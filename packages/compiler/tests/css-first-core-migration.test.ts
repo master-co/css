@@ -128,7 +128,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
   test('lowers managed enum patterns as semantic utilities without replacing exact utility precedence', () => {
     const { manifest } = compileCSSManifest(`
       @utilities {
-        text-<left|right|center> {
+        text-<left|right|center|start|end|justify> {
           text-align: --value();
         }
 
@@ -136,7 +136,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           margin: calc(--value() * 1px);
         }
 
-        bg-origin-<border=border-box|content=content-box> {
+        bg-origin-<border=border-box|content=content-box|padding=padding-box> {
           background-origin: --value();
         }
 
@@ -160,23 +160,23 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     expect(manifest.utilities?.some((utility) => utility.matchers.some((matcher) => matcher.type === 'pattern'))).toBe(true)
-    expect(manifest.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
+    expect(manifest.utilities?.find((utility) => utility.id === 'text-<left|right|center|start|end|justify>')).toMatchObject({
       type: UtilityType.Semantic,
       matchers: [{
         type: 'pattern',
         prefix: 'text-',
-        values: ['left', 'right', 'center']
+        values: ['left', 'right', 'center', 'start', 'end', 'justify']
       }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box>')).toMatchObject({
+    expect(manifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box|padding=padding-box>')).toMatchObject({
       type: UtilityType.Semantic,
       matchers: [{
         type: 'pattern',
         prefix: 'bg-origin-',
-        values: ['border', 'content'],
+        values: ['border', 'content', 'padding'],
         valueMap: {
           border: 'border-box',
-          content: 'content-box'
+          content: 'content-box', padding: 'padding-box'
         }
       }]
     })
@@ -206,23 +206,23 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         font-<~font-size> { font-size: --value(); }
         font-<~font-family> { font-family: --value(); }
         font-<~font-weight> { font-weight: --value(); }
-        font-size:<number> { font-size: --value(); }
+        font-size:<*> { font-size: --value(); }
         bg-<~color> { background-color: --value(); }
         fg-<~color-text|~color> { color: --value(); }
-        grid-cols:<number|*> {
+        grid-cols:<*> {
           display: grid;
           grid-template-columns: repeat(--value(), minmax(0, 1fr));
         }
-        grid-col-span:<number|*> { grid-column: span --value()/span --value(); }
+        grid-col-span:<*> { grid-column: span --value()/span --value(); }
         size-<~container> { width: --value(); height: --value(); }
-        size:<number|*> { width: --value(); height: --value(); }
-        gap:<*|number> { gap: --value(); }
-        accent:<color|*> { accent-color: --value(); }
-        user-select:<auto|none|text|all> {
+        size:<*> { width: --value(); height: --value(); }
+        gap:<*> { gap: --value(); }
+        accent:<*> { accent-color: --value(); }
+        user-select:<*> {
           -webkit-user-select: --value();
           user-select: --value();
         }
-        clamp-lines:<number|none> { -webkit-line-clamp: --value(); }
+        clamp-lines:<*> { -webkit-line-clamp: --value(); }
         text-<~font-size> {
           font-size: --value();
           line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
@@ -238,24 +238,24 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(utility('font-<~font-size>')).toMatchObject({
       variableAliasRefs: ['~font-size'], matchers: [{ type: 'token', prefix: 'font-' }]
     })
-    expect(utility('font-size:<number>')).toMatchObject({
-      kind: 'number', matchers: [{ type: 'value', keys: ['font-size'] }]
+    expect(utility('font-size:<*>')).toMatchObject({
+      matchers: [{ type: 'key', keys: ['font-size'] }]
     })
     expect(utility('size-<~container>')).toMatchObject({
       type: UtilityType.Shorthand, variableAliasRefs: ['~container'],
       matchers: [{ type: 'token', prefix: 'size-' }]
     })
     for (const key of ['grid-cols', 'grid-col-span', 'size']) {
-      expect(utility(`${key}:<number|*>`)).toMatchObject({
-        kind: 'number', matchers: [{ type: 'value', keys: [key] }, { type: 'key', keys: [key] }]
+      expect(utility(`${key}:<*>`)).toMatchObject({
+        matchers: [{ type: 'key', keys: [key] }]
       })
     }
-    expect(utility('accent:<color|*>')).toMatchObject({
-      kind: 'color', matchers: [{ type: 'value', keys: ['accent'] }, { type: 'key', keys: ['accent'] }]
+    expect(utility('accent:<*>')).toMatchObject({
+      matchers: [{ type: 'key', keys: ['accent'] }]
     })
-    expect(utility('accent:<color|*>')).not.toHaveProperty('variableAliasRefs')
-    expect(utility('user-select:<auto|none|text|all>')).toMatchObject({
-      matchers: [{ type: 'pattern', prefix: 'user-select:', values: ['auto', 'none', 'text', 'all'] }]
+    expect(utility('accent:<*>')).not.toHaveProperty('variableAliasRefs')
+    expect(utility('user-select:<*>')).toMatchObject({
+      matchers: [{ type: 'key', keys: ['user-select'] }]
     })
     expect(utility('text-<~font-size>')?.emit).toMatchObject({
       type: 'static', rules: [{ declarations: {
@@ -354,7 +354,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value()-box;
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+    `, { baseManifest: defaultManifest })).toThrow('--value() is a complete CSS value')
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -362,7 +362,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: foo--value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+    `, { baseManifest: defaultManifest })).not.toThrow()
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -370,7 +370,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           align-content: space---value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
+    `, { baseManifest: defaultManifest })).not.toThrow()
 
     const nativeFunction = compileCSSManifest(`
       @utilities { text-center { text-align: --value(); } }
@@ -387,7 +387,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility source list cannot be empty')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -395,7 +395,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Token namespaces require named patterns')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -403,7 +403,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum source requires at least two values separated by "|"')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -411,7 +411,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Token namespaces require named patterns')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -419,7 +419,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           fill: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).not.toThrow()
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -427,7 +427,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum values')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -435,7 +435,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum values')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -443,7 +443,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility source lists must use "|" separators')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -451,7 +451,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utilities only support one raw value kind per entry')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -459,7 +459,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utilities must use key:<...> syntax')
+    `, { baseManifest: defaultManifest })).toThrow(/Raw utility|Raw utilities/)
   })
 
   test('does not consume @utility as a Master CSS directive', () => {

@@ -5,6 +5,7 @@ mod configuration;
 mod managed;
 mod native;
 mod stylesheets;
+mod utilities;
 mod values;
 
 use crate::CompilerError;
@@ -41,6 +42,7 @@ pub enum RcMigrationProfile {
     RcNamed,
     RcNative,
     RcManaged,
+    RcUtilities,
 }
 
 #[derive(Debug, Serialize)]
@@ -74,6 +76,7 @@ struct Family {
     render: String,
     resolver: String,
     managed: bool,
+    raw_kind: Option<String>,
 }
 
 struct StaticFamily {
@@ -142,12 +145,30 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
         class_lists.push(proposals);
     }
     let mut previous_styles = Vec::new();
-    let stylesheets = request
+    let mut stylesheets: Vec<_> = request
         .stylesheets
         .iter()
         .enumerate()
         .map(|(index, source)| migration.stylesheet(source, index, &mut previous_styles))
         .collect();
+    let mut definition_files = std::collections::HashMap::<String, usize>::new();
+    for (index, source) in request.stylesheets.iter().enumerate() {
+        for definition in crate::utility_sources::collect(source, "migration.css") {
+            if let Some(previous) = definition_files.insert(definition.identity, index)
+                && previous != index
+            {
+                let note = format!(
+                    "Utility {} is defined across multiple sources; whole-definition replacement requires a saved-order review",
+                    definition.name
+                );
+                for file in [previous, index] {
+                    if !stylesheets[file].notes.contains(&note) {
+                        stylesheets[file].notes.push(note.clone());
+                    }
+                }
+            }
+        }
+    }
     Ok(RcMigrationResult {
         version: 2,
         from: request.from,
@@ -208,7 +229,9 @@ impl Migration {
         }
         let configuration = if matches!(
             request.from,
-            RcMigrationProfile::RcNative | RcMigrationProfile::RcManaged
+            RcMigrationProfile::RcNative
+                | RcMigrationProfile::RcManaged
+                | RcMigrationProfile::RcUtilities
         ) {
             configuration::Configuration {
                 manifest: request.manifest.clone(),
@@ -329,6 +352,10 @@ impl Migration {
         if request.from == RcMigrationProfile::RcLegacy {
             helper_manifest["utilities"] = Value::Array(utilities);
         }
+        if request.from != RcMigrationProfile::RcLegacy {
+            helper_manifest["utilities"] = json!([]);
+        }
+        utilities::current_helper(&mut helper_manifest);
         let mut target_manifest = request.target_manifest.clone();
         // Saved project resources retain their identities. Managed definitions
         // must be present in the migrated target manifest to prove equivalence.
@@ -415,6 +442,11 @@ impl Migration {
     }
 
     fn convert(&self, source: &str) -> Result<String, String> {
+        let after = self.convert_previous(source)?;
+        self.utility_class(source, after)
+    }
+
+    fn convert_previous(&self, source: &str) -> Result<String, String> {
         if let Some(name) = self.managed_reference(source) {
             return if name == source {
                 Ok(source.into())
@@ -424,7 +456,10 @@ impl Migration {
                 ))
             };
         }
-        if self.profile == RcMigrationProfile::RcManaged {
+        if matches!(
+            self.profile,
+            RcMigrationProfile::RcManaged | RcMigrationProfile::RcUtilities
+        ) {
             return Ok(source.into());
         }
 
@@ -526,6 +561,11 @@ impl Migration {
                 let candidate = token_class(key, &value, &suffix);
                 self.equivalent(&token_rules, &candidate, true)?;
                 return Ok(candidate);
+            }
+            if let Some(kind) = &family.raw_kind
+                && !utilities::legacy_kind(&value, Some(kind))
+            {
+                continue;
             }
             let probe_value = self.rewrite_value(&value, None, key == "image-resolution")?;
             let probe = format!("{}:{probe_value}{suffix}", family.probe);
@@ -703,11 +743,7 @@ fn add_family(
             json!({"type":"token","prefix":format!("{token}-")}),
             false,
         ),
-        (
-            &probe,
-            json!({"type":if original.get("kind").is_some() {"value"} else {"key"},"keys":[probe]}),
-            false,
-        ),
+        (&probe, json!({"type":"key","keys":[probe]}), false),
         (&render, json!({"type":"key","keys":[render]}), false),
         (
             &resolver,
@@ -733,6 +769,9 @@ fn add_family(
         render,
         resolver,
         managed,
+        raw_kind: (!matchers.iter().any(|matcher| matcher["type"] == "key"))
+            .then(|| original["kind"].as_str().map(str::to_owned))
+            .flatten(),
     });
 }
 
@@ -763,7 +802,18 @@ fn valid_saved_declaration(property: &str, value: &str) -> bool {
             return true;
         }
     }
-    let source = format!("{property}:{value}");
+    // These RC vendor longhands use the existing CSS width/color grammars.
+    // Lightning CSS does not classify the vendor spelling itself.
+    let validation_property = match property {
+        "-webkit-text-stroke-width" => "border-top-width",
+        "-webkit-text-stroke-color" => "color",
+        "-webkit-text-stroke" => {
+            return valid_saved_declaration("color", value)
+                || valid_saved_declaration("border-top-width", value);
+        }
+        _ => property,
+    };
+    let source = format!("{validation_property}:{value}");
     let Ok(block) = DeclarationBlock::parse_string(&source, ParserOptions::default()) else {
         return false;
     };

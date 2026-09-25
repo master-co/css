@@ -13,7 +13,7 @@ for (const source of [
   const file = '/tmp/master-source-columns.scss'
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
   try {
-    await transformStylesheet(file, prepared.source, { baseManifest: { version: 1, languageVersion: 2, utilities: [] }, sourceMap: prepared.sourceMap, loadSass: identity })
+    await transformStylesheet(file, prepared.source, { baseManifest: { version: 1, languageVersion: 3, utilities: [] }, sourceMap: prepared.sourceMap, loadSass: identity })
     throw new Error('Expected invalid compose')
   } catch (error: any) {
     const diagnostic = error.diagnostics[0]
@@ -31,5 +31,5 @@ for (const source of [
 test('rendered root diagnostics are mapped once through the Sass source map', async () => {
   const file = '/tmp/master-root-columns.scss', source = '/* authored */\n\n\n.card{@compose "block";}'
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
-  await expect(compileRenderedStylesheet(file, prepared.source, { baseManifest: { version: 1, languageVersion: 2, utilities: [] }, sourceMap: prepared.sourceMap, loadSass: identity })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: file, range: { start: expect.objectContaining({ line: 3 }), end: expect.objectContaining({ line: 3 }) } })] })
+  await expect(compileRenderedStylesheet(file, prepared.source, { baseManifest: { version: 1, languageVersion: 3, utilities: [] }, sourceMap: prepared.sourceMap, loadSass: identity })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: file, range: { start: expect.objectContaining({ line: 3 }), end: expect.objectContaining({ line: 3 }) } })] })
 })

@@ -175,3 +175,25 @@ it('migrates rc-managed native components in preview and atomically blocks unsaf
   expect(blocked.files.every(file => !file.written)).toBe(true)
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(source)
 })
+
+
+it('previews rc-utilities and blocks every write when one typed definition needs review', () => {
+  const cwd = project()
+  fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), JSON.stringify({
+    version: 1, languageVersion: 2, packageVersion: '2.0.0-rc.utilities', utilities: []
+  }))
+  const safe = '@master entry; @utilities { pair:<number|*> { width:--value(); height:--value(); } }'
+  fs.writeFileSync(path.join(cwd, 'app.css'), safe)
+  const options = { cwd, from: 'rc-utilities' as const }
+  const preview = runMigrate(['app.css'], options)
+  expect(preview.files[0].edits[0].after).toContain('pair:<*>')
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(safe)
+  fs.writeFileSync(path.join(cwd, 'unsafe.css'), '@utilities { limited:<number> { width:--value(); } }')
+  const blocked = runMigrate(['*.css'], { ...options, write: true })
+  expect(blocked.files.some(file => file.review.length > 0)).toBe(true)
+  expect(blocked.files.every(file => !file.written)).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(safe)
+  fs.unlinkSync(path.join(cwd, 'unsafe.css'))
+  expect(runMigrate(['app.css'], { ...options, write: true }).files[0].written).toBe(true)
+  expect(runMigrate(['app.css'], options).files[0].edits).toEqual([])
+})

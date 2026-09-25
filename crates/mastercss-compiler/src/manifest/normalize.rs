@@ -160,18 +160,22 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
             .and_then(Value::as_str)
             .map(str::to_owned)
     });
-    let utilities = merge_array_by(
-        base.get("utilities"),
-        fragment.get("utilities"),
-        |utility| {
-            let id = utility.get("id").and_then(Value::as_str)?;
-            let layer = utility
-                .get("layer")
-                .and_then(Value::as_str)
-                .unwrap_or_default();
-            Some(format!("{id}\0{layer}"))
-        },
-    );
+    let all_utilities = base
+        .get("utilities")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .chain(
+            fragment
+                .get("utilities")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten(),
+        )
+        .cloned()
+        .collect::<Vec<_>>();
+    let utilities = (!all_utilities.is_empty())
+        .then(|| Value::Array(mastercss_engine::effective_utilities(&all_utilities)));
     for (key, value) in [
         ("settings", settings),
         ("variables", variables),
@@ -214,6 +218,32 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
 }
 
 pub fn compile_manifest_input(
+    input: &CssDirectiveManifestInput,
+    options: &CompileManifestOptions,
+) -> Result<CompileManifestResult, CompilerError> {
+    if input
+        .utilities
+        .iter()
+        .flatten()
+        .any(|definition| definition.get("body").is_some())
+    {
+        let result = crate::lower_css_directives(
+            input,
+            &[],
+            &[],
+            &crate::LowerCssDirectivesOptions {
+                base_manifest: options.base_manifest.clone(),
+                resolution_manifest: None,
+            },
+        )?;
+        return Ok(CompileManifestResult {
+            manifest: result.manifest,
+        });
+    }
+    compile_manifest_fragment(input, options)
+}
+
+pub(crate) fn compile_manifest_fragment(
     input: &CssDirectiveManifestInput,
     options: &CompileManifestOptions,
 ) -> Result<CompileManifestResult, CompilerError> {

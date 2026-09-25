@@ -30,8 +30,8 @@ test('native and Wasm retain ordered compose output, source traces and migration
   }
   const migration = {
     from: 'rc-managed' as const, sourceVersion: '2.0.0-rc.managed',
-    manifest: { version: 1 as const, languageVersion: 2 as const, utilities: [] },
-    targetManifest: { version: 1 as const, languageVersion: 2 as const },
+    manifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] },
+    targetManifest: { version: 1 as const, languageVersion: 3 as const },
     stylesheets: ['@components{button{display:block}}.a{@compose button;}'],
     classLists: [['button:hover']], documents: []
   }

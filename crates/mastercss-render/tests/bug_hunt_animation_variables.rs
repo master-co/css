@@ -26,7 +26,7 @@ fn browser_variable_corpus_retains_exactly_the_expected_animation_union() {
 
 fn generated(css: &str, variables: Vec<Value>) -> String {
     let manifest = json!({
-        "version": 1,"languageVersion":2,
+        "version": 1,"languageVersion":3,
         "utilities": [],
         "modes": [{"name":"dark","branches":[{"selector":".dark"}]}],
         "variables": {"animation": variables},

@@ -63,7 +63,7 @@ const selectorVariantRuleTexts = [
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const inlineThemeManifest = {
-  version: 1, languageVersion: 2,
+  version: 1, languageVersion: 3,
   modes: [
     { name: 'light', branches: [{ selector: '.light' }] },
     { name: 'dark', branches: [{ selector: '.dark' }] }
@@ -112,7 +112,7 @@ const inlineThemeCSS = [
 ].join('')
 
 const manifest: MasterCSSManifest = {
-  version: 1, languageVersion: 2,
+  version: 1, languageVersion: 3,
   conditions: {
     sm: { id: 'media', nodes: [{ type: 'number', value: 52.125, unit: 'rem' }] }
   },

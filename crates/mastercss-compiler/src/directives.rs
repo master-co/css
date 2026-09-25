@@ -297,6 +297,25 @@ fn compile_css_directives_impl(
         }
     }
     crate::output_mappings::refine_native_declaration_sources(source, &mut style_definitions);
+    // Index authoring declarations once for all definition bodies.
+    let mut bodies = Vec::new();
+    let mut sizes = Vec::new();
+    for utility in manifest_input.utilities.iter().flatten() {
+        let body: Vec<CssDirectiveStyleDefinition> = utility
+            .get("body")
+            .map(|body| serde_json::from_value(body.clone()).expect("compiler body"))
+            .unwrap_or_default();
+        sizes.push(body.len());
+        bodies.extend(body);
+    }
+    crate::output_mappings::refine_native_declaration_sources(source, &mut bodies);
+    let mut bodies = bodies.into_iter();
+    for (utility, size) in manifest_input.utilities.iter_mut().flatten().zip(sizes) {
+        if utility.get("body").is_some() {
+            utility["body"] = serde_json::to_value(bodies.by_ref().take(size).collect::<Vec<_>>())
+                .expect("compiler body");
+        }
+    }
     stylesheet.rules.0 = native_rules;
     if !extraction_policy.preserve_native
         && (options.prune_native_css || extraction_policy.prune_native)

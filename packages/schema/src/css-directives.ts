@@ -1,6 +1,5 @@
 import type {
   MasterCSSManifestMode,
-  MasterCSSManifestUtilityKind,
   MasterCSSManifestUtilityLayerName,
   MasterCSSManifestVariant
 } from './manifest.js'
@@ -127,9 +126,6 @@ export interface CSSDirectiveUtilityPatternDefinition {
 
 export interface CSSDirectiveUtilityDynamicDefinition {
   key: string
-  kind?: MasterCSSManifestUtilityKind
-  values?: string[]
-  arbitrary?: boolean
 }
 
 export interface CSSDirectiveUtilityTokenDefinition {
@@ -139,6 +135,9 @@ export interface CSSDirectiveUtilityTokenDefinition {
 
 export interface CSSDirectiveUtilityDefinition {
   name: string
+  /** Complete ordered authoring body; retained until whole-definition replacement. */
+  body?: CSSDirectiveStyleDefinition[]
+  source?: CSSDirectiveSourceReference
   type?: 'static' | 'pattern' | 'dynamic' | 'token'
   layer?: CSSDirectiveLayerName
   pattern?: CSSDirectiveUtilityPatternDefinition
@@ -228,6 +227,8 @@ export interface CSSNativeOutput {
 
 export interface CSSUtilitySource {
   name: string
+  identity: string
+  replacedBy?: CSSDirectiveSourceReference
   source: CSSDirectiveSourceReference
 }
 

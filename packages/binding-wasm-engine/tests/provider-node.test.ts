@@ -14,7 +14,7 @@ test('loads an explicit engine artifact file URL in Node', async () => {
     }>
   }
   const engine = await provider.createEngineSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     utilities: []
   }))
 

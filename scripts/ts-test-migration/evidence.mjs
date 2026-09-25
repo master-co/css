@@ -58,6 +58,7 @@ export function rustContractRecordScopeDigest(record) {
   return sha256(JSON.stringify({
     sourceId: record.sourceId,
     sourceDigest: record.sourceDigest,
+    ...(record.targetId ? { targetId: record.targetId } : {}),
     targetDigest: record.targetDigest,
     proof: record.proof,
     reason: record.reason

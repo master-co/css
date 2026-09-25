@@ -4,7 +4,7 @@ use super::{
 };
 use std::collections::HashMap;
 
-pub(super) fn manifest_error(message: impl Into<String>) -> CompilerError {
+pub(crate) fn manifest_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {
         message: message.into(),
         filename: "manifest.json".into(),

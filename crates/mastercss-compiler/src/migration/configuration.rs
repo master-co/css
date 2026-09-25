@@ -12,7 +12,7 @@ pub(super) struct Configuration {
 
 pub(super) fn convert(original: &Value) -> Result<Configuration, CompilerError> {
     let mut manifest = original.clone();
-    manifest["languageVersion"] = json!(2);
+    manifest["languageVersion"] = json!(mastercss_schema::LANGUAGE_VERSION);
     let settings = original.get("settings");
     let trigger = settings
         .and_then(|s| s.get("modeTrigger"))

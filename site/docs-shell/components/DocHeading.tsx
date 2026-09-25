@@ -15,7 +15,7 @@ export default function DocHeading({ tagName, ...props }: any) {
     }}>
       { }
       <IconHash className="abs inset:0 invisible my:auto ml:-1.375em stroke-text-disabled contain:strict visible:of(:target)" width={'1em'} height={'1em'} />
-      <Link href={'#' + props.id} className="content:none:after text:inherit">
+      <Link href={'#' + props.id} className="content:none:after">
         {typeof props.children === 'string' ? props.children.replace(' [sr-only]', '') : props.children}
       </Link>
     </Element>

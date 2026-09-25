@@ -658,6 +658,7 @@ mod managed;
 mod native_conditionals;
 mod native_output;
 mod native_source;
+mod utility_definitions;
 pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
 mod graph_inline;
 mod native_style;
@@ -689,7 +690,7 @@ pub(crate) use native_style::{
 };
 pub(crate) use pattern::{
     ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
-    lower_managed_pattern_style, mask_managed_pattern_names, minified_css, trim_byte_range,
+    mask_managed_pattern_names, minified_css, trim_byte_range,
 };
 pub(crate) use syntax::{
     collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,

@@ -163,7 +163,7 @@ mod tests {
 
     fn manifest() -> String {
         serde_json::json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "utilities": [
                 {
                     "id": ".block",
@@ -208,7 +208,7 @@ mod tests {
     #[test]
     fn repeated_classes_share_generated_rules() {
         let mut session =
-            RenderSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#, None)
+            RenderSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#, None)
                 .unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block"])
@@ -263,7 +263,7 @@ mod tests {
     #[test]
     fn cached_native_declarations_preserve_later_alias_matchers() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "variables": {
                 "": [{
                     "name": "stripe",
@@ -291,7 +291,7 @@ mod tests {
     #[test]
     fn cached_subsets_preserve_page_resource_composition() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },
@@ -339,7 +339,7 @@ mod tests {
     #[test]
     fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },
@@ -378,7 +378,7 @@ mod tests {
     #[test]
     fn preserves_and_increments_host_resource_counts() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },

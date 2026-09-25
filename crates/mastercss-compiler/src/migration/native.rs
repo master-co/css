@@ -65,7 +65,9 @@ impl Migration {
     pub(super) fn native_profile(&self) -> bool {
         matches!(
             self.profile,
-            RcMigrationProfile::RcNative | RcMigrationProfile::RcManaged
+            RcMigrationProfile::RcNative
+                | RcMigrationProfile::RcManaged
+                | RcMigrationProfile::RcUtilities
         )
     }
 }

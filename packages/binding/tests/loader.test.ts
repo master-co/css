@@ -88,7 +88,7 @@ describe('native target resolution', () => {
 
   it('rejects unsupported lint request versions with a structured error', () => {
     const lint = loadNativeToolingBinding({ required: true })!
-      .createLintSession({ version: 1, languageVersion: 2, utilities: [] } as never)
+      .createLintSession({ version: 1, languageVersion: 3, utilities: [] } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
         version: 0,
@@ -102,7 +102,7 @@ describe('native target resolution', () => {
 
   it('loads raw value policy candidates and diagnostics', () => {
     const lint = loadNativeToolingBinding({ required: true })!.createLintSession({
-      version: 1, languageVersion: 2,
+      version: 1, languageVersion: 3,
       variables: {
         spacing: [{ key: 'md', type: 'number', value: '1rem' }]
       },
@@ -144,7 +144,7 @@ describe('native target resolution', () => {
 
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
-      version: 1, languageVersion: 2,
+      version: 1, languageVersion: 3,
       utilities: [{
         id: 'display-block',
         name: 'block',

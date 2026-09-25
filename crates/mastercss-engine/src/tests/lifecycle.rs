@@ -150,7 +150,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "utilities":[{
             "id":".multi",
             "name":"multi",
@@ -368,7 +368,7 @@ fn registers_host_keyframes_after_animation_rules_are_ensured() {
 #[test]
 fn host_globals_replace_locally_emitted_static_resources() {
     let manifest = r##"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "variables":{"color":[{"key":"brand","value":"#123","static":true}]},
           "animations":{"pulse":{"to":{"opacity":"1"}}},
           "animationOptions":{"pulse":{"static":true}},
@@ -386,7 +386,7 @@ fn host_globals_replace_locally_emitted_static_resources() {
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["display:block", "made-up:nope"])
         .unwrap();
@@ -406,7 +406,7 @@ fn commits_native_declarations_without_host_support_filtering() {
 // Also replaces commits_only_host_supported_native_declarations with preservation assertions.
 // The final v2 contract preserves declarations; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["width:error", "w:10px"])
         .unwrap();
@@ -435,7 +435,7 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["pl:calc(5x-2px)"])
         .unwrap();

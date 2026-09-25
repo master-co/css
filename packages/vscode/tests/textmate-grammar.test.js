@@ -58,7 +58,7 @@ test('scopes v2 named classes, opacity, and pattern forms in CSS directives', ()
   const tokens = tokenizeWith(injectedCSSGrammar, [
     '@utilities { card { @compose fg-red/0.5 fg-blue/.5 block:hover@sm color:red; } }',
     '@utilities { font-<~font-family> { font-family: --value(); } }',
-    '@utilities { size:<number|*> { width: --value(); } }',
+    '@utilities { size:<*> { width: --value(); } }',
     '@utilities { font:<~font-size> { font-size: --value(); } }'
   ].join('\n'))
 
@@ -75,10 +75,10 @@ test('scopes v2 named classes, opacity, and pattern forms in CSS directives', ()
   expectScope(tokens, 'font', 'support.type.property-name.master-css')
   expectScope(tokens, 'font-family', 'variable.parameter.master-css')
   expectScope(tokens, 'size', 'support.type.property-name.master-css')
-  expectScope(tokens, 'number', 'variable.parameter.master-css')
+  expectScope(tokens, '*', 'keyword.operator.master-css')
   expectSomeScope(tokens, 'font:<~font-size>', 'invalid.deprecated.master-css')
   expectNoSomeScope(tokens, 'font-family', 'invalid.deprecated.master-css')
-  expectNoSomeScope(tokens, 'number', 'invalid.deprecated.master-css')
+  expectNoSomeScope(tokens, '*', 'invalid.deprecated.master-css')
 })
 
 function tokenizeWith(targetGrammar, source) {
@@ -492,7 +492,8 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectScope(tokens, 'brand', 'support.constant.property-value.master-css')
   expectSomeScope(tokens, 'Font families', 'comment.block.css')
   expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
-  expectScope(tokens, '--alpha', 'support.function.misc.master-css')
+  expectSomeScope(tokens, '--alpha(', 'meta.property-value.css')
+  expect(tokens.filter(token => token.text.includes('--alpha')).every(token => !token.scopes.includes('support.function.misc.master-css'))).toBe(true)
   expectScope(tokens, '--color-blue-60', 'variable.argument.css')
   expectScope(tokens, '--size', 'variable.argument.css')
   expectScope(tokens, '-0.072', 'constant.numeric.css')

@@ -159,7 +159,7 @@ fn tracks_keyframes_only_from_animation_declarations() {
 #[test]
 fn tracks_theme_variables_referenced_by_keyframes() {
     let manifest = r##"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "variables":{"color":[{"name":"color-primary","key":"primary","value":"#ff0"}]},
           "animations":{"fade":{"to":{"background":"var(--color-primary)"}}},
           "utilities":[{
@@ -239,7 +239,7 @@ fn renders_the_compiled_condition_grammar() {
 
 #[test]
 fn separates_child_selectors_from_dynamic_values() {
-    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
     engine.ensure_class_rules(["mt:0>div"]).unwrap();
     assert_eq!(
         engine.css_text(),
@@ -259,7 +259,7 @@ fn separates_child_selectors_from_dynamic_values() {
 #[test]
 fn native_property_precedes_overlapping_enum_name_inside_groups() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "utilities":[{
             "id":"text-<wrap|pretty>",
             "type":-2,
@@ -292,7 +292,7 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 #[test]
 fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "utilities":[
             {
               "id":"text-<left|center>",
@@ -314,7 +314,7 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
     assert!(engine.inspect("margin:$(spacing-x1)").unwrap().match_status != mastercss_schema::MatchStatus::Matched);
     assert!(
         engine
@@ -327,7 +327,7 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
 #[test]
 fn preserves_all_static_rules_for_the_same_class_across_layers() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "utilities":[
             {
               "id":"demo-defaults",
@@ -356,7 +356,7 @@ fn preserves_all_static_rules_for_the_same_class_across_layers() {
 #[test]
 fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "variables":{"":[
             {
               "name":"stripe",
@@ -368,7 +368,6 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
           "utilities":[{
             "id":"bg-<~color>",
             "type":0,
-            "kind":"color",
             "variableAliasRefs":["~color"],
             "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
             "matchers":[
@@ -397,7 +396,7 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
 #[test]
 fn preserves_native_alias_matchers_for_shared_declarations() {
     let manifest = r#"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "variables":{"":[
             {
               "name":"stripe",
@@ -426,7 +425,7 @@ fn preserves_native_alias_matchers_for_shared_declarations() {
 #[test]
 fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
     let manifest = r##"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "variables":{"color":[
             {"name":"color-primary","key":"primary","value":"#123","inline":true},
             {"name":"color-brand","key":"brand","value":"var(--color-primary)","inline":true}
@@ -458,7 +457,7 @@ fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
 #[test]
 fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
     let manifest = r##"{
-          "version":1,"languageVersion":2,
+          "version":1,"languageVersion":3,
           "modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],
           "variables":{
             "color":[
@@ -517,7 +516,7 @@ fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
 fn rejects_circular_inline_variable_references() {
     let error = EngineSession::create(
         r##"{
-              "version":1,"languageVersion":2,
+              "version":1,"languageVersion":3,
               "variables":{"color":[
                 {"name":"color-a","key":"a","value":"var(--color-b)","inline":true},
                 {"name":"color-b","key":"b","value":"var(--color-a)","inline":true}

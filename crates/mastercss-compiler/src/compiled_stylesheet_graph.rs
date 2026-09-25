@@ -569,6 +569,7 @@ pub fn compile_css_stylesheet_graph(
     combined
         .utility_sources
         .splice(0..0, request.utility_sources.clone());
+    crate::utility_sources::resolve(&mut combined.utility_sources);
     for trace in &mut combined.compositions {
         crate::utility_sources::attach(trace, &combined.utility_sources);
     }

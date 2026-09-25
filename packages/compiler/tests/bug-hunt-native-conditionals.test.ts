@@ -3,7 +3,7 @@ import { SourceMap } from 'node:module'
 import { createCompiler } from '../src/index'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const wrappers = ['@media(min-width:1px)', '@supports(display:grid)', '@container card (min-width:1px)', '@layer cards', '@layer', '@starting-style']
 
 test('BH-0057 native and Wasm graphs preserve conditional structure and sibling order', async () => {

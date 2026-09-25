@@ -12,7 +12,7 @@ for (const binding of ['native', 'wasm'] as const) {
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
       const entry = `@import "./child.css"${qualifier};@utilities{paint{padding:2rem}}/* 😀 */\n.after{margin:1px}`
       const child = '/* child */\n.card{@compose paint;}\n.card{padding:3rem}'
-      const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: { version: 1 as const, languageVersion: 2 as const, utilities: [] }, inlineImports: true }
+      const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
       expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)
@@ -31,8 +31,8 @@ test('Node manifest files and references reject qualified global definitions', a
     writeFileSync(child, '@utilities{paint{padding:2rem}}')
     for (const qualifier of [' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) screen']) {
       writeFileSync(entry, `@import "./child.css"${qualifier};`)
-      expect(() => compileManifestFileSync(entry, { baseManifest: { version: 1, languageVersion: 2, utilities: [] } })).toThrow(/Qualified import.*global @utilities/)
-      await expect(compileRenderedStylesheet(join(root, 'card.css'), '@reference "./entry.css";.card{@compose paint;}', { projectDir: root, baseManifest: { version: 1, languageVersion: 2, utilities: [] } })).rejects.toThrow(/Qualified import.*global @utilities/)
+      expect(() => compileManifestFileSync(entry, { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).toThrow(/Qualified import.*global @utilities/)
+      await expect(compileRenderedStylesheet(join(root, 'card.css'), '@reference "./entry.css";.card{@compose paint;}', { projectDir: root, baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).rejects.toThrow(/Qualified import.*global @utilities/)
 
     }
   } finally { rmSync(root, { recursive: true, force: true }) }

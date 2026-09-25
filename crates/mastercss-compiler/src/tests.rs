@@ -307,7 +307,15 @@ fn lowers_static_managed_definitions_with_utf16_source_ranges() {
             &CompileNativeCssOptions::default(),
         )
         .unwrap();
-    let definitions = serde_json::to_value(result.style_definitions.unwrap()).unwrap();
+    let definitions = serde_json::Value::Array(
+        result
+            .manifest_input
+            .utilities
+            .unwrap()
+            .into_iter()
+            .flat_map(|definition| definition["body"].as_array().cloned().unwrap())
+            .collect(),
+    );
     assert_eq!(definitions[0]["layer"], "utilities");
     assert_eq!(definitions[0]["declarations"][0]["property"], "display");
     assert_eq!(definitions[0]["declarations"][0]["value"], "inline-flex");

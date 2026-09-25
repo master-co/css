@@ -13,7 +13,7 @@ for (const item of cases) {
     const request: MasterCSSCompileStylesheetsRequest = {
       graph: { entry: 'entry', files: { entry: item.entry, local: item.local || '.example{color:red}' }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
       urls: { entry: '/output/entry.css', local: '/output/local.css' },
-      baseManifest: { version: 1, languageVersion: 2, utilities: [] }
+      baseManifest: { version: 1, languageVersion: 3, utilities: [] }
     }
     using native = await createCompiler({ binding: 'native' })
     using wasm = await createCompiler({ binding: 'wasm' })
@@ -37,7 +37,7 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
         local: '.example{@compose paint;}'
       }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
       urls: { entry: '/output/entry.css', local: '/output/local.css' },
-      baseManifest: { version: 1, languageVersion: 2, utilities: [] }
+      baseManifest: { version: 1, languageVersion: 3, utilities: [] }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
     expect(result.stylesheets[1].css).not.toContain('@compose')
@@ -62,13 +62,13 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
     using compiler = await createCompiler({ binding })
     const request: MasterCSSCompileStylesheetsRequest = {
       graph: { entry: 'entry', files: { entry: "@reference 'reference.css';.example{@compose paint;}" }, edges: [] },
-      urls: { entry: '/entry.css' }, baseManifest: { version: 1, languageVersion: 2, utilities: [] }
+      urls: { entry: '/entry.css' }, baseManifest: { version: 1, languageVersion: 3, utilities: [] }
     }
     expect(() => compiler.compileStylesheets(request)).toThrowError(expect.objectContaining({ code: 'CSS_IMPORT_ERROR' }))
-    const reference = compiler.compileManifest('@utilities{paint{color:red}}', { baseManifest: { version: 1, languageVersion: 2, utilities: [] } })
+    const reference = compiler.compileManifest('@utilities{paint{color:red}}', { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
     const result = compiler.compileStylesheets({ ...request, resolutionManifest: reference.manifest })
     expect(result.css).toContain('color:red')
-    const empty = compiler.compileManifest('', { baseManifest: { version: 1, languageVersion: 2, utilities: [] } })
+    const empty = compiler.compileManifest('', { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
     expect(result.manifest).toEqual(empty.manifest)
   }
 })
@@ -82,7 +82,7 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
     }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
     urls: { entry: './entry.css', child: './child.css' },
     resourceURLs: { child: { 'image.svg': './asset.svg?q=1#part' } },
-    relativeResourceURLs: true, options: { classes: ['example'] }, classesByStylesheet: { child: null }, baseManifest: { version: 1, languageVersion: 2, utilities: [] }
+    relativeResourceURLs: true, options: { classes: ['example'] }, classesByStylesheet: { child: null }, baseManifest: { version: 1, languageVersion: 3, utilities: [] }
   }
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })

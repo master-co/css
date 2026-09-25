@@ -331,7 +331,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     css.ensureClassRules('card')
 
-    expect(result.directives.styleDefinitions).toEqual(expect.arrayContaining([
+    const definitions = [...(result.directives.styleDefinitions ?? []), ...(result.directives.manifestInput.utilities ?? []).flatMap(definition => definition.body ?? [])]
+    expect(definitions).toEqual(expect.arrayContaining([
       expect.objectContaining({
         type: 'compose',
         className: 'bg-primary/.9'
@@ -357,7 +358,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(result.css).toContain('.list>li{text-align:center}')
   })
 
-  test('batches independent managed style refreshes before native compose', () => {
+  test('reuses native declaration seeds before composing independent utilities', () => {
     const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
       @utilities {
         alpha {
@@ -375,7 +376,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `)
 
     expect(result.css).toContain('.card{color:red;background:#00f}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
+    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(0)
   })
 
   test('refreshes once before a managed compose dependency', () => {
@@ -441,7 +442,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `)
 
     expect(result.css).toContain('.card{color:red;background:#00f}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(2)
+    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
   })
 
   test('rejects quoted and grouped compose class lists', () => {
@@ -468,7 +469,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     }
 
     expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax', '"block"')
-    expectComposeError('.card { @compose content:\'-\'; }', 'compose-quoted-syntax', '\'-\'')
+    expect(compileCSSManifest(".card { @compose content:'-'; }", { baseManifest: defaultManifest }).css).toContain("content:'-'")
     expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax', '{text-center;block}')
   })
 

@@ -8,7 +8,7 @@ import { createCompiler } from '../src/index'
 import { createCompilerBindingSession } from '../src/session'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const source = '@utilities{paint{padding:2rem}}@layer{.card{@compose paint;}.card{padding:3rem!important}}'
 
 for (const binding of ['native', 'wasm'] as const) {

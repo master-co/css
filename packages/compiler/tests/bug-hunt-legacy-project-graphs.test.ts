@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { compileProjectManifest } from '../src/node-compiler'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {
     test(`Node project retains imported definitions: ${qualifier || 'unqualified'}, compose=${compose}`, () => {

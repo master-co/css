@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "removed": {
+      "f113e583167d23af": {
+        "className": "text:inherit",
+        "key": "text:inherit",
+        "layer": "utilities",
+        "type": 0,
+        "sortTier": 0,
+        "priority": {
+          "features": [],
+          "selector": 0,
+          "sortKey": "text:inherit"
+        },
+        "text": ".text\\:inherit{text:inherit}",
+        "selectorText": ".text\\:inherit"
+      }
+    },
+    "added": {},
+    "changed": {}
+  },
+  "cssSegments": {
+    "removed": {
+      "53e7a35dd75729c4": ".text\\:inherit{text:inherit}"
+    },
+    "added": {},
+    "changed": {}
+  }
+}

@@ -1,4 +1,4 @@
-This guide upgrades three saved RC contracts to language v2: **`rc-legacy`** before named tokens, **`rc-named`** before explicit modes and native queries, and **`rc-native`** before the native-value boundaries, simple-query subset and deterministic source lifecycle. Check the exact installed RC versions and resolved manifest first; RC releases did not all have identical behavior. Follow stages 2–7 for applicable earlier changes, then stage 9 for the current boundary contract.
+This guide upgrades five saved RC contracts to language v3 (an internal contract number, not the product version): **`rc-legacy`** before named tokens, **`rc-named`** before explicit modes and native queries, **`rc-native`** before the native-value boundaries, simple-query subset and deterministic source lifecycle, **`rc-managed`** before native components and ordered composition, and **`rc-utilities`** before fixed raw intent and whole-definition replacement. Check the exact installed RC versions and resolved manifest first; RC releases did not all have identical behavior. Follow stages 2–7 for applicable earlier changes, then the boundary, native-component and utility stages below.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -154,14 +154,14 @@ Separate token and raw parameter sources in managed patterns:
     height: --value();
   }
 
-  size:<number|*> {
+  size:<*> {
     width: --value();
     height: --value();
   }
 }
 ```
 
-`prefix-<~namespace>` and `prefix-<=namespace>` accept token sources only. Raw kinds and `*` belong in colon patterns. `key:<color>` accepts raw colors and does not imply a color namespace. Enum patterns and full-value `--value()` substitution remain supported.
+`prefix-<~namespace>` accepts token sources only. Use `key:<*>` for a complete raw CSS value and a hyphen enum for named options. The former `=namespace`, typed raw and colon enum forms are historical RC syntax; migrate them through the utility stage below. Full-value `--value()` substitution remains supported.
 
 A managed definition using a native property name must preserve that property's intent and value. Matching vendor-prefixed declarations may accompany it; changing to a subproperty or adding a separate style effect requires a distinct utility name. For example, migrate the old combined line-clamp definition to `clamp-lines`.
 
@@ -169,11 +169,11 @@ Regenerate artifacts from their source definitions. Manifest and hydration envel
 
 - Token matchers use `{ "type": "token", "prefix": "font-" }` with namespace references on their utility; the old `variable` matcher is rejected.
 - Directive IR has a `token` pattern distinct from `dynamic` raw parameters.
-- Add `languageVersion: 2` to regenerated manifest and hydration data; missing or unsupported language versions are rejected even though their envelope remains `version: 1`.
+- Add `languageVersion: 3` to regenerated manifest and hydration data; missing or unsupported language versions are rejected even though their envelope remains `version: 1`.
 - Replace global mode settings with ordered `modes` activation definitions, and remove `rootSize`, `defaultMode`, `modeTrigger`, and `settings.modes`.
 - Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
 - Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
-- Update native and Wasm providers together to **binding ABI 11**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
+- Update native and Wasm providers together to **binding ABI 12**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
 - Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
 
 See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
@@ -366,6 +366,8 @@ Select the profile matching the **saved installation**, not the version you are 
 | `rc-legacy` | Colon tokens, length `x`, `$name`, inferred queries and global mode settings |
 | `rc-named` | Named tokens and native declaration semantics, before explicit modes and native-query semantics |
 | `rc-native` | Explicit `@mode`, preserved native values and native query suffixes, before the simple-query and source-lifecycle contract |
+| `rc-managed` | Before native component authoring and ordered utility composition |
+| `rc-utilities` | Native components and ordered composition, before fixed raw intent and whole-definition replacement |
 
 Every profile requires the actual package version and saved resolved manifest. `rc-native` does not apply the old mode or root-size conversions.
 
@@ -418,7 +420,7 @@ Markdown/MDX display text, code fences, inline code and frontmatter no longer ge
 
 Use `validation: 'report' | 'error'` for compiler/stylesheet APIs. The former `cssValuePolicy` option is rejected. Strict syntax/value errors fail the whole result; unknown capabilities alone do not fail. `cssSyntaxStatus`, `cssValueStatus`, `matchStatus` and `browserSupport` describe separate checks; an unchecked browser is `not-checked`.
 
-Upgrade bindings and tools together: ABI **11**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 2`; regenerate hydration priorities rather than filling missing fields with RC defaults.
+Upgrade bindings and tools together: ABI **12**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 3`; regenerate hydration priorities rather than filling missing fields with RC defaults.
 
 MCP v3 returns `{ version, metadata, diagnostics, result }`. `result` is either `{ status: 'success', data }` or `{ status: 'error', error: { code, message } }`. Read the published output schema. JSON text equals `structuredContent`; errors also set `isError`. Unavailable context/fingerprint data is null and dependencies remain explicit arrays.
 
@@ -438,3 +440,53 @@ Save the resolved manifest with the original installation before upgrading. Prev
 Simple `@defaults { prose { ... } }` becomes `@layer defaults { .prose { ... } }`, and `@components` becomes `@layer components` with escaped class selectors. Inner declarations and nested rules are preserved. Native styles now ship even when unused and use CSS source order within a layer; native pruning remains opt-in.
 
 Review reported locations for patterns, derived class suffixes, composition references, extraction policy and cascade conflicts. Replace `@compose button` with native declarations, or intentionally extract shared utility behavior into `@utilities`. Write component states and conditions as native CSS. The tool does not silently move components into the utilities layer. Rerunning a completed migration produces no further edits.
+
+
+## Utility intent and whole-definition replacement
+
+Select `--from rc-utilities` for the saved contract immediately before this change. All five profiles finish with this utility migration stage. Continue to supply the actual installed version and original resolved manifest:
+
+```sh
+master-css migrate src --from rc-utilities --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json
+master-css migrate src --from rc-utilities --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json --target-manifest master.target.manifest.json --write
+```
+
+### Convert definitions while preserving acceptance and intent
+
+The following is **historical RC syntax, for comparison only**:
+
+```text name="Historical RC-utilities definitions; display only"
+@utilities {
+  size:<number|*> { width: --value(); height: --value(); }
+  font-<=font-family> { font-family: --value(); }
+}
+```
+
+```css name="Current utility definitions"
+@utilities {
+  size:<*> { width: --value(); height: --value(); }
+  font-<~font-family> { font-family: --value(); }
+}
+```
+
+A unique raw-any pattern can be simplified safely. Typed-only patterns, colon enums and overloads require review because `:<*>` accepts more values. Previously unmatched or ineffective input can start generating effective CSS. Do not silently turn `x:<number>` into `x:<*>` without auditing its uses.
+
+`text-stroke:` now always sets `-webkit-text-stroke`, including its reset behavior. Use `text-stroke-width:2px` or `text-stroke-color:red` to preserve the corresponding old longhand effect. The migrator compares the original emitted property; it does not infer intent from a variable's current color or length. Old `var()` color guesses require manual review. Named color tokens retain their partial color effect.
+
+### Audit replacement, conflicts and composition
+
+A later utility replaces an entire earlier definition, including nested selectors, conditions and dependencies. Empty definitions clear previous output while keeping the name registered. Adjacent static definitions can be merged automatically only when their full source order can be preserved. Overrides across imports/packages, overlapping enums, raw/fixed name collisions and dynamic classes require review.
+
+Enum identity uses the key set, so changing key order is still replacement. Duplicate keys are errors. Token identity preserves the ordered namespace list; `=namespace` becomes `~namespace`. Exact static names precede enum names, and both precede tokens. Unknown but structurally valid static pseudo-classes no longer fall through to a declaration.
+
+All four definition forms accept fixed-class `@compose`. Placeholder substitution is limited to parameterized declaration values. Replace parameter-dependent compose targets with declarations. Native strings, comments and same-name functions outside managed templates are unchanged.
+
+Compare saved and new declarations, their order, selectors, conditions, variables and animations. Inspect the source of every effective and replaced definition. Verify removal and reinsertion release obsolete resources and that a second migration produces no edits. A batch with any review item writes nothing; changed inputs invalidate a pending write.
+
+### Rebuild and validate the complete installation
+
+Upgrade binding ABI **12** and rebuild manifests/hydration with envelope v1 and **`languageVersion: 3`**. Older language data is rejected. Custom manifest consumers must remove `kind`, `value` matchers and segment dispatch; raw entries use a fixed key matcher. Validator, language, diagnostics and MCP outer versions stay unchanged from the preceding stage.
+
+The default `validation: 'report'` keeps generated CSS and reports known math grammar errors, including missing operands, invalid separators and known function arity. `var()`, custom functions and environment-dependent results remain unknown unless a definite independent error exists. `validation: 'error'` fails the whole build without publishing partial CSS. Neither mode selects a different utility based on a value.
+
+Run builds, lint, declaration comparisons and browser checks across your rendering modes. Verify themes, conditions, hover/focus, hydration and subsequent DOM updates. Retain manual-review decisions and the saved baseline; matching current token numbers is not proof of migration equivalence.

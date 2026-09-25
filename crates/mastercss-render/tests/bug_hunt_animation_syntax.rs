@@ -2,7 +2,7 @@ use mastercss_render::RenderSession;
 
 fn expects_manifest_animation(css: &str, expected: bool) {
     let manifest = serde_json::json!({
-        "version": 1,"languageVersion":2,
+        "version": 1,"languageVersion":3,
         "animations": {"fade": {"to": {"opacity": "1"}}},
         "utilities": []
     })

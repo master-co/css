@@ -78,7 +78,7 @@ function directiveSummary(result: CompileCSSResult) {
         countKeys.map((key) => [key, countRecordValue(manifestInput[key])])
       ))
     }),
-    styleDefinitions: result.styleDefinitions?.length ?? 0,
+    styleDefinitions: (result.styleDefinitions?.length ?? 0) + (result.manifestInput.utilities ?? []).reduce((count, definition) => count + (definition.body?.length ?? 0), 0),
     extractionPolicy: freezeExtractionPolicy(result.extractionPolicy)
   })
 }

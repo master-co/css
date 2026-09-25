@@ -1,0 +1,305 @@
+{
+  "current": {
+    "versions": {
+      "bindingAbiVersion": 12,
+      "packageVersion": "0.0.0",
+      "manifestVersion": 1,
+      "languageVersion": 3,
+      "hydrationManifestVersion": 1,
+      "engineTransitionVersion": 1,
+      "validatorBatchVersion": 3,
+      "diagnosticsReportVersion": 3,
+      "lintBatchVersion": 1,
+      "languageBatchVersion": 4,
+      "lexerBatchVersion": 1,
+      "sourceBatchVersion": 2,
+      "target": "aarch64-apple-darwin",
+      "surface": "native",
+      "features": [
+        "compiler",
+        "diagnostics",
+        "engine",
+        "language",
+        "lexer",
+        "lint",
+        "project",
+        "render",
+        "scanner",
+        "source",
+        "validator"
+      ]
+    },
+    "cases": {
+      "single": {
+        "utilities": 1000,
+        "manifest": {
+          "raw": 187607,
+          "gzip": 11954
+        },
+        "css": {
+          "raw": 19908,
+          "gzip": 2313
+        },
+        "cssomNodes": 1000,
+        "compileMedianMs": 70.44612499999994,
+        "engineMedianMs": 7.35370799999987,
+        "cssom": {
+          "insertMedianMs": 0.2999999523162842,
+          "deleteMedianMs": 0.10000002384185791
+        }
+      },
+      "fallbacks": {
+        "utilities": 1000,
+        "manifest": {
+          "raw": 232607,
+          "gzip": 12030
+        },
+        "css": {
+          "raw": 47798,
+          "gzip": 5235
+        },
+        "cssomNodes": 2000,
+        "compileMedianMs": 88.62125000000015,
+        "engineMedianMs": 9.375292000000172,
+        "cssom": {
+          "insertMedianMs": 0.7000000476837158,
+          "deleteMedianMs": 0.10000002384185791
+        }
+      }
+    },
+    "counterexamples": {
+      "fallback": ".a{color:red;display:block;display:made-up-value}",
+      "padding": ".a{color:red;padding-left:20px;padding:10px;padding-left:30px}",
+      "statements": ".a{color:red;color:blue}"
+    },
+    "computedStyles": {
+      "fallback": {
+        "display": "block",
+        "paddingLeft": "0px",
+        "color": "rgb(255, 0, 0)"
+      },
+      "padding": {
+        "display": "inline",
+        "paddingLeft": "30px",
+        "color": "rgb(255, 0, 0)"
+      },
+      "statements": {
+        "display": "inline",
+        "paddingLeft": "0px",
+        "color": "rgb(0, 0, 255)"
+      }
+    },
+    "representativeManifest": {
+      "version": 1,
+      "languageVersion": 3,
+      "utilities": [
+        {
+          "id": ".fallback",
+          "name": "fallback",
+          "type": -2,
+          "order": 0,
+          "layer": "utilities",
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "display": "block"
+                }
+              },
+              {
+                "declarations": {
+                  "display": "made-up-value",
+                  "padding-left": "20px",
+                  "padding": "10px"
+                }
+              },
+              {
+                "declarations": {
+                  "padding-left": "30px"
+                }
+              }
+            ]
+          },
+          "matchers": [
+            {
+              "type": "static",
+              "name": "fallback"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "baseline": {
+    "versions": {
+      "bindingAbiVersion": 11,
+      "packageVersion": "0.0.0",
+      "manifestVersion": 1,
+      "languageVersion": 2,
+      "hydrationManifestVersion": 1,
+      "engineTransitionVersion": 1,
+      "validatorBatchVersion": 3,
+      "diagnosticsReportVersion": 3,
+      "lintBatchVersion": 1,
+      "languageBatchVersion": 4,
+      "lexerBatchVersion": 1,
+      "sourceBatchVersion": 2,
+      "target": "aarch64-apple-darwin",
+      "surface": "native",
+      "features": [
+        "compiler",
+        "diagnostics",
+        "engine",
+        "language",
+        "lexer",
+        "lint",
+        "project",
+        "render",
+        "scanner",
+        "source",
+        "validator"
+      ]
+    },
+    "cases": {
+      "single": {
+        "utilities": 1000,
+        "manifest": {
+          "raw": 187607,
+          "gzip": 11954
+        },
+        "css": {
+          "raw": 19908,
+          "gzip": 2313
+        },
+        "cssomNodes": 1000,
+        "compileMedianMs": 24.804665999999997,
+        "engineMedianMs": 10.897375000000011,
+        "cssom": {
+          "insertMedianMs": 0.20000004768371582,
+          "deleteMedianMs": 0
+        }
+      },
+      "fallbacks": {
+        "utilities": 1000,
+        "manifest": {
+          "raw": 232607,
+          "gzip": 12030
+        },
+        "css": {
+          "raw": 47798,
+          "gzip": 5235
+        },
+        "cssomNodes": 2000,
+        "compileMedianMs": 36.56129199999987,
+        "engineMedianMs": 12.202124999999796,
+        "cssom": {
+          "insertMedianMs": 0.7999999523162842,
+          "deleteMedianMs": 0.10000002384185791
+        }
+      }
+    },
+    "counterexamples": {
+      "fallback": ".a{color:red;display:block;display:made-up-value}",
+      "padding": ".a{color:red;padding-left:20px;padding:10px;padding-left:30px}",
+      "statements": ".a{color:red;color:blue}"
+    },
+    "computedStyles": {
+      "fallback": {
+        "display": "block",
+        "paddingLeft": "0px",
+        "color": "rgb(255, 0, 0)"
+      },
+      "padding": {
+        "display": "inline",
+        "paddingLeft": "30px",
+        "color": "rgb(255, 0, 0)"
+      },
+      "statements": {
+        "display": "inline",
+        "paddingLeft": "0px",
+        "color": "rgb(0, 0, 255)"
+      }
+    },
+    "representativeManifest": {
+      "version": 1,
+      "languageVersion": 2,
+      "utilities": [
+        {
+          "id": ".fallback",
+          "name": "fallback",
+          "type": -2,
+          "order": 0,
+          "layer": "utilities",
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "display": "block"
+                }
+              },
+              {
+                "declarations": {
+                  "display": "made-up-value",
+                  "padding-left": "20px",
+                  "padding": "10px"
+                }
+              },
+              {
+                "declarations": {
+                  "padding-left": "30px"
+                }
+              }
+            ]
+          },
+          "matchers": [
+            {
+              "type": "static",
+              "name": "fallback"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "packages/preset/src/default-manifest.json": {
+      "current": {
+        "raw": 91526,
+        "gzip9": 12930,
+        "brotli": 10280
+      }
+    },
+    "packages/runtime/dist/global.min.js": {
+      "current": {
+        "raw": 48219,
+        "gzip9": 13333,
+        "brotli": 12025
+      }
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "current": {
+        "raw": 91526,
+        "gzip9": 12930,
+        "brotli": 10280
+      }
+    },
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "current": {
+        "raw": 1041773,
+        "gzip9": 323710,
+        "brotli": 246702
+      }
+    }
+  },
+  "environment": {
+    "node": "v24.20.0",
+    "platform": "darwin/arm64",
+    "browser": "153.0.8010.12",
+    "samples": 9,
+    "warmups": 3,
+    "gzipLevel": 6,
+    "bindingProfile": "release (caller must build both bindings with --release)"
+  }
+}

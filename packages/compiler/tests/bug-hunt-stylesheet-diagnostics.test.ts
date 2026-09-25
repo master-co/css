@@ -7,7 +7,7 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { createCompiler } from '../src/index'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const inputs = [
   { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: 'unknown-utility', code: 'invalid-compose-class' },
   { source: '/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}', token: '@utilities', code: 'CSS_DIRECTIVE_ERROR' },

@@ -17,7 +17,11 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
 pub(crate) fn compile_manifest(
     manifest: &MasterCssManifest,
 ) -> Result<ManifestProjection, EngineError> {
-    let mut projection: ManifestProjection = serde_json::from_value(manifest.as_value().clone())
+    let mut value = manifest.as_value().clone();
+    if let Some(utilities) = value.get_mut("utilities").and_then(Value::as_array_mut) {
+        *utilities = super::effective_utilities(utilities);
+    }
+    let mut projection: ManifestProjection = serde_json::from_value(value)
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
     if projection.version != 1 {
         return Err(EngineError::InvalidManifest(
@@ -26,6 +30,34 @@ pub(crate) fn compile_manifest(
     }
     for utility in &projection.utilities {
         validate_native_utility(utility)?;
+        for matcher in &utility.matchers {
+            let valid = match matcher {
+                UtilityMatcher::Static { name } => mastercss_lexer::valid_utility_name(name),
+                UtilityMatcher::Key { keys } => {
+                    !keys.is_empty()
+                        && keys
+                            .iter()
+                            .all(|key| mastercss_lexer::valid_utility_name(key))
+                }
+                UtilityMatcher::Token { prefix } => prefix
+                    .strip_suffix('-')
+                    .is_some_and(mastercss_lexer::valid_utility_name),
+                UtilityMatcher::Pattern { prefix, values, .. } => {
+                    prefix
+                        .strip_suffix('-')
+                        .is_some_and(mastercss_lexer::valid_utility_name)
+                        && values
+                            .iter()
+                            .all(|key| mastercss_lexer::valid_utility_name(key))
+                }
+            };
+            if !valid {
+                return Err(EngineError::InvalidManifest(format!(
+                    "Invalid decoded utility name in {}; recompile CSS identifiers without Master class delimiters",
+                    utility.id
+                )));
+            }
+        }
     }
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
@@ -152,14 +184,6 @@ pub(crate) fn compile_manifest(
             .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))) as u8
     });
     for (index, utility) in projection.utilities.iter().enumerate() {
-        if utility.matchers.iter().any(|matcher| {
-            matches!(
-                matcher,
-                UtilityMatcher::Static { .. } | UtilityMatcher::Pattern { .. }
-            )
-        }) {
-            projection.reserved_utilities.push(index);
-        }
         for matcher in &utility.matchers {
             match matcher {
                 UtilityMatcher::Token { prefix } => {
@@ -169,11 +193,74 @@ pub(crate) fn compile_manifest(
                         .or_default()
                         .push(index);
                 }
-                UtilityMatcher::Key { keys } | UtilityMatcher::Value { keys, .. } => {
+                UtilityMatcher::Key { keys } => {
                     projection.declaration_keys.extend(keys.iter().cloned());
+                    for key in keys {
+                        projection
+                            .raw_utilities
+                            .entry(key.clone())
+                            .or_default()
+                            .push(index);
+                    }
                 }
-                _ => {}
+                UtilityMatcher::Static { name } => {
+                    projection
+                        .static_utilities
+                        .entry(name.clone())
+                        .or_default()
+                        .push(index);
+                }
+                UtilityMatcher::Pattern { prefix, values, .. } => {
+                    let mut unique = std::collections::HashSet::new();
+                    if !prefix.ends_with('-') || values.len() < 2 {
+                        return Err(EngineError::InvalidManifest(
+                            "Enum patterns require prefix-<a|b> with at least two keys".into(),
+                        ));
+                    }
+                    for value in values {
+                        if !unique.insert(value) {
+                            return Err(EngineError::InvalidManifest(format!(
+                                "Duplicate enum key {value} in {}",
+                                utility.id
+                            )));
+                        }
+                        let name = format!("{prefix}{value}");
+                        let entries = projection.enum_utilities.entry(name.clone()).or_default();
+                        if let Some(previous) = entries
+                            .iter()
+                            .map(|index| &projection.utilities[*index])
+                            .find(|previous| {
+                                previous.layer == utility.layer || !previous.matchers.iter().any(|matcher| {
+                                    matches!(matcher, UtilityMatcher::Pattern { prefix: previous_prefix, values: previous_values, .. }
+                                        if previous_prefix == prefix && previous_values.len() == values.len()
+                                            && previous_values.iter().all(|value| values.contains(value)))
+                                })
+                            })
+                        {
+                            return Err(EngineError::InvalidManifest(format!(
+                                "Overlapping enum name {name}: {} and {}",
+                                previous.id, utility.id
+                            )));
+                        }
+                        entries.push(index);
+                    }
+                }
             }
+        }
+    }
+    for name in projection
+        .static_utilities
+        .keys()
+        .chain(projection.enum_utilities.keys())
+    {
+        if projection.raw_utilities.get(name).is_some_and(|indexes| {
+            indexes
+                .iter()
+                .any(|index| !projection.utilities[*index].native_fallback)
+        }) {
+            return Err(EngineError::InvalidManifest(format!(
+                "Utility entry {name} is both a fixed name and a raw key; use distinct names to distinguish :value from :pseudo-class"
+            )));
         }
     }
     Ok(projection)
@@ -192,9 +279,7 @@ fn validate_native_utility(utility: &super::UtilityDefinition) -> Result<(), Eng
             )));
         }
         let keys: Vec<&str> = match matcher {
-            UtilityMatcher::Key { keys } | UtilityMatcher::Value { keys, .. } => {
-                keys.iter().map(String::as_str).collect()
-            }
+            UtilityMatcher::Key { keys } => keys.iter().map(String::as_str).collect(),
             UtilityMatcher::Pattern { prefix, .. } => {
                 prefix.strip_suffix(':').into_iter().collect()
             }
@@ -213,24 +298,25 @@ fn validate_native_utility(utility: &super::UtilityDefinition) -> Result<(), Eng
                 )));
             }
             let rules = super::emit_declarations(utility, Some("var(--migration-value)"), false);
-            let valid = rules.len() == 1
-                && rules.iter().all(|(_, declarations, selector, conditions)| {
-                    selector.is_none()
-                        && conditions.is_empty()
-                        && declarations.split(';').any(|declaration| {
-                            declaration == format!("{property}:var(--migration-value)")
-                        })
-                        && declarations.split(';').all(|declaration| {
-                            declaration.split_once(':').is_some_and(|(key, value)| {
-                                let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
-                                    .iter()
-                                    .find_map(|prefix| key.strip_prefix(prefix))
-                                    .unwrap_or(key);
-                                value == "var(--migration-value)"
-                                    && (key == property || unprefixed == property)
+            let valid = rules.is_empty()
+                || rules.len() == 1
+                    && rules.iter().all(|(_, declarations, selector, conditions)| {
+                        selector.is_none()
+                            && conditions.is_empty()
+                            && declarations.split(';').any(|declaration| {
+                                declaration == format!("{property}:var(--migration-value)")
                             })
-                        })
-                });
+                            && declarations.split(';').all(|declaration| {
+                                declaration.split_once(':').is_some_and(|(key, value)| {
+                                    let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
+                                        .iter()
+                                        .find_map(|prefix| key.strip_prefix(prefix))
+                                        .unwrap_or(key);
+                                    value == "var(--migration-value)"
+                                        && (key == property || unprefixed == property)
+                                })
+                            })
+                    });
             if !valid {
                 return Err(EngineError::InvalidManifest(format!(
                     "Native property {property}: must preserve its property and value; rename managed utility {} to express another intent",
@@ -658,7 +744,7 @@ pub(crate) const BUILTIN_TOKEN_NAMESPACES: &[(&[&str], &[&str])] = &[
     ),
     (&["caret-color"], &["~color-text", "~color"]),
     (&["stroke"], &["~color-line", "~color"]),
-    (&["color"], &["=color", "~color-text", "~color"]),
+    (&["color"], &["~color", "~color-text"]),
     (
         &["-webkit-text-fill-color", "text-decoration-color"],
         &["~color-text", "~color"],
@@ -680,14 +766,14 @@ pub(crate) const BUILTIN_TOKEN_NAMESPACES: &[(&[&str], &[&str])] = &[
         &["~easing"],
     ),
     (&["animation", "transition"], &["~duration", "~easing"]),
-    (&["content"], &["=content"]),
-    (&["font-feature-settings"], &["=font-feature"]),
-    (&["font-family"], &["=font-family"]),
-    (&["font-size"], &["=font-size"]),
-    (&["font-weight"], &["=font-weight"]),
+    (&["content"], &["~content"]),
+    (&["font-feature-settings"], &["~font-feature"]),
+    (&["font-family"], &["~font-family"]),
+    (&["font-size"], &["~font-size"]),
+    (&["font-weight"], &["~font-weight"]),
     (&["letter-spacing"], &["~tracking"]),
     (&["line-height"], &["~leading"]),
-    (&["order"], &["=order"]),
+    (&["order"], &["~order"]),
 ];
 
 pub(crate) const BUILTIN_NATIVE_DECLARATION_PROPERTIES: &[&str] = &[
@@ -809,6 +895,7 @@ pub(crate) const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
     ("size-x", "inline-size"),
     ("size-y", "block-size"),
     ("text-fill-color", "-webkit-text-fill-color"),
+    ("text-stroke", "-webkit-text-stroke"),
     ("text-stroke-color", "-webkit-text-stroke-color"),
     ("text-stroke-width", "-webkit-text-stroke-width"),
     ("tracking", "letter-spacing"),

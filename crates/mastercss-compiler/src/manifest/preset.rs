@@ -2,7 +2,7 @@ use super::variables::manifest_error;
 use super::{
     CompileDefaultPresetRequest, CompileDefaultPresetResult, CompileManifestOptions,
     CompileManifestResult, CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition,
-    Map, Value, compile_manifest_input, json, normalize_default_manifest_for_json,
+    Map, Value, json, normalize_default_manifest_for_json,
 };
 
 pub(super) fn append_default_preset_styles(
@@ -117,7 +117,18 @@ pub fn compile_manifest_input_with_styles(
 ) -> Result<CompileManifestResult, CompilerError> {
     let mut input = input.clone();
     append_default_preset_styles(&mut input, definitions)?;
-    compile_manifest_input(&input, options)
+    let result = crate::lower_css_directives(
+        &input,
+        &[],
+        &[],
+        &crate::LowerCssDirectivesOptions {
+            base_manifest: options.base_manifest.clone(),
+            resolution_manifest: None,
+        },
+    )?;
+    Ok(CompileManifestResult {
+        manifest: result.manifest,
+    })
 }
 
 pub fn compile_default_preset_manifest(

@@ -330,7 +330,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         user-select: --value();
       }
 
-      grid-cols:<number> {
+      grid-cols:<*> {
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
 
         @variant <sm {

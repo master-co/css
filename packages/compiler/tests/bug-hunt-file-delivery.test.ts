@@ -13,7 +13,7 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) print
       writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@compose paint;}")
       writeFileSync(tokens, '@utilities{paint{color:red}}.reference-only{color:blue}')
       const options = {
-        root, baseManifest: { version: 1 as const, languageVersion: 2 as const, utilities: [] }, preserveNativeCSS: true,
+        root, baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] }, preserveNativeCSS: true,
         delivery: { entryURL: '/output/main.css', stylesheetURL: (file: string) => `/output/${basename(file)}`, resourceURL: (file: string) => `/output/${basename(file)}` }
       }
       const result = compileManifestFileSync(entry, options)
@@ -44,7 +44,7 @@ for (const preserveNativeCSS of [undefined, true]) {
       writeFileSync(tokens, "@utilities{paint{color:red;background-image:url('./pixel.svg?version=1#icon')}}")
       writeFileSync(resource, '<svg xmlns="http://www.w3.org/2000/svg"/>')
       const result = compileManifestFileSync('entry.css', {
-        root, preserveNativeCSS, baseManifest: { version: 1, languageVersion: 2, utilities: [] },
+        root, preserveNativeCSS, baseManifest: { version: 1, languageVersion: 3, utilities: [] },
         delivery: { entryURL: '/published/main.css', stylesheetURL: file => `/published/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
       })
       const css = result.stylesheets.find(asset => asset.id === child)!.css
@@ -68,7 +68,7 @@ test('BH-0004 file delivery rejects missing resources and URL collisions before 
     writeFileSync(entry, "@import './child.css';")
     writeFileSync(child, ".example{background:url('./missing.svg')}")
     const dependencies: string[] = []
-    const options = { root, baseManifest: { version: 1 as const, languageVersion: 2 as const, utilities: [] }, delivery: {
+    const options = { root, baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] }, delivery: {
       entryURL: '/entry.css', stylesheetURL: () => '/entry.css', resourceURL: () => '/resource.svg', onDependency: (file: string) => dependencies.push(file)
     } }
     expect(() => compileManifestFileSync(entry, options)).toThrow(/missing\.svg/)

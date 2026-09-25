@@ -94,6 +94,7 @@ export const builtinKeyAliases = Object.freeze({
   "size-x": "inline-size",
   "size-y": "block-size",
   "text-fill-color": "-webkit-text-fill-color",
+  "text-stroke": "-webkit-text-stroke",
   "text-stroke-color": "-webkit-text-stroke-color",
   "text-stroke-width": "-webkit-text-stroke-width",
   "tracking": "letter-spacing",
@@ -299,9 +300,8 @@ export const builtinTokenNamespaces = Object.freeze(
       "color"
     ],
     "variableAliasRefs": [
-      "=color",
-      "~color-text",
-      "~color"
+      "~color",
+      "~color-text"
     ]
   },
   {
@@ -374,7 +374,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "content"
     ],
     "variableAliasRefs": [
-      "=content"
+      "~content"
     ]
   },
   {
@@ -382,7 +382,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "font-feature-settings"
     ],
     "variableAliasRefs": [
-      "=font-feature"
+      "~font-feature"
     ]
   },
   {
@@ -390,7 +390,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "font-family"
     ],
     "variableAliasRefs": [
-      "=font-family"
+      "~font-family"
     ]
   },
   {
@@ -398,7 +398,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "font-size"
     ],
     "variableAliasRefs": [
-      "=font-size"
+      "~font-size"
     ]
   },
   {
@@ -406,7 +406,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "font-weight"
     ],
     "variableAliasRefs": [
-      "=font-weight"
+      "~font-weight"
     ]
   },
   {
@@ -430,7 +430,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "order"
     ],
     "variableAliasRefs": [
-      "=order"
+      "~order"
     ]
   }
 ].map((namespace) => Object.freeze({

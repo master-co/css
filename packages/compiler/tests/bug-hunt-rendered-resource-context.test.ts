@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const definitions = '@theme{--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;@keyframes audit{from{opacity:0}to{opacity:1}}}'
 const initialSource = definitions + '.card{color:var(--color-old)}'
 // A host has modified the old generated value and introduced new resources.

@@ -81,7 +81,7 @@ test('loads the isolated compiler Wasm surface', async () => {
     utilities: [{ name: 'card', declarations: { color: 'red' } }]
   }))).toEqual({
     manifest: {
-      version: 1, languageVersion: 2,
+      version: 1, languageVersion: 3,
       variables: {
         color: [{
           name: 'color-brand',

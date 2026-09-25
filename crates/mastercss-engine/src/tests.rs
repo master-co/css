@@ -27,7 +27,7 @@ struct ParserParityCorpusCase {
 }
 
 const MANIFEST: &str = r##"{
-      "version":1,"languageVersion":2,
+      "version":1,"languageVersion":3,
       "modes":[{"name":"dark","branches":[{"selector":":root","conditions":["@media (prefers-color-scheme:dark)"]}]}],
       "conditions":{
         "sm":{"id":"media","nodes":[{"type":"number","value":52.125,"unit":"rem"}]}
@@ -64,14 +64,13 @@ const MANIFEST: &str = r##"{
           "matchers":[{
             "type":"pattern",
             "prefix":"bg-origin-",
-            "values":["border"],
+            "values":["border","padding"],
             "valueMap":{"border":"border-box"}
           }]
         },
         {
           "id":"background-color",
           "type":0,
-          "kind":"color",
           "variableAliasRefs":["~color"],
           "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
           "matchers":[

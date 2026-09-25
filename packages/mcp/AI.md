@@ -14,6 +14,8 @@
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
 - Contributor routing across npm workspaces and Rust crates, including Cargo manifests, crate-local AI notes, risk packs, and scoped validation commands.
 
+- Utility queries expose language v3 fixed raw keys, enum names and token families; never suggest typed raw matchers, colon enums or `=namespace`.
+
 ## Does Not Own
 
 - Engine class semantics, CSS output, priority, variables, modes, or generated rule ordering.

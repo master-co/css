@@ -65,7 +65,7 @@ fn prepared_analysis_consumes_or_cancels_pending_state_and_rejects_stale_ids() {
 
 #[test]
 fn host_support_does_not_remove_native_declaration_semantics() {
-    let mut session = LanguageSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":1,"languageVersion":3}"#).unwrap();
     let prepared = session
         .prepare_document(&request(
             "<div class=\"display:banana display:block display:block\"/>",

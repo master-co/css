@@ -146,13 +146,14 @@ pub enum ErrorCode {
     UnknownCondition,
     MasterQueryRequiresCss,
     UndefinedMode,
+    UtilityNameConflict,
     AmbiguousToken,
     UnknownToken,
     Internal,
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 28] = [
+    pub const ALL: [Self; 29] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -178,6 +179,7 @@ impl ErrorCode {
         Self::UnknownCondition,
         Self::MasterQueryRequiresCss,
         Self::UndefinedMode,
+        Self::UtilityNameConflict,
         Self::AmbiguousToken,
         Self::UnknownToken,
         Self::Internal,
@@ -210,6 +212,7 @@ impl ErrorCode {
             Self::UnknownCondition => "UNKNOWN_CONDITION",
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UndefinedMode => "UNDEFINED_MODE",
+            Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",
             Self::AmbiguousToken => "AMBIGUOUS_TOKEN",
             Self::UnknownToken => "UNKNOWN_TOKEN",
             Self::Internal => "INTERNAL",
@@ -458,5 +461,9 @@ pub struct CssCompositionTrace {
 #[serde(rename_all = "camelCase")]
 pub struct CssUtilitySource {
     pub name: String,
+    #[serde(default)]
+    pub identity: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub replaced_by: Option<CssDirectiveSourceReference>,
     pub source: CssDirectiveSourceReference,
 }

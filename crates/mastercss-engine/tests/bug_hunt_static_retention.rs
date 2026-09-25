@@ -2,7 +2,7 @@ use mastercss_engine::EngineSession;
 use serde_json::{Value, json};
 
 fn manifest(variables: Value) -> String {
-    json!({"version":1,"languageVersion":2,"utilities":[],"modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],"variables":{"color":variables}})
+    json!({"version":1,"languageVersion":3,"utilities":[],"modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],"variables":{"color":variables}})
         .to_string()
 }
 

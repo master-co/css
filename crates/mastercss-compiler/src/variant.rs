@@ -614,6 +614,10 @@ pub(crate) fn validate_compose_syntax(source: &str, filename: &str) -> Result<()
             let character = source[cursor..].chars().next().unwrap_or_default();
             if matches!(character, '\'' | '"') {
                 let quote_end = css_quote_end(source, cursor, character);
+                if cursor != index {
+                    cursor = quote_end;
+                    continue;
+                }
                 return Err(ranged_directive_diagnostic(
                     source,
                     filename,

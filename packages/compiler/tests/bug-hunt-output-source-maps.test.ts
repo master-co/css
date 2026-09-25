@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 import { compileRenderedStylesheet, compileStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 function origin(result: { css: string, sourceMap?: string }, text: string) {
   expect(result.sourceMap).toBeTypeOf('string')
   const offset = result.css.indexOf(text)

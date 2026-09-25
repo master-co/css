@@ -9,23 +9,42 @@
     {
       "sourceId": "rc87-886095b27074cf6c",
       "sourceDigest": "0f6195379a6491d260f50a4f15cc0b6e3332db3f207c664a0bd906b1089bd9dd",
-      "targetDigest": "e0de264a272004f70c6996c83bd4fc8e99b6d98abf1d162750ea1d31707a12df",
-      "proof": "verified-superset",
-      "reason": "The original packaged Wasm artifact assertions remain and the target adds native-declaration coverage for Node hosts without CSS.supports."
+      "targetDigest": "b60e9a27b00a83c49c1a21084931aec7144f19b40615321ce78bfbb90a3e62de",
+      "proof": "approved-contract-change",
+      "reason": "Packaged Wasm loading, initial empty snapshot, one block mutation, exact layered CSS and disposal remain covered. The approved inspection contract replaces valid:true with matchStatus:matched and requires languageVersion:2 in this committed target; a separate native declaration case verifies explicit var() resource emission without host support filtering.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.469Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "6b337d1f4fc40279db3e464bee872cb79fc6d334c03683d23f2f1966de7a5c5a"
+      }
     },
     {
       "sourceId": "rc87-534a5dbe18105a92",
       "sourceDigest": "3f0364bd9b6a1fa7c2bd51793132299992be25b488b311bd2ee5899a59d0295a",
-      "targetDigest": "09261e359de7fc13b9b2f2dbe64062d54c49e295219d52a4e22d1e5d99c41ddf",
-      "proof": "verified-superset",
-      "reason": "The existing browser CSS.supports handshake assertions remain and the target adds the equivalent Wasm render-session assertion."
+      "targetDigest": "af80b3b3547d7f2aee9195f71ab1a1325d4510321f306b37f0237bedd170b51d",
+      "proof": "approved-contract-change",
+      "reason": "The approved preserve-and-diagnose policy removes the browser support handshake from generation. The replacement asserts identical native declaration preservation without host filtering; it intentionally reverses the old support-dependent contract.",
+      "targetId": "rc87-01b18af25a7b490a",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:09:01.430Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "9a7f1f058f5e67f9ba8f6495612ec23144d742399985261a27e40f6dc2e9ee77"
+      }
     },
     {
       "sourceId": "rc87-97379238aa6e9c52",
       "sourceDigest": "5bbd8c3b2443030c35c33062316c8a8e5e4e967d6895f171e073691476f38a1d",
-      "targetDigest": "a13f11ecfd946a2fbe1e1fe86f78e132a4688175523e438963c1207f7ac13fe8",
-      "proof": "verified-superset",
-      "reason": "The original error normalization and idempotent disposal assertions remain and the target adds native declaration rendering coverage."
+      "targetDigest": "6c800b552186f626fe9f53d862ea20308393c418a57b8a7cc17990938f540508",
+      "proof": "approved-contract-change",
+      "reason": "Original normalized engine-operation failure and idempotent disposal assertions remain. Added native declaration coverage checks the explicit var(--stripe) resource and background shorthand; the shared fixture now declares the approved language version. This is not evidence that colon token inference remains supported.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "559da5b0560d2a1fedf4044bdd638ca47642da62c9ba840fa68d7f0c90effb05"
+      }
     },
     {
       "sourceId": "rc87-7748131a83619c59",
@@ -51,28 +70,30 @@
     {
       "sourceId": "rc87-2d99ea0e5a8248fe",
       "sourceDigest": "63596bb25639863c4a77c4599587a1178ee46f2d3e938eaeac5d397122c12063",
-      "targetDigest": "5bb285512b710f4cb5fe56e5902499814b647ee410347a7ea3ee6d92c6d070dc",
+      "targetDigest": "632567a524db6c1138bc2dd6116ecb22bf57625eba4b9b1b7ca40e04cff861f5",
       "proof": "approved-contract-change",
-      "reason": "The universal manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "reason": "The approved bundler-owned manifest delivery replaces hand-assembled Next production/development URLs. The replacement retains universal loading through the emitted asset URL and explicitly tests the new delivery contract.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-07-28T12:14:27Z",
-        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
-        "scopeDigest": "6fe7a81f96131dfa49550e0f9608777417cc7938cf967e8e341305a121393625"
-      }
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:09:01.429Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "fe34adf8998554b7b99b7266c85bae0c802f9cb9e7b51c419a8614531d44e478"
+      },
+      "targetId": "rc87-95afc75a0d20ce37"
     },
     {
       "sourceId": "rc87-c6f234a37661be00",
       "sourceDigest": "234eb3d4b27a4bd80066a07a403be6afa0b6be8aa51a268c7720301f8a530a07",
-      "targetDigest": "449583c35a6d3b4499950043ea16a0a2d16912810941afe4801ceac17028121e",
+      "targetDigest": "461c6a81710f78dac0d37c5969508b9d5a12e33324051fb772825eabbe5beafe",
       "proof": "approved-contract-change",
-      "reason": "The Next manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "reason": "The approved Next manifest ESM plan removes direct writes to .next/static/media and external JSON URL assembly. The replacement checks standard ESM output and absence of loader asset writes.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-07-28T12:14:27Z",
-        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
-        "scopeDigest": "af679f9e7623f989848eb99dfe20a405f13b37feefcc96155dd439af8f9276da"
-      }
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:09:01.430Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "b9856d5f427e8e0628dd26e6e562862061d950a0a3fd1dedcec13f587848e7f1"
+      },
+      "targetId": "rc87-a9210afde2b25995"
     },
     {
       "sourceId": "rc87-074e56c447b243c2",
@@ -129,14 +150,14 @@
     {
       "sourceId": "rc87-6c18481fc5cdfa31",
       "sourceDigest": "ee6b8dcf67b8d3b4e1da6ef2506d00d0688c4af5c50c104eb52dfd7641bdb57a",
-      "targetDigest": "825fbb83678c41c1bda9025b82f6d7e0e8dd5fbb774f4793fa605974249e5ab1",
+      "targetDigest": "c260d70c0ab9722d3fd96f1fc881cfbb35b105f634e69b0b2bc31ce76080f438",
       "proof": "approved-contract-change",
-      "reason": "The Webpack default manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "reason": "Webpack retains its virtual JS facade plus external JSON asset and version:1 assertions. The audited target explicitly reads .default from the JSON module and covers the previously approved Safari fetch fallback; the negative inline-CSS assertion uses current font-weight:bold spelling. This Webpack contract is separate from the approved Next ESM delivery change.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-07-28T12:14:27Z",
-        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
-        "scopeDigest": "7b3ec6136739fc76be6f6ba28e205d33af22252bef125fcb695a9057cd99cc54"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "cba967be1d780a9c0c77bff938506266b45e750eca67393dc77ce023bb451470"
       }
     },
     {
@@ -155,16 +176,28 @@
     {
       "sourceId": "rc87-38e614a90e947c6e",
       "sourceDigest": "881fc820f146082f4ab3858223cf9e487007579535731b6441db4e762d7e97a1",
-      "targetDigest": "e83c6a132c65f0e332d86e4d3474165c1d64f8fdac8551eb72551ff9e1d6473d",
-      "proof": "verified-superset",
-      "reason": "The progressive Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+      "targetDigest": "5edf2557b5083c9abf14bd528c0d7c19ea6191d19011831430178fed951f8978",
+      "proof": "approved-contract-change",
+      "reason": "Astro progressive middleware, runtime injection, manifest uniqueness and SSR externals remain tested with explicit mode:progressive after the approved static default. Scanner/style-entry plugins are now required, not excluded, to deliver owned native CSS and emitted globals consistently.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "c6c47d5fa562e1d6c1945cb4e6047382a019a8915d1bcbf1a48cdb010f82f1c4"
+      }
     },
     {
       "sourceId": "rc87-c0aa293b8c818099",
       "sourceDigest": "7dd12ad038b1f8a035766a130deae34304c76c9515c9e7620cfaaff34623093e",
-      "targetDigest": "18a7fa906d36827b33bb1604278ced824c5d54279b1198b04d65a8427739dbb7",
-      "proof": "verified-superset",
-      "reason": "The pre-render Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+      "targetDigest": "b149baca79749eb26c53857cb03407370e4a224dc21924c4ca4246849e3a7266",
+      "proof": "approved-contract-change",
+      "reason": "Astro pre-render still registers middleware without runtime injection, keeps a single manifest plugin and omits the generic Vite pre-render plugin. The target adds emitted-globals registration; these assertions preserve the pre-render behavior while expanding resource ownership coverage.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "99d80a4555e471df6ae15b0a77a959062eb2970a104e2d40598eab0a3af4b21e"
+      }
     },
     {
       "sourceId": "rc87-52d38fb240c780c8",
@@ -183,37 +216,67 @@
     {
       "sourceId": "rc87-64695981843c3c3f",
       "sourceDigest": "539e9d5dff37e4cbc2fd277e41133ff42fe1d948f7f938be03e3c0b78b0e27dc",
-      "targetDigest": "831214290606fcec676fffb39cea34b44d0adfa2f687a9eaea5a81205d371978",
-      "proof": "verified-superset",
-      "reason": "The Next Webpack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+      "targetDigest": "4124e3f6196368dbc26787197f67b026d175abb63e704b739df900de078548ab",
+      "proof": "approved-contract-change",
+      "reason": "Next Webpack manifest testing explicitly selects progressive mode after the approved static default. Loader options intentionally drop external:true for bundler-managed ESM; emitted-globals has a dedicated loader and ordinary CSS is no longer matched by the manifest loader. Alias and instrumentation assertions remain.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "0c4c5e000d2dec77bd4c22f0ba34d2353c5f133c4049a5d0a0fd2584e823af8d"
+      }
     },
     {
       "sourceId": "rc87-bc7adf7569796dc8",
       "sourceDigest": "9fe3dfa54a4f08cfcd77745c1601c9077b3a554ed8b2be8460e83c62c356fcdd",
-      "targetDigest": "3635270702bb7333ab86052d08b87177fb2bffc2bec0180570e7e7da16c782b8",
-      "proof": "verified-superset",
-      "reason": "The Next Turbopack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+      "targetDigest": "0e0cf5c13e9ac0afff4be07f5b12d1d2855e65f9b04f52d26900fbdf3ab6c89c",
+      "proof": "approved-contract-change",
+      "reason": "Next Turbopack manifest testing explicitly selects progressive mode and retains user JS rules and manifest conditions. The approved ESM delivery removes external:true and redundant as rewrites, adds emitted-globals loading, and excludes CSS Modules from the ordinary Master stylesheet route.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "c963c95f820f728cd4d361dc34a9ac763c7c583bfa3e849108a56a4559967a27"
+      }
     },
     {
       "sourceId": "rc87-bb811e6bf975c3ed",
       "sourceDigest": "273cda5376e1c542749cec494aa53fdcdbd55e19f8efac03b9f104d08d832708",
-      "targetDigest": "6cf6ae349b1772019addebb1572bdd5bbf6825fee995cdf6aa9c5f80807c0a5b",
-      "proof": "verified-superset",
-      "reason": "The Nuxt pre-render CSS assertions remain and the target adds global variable ownership and placement coverage."
+      "targetDigest": "948e001956418c2255b04617c81ad314e15a6756b6d441c300281c26dce9553b",
+      "proof": "approved-contract-change",
+      "reason": "Nuxt pre-render intentionally no longer injects a hydration manifest because this mode has no runtime. Generated component display/font-size assertions remain; delivered CSS is followed through its asset imports, owns --color-host, and HTML contains the generated token rule without duplicating its variable.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "ac6448114d6decb49495bcc081e2537b3a2dda274a192323dcf4014ca6e63aaa"
+      }
     },
     {
       "sourceId": "rc87-60160a1512713e62",
       "sourceDigest": "38a89dfa54b675dc67cef33bf351e323d2635f52b23f82827dfd9ac992524c1e",
-      "targetDigest": "cf1b32532b0d0cae3092bf583438c9e7d4bfa156695b78ec99be4bccfe3014c7",
-      "proof": "verified-superset",
-      "reason": "The Nuxt progressive CSS assertions remain and the target adds global variable ownership and placement coverage."
+      "targetDigest": "cf793609619463bdc1d13c694cfddddf9fc0184dea17410922efc4d24fdf2227",
+      "proof": "approved-contract-change",
+      "reason": "Nuxt progressive retains inline hydration, no external hydration attribute, and no JSON modulepreload assertions. Existing component CSS assertions remain; the target follows delivered stylesheet imports and separately checks token rule placement and one owner for its variable.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "ab2ec0fa9cbf62612e4fdeb9689d25efef7cabff5a53b0e0a0e0f65c287d8d17"
+      }
     },
     {
       "sourceId": "rc87-060c3ad6820a18f8",
       "sourceDigest": "0c7dafc66d591403af76835958acefdf9273092f334ae0a5bd9a5866397f9466",
-      "targetDigest": "de25f1b167d1913e1be6709cc2385f66201efcdcbf2e6f1c9b8d405e31a71d93",
-      "proof": "verified-superset",
-      "reason": "The Nuxt runtime cascade assertion remains and the target also verifies emitted global variables stay out of the runtime stylesheet."
+      "targetDigest": "bb2566d846b0475cf732bdcc47e776091f33b5cf68affc66121a4e807bf7f5ba",
+      "proof": "approved-contract-change",
+      "reason": "Nuxt runtime still waits for and asserts display:block overriding component CSS. Additional assertions require the generated fg-host rule in the runtime stylesheet while keeping its externally emitted --color-host variable out of that stylesheet.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "9afccd306db64580159324e39fa016d58d8f2b37cb885760c5f6f959101482a7"
+      }
     },
     {
       "sourceId": "rc87-51b092cde77ad479",
@@ -231,27 +294,27 @@
     {
       "sourceId": "rc87-19ccc0505d60d982",
       "sourceDigest": "2613dedadd32ea00fc41f50a5c91fc37f928db07242138ae139e6718fc4e2503",
-      "targetDigest": "657727f550badd476e66a660280ff8419d3b03b6ce494cfada7ec75189957a27",
+      "targetDigest": "16dc9856f98b32f5029bc2acc9fdf25a5e3f2103209bc1b49a624aec06645cfc",
       "proof": "approved-contract-change",
-      "reason": "The runtime emittedGlobals case now verifies referenced resource removal and concurrent count merging with concrete globals while retaining same-instance and registration-count coverage.",
+      "reason": "Runtime emittedGlobals still returns the same instance and registers variable/animation counts. The target uses an actually referenced named token and animation, verifies both resources before registration, preserves their utility rules afterwards, and removes only their duplicate resource definitions. Concurrent-start count merging is tested separately and is not claimed as an assertion inside this case.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:53:04Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "ed1ea81e04702dd01c92be68b0059b52f438072d7ed610408a4e4dae4ede5d3a"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "6b041d84f9ac375d74f7c422d36dcdb36fb78795ad530897212043cd81ccf2a4"
       }
     },
     {
       "sourceId": "rc87-6037936609bf96b7",
       "sourceDigest": "abbb842d05f49eddc7f51f331d5fb21227e26e76bc03078d4bd87119bea5a144",
-      "targetDigest": "6387e9c21ea68945e8d6f547750b2af1f73f1fa58a4ee0873156be1ecb42f595",
+      "targetDigest": "9d66632cf60c55e157f04cfea386749bc7b7ae4148c667831aa08d1d0edbbe82",
       "proof": "approved-contract-change",
-      "reason": "The Vite browser HMR case retains its global-CSS-before-runtime assertions and uses an explicit navigation and readiness timeout for loaded CI runners.",
+      "reason": "Vite browser HMR still verifies global CSS loads before the runtime stylesheet and the computed utility display wins. The approved native-components contract moves this equal-layer ordering probe from components to utilities, preserving the intended source-order test; explicit navigation/readiness timeouts accommodate loaded runners.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:53:04Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "2cb2d0803fb3465a0fa644392ce46b53fbfc5753bf1bb9b56fd0c993435cf58f"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "4b51e87f050eb174ee4789acf9c15a7a9a45a792706e249fed41f2385beec8a3"
       }
     },
     {
@@ -270,14 +333,14 @@
     {
       "sourceId": "rc87-48ff4814761d1c90",
       "sourceDigest": "c62fd9d5353d8b511ad24233e46b4cf160e758ea23c413735a73c3c1c911a7fe",
-      "targetDigest": "4eff30677d1e0c99728b77d0be687e3e063f2a9f5a719e1c76d66a5160d0c2e9",
+      "targetDigest": "3a6d0130956c5c52141ffa81fd7b511cbbfc7beb1f085ede3d0ae87b2f3032ab",
       "proof": "approved-contract-change",
-      "reason": "The failed-style dependency case now compares the normalized absolute path returned by the Vite host while preserving the same dependency registration requirement.",
+      "reason": "Vite failed-style handling still rejects invalid composition and registers the original absolute source dependency. The fixture now uses @utilities and a definitely missing named token, and expects the new utility diagnostic wording; this avoids relying on removed colon-token inference to create an error.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:53:04Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "09fffd6b3e164cc50628cca661459c30f2993f80ccddbb9d33871ffcdd54ea75"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T08:47:41.470Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "6aa033e3f208bda722c151d0d334688d2c29b446f2064b8be01bf2e95800422a"
       }
     }
   ],
@@ -285,92 +348,105 @@
     {
       "surfaceId": "public-api-contract",
       "baselineDigest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
-      "targetDigest": "10a6bdfd17104db2e12c463e6a1587c300277303ebc66f73e9e169eaaf82d2da",
+      "targetDigest": "d27ade80cd1b9f0da22b891083ae8668b1a4ab338fbbfc21a7023d4725f4e058",
       "proof": "approved-contract-change",
-      "reason": "The public tooling surface intentionally adds structured Language Batch v2 color expression and source-format types. The compiler alias removal is tracked separately by the raw compiler surfaces; no compatibility alias remains.",
+      "reason": "Reviewed the public API and census changes through 704996ec: named token registry, separate match/syntax/value/browser diagnostics, source ownership and occurrence data, migration profiles, stylesheet graphs/composition traces, strict validation, explicit modes, and static/pruning options replace the previous RC contracts. Function completions and color-expression types remain. These changes implement the explicitly approved language, scanner, native CSS and rendering plans.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T17:24:34Z",
-        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
-        "scopeDigest": "17dabc1fdf7c4bdbbf9a69f42bdaaeb91ac176d6e3d5d7675cee1441aca9a440"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.488Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "27e56be87f8536e6ad434b45056287cc5236ac95a5c1dc82a49a6a746cdb9390"
       }
     },
     {
       "surfaceId": "binding-version-contract",
       "baselineDigest": "a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389",
-      "targetDigest": "0cf8147a3c8ecf93750c64d15dddbbb5a9d6375a89890c774b0fa680b296a69f",
+      "targetDigest": "04b30b6687b0dfba938b8b7ae0ea01a41c355b855c22b838b3ffbc13927c939f",
       "proof": "approved-contract-change",
-      "reason": "Language Batch intentionally advances from 1 to 2 for function completions and recursive color expressions. Native binding ABI, manifest, hydration, transition, lexer, lint, source, and validator versions remain unchanged.",
+      "reason": "The committed target coordinates ABI 11, languageVersion 2, validator/diagnostics 3, language batch 4 and source batch 2. Manifest/hydration envelopes, transition, lexer and lint remain version 1. This records the approved earlier RC changes; the current utility work separately advances ABI 12 and languageVersion 3 and must be audited after commit.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T17:24:34Z",
-        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
-        "scopeDigest": "7f0f9f8e75124e2c167bd0a3e45649ac3f076bb64945055d822e169b65c9a6f7"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "086e95bc7ec8285051cd243c492fc038982ade9ae2762e379e8dd6bf0e60a2fb"
       }
     },
     {
       "surfaceId": "native-compiler-raw-surface",
       "baselineDigest": "c6b7384f29a6bdae96a002b7827b9e2c7b3d7bb994e32adaee4a70abba4324d5",
-      "targetDigest": "7a603fe7cbbe4d301228fe278a2192a77e53062be7a421048e34fd8cd13ce9a4",
+      "targetDigest": "c1cd47bbac3e82935d87c0b0561e71c5cb074a5ade5bbca5b9ef1d6bec7692a4",
       "proof": "approved-contract-change",
-      "reason": "The native compiler binding intentionally removes compileThemeCSS, leaving compileCSSDirectives as the sole CSS-directive compilation operation; no deprecated alias or compatibility shim remains.",
+      "reason": "The native compiler removes compileThemeCSS and host nativeSupport filtering, and adds migrateRC plus stylesheet graph preparation/rendering/compilation. Existing CSS-directive, manifest, dependency and inspection entry points remain. These are the approved migration, preserve-and-diagnose and native stylesheet delivery contracts.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T17:24:34Z",
-        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
-        "scopeDigest": "efe6b8e15f0eb8d0738cf9730ea60e6cf7c83bfdf042ad4e2131550469382786"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "415fc1a363ad91bf38693c8fbc2aa4979df28dabc80b78354a3fb9d31695869d"
       }
     },
     {
       "surfaceId": "wasm-compiler-raw-surface",
       "baselineDigest": "7bb965109d8a7b8ebbb475dd67224b0b96493eb21700d553b49891ae4ee648bf",
-      "targetDigest": "71c04aa417736f0df750a897ac39a029ccbe8998d08b55404b3c36633285b127",
+      "targetDigest": "507d877ae52f114dc9414b79f3559c13ad4f74886e6fddb1311cefa48f6a47f1",
       "proof": "approved-contract-change",
-      "reason": "The Wasm compiler raw surface intentionally removes compileThemeCSS, leaving compileCSSDirectives as the sole CSS-directive compilation operation; no deprecated alias or compatibility shim remains.",
+      "reason": "The Wasm compiler mirrors native migrateRC and stylesheet graph preparation/rendering/compilation and removes compileThemeCSS and output-filtering support flags. This is the same approved Rust-owned compilation contract on both bindings.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T17:24:34Z",
-        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
-        "scopeDigest": "1d3167b6386483bb1a2aab13653cbb339bfc379675395cef8cdb8c4db68b6560"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "b65eaebed42a9b6050c9557ce935ffbc7971ec23cc860a5730687ee19e5e3472"
       }
     },
     {
       "surfaceId": "language-batch-contract",
       "baselineDigest": "a77053bed4610a35ef92202e2385f1b6f626a45db097e55d658395f21e948545",
-      "targetDigest": "41d524a9f6106ba619f400075a7b2c6b946e8a3ab31eb34398920e28d2c3bf7e",
+      "targetDigest": "c883844892117362024847c0730cf7c8366e0e11a30b28e9d09973bc17ff4ed6",
       "proof": "approved-contract-change",
-      "reason": "Language Batch v2 intentionally adds the function completion kind and recursive color expression and source-format contracts for static color-mix; CSS compilation and runtime semantics remain unchanged.",
+      "reason": "The approved language contract adds named token classification, replaces valid booleans with separate match/syntax/value/browser statuses, includes complete diagnostics, and retains function completion and structured recursive color expressions. Batch version 4 binds this wire format.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T17:24:34Z",
-        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
-        "scopeDigest": "686afd59e64ea5ee2fd93ff8075b5a937b7d418d4afc70c3ac4e96fe82775937"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "2c40adb427bc4b403c5c80c187aabe4980232494b250f6e8f575746ca0c1d376"
       }
     },
     {
       "surfaceId": "native-engine-raw-surface",
       "baselineDigest": "ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a",
-      "targetDigest": "c0fe94acfe7dccfe5e71270fcfd5849e1418185a267640bab7a9a22c89e084ac",
+      "targetDigest": "5057b2da9d1de9e4cea516ddd361b7e05a4ea7ad996ff812f7300f4237263a31",
       "proof": "approved-contract-change",
-      "reason": "The native engine-session raw surface intentionally adds registerEmittedGlobals to mirror the Rust engine operation used by runtime and scanner hosts; existing methods remain unchanged.",
+      "reason": "The native engine adds emitted-global registration and executionState for exact resource/rule hydration and removes ensureClassRulesWithNativeSupport. Native declaration discovery remains inspection-only; generation preserves declarations independent of host support.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:55:21Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "ad6fda408474c6d1576332ca4b340905689a1ac8cd1af1e4f4257ed7bc460636"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "1525142eb2028b73c58dacf875415c3d02c5b6ddfaf433a1b2ec9b7696491528"
       }
     },
     {
       "surfaceId": "wasm-engine-raw-surface",
       "baselineDigest": "da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012",
-      "targetDigest": "6563b821480af814fefd211bd636c111eb9e361c83ea6ac467462df820ab4474",
+      "targetDigest": "ca033fbbf6a3e9cca84804d3d49d69485ea9a5085ce8c86cee64da0bd22cba06",
       "proof": "approved-contract-change",
-      "reason": "The private generated Wasm render-session declaration matches wasm-bindgen's Vec<bool> JavaScript ABI. The engine-session raw surface now includes registerEmittedGlobals, and its wrapper intentionally exposes the operation so runtime and scanner hosts can coordinate emitted global reference counts. Package exports and existing session behavior remain unchanged; the new method is covered across Wasm binding, engine, runtime, and scanner tests.",
+      "reason": "The Wasm engine adds emitted-global registration and executionState. Its wrapper removes the CSS.supports generation handshake; the render-session private declaration uses the generated boolean-array ABI. The approved plan preserves CSS and verifies actual hydration/resource ownership.",
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:40:43Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "667e82c6b9260004f951d92075a9edc30c56825eb0674a208919b8298e75c9cc"
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "16bffebc84aabbd9712bc62ae76ea18c466fc6190f1496412ddd7cd34ce9450a"
+      }
+    },
+    {
+      "surfaceId": "integration-rendering-options-contract",
+      "baselineDigest": "2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef",
+      "targetDigest": "b01643013d47a686698b74c9fc6c6826e676fa89e9cce2f4e8645d6fb39fff45",
+      "proof": "approved-contract-change",
+      "reason": "All six integration option surfaces now default to static and derive runtime enablement from the explicit mode. Contradictory runtime options are rejected by the shared resolver. Vite/Webpack/Next and the shared schema add pruneNativeCSS with false default. This is the explicitly approved static-first/pruning-opt-in change.",
+      "approval": {
+        "approvedBy": "Aron (explicit implementation plan in this task)",
+        "approvedAt": "2026-09-25T09:11:22.490Z",
+        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
+        "scopeDigest": "2923dbfdb3cf0d572e37b4b8e7d4235abcf7e88d8c081a2d61a0b94af3a69d70"
       }
     }
   ]

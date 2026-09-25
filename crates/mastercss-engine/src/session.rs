@@ -418,6 +418,37 @@ impl EngineSession {
         self.inspect_with_mode(class_name, None)
     }
 
+    /// Resolve registered definitions independently of emitted rule count.
+    pub fn matched_utility_names(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let class_name =
+            canonicalize_class_name(class_name).unwrap_or_else(|| class_name.to_owned());
+        if !super::named::diagnostics(&class_name, &self.compiled).is_empty() {
+            return Ok(Vec::new());
+        }
+        if let Some(body) = class_name.strip_prefix('{')
+            && let Some(close) = super::find_group_close(body)
+        {
+            let mut names = Vec::new();
+            for member in super::split_top_level(&body[..close], ';') {
+                for name in
+                    self.matched_utility_names(&format!("{member}{}", &body[close + 1..]))?
+                {
+                    if !names.contains(&name) {
+                        names.push(name);
+                    }
+                }
+            }
+            return Ok(names);
+        }
+        Ok(
+            super::named::matching_utilities(&class_name, &self.compiled)
+                .into_iter()
+                .filter_map(|(index, _)| self.compiled.utilities[index].name.clone())
+                .collect(),
+        )
+    }
+
     pub fn composition_rules(
         &self,
         class_name: &str,
@@ -463,7 +494,9 @@ impl EngineSession {
         Ok(EngineInspectionIr {
             version: 1,
             class_name: class_name.to_owned(),
-            match_status: if !rules.is_empty() {
+            match_status: if diagnostics.is_empty()
+                && (!rules.is_empty() || !self.matched_utility_names(class_name)?.is_empty())
+            {
                 mastercss_schema::MatchStatus::Matched
             } else if diagnostics
                 .iter()
@@ -506,7 +539,16 @@ impl EngineSession {
     ) -> Result<ClassSemanticInspection, EngineError> {
         self.ensure_active()?;
         let rules = self.generate_class_rules_with_mode(class_name, mode);
-        if rules.is_empty() {
+        let canonical =
+            canonicalize_class_name(class_name).unwrap_or_else(|| class_name.to_owned());
+        let empty_matches = if rules.is_empty()
+            && super::named::diagnostics(&canonical, &self.compiled).is_empty()
+        {
+            super::named::matching_utilities(&canonical, &self.compiled)
+        } else {
+            Vec::new()
+        };
+        if rules.is_empty() && empty_matches.is_empty() {
             return Ok(ClassSemanticInspection {
                 class_name: class_name.to_owned(),
                 kind: ClassSemanticKind::Unknown,
@@ -532,12 +574,23 @@ impl EngineSession {
             state_token.get_or_insert_with(|| rule.state_token.clone());
         }
 
+        for (_, matched) in &empty_matches {
+            if !matcher_types.contains(&matched.matcher_type) {
+                matcher_types.push(matched.matcher_type);
+            }
+            state_token.get_or_insert_with(|| matched.state_token.clone());
+        }
+        let first_type = rules.first().map(|rule| rule.ir.utility_type).or_else(|| {
+            empty_matches
+                .first()
+                .map(|(index, _)| self.compiled.utilities[*index].utility_type)
+        });
         let component = rules.iter().any(|rule| {
             rule.ir.utility_type == -2 && rule.ir.layer == UtilityLayerName::Components
         });
         let kind = if component {
             ClassSemanticKind::Component
-        } else if rules[0].ir.utility_type == -2 {
+        } else if first_type == Some(-2) {
             ClassSemanticKind::Semantic
         } else if matcher_types.contains(&UtilityMatcherType::Pattern) {
             ClassSemanticKind::Pattern

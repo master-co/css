@@ -120,7 +120,7 @@ pub(crate) fn lower_native_compose_rule(
     }
     let (_, content_end) = trim_byte_range(rewritten_source, content_start, semicolon);
     let class_list = &rewritten_source[content_start..content_end];
-    if class_list.contains(['\'', '"']) {
+    if class_list.starts_with(['\'', '"']) {
         return Err(CompilerError::DirectiveDiagnostic {
             code: ErrorCode::ComposeQuotedSyntax,
             message: "@compose only accepts unquoted class lists".into(),

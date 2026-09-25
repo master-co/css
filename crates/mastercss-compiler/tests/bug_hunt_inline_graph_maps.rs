@@ -5,7 +5,7 @@ fn compile(entry: &str, child: &str, child_url: &str) -> Value {
     let input: CompileCssStylesheetGraphInput = serde_json::from_value(json!({
         "inlineImports":true,
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
-        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
+        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph_input(&input).unwrap()).unwrap()
 }

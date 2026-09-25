@@ -129,7 +129,7 @@ fn audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable() {
     for invalid in [
         "{",
         r#"{"version":999}"#,
-        r#"{"version":1,"languageVersion":2,"utilities":null}"#,
+        r#"{"version":1,"languageVersion":3,"utilities":null}"#,
     ] {
         assert!(engine.refresh(invalid).is_err());
         assert_eq!(engine.snapshot().unwrap(), before);

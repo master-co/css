@@ -5,7 +5,7 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version": 1,"languageVersion":2,
+        "version": 1,"languageVersion":3,
         "variables": { "": [
             { "name": "x", "key": "x", "value": "red" },
             { "name": "y", "key": "y", "value": "blue" },

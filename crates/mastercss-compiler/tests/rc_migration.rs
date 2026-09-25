@@ -124,7 +124,7 @@ fn migration_is_idempotent_for_safe_classes() {
 fn migrates_directives_and_reports_selector_references() {
     let mut input = request(&[]);
     input.manifest["settings"] = json!({"baseUnit":8,"rootSize":20});
-    input.stylesheets = vec!["@settings{base-unit:8;root-size:20}@utilities{font:<~font-size|number>{font-size:--value()}}.card{@compose p:md font:mono}".into(),
+    input.stylesheets = vec!["@settings{base-unit:8;root-size:20}@utilities{font:<~font-size|number|*>{font-size:--value()}}.card{@compose p:md font:mono}".into(),
         ".p\\:md{color:red}".into()];
     let result = migrate_rc(&input).unwrap();
     assert!(
@@ -141,7 +141,7 @@ fn migrates_directives_and_reports_selector_references() {
     }
     assert!(!migrated.contains("base-unit"));
     assert!(migrated.contains("font-<~font-size>"));
-    assert!(migrated.contains("font-size:<number>"));
+    assert!(migrated.contains("font-size:<*>"));
     assert!(migrated.contains("@compose p-md font-mono"));
     assert!(!result.stylesheets[1].notes.is_empty());
     input.stylesheets = vec![migrated];

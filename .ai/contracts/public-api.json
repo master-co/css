@@ -843,10 +843,8 @@
           "MasterCSSManifestUtilities",
           "MasterCSSManifestUtility",
           "MasterCSSManifestUtilityEmit",
-          "MasterCSSManifestUtilityKind",
           "MasterCSSManifestUtilityLayerName",
           "MasterCSSManifestUtilityMatcher",
-          "MasterCSSManifestUtilityMatcherValueSegments",
           "MasterCSSManifestUtilityRule",
           "MasterCSSManifestVariable",
           "MasterCSSManifestVariableAlias",
@@ -962,7 +960,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "344d5988c54058c0"
+      "surface": "ac5522612740ed9c"
     },
     "@master/css-server": {
       "directory": "server",

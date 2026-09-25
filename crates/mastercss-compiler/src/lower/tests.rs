@@ -15,7 +15,7 @@ fn lower_for_test(
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":3, "utilities": [] })),
             resolution_manifest: None,
         },
     )
@@ -36,7 +36,7 @@ fn preserves_native_values_in_compose_for_tooling_validation() {
         &[definition],
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":3, "utilities": [] })),
             resolution_manifest: None,
         },
     )
@@ -90,7 +90,7 @@ fn accepts_valid_unparsed_native_declarations_in_compose() {
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":3, "utilities": [] })),
             resolution_manifest: None,
         },
     )

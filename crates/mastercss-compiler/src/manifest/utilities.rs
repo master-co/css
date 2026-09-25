@@ -1,7 +1,4 @@
-use super::variables::{
-    compile_condition, compile_selector, manifest_error, object, skip_quoted_value,
-    skip_value_comment, string_array,
-};
+use super::variables::{compile_condition, compile_selector, manifest_error, object, string_array};
 use super::{CompilerError, Map, NATIVE_CSS_SHORTHANDS, Value, json};
 
 pub(super) type CompiledVariants = (Option<Value>, Map<String, Value>, Map<String, Value>);
@@ -88,72 +85,50 @@ pub(super) fn compile_variants(
     Ok((Some(Value::Array(variants)), selectors, conditions))
 }
 
-pub(super) fn value_placeholder_parts(value: &str) -> Result<Value, CompilerError> {
-    if !value.contains("--value") {
-        return Ok(Value::String(value.into()));
-    }
-    if value == "--value()" {
-        return Ok(Value::Null);
-    }
+pub(crate) fn value_placeholder_parts(value: &str) -> Result<Value, CompilerError> {
+    let tokens = mastercss_lexer::tokenize_css_syntax(value);
     let mut parts = Vec::new();
-    let mut index = 0;
-    let mut last_index = 0;
-    let mut matched = false;
-    while index < value.len() {
-        let character = value[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = skip_quoted_value(value, index, character);
-            continue;
+    let mut end = 0;
+    for token in &tokens {
+        if let mastercss_lexer::CssSyntaxKind::Function(name) = &token.kind
+            && name == "--value"
+        {
+            let close = token
+                .close
+                .and_then(|close| tokens.get(close))
+                .ok_or_else(|| manifest_error("Unclosed --value() placeholder"))?;
+            if !mastercss_lexer::tokenize_css_syntax(&value[token.bytes.end..close.bytes.start])
+                .is_empty()
+            {
+                return Err(manifest_error("--value() does not accept arguments"));
+            }
+            if value[close.bytes.end..]
+                .chars()
+                .next()
+                .is_some_and(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '\\' | '('))
+            {
+                return Err(manifest_error(
+                    "--value() is a complete CSS value; separate adjacent tokens instead of joining an identifier or function name",
+                ));
+            }
+            if token.bytes.start > end {
+                parts.push(Value::String(value[end..token.bytes.start].into()));
+            }
+            parts.push(Value::Null);
+            end = close.bytes.end;
         }
-        if value[index..].starts_with("/*") {
-            index = skip_value_comment(value, index);
-            continue;
-        }
-        if !value[index..].starts_with("--value") {
-            index += character.len_utf8();
-            continue;
-        }
-        if value[..index].chars().next_back().is_some_and(|character| {
-            character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
-        }) {
-            return Err(manifest_error(
-                "--value() must be a standalone CSS value placeholder",
-            ));
-        }
-        let open = index + "--value".len();
-        if value.as_bytes().get(open) != Some(&b'(') {
-            return Err(manifest_error("--value() must be called as --value()"));
-        }
-        let Some(close_offset) = value[open + 1..].find(')') else {
-            return Err(manifest_error("--value() must be called as --value()"));
-        };
-        let close = open + 1 + close_offset;
-        if !value[open + 1..close].trim().is_empty() {
-            return Err(manifest_error("--value() does not accept arguments"));
-        }
-        let end = close + 1;
-        if value[end..].chars().next().is_some_and(|character| {
-            character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
-        }) {
-            return Err(manifest_error(
-                "--value() must be a standalone CSS value placeholder",
-            ));
-        }
-        if index > last_index {
-            parts.push(Value::String(value[last_index..index].into()));
-        }
-        parts.push(Value::Null);
-        matched = true;
-        index = end;
-        last_index = index;
     }
-    if !matched {
+    if parts.is_empty() {
         return Ok(Value::String(value.into()));
     }
-    if last_index < value.len() {
-        parts.push(Value::String(value[last_index..].into()));
+    if end < value.len() {
+        parts.push(Value::String(value[end..].into()));
     }
-    Ok(Value::Array(parts))
+    if parts == [Value::Null] {
+        Ok(Value::Null)
+    } else {
+        Ok(Value::Array(parts))
+    }
 }
 
 pub(super) fn compile_declarations(
@@ -206,6 +181,12 @@ pub(super) fn utility_rules(
     definition: &Map<String, Value>,
     pattern: bool,
 ) -> Result<Vec<Value>, CompilerError> {
+    if let Some(rules) = definition.get("compiledBody").and_then(Value::as_array) {
+        return Ok(rules.clone());
+    }
+    if definition.contains_key("body") {
+        return crate::utility_definitions::seed_rules(definition);
+    }
     let mut rules = Vec::new();
     if let Some(declarations) = definition.get("declarations").and_then(Value::as_object) {
         let mut rule = Map::new();
@@ -276,24 +257,25 @@ fn validate_native_pattern(key: &str, rules: &[Value]) -> Result<(), CompilerErr
     if !native {
         return Ok(());
     }
-    let valid = rules.len() == 1
-        && rules.iter().all(|rule| {
-            !rule.as_object().is_some_and(|rule| {
-                rule.contains_key("selector") || rule.contains_key("conditions")
-            }) && rule
-                .get("declarations")
-                .and_then(Value::as_object)
-                .is_some_and(|declarations| {
-                    declarations.get(key).is_some_and(Value::is_null)
-                        && declarations.iter().all(|(property, value)| {
-                            let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
-                                .iter()
-                                .find_map(|prefix| property.strip_prefix(prefix))
-                                .unwrap_or(property);
-                            value.is_null() && (property == key || unprefixed == key)
-                        })
-                })
-        });
+    let valid = rules.is_empty()
+        || rules.len() == 1
+            && rules.iter().all(|rule| {
+                !rule.as_object().is_some_and(|rule| {
+                    rule.contains_key("selector") || rule.contains_key("conditions")
+                }) && rule
+                    .get("declarations")
+                    .and_then(Value::as_object)
+                    .is_some_and(|declarations| {
+                        declarations.get(key).is_some_and(Value::is_null)
+                            && declarations.iter().all(|(property, value)| {
+                                let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
+                                    .iter()
+                                    .find_map(|prefix| property.strip_prefix(prefix))
+                                    .unwrap_or(property);
+                                value.is_null() && (property == key || unprefixed == key)
+                            })
+                    })
+            });
     if !valid {
         return Err(manifest_error(format!(
             "Native property {key}: must emit {key}: --value() without changing its intent; use a distinct utility name for subproperties or combined styles"
@@ -415,35 +397,22 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
             .and_then(Value::as_str)
             .ok_or_else(|| manifest_error("Managed dynamic utility requires a key"))?;
         let rules = utility_rules(definition, true)?;
-        let references = string_array(dynamic.get("variableAliasRefs"));
         validate_native_pattern(key, &rules)?;
-        let values = string_array(dynamic.get("values"));
-        let kind = dynamic.get("kind").and_then(Value::as_str);
-        let arbitrary = dynamic.get("arbitrary").and_then(Value::as_bool) == Some(true);
-        let mut matchers = Vec::new();
-        if !references.is_empty() {
+        if [
+            "kind",
+            "values",
+            "arbitrary",
+            "variableAliasRefs",
+            "segments",
+        ]
+        .iter()
+        .any(|field| dynamic.contains_key(*field))
+        {
             return Err(manifest_error(
-                "Colon utilities cannot resolve token namespaces; use a named token pattern",
+                "Raw utilities accept only a fixed key; rebuild with key:<*>",
             ));
         }
-        if kind.is_some() {
-            matchers.push(json!({ "type": "value", "keys": [key] }));
-        }
-        if arbitrary {
-            matchers.push(json!({ "type": "key", "keys": [key] }));
-        }
-        if !values.is_empty() {
-            matchers.push(json!({
-                "type": "pattern",
-                "prefix": format!("{key}:"),
-                "values": values
-            }));
-        }
-        if matchers.is_empty() {
-            return Err(manifest_error(
-                "Managed dynamic utility definition must include at least one value source",
-            ));
-        }
+        let matchers = vec![json!({ "type": "key", "keys": [key] })];
         let mut utility = Map::new();
         utility.insert("id".into(), Value::String(source_name.into()));
         utility.insert("name".into(), Value::String(source_name.into()));
@@ -453,15 +422,6 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
         );
         utility.insert("order".into(), Value::Number(order.into()));
         utility.insert("layer".into(), Value::String(layer.into()));
-        if let Some(kind) = kind {
-            utility.insert("kind".into(), Value::String(kind.into()));
-        }
-        if !references.is_empty() {
-            utility.insert(
-                "variableAliasRefs".into(),
-                Value::Array(references.into_iter().map(Value::String).collect()),
-            );
-        }
         utility.insert("emit".into(), json!({ "type": "static", "rules": rules }));
         utility.insert("matchers".into(), Value::Array(matchers));
         return Ok(Value::Object(utility));
@@ -487,7 +447,7 @@ pub(super) fn compile_utilities(
         return Ok(None);
     };
     Ok(Some(Value::Array(
-        input
+        crate::utility_definitions::effective(input)
             .iter()
             .enumerate()
             .map(|(order, definition)| compile_utility(definition, order))

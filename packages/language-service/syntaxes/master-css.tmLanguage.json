@@ -543,7 +543,7 @@
     "master-managed-pattern": {
       "patterns": [
         {
-          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*:<[~=][^>]*>)",
+          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*(?::<(?!\\*>)[^>]*>|-<=[^>]*>))",
           "captures": {
             "3": {
               "name": "invalid.deprecated.master-css"
@@ -551,7 +551,7 @@
           }
         },
         {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(-)(<)(?=[~=])",
+          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(-)(<)(?=~)",
           "beginCaptures": {
             "3": {
               "name": "support.type.property-name.master-css"
@@ -571,7 +571,7 @@
           },
           "patterns": [
             {
-              "match": "[~|=*]",
+              "match": "[~|]",
               "name": "keyword.operator.master-css"
             },
             {
@@ -581,7 +581,7 @@
           ]
         },
         {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)",
+          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)(?=\\*>)",
           "beginCaptures": {
             "3": {
               "name": "support.type.property-name.master-css"
@@ -601,17 +601,13 @@
           },
           "patterns": [
             {
-              "match": "[~|=*]",
+              "match": "\\*",
               "name": "keyword.operator.master-css"
-            },
-            {
-              "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
-              "name": "variable.parameter.master-css"
             }
           ]
         },
         {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(<)",
+          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*-)(<)",
           "beginCaptures": {
             "3": {
               "name": "entity.other.attribute-name.class.master-css"

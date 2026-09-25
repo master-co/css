@@ -21,7 +21,7 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
       writeFileSync(child, `@import 'https://remote.test/external.css';@reference '../tokens.css';@source './templates/*.html';.native{color:blue}`)
       writeFileSync(tokens, '@utilities{paint{color:red}}.reference-native{color:green}')
       writeFileSync(template, '<div class="widget button"></div>')
-      const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+      const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
       const options = { root: cwd, entries: [entry], baseManifest }
       const results = [await compileProjectManifest(options), await loadProjectManifest(options), compileProjectManifestSync(options)]
       for (const result of results) {
@@ -55,7 +55,7 @@ test('BH-0004 project graph preserves explicit entry order', async () => {
     writeFileSync(a, '@master entry;@utilities{choice{color:red}}')
     writeFileSync(b, '@master entry;@utilities{choice{color:blue}}')
     for (const [entries, expected] of [[[a, b], '#00f'], [[b, a], 'red']] as const) {
-      const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: { version: 1, languageVersion: 2, utilities: [] } })
+      const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
       const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
       try {
         engine.ensureClassRules(['choice'])
@@ -72,7 +72,7 @@ test('BH-0004 project graph rejects missing and circular references', async () =
     const entry = join(root, 'entry.css')
     const reference = join(root, 'tokens.css')
     writeFileSync(entry, "@master entry;@reference './tokens.css';")
-    const options = { root, entries: [entry], baseManifest: { version: 1 as const, languageVersion: 2 as const, utilities: [] } }
+    const options = { root, entries: [entry], baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] } }
     await expect(compileProjectManifest(options)).rejects.toThrow(/tokens\.css/)
     writeFileSync(reference, "@reference './entry.css';")
     await expect(compileProjectManifest(options)).rejects.toThrow(/Circular CSS reference/)

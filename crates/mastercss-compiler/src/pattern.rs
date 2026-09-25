@@ -1,10 +1,7 @@
 use super::{
-    CompilerError, CssDirectiveConditionPathEntry, CssRule, HashMap, PrinterOptions, StyleRule,
-    ToCss, UtilityLayerName, Value, collect_ordered_declarations, combine_managed_selectors,
-    css_comment_end, css_quote_end, next_char_end, preserve_ordered_literal_spelling,
-    printed_selectors,
+    CompilerError, CssDirectiveConditionPathEntry, HashMap, PrinterOptions, ToCss,
+    UtilityLayerName, Value, css_comment_end, css_quote_end, next_char_end,
 };
-use crate::source_index::SourceIndex;
 
 #[derive(Debug, Clone)]
 pub(crate) enum ParsedManagedPattern {
@@ -22,10 +19,6 @@ pub(crate) enum ParsedManagedPattern {
     Dynamic {
         name: String,
         key: String,
-        variable_alias_refs: Vec<String>,
-        kind: Option<String>,
-        values: Vec<String>,
-        arbitrary: bool,
     },
 }
 
@@ -75,65 +68,33 @@ impl ParsedManagedPattern {
                 }
                 definition.insert("pattern".into(), Value::Object(pattern));
             }
-            Self::Dynamic {
-                name,
-                key,
-                variable_alias_refs,
-                kind,
-                values,
-                arbitrary,
-            } => {
+            Self::Dynamic { name, key } => {
                 definition.insert("name".into(), Value::String(name.clone()));
                 definition.insert("type".into(), Value::String("dynamic".into()));
                 definition.insert(
                     "layer".into(),
                     serde_json::to_value(layer).expect("layer serializes"),
                 );
-                let mut dynamic = serde_json::Map::new();
-                dynamic.insert("key".into(), Value::String(key.clone()));
-                if !variable_alias_refs.is_empty() {
-                    dynamic.insert(
-                        "variableAliasRefs".into(),
-                        Value::Array(
-                            variable_alias_refs
-                                .iter()
-                                .cloned()
-                                .map(Value::String)
-                                .collect(),
-                        ),
-                    );
-                }
-                if let Some(kind) = kind {
-                    dynamic.insert("kind".into(), Value::String(kind.clone()));
-                }
-                if !values.is_empty() {
-                    dynamic.insert(
-                        "values".into(),
-                        Value::Array(values.iter().cloned().map(Value::String).collect()),
-                    );
-                }
-                if *arbitrary {
-                    dynamic.insert("arbitrary".into(), Value::Bool(true));
-                }
-                definition.insert("dynamic".into(), Value::Object(dynamic));
+                definition.insert("dynamic".into(), serde_json::json!({ "key": key }));
             }
         }
         definition
     }
 }
 
+/// Decode one CSS identifier, then reject delimiters belonging to Master or HTML.
+pub(crate) fn utility_identifier(value: &str) -> Result<String, String> {
+    mastercss_lexer::decode_utility_name(value).ok_or_else(|| format!("Invalid utility identifier {value}; use a CSS identifier without Master class delimiters"))
+}
+
 pub(crate) fn valid_pattern_token(value: &str, allow_leading_digit: bool) -> bool {
-    let value = value.strip_prefix('-').unwrap_or(value);
-    let mut characters = value.chars();
-    let Some(first) = characters.next() else {
-        return false;
-    };
-    let valid_first = first == '_'
-        || first.is_ascii_alphabetic()
-        || (allow_leading_digit && first.is_ascii_digit());
-    valid_first
-        && characters.all(|character| {
-            character == '_' || character == '-' || character.is_ascii_alphanumeric()
+    utility_identifier(value).is_ok()
+        || (allow_leading_digit && {
+            let value = value.strip_prefix('-').unwrap_or(value);
+            !value.is_empty()
+                && value
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
         })
 }
 
@@ -156,9 +117,10 @@ pub(crate) fn managed_pattern_parts(pattern: &str) -> Result<(&str, &str, &str),
 
 pub(crate) fn parse_managed_enum_pattern(pattern: &str) -> Result<ParsedManagedPattern, String> {
     let (prefix, raw_values, suffix) = managed_pattern_parts(pattern)?;
-    if prefix.is_empty() || !suffix.is_empty() {
+    if !prefix.ends_with('-') || prefix == "-" || !suffix.is_empty() {
         return Err("Managed enum pattern must use a prefix before <...> and no suffix".into());
     }
+    let prefix = format!("{}-", utility_identifier(&prefix[..prefix.len() - 1])?);
     let raw_values = raw_values.trim();
     if raw_values.is_empty() {
         return Err("Managed enum pattern cannot be empty".into());
@@ -191,7 +153,15 @@ pub(crate) fn parse_managed_enum_pattern(pattern: &str) -> Result<ParsedManagedP
                 "Invalid managed enum mapped value: {emitted_value}"
             ));
         }
-        values.push(class_value.to_owned());
+        let class_value = if valid_pattern_token(class_value, false) {
+            utility_identifier(class_value)?
+        } else {
+            class_value.to_owned()
+        };
+        if values.contains(&class_value) {
+            return Err(format!("Duplicate managed enum key: {class_value}"));
+        }
+        values.push(class_value.clone());
         value_map.insert(
             class_value.to_owned(),
             Value::String(emitted_value.to_owned()),
@@ -212,80 +182,20 @@ pub(crate) fn parse_managed_enum_pattern(pattern: &str) -> Result<ParsedManagedP
 }
 
 pub(crate) fn parse_managed_dynamic_pattern(pattern: &str) -> Result<ParsedManagedPattern, String> {
-    let (prefix, raw_values, suffix) = managed_pattern_parts(pattern)?;
-    if !prefix.ends_with(':') || prefix == ":" || !suffix.is_empty() {
-        return Err("Managed dynamic utilities must use key:<...> syntax".into());
-    }
-    let key = &prefix[..prefix.len() - 1];
-    if !valid_pattern_token(key, false) {
-        return Err(format!("Invalid managed dynamic utility key: {key}"));
-    }
-    let raw_values = raw_values.trim();
-    if raw_values.is_empty() {
-        return Err("Managed dynamic utility source list cannot be empty".into());
-    }
-    if raw_values.contains(',') {
-        return Err("Managed dynamic utility source lists must use \"|\" separators like font:<~font-size|number>".into());
-    }
-    let entries = raw_values.split('|').map(str::trim).collect::<Vec<_>>();
-    if entries.iter().any(|value| value.is_empty()) {
-        return Err("Managed dynamic utility source list cannot contain empty entries".into());
-    }
-    let mut canonical = Vec::new();
-    let mut literal_values = Vec::new();
-    let mut kind: Option<String> = None;
-    let mut arbitrary = false;
-    let add_unique = |values: &mut Vec<String>, value: &str| {
-        if !values.iter().any(|existing| existing == value) {
-            values.push(value.to_owned());
-        }
-    };
-    for value in entries {
-        if value.starts_with(['~', '=']) {
-            return Err(format!(
-                "Token namespaces require named patterns: use {key}-<{value}> instead of {key}:<{value}>"
-            ));
-        }
-        if matches!(value, "number" | "color" | "image") {
-            if kind.as_deref().is_some_and(|existing| existing != value) {
-                return Err(
-                    "Managed dynamic utilities only support one raw value kind per entry".into(),
-                );
-            }
-            kind = Some(value.to_owned());
-            add_unique(&mut canonical, value);
-            continue;
-        }
-        if value == "*" {
-            arbitrary = true;
-            add_unique(&mut canonical, value);
-            continue;
-        }
-        if valid_pattern_token(value, true) {
-            add_unique(&mut literal_values, value);
-            add_unique(&mut canonical, value);
-            continue;
-        }
+    let (prefix, sources, suffix) = managed_pattern_parts(pattern)?;
+    let key = prefix
+        .strip_suffix(':')
+        .filter(|key| !key.is_empty())
+        .ok_or("Raw utilities require key:<*> syntax")?;
+    let key = utility_identifier(key)?;
+    if sources.trim() != "*" || !suffix.is_empty() {
         return Err(format!(
-            "Unsupported managed dynamic utility source: {value}"
+            "Raw utility {key} requires {key}:<*>; typed sources and colon enums have been removed. Use prefix-<a|b> for named options or prefix-<~namespace> for tokens"
         ));
     }
-    if arbitrary && !literal_values.is_empty() {
-        return Err("Managed dynamic utility wildcard cannot be combined with enum values".into());
-    }
-    if !literal_values.is_empty() && kind.is_none() && literal_values.len() < 2 {
-        return Err(
-            "Managed dynamic utility enum source requires at least two values separated by \"|\""
-                .into(),
-        );
-    }
     Ok(ParsedManagedPattern::Dynamic {
-        name: format!("{key}:<{}>", canonical.join("|")),
-        key: key.to_owned(),
-        variable_alias_refs: Vec::new(),
-        kind,
-        values: literal_values,
-        arbitrary,
+        name: format!("{key}:<*>"),
+        key,
     })
 }
 
@@ -307,16 +217,18 @@ pub(crate) fn parse_managed_pattern(pattern: &str) -> Result<ParsedManagedPatter
         {
             return Err("Named token patterns require prefix-<~namespace> syntax".into());
         }
+        let prefix = format!("{}-", utility_identifier(&prefix[..prefix.len() - 1])?);
         let mut references = Vec::new();
         for source in sources.split('|').map(str::trim) {
-            if !source.starts_with(['~', '='])
+            if !source.starts_with('~')
                 || !valid_pattern_token(&source[1..], false)
                 || source[1..].starts_with('-')
             {
-                return Err("Named token patterns accept only namespace references; define raw values in a separate key:<...> entry".into());
+                return Err("Named token patterns require ~namespace (the =namespace spelling was removed); define raw values in a separate key:<*> entry".into());
             }
-            if !references.iter().any(|existing| existing == source) {
-                references.push(source.to_owned());
+            let source = format!("~{}", utility_identifier(&source[1..])?);
+            if !references.contains(&source) {
+                references.push(source);
             }
         }
         Ok(ParsedManagedPattern::Token {
@@ -506,263 +418,4 @@ pub(crate) fn condition_properties(
         })
         .collect::<Option<Vec<_>>>();
     (conditions, Some(path.to_vec()))
-}
-
-pub(crate) fn insert_condition_properties(
-    object: &mut serde_json::Map<String, Value>,
-    condition_path: &[CssDirectiveConditionPathEntry],
-) {
-    let (conditions, path) = condition_properties(condition_path);
-    if let Some(conditions) = conditions {
-        object.insert(
-            "conditions".into(),
-            Value::Array(conditions.into_iter().map(Value::String).collect()),
-        );
-    }
-    if let Some(path) = path {
-        object.insert(
-            "conditionPath".into(),
-            serde_json::to_value(path).expect("condition path serializes"),
-        );
-    }
-}
-
-pub(crate) fn push_pattern_declarations(
-    definition: &mut serde_json::Map<String, Value>,
-    declarations: Vec<super::CssDeclaration>,
-    selector: &str,
-    condition_path: &[CssDirectiveConditionPathEntry],
-) {
-    for run in super::declaration_runs(declarations) {
-        push_pattern_declaration_run(definition, run, selector, condition_path);
-    }
-}
-
-fn push_pattern_declaration_run(
-    definition: &mut serde_json::Map<String, Value>,
-    declarations: serde_json::Map<String, Value>,
-    selector: &str,
-    condition_path: &[CssDirectiveConditionPathEntry],
-) {
-    if declarations.is_empty() {
-        return;
-    }
-    let can_inline = selector == "&"
-        && condition_path.is_empty()
-        && !definition.contains_key("declarations")
-        && !definition.contains_key("rules");
-    if can_inline {
-        definition.insert("declarations".into(), Value::Object(declarations));
-        return;
-    }
-
-    let previous = definition.remove("declarations");
-    let rules = definition
-        .entry("rules")
-        .or_insert_with(|| Value::Array(Vec::new()))
-        .as_array_mut()
-        .expect("pattern rules are an array");
-    if let Some(previous) = previous {
-        let mut rule = serde_json::Map::new();
-        rule.insert("declarations".into(), previous);
-        rules.push(Value::Object(rule));
-    }
-    let mut rule = serde_json::Map::new();
-    rule.insert("declarations".into(), Value::Object(declarations));
-    if selector != "&" {
-        rule.insert("selector".into(), Value::String(selector.to_owned()));
-    }
-    insert_condition_properties(&mut rule, condition_path);
-    rules.push(Value::Object(rule));
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn lower_managed_pattern_rule_list(
-    source: &SourceIndex<'_>,
-    filename: &str,
-    body: &SourceIndex<'_>,
-    rules: Vec<CssRule<'_>>,
-    selectors: &[String],
-    condition_path: &[CssDirectiveConditionPathEntry],
-    variant_rule_offsets: &HashMap<usize, String>,
-    definition: &mut serde_json::Map<String, Value>,
-) -> Result<(), CompilerError> {
-    for child in rules {
-        match child {
-            CssRule::Style(child) => {
-                let child_selectors = printed_selectors(&child.selectors.0, filename)?;
-                let combined = combine_managed_selectors(selectors, &child_selectors);
-                lower_managed_pattern_style(
-                    source,
-                    filename,
-                    body,
-                    child,
-                    &combined,
-                    condition_path,
-                    variant_rule_offsets,
-                    definition,
-                )?;
-            }
-            CssRule::NestedDeclarations(child) => {
-                let mut declarations = collect_ordered_declarations(&child.declarations, filename)?;
-                if let Some(start) = body.byte_offset_for_location(child.loc.line, child.loc.column)
-                {
-                    crate::declarations::preserve_ordered_declaration_sequence(
-                        body.text(),
-                        start,
-                        &mut declarations,
-                    );
-                }
-                for selector in selectors {
-                    push_pattern_declarations(
-                        definition,
-                        declarations.clone(),
-                        selector,
-                        condition_path,
-                    );
-                }
-            }
-            CssRule::Media(media) => {
-                let mut path = condition_path.to_vec();
-                let local_offset = body.byte_offset_for_location(media.loc.line, media.loc.column);
-                if let Some(token) =
-                    local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
-                {
-                    path.push(CssDirectiveConditionPathEntry::Variant {
-                        token: token.clone(),
-                    });
-                } else {
-                    path.push(CssDirectiveConditionPathEntry::Condition {
-                        value: format!("@media {}", minified_css(&media.query, filename)?),
-                    });
-                }
-                lower_managed_pattern_rule_list(
-                    source,
-                    filename,
-                    body,
-                    media.rules.0,
-                    selectors,
-                    &path,
-                    variant_rule_offsets,
-                    definition,
-                )?;
-            }
-            CssRule::Supports(supports) => {
-                let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: format!("@supports {}", minified_css(&supports.condition, filename)?),
-                });
-                lower_managed_pattern_rule_list(
-                    source,
-                    filename,
-                    body,
-                    supports.rules.0,
-                    selectors,
-                    &path,
-                    variant_rule_offsets,
-                    definition,
-                )?;
-            }
-            CssRule::Container(container) => {
-                let mut prelude = Vec::new();
-                if let Some(name) = &container.name {
-                    prelude.push(minified_css(name, filename)?);
-                }
-                if let Some(condition) = &container.condition {
-                    prelude.push(minified_css(condition, filename)?);
-                }
-                let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: format!("@container {}", prelude.join(" ")),
-                });
-                lower_managed_pattern_rule_list(
-                    source,
-                    filename,
-                    body,
-                    container.rules.0,
-                    selectors,
-                    &path,
-                    variant_rule_offsets,
-                    definition,
-                )?;
-            }
-            CssRule::StartingStyle(starting_style) => {
-                let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: "@starting-style".into(),
-                });
-                lower_managed_pattern_rule_list(
-                    source,
-                    filename,
-                    body,
-                    starting_style.rules.0,
-                    selectors,
-                    &path,
-                    variant_rule_offsets,
-                    definition,
-                )?;
-            }
-            CssRule::Unknown(rule) if rule.name.eq_ignore_ascii_case("compose") => {
-                return Err(CompilerError::Directive {
-                    message: "@compose is not supported inside managed pattern definitions".into(),
-                    filename: filename.to_owned(),
-                    range: None,
-                });
-            }
-            CssRule::LayerBlock(_) => {
-                return Err(CompilerError::Directive {
-                    message:
-                        "Nested @layer blocks are not allowed inside managed pattern definitions"
-                            .into(),
-                    filename: filename.to_owned(),
-                    range: None,
-                });
-            }
-            CssRule::Keyframes(_) => {
-                return Err(CompilerError::Directive {
-                    message: "@keyframes is not allowed inside managed pattern definitions. Move managed animation definitions to top-level @theme.".into(),
-                    filename: filename.to_owned(),
-                    range: None,
-                });
-            }
-            _ => {
-                return Err(CompilerError::Directive {
-                    message: "Managed pattern definitions only accept declarations, nested selectors, and nested at-rules".into(),
-                    filename: filename.to_owned(),
-                    range: None,
-                });
-            }
-        }
-    }
-    Ok(())
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn lower_managed_pattern_style(
-    source: &SourceIndex<'_>,
-    filename: &str,
-    body: &SourceIndex<'_>,
-    style: StyleRule<'_>,
-    selectors: &[String],
-    condition_path: &[CssDirectiveConditionPathEntry],
-    variant_rule_offsets: &HashMap<usize, String>,
-    definition: &mut serde_json::Map<String, Value>,
-) -> Result<(), CompilerError> {
-    let mut declarations = collect_ordered_declarations(&style.declarations, filename)?;
-    if let Some(start) = body.byte_offset_for_location(style.loc.line, style.loc.column) {
-        preserve_ordered_literal_spelling(body.text(), start, &mut declarations);
-    }
-    for selector in selectors {
-        push_pattern_declarations(definition, declarations.clone(), selector, condition_path);
-    }
-    lower_managed_pattern_rule_list(
-        source,
-        filename,
-        body,
-        style.rules.0,
-        selectors,
-        condition_path,
-        variant_rule_offsets,
-        definition,
-    )
 }

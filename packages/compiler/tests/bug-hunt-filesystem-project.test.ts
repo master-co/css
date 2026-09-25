@@ -18,7 +18,7 @@ for (const explicit of [false, true]) {
         writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@compose paint;}.ordinary{color:blue}")
         writeFileSync(tokens, '@utilities{paint{color:red}}')
         writeFileSync(view, '<div class="button card"></div>')
-        const result = binding.loadProjectManifest(root, { version: 1, languageVersion: 2, utilities: [] }, explicit ? [entry] : undefined)
+        const result = binding.loadProjectManifest(root, { version: 1, languageVersion: 3, utilities: [] }, explicit ? [entry] : undefined)
         expect(result.sourcePlan.files).toEqual([view])
         expect([...result.dependencies].sort()).toEqual([entry, child, tokens].sort())
         expect(result.css).toContain('.card{color:red}')

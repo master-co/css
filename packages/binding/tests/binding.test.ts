@@ -8,7 +8,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest = Object.freeze({
-  version: 1, languageVersion: 2,
+  version: 1, languageVersion: 3,
   utilities: Object.freeze([Object.freeze({
     id: 'display-block',
     name: 'block',
@@ -46,7 +46,7 @@ describe('binding loader', () => {
 
     const nativeDeclarationSession = await createEngineBindingSession({
       manifest: {
-        version: 1, languageVersion: 2,
+        version: 1, languageVersion: 3,
         variables: {
           '': [{
             name: 'stripe',

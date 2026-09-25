@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "baselineHead": "70ed3f6c0e74f42ca1d5101c4ac4bce3e01253db",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "logDirectory": "/tmp/master-utilities-contract-baseline",
+  "checks": [
+    {
+      "name": "rust-workspace",
+      "command": "cargo test --workspace",
+      "result": "passed before the final compiler-only manifest reuse change",
+      "log": "rust-workspace-final.log",
+      "sha256": "201af0c4850e94abba86d3d1eed12be61d2ee856c085d538a1365d1d2808cf53"
+    },
+    {
+      "name": "rust-compiler-final",
+      "command": "cargo test -p mastercss-compiler",
+      "result": "passed after the final compiler change",
+      "log": "compiler-reuse-tests.log",
+      "sha256": "fe1b26c114cf6a23ef9650b3faec19be617d2752d682f578595812f036a57924"
+    },
+    {
+      "name": "rust-clippy",
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "result": "passed",
+      "log": "clippy-reuse.log",
+      "sha256": "158eccdc82ec187024ef47a6fc955593f1ecc963d8877e0db6261799c724f4d2"
+    },
+    {
+      "name": "codegen",
+      "command": "cargo xtask codegen --check",
+      "result": "passed",
+      "log": "codegen-final.log",
+      "sha256": "96ef70fb2b4354d41e9b7d67cf14f86a8ff805067bc28637cad729f912374a83"
+    },
+    {
+      "name": "native-wasm-parity",
+      "command": "cargo xtask parity",
+      "result": "passed",
+      "log": "parity-last.log",
+      "sha256": "0dca719e10cc1314902c2d91fb3372cd49923abf71e20aa8a476b69c3cc14de5"
+    },
+    {
+      "name": "packages-build",
+      "command": "package workspace build via the existing Turbo wrapper",
+      "result": "32 tasks passed",
+      "log": "all-build-final.log",
+      "sha256": "f276d4f168935d9a31d16ef6c47c4adb29a02127a089dc8798692ec8ee85d8b4"
+    },
+    {
+      "name": "packages-lint-types",
+      "command": "package workspace lint/type-check via the existing Turbo wrapper",
+      "result": "68 tasks passed; late changes have scoped reruns",
+      "log": "all-lint-types3.log",
+      "sha256": "d88cc8e9acd1a380adafb2f83111c54a0455df1826ee5f30bd5a7a0462e70076"
+    },
+    {
+      "name": "scoped-lint-final",
+      "command": "affected package lint scripts",
+      "result": "passed",
+      "log": "scoped-lint-final.log",
+      "sha256": "b95c6beefe62aaabf6f9b285177feab45fc3e024fa4b384d5f1875707883fe25"
+    },
+    {
+      "name": "scoped-types-final",
+      "command": "affected package type-check scripts",
+      "result": "passed",
+      "log": "scoped-types-final.log",
+      "sha256": "06b60f5e2f9db0985a2a4ad99e25e6c9373f07acca274a94df1124e2c6b6a9ba"
+    },
+    {
+      "name": "bindings-final",
+      "command": "native and all three Wasm binding package test scripts",
+      "result": "passed",
+      "log": "bindings-final.log",
+      "sha256": "37d9128e8e8c65e11f03643213997e3f26cd13a97f19faf2190ad35f35f86d4a"
+    },
+    {
+      "name": "compiler-package-final",
+      "command": "pnpm --filter @master/css-compiler test",
+      "result": "61 files / 452 tests passed",
+      "log": "compiler-package-final.log",
+      "sha256": "b9da0a9dafb2321a255dc977115462bfabda50b19cb6a9caee29815237295ce2"
+    },
+    {
+      "name": "cli-final",
+      "command": "pnpm --filter @master/css-cli test",
+      "result": "18 files / 83 tests passed",
+      "log": "cli-last.log",
+      "sha256": "54f2fb62aa37488c3d671e51c73b955ce67cf0309e6a623b7cd86a4fcf683f5c"
+    },
+    {
+      "name": "mcp-final",
+      "command": "pnpm --filter @master/css-mcp test",
+      "result": "8 files / 49 tests passed",
+      "log": "mcp-final3.log",
+      "sha256": "66d0514c710c606174df1c324f5cb1ff9064edd135fb69a991b8daa4a48c26e5"
+    },
+    {
+      "name": "vscode-final",
+      "command": "pnpm --filter @master/css-vscode test",
+      "result": "3 files / 33 tests passed",
+      "log": "vscode-final3.log",
+      "sha256": "b572bf71c4be7d22e7d55531343e7565818b8ec4665b0ff08aeb63bc292b3e76"
+    },
+    {
+      "name": "mcp-evaluation",
+      "command": "actual MCP schema and shared workflow fixtures with MASTER_CSS_EVALUATION_REPORT",
+      "result": "passed; persistent structured trace accompanies this report",
+      "log": "mcp-evaluation.log",
+      "sha256": "9add48ecde680e3b268e831c7c3ad4180bfd424b3ef933a937cc076cb1fe03d0"
+    },
+    {
+      "name": "runtime-chromium-webkit",
+      "command": "full Playwright runtime suite",
+      "result": "Chromium passed; 5 WebKit load failures while another command rebuilt dist, corrected by stable-artifact rerun",
+      "log": "runtime-chromium-webkit.log",
+      "sha256": "3cd4286f951467a813bdb3439655f218bc1925d0f729a8f6360c859050e16629"
+    },
+    {
+      "name": "runtime-webkit-rerun",
+      "command": "affected WebKit test files against stable artifacts",
+      "result": "26 tests passed",
+      "log": "runtime-webkit-rerun.log",
+      "sha256": "298972e735d2899971be612ee9f8e15ef66bc52968a85ba46d2ef563b59037cc"
+    },
+    {
+      "name": "runtime-firefox",
+      "command": "node packages/runtime/scripts/test-isolated-firefox.mjs",
+      "result": "136 tests passed",
+      "log": "runtime-firefox.log",
+      "sha256": "d817ce9644a8c4ffaedd6fbcf0bb0ad3059d795502ee8636936248f523b051e5"
+    },
+    {
+      "name": "utility-browser-final",
+      "command": "utility fixture in Chromium and WebKit",
+      "result": "8 tests passed on final artifacts",
+      "log": "utility-browser-final.log",
+      "sha256": "2fefa65c071d30073c9619dbb843db283c09b364d678afb82e920124b50e4676"
+    },
+    {
+      "name": "utility-firefox-final",
+      "command": "utility fixture in isolated Firefox",
+      "result": "4 tests passed on final artifacts",
+      "log": "utility-firefox-final.log",
+      "sha256": "287e69ecf2be162f55fd144b7d2e54ea680c82ec7258fecc13198d508b94690a"
+    },
+    {
+      "name": "next-e2e",
+      "command": "Next integration e2e tests",
+      "result": "3 files / 4 tests passed",
+      "log": "next-e2e1.log",
+      "sha256": "e84f494ee3b97ca84f339652ceda577e0e9ac4025bdd4ddcdd8f1b34631a3bd8"
+    },
+    {
+      "name": "site-examples",
+      "command": "executable documentation example tests",
+      "result": "passed",
+      "log": "site-docs1.log",
+      "sha256": "4348013310299c22b569b9410c3fda2a8336b49eb0f30ea273a97a2f628f6d18"
+    },
+    {
+      "name": "site-reference",
+      "command": "pnpm --filter site test:reference",
+      "result": "20 tests passed",
+      "log": "site-reference2.log",
+      "sha256": "87987c7a532f98166f27f2d44e368e13deb43de864b4d1a87fb5522c174a4d2d"
+    },
+    {
+      "name": "site-migration",
+      "command": "v2 RC guide tests",
+      "result": "3 tests passed",
+      "log": "site-migration4.log",
+      "sha256": "c6e7031dfb6289c54f3c9dbd737dbddb3365c073eb8543819e00a42632a903ca"
+    },
+    {
+      "name": "site-build",
+      "command": "pnpm --filter site build",
+      "result": "passed; 1240 exported routes and 95 validated assets",
+      "log": "site-production-last.log",
+      "sha256": "c0dd26acba35eba0c36dd0df358ffd0ca912e66bc4f780ffd53bbddc298154d6"
+    },
+    {
+      "name": "site-css",
+      "command": "pnpm --filter site test:css-contract",
+      "result": "passed after exact CSS review",
+      "log": "site-contract-last.log",
+      "sha256": "fb2908f13ebdc275cbfa0554450877864d1ba09216257de15e46773840f006d1"
+    },
+    {
+      "name": "site-browser",
+      "command": "desktop/narrow static-export QA plus heading computed styles",
+      "result": "passed",
+      "log": "site-browser-last.log",
+      "sha256": "440f2012f7f90e2ddef2b4d69459d37e38c9df54623df8dcfa9457ba2c438ff9"
+    },
+    {
+      "name": "package-artifacts",
+      "command": "pnpm run check:artifacts",
+      "result": "778 artifacts passed",
+      "log": "artifacts-final.log",
+      "sha256": "7add660581b7dee83482d2cf15ac5e3faec8621d5265d16dc4b50398ab500409"
+    },
+    {
+      "name": "runtime-size",
+      "command": "pnpm run check:runtime-size",
+      "result": "passed",
+      "log": "runtime-size-final.log",
+      "sha256": "650c8412ce9049d85f705a7b6e35fc159099018f6e989325ecef766630e05fe7"
+    },
+    {
+      "name": "package-contracts",
+      "command": "pnpm run check:packages",
+      "result": "passed after intentional two-export removal",
+      "log": "packages-last.log",
+      "sha256": "0271490ee9f4331c7c6eba82567503393284a700a3e802c13eac33d95f918edb"
+    },
+    {
+      "name": "api-census",
+      "command": "pnpm run check:api-census",
+      "result": "passed",
+      "log": "census-last.log",
+      "sha256": "be422879d7ad4303d7cc56c751737a7c54b83e17744610bab4c83f19010d9388"
+    },
+    {
+      "name": "boundaries",
+      "command": "pnpm run check:boundaries",
+      "result": "passed",
+      "log": "boundaries-final.log",
+      "sha256": "29da486cc104c5909c8ef7cf5b310921d216f7c6fefa8aa5d2012e41f0c2226c"
+    },
+    {
+      "name": "mdn-registry",
+      "command": "pnpm run check:mdn-registry",
+      "result": "passed",
+      "log": "mdn-final.log",
+      "sha256": "71b26648927e98fa6e5b505524aae9a5b006e54973dbb39ec8e1c4eba7ca6457"
+    },
+    {
+      "name": "release-config",
+      "command": "pnpm run check:release",
+      "result": "35 packages passed",
+      "log": "release-final.log",
+      "sha256": "0322ae490a605b3919cc3a904ce9445b4c5564f653612a6d8b438a52611b26c3"
+    },
+    {
+      "name": "ai-context",
+      "command": "pnpm run check:ai-context",
+      "result": "passed",
+      "log": "ai-last.log",
+      "sha256": "4601137f3d9fb68745d4f6e09375354b088c120e6a6692eb65b87abeca80a323"
+    },
+    {
+      "name": "historical-migration",
+      "command": "pnpm run check:migration",
+      "result": "blocked: stale post-RC overlay; independent historical audit also lists pending evidence",
+      "log": "migration-ledger4.log",
+      "sha256": "5bb9ae90afb4b75f27ffabc37227ebd64353d2d87a8d30a1650c2fff54dca2e6"
+    },
+    {
+      "name": "site-lint-final",
+      "command": "pnpm --filter site lint",
+      "result": "passed, zero errors / 188 warnings",
+      "log": "site-lint-final.log",
+      "sha256": "03cd395570117ae9d77ec4c96417c4a4e8663a584bf8c2678cfa38f2d2e29b7e"
+    },
+    {
+      "name": "site-types-final",
+      "command": "pnpm --filter site type-check",
+      "result": "passed",
+      "log": "site-types-last.log",
+      "sha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "name": "scripts-lint",
+      "command": "ESLint for the changed benchmark and evidence scripts",
+      "result": "passed",
+      "log": "scripts-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "evidence-negative-tests",
+      "command": "node --test scripts/ts-test-migration/rust-contracts.test.mjs",
+      "result": "3 tests passed",
+      "log": "evidence-tests-final.log",
+      "sha256": "ab879faf85df9fd733fba074a58b4576d021b37f509dd35bad7b0a0380d6c6ab"
+    }
+  ]
+}

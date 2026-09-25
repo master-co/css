@@ -28,7 +28,7 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     expect(engine.executionState(classes)).toEqual(state)
     engine.deleteClassRules(['block'])
     expect(engine.executionState(['block']).classes[0].references).toEqual([])
-    engine.refresh({ version: 1, languageVersion: 2 })
+    engine.refresh({ version: 1, languageVersion: 3 })
     expect(engine.executionState(['block@base']).classes[0].references).toEqual([])
   } finally {
     engine.dispose()

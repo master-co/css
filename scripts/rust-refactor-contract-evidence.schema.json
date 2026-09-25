@@ -22,6 +22,7 @@
         "properties": {
           "sourceId": { "type": "string" },
           "sourceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "targetId": { "type": "string", "pattern": "^rc87-[a-f0-9]{16}$" },
           "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "proof": { "enum": ["verified-superset", "approved-contract-change"] },
           "reason": { "type": "string", "minLength": 1 },
@@ -34,7 +35,7 @@
               "properties": { "proof": { "const": "approved-contract-change" } }
             },
             "then": { "required": ["approval"] },
-            "else": { "not": { "required": ["approval"] } }
+            "else": { "not": { "anyOf": [{ "required": ["approval"] }, { "required": ["targetId"] }] } }
           }
         ]
       }

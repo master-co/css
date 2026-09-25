@@ -220,7 +220,6 @@ impl EngineSession {
             },
             order: Some(0),
             layer: UtilityLayerName::Utilities,
-            kind: None,
             keys: Vec::new(),
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),

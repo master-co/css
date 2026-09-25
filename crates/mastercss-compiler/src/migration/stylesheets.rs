@@ -40,7 +40,10 @@ impl Migration {
         // Only declaration values were RC macros. A native function declaration
         // anywhere in the selected source set makes the name ambiguous.
         for statement in &statements {
-            if self.profile == super::RcMigrationProfile::RcManaged {
+            if matches!(
+                self.profile,
+                super::RcMigrationProfile::RcManaged | super::RcMigrationProfile::RcUtilities
+            ) {
                 break;
             }
             let Some(colon) = tokens
@@ -265,6 +268,7 @@ impl Migration {
             add_edit(&mut result, source, 0, 0, self.configuration_css.clone());
         }
         self.managed_stylesheet(source, &mut result, file_index, previous);
+        self.utility_stylesheet(source, &mut result);
         result.edits.sort_by_key(|edit| edit.range.start);
         if result
             .edits
@@ -330,7 +334,14 @@ fn migrate_pattern(key: &str, pattern: &str, body: &str) -> Result<String, Strin
     }
     let mut definitions = Vec::new();
     if !namespaces.is_empty() {
-        definitions.push(format!("{key}-<{}>{body}", namespaces.join("|")));
+        definitions.push(format!(
+            "{key}-<{}>{body}",
+            namespaces
+                .iter()
+                .map(|namespace| format!("~{}", &namespace[1..]))
+                .collect::<Vec<_>>()
+                .join("|")
+        ));
     }
     if !raw.is_empty() {
         let mut target = if key == "line-clamp" {
@@ -345,7 +356,7 @@ fn migrate_pattern(key: &str, pattern: &str, body: &str) -> Result<String, Strin
             .unwrap_or(key);
         if mastercss_schema::is_native_css_property(property) {
             // Inspect a neutral managed name using the real directive parser.
-            let neutral = format!("@utilities{{migration-raw:<{}>{body}}}", raw.join("|"));
+            let neutral = format!("@utilities{{migration-raw:<*>{body}}}");
             let parsed = compile_css_directives(&neutral, &CompileNativeCssOptions::default())
                 .map_err(|err| err.to_string())?;
             let compiled =
@@ -362,7 +373,12 @@ fn migrate_pattern(key: &str, pattern: &str, body: &str) -> Result<String, Strin
                 target = declarations.keys().next().unwrap().clone();
             }
         }
-        definitions.push(format!("{target}:<{}>{body}", raw.join("|")));
+        if !raw.contains(&"*") {
+            return Err(format!(
+                "Typed utility {key} requires review before widening its accepted values"
+            ));
+        }
+        definitions.push(format!("{target}:<*>{body}"));
     }
     let result = definitions.join("\n");
     let source = format!("@utilities{{{result}}}");

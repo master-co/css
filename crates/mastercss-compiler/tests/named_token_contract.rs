@@ -257,11 +257,11 @@ fn rejects_rc_contracts_in_formal_compilation() {
     assert!(
         compile("@utilities{font:<~font-family>{font-family:--value()}}")
             .unwrap_err()
-            .contains("named patterns")
+            .contains("prefix-<~namespace>")
     );
     assert!(compile("@utilities{font-<~font-family|*>{font-family:--value()}}").is_err());
     assert!(
-        compile("@utilities{outline:<number>{outline-width:--value()}}")
+        compile("@utilities{outline:<*>{outline-width:--value()}}")
             .unwrap_err()
             .contains("Native property")
     );
@@ -272,12 +272,12 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(serde_json::from_value::<CssDirectiveManifestInput>(json!({"baseUnit":4})).is_err());
     assert!(
-        MasterCssManifest::new(json!({"version":1,"languageVersion":2,"settings":{"baseUnit":4}}))
+        MasterCssManifest::new(json!({"version":1,"languageVersion":3,"settings":{"baseUnit":4}}))
             .is_err()
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":1,"languageVersion":2,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":1,"languageVersion":3,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -310,13 +310,18 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":1,"languageVersion":2,"utilities":[utility]}).to_string();
+        let source = json!({"version":1,"languageVersion":3,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()
                 .unwrap()
                 .to_string()
                 .contains("Native property")
+                || EngineSession::create(&source)
+                    .err()
+                    .unwrap()
+                    .to_string()
+                    .contains("Typed raw utility matchers")
         );
     }
 }
@@ -325,7 +330,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
 fn handwritten_static_names_reserve_token_spellings_at_every_sort_type() {
     for utility_type in [-2, -1, 0] {
         let manifest = json!({
-            "version": 1,"languageVersion":2,
+            "version": 1,"languageVersion":3,
             "variables": {"color": [{"key":"red", "type":"string", "value":"#f00"}]},
             "utilities": [{
                 "id":"explicit-red", "name":"fg-red", "type": utility_type,
@@ -361,7 +366,7 @@ fn mixed_manifest_matchers_preserve_source_boundaries() {
         })
         .unwrap();
     let matchers = family["matchers"].as_array_mut().unwrap();
-    matchers.push(json!({"type":"pattern", "prefix":"font-", "values":["reserved"], "valueMap":{"reserved":"serif"}}));
+    matchers.push(json!({"type":"pattern", "prefix":"font-", "values":["reserved","other"], "valueMap":{"reserved":"serif","other":"monospace"}}));
     matchers.push(json!({"type":"key", "keys":["custom-font"]}));
     let engine = EngineSession::create(&manifest.to_string()).unwrap();
     assert!(

@@ -26,7 +26,6 @@ pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefiniti
                     },
                     order: Some(0),
                     layer: UtilityLayerName::Utilities,
-                    kind: None,
                     keys: Vec::new(),
                     alias_groups: Vec::new(),
                     variable_aliases: Vec::new(),
@@ -71,7 +70,6 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             },
             order: Some(0),
             layer: UtilityLayerName::Utilities,
-            kind: None,
             keys: Vec::new(),
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
@@ -102,10 +100,7 @@ pub(crate) fn compile_utility_variables(
         }
     }
     for reference in &utility.variable_alias_refs {
-        let namespace = reference
-            .strip_prefix('=')
-            .or_else(|| reference.strip_prefix('~'))
-            .unwrap_or(reference.as_str());
+        let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
         for variable_name in variable_order {
             let Some(variable) = variables.get(variable_name) else {
                 continue;
@@ -282,10 +277,9 @@ pub(crate) fn match_utility_filtered(
     for matcher in utility.matchers.iter().filter(|matcher| accepts(matcher)) {
         match matcher {
             UtilityMatcher::Static { name }
-                if class_name.strip_prefix(name).is_some_and(|rest| {
-                    is_match_state_boundary(rest)
-                        && (!rest.starts_with(':') || is_selector_state_start(rest))
-                }) =>
+                if class_name
+                    .strip_prefix(name)
+                    .is_some_and(is_match_state_boundary) =>
             {
                 return Some(UtilityMatch {
                     value: None,
@@ -380,34 +374,6 @@ pub(crate) fn match_utility_filtered(
                     variable_names,
                     matcher_type: UtilityMatcherType::Token,
                 });
-            }
-            UtilityMatcher::Value { keys, segments } => {
-                for key in keys {
-                    let Some(raw_value) = class_name
-                        .strip_prefix(key)
-                        .and_then(|rest| rest.strip_prefix(':'))
-                    else {
-                        continue;
-                    };
-                    let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if value.is_empty()
-                        || contains_legacy_variable_reference(&value)
-                        || (segments.as_deref() != Some("multiple")
-                            && has_top_level_value_separator(&value))
-                        || !matches_utility_kind(&value, utility.kind.as_deref())
-                    {
-                        continue;
-                    }
-                    let (value, variable_names) =
-                        resolve_value_components(&value, Some(utility), manifest);
-                    return Some(UtilityMatch {
-                        value: Some(value),
-                        value_normalized: true,
-                        state_token,
-                        variable_names,
-                        matcher_type: UtilityMatcherType::Value,
-                    });
-                }
             }
             _ => {}
         }
@@ -594,41 +560,6 @@ pub(crate) fn resolve_value_components(
     )
 }
 
-pub(crate) fn matches_utility_kind(value: &str, kind: Option<&str>) -> bool {
-    let function_name = value
-        .trim_start_matches('-')
-        .split_once('(')
-        .filter(|(_, rest)| rest.ends_with(')'))
-        .map(|(name, _)| name);
-    match kind {
-        Some("number") => {
-            value
-                .chars()
-                .next()
-                .is_some_and(|character| character.is_ascii_digit() || character == '.')
-                || matches!(function_name, Some("calc" | "clamp" | "min" | "max"))
-        }
-        Some("color") => {
-            value.starts_with('#')
-                || value.starts_with("currentColor")
-                || value.starts_with("transparent")
-                || function_name.is_some_and(|name| {
-                    !matches!(name, "calc" | "clamp" | "min" | "max" | "url" | "image")
-                        && !name.ends_with("gradient")
-                })
-        }
-        Some("image") => function_name.is_some_and(|name| {
-            name == "url"
-                || name == "element"
-                || name == "paint"
-                || name == "cross-fade"
-                || name.ends_with("gradient")
-                || name.contains("image")
-        }),
-        _ => false,
-    }
-}
-
 pub(crate) fn is_match_state_boundary(rest: &str) -> bool {
     rest.is_empty()
         || rest.chars().next().is_some_and(|character| {
@@ -637,95 +568,6 @@ pub(crate) fn is_match_state_boundary(rest: &str) -> bool {
                 '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_' | '.'
             )
         })
-}
-
-pub(crate) fn is_selector_state_start(rest: &str) -> bool {
-    if rest.starts_with("::") {
-        return true;
-    }
-    let Some(rest) = rest.strip_prefix(':') else {
-        return false;
-    };
-    let name = rest
-        .split(|character: char| !character.is_ascii_alphanumeric() && character != '-')
-        .next()
-        .unwrap_or_default();
-    matches!(
-        name,
-        "active"
-            | "any-link"
-            | "after"
-            | "autofill"
-            | "before"
-            | "blank"
-            | "checked"
-            | "current"
-            | "default"
-            | "defined"
-            | "disabled"
-            | "empty"
-            | "enabled"
-            | "first"
-            | "first-child"
-            | "first-letter"
-            | "first-line"
-            | "first-of-type"
-            | "focus"
-            | "focus-visible"
-            | "focus-within"
-            | "fullscreen"
-            | "future"
-            | "has"
-            | "host"
-            | "host-context"
-            | "hover"
-            | "in-range"
-            | "indeterminate"
-            | "invalid"
-            | "is"
-            | "lang"
-            | "last"
-            | "last-child"
-            | "last-of-type"
-            | "left"
-            | "link"
-            | "local-link"
-            | "modal"
-            | "not"
-            | "nth-child"
-            | "nth-col"
-            | "nth-last-child"
-            | "nth-last-col"
-            | "nth-last-of-type"
-            | "nth-of-type"
-            | "only"
-            | "only-child"
-            | "only-of-type"
-            | "of"
-            | "optional"
-            | "out-of-range"
-            | "past"
-            | "paused"
-            | "picture-in-picture"
-            | "placeholder-shown"
-            | "playing"
-            | "read-only"
-            | "read-write"
-            | "required"
-            | "right"
-            | "root"
-            | "scope"
-            | "seeking"
-            | "stalled"
-            | "target"
-            | "target-within"
-            | "user-invalid"
-            | "user-valid"
-            | "valid"
-            | "visited"
-            | "volume-locked"
-            | "where"
-    )
 }
 
 pub(crate) fn split_dynamic_value_state(value: &str) -> (String, String) {

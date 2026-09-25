@@ -319,13 +319,15 @@ Registers on-demand Master utilities in the `utilities` layer. The first level c
 }
 ```
 
-Static utilities accept native declarations, `@compose`, nested selectors, native conditional at-rules, and `@variant`. Enum, token and dynamic patterns accept declarations and nested rules; `@compose` inside a pattern body is unsupported and reports an error. The existing pattern grammar is unchanged.
+All four forms—static names, hyphen enums, named tokens and raw parameters—accept native declarations, nesting, conditions, `@variant` and fixed-class `@compose`. Names determine the style intent before values are parsed. CSS support data never selects an overload.
+
+Names follow CSS identifier and escape rules, preserving case and Unicode. Decoded names cannot contain HTML whitespace or Master class delimiters. These are Master definition names, not element selectors. `@utilities` and its patterns are custom at-rule grammar, as permitted by [CSS Syntax](https://www.w3.org/TR/css-syntax-3/).
 
 ### Named and enumerated classes \{#named-and-enumerated-classes\}
 
 Exact static names and enum patterns use the semantic priority tier. Named token patterns use the shorthand or longhand tier inferred from their declarations, just like colon patterns; a hyphen alone does not make a token a static utility. Within the same layer, condition, selector, and property tier, token rules precede direct-value rules.
 
-Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. Use `token=value` when the class suffix should emit a different CSS value:
+Enum patterns require exactly one `<...>` segment with at least two distinct pipe-separated keys. Duplicate keys, including keys with different mapped values, are errors. Use `token=value` when the class suffix should emit a different CSS value:
 
 <StylesheetExample
   title="Map a class suffix to a CSS value"
@@ -348,7 +350,7 @@ Unmapped entries emit the class token itself, so `text-<left|right>` behaves lik
 
 ### Named token patterns \{#named-token-patterns\}
 
-Use `prefix-<~namespace>` or `prefix-<=namespace>` for named tokens. A source list may contain ordered namespace references, but cannot mix token sources with raw kinds, enum values, or `*`.
+Use `prefix-<~namespace>` for named tokens. The former `=namespace` spelling is removed. A source list may contain ordered namespace references, but cannot mix token sources with raw kinds, enum values, or `*`.
 
 ```css
 @utilities {
@@ -375,60 +377,52 @@ Numeric tokens accept a leading negative sign only on properties supporting nega
 
 ### Dynamic values \{#dynamic-values\}
 
-Colon patterns use `key:<source-list>` and match `key:value`. They accept one raw kind (`number`, `color`, or `image`), literal enum alternatives, or `*` according to the combinations below. They never resolve theme token names. Use `var(--name)` for explicit references, including inside functions and multi-value declarations; `$name` is removed.
+Raw patterns use only `key:<*>` and accept a complete CSS value. Typed matchers and colon enums are removed; named options use a hyphen enum. Master does not redefine the CSS types [`<number>` and `<length>`](https://www.w3.org/TR/css-values-4/#value-defs).
 
 ```css
 @utilities {
-  size:<number|*> {
+  size:<*> {
     width: --value();
     height: --value();
   }
 
-  accent:<color> {
+  accent:<*> {
     accent-color: --value();
   }
 }
 ```
 
-`size:20px` emits both dimensions. `accent:#fff` accepts a raw color; `<color>` does not imply `~color`. Token patterns must be declared separately, such as `accent-<~color>`.
+`size:20px` emits `width:20px;height:20px`; `size:var(--size)` emits the same properties with `var(--size)`. `size:red` still emits both declarations and tooling reports invalid CSS values. Unknown functions and environment-dependent values are preserved and reported as unknown when they cannot be verified. Values never change the selected utility.
+
+Raw patterns do not look up tokens. Use `var(--name)` explicitly, including in functions and multi-value declarations; `$name` is removed. Named colors require a separate token pattern such as `accent-<~color>`.
 
 A native property or property alias must retain its native declaration intent. For example, `font:16px` emits a native `font` value (invalid by itself), `bg:#fff` emits `background:#fff`, and `outline:2px` emits `outline:2px`. Use `font-size`, `background-color`, or `outline-width` for partial changes. A managed native-property definition may add equal-value vendor compatibility declarations, but cannot redirect to a subproperty or add unrelated effects. The combined truncation utility is `clamp-lines:3`; `line-clamp:3` is native.
 
 Old colon namespace patterns are rejected with a migration diagnostic. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) for preserving RC declaration intent and converting length `x` using the original settings.
 
-### Literal alternatives and raw values \{#literal-and-raw-values\}
+### Fixed names and raw values \{#literal-and-raw-values\}
 
-Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
+Native properties and registered property aliases retain native intent. Registered raw keys own their values. Exact static names take priority over enum names; both take priority over token names. Overlapping enum patterns are registration errors after whole-definition replacement. A raw key and a fixed name cannot claim the same entry because `name:value` and `name:pseudo` would be ambiguous.
 
-`*` is for raw-any full-value wrappers, such as paired vendor declarations or shorthand values that should accept `var(...)`. It may be used alone or with one raw kind, as in `text-decoration:<*>`, `accent:<color|*>`, or `size:<number|*>`. It cannot be mixed with enum values or token namespaces. No raw pattern implicitly resolves tokens.
+Only an unclaimed, structurally valid `property:value` enters native fallback. Unknown native properties are preserved and diagnosed. Static names accept structurally valid pseudo-class suffixes such as `block:open`, `block:state(open)` and future pseudo-classes without a support whitelist.
 
-```css
-@utilities {
-  user-select:<auto|none|text|all> {
-    -webkit-user-select: --value();
-    user-select: --value();
-  }
-
-  appearance:<*> {
-    -webkit-appearance: --value();
-    appearance: --value();
-  }
-}
-```
+`text-stroke:` always sets the `-webkit-text-stroke` shorthand. Use `text-stroke-width:` or `text-stroke-color:` for partial changes; `text-stroke-red` remains a named color token.
 
 ### Reusing a matched value \{#reusing-a-matched-value\}
 
-`--value()` accepts no arguments and is only valid inside managed enum, named-token, or dynamic colon pattern declarations. It represents a complete CSS value placeholder, so it may be reused in value slots such as `span --value()/span --value()` or inside CSS functions such as `repeat(--value(), minmax(0, 1fr))`. It cannot be joined into identifiers or function names, so forms such as `--value()-box` or `space---value()` should use enum mapping instead.
+`--value()` accepts no arguments. In a parameterized utility's declaration value, it substitutes the complete matched value while preserving CSS token boundaries. It works inside functions such as `repeat(--value(), minmax(0, 1fr))`. Strings, comments and identifier fragments are not placeholders, and inserted arguments are not expanded again. Ordinary stylesheet calls remain native CSS.
+
+Parameters cannot be inserted into property names, selectors, queries, definition names or `@compose` targets. For example, write `width: --value()` rather than `@compose width:--value()`. Use enum mapping for named alternatives. This is compile-time substitution, not `var(--value)` or the parameter scope and evaluation model in the [CSS Functions and Mixins draft](https://drafts.csswg.org/css-mixins/).
 
 ```css
 @utilities {
-  grid-cols:<number|*> {
+  grid-cols:<*> {
     display: grid;
     grid-template-columns:
       repeat(--value(), minmax(0, 1fr));
   }
 
-  grid-col-span:<number|*> {
+  grid-col-span:<*> {
     grid-column: span --value()/span --value();
   }
 }
@@ -436,8 +430,34 @@ Literal enum values can stand alone when at least two values are provided, such 
 
 <StylesheetExample
   title="Reuse one value for both dimensions"
-  source={"@utilities {\n  square:<number|*> {\n    width: --value();\n    height: --value();\n  }\n}\n\n.avatar {\n  @compose square:1rem;\n}"}
+  source={"@utilities {\n  tile-size:<*> {\n    width: --value();\n    height: --value();\n  }\n}\n\n.avatar {\n  @compose tile-size:1rem;\n}"}
 />
+
+### Whole-definition replacement \{#whole-definition-replacement\}
+
+Within one layer, a later definition replaces the entire earlier definition with the same identity:
+
+| Form | Identity |
+| --- | --- |
+| Static | Decoded name |
+| Raw | Decoded key |
+| Token | Prefix and ordered namespace list |
+| Enum | Prefix and key set, independent of key order and mapped values |
+
+The winning definition occupies its last source position. Old nested rules, composition edges and resource references disappear. Empty definitions remain registered and match without generating rules; they can also be composed. Imports, references, preset overrides and manifest merges follow the same replacement rule.
+
+```css
+@utilities {
+  card { color: red; &:hover { color: blue; } }
+  card { padding: 1rem; }
+  disabled-card { }
+  size:<*> { @compose display:block; width: --value(); height: --value(); }
+}
+```
+
+Here `card` emits only padding. Inside one definition, declaration order, repeated declarations, vendor fallbacks and separate compose statements remain ordered. Each compose statement sorts its fixed class list using Master precedence; it does not reorder neighboring declarations. Cycles, unknown names, ambiguity and layer changes remain errors. A quoted whole list is forbidden, but CSS strings within a class value, such as `content:'hello'`, remain valid.
+
+Compiler inspection retains original definition sources and the source that replaces each overridden definition. Runtime manifests contain only effective definitions.
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
 

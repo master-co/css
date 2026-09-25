@@ -7,7 +7,7 @@ import { prepareStylesheet, transformStylesheet } from '../src/stylesheet/index-
 
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sass = createRequire(require.resolve('vite'))('sass')
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 
 async function fixture(run: (root: string) => Promise<void>) {
   const root = mkdtempSync(join(tmpdir(), 'prepared-source-context-'))

@@ -12,7 +12,7 @@ beforeAll(() => {
 
 const manifest = {
   version: 1,
-  languageVersion: 2,
+  languageVersion: 3,
   utilities: [
     {
       id: 'display-block',

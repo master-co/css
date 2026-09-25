@@ -28,7 +28,7 @@ impl Project {
     fn load(&self) -> mastercss_project::ProjectManifestIr {
         load_project_manifest(
             &self.0,
-            json!({"version":1,"languageVersion":2,"utilities":[]}),
+            json!({"version":1,"languageVersion":3,"utilities":[]}),
         )
         .unwrap()
     }
@@ -66,7 +66,7 @@ fn qualified_files_reject_global_definitions_but_keep_native_compose() {
             "@utilities{paint{color:red}}.card{@compose paint;}.ordinary{color:blue}",
         );
         if !qualifier.is_empty() {
-            let error = load_project_manifest(&project.0, json!({"version":1,"languageVersion":2}))
+            let error = load_project_manifest(&project.0, json!({"version":1,"languageVersion":3}))
                 .unwrap_err()
                 .to_string();
             assert!(error.contains("Qualified import"), "{error}");
@@ -156,7 +156,7 @@ fn filesystem_import_and_reference_cycles_remain_errors() {
         project.file("child.css", &format!("@{kind} './entry.css';"));
         let error = load_project_manifest(
             &project.0,
-            json!({"version":1,"languageVersion":2,"utilities":[]}),
+            json!({"version":1,"languageVersion":3,"utilities":[]}),
         )
         .unwrap_err();
         assert!(

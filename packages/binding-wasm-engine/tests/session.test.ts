@@ -41,7 +41,7 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -59,7 +59,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   session.dispose()
 
   const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     variables: {
       '': [{
         name: 'stripe',
@@ -85,7 +85,7 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     import.meta.url
   )))
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     variables: {
       color: [{ key: 'red-60', value: '#d00' }]
     },
@@ -108,7 +108,7 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     import.meta.url
   )))
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     variables: {
       color: [{ key: 'red-60', value: '#d00' }]
     },
@@ -135,7 +135,7 @@ it('preserves native declarations independently of browser CSS.supports', async 
     import.meta.url
   )))
   const session = await createWasmEngineSession(
-    JSON.stringify({ version: 1, languageVersion: 2, utilities: [] }),
+    JSON.stringify({ version: 1, languageVersion: 3, utilities: [] }),
     {},
     { input }
   )
@@ -148,7 +148,7 @@ it('preserves native declarations independently of browser CSS.supports', async 
   session.dispose()
 
   const renderSession = await createWasmRenderSession(
-    JSON.stringify({ version: 1, languageVersion: 2, utilities: [] }),
+    JSON.stringify({ version: 1, languageVersion: 3, utilities: [] }),
     {},
     { input }
   )

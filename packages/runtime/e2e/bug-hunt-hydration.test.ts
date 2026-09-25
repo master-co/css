@@ -7,7 +7,7 @@ test('BH-0008: external hydration works with modules and Wasm allowed but unsafe
   await page.route(manifestURL, (route) => route.fulfill({
     contentType: 'application/json',
     headers: { 'Access-Control-Allow-Origin': '*' },
-    body: JSON.stringify({ version: 1, languageVersion: 2, rules: [], resourceOrder: [] })
+    body: JSON.stringify({ version: 1, languageVersion: 3, rules: [], resourceOrder: [] })
   }))
   await page.setContent(`<html><head>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' http://127.0.0.1:*">

@@ -10,7 +10,7 @@ use mastercss_schema::{
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 
-use crate::{CompileManifestOptions, CompilerError, compile_manifest_input};
+use crate::{CompileManifestOptions, CompilerError};
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +39,7 @@ pub struct LowerCssDirectivesRequest {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesResult {
+    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,
     pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
@@ -71,6 +72,7 @@ struct MergedStyleDefinition {
 }
 
 mod api;
+mod definitions;
 pub(crate) mod inspection;
 mod merge;
 mod output;

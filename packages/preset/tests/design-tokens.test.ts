@@ -396,7 +396,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('fg-red')?.text).toBe('.fg-red{color:var(--color-red)}')
     expect(css.createRule('text-blue')?.text).toBe('.text-blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
-    expect(declarationsCSS.createRule('text:blue-60')?.text).toContain('text:blue-60')
+    expect(declarationsCSS.createRule('text:blue-60')?.text).toContain('font-size:blue-60')
     expect(css.createRule('text-fill-color-text-pink')?.text).toBe('.text-fill-color-text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
     expect(css.createRule('animate-fade')?.text).toContain('animation:var(--animate-fade)')
     expect(declarationsCSS.createRule('bg:accent')?.text).toContain('background:accent')

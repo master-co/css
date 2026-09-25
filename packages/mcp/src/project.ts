@@ -34,7 +34,7 @@ export async function loadWorkspaceManifest(context: MasterCSSMCPContext, reques
     }
     const result = requested === 'preset'
       ? { manifest: defaultManifest, entries: [], dependencies: [], diagnostics: [] }
-      : await loadProjectManifest({ root: context.root, entries, baseManifest: { version: 1, languageVersion: 2 } })
+      : await loadProjectManifest({ root: context.root, entries, baseManifest: { version: 1, languageVersion: 3 } })
     return {
       status: 'loaded' as const,
       context: requested, versions,

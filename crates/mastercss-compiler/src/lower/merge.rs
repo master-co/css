@@ -95,7 +95,12 @@ pub(super) fn create_merged_style_definitions(
                         break;
                     }
                     let rules = composition_rules(engine, class_name)?;
-                    if rules.is_empty() {
+                    if rules.is_empty()
+                        && engine
+                            .matched_utility_names(class_name)
+                            .map_err(|error| super::resolution::directive_error(error.to_string()))?
+                            .is_empty()
+                    {
                         return Err(directive_diagnostic(
                             ErrorCode::InvalidComposeClass,
                             format!(

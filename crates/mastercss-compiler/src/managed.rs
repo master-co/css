@@ -3,9 +3,9 @@ use super::{
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap,
     ParsedManagedPattern, StyleRule, UnknownAtRule, UtilityLayerName, Value,
     collect_class_list_token_ranges, collect_ordered_declarations, combine_managed_selectors,
-    condition_properties, css_statement_delimiter, directive_error, lower_managed_pattern_style,
-    managed_selector_definition, minified_css, next_char_end, preserve_ordered_literal_spelling,
-    printed_selectors, trim_byte_range, utf16_to_byte_offset,
+    condition_properties, css_statement_delimiter, directive_error, managed_selector_definition,
+    minified_css, next_char_end, preserve_ordered_literal_spelling, printed_selectors,
+    trim_byte_range, utf16_to_byte_offset,
 };
 use crate::source_index::SourceIndex;
 
@@ -91,7 +91,7 @@ pub(crate) fn lower_compose_rule(
     }
     let (_, content_end) = trim_byte_range(body, content_start, semicolon);
     let class_list = &body[content_start..content_end];
-    if class_list.contains(['\'', '"']) {
+    if class_list.starts_with(['\'', '"']) {
         return Err(CompilerError::DirectiveDiagnostic {
             code: ErrorCode::ComposeQuotedSyntax,
             message: "@compose only accepts unquoted class lists".into(),
@@ -219,21 +219,72 @@ pub(crate) fn lower_managed_rule_list(
         match child {
             CssRule::Style(child) => {
                 let local_offset = body.byte_offset_for_location(child.loc.line, child.loc.column);
-                if context.is_none()
-                    && let Some(pattern) =
-                        local_offset.and_then(|offset| pattern_rule_offsets.get(&offset))
-                {
-                    let mut definition = pattern.definition(layer);
-                    lower_managed_pattern_style(
+                if context.is_none() {
+                    let pattern = local_offset.and_then(|offset| pattern_rule_offsets.get(&offset));
+                    let mut definition = if let Some(pattern) = pattern {
+                        pattern.definition(layer)
+                    } else {
+                        let (name, _) = managed_selector_definition(&child.selectors.0, filename)?;
+                        if !mastercss_lexer::valid_utility_name(&name) {
+                            return Err(directive_error(
+                                source.text(),
+                                filename,
+                                body_start_byte + local_offset.unwrap_or(0),
+                                format!(
+                                    "Invalid utility identifier {name}; decoded names cannot contain Master class delimiters"
+                                ),
+                            ));
+                        }
+                        if !class_names.contains(&name) {
+                            class_names.push(name.clone());
+                        }
+                        serde_json::from_value(
+                            serde_json::json!({ "name": name, "type": "static", "layer": layer }),
+                        )
+                        .expect("definition object")
+                    };
+                    let selector_source = source.selector_reference(
+                        filename,
+                        body,
+                        body_start_byte,
+                        child.loc.line,
+                        child.loc.column,
+                    );
+                    let name = definition["name"]
+                        .as_str()
+                        .expect("definition name")
+                        .to_owned();
+                    let mut fragments = Vec::new();
+                    lower_managed_style(
                         source,
                         filename,
                         body,
+                        body_start_byte,
                         child,
-                        &["&".into()],
+                        ManagedStyleContext {
+                            name,
+                            selectors: vec!["&".into()],
+                            selector_source: selector_source.clone(),
+                        },
                         condition_path,
                         variant_rule_offsets,
-                        &mut definition,
+                        pattern_rule_offsets,
+                        layer,
+                        class_names,
+                        manifest_input,
+                        &mut fragments,
+                        style_order,
                     )?;
+                    definition.insert(
+                        "body".into(),
+                        serde_json::to_value(fragments).expect("definition body"),
+                    );
+                    if let Some(source) = selector_source {
+                        definition.insert(
+                            "source".into(),
+                            serde_json::to_value(source).expect("definition source"),
+                        );
+                    }
                     manifest_input
                         .utilities
                         .get_or_insert_default()
@@ -297,7 +348,15 @@ pub(crate) fn lower_managed_rule_list(
                         "Managed definition directives only accept bare managed names and nested at-rules",
                     ));
                 };
-                let declarations = collect_ordered_declarations(&child.declarations, filename)?;
+                let mut declarations = collect_ordered_declarations(&child.declarations, filename)?;
+                if let Some(start) = body.byte_offset_for_location(child.loc.line, child.loc.column)
+                {
+                    crate::declarations::preserve_ordered_declaration_sequence(
+                        body.text(),
+                        start,
+                        &mut declarations,
+                    );
+                }
                 push_managed_declarations(
                     declarations,
                     context,

@@ -10,7 +10,7 @@ fn relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_owne
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"./main.css","child":"./child.css"},
         "resourceURLs":{"child":{"image.svg":"./asset.svg?q=1#part"}},
-        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
     });
     let error =
         compile_css_stylesheet_graph(&serde_json::from_value(base.clone()).unwrap()).unwrap_err();

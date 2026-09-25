@@ -4,9 +4,6 @@ import type { UtilityType } from './utility-type.js'
 export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
 export type MasterCSSManifestVariantToken = `:${string}` | `::${string}` | `@${string}`
-export type MasterCSSManifestUtilityKind = 'number' | 'color' | 'image'
-/** Defaults to single for raw value matchers; multiple is an explicit opt-in. */
-export type MasterCSSManifestUtilityMatcherValueSegments = 'single' | 'multiple'
 
 export type MasterCSSManifestCSSDeclarationPrimitive = string | number | null
 export type MasterCSSManifestCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSManifestCSSDeclarationPrimitive | MasterCSSManifestCSSDeclarationPrimitive[]>
@@ -115,7 +112,6 @@ export type MasterCSSManifestUtilityMatcher =
   | { type: 'pattern'; prefix: string; values: string[]; valueMap?: Record<string, string> }
   | { type: 'key'; keys: string[] }
   | { type: 'token'; prefix: string }
-  | { type: 'value'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
 
 export type MasterCSSManifestVariableAlias = [key: string, name: string]
 export type MasterCSSManifestVariableAliasSet = MasterCSSManifestVariableAlias[]
@@ -142,7 +138,6 @@ export interface MasterCSSManifestUtility {
   subkey?: string
   keys?: string[]
   aliasGroups?: string[]
-  kind?: MasterCSSManifestUtilityKind
   namespaces?: string[]
   implicitNamespace?: boolean
   separators?: string[]
@@ -168,7 +163,7 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 1
-  languageVersion: 2
+  languageVersion: 3
   modes?: MasterCSSManifestMode[]
   settings?: MasterCSSManifestSettings
   variables?: MasterCSSManifestVariables

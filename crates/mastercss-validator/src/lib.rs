@@ -77,7 +77,7 @@ mod tests {
     use super::*;
 
     const MANIFEST: &str = r#"{
-      "version":1,"languageVersion":2,
+      "version":1,"languageVersion":3,
       "utilities":[{
         "id":"display-block",
         "name":"block",
@@ -105,7 +105,7 @@ mod tests {
     #[test]
     fn preserves_native_declarations_regardless_of_host_support() {
         let mut session =
-            ValidatorSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#)
+            ValidatorSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#)
                 .unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block", "display:banana"])

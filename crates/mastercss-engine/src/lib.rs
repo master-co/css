@@ -86,7 +86,11 @@ struct ManifestProjection {
     #[serde(skip)]
     token_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
-    reserved_utilities: Vec<usize>,
+    static_utilities: HashMap<String, Vec<usize>>,
+    #[serde(skip)]
+    enum_utilities: HashMap<String, Vec<usize>>,
+    #[serde(skip)]
+    raw_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
     declaration_keys: HashSet<String>,
 }
@@ -159,8 +163,6 @@ struct UtilityDefinition {
     #[serde(default)]
     layer: UtilityLayerName,
     #[serde(default)]
-    kind: Option<String>,
-    #[serde(default)]
     keys: Vec<String>,
     #[serde(default, rename = "aliasGroups")]
     alias_groups: Vec<String>,
@@ -198,11 +200,6 @@ enum UtilityMatcher {
     },
     Token {
         prefix: String,
-    },
-    Value {
-        keys: Vec<String>,
-        #[serde(default)]
-        segments: Option<String>,
     },
 }
 
@@ -252,7 +249,6 @@ pub enum UtilityMatcherType {
     Pattern,
     Key,
     Token,
-    Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -436,6 +432,8 @@ mod state;
 mod stylesheet_resources;
 mod theme_batch;
 mod utility;
+mod utility_identity;
+pub use utility_identity::{effective_utilities, utility_identity};
 mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};

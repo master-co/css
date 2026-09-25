@@ -10,19 +10,12 @@ pub(crate) fn utility_completion_metadata(
     utility: &UtilityDefinition,
 ) -> (Vec<String>, Vec<String>) {
     let mut keys = utility.keys.clone();
-    let mut alias_groups = utility.alias_groups.clone();
+    let alias_groups = utility.alias_groups.clone();
     for matcher in &utility.matchers {
         match matcher {
             UtilityMatcher::Key { keys: matcher_keys } => {
                 for key in matcher_keys {
                     add_unique_string(&mut keys, key);
-                }
-            }
-            UtilityMatcher::Value {
-                keys: matcher_keys, ..
-            } => {
-                for key in matcher_keys {
-                    add_unique_string(&mut alias_groups, key);
                 }
             }
             UtilityMatcher::Static { .. }
@@ -267,9 +260,7 @@ pub(crate) fn collect_class_completion_candidates(
                             );
                         }
                     }
-                    UtilityMatcher::Key { .. }
-                    | UtilityMatcher::Token { .. }
-                    | UtilityMatcher::Value { .. } => {}
+                    UtilityMatcher::Key { .. } | UtilityMatcher::Token { .. } => {}
                 }
             }
             continue;

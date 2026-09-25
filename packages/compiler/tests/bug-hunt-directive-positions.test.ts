@@ -18,7 +18,7 @@ for (const binding of ['native', 'wasm'] as const) {
         try {
           compiler.compileStylesheets({
             graph: { entry: 'entry.css', files: { 'entry.css': source }, edges: [] }, urls: { 'entry.css': '/entry.css' },
-            baseManifest: { version: 1, languageVersion: 2, utilities: [] }, resolutionManifest: { version: 1, languageVersion: 2, utilities: [] }
+            baseManifest: { version: 1, languageVersion: 3, utilities: [] }, resolutionManifest: { version: 1, languageVersion: 3, utilities: [] }
           })
         } catch (error) { caught = error }
         expect(caught).toBeInstanceOf(MasterCSSError)
@@ -30,7 +30,7 @@ for (const binding of ['native', 'wasm'] as const) {
 
 test('BH-0004 local stylesheet lowering retains source text for diagnostics', async () => {
   const source = '/*😀*/\n.example {\n  @compose unknown-utility;\n}'
-  await expect(transformStylesheet('local.css', source, { baseManifest: { version: 1, languageVersion: 2, utilities: [] } })).rejects.toMatchObject({
+  await expect(transformStylesheet('local.css', source, { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).rejects.toMatchObject({
     diagnostics: [{ code: 'invalid-compose-class', source: 'local.css', range: { start: { line: 2, character: 11 }, end: { line: 2, character: 26 } } }]
   })
 })

@@ -109,7 +109,7 @@ fn nested_rules_are_not_moved_across_source_boundaries() {
 fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
     let source = "@utilities{fallback{display:-webkit-box;display:flex!important;display:grid}}.a{@compose fallback;display:block}";
     let parsed = compile_css_directives(source, &Default::default()).unwrap();
-    let value = serde_json::to_value(parsed.style_definitions).unwrap();
+    let value = &parsed.manifest_input.utilities.as_ref().unwrap()[0]["body"];
     let declarations = value[0]["declarations"].as_array().unwrap();
     assert_eq!(
         declarations
@@ -155,13 +155,9 @@ fn unknown_native_class_and_cycles_fail_without_partial_output() {
 }
 
 #[test]
-fn pattern_compose_remains_unsupported_with_an_explicit_diagnostic() {
-    let error = compile_css_directives(
-        "@utilities{size-<sm|lg>{@compose display:block;}}",
-        &Default::default(),
-    )
-    .unwrap_err();
-    assert!(error.to_string().contains("@compose"), "{error}");
+fn pattern_compose_accepts_fixed_classes() {
+    let result = compile("@utilities{size-<sm|lg>{@compose display:block;}}.x{@compose size-sm;}");
+    assert!(result.css.unwrap().contains("display:block"));
 }
 
 #[test]

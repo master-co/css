@@ -38,7 +38,7 @@ pub enum SchemaError {
     #[error("Unsupported MasterCSSManifest version. Expected version 1.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 2; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 3; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("settings.{0} was removed; migrate to explicit native queries and @mode definitions.")]
@@ -63,6 +63,10 @@ pub enum SchemaError {
         "The variable matcher was removed; migrate colon token patterns to a token matcher with a hyphen prefix."
     )]
     RemovedVariableMatcher,
+    #[error(
+        "Typed raw utility matchers, kinds, segments and =namespace were removed; recompile using key:<*> and prefix-<~namespace>."
+    )]
+    RemovedUtilityMatcher,
 }
 
 impl SchemaError {
@@ -77,7 +81,8 @@ impl SchemaError {
             | Self::InvalidManifest
             | Self::RemovedSetting(_)
             | Self::RemovedBaseUnit
-            | Self::RemovedVariableMatcher => ErrorCode::InvalidManifest,
+            | Self::RemovedVariableMatcher
+            | Self::RemovedUtilityMatcher => ErrorCode::InvalidManifest,
         }
     }
 }
@@ -139,6 +144,42 @@ impl MasterCssManifest {
             .any(|matcher| matcher.get("type").and_then(Value::as_str) == Some("variable"))
         {
             return Err(SchemaError::RemovedVariableMatcher);
+        }
+        for utility in object
+            .get("utilities")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+        {
+            if utility.get("kind").is_some()
+                || utility.get("segments").is_some()
+                || utility
+                    .get("variableAliasRefs")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .any(|reference| {
+                        reference
+                            .as_str()
+                            .is_some_and(|reference| reference.starts_with('='))
+                    })
+                || utility
+                    .get("matchers")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .any(|matcher| {
+                        matcher.get("type").and_then(Value::as_str) == Some("value")
+                            || matcher.get("segments").is_some()
+                            || (matcher.get("type").and_then(Value::as_str) == Some("pattern")
+                                && matcher
+                                    .get("prefix")
+                                    .and_then(Value::as_str)
+                                    .is_some_and(|prefix| prefix.ends_with(':')))
+                    })
+            {
+                return Err(SchemaError::RemovedUtilityMatcher);
+            }
         }
         Ok(Self(value))
     }

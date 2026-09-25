@@ -31,7 +31,7 @@ Risks:
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
 The envelope stays Manifest v1; executable manifests and hydration must carry
-`languageVersion: 2`. Reject missing or unsupported language versions before
+`languageVersion: 3`. Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.

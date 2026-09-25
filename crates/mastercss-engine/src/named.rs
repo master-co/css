@@ -11,27 +11,38 @@ pub(crate) fn matching_utilities(
     manifest: &ManifestProjection,
 ) -> Vec<(usize, UtilityMatch)> {
     let native = is_native_declaration(source, manifest);
-    let reserved = manifest
-        .reserved_utilities
-        .iter()
-        .copied()
-        .filter_map(|index| {
-            let utility = &manifest.utilities[index];
-            (!native)
-                .then(|| {
-                    match_utility_filtered(source, utility, manifest, |matcher| {
-                        matches!(
-                            matcher,
-                            UtilityMatcher::Static { .. } | UtilityMatcher::Pattern { .. }
-                        )
-                    })
-                })
-                .flatten()
-                .map(|matched| (index, matched))
-        })
-        .collect::<Vec<_>>();
-    if !reserved.is_empty() {
-        return reserved;
+    if !native {
+        for entries in [&manifest.static_utilities, &manifest.enum_utilities] {
+            for end in std::iter::once(source.len())
+                .chain(source.char_indices().map(|(index, _)| index).rev())
+            {
+                if super::utility::is_match_state_boundary(&source[end..])
+                    && let Some(indexes) = entries.get(&source[..end])
+                {
+                    let matches = indexes
+                        .iter()
+                        .filter_map(|index| {
+                            match_utility_filtered(
+                                source,
+                                &manifest.utilities[*index],
+                                manifest,
+                                |matcher| {
+                                    matches!(
+                                        matcher,
+                                        UtilityMatcher::Static { .. }
+                                            | UtilityMatcher::Pattern { .. }
+                                    )
+                                },
+                            )
+                            .map(|matched| (*index, matched))
+                        })
+                        .collect::<Vec<_>>();
+                    if !matches.is_empty() {
+                        return matches;
+                    }
+                }
+            }
+        }
     }
 
     if let Some(prefix) = token_prefix(source, manifest) {
@@ -47,17 +58,25 @@ pub(crate) fn matching_utilities(
         }
         return matches;
     }
-    manifest
-        .utilities
+    let Some((key, _)) = source.split_once(':') else {
+        return Vec::new();
+    };
+    let indexes = manifest
+        .raw_utilities
+        .get(key)
+        .map(Vec::as_slice)
+        .unwrap_or_default();
+    let has_explicit = indexes
         .iter()
-        .enumerate()
-        .filter_map(|(index, utility)| {
-            if native && utility.utility_type == -2 && !utility.native_fallback
-                && !utility.matchers.iter().any(|matcher| matches!(matcher, UtilityMatcher::Pattern { prefix, .. } if prefix.ends_with(':')))
-            {
-                return None;
-            }
-            match_utility_filtered(source, utility, manifest, |matcher| !matches!(matcher, UtilityMatcher::Token { .. })).map(|matched| (index, matched))
+        .any(|index| !manifest.utilities[*index].native_fallback);
+    indexes
+        .iter()
+        .filter(|index| !has_explicit || !manifest.utilities[**index].native_fallback)
+        .filter_map(|index| {
+            match_utility_filtered(source, &manifest.utilities[*index], manifest, |matcher| {
+                matches!(matcher, UtilityMatcher::Key { .. })
+            })
+            .map(|matched| (*index, matched))
         })
         .collect()
 }

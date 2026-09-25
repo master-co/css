@@ -85,11 +85,8 @@ pub(crate) fn attach_definition_sources(
             continue;
         }
         let names = engine
-            .composition_rules(&class)
-            .map_err(|error| super::resolution::directive_error(error.to_string()))?
-            .into_iter()
-            .filter_map(|rule| rule.utility_name)
-            .collect::<Vec<_>>();
+            .matched_utility_names(&class)
+            .map_err(|error| super::resolution::directive_error(error.to_string()))?;
         for name in &names {
             if !trace.resolved_utilities.contains(name) {
                 trace.resolved_utilities.push(name.clone());

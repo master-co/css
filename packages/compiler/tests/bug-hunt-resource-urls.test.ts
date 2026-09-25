@@ -9,7 +9,7 @@ const request: MasterCSSCompileStylesheetsRequest = {
   }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
   urls: { entry: '/output/main.css', child: '/output/child.css' },
   resourceURLs: { child: { 'hero.svg?q=1#part': '/source/child/hero.svg?q=1#part', 'small.png': '/source/child/small.png', 'big.png': '/source/child/big.png' } },
-  baseManifest: { version: 1, languageVersion: 2, utilities: [] }
+  baseManifest: { version: 1, languageVersion: 3, utilities: [] }
 }
 
 for (const binding of ['native', 'wasm'] as const) {

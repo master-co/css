@@ -24,7 +24,11 @@ function loadRustRefactorContractEvidence() {
   assert.ok(Array.isArray(evidence.surfaces), 'Rust refactor contract surface evidence must be an array.')
   for (const record of evidence.records) {
     const label = `Rust contract evidence ${record.sourceId ?? '<unknown>'}`
-    assertObjectKeys(record, ['sourceId', 'sourceDigest', 'targetDigest', 'proof', 'reason', 'approval'], label)
+    assertObjectKeys(record, ['sourceId', 'sourceDigest', 'targetId', 'targetDigest', 'proof', 'reason', 'approval'], label)
+    if (record.targetId !== undefined) {
+      assert.equal(record.proof, 'approved-contract-change', `${label} renamed targets require approved contract evidence.`)
+      assert.match(record.targetId, /^rc87-[a-f0-9]{16}$/u, `${label} targetId is invalid.`)
+    }
     if (record.proof === 'approved-contract-change') {
       assertObjectKeys(record.approval, ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest'], `${label} approval`)
       validateApprovalMetadata(record.approval, `${label} approval`)
@@ -135,7 +139,7 @@ function nativeTargetPackageContract(commit) {
   }
 }
 
-function contractSurfaceSources(commit) {
+export function contractSurfaceSources(commit) {
   // Two colour blocks postdate the baseline, so requiring them there makes the
   // surface impossible to extract at all. Contribute nothing for a block the
   // baseline never had, and keep it required in the target so a later removal
@@ -275,6 +279,18 @@ function contractRelocationKey(testCase) {
   ])
 }
 
+// Renames are explicit, digest-bound contract decisions, never title similarity guesses.
+export function resolveReviewedRename(record, targetById, matchedTargetIds) {
+  assert.equal(record.proof, 'approved-contract-change', 'Renamed targets require approved contract evidence.')
+  assert.ok(record.approval, 'Renamed targets require approval metadata.')
+  assert.equal(record.approval.scopeDigest, rustContractRecordScopeDigest(record), 'Renamed target approval is stale.')
+  const targets = targetById.get(record.targetId) ?? []
+  assert.equal(targets.length, 1, `Missing or ambiguous renamed target ${record.targetId}.`)
+  assert.ok(!matchedTargetIds.has(record.targetId), `Renamed target ${record.targetId} is already used.`)
+  assert.equal(targets[0].sourceDigest, record.targetDigest, `Stale renamed target digest for ${record.sourceId}.`)
+  return targets
+}
+
 export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
   const baselineInventory = collectCasesFromRef(
     'rust-refactor-contract',
@@ -311,6 +327,11 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
         .filter((target) => !matchedTargetIds.has(target.id))
       relocated = targets.length > 0
     }
+    const record = evidenceBySourceId.get(source.id)
+    if (record?.targetId) {
+      assert.equal(targets.length, 0, `Renamed target evidence for ${source.id} must not override an existing match.`)
+      targets = resolveReviewedRename(record, targetById, matchedTargetIds)
+    }
     if (!targets.length) {
       return { source, status: 'removed-unapproved', target: null, proof: null }
     }
@@ -324,6 +345,7 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
       }
     }
     const target = targets[0]
+    assert.ok(!matchedTargetIds.has(target.id), `Rust contract target ${target.id} is already assigned to another baseline case.`)
     matchedTargetIds.add(target.id)
     if (target.contractDigest === source.contractDigest) {
       const exactSource = target.sourceDigest === source.sourceDigest
@@ -337,7 +359,6 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
         ...(relocated ? { relocatedFrom: source.file } : {})
       }
     }
-    const record = evidenceBySourceId.get(source.id)
     if (!record) {
       return { source, status: 'regressed', target: targetReference(target), proof: null }
     }

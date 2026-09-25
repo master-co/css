@@ -1,7 +1,7 @@
 use super::{
     CompileManifestOptions, CompilerError, CssDirectiveConditionPathEntry,
     CssDirectiveManifestInput, CssDirectiveSourceReference, EngineCompositionRuleIr, EngineSession,
-    ErrorCode, Map, ResolvedStyleBranch, UtilityLayerName, Value, compile_manifest_input, json,
+    ErrorCode, Map, ResolvedStyleBranch, UtilityLayerName, Value, json,
 };
 
 pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
@@ -37,7 +37,7 @@ pub(super) fn compile_with_base(
     input: &CssDirectiveManifestInput,
     base_manifest: Option<Value>,
 ) -> Result<Value, CompilerError> {
-    compile_manifest_input(input, &CompileManifestOptions { base_manifest })
+    crate::manifest::compile_manifest_fragment(input, &CompileManifestOptions { base_manifest })
         .map(|result| result.manifest)
 }
 

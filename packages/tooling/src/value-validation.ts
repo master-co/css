@@ -1,3 +1,4 @@
+import { mathFunctionStatus } from './math-validation'
 import { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'
 import { definitionSyntax, generate, lexer, parse, property as propertyName, walk, version as cssTreeVersion } from 'css-tree'
 import type { MasterCSSDiagnostic, MasterCSSValueStatus } from '@master/css-binding/tooling'
@@ -10,7 +11,7 @@ export interface DeclarationValidation {
   readonly range?: { readonly start: number, readonly end: number }
 }
 
-export const CSS_VALUE_CHECK = Object.freeze({ name: 'css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations' as const })
+export const CSS_VALUE_CHECK = Object.freeze({ name: 'css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations-and-known-math-grammar' as const })
 
 const units = new Set(Object.values((lexer as typeof lexer & { units: Record<string, string[]> }).units).flat().map((unit) => unit.toLowerCase()))
 const cache = new Map<string, MasterCSSValueStatus>()
@@ -48,10 +49,16 @@ function validateValue(property: string, value: string, atRule?: string): Master
     const pageContext = atRule === 'page' || /^(?:top|bottom)-(?:left|center|right)(?:-corner)?$|^(?:left|right)-(?:top|middle|bottom)$/.test(atRule ?? '')
     const useDescriptor = Boolean(atRule && (descriptor || !pageContext))
     let unresolved = dependent || (useDescriptor ? !descriptor : !lexer.getProperty(property))
+    let unknownCapability = false
     let invalidRepeat = false
+    let invalidMath = false
+    let unknownMath = false
     walk(ast, (node) => {
       if (node.type === 'Function') {
         const name = node.name.toLowerCase()
+        const math = mathFunctionStatus(node)
+        invalidMath ||= math === 'invalid'
+        unknownMath ||= math === 'unknown'
         if (['var', 'env', 'attr'].includes(name)) dependent = true
         if (dependent || !lexer.getType(`${name}()`)) unresolved = true
         if (name === 'repeat' && /^grid-template-(?:columns|rows)$/.test(property)) {
@@ -66,12 +73,13 @@ function validateValue(property: string, value: string, atRule?: string): Master
         unresolved = true
       } else if (node.type === 'Dimension' && !units.has(node.unit.toLowerCase())) {
         unresolved = true
+        unknownCapability = true
       }
     })
     const knownMatch = !(useDescriptor
       ? lexer.matchAtruleDescriptor(atRule!, property, ast)
       : lexer.matchProperty(property, ast)).error
-    status = invalidRepeat ? 'invalid' : dependent ? 'unknown' : knownMatch ? 'valid' : unresolved ? 'unknown' : 'invalid'
+    status = invalidRepeat || invalidMath ? 'invalid' : dependent || unknownMath || unknownCapability ? 'unknown' : knownMatch ? 'valid' : unresolved ? 'unknown' : 'invalid'
   } catch {
     status = 'invalid'
   }

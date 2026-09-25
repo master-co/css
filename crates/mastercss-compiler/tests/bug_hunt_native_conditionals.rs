@@ -26,7 +26,7 @@ fn graph(source: &str) -> String {
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
         "urls":{"entry.css":"/entry.css"},
-        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
     }))
     .unwrap();
     compile_css_stylesheet_graph(&request).unwrap().stylesheets[0]

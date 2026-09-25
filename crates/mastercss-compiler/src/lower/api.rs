@@ -25,6 +25,7 @@ pub fn lower_css_directives(
         let manifest = compile_with_base(&input, options.base_manifest.clone())?;
         let warnings = initial_warnings.to_vec();
         return Ok(LowerCssDirectivesResult {
+            utility_sources: Vec::new(),
             css: None,
             compositions: Vec::new(),
             output_mappings: Vec::new(),
@@ -37,12 +38,12 @@ pub fn lower_css_directives(
             diagnostic_counts: HashMap::from([("lower-managed-style-refresh-count".into(), 0)]),
         });
     }
-    let initial_manifest = compile_with_base(&input, resolution_base.clone())?;
-    let mut engine = engine_for_manifest(&initial_manifest)?;
+    let (body_definitions, mut engine, mut resolution_manifest, body_refresh_count) =
+        super::definitions::resolve_bodies(&mut input, resolution_base.clone())?;
     let unfinalized_input = input.clone();
     finalize_utility_definitions(&mut input, &mut engine)?;
-    let resolution_manifest = compile_with_base(&input, resolution_base)?;
     if input != unfinalized_input {
+        resolution_manifest = compile_with_base(&input, resolution_base.clone())?;
         engine = engine_for_manifest(&resolution_manifest)?;
     }
 
@@ -99,17 +100,29 @@ pub fn lower_css_directives(
             None,
         )?)
     };
-    let manifest = compile_with_base(&input, options.base_manifest.clone())?;
+    // Body lowering already compiled this exact effective definition set. Reuse
+    // it when legacy fragments and a distinct reference context cannot change it.
+    let manifest = if groups.is_empty() && resolution_base == options.base_manifest {
+        resolution_manifest.clone()
+    } else {
+        compile_with_base(&input, options.base_manifest.clone())?
+    };
     let warnings = initial_warnings.to_vec();
     let diagnostic_counts = HashMap::from([(
         "lower-managed-style-refresh-count".into(),
-        managed_refresh_count(
-            &managed_order,
-            &dependencies,
-            !native_definitions.is_empty(),
-        ),
+        body_refresh_count
+            + managed_refresh_count(
+                &managed_order,
+                &dependencies,
+                !native_definitions.is_empty(),
+            ),
     )]);
-    let compositions = if style_definitions
+    let inspection_definitions = body_definitions
+        .iter()
+        .chain(style_definitions.iter())
+        .cloned()
+        .collect::<Vec<_>>();
+    let compositions = if inspection_definitions
         .iter()
         .any(|definition| matches!(definition, CssDirectiveStyleDefinition::Compose { .. }))
     {
@@ -121,13 +134,14 @@ pub fn lower_css_directives(
                 .or_else(|| options.base_manifest.clone()),
         )?;
         super::inspection::inspect_compositions(
-            style_definitions,
+            &inspection_definitions,
             &mut engine_for_manifest(&final_manifest)?,
         )?
     } else {
         Vec::new()
     };
     Ok(LowerCssDirectivesResult {
+        utility_sources: Vec::new(),
         css: None,
         compositions,
         output_mappings: Vec::new(),
@@ -151,8 +165,10 @@ pub fn lower_css_directives_request(
         &request.warnings,
         options,
     )?;
+    result.utility_sources = request.utility_sources.clone();
+    crate::utility_sources::resolve(&mut result.utility_sources);
     for trace in &mut result.compositions {
-        crate::utility_sources::attach(trace, &request.utility_sources);
+        crate::utility_sources::attach(trace, &result.utility_sources);
     }
     if let Some(output) = &request.native_output {
         super::output::assemble_native_output(output, options, &mut result)?;

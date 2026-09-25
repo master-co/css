@@ -481,7 +481,7 @@
     height: --value();
   }
 
-  size:<number|*> {
+  size:<*> {
     width: --value();
     height: --value();
   }
@@ -491,7 +491,7 @@
     min-height: --value();
   }
 
-  min-size:<number|*> {
+  min-size:<*> {
     min-width: --value();
     min-height: --value();
   }
@@ -501,7 +501,7 @@
     max-height: --value();
   }
 
-  max-size:<number|*> {
+  max-size:<*> {
     max-width: --value();
     max-height: --value();
   }
@@ -553,26 +553,26 @@
 
 /* Grid, stroke, and text shorthands. */
 @utilities {
-  grid-cols:<number|*> {
+  grid-cols:<*> {
     display: grid;
     grid-template-columns: repeat(--value(), minmax(0, 1fr));
   }
 
-  grid-rows:<number|*> {
+  grid-rows:<*> {
     display: grid;
     grid-auto-flow: column;
     grid-template-rows: repeat(--value(), minmax(0, 1fr));
   }
 
-  grid-col-span:<number|*> {
+  grid-col-span:<*> {
     grid-column: span --value()/span --value();
   }
 
-  grid-row-span:<number|*> {
+  grid-row-span:<*> {
     grid-row: span --value()/span --value();
   }
 
-  clamp-lines:<number> {
+  clamp-lines:<*> {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: --value();
@@ -587,7 +587,7 @@
     letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
   }
 
-  text:<number> {
+  text:<*> {
     font-size: --value();
     line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
     letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
@@ -606,7 +606,7 @@
     text-decoration: --value();
   }
 
-  text-decoration-thickness:<number|*> {
+  text-decoration-thickness:<*> {
     text-decoration-thickness: --value();
   }
 
@@ -614,15 +614,7 @@
     text-underline-offset: --value();
   }
 
-  text-stroke:<number> {
-    -webkit-text-stroke-width: --value();
-  }
-
   text-stroke-<~color> {
-    -webkit-text-stroke-color: --value();
-  }
-
-  text-stroke:<color> {
     -webkit-text-stroke-color: --value();
   }
 
@@ -643,7 +635,7 @@
     backdrop-filter: --value();
   }
 
-  box-decoration-break:<clone|slice> {
+  box-decoration-break:<*> {
     -webkit-box-decoration-break: --value();
     box-decoration-break: --value();
   }
@@ -653,12 +645,12 @@
     mask-image: --value();
   }
 
-  user-drag:<auto|element|none> {
+  user-drag:<*> {
     -webkit-user-drag: --value();
     user-drag: --value();
   }
 
-  user-select:<auto|none|text|all> {
+  user-select:<*> {
     -webkit-user-select: --value();
     user-select: --value();
   }

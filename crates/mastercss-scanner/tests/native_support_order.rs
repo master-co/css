@@ -42,7 +42,7 @@ fn output_is_stable_with_duplicates_groups_blocklists_and_source_order() {
     ];
     let mut expected = None;
     for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
-        let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
+        let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":3}"#).unwrap();
         for index in order {
             scan(&mut scanner, &format!("{index}.html"), inputs[index]);
         }

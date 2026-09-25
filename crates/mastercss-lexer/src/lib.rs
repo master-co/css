@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 
+mod utility_name;
+pub use utility_name::{decode_utility_name, valid_utility_name};
+
 mod query;
 mod selector;
 pub use query::{

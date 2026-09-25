@@ -18,7 +18,7 @@ const nativeLoader = require.resolve('next/dist/build/webpack/loaders/postcss-lo
 interface Declaration { prop: string; value: string; remove(): void }
 interface Root { append(node: unknown): void; walkDecls(callback: (declaration: Declaration) => void): void; walkRules(selector: string, callback: (rule: Root) => void): void }
 interface Output { source: string; sourceMap: string; globalAnimations: string[]; processedGlobals?: Required<MasterCSSEmittedGlobals> }
-const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const source = '@theme{--color-old:#111111;--color-late:#abcdef;--color-child:#010203;--shape-late:url("../late.svg?rev=1#shape")}.card{color:var(--color-old)}'
 
 /** Run the owned input pitch, the dispatcher and Next's installed PostCSS loader as the Webpack chain does. */

@@ -6,7 +6,7 @@ import { createToolingSessionSync } from '../../src/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
-  version: 1, languageVersion: 2,
+  version: 1, languageVersion: 3,
   utilities: [{
     id: '.block',
     name: 'block',

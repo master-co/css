@@ -919,7 +919,7 @@
             ]
           }
         ],
-        "languageVersion": 2,
+        "languageVersion": 3,
         "modes": [
           {
             "name": "light",
@@ -1186,7 +1186,7 @@
             ]
           }
         ],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "steps": [
         {
@@ -1355,7 +1355,7 @@
             ]
           }
         ],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "steps": [
         {
@@ -1429,7 +1429,7 @@
             ]
           }
         ],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "steps": [
         {
@@ -1459,7 +1459,6 @@
           {
             "id": "bg:<~color|color>",
             "type": 0,
-            "kind": "color",
             "variableAliasRefs": [
               "~color"
             ],
@@ -1481,7 +1480,7 @@
             ]
           }
         ],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "steps": [
         {
@@ -1508,7 +1507,7 @@
           ]
         },
         "utilities": [],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "steps": [
         {
@@ -2741,11 +2740,11 @@
       "source": "@mode light { .light { @slot; } } @mode dark { .dark { @slot; } } @theme static { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } @theme dark static { --color-brand: #123; }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "modes": [
           {
             "name": "light",
@@ -2811,11 +2810,11 @@
       "source": "@theme { --color-brand: $color-blue-50; }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "variables": {
           "color": [
             {
@@ -2834,11 +2833,11 @@
       "source": "@theme static { --spacing--card: -12; }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "variables": {
           "spacing": [
             {
@@ -2861,11 +2860,11 @@
       "source": "@theme static { @keyframes fade { to { opacity: 1; } } }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "animations": {
           "fade": {
             "to": {
@@ -2899,11 +2898,11 @@
             ]
           }
         ],
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       }
     },
     {
@@ -2912,11 +2911,11 @@
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px; }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "variables": {
           "breakpoint": [
             {
@@ -2987,11 +2986,11 @@
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "variables": {
           "spacing": [
             {
@@ -3094,11 +3093,11 @@
       "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @utilities { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "variants": [
           {
             "token": "@motion-safe",
@@ -3177,11 +3176,11 @@
       "source": "@utilities { card { display: grid; color: var(--color-primary); } }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "utilities": [
           {
             "id": ".card",
@@ -3216,11 +3215,11 @@
       "source": "@utilities { btn { display: flex; color: red; } }",
       "baseManifest": {
         "version": 1,
-        "languageVersion": 2
+        "languageVersion": 3
       },
       "expectedManifest": {
         "version": 1,
-        "languageVersion": 2,
+        "languageVersion": 3,
         "utilities": [
           {
             "id": ".btn",
@@ -3250,7 +3249,7 @@
       }
     }
   ],
-  "contract": "Master CSS 2.0 final semantic contract: named tokens, preserved native declarations, explicit queries and modes",
+  "contract": "Master CSS 2.0 final semantic contract: named tokens, preserved native declarations, explicit queries and modes; fixed raw intent and whole-definition utility replacement",
   "intentionalDifferences": [
     "Named-token selectors use hyphens and explicit token priority metadata.",
     "RC value-dependent shorthand routing migrates to its explicit longhand; native aliases preserve native properties.",
@@ -3258,10 +3257,11 @@
     "Explicit var() replaces implicit references inside raw values.",
     "Groups emit independently ordered rules for each value source, selector, layer and importance.",
     "Existing static and enum names retain semantic ordering; declaration ordering uses emitted properties and values.",
-    "Require languageVersion: 2 on manifests and hydration.",
+    "Require languageVersion: 3 on manifests and hydration.",
     "Replace global mode settings with explicit ordered mode branches; do not infer default values or color-scheme.",
     "Scope base variables to Document and ShadowRoot using :root,:host.",
-    "Preserve breakpoint and container units; reject historical inferred condition syntax."
+    "Preserve breakpoint and container units; reject historical inferred condition syntax.",
+    "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field."
   ],
-  "languageVersion": 2
+  "languageVersion": 3
 }

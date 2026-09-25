@@ -15,7 +15,7 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
 export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities'
   readonly sourceVersion: string
   readonly manifest: Readonly<Record<string, unknown>>
   readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -34,7 +34,7 @@ export interface MasterCSSRCClassMigration {
 
 export interface MasterCSSRCMigrationResult {
   readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities'
   readonly sourceVersion: string
   readonly behaviorChanges: readonly string[]
   readonly configurationCSS: string
@@ -695,7 +695,7 @@ export type MasterCSSLanguageClassKind =
 export interface MasterCSSLanguageClass {
   className: string
   kind: MasterCSSLanguageClassKind
-  matcherTypes: ('static' | 'pattern' | 'key' | 'token' | 'value')[]
+  matcherTypes: ('static' | 'pattern' | 'key' | 'token')[]
   keyToken?: string
   valueToken?: string
   stateToken?: string
@@ -742,7 +742,7 @@ export interface MasterCSSLanguageInspection {
   valueToken?: string
   stateToken?: string
   important: boolean
-  matcherTypes: ('static' | 'pattern' | 'key' | 'token' | 'value')[]
+  matcherTypes: ('static' | 'pattern' | 'key' | 'token')[]
   variables: MasterCSSLanguageClassVariable[]
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   text: string

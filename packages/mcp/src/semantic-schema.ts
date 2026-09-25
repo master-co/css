@@ -42,8 +42,7 @@ const matcher = z.discriminatedUnion('type', [
   z.object({ type: z.literal('static'), name: z.string() }),
   z.object({ type: z.literal('pattern'), prefix: z.string(), values: strings, valueMap: z.record(z.string(), z.string()).optional() }),
   z.object({ type: z.literal('key'), keys: strings }),
-  z.object({ type: z.literal('token'), prefix: z.string() }),
-  z.object({ type: z.literal('value'), keys: strings, segments: z.enum(['single', 'multiple']).optional() })
+  z.object({ type: z.literal('token'), prefix: z.string() })
 ])
 const emit = z.discriminatedUnion('type', [
   z.object({ type: z.literal('declarations'), declarations: strings }),
@@ -54,7 +53,7 @@ const emit = z.discriminatedUnion('type', [
 export const utility = z.object({
   id: z.string(), type: z.number(), matchers: z.array(matcher), emit,
   key: z.string().optional(), keys: strings.optional(), subkey: z.string().optional(), name: z.string().optional(),
-  order: z.number().optional(), layer: z.string().optional(), kind: z.string().optional(), namespaces: strings.optional(),
+  order: z.number().optional(), layer: z.string().optional(), namespaces: strings.optional(),
   variableAliases: z.array(z.tuple([z.string(), z.string()])).optional(), variableAliasRefs: strings.optional(), aliasGroups: strings.optional(), conditions: strings.optional(),
   matcherTypes: strings, emitType: z.string()
 }).passthrough()

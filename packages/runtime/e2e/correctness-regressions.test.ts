@@ -86,7 +86,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     variables: { '': [
       { name: 'x', key: 'x', value: 'red' },
       { name: 'y', key: 'y', value: 'blue' },
@@ -112,7 +112,7 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
     variables: { '': [{ name: 'primary', key: 'primary', modes: { light: { value: '#000000' }, dark: { value: '#ffffff' } } }] },
     utilities: [utility('theme-color', { color: 'var(--primary)' })]
@@ -148,7 +148,7 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 1, languageVersion: 2,
+      version: 1, languageVersion: 3,
       utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
         ...utility(layer, { color: 'red' }),
         layer: layer as 'base' | 'defaults' | 'components' | 'utilities',

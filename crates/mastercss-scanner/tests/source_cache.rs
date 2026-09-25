@@ -3,7 +3,7 @@ use mastercss_schema::CssDirectiveBlocklistEntry;
 
 #[test]
 fn cache_tracks_empty_results_and_policy_changes_without_host_support_filtering() {
-    let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
+    let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":3}"#).unwrap();
     let options = ScannerSourceOptions::default();
     let candidates = vec!["future-property:new-value".into(), "color:red".into()];
     let blocklist = [CssDirectiveBlocklistEntry::Exact("color:red".into())];
@@ -51,7 +51,7 @@ fn cache_tracks_empty_results_and_policy_changes_without_host_support_filtering(
 
 #[test]
 fn extraction_cache_does_not_reuse_host_candidates_and_reapplies_policy() {
-    let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
+    let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":3}"#).unwrap();
     let options = ScannerSourceOptions::default();
     let source = "<div class=\"color:red\"/>";
     scanner

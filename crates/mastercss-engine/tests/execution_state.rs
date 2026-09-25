@@ -45,7 +45,7 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
             .is_empty()
     );
     engine
-        .refresh(r#"{"version":1,"languageVersion":2}"#)
+        .refresh(r#"{"version":1,"languageVersion":3}"#)
         .unwrap();
     assert!(
         engine.execution_state(["block@base"]).unwrap().classes[0]
@@ -59,7 +59,7 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
 #[test]
 fn execution_state_tracks_resource_counts_without_css_mutations() {
     let mut engine = EngineSession::create(
-        r#"{"version":1,"languageVersion":2,"variables":{"": [{"name":"x","key":"x","value":"red"}]}}"#,
+        r#"{"version":1,"languageVersion":3,"variables":{"": [{"name":"x","key":"x","value":"red"}]}}"#,
     )
     .unwrap();
     engine

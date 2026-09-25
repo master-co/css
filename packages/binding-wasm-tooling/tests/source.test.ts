@@ -52,7 +52,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   )).toEqual(['grid', 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -77,7 +77,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   scanner.free()
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -100,7 +100,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   validator.free()
 
   const lint = new tooling.ToolingLintSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     variables: {
       spacing: [{ key: 'md', type: 'number', value: '1rem' }]
     },
@@ -238,7 +238,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   lint.free()
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
-    version: 1, languageVersion: 2,
+    version: 1, languageVersion: 3,
     utilities: [{
       id: 'display-block',
       name: 'block',

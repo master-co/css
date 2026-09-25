@@ -19,7 +19,7 @@ fn compile(entry: &str, child: &str, resource_urls: Value) -> Value {
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
         "urls":{"/entry.css":"/entry.css","/child.css":"/assets/very-long-child-😀.css?version=abcdef"},
         "resourceURLs":resource_urls,
-        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap()
 }
@@ -80,7 +80,7 @@ fn graph_native_suppression_keeps_composed_conditions_and_layer_identity() {
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"/entry.css","files":{"/entry.css":source},"edges":[]},
         "urls":{"/entry.css":"/entry.css"},"options":{"preserveNativeCSS":false},
-        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
     }))
     .unwrap();
     let result = serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap();

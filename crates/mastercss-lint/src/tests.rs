@@ -10,7 +10,7 @@ use super::{
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
 const MANIFEST: &str = r#"{
-      "version":1,"languageVersion":2,
+      "version":1,"languageVersion":3,
       "variables":{
         "spacing":[{"key":"md","type":"number","value":"1rem"}]
       },

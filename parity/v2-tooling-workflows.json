@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "languageVersion": 2,
-  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem; }\n",
+  "version": 3,
+  "languageVersion": 3,
+  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem; }\n@utilities { erased { color:red; } erased {} pair:<*> { width:--value(); height:--value(); } }\n",
   "cases": [
     {
       "className": "font-brand",
@@ -88,6 +88,38 @@
       "matchStatus": "matched",
       "cssSyntaxStatus": "valid",
       "cssValueStatus": "valid"
+    },
+    {
+      "className": "pair:red",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "pair:var(--size)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown"
+    },
+    {
+      "className": "pair:calc(1px|+|)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "block:state(open)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "valid"
+    },
+    {
+      "className": "erased",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked"
     }
   ]
 }

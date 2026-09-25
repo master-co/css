@@ -1,0 +1,2041 @@
+{
+  "fixtureVersion": 3,
+  "languageVersion": 3,
+  "node": "v24.20.0",
+  "platform": "darwin",
+  "results": [
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "font-brand",
+      "matchStatus": "ambiguous",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "unknown",
+      "base": "font-brand",
+      "suffix": "",
+      "important": false,
+      "matcherTypes": [],
+      "variables": [],
+      "rules": [],
+      "diagnostics": [
+        {
+          "code": "AMBIGUOUS_TOKEN",
+          "phase": "match",
+          "severity": "error",
+          "message": "Ambiguous named token font-brand; use an explicit utility name: font-size-brand, font-family-brand",
+          "notes": [
+            "font-size-brand",
+            "font-family-brand"
+          ]
+        }
+      ],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "css": ""
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "padding:red",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "padding:red",
+      "suffix": "",
+      "key": "padding",
+      "value": "red",
+      "keyToken": "padding:",
+      "valueToken": "red",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "padding:red",
+          "key": "padding:red",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "padding:red"
+          },
+          "text": ".padding\\:red{padding:red}",
+          "selectorText": ".padding\\:red"
+        }
+      ],
+      "text": "@layer utilities{.padding\\:red{padding:red}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "padding",
+          "value": "red",
+          "status": "invalid",
+          "range": {
+            "start": 14,
+            "end": 25
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: padding:red",
+          "range": {
+            "start": 0,
+            "end": 11
+          },
+          "notes": []
+        }
+      ],
+      "css": ".padding\\:red{padding:red}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "font:16px",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "font:16px",
+      "suffix": "",
+      "key": "font",
+      "value": "16px",
+      "keyToken": "font:",
+      "valueToken": "16px",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "font:16px",
+          "key": "font:16px",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "font:16px"
+          },
+          "text": ".font\\:16px{font:16px}",
+          "selectorText": ".font\\:16px"
+        }
+      ],
+      "text": "@layer utilities{.font\\:16px{font:16px}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "font",
+          "value": "16px",
+          "status": "invalid",
+          "range": {
+            "start": 12,
+            "end": 21
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: font:16px",
+          "range": {
+            "start": 0,
+            "end": 9
+          },
+          "notes": []
+        }
+      ],
+      "css": ".font\\:16px{font:16px}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "grid-cols:2.5",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "grid-cols:2.5",
+      "suffix": "",
+      "key": "grid-cols",
+      "value": "2.5",
+      "keyToken": "grid-cols:",
+      "valueToken": "2.5",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "grid-cols:2.5",
+          "key": "grid-cols:2.5",
+          "layer": "utilities",
+          "type": 0,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "display:grid;grid-template-columns:repeat(2.5, minmax(0, 1fr))"
+          },
+          "text": ".grid-cols\\:2\\.5{display:grid;grid-template-columns:repeat(2.5, minmax(0, 1fr))}",
+          "selectorText": ".grid-cols\\:2\\.5"
+        }
+      ],
+      "text": "@layer utilities{.grid-cols\\:2\\.5{display:grid;grid-template-columns:repeat(2.5, minmax(0, 1fr))}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "display",
+          "value": "grid",
+          "status": "valid",
+          "range": {
+            "start": 17,
+            "end": 29
+          }
+        },
+        {
+          "property": "grid-template-columns",
+          "value": "repeat(2.5,minmax(0,1fr))",
+          "status": "invalid",
+          "range": {
+            "start": 30,
+            "end": 79
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: grid-template-columns:repeat(2.5,minmax(0,1fr))",
+          "range": {
+            "start": 0,
+            "end": 13
+          },
+          "notes": []
+        }
+      ],
+      "css": ".grid-cols\\:2\\.5{display:grid;grid-template-columns:repeat(2.5, minmax(0, 1fr))}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "grid-cols:foo",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "grid-cols:foo",
+      "suffix": "",
+      "key": "grid-cols",
+      "value": "foo",
+      "keyToken": "grid-cols:",
+      "valueToken": "foo",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "grid-cols:foo",
+          "key": "grid-cols:foo",
+          "layer": "utilities",
+          "type": 0,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "display:grid;grid-template-columns:repeat(foo, minmax(0, 1fr))"
+          },
+          "text": ".grid-cols\\:foo{display:grid;grid-template-columns:repeat(foo, minmax(0, 1fr))}",
+          "selectorText": ".grid-cols\\:foo"
+        }
+      ],
+      "text": "@layer utilities{.grid-cols\\:foo{display:grid;grid-template-columns:repeat(foo, minmax(0, 1fr))}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "display",
+          "value": "grid",
+          "status": "valid",
+          "range": {
+            "start": 16,
+            "end": 28
+          }
+        },
+        {
+          "property": "grid-template-columns",
+          "value": "repeat(foo,minmax(0,1fr))",
+          "status": "invalid",
+          "range": {
+            "start": 29,
+            "end": 78
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: grid-template-columns:repeat(foo,minmax(0,1fr))",
+          "range": {
+            "start": 0,
+            "end": 13
+          },
+          "notes": []
+        }
+      ],
+      "css": ".grid-cols\\:foo{display:grid;grid-template-columns:repeat(foo, minmax(0, 1fr))}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "future-property:future(1furlong)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "future-property:future(1furlong)",
+      "suffix": "",
+      "key": "future-property",
+      "value": "future(1furlong)",
+      "keyToken": "future-property:",
+      "valueToken": "future(1furlong)",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "future-property:future(1furlong)",
+          "key": "future-property:future(1furlong)",
+          "layer": "utilities",
+          "type": 0,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "future-property:future(1furlong)"
+          },
+          "text": ".future-property\\:future\\(1furlong\\){future-property:future(1furlong)}",
+          "selectorText": ".future-property\\:future\\(1furlong\\)"
+        }
+      ],
+      "text": "@layer utilities{.future-property\\:future\\(1furlong\\){future-property:future(1furlong)}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "future-property",
+          "value": "future(1furlong)",
+          "status": "unknown",
+          "range": {
+            "start": 37,
+            "end": 69
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_UNKNOWN",
+          "phase": "css-value",
+          "severity": "info",
+          "message": "CSS value cannot be fully checked: future-property:future(1furlong)",
+          "range": {
+            "start": 0,
+            "end": 32
+          },
+          "notes": []
+        }
+      ],
+      "css": ".future-property\\:future\\(1furlong\\){future-property:future(1furlong)}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "width:var(--dynamic)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "width:var(--dynamic)",
+      "suffix": "",
+      "key": "width",
+      "value": "var(--dynamic)",
+      "keyToken": "width:",
+      "valueToken": "var(--dynamic)",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "width:var(--dynamic)",
+          "key": "width:var(--dynamic)",
+          "layer": "utilities",
+          "type": 0,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "width:var(--dynamic)"
+          },
+          "text": ".width\\:var\\(--dynamic\\){width:var(--dynamic)}",
+          "selectorText": ".width\\:var\\(--dynamic\\)"
+        }
+      ],
+      "text": "@layer utilities{.width\\:var\\(--dynamic\\){width:var(--dynamic)}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "width",
+          "value": "var(--dynamic)",
+          "status": "unknown",
+          "range": {
+            "start": 25,
+            "end": 45
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_UNKNOWN",
+          "phase": "css-value",
+          "severity": "info",
+          "message": "CSS value cannot be fully checked: width:var(--dynamic)",
+          "range": {
+            "start": 0,
+            "end": 20
+          },
+          "notes": []
+        }
+      ],
+      "css": ".width\\:var\\(--dynamic\\){width:var(--dynamic)}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "ordinary-card",
+      "matchStatus": "unmatched",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "unknown",
+      "base": "ordinary-card",
+      "suffix": "",
+      "important": false,
+      "matcherTypes": [],
+      "variables": [],
+      "rules": [],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "diagnostics": [],
+      "css": ""
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "block@missing",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "unknown",
+      "base": "block",
+      "suffix": "@missing",
+      "important": false,
+      "matcherTypes": [],
+      "variables": [],
+      "rules": [],
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_CONDITION",
+          "phase": "match",
+          "severity": "error",
+          "message": "Unknown or invalid condition @missing; define a named condition or use @media(...), @supports(...), or @container(...)",
+          "range": {
+            "start": 0,
+            "end": 13
+          }
+        }
+      ],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "css": ""
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "padding:1px.<br",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "invalid",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "unknown",
+      "base": "padding:1px.<br",
+      "suffix": "",
+      "key": "padding",
+      "value": "1px.<br",
+      "important": false,
+      "matcherTypes": [],
+      "variables": [],
+      "rules": [],
+      "diagnostics": [
+        {
+          "code": "CLASS_SYNTAX_ERROR",
+          "phase": "match",
+          "severity": "error",
+          "message": "Invalid selector structure: .<br",
+          "range": {
+            "start": 0,
+            "end": 15
+          }
+        }
+      ],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "css": ""
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "display:block@supports(selector([lang|=en]))",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "unknown",
+      "base": "display:block",
+      "suffix": "@supports(selector([lang|=en]))",
+      "key": "display",
+      "value": "block",
+      "important": false,
+      "matcherTypes": [],
+      "variables": [],
+      "rules": [],
+      "diagnostics": [
+        {
+          "code": "MASTER_QUERY_REQUIRES_CSS",
+          "phase": "match",
+          "severity": "error",
+          "message": "Complex @supports queries belong in CSS; define @custom-variant and use its name",
+          "range": {
+            "start": 0,
+            "end": 44
+          },
+          "notes": [
+            "@custom-variant query-name { @supports selector([lang =en]) { @slot; } }",
+            "Use @query-name. Verify literal pipes in the CSS query before copying."
+          ]
+        }
+      ],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "css": ""
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "--money:$100",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "--money:$100",
+      "suffix": "",
+      "key": "--money",
+      "value": "$100",
+      "keyToken": "--money:",
+      "valueToken": "$100",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "--money:$100",
+          "key": "--money:$100",
+          "layer": "utilities",
+          "type": 0,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "--money:$100"
+          },
+          "text": ".--money\\:\\$100{--money:$100}",
+          "selectorText": ".--money\\:\\$100"
+        }
+      ],
+      "text": "@layer utilities{.--money\\:\\$100{--money:$100}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "--money",
+          "value": "$100",
+          "status": "unknown",
+          "range": {
+            "start": 16,
+            "end": 28
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_UNKNOWN",
+          "phase": "css-value",
+          "severity": "info",
+          "message": "CSS value cannot be fully checked: --money:$100",
+          "range": {
+            "start": 0,
+            "end": 12
+          },
+          "notes": []
+        }
+      ],
+      "css": ".--money\\:\\$100{--money:$100}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "p:1px@media((40rem<=width<64rem))",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "valid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "p:1px",
+      "suffix": "@media((40rem<=width<64rem))",
+      "key": "p",
+      "value": "1px",
+      "keyToken": "p:",
+      "valueToken": "1px",
+      "stateToken": "@media((40rem<=width<64rem))",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "p:1px@media((40rem<=width<64rem))",
+          "key": "p:1px@media((40rem<=width<64rem))\u0000@media((40rem<=width<64rem))",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 3,
+          "priority": {
+            "features": [
+              {
+                "domain": "media",
+                "feature": "width",
+                "unit": "rem",
+                "lower": {
+                  "value": 40,
+                  "inclusive": true
+                },
+                "upper": {
+                  "value": 64,
+                  "inclusive": false
+                }
+              }
+            ],
+            "selector": 0,
+            "sortKey": "padding:1px"
+          },
+          "text": "@media (40rem<=width<64rem){.p\\:1px\\@media\\(\\(40rem\\<\\=width\\<64rem\\)\\){padding:1px}}",
+          "selectorText": ".p\\:1px\\@media\\(\\(40rem\\<\\=width\\<64rem\\)\\)"
+        }
+      ],
+      "text": "@layer utilities{@media (40rem<=width<64rem){.p\\:1px\\@media\\(\\(40rem\\<\\=width\\<64rem\\)\\){padding:1px}}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "padding",
+          "value": "1px",
+          "status": "valid",
+          "range": {
+            "start": 72,
+            "end": 83
+          }
+        }
+      ],
+      "diagnostics": [],
+      "css": "@media (40rem<=width<64rem){.p\\:1px\\@media\\(\\(40rem\\<\\=width\\<64rem\\)\\){padding:1px}}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "pair:red",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "pair:red",
+      "suffix": "",
+      "key": "pair",
+      "value": "red",
+      "keyToken": "pair:",
+      "valueToken": "red",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "pair:red",
+          "key": "pair:red",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "width:red;height:red"
+          },
+          "text": ".pair\\:red{width:red;height:red}",
+          "selectorText": ".pair\\:red"
+        }
+      ],
+      "text": "@layer utilities{.pair\\:red{width:red;height:red}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "width",
+          "value": "red",
+          "status": "invalid",
+          "range": {
+            "start": 11,
+            "end": 20
+          }
+        },
+        {
+          "property": "height",
+          "value": "red",
+          "status": "invalid",
+          "range": {
+            "start": 21,
+            "end": 31
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: width:red",
+          "range": {
+            "start": 0,
+            "end": 8
+          },
+          "notes": []
+        },
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: height:red",
+          "range": {
+            "start": 0,
+            "end": 8
+          },
+          "notes": []
+        }
+      ],
+      "css": ".pair\\:red{width:red;height:red}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "pair:var(--size)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "pair:var(--size)",
+      "suffix": "",
+      "key": "pair",
+      "value": "var(--size)",
+      "keyToken": "pair:",
+      "valueToken": "var(--size)",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "pair:var(--size)",
+          "key": "pair:var(--size)",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "width:var(--size);height:var(--size)"
+          },
+          "text": ".pair\\:var\\(--size\\){width:var(--size);height:var(--size)}",
+          "selectorText": ".pair\\:var\\(--size\\)"
+        }
+      ],
+      "text": "@layer utilities{.pair\\:var\\(--size\\){width:var(--size);height:var(--size)}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "width",
+          "value": "var(--size)",
+          "status": "unknown",
+          "range": {
+            "start": 21,
+            "end": 38
+          }
+        },
+        {
+          "property": "height",
+          "value": "var(--size)",
+          "status": "unknown",
+          "range": {
+            "start": 39,
+            "end": 57
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_UNKNOWN",
+          "phase": "css-value",
+          "severity": "info",
+          "message": "CSS value cannot be fully checked: width:var(--size)",
+          "range": {
+            "start": 0,
+            "end": 16
+          },
+          "notes": []
+        },
+        {
+          "code": "CSS_VALUE_UNKNOWN",
+          "phase": "css-value",
+          "severity": "info",
+          "message": "CSS value cannot be fully checked: height:var(--size)",
+          "range": {
+            "start": 0,
+            "end": 16
+          },
+          "notes": []
+        }
+      ],
+      "css": ".pair\\:var\\(--size\\){width:var(--size);height:var(--size)}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "pair:calc(1px|+|)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "browserSupport": "not-checked",
+      "kind": "declaration",
+      "base": "pair:calc(1px|+|)",
+      "suffix": "",
+      "key": "pair",
+      "value": "calc(1px|+|)",
+      "keyToken": "pair:",
+      "valueToken": "calc(1px|+|)",
+      "important": false,
+      "matcherTypes": [
+        "key"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "pair:calc(1px|+|)",
+          "key": "pair:calc(1px|+|)",
+          "layer": "utilities",
+          "type": -1,
+          "sortTier": 0,
+          "priority": {
+            "features": [],
+            "selector": 0,
+            "sortKey": "width:calc(1px + );height:calc(1px + )"
+          },
+          "text": ".pair\\:calc\\(1px\\|\\+\\|\\){width:calc(1px + );height:calc(1px + )}",
+          "selectorText": ".pair\\:calc\\(1px\\|\\+\\|\\)"
+        }
+      ],
+      "text": "@layer utilities{.pair\\:calc\\(1px\\|\\+\\|\\){width:calc(1px + );height:calc(1px + )}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "width",
+          "value": "calc(1px + )",
+          "status": "invalid",
+          "range": {
+            "start": 25,
+            "end": 43
+          }
+        },
+        {
+          "property": "height",
+          "value": "calc(1px + )",
+          "status": "invalid",
+          "range": {
+            "start": 44,
+            "end": 63
+          }
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: width:calc(1px + )",
+          "range": {
+            "start": 0,
+            "end": 17
+          },
+          "notes": []
+        },
+        {
+          "code": "CSS_VALUE_INVALID",
+          "phase": "css-value",
+          "severity": "error",
+          "message": "Invalid CSS value: height:calc(1px + )",
+          "range": {
+            "start": 0,
+            "end": 17
+          },
+          "notes": []
+        }
+      ],
+      "css": ".pair\\:calc\\(1px\\|\\+\\|\\){width:calc(1px + );height:calc(1px + )}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "block:state(open)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "valid",
+      "browserSupport": "not-checked",
+      "kind": "semantic",
+      "base": "block",
+      "suffix": ":state(open)",
+      "stateToken": ":state(open)",
+      "important": false,
+      "matcherTypes": [
+        "static"
+      ],
+      "variables": [],
+      "rules": [
+        {
+          "className": "block:state(open)",
+          "key": "block:state(open)\u0000:state(open)",
+          "layer": "utilities",
+          "type": -2,
+          "sortTier": 1,
+          "priority": {
+            "features": [],
+            "selector": 0
+          },
+          "text": ".block\\:state\\(open\\):state(open){display:block}",
+          "selectorText": ".block\\:state\\(open\\):state(open)"
+        }
+      ],
+      "text": "@layer utilities{.block\\:state\\(open\\):state(open){display:block}}",
+      "checks": [
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-syntax",
+          "scope": "selectors-queries-declarations"
+        },
+        {
+          "name": "css-tree",
+          "version": "3.2.1",
+          "phase": "css-value",
+          "scope": "expanded-declarations-and-known-math-grammar"
+        }
+      ],
+      "declarations": [
+        {
+          "property": "display",
+          "value": "block",
+          "status": "valid",
+          "range": {
+            "start": 34,
+            "end": 47
+          }
+        }
+      ],
+      "diagnostics": [],
+      "css": ".block\\:state\\(open\\):state(open){display:block}"
+    },
+    {
+      "manifest": {
+        "status": "loaded",
+        "context": "project",
+        "versions": {
+          "bindingAbiVersion": 12,
+          "packageVersion": "0.0.0",
+          "manifestVersion": 1,
+          "languageVersion": 3,
+          "hydrationManifestVersion": 1,
+          "engineTransitionVersion": 1,
+          "validatorBatchVersion": 3,
+          "diagnosticsReportVersion": 3,
+          "lintBatchVersion": 1,
+          "languageBatchVersion": 4,
+          "lexerBatchVersion": 1,
+          "sourceBatchVersion": 2,
+          "target": "aarch64-apple-darwin",
+          "surface": "native",
+          "features": [
+            "compiler",
+            "diagnostics",
+            "engine",
+            "language",
+            "lexer",
+            "lint",
+            "project",
+            "render",
+            "scanner",
+            "source",
+            "validator"
+          ]
+        },
+        "fingerprint": "987dae9631c0af26b508bf410223d4aff79d43e378ce593cce87d3fae63bb1f2",
+        "entries": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css"
+        ],
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-final-workflows-TArQkb/app.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/colors.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ],
+        "diagnostics": [],
+        "warnings": []
+      },
+      "version": 4,
+      "className": "erased",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "browserSupport": "not-checked",
+      "kind": "semantic",
+      "base": "erased",
+      "suffix": "",
+      "important": false,
+      "matcherTypes": [
+        "static"
+      ],
+      "variables": [],
+      "rules": [],
+      "text": "",
+      "checks": [],
+      "declarations": [],
+      "diagnostics": [],
+      "css": ""
+    }
+  ]
+}

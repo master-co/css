@@ -20,7 +20,7 @@ fn flat_project_css_uses_ordered_output_while_preserving_metadata_views() {
     fs::write(&entry, "@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@compose paint;}.b{@compose low;}}").unwrap();
     let result = load_project_manifest_entries(
         &[entry],
-        json!({"version":1,"languageVersion":2,"utilities":[]}),
+        json!({"version":1,"languageVersion":3,"utilities":[]}),
     );
     fs::remove_dir_all(root).unwrap();
     let result = result.unwrap();

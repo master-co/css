@@ -63,7 +63,7 @@ export interface MasterCSSFormatDirectivesResult {
 export interface MasterCSSLanguageClass {
   readonly className: string
   readonly kind: MasterCSSLanguageClassKind
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token' | 'value')[]
+  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token')[]
   readonly keyToken?: string
   readonly valueToken?: string
   readonly stateToken?: string
@@ -112,7 +112,7 @@ export interface MasterCSSLanguageInspection {
   readonly valueToken?: string
   readonly stateToken?: string
   readonly important: boolean
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token' | 'value')[]
+  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token')[]
   readonly variables: readonly MasterCSSLanguageClassVariable[]
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly diagnostics?: BindingInspection['diagnostics']

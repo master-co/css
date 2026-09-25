@@ -224,7 +224,7 @@ describe('@master/css-preset defaultManifest', () => {
     const manifest = getCompiledDefaultManifest()
     const utilities = manifest.utilities || []
 
-    expect(utilities).toHaveLength(172)
+    expect(utilities).toHaveLength(170)
     expect(utilities.some((utility) => 'order' in utility)).toBe(false)
     expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
     expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
@@ -377,7 +377,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('text-fill-color-red')?.text).toBe('.text-fill-color-red{-webkit-text-fill-color:var(--color-text-red)}')
     expect(css.createRule('text-decoration-color-red')?.text).toBe('.text-decoration-color-red{text-decoration-color:var(--color-text-red)}')
     expect(css.createRule('text-stroke-color-red')?.text).toBe('.text-stroke-color-red{-webkit-text-stroke-color:var(--color-red)}')
-    expect(css.createRule('text-stroke:1px')?.text).toBe('.text-stroke\\:1px{-webkit-text-stroke-width:1px}')
+    expect(css.createRule('text-stroke:1px')?.text).toBe('.text-stroke\\:1px{-webkit-text-stroke:1px}')
     expect(css.createRule('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
     expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
     expect(css.createRule('user-drag:none')?.text).toBe('.user-drag\\:none{-webkit-user-drag:none;user-drag:none}')
@@ -392,7 +392,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect('utilityBuckets' in defaultManifest).toBe(false)
     expect((defaultManifest.utilities || [])
       .filter((utility) => utility.matchers.some((matcher) => matcher.type === 'pattern')))
-      .toHaveLength(38)
+      .toHaveLength(35)
     expect(defaultManifest.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
     expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
       .toMatchObject({
@@ -465,8 +465,8 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
     const declarationsCSS = createTestCSS(defaultManifest)
 
-    expect(declarationsCSS.createRule('text:center')?.text).toContain('text:center')
-    expect(declarationsCSS.createRule('text:underline')?.text).toContain('text:underline')
+    expect(declarationsCSS.createRule('text:center')?.text).toContain('font-size:center')
+    expect(declarationsCSS.createRule('text:underline')?.text).toContain('font-size:underline')
     expect(declarationsCSS.createRule('bg:cover')?.text).toContain('background:cover')
     expect(declarationsCSS.createRule('object:cover')?.text).toContain('object:cover')
     expect(declarationsCSS.createRule('border-solid')).toBeUndefined()
@@ -509,9 +509,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('text-red')?.text).toBe('.text-red{color:var(--color-text-red)}')
     expect(css.createRule('text-blue')?.text).toBe('.text-blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
-    expect(declarationsCSS.createRule('text:blue-60')?.text).toContain('text:blue-60')
-    expect(declarationsCSS.createRule('text:#fff')?.text).toContain('text:#fff')
-    expect(declarationsCSS.createRule('text:transparent')?.text).toContain('text:transparent')
+    expect(declarationsCSS.createRule('text:blue-60')?.text).toContain('font-size:blue-60')
+    expect(declarationsCSS.createRule('text:#fff')?.text).toContain('font-size:#fff')
+    expect(declarationsCSS.createRule('text:transparent')?.text).toContain('font-size:transparent')
     expect(css.createRule('text-body')?.text).toBe('.text-body{color:var(--color-text-body)}')
     expect(css.createRule('text-inverse')?.text).toBe('.text-inverse{color:var(--color-text-inverse)}')
     expect(css.createRule('text-muted')?.text).toBe('.text-muted{color:var(--color-text-muted)}')
@@ -615,9 +615,8 @@ describe('@master/css-preset defaultManifest', () => {
       expect('transform' in utility, utility.id).toBe(false)
     }
     for (const utility of defaultManifest.utilities || []) {
-      if (utility.matchers.some((matcher) => matcher.type === 'value')) {
-        expect(utility.kind, utility.id).toBeDefined()
-      }
+      expect(utility.matchers.map(matcher => matcher.type), utility.id).not.toContain('value')
+      expect('kind' in utility, utility.id).toBe(false)
     }
   })
 
@@ -703,6 +702,6 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect(utilities).toHaveLength(172)
+    expect(utilities).toHaveLength(170)
   })
 })
