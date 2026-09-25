@@ -50,7 +50,7 @@ The package base entry declares the stable layer order:
 @layer theme, base, defaults, components, utilities;
 ```
 
-Write project-wide element defaults in native CSS and put them in `@layer base` when they should behave like document baseline styles:
+Write browser normalization and structural baselines in `@layer base`. Put broad product choices, such as the page background and text color, in `@layer defaults` so component and utility styles can override them:
 
 ```css name=app.css
 @import "@master/css";
@@ -60,18 +60,20 @@ Write project-wide element defaults in native CSS and put them in `@layer base` 
     color-scheme: light dark;
   }
 
-  body {
-    background: var(--color-surface-base);
-    color: var(--color-text-body);
-  }
-
   :where(button, input, textarea, select) {
     font: inherit;
   }
 }
+
+@layer defaults {
+  body {
+    background: var(--color-surface-base);
+    color: var(--color-text-body);
+  }
+}
 ```
 
-Keep base styles broad and structural. Use later layers, component classes, and utilities for product UI roles or local page decisions.
+`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer still connects the configured font tokens to the document's baseline typography.
 
 Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
 

@@ -26,14 +26,16 @@ Use `theme` for generated CSS custom properties. Regular tokens defined in `@the
 Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
 
 ### Base \{#base\}
-Use `base` for low-level resets and normalization. This layer should make the browser environment predictable, not express a brand or component design.
+Use `base` for low-level resets, normalization, and structural document baselines. This layer should make the browser environment predictable, not express a brand or component design.
 
 Use the `@base` class suffix for a generated rule, or write native CSS inside `@layer base`.
 
 ### Defaults \{#defaults\}
-Use `defaults` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
+Use `defaults` for broad visual choices made by the project, such as the page's text color, typography inside an article, or code styling that should remain below component and utility styles. These are not the browser's built-in default styles.
 
 Use the `@default` class suffix, native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
+
+For example, put `button { font: inherit; }` in `base`, `body { color: var(--color-text-body); }` in `defaults`, and `.btn { display: inline-flex; }` in `components`.
 
 ### Components \{#components\}
 Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write native class selectors inside `@layer components`.

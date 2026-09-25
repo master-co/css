@@ -121,7 +121,9 @@ For recurring work, add a short Master CSS rules block to the project's agent in
 When editing Master CSS:
 - Use https://rc.css.master.co as the source of truth.
 - Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
-- Prefer existing @theme tokens and native CSS in @layer defaults/components. Use @utilities for on-demand primitives.
+- Put resets and normalization in @layer base, broad project visual defaults in @layer defaults, and named UI classes in @layer components.
+- For example, put button font inheritance in base, the page text color in defaults, and a .btn design in components; defaults does not mean browser defaults.
+- Prefer existing @theme tokens. Use @utilities for on-demand primitives.
 - Use @compose only when a utility encapsulates shared behavior; native component classes cannot be composition targets or derive Master suffixes.
 - Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
 - Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.
