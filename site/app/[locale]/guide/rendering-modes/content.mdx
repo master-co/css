@@ -338,7 +338,8 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     ```css name=index.css
     @layer components {
       .btn {
-        @compose inline-flex px-md;
+        display: inline-flex;
+        padding-inline: var(--spacing-md);
       }
     }
     ```
@@ -445,7 +446,11 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @layer components {
   .btn {
-    @compose inline-flex items-center px-md py-xs r-md;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
     background: var(--color-primary);
   }
 }

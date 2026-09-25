@@ -11,7 +11,7 @@ Start with the stylesheet your app already loads.
 2. Keep default source discovery unless the project needs a narrower scan boundary.
 3. Move shared design values into `@theme`.
 4. Convert component-local visual rules into class strings when the markup stays readable.
-5. Use `@reference` and `@compose` inside CSS Modules when a local class name is still the clearest API.
+5. Keep CSS Modules when a local class name is still the clearest API; use `@reference` when their native declarations need project tokens.
 6. Delete old CSS only after the affected screens build and visually match.
 
 Avoid converting selectors that describe document structure, third-party internals, browser quirks, or animation timelines better than a class list can.
@@ -25,7 +25,7 @@ Inspect the CSS surface before changing files.
 | --- | --- | --- |
 | App CSS entry | Global imports, reset files, cascade layers, and framework CSS entries | Add Master CSS beside the existing CSS first. |
 | Global CSS | Base element styles, custom properties, fonts, media queries, and layout primitives | Keep broad document rules in CSS; move reusable values into `@theme`. |
-| CSS Modules | `.module.css` files, `styles.*` usage, `:global`, `composes`, and local variants | Convert to markup classes or use `@compose` inside the module. |
+| CSS Modules | `.module.css` files, `styles.*` usage, `:global`, `composes`, and local variants | Convert to markup classes or retain native CSS in the module. |
 | Tokens | `--*` custom properties, theme files, spacing scales, color variables, and breakpoints | Move project-owned values into Master CSS `@theme` blocks. |
 | Dynamic values | Inline styles, CSS variables, runtime-calculated measurements, and data attributes | Keep the class static and pass dynamic values through CSS variables. |
 | External CSS | Vendor styles, generated CSS, editor themes, maps, and third-party component styles | Keep as CSS unless the project owns the styling contract. |
@@ -73,20 +73,28 @@ Prefer named theme tokens such as `bg-surface`, `p-card`, or `r-card` when the v
 ---
 
 ## Keep CSS Modules when they are the component API
-CSS Modules are still useful when a component exposes a stable local class name, needs selectors that target internal structure, or composes shared styles with a local variant.
+CSS Modules are still useful when a component exposes a stable local class name, needs selectors that target internal structure, or uses project tokens in local variants.
 
-Use `@reference` to make project tokens, components, utilities, and custom variants available without importing the app CSS output again.
+Use `@reference` when native declarations use project theme variables that the app entry may otherwise omit. It provides compile-time context without importing the app CSS output again.
 
 ```css name=Button.module.css
 @reference "../app.css";
 
 .button {
-  @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-blue-60 fg-white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  height: 2.5rem;
 }
 
 .button:disabled {
   opacity: 0.5;
-pointer-events: none;
+  pointer-events: none;
 }
 ```
 
@@ -147,6 +155,6 @@ Review each batch as both code and UI.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@reference`, `@compose`, `@source`, `@safelist`, and `@blocklist`.
+- [CSS directives](/reference#directives) for `@reference`, `@source`, `@safelist`, and `@blocklist`.
 - [Route-level styles](/guide/route-level-styles) for local CSS Modules and route styles that compose project context.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup utilities, theme tokens, custom utilities, and component classes.

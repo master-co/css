@@ -36,7 +36,10 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 }
 
 .button {
-  @compose inline-flex items:center gap:0.5rem fg-primary;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-primary);
 }
 ```
 

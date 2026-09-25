@@ -81,7 +81,7 @@ export async function verifyMonorepoExamples() {
     assert.ok(project.entries[0].endsWith('/projects/admin/index.css'))
     const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: root, classes: ['bg-primary'] })
     assert.match(rendered.css, /--color-primary:#4f46e5/)
-    assert.match(rendered.css, /\.app-shell\{/)
+    assert.match(rendered.css, /\.app-shell\s*\{[^}]*background-color:\s*var\(--color-surface-base\)/)
     assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
   } finally { files.dispose() }
 }

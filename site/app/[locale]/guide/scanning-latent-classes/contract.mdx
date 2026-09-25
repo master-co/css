@@ -91,11 +91,18 @@ After candidate scanning, Master CSS validates each class against the active man
 ```css name=index.css
 @layer components {
   .btn {
-    @compose inline-flex items-center h:40px px-md r-md;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+    padding-inline: var(--spacing-md);
+    height: 40px;
   }
 
   .hero-title {
-    @compose m:0 font-5xl font-heavy text-neutral;
+    margin: 0;
+    color: var(--color-text-neutral);
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-heavy);
   }
 }
 ```

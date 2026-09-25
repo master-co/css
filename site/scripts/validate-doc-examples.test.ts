@@ -18,6 +18,7 @@ import { validateCSS } from '@master/css-tooling/css'
 import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
 import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
 import { configuredExampleCSS } from '../reference/configured-example'
+import { routeStyles } from '../tests/delivery-examples'
 import { installationGuideSlugs } from '../utils/installation-content'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
@@ -58,6 +59,16 @@ const cliCommands = new Set((apiCensusJSON as APICensusContract).records
   .flatMap(({ name }) => name ? [name] : []))
 
 after(() => tooling.dispose())
+
+test('route-level native CSS retains referenced tokens and one shared utility', async () => {
+  const css = await routeStyles()
+  assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
+  assert.match(css, /--color-surface-raised:/)
+  assert.match(css, /--spacing-5xl:/)
+  assert.match(css, /@media \(prefers-color-scheme:dark\)\{\.home-cta/)
+  assert.match(css, /@media \(width<52\.125rem\)\{\.home-cta\{width:100%\}/)
+  assert.doesNotMatch(css, /@compose|@reference/)
+})
 
 function extractClassCandidates(content: string) {
   return tooling.extractClassCandidates(content)

@@ -248,11 +248,14 @@ Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@
 }
 ```
 
-Use native declarations when the value is clearer than a class:
+For component-specific styles, native declarations can express the entire rule:
 
 ```css name=app.css
 .form-panel {
-  @compose p-lg r-lg bg-white shadow-sm;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background-color: oklch(100% 0 none);
+  box-shadow: var(--shadow-sm);
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
 }
 ```
@@ -303,15 +306,25 @@ Use `@layer components` when the name describes a product UI role rather than a 
 ```css name=app.css
 @layer components {
   .btn {
-    @compose inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-md font-sm font-medium;
-    @compose bg-blue-60 fg-white;
+    display: inline-flex;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
 
     &:disabled {
-      @compose opacity:.5 pointer-events:none;
+      opacity: .5;
+      pointer-events: none;
     }
 
     @variant md {
-      @compose px-lg;
+      padding-inline: var(--spacing-lg);
     }
   }
 }

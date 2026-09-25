@@ -818,7 +818,7 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <div data-stylesheet-gallery>
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  background-color: var(--color-brand);\n}"}
 />
 
 <StylesheetExample

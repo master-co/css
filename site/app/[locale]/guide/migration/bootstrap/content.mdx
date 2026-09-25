@@ -121,13 +121,28 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 
 @layer components {
   .btn-primary {
-    @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md bg-primary fg-white r-control;
-    &:hover { @compose bg-blue-70; }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
     &:disabled { opacity: 0.5; }
   }
 
   .panel {
-    @compose p-lg b:1px|solid|var(--color-line-base) r-lg bg-white fg-body shadow-sm;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-base);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-text-body);
   }
 }
 ```
