@@ -2,7 +2,7 @@
 
 @layer components {
   .scrollbar {
-    &::scrollbar {
+    &::-webkit-scrollbar {
       border-radius: 1e9em;
       width: 0.25rem;
       height: 0.25rem;
@@ -13,16 +13,16 @@
       background-color: transparent;
     }
 
-    &::scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
       border-radius: 1e9em;
       background-color: var(--color-line-subtle);
     }
 
-    &::scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
       background-color: var(--color-line-muted);
     }
 
-    &::scrollbar-thumb:active {
+    &::-webkit-scrollbar-thumb:active {
       background-color: var(--color-line-base);
     }
 
@@ -32,15 +32,15 @@
   }
 
   .scrollbar-concealed {
-    &:not(:hover)::scrollbar {
+    &:not(:hover)::-webkit-scrollbar {
       visibility: hidden;
     }
 
-    &:not(:hover)::scrollbar-thumb {
+    &:not(:hover)::-webkit-scrollbar-thumb {
       visibility: hidden;
     }
 
-    &::scrollbar {
+    &::-webkit-scrollbar {
       background-color: transparent!important;
     }
   }
