@@ -6,11 +6,10 @@ declare type Props = {
   locale: typeof i18n.locales[number];
 } & React.HTMLAttributes<HTMLHtmlElement>;
 
-export default async function HTML({ locale, hidden, ...props }: Props) {
+export default async function HTML({ locale, ...props }: Props) {
   return (
     <html {...props}
       lang={locale}
-      hidden={typeof hidden === 'boolean' ? hidden : process.env.NODE_ENV === 'development'}
       suppressHydrationWarning
     >
       <head>
