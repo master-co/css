@@ -1,6 +1,7 @@
 import { mathFunctionStatus } from './math-validation'
 import { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'
-import { definitionSyntax, generate, lexer, parse, property as propertyName, walk, version as cssTreeVersion } from 'css-tree'
+import { cssTreeVersion } from './css-tree-version'
+import { definitionSyntax, generate, lexer, parse, property as propertyName, walk } from '@eslint/css-tree'
 import type { MasterCSSDiagnostic, MasterCSSValueStatus } from '@master/css-binding/tooling'
 
 export interface DeclarationValidation {
@@ -11,7 +12,7 @@ export interface DeclarationValidation {
   readonly range?: { readonly start: number, readonly end: number }
 }
 
-export const CSS_VALUE_CHECK = Object.freeze({ name: 'css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations-and-known-math-grammar' as const })
+export const CSS_VALUE_CHECK = Object.freeze({ name: '@eslint/css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations-and-known-math-grammar' as const })
 
 const units = new Set(Object.values((lexer as typeof lexer & { units: Record<string, string[]> }).units).flat().map((unit) => unit.toLowerCase()))
 const cache = new Map<string, MasterCSSValueStatus>()
@@ -19,7 +20,13 @@ let knownKeywords: Set<string> | undefined
 function isKnownKeyword(name: string) {
   if (!knownKeywords) {
     knownKeywords = new Set<string>()
-    const grammar = lexer.dump() as { properties: Record<string, unknown>, types: Record<string, unknown> }
+    // The runtime accepts a boolean here; the bundled declaration incorrectly uses Syntax.
+    const grammar = (lexer as typeof lexer & {
+      dump(syntaxAsAst: boolean, pretty: boolean): {
+        properties: Record<string, unknown>
+        types: Record<string, unknown>
+      }
+    }).dump(false, false)
     for (const syntax of [...Object.values(grammar.properties), ...Object.values(grammar.types)]) {
       if (typeof syntax !== 'string') continue
       definitionSyntax.walk(definitionSyntax.parse(syntax), node => {
@@ -96,6 +103,7 @@ export function validateRuleDeclarations(text: string): DeclarationValidation[] 
   walk(ast, {
     visit: 'Declaration',
     enter(node) {
+      if (node.type !== 'Declaration') return
       const value = generate(node.value)
       const atRule = this.atrule && !this.rule ? this.atrule.name.toLowerCase() : undefined
       declarations.push({ property: node.property, value, ...(atRule ? { atRule } : {}), status: validateValue(node.property, value, atRule), ...(node.loc ? { range: { start: node.loc.start.offset, end: node.loc.end.offset } } : {}) })

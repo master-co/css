@@ -61,7 +61,7 @@ it('create rules by class', () => {
   expect(generateValidRules('text:cente')).toHaveLength(0)
 })
 
-it('validates native CSS declarations through css-tree fallback', () => {
+it('validates native CSS declarations through @eslint/css-tree', () => {
   expect(generateValidRules('float:left')[0]?.text).toBe('.float\\:left{float:left}')
   expect(generateValidRules('display:block')[0]?.text).toBe('.display\\:block{display:block}')
   expect(generateValidRules('field-sizing:content')[0]?.text).toBe('.field-sizing\\:content{field-sizing:content}')

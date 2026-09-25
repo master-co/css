@@ -1609,6 +1609,9 @@ importers:
 
   packages/tooling:
     dependencies:
+      '@eslint/css-tree':
+        specifier: ^4.1.1
+        version: 4.1.1
       '@master/css-binding':
         specifier: workspace:*
         version: link:../binding
@@ -1618,9 +1621,6 @@ importers:
       consola:
         specifier: ^3.4.2
         version: 3.4.2
-      css-tree:
-        specifier: ^3.2.1
-        version: 3.2.1
       defu:
         specifier: ^6.1.7
         version: 6.1.7
@@ -1634,9 +1634,6 @@ importers:
         specifier: ^10.2.6
         version: 10.2.6
     devDependencies:
-      '@types/css-tree':
-        specifier: ^3.2.0
-        version: 3.2.0
       svelte:
         specifier: ^5.57.0
         version: 5.57.0(@typescript-eslint/types@8.69.0)
@@ -4401,6 +4398,10 @@ packages:
 
   '@eslint/css-tree@4.1.0':
     resolution: {integrity: sha512-cg0ohyrAG3swyGqt8t1K/OK97DqBw/ftDvlvyY1fmEst5B40UOmsimwLENq74z2dyw5CDM+3zJIW+CV2nFNDdA==}
+    engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@eslint/css-tree@4.1.1':
+    resolution: {integrity: sha512-A+s89eP+yDAPkKjnIOfjlkGifg5J7GPn01nWx14UjBVWktfkxOU4975F9ZZ13xNxkGiblNcBaAqgKhnQrW6SWA==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
   '@eslint/js@10.0.1':
@@ -19975,6 +19976,11 @@ snapshots:
   '@eslint/css-tree@4.1.0':
     dependencies:
       mdn-data: 2.34.0
+      source-map-js: 1.2.1
+
+  '@eslint/css-tree@4.1.1':
+    dependencies:
+      mdn-data: 2.35.0
       source-map-js: 1.2.1
 
   '@eslint/js@10.0.1(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))':

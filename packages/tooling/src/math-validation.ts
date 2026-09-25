@@ -1,11 +1,11 @@
-import { clone, generate, lexer, List, walk } from 'css-tree'
-import type { CssNode, FunctionNode } from 'css-tree'
+import { clone, generate, lexer, List, walk } from '@eslint/css-tree'
+import type { CssNode, FunctionNode } from '@eslint/css-tree'
 
 const functions = new Set(['calc', 'min', 'max', 'clamp', 'mod', 'rem', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'pow', 'sqrt', 'hypot', 'exp', 'abs', 'sign', 'log', 'round'])
 
 /** Check operator structure and arity, without inferring the result's dimension.
  * CSS Values 4 allows dimensional division. Normalize operands for grammar-only
- * checks rather than applying css-tree's older numeric-divisor restriction.
+ * checks rather than applying the lexer's numeric-divisor restriction.
  */
 export function mathFunctionStatus(node: FunctionNode): 'valid' | 'invalid' | 'unknown' | undefined {
   const name = node.name.toLowerCase()
@@ -42,7 +42,7 @@ export function mathFunctionStatus(node: FunctionNode): 'valid' | 'invalid' | 'u
     return 'unknown'
   }
   if (name === 'log' || name === 'round') {
-    // css-tree's bundled draft still requires commas for omitted optional
+    // The bundled grammar still requires commas for omitted optional
     // arguments. Validate the current arity and reuse its calc-sum grammar.
     const parts: CssNode[][] = [[]]
     for (const child of normalized.children) {

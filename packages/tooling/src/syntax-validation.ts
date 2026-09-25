@@ -1,7 +1,8 @@
-import { parse, tokenize, tokenTypes, version } from 'css-tree'
+import { parse, tokenize, tokenTypes } from '@eslint/css-tree'
+import { cssTreeVersion } from './css-tree-version'
 import type { MasterCSSSyntaxStatus } from '@master/css-binding/tooling'
 
-export const CSS_SYNTAX_CHECK = Object.freeze({ name: 'css-tree', version, phase: 'css-syntax' as const, scope: 'selectors-queries-declarations' as const })
+export const CSS_SYNTAX_CHECK = Object.freeze({ name: '@eslint/css-tree', version: cssTreeVersion, phase: 'css-syntax' as const, scope: 'selectors-queries-declarations' as const })
 
 /** Token structure is independent of property grammars and browser support. */
 export function cssSyntaxStatus(text: string): MasterCSSSyntaxStatus {
@@ -26,7 +27,7 @@ export function cssSyntaxStatus(text: string): MasterCSSSyntaxStatus {
   try {
     let unknown = false
     const ast = parse(text, { parseCustomProperty: false, onParseError: () => { unknown = true } })
-    // Parsing checks syntax, not whether the browser implements it. css-tree's
+    // Parsing checks syntax, not whether the browser implements it. The parser's
     // inability to parse a future construct is incomplete knowledge, not invalidity.
     return ast && !unknown ? 'valid' : 'unknown'
   } catch {

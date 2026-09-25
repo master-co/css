@@ -1,4 +1,4 @@
-import { generate, lexer, parse, walk, property as propertyName } from 'css-tree'
+import { generate, lexer, parse, walk, property as propertyName } from '@eslint/css-tree'
 import { type SyntaxError } from './validator/types/syntax-error'
 
 export function validateCSS(text: string, parseOptions = {
@@ -51,6 +51,9 @@ export function isTargetError(error: SyntaxError | null) {
   if (!error) {
     return null
   }
+
+  // var() and env() cannot be matched before substitution; they are not invalid CSS.
+  if (error.name === 'UnsupportedMatchingTree') return null
 
   if (error.name !== 'SyntaxError' &&
     error.name !== 'SyntaxMatchError' &&
