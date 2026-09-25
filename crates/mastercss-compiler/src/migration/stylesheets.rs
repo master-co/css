@@ -42,7 +42,9 @@ impl Migration {
         for statement in &statements {
             if matches!(
                 self.profile,
-                super::RcMigrationProfile::RcManaged | super::RcMigrationProfile::RcUtilities
+                super::RcMigrationProfile::RcManaged
+                    | super::RcMigrationProfile::RcUtilities
+                    | super::RcMigrationProfile::RcSizing
             ) {
                 break;
             }

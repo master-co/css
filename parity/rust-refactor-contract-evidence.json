@@ -9,41 +9,41 @@
     {
       "sourceId": "rc87-886095b27074cf6c",
       "sourceDigest": "0f6195379a6491d260f50a4f15cc0b6e3332db3f207c664a0bd906b1089bd9dd",
-      "targetDigest": "b60e9a27b00a83c49c1a21084931aec7144f19b40615321ce78bfbb90a3e62de",
+      "targetDigest": "ebd65a3374a0f2e63acc87c5d2121af5ac7003c34023fa54830e284ea6e829d2",
       "proof": "approved-contract-change",
-      "reason": "Packaged Wasm loading, initial empty snapshot, one block mutation, exact layered CSS and disposal remain covered. The approved inspection contract replaces valid:true with matchStatus:matched and requires languageVersion:2 in this committed target; a separate native declaration case verifies explicit var() resource emission without host support filtering.",
+      "reason": "Reviewed at implementation HEAD 2079d665a: Node file-URL Wasm loading, matched inspection, empty snapshot, exactly one block mutation, layered CSS and disposal are asserted. Explicit var(--stripe) resource generation remains covered. The manifest fixture now uses the approved languageVersion:3 contract.",
       "approval": {
         "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T08:47:41.469Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "6b337d1f4fc40279db3e464bee872cb79fc6d334c03683d23f2f1966de7a5c5a"
+        "approvedAt": "2026-09-25T15:06:47.464Z",
+        "reviewRef": "parity/sizing-resolution-validation.md#historical-evidence-review",
+        "scopeDigest": "e2c98b255fc1599b6daea47926740dd6349781e6a6b4b7ce71a835ec78da062b"
       }
     },
     {
       "sourceId": "rc87-534a5dbe18105a92",
       "sourceDigest": "3f0364bd9b6a1fa7c2bd51793132299992be25b488b311bd2ee5899a59d0295a",
-      "targetDigest": "af80b3b3547d7f2aee9195f71ab1a1325d4510321f306b37f0237bedd170b51d",
+      "targetDigest": "2a0102f5595d849144e6e0642eac0acdc0ca276ecf50b4851e975d828e653f84",
       "proof": "approved-contract-change",
-      "reason": "The approved preserve-and-diagnose policy removes the browser support handshake from generation. The replacement asserts identical native declaration preservation without host filtering; it intentionally reverses the old support-dependent contract.",
+      "reason": "Reviewed at implementation HEAD 2079d665a: the renamed preservation test stubs CSS.supports to reject made-up:nope but still asserts both rules and exact CSS; RenderSession also preserves accent-color:transparent. This implements the approved removal of host-support filtering, with languageVersion:3.",
       "targetId": "rc87-01b18af25a7b490a",
       "approval": {
         "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T09:09:01.430Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "9a7f1f058f5e67f9ba8f6495612ec23144d742399985261a27e40f6dc2e9ee77"
+        "approvedAt": "2026-09-25T15:06:47.464Z",
+        "reviewRef": "parity/sizing-resolution-validation.md#historical-evidence-review",
+        "scopeDigest": "851e32bb775bf29a232b98d81a5401c5797282108c4dc786488bd08098f9da4e"
       }
     },
     {
       "sourceId": "rc87-97379238aa6e9c52",
       "sourceDigest": "5bbd8c3b2443030c35c33062316c8a8e5e4e967d6895f171e073691476f38a1d",
-      "targetDigest": "6c800b552186f626fe9f53d862ea20308393c418a57b8a7cc17990938f540508",
+      "targetDigest": "fa84688920c14eeda4852d17e786d653d5b88e225d2dc8aa65c85ed821b93155",
       "proof": "approved-contract-change",
-      "reason": "Original normalized engine-operation failure and idempotent disposal assertions remain. Added native declaration coverage checks the explicit var(--stripe) resource and background shorthand; the shared fixture now declares the approved language version. This is not evidence that colon token inference remains supported.",
+      "reason": "Reviewed at implementation HEAD 2079d665a: double disposal remains safe and later snapshot throws structured SESSION_DISPOSED in the engine domain. The explicit var(--stripe) resource and background shorthand assertions remain; manifest fixtures now use languageVersion:3.",
       "approval": {
         "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T08:47:41.470Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "559da5b0560d2a1fedf4044bdd638ca47642da62c9ba840fa68d7f0c90effb05"
+        "approvedAt": "2026-09-25T15:06:47.465Z",
+        "reviewRef": "parity/sizing-resolution-validation.md#historical-evidence-review",
+        "scopeDigest": "352d057c88c3e07f89aef5c905c14865f2f7ba1453696badf08d442abc2150a6"
       }
     },
     {
@@ -84,14 +84,14 @@
     {
       "sourceId": "rc87-c6f234a37661be00",
       "sourceDigest": "234eb3d4b27a4bd80066a07a403be6afa0b6be8aa51a268c7720301f8a530a07",
-      "targetDigest": "461c6a81710f78dac0d37c5969508b9d5a12e33324051fb772825eabbe5beafe",
+      "targetDigest": "18466eeec0c81b7e8e3f595f9b75f6593264bcdb8731aad877676e02eedb828f",
       "proof": "approved-contract-change",
-      "reason": "The approved Next manifest ESM plan removes direct writes to .next/static/media and external JSON URL assembly. The replacement checks standard ESM output and absence of loader asset writes.",
+      "reason": "Reviewed at implementation HEAD 2079d665a: the renamed ESM test imports emitted data, asserts languageVersion:3 and theme content, rejects fetch and /_next URL assembly, and confirms no .next output directory. This preserves the approved bundler-owned delivery change rather than the removed external JSON behavior.",
       "approval": {
         "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T09:09:01.430Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "b9856d5f427e8e0628dd26e6e562862061d950a0a3fd1dedcec13f587848e7f1"
+        "approvedAt": "2026-09-25T15:06:47.465Z",
+        "reviewRef": "parity/sizing-resolution-validation.md#historical-evidence-review",
+        "scopeDigest": "83cdd2abfd107576a9590f945f18320b17eb68bbdaf0589dc98c9918bac94b65"
       },
       "targetId": "rc87-a9210afde2b25995"
     },

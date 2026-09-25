@@ -51,7 +51,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const properties = new Set(rows.flatMap(row => row.identifiers.filter(id => !id.endsWith(':'))))
     const aliases = [...new Set([...extracted.examples.flatMap(example => example.classes), ...rows.flatMap(row => row.identifiers), ...Object.entries(builtinKeyAliases).filter(([, property]) => properties.has(property)).map(([alias]) => `${alias}:`)])]
     const doc: ReferenceDocument = {
-      id: entry.name, kind: 'utility', title: metadata.title, description: metadata.description,
+      id: entry.name, kind: metadata.referenceKind ?? 'utility', ...(metadata.guide ? { guide: metadata.guide } : {}), title: metadata.title, description: metadata.description,
       category: metadata.category, url: `/reference/${entry.name}`, source: relative(file), sourceDigest: digest(await readFile(file, 'utf8')),
       language: 'en', aliases, terms: [], rows, examples: extracted.examples, related: ['rules/conditions'],
       markdown: extracted.markdown, headings: documentHeadings(extracted.markdown), extractionNotes: extracted.notes,

@@ -453,7 +453,7 @@ export class MasterCSSLanguageServer implements Disposable {
 
   async initWorkspaceLanguageService(workspace: MasterCSSWorkspace) {
     workspace.baseManifest = await this.loadWorkspaceBaseManifest(workspace)
-    let workspacePlan: MasterCSSManifest | undefined
+    let workspacePlan: Awaited<ReturnType<MasterCSSLanguageServer['loadWorkspacePlan']>>
     workspace.manifestErrors = []
     if (workspace !== this.globalWorkspace) {
       try {
@@ -469,12 +469,12 @@ export class MasterCSSLanguageServer implements Disposable {
         this.console.info(`Initialized workspace ${workspace.uri}`)
       }
     }
-    const manifest = workspacePlan
+    const manifest = workspacePlan?.manifest
       ?? workspace.languageServiceSettings.manifest
       ?? workspace.baseManifest
     workspace.languageService = new MasterCSSLanguageService(
       { ...workspace.languageServiceSettings, manifest },
-      { session: await createToolingSession({ manifest }) }
+      { session: await createToolingSession({ manifest, nativeClassNames: workspacePlan?.nativeClassNames }) }
     )
   }
 
@@ -499,14 +499,14 @@ export class MasterCSSLanguageServer implements Disposable {
 
   private async loadWorkspacePlan(workspace: MasterCSSWorkspace, baseManifest: MasterCSSManifest) {
     const entries = workspace.planEntries ?? []
-    if (!entries.length) return workspace.languageServiceSettings.manifest
+    if (!entries.length) return undefined
     const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
     const result = await loadProjectManifest({
       root: cwd,
       entries,
       baseManifest
     })
-    return result.manifest
+    return result
   }
 
   private async loadWorkspaceBaseManifest(workspace: MasterCSSWorkspace): Promise<MasterCSSManifest> {

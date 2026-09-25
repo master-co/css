@@ -68,6 +68,7 @@ impl Migration {
             RcMigrationProfile::RcNative
                 | RcMigrationProfile::RcManaged
                 | RcMigrationProfile::RcUtilities
+                | RcMigrationProfile::RcSizing
         )
     }
 }

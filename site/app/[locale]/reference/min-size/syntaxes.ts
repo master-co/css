@@ -1,7 +1,3 @@
-const syntaxes = [
-  ['min:`size`'],
-  ['min-size-x:`size`'],
-  ['min-size-y:`size`'],
-]
+const syntaxes: string[] = []
 
 export default syntaxes

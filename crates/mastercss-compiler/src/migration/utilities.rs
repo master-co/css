@@ -74,6 +74,7 @@ impl Migration {
         if !matches!(
             self.profile,
             RcMigrationProfile::RcUtilities
+                | RcMigrationProfile::RcSizing
                 | RcMigrationProfile::RcManaged
                 | RcMigrationProfile::RcNative
                 | RcMigrationProfile::RcNamed
@@ -237,13 +238,16 @@ impl Migration {
         Ok(candidate)
     }
 
-    fn utility_resources(
+    pub(super) fn utility_resources(
         &self,
         original: &EngineSession,
         before: &str,
         after: &str,
     ) -> Result<(), String> {
-        if self.profile != RcMigrationProfile::RcUtilities {
+        if !matches!(
+            self.profile,
+            RcMigrationProfile::RcUtilities | RcMigrationProfile::RcSizing
+        ) {
             return Ok(());
         }
         let resources = |engine: &EngineSession, class: &str| -> Result<Value, String> {

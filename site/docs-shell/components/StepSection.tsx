@@ -15,12 +15,12 @@ const StepSection = styled.div`
 export const StepNum = styled.div`
   inline-flex items-center
   justify-center
-  size:24px mr:1.281rem b:1px|solid|var(--color-line-muted) r-sm font-weight:460 font-xs tracking-normal surface-raised counter-increment:step vertical-align:middle
+  width:24px height:24px mr:1.281rem b:1px|solid|var(--color-line-muted) r-sm font-weight:460 font-xs tracking-normal surface-raised counter-increment:step vertical-align:middle
   content:counter(step):before
 `
 
 export const StepEnd = styled.div`
-  abs bottom left-2xl size:10px round b:1px|solid|var(--color-line-muted)
+  abs bottom left-2xl width:10px height:10px round b:1px|solid|var(--color-line-muted)
   surface-raised
   transform:translate(-4px,4px)
   hidden@media((width<64rem)) shadow:0|0.1px|0.3px|rgba(0,0,0,0.024),0|0.4px|0.9px|rgba(0,0,0,0.036),0|1px|1px|rgba(0,0,0,0.06)

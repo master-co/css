@@ -30,7 +30,7 @@ async function createClassInspectionState(context: MasterCSSMCPContext, options:
   const activeManifest = requireWorkspaceManifest(manifest)
   return {
     manifest,
-    session: await createMCPToolingSession(activeManifest)
+    session: await createMCPToolingSession(activeManifest, manifest.nativeClassNames)
   }
 }
 

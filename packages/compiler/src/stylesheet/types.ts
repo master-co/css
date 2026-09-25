@@ -59,6 +59,7 @@ export interface CompileRenderedStylesheetResult extends CompileCSSResult {
 }
 
 export interface TransformLocalStylesheetResult {
+  globalStylesheet?: { readonly css: string, readonly sourceMap?: string }
   stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap?: string }[]
   resources?: readonly StylesheetResourceAsset[]
   code: string
@@ -68,6 +69,8 @@ export interface TransformLocalStylesheetResult {
 }
 
 export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
+  /** Keep generated root/mode resources outside a host's locally scoped CSS. */
+  generatedGlobals?: 'inline' | 'separate'
   transformNativeStylesheets?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
 }

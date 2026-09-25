@@ -86,7 +86,7 @@ export default function ViewTransitionDemo() {
                 onClick={() => selectView(view.id)}
                 type="button"
               >
-                <span className={clsx('inline-block size:0.5rem mr-xs r:100%', view.accent)} />
+                <span className={clsx('inline-block width:0.5rem height:0.5rem mr-xs r:100%', view.accent)} />
                 <span className="text-sm font-medium">{view.title}</span>
                 <span className="block mt-2xs text-xs text-body">{view.eyebrow}</span>
               </button>

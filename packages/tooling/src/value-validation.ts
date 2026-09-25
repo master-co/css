@@ -1,4 +1,5 @@
 import { mathFunctionStatus } from './math-validation'
+import { validateMathTypes } from './math-types'
 import { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'
 import { cssTreeVersion } from './css-tree-version'
 import { definitionSyntax, generate, lexer, parse, property as propertyName, walk } from '@eslint/css-tree'
@@ -12,7 +13,7 @@ export interface DeclarationValidation {
   readonly range?: { readonly start: number, readonly end: number }
 }
 
-export const CSS_VALUE_CHECK = Object.freeze({ name: '@eslint/css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations-and-known-math-grammar' as const })
+export const CSS_VALUE_CHECK = Object.freeze({ name: '@eslint/css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations-and-known-math-grammar-and-static-types-v1' as const })
 
 const units = new Set(Object.values((lexer as typeof lexer & { units: Record<string, string[]> }).units).flat().map((unit) => unit.toLowerCase()))
 const cache = new Map<string, MasterCSSValueStatus>()
@@ -83,9 +84,16 @@ function validateValue(property: string, value: string, atRule?: string): Master
         unknownCapability = true
       }
     })
-    const knownMatch = !(useDescriptor
-      ? lexer.matchAtruleDescriptor(atRule!, property, ast)
-      : lexer.matchProperty(property, ast)).error
+    const matches = (value: typeof ast) => !(useDescriptor
+      ? lexer.matchAtruleDescriptor(atRule!, property, value)
+      : lexer.matchProperty(property, value)).error
+    const math = validateMathTypes(ast, matches)
+    invalidMath ||= math.status === 'invalid'
+    unknownMath ||= math.status === 'unknown'
+    const knownMatch = matches(math.ast)
+    // A proven result type in an otherwise known property grammar is a definite
+    // mismatch. Unknown surrounding functions or keywords remain unknown.
+    if (math.status === 'valid' && !knownMatch && !unresolved && !unknownCapability) invalidMath = true
     status = invalidRepeat || invalidMath ? 'invalid' : dependent || unknownMath || unknownCapability ? 'unknown' : knownMatch ? 'valid' : unresolved ? 'unknown' : 'invalid'
   } catch {
     status = 'invalid'

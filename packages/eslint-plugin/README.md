@@ -163,7 +163,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font-size:16px` to `font-md`, `margin-md` to `m-md`, `m:1rem|1.5rem` to `m:var(--spacing-md)|var(--spacing-lg)`, `fg:var(--color-red-60)` to `fg-red-60`, `w-md h-md` to `size-md`, `mt-md mb-md` to `my-md`, and `block@dark@sm` to `block@sm@dark`.
+For example, equivalent property aliases can shorten `margin-md` to `m-md` while retaining the same token. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`width-sm height-sm`); the preset no longer supplies the `size`, `min-size`, or `max-size` families. Version upgrades belong to `master-css migrate` with the saved RC manifest.
 
 The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
 

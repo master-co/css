@@ -254,7 +254,7 @@ export async function createMasterCSSInspectionReport(
       patterns: sourcePatterns,
       files,
       classes: classChecks,
-      inspections: (await validateClassNames([...new Set([...scanner.latentClasses, ...scanner.validClasses, ...scanner.invalidClasses, ...classChecks])], { manifest: scanner.manifest })).classes,
+      inspections: (await validateClassNames([...new Set([...scanner.latentClasses, ...scanner.validClasses, ...scanner.invalidClasses, ...classChecks])].filter(name => !scanner.usedNativeClasses.has(name)), { manifest: scanner.manifest })).classes,
       scanner: {
         latent: [...scanner.latentClasses],
         valid: [...scanner.validClasses],

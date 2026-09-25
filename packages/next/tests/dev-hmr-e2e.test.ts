@@ -61,7 +61,7 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
   writeFileSync(join(fixtureDir, 'next.config.js'), [
     `import { withMasterCSS } from ${JSON.stringify(nextIntegrationURL)}`,
     '',
-    `export default withMasterCSS({ reactStrictMode: true })`,
+    `export default withMasterCSS(${JSON.stringify({ reactStrictMode: true, ...(process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT ? { turbopack: { root: process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT } } : {}) })})`,
     ''
   ].join('\n'))
   writeFileSync(join(fixtureDir, 'app/layout.jsx'), [
@@ -183,6 +183,39 @@ async function expectDisplay(browser: Browser, url: string, display: string) {
 }
 
 describe('Next dev HMR', () => {
+  it('updates separated Module theme resources while preserving ancestor inheritance (webpack)', async () => {
+    buildPackage()
+    const workspace = join(packageDir, 'e2e/dev-hmr-workspaces')
+    mkdirSync(workspace, { recursive: true })
+    const fixture = mkdtempSync(join(workspace, 'module-globals-'))
+    writeFixture(fixture)
+    const tokens = join(fixture, 'app/tokens.css')
+    writeFileSync(tokens, '@theme { --color-module: red; }')
+    writeFileSync(join(fixture, 'app/Card.module.css'), '@reference "./tokens.css"; .card { color:var(--color-module); }')
+    writeFileSync(join(fixture, 'app/page.jsx'), `import styles from './Card.module.css'; export default function Page(){ return <main className={styles.card}>Theme</main> }`)
+    const port = await getFreePort(), url = `http://127.0.0.1:${port}`
+    const { child, output } = startNextDev(fixture, port, 'webpack')
+    let browser: Browser | undefined
+    try {
+      await waitForServer(url, child, output)
+      browser = await chromium.launch()
+      const page = await browser.newPage()
+      await page.goto(url)
+      await page.waitForFunction(() => getComputedStyle(document.querySelector('main')!).color === 'rgb(255, 0, 0)')
+      await page.evaluate(() => document.body.style.setProperty('--color-module', 'rgb(1, 2, 3)'))
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
+      writeFileSync(tokens, '@theme { --color-module: blue; }')
+      await page.waitForFunction(() => getComputedStyle(document.documentElement).getPropertyValue('--color-module').trim() === 'blue')
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
+      await page.evaluate(() => document.body.style.removeProperty('--color-module'))
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(0, 0, 255)')
+    } finally {
+      await browser?.close()
+      await stopNextDev(child)
+      rmSync(fixture, { recursive: true, force: true })
+    }
+  }, 180000)
+
   it.each(['turbo', 'webpack'] as const)('updates Master CSS without a full reload (%s)', async bundler => {
     buildPackage()
     const workspaceDir = join(packageDir, 'e2e/dev-hmr-workspaces')

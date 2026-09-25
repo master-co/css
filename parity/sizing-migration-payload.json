@@ -1,0 +1,61 @@
+{
+  "note": "Payload comparison for six independent examples; not proof of cascade equivalence for competing dimensions.",
+  "results": [
+    {
+      "label": "before",
+      "classes": [
+        "size:20px",
+        "min-size:10px",
+        "max-size:40px",
+        "size-sm",
+        "min-size-md",
+        "max-size-lg"
+      ],
+      "classCount": 6,
+      "ruleCount": 6,
+      "markup": {
+        "raw": 69,
+        "gzip": 60,
+        "brotli": 54
+      },
+      "css": {
+        "raw": 446,
+        "gzip": 210,
+        "brotli": 173
+      },
+      "hydration": {
+        "raw": 1962,
+        "gzip": 431,
+        "brotli": 360
+      }
+    },
+    {
+      "label": "after",
+      "classes": [
+        "{width:20px;height:20px}",
+        "{min-width:10px;min-height:10px}",
+        "{max-width:40px;max-height:40px}",
+        "{width-sm;height-sm}",
+        "{min-width-md;min-height-md}",
+        "{max-width-lg;max-height-lg}"
+      ],
+      "classCount": 6,
+      "ruleCount": 12,
+      "markup": {
+        "raw": 169,
+        "gzip": 104,
+        "brotli": 84
+      },
+      "css": {
+        "raw": 767,
+        "gzip": 245,
+        "brotli": 211
+      },
+      "hydration": {
+        "raw": 4628,
+        "gzip": 605,
+        "brotli": 510
+      }
+    }
+  ]
+}

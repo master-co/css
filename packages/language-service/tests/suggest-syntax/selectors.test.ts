@@ -96,3 +96,9 @@ test.concurrent('sorting', () => {
 test('types _ should hint', () => {
   expect(hint('block_')?.map(({ label }) => label)).toContain(':active')
 })
+
+it('reserves native colon entries and suggests display states through an explicit declaration', () => {
+  expect(hint('flex:')?.map(item => item.label)).not.toContain(':hover')
+  expect(hint('grid:')?.map(item => item.label)).not.toContain(':hover')
+  expect(hint('display:flex:')?.map(item => item.label)).toContain(':hover')
+})

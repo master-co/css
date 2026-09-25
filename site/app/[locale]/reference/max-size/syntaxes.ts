@@ -1,7 +1,3 @@
-const syntaxes = [
-  ['max:`size`'],
-  ['max-size-x:`size`'],
-  ['max-size-y:`size`'],
-]
+const syntaxes: string[] = []
 
 export default syntaxes

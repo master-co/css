@@ -38,12 +38,52 @@ pub fn utility_identity(utility: &Value) -> String {
 
 pub fn effective_utilities(utilities: &[Value]) -> Vec<Value> {
     let mut seen = std::collections::HashSet::new();
-    let mut output = utilities
-        .iter()
-        .rev()
-        .filter(|utility| seen.insert(utility_identity(utility)))
-        .cloned()
-        .collect::<Vec<_>>();
+    let mut output = Vec::new();
+    for utility in utilities.iter().rev() {
+        // An alias is an entry point, not part of another alias's identity.
+        // Keep invalid/empty matchers intact so manifest validation can reject
+        // them instead of silently dropping a malformed definition.
+        let Some(matchers) = utility
+            .get("matchers")
+            .and_then(Value::as_array)
+            .filter(|matchers| !matchers.is_empty())
+        else {
+            if seen.insert(utility_identity(utility)) {
+                output.push(utility.clone());
+            }
+            continue;
+        };
+        for matcher in matchers.iter().rev() {
+            let entries = if matcher.get("type").and_then(Value::as_str) == Some("key") {
+                matcher
+                    .get("keys")
+                    .and_then(Value::as_array)
+                    .filter(|keys| !keys.is_empty())
+                    .map(|keys| {
+                        keys.iter()
+                            .map(|key| {
+                                let mut entry = matcher.clone();
+                                entry["keys"] = json!([key]);
+                                entry
+                            })
+                            .collect()
+                    })
+                    .unwrap_or_else(|| vec![matcher.clone()])
+            } else {
+                vec![matcher.clone()]
+            };
+            for matcher in entries.into_iter().rev() {
+                let mut entry = utility.clone();
+                entry["matchers"] = json!([matcher]);
+                if matcher["type"] == "key" && entry.get("keys").is_some() {
+                    entry["keys"] = matcher["keys"].clone();
+                }
+                if seen.insert(utility_identity(&entry)) {
+                    output.push(entry);
+                }
+            }
+        }
+    }
     output.reverse();
     output
 }

@@ -37,8 +37,8 @@ export const code5 = `
   <div class="w:32px h:32px r:5px z:10 my:1px px:1px">
 `
 export const code6 = `
-  <!-- @MARK size:32px -->
-  <div class="size:32px r:5px z:10 my:1px px:1px">
+  <!-- @MARK width:32px height:32px -->
+  <div class="width:32px height:32px r:5px z:10 my:1px px:1px">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -62,7 +62,7 @@ export const code6 = `
 - Directions: `t` top, `b` bottom, `l` left, `r` right, usually after a spacing prefix like `mt`, `pb`, or `pr`.
 - Radius sides and corners: `rt`, `rb`, `rl`, `rr`, `rtl`, `rtr`, `rbl`, and `rbr`.
 
-(o) Use `mcss size:*` when width and height share the same value. <Dropped p1={code3} p2={code6} target="class" />
+(o) Write both width and height explicitly when they share the same value. <Dropped p1={code3} p2={code6} target="class" />
 <Code lang="html">
   {code6}
 </Code>

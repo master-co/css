@@ -240,16 +240,26 @@ pub(crate) fn collect_class_completion_candidates(
             let static_detail = static_utility_detail(utility);
             for matcher in &utility.matchers {
                 match matcher {
-                    UtilityMatcher::Static { name } => push_value_completion_candidate(
-                        &mut candidates,
-                        &mut labels,
-                        name.clone(),
-                        if is_component {
-                            Some("component".into())
-                        } else {
-                            static_detail.clone()
-                        },
-                    ),
+                    UtilityMatcher::Static { name } => {
+                        push_value_completion_candidate(
+                            &mut candidates,
+                            &mut labels,
+                            name.clone(),
+                            if is_component {
+                                Some("component".into())
+                            } else {
+                                static_detail.clone()
+                            },
+                        );
+                        if mastercss_schema::is_native_css_property(name) {
+                            push_property_completion_candidate(
+                                &mut candidates,
+                                &mut labels,
+                                name,
+                                None,
+                            );
+                        }
+                    }
                     UtilityMatcher::Pattern { prefix, values, .. } => {
                         for value in values {
                             push_value_completion_candidate(

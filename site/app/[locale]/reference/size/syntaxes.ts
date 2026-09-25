@@ -1,9 +1,3 @@
-const syntaxes = [
-  'full',
-  'fit',
-  ['size:`size`'],
-  ['size-x:`size`'],
-  ['size-y:`size`'],
-]
+const syntaxes: string[] = []
 
 export default syntaxes

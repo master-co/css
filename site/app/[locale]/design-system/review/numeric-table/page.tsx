@@ -22,7 +22,7 @@ function SpacingTable({ variant }: { variant: 'original' | 'current' | 'candidat
         <td><InlineCode>{entry.value}</InlineCode></td>
         <td>{`${Number(entry.px.toFixed(4))}px`}</td>
         <td><div className={`inline-flex w:fit-content outline:1px|solid|var(--color-line-muted) outline-offset:-1px v:middle ${pink ? 'background-color:var(--stripe-pink)' : 'demo-pattern'}`} style={{ gap: entry.value }}>
-          {Array.from({ length: 5 }, (_, index) => <span key={index} className={`inline-block size:1.5em ${pink ? 'surface-raised' : 'demo-item'}`} />)}
+          {Array.from({ length: 5 }, (_, index) => <span key={index} className={`inline-block width:1.5em height:1.5em ${pink ? 'surface-raised' : 'demo-item'}`} />)}
         </div></td>
       </tr>)}</tbody>
     </table>

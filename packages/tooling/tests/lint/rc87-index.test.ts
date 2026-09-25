@@ -392,10 +392,10 @@ describe('source content linting', () => {
 
   test('applies source fixes until class lists are stable', () => {
     expect(fixMasterCSSContent({
-      content: '<div class="size-md w-md h-md block"></div>',
+      content: '<div class="w-md h-md block"></div>',
       filePath: '/project/index.html',
       css
-    })).toBe('<div class="block size-md h-md w-md"></div>')
+    })).toBe('<div class="block h-md w-md"></div>')
   })
 
   test('uses script language ids for cjs and typescript module files', () => {

@@ -13,17 +13,17 @@ const sizingRoles = [
     description: 'Set the height of fixed regions, viewport sections, media slots, and controls.'
   },
   {
-    utility: 'size:*',
+    utility: 'width:* height:*',
     role: 'Equal axes',
     description: 'Set width and height together when the element is square by design.'
   },
   {
-    utility: 'min-w:*, min-h:*, min:*',
+    utility: 'min-w:*, min-h:*',
     role: 'Lower bound',
     description: 'Prevent collapse, allow flex children to shrink, or set a minimum usable region.'
   },
   {
-    utility: 'max-w:*, max-h:*, max:*',
+    utility: 'max-w:*, max-h:*',
     role: 'Upper bound',
     description: 'Cap growth for page wrappers, readable measures, panels, menus, and media.'
   },

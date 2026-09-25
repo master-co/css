@@ -8,9 +8,8 @@ import { publishFile } from './static-publication'
 const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex')
 
 /** The host loads entry CSS in place; publish every retained child before returning it. */
-export async function deliverNextStylesheet(file: string, projectDir: string, onDependency: (file: string) => void,
-  compile: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<MasterCSSCompiledStylesheet>) {
-  const directory = join(projectDir, '.master/stylesheets', hash(file))
+export async function deliverNextStylesheet<T extends Pick<MasterCSSCompiledStylesheet, 'entry' | 'stylesheets' | 'resources' | 'css' | 'sourceMap'>>(file: string, projectDir: string, onDependency: (file: string) => void,
+  compile: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<T>, sharedGlobals = false) {
   const href = (output: string) => './' + output
   const resources = new Map<string, Buffer>()
   const read = (file: string) => {
@@ -27,7 +26,14 @@ export async function deliverNextStylesheet(file: string, projectDir: string, on
     onDependency
   }
   let result = await compile(delivery)
-  revision = hash(JSON.stringify({ version: 2, stylesheets: result.stylesheets })) + '-'
+  // Generated globals have no local Module identity. Their resolved CSS already
+  // contains content-addressed resource URLs, so identical resource sets from
+  // separate modules can share one delivery entry without changing selectors.
+  const identity = sharedGlobals
+    ? hash(JSON.stringify({ version: 2, kind: 'generated-globals', stylesheets: result.stylesheets?.map(({ css, sourceMap }) => ({ css, sourceMap })) }))
+    : hash(file)
+  const directory = join(projectDir, '.master/stylesheets', identity)
+  revision = (sharedGlobals ? identity : hash(JSON.stringify({ version: 2, stylesheets: result.stylesheets }))) + '-'
   result = await compile(delivery)
   const assets = new Map<string, Buffer>()
   const cssBytes = new Map<string, number>()

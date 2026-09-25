@@ -12,7 +12,7 @@ export const tokenEditorial: Record<string, { context: string, guide: string, la
   easing: { context: 'Timing curves describe how an animation or transition progresses between its states.', guide: '/guide/motion', label: 'Motion' },
   'font-family': { context: 'Each value is an ordered fallback stack. Available font files determine which face the browser uses.', guide: '/guide/typography#font-families', label: 'Typography' },
   'font-feature': { context: 'OpenType feature values apply through font-feature-settings. The chosen font must support the requested feature.', guide: '/reference/font-feature-settings', label: 'Font features' },
-  'font-size': { context: 'Use font:* for a size-only change. The text:* utility combines size with the preset’s corresponding line height and letter spacing.', guide: '/guide/typography', label: 'Typography' },
+  'font-size': { context: 'Use font-size:* for a size-only change. The text:* utility combines size with the preset’s corresponding line height and letter spacing.', guide: '/guide/typography', label: 'Typography' },
   'font-weight': { context: 'Named weights map to numeric font weights. Their appearance depends on the available faces and supported weight range.', guide: '/guide/typography#font-weights', label: 'Typography' },
   leading: { context: 'These unitless line heights scale with the element’s font size.', guide: '/guide/typography#line-height', label: 'Typography' },
   order: { context: 'Order changes the visual arrangement of flex and grid items. It does not change document order or keyboard navigation order.', guide: '/reference/order', label: 'Order' },

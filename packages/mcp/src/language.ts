@@ -22,7 +22,8 @@ export async function suggestSyntax(context: MasterCSSMCPContext, options: Sugge
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context, options.context)
   const session = createToolingSessionSync({
-    manifest: requireWorkspaceManifest(manifest)
+    manifest: requireWorkspaceManifest(manifest),
+    nativeClassNames: manifest.nativeClassNames
   })
   const service = new MasterCSSLanguageService(
     { manifest: requireWorkspaceManifest(manifest) },

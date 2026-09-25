@@ -4,6 +4,7 @@ mod conditions;
 mod configuration;
 mod managed;
 mod native;
+mod sizing;
 mod stylesheets;
 mod utilities;
 mod values;
@@ -43,6 +44,7 @@ pub enum RcMigrationProfile {
     RcNative,
     RcManaged,
     RcUtilities,
+    RcSizing,
 }
 
 #[derive(Debug, Serialize)]
@@ -96,6 +98,7 @@ struct Migration {
     target_manifest: RefCell<Value>,
     query_definitions: RefCell<std::collections::BTreeMap<String, String>>,
     native_alpha: bool,
+    sizing_helpers: Vec<String>,
     managed_names: Vec<String>,
     families: Vec<Family>,
     static_families: Vec<StaticFamily>,
@@ -131,7 +134,18 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
                     .after
                     .as_deref()
                     .unwrap_or(&proposals[right].before);
-                if request.from != RcMigrationProfile::RcManaged && migration.overlap(a, b) {
+                let sizing_changed = [left, right].iter().any(|index| {
+                    proposals[*index].after.as_deref().is_some_and(|after| {
+                        after != proposals[*index].before
+                            && migration
+                                .sizing_helpers
+                                .iter()
+                                .any(|prefix| proposals[*index].before.starts_with(prefix))
+                    })
+                });
+                if (request.from != RcMigrationProfile::RcManaged || sizing_changed)
+                    && migration.overlap(a, b)
+                {
                     for index in [left, right] {
                         proposals[index].status = "review";
                         let note = "Overlapping declarations require a cascade review against the saved RC result".to_owned();
@@ -232,6 +246,7 @@ impl Migration {
             RcMigrationProfile::RcNative
                 | RcMigrationProfile::RcManaged
                 | RcMigrationProfile::RcUtilities
+                | RcMigrationProfile::RcSizing
         ) {
             configuration::Configuration {
                 manifest: request.manifest.clone(),
@@ -305,6 +320,16 @@ impl Migration {
             }
             for key in keys {
                 add_family(&mut utilities, &mut families, key, utility, true);
+                // Frozen RC aliases, absent from the current engine registry.
+                if matches!(key, "min-size" | "max-size") {
+                    add_family(
+                        &mut utilities,
+                        &mut families,
+                        key.trim_end_matches("-size"),
+                        utility,
+                        true,
+                    );
+                }
             }
         }
         for (properties, references) in builtin_token_namespaces() {
@@ -377,8 +402,10 @@ impl Migration {
         if request.from == RcMigrationProfile::RcNative {
             native::restore_query_variants(&request.stylesheets, &mut target_manifest)?;
         }
+        let sizing_helpers = sizing::add_helpers(&request.manifest, &mut target_manifest);
         Ok(Self {
             profile: request.from,
+            sizing_helpers,
             managed_names: managed::names(&request.stylesheets, &request.manifest),
             original: request.manifest.clone(),
             configuration_css: configuration.css,
@@ -443,10 +470,14 @@ impl Migration {
 
     fn convert(&self, source: &str) -> Result<String, String> {
         let after = self.convert_previous(source)?;
-        self.utility_class(source, after)
+        let after = self.utility_class(source, after)?;
+        self.sizing_class(after)
     }
 
     fn convert_previous(&self, source: &str) -> Result<String, String> {
+        if source.starts_with('{') {
+            return self.group(source);
+        }
         if let Some(name) = self.managed_reference(source) {
             return if name == source {
                 Ok(source.into())
@@ -458,7 +489,9 @@ impl Migration {
         }
         if matches!(
             self.profile,
-            RcMigrationProfile::RcManaged | RcMigrationProfile::RcUtilities
+            RcMigrationProfile::RcManaged
+                | RcMigrationProfile::RcUtilities
+                | RcMigrationProfile::RcSizing
         ) {
             return Ok(source.into());
         }

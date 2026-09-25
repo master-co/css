@@ -44,7 +44,14 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('every existing utility has a document and no component silently loses its text', async () => {
   const candidates = (await readdir(path.join(root, 'app/[locale]/reference'), { withFileTypes: true })).filter(entry => entry.isDirectory() && !entry.name.startsWith('['))
   const directories = (await Promise.all(candidates.map(async entry => await readFile(path.join(root, 'app/[locale]/reference', entry.name, 'metadata.ts')).then(() => entry, () => null)))).filter(Boolean)
-  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, directories.length)
+  const retired = ['size', 'min-size', 'max-size']
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, directories.length - retired.length)
+  for (const id of retired) {
+    const doc = catalog.documents.find(doc => doc.id === id)!
+    assert.equal(doc.kind, 'rule')
+    assert.deepEqual(doc.rows, [])
+    assert.equal(doc.guide, '/guide/migration/v2-rc#sizing-and-resolution')
+  }
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)

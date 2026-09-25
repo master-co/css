@@ -20,7 +20,7 @@ export default function Backers({ backers }: any) {
       const Avatar = () =>
         <>
           <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-          {sourceIcon && <div className="abs bottom:-3px right:-3px size:22px round p-4xs surface-raised">
+          {sourceIcon && <div className="abs bottom:-3px right:-3px width:22px height:22px round p-4xs surface-raised">
             <Image src={sourceIcon} alt="source" width="18" height="18" />
           </div>}
         </>

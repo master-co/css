@@ -145,6 +145,7 @@ pub enum ErrorCode {
     SourceParseError,
     UnknownCondition,
     MasterQueryRequiresCss,
+    RemovedPresetUtility,
     UndefinedMode,
     UtilityNameConflict,
     AmbiguousToken,
@@ -153,7 +154,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 29] = [
+    pub const ALL: [Self; 30] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -178,6 +179,7 @@ impl ErrorCode {
         Self::SourceParseError,
         Self::UnknownCondition,
         Self::MasterQueryRequiresCss,
+        Self::RemovedPresetUtility,
         Self::UndefinedMode,
         Self::UtilityNameConflict,
         Self::AmbiguousToken,
@@ -210,6 +212,7 @@ impl ErrorCode {
             Self::ClassSyntaxError => "CLASS_SYNTAX_ERROR",
             Self::SourceParseError => "SOURCE_PARSE_ERROR",
             Self::UnknownCondition => "UNKNOWN_CONDITION",
+            Self::RemovedPresetUtility => "REMOVED_PRESET_UTILITY",
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UndefinedMode => "UNDEFINED_MODE",
             Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",

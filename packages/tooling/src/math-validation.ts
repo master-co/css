@@ -1,7 +1,6 @@
 import { clone, generate, lexer, List, walk } from '@eslint/css-tree'
 import type { CssNode, FunctionNode } from '@eslint/css-tree'
-
-const functions = new Set(['calc', 'min', 'max', 'clamp', 'mod', 'rem', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'pow', 'sqrt', 'hypot', 'exp', 'abs', 'sign', 'log', 'round'])
+import { mathFunctions as functions } from './math-types'
 
 /** Check operator structure and arity, without inferring the result's dimension.
  * CSS Values 4 allows dimensional division. Normalize operands for grammar-only

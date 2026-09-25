@@ -1,4 +1,4 @@
-This guide upgrades five saved RC contracts to language v3 (an internal contract number, not the product version): **`rc-legacy`** before named tokens, **`rc-named`** before explicit modes and native queries, **`rc-native`** before the native-value boundaries, simple-query subset and deterministic source lifecycle, **`rc-managed`** before native components and ordered composition, and **`rc-utilities`** before fixed raw intent and whole-definition replacement. Check the exact installed RC versions and resolved manifest first; RC releases did not all have identical behavior. Follow stages 2–7 for applicable earlier changes, then the boundary, native-component and utility stages below.
+This guide upgrades six saved RC contracts to language v3 (an internal contract number, not the product version): **`rc-legacy`** before named tokens, **`rc-named`** before explicit modes and native queries, **`rc-native`** before the native-value boundaries, simple-query subset and deterministic source lifecycle, **`rc-managed`** before native components and ordered composition, **`rc-utilities`** before fixed raw intent and whole-definition replacement, and **`rc-sizing`** before entry ownership fixes and preset sizing removal. Check the exact installed RC versions and resolved manifest first; RC releases did not all have identical behavior. Follow stages 2–7 for applicable earlier changes, then the boundary, native-component and utility stages below.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -45,7 +45,8 @@ The RC column below is historical reference text, not executable new syntax. `br
 | `p:4x` with RC defaults | `p:1rem` | Converts the old length multiplier; verify the original settings first. |
 | `fg:$color-brand` | `fg:var(--color-brand)` | Explicit native custom-property reference. |
 | `m:sm\|md` | `m:var(--spacing-sm)\|var(--spacing-md)` | Explicit references in a multi-value declaration. |
-| `grid-cols:3`, `size:20px` | Unchanged | Explicit Master parameter utilities remain available. |
+| `grid-cols:3` | Unchanged | Explicit Master parameter utility. |
+| RC `size:20px` | `width:20px height:20px` | The paired sizing family is removed; review cascade order. |
 
 The examples above show variable-backed tokens. A token declared with `@theme inline` substitutes its declared value instead of a `var()` reference.
 
@@ -173,7 +174,7 @@ Regenerate artifacts from their source definitions. Manifest and hydration envel
 - Replace global mode settings with ordered `modes` activation definitions, and remove `rootSize`, `defaultMode`, `modeTrigger`, and `settings.modes`.
 - Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
 - Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
-- Update native and Wasm providers together to **binding ABI 12**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
+- Update native and Wasm providers together to **binding ABI 13**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
 - Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
 
 See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
@@ -368,6 +369,7 @@ Select the profile matching the **saved installation**, not the version you are 
 | `rc-native` | Explicit `@mode`, preserved native values and native query suffixes, before the simple-query and source-lifecycle contract |
 | `rc-managed` | Before native component authoring and ordered utility composition |
 | `rc-utilities` | Native components and ordered composition, before fixed raw intent and whole-definition replacement |
+| `rc-sizing` | Four utility definition forms, before entry-level replacement, token ambiguity correction, and removal of built-in paired dimensions |
 
 Every profile requires the actual package version and saved resolved manifest. `rc-native` does not apply the old mode or root-size conversions.
 
@@ -420,7 +422,7 @@ Markdown/MDX display text, code fences, inline code and frontmatter no longer ge
 
 Use `validation: 'report' | 'error'` for compiler/stylesheet APIs. The former `cssValuePolicy` option is rejected. Strict syntax/value errors fail the whole result; unknown capabilities alone do not fail. `cssSyntaxStatus`, `cssValueStatus`, `matchStatus` and `browserSupport` describe separate checks; an unchecked browser is `not-checked`.
 
-Upgrade bindings and tools together: ABI **12**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 3`; regenerate hydration priorities rather than filling missing fields with RC defaults.
+Upgrade bindings and tools together: ABI **13**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 3`; regenerate hydration priorities rather than filling missing fields with RC defaults.
 
 MCP v3 returns `{ version, metadata, diagnostics, result }`. `result` is either `{ status: 'success', data }` or `{ status: 'error', error: { code, message } }`. Read the published output schema. JSON text equals `structuredContent`; errors also set `isError`. Unavailable context/fingerprint data is null and dependencies remain explicit arrays.
 
@@ -485,8 +487,43 @@ Compare saved and new declarations, their order, selectors, conditions, variable
 
 ### Rebuild and validate the complete installation
 
-Upgrade binding ABI **12** and rebuild manifests/hydration with envelope v1 and **`languageVersion: 3`**. Older language data is rejected. Custom manifest consumers must remove `kind`, `value` matchers and segment dispatch; raw entries use a fixed key matcher. Validator, language, diagnostics and MCP outer versions stay unchanged from the preceding stage.
+Upgrade binding ABI **13** and rebuild manifests/hydration with envelope v1 and **`languageVersion: 3`**. Older language data is rejected. Custom manifest consumers must remove `kind`, `value` matchers and segment dispatch; raw entries use a fixed key matcher. Validator, language, diagnostics and MCP outer versions stay unchanged from the preceding stage.
 
 The default `validation: 'report'` keeps generated CSS and reports known math grammar errors, including missing operands, invalid separators and known function arity. `var()`, custom functions and environment-dependent results remain unknown unless a definite independent error exists. `validation: 'error'` fails the whole build without publishing partial CSS. Neither mode selects a different utility based on a value.
 
 Run builds, lint, declaration comparisons and browser checks across your rendering modes. Verify themes, conditions, hover/focus, hydration and subsequent DOM updates. Retain manual-review decisions and the saved baseline; matching current token numbers is not proof of migration equivalence.
+
+
+## Sizing and resolution \{#sizing-and-resolution\}
+
+Choose `--from rc-sizing` when upgrading from four utility definition forms with the built-in size family still present. All six profiles pass through this final migration stage. Keep the actual source package version and saved original manifest:
+
+```sh
+master-css migrate src --from rc-sizing --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json
+master-css migrate src --from rc-sizing --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json --target-manifest master.target.manifest.json --write
+```
+
+| Historical RC input | Current explicit intent |
+| --- | --- |
+| `size:20px` | `width:20px height:20px` |
+| `min-size:20px` | `min-width:20px min-height:20px` |
+| `max-size:20px` | `max-width:20px max-height:20px` |
+| `size-sm` | `width-sm height-sm`, retaining the original token |
+
+Removing the utility does not ban its name: unregistered colon inputs follow native declaration fallback. Do not assume old `size:` classes are inert; browsers may implement native behavior (the current WebKit test build applies `size`). Replace the old intent explicitly and compare computed styles. Native `@page { size: A4; }` remains untouched.
+
+The old `min` and `max` aliases retire with `min-size` and `max-size`. Logical `size-x`/`size-y` aliases and native `@page` size descriptors are unaffected.
+
+The CLI proposes one grouped replacement, for example `{width:20px;height:20px}:hover@sm!`, to retain each source occurrence and its suffix. A group is not proof of unchanged sorting. Overlapping width/height rules, selector references, dynamic construction and unproven custom definitions require manual review and block the entire write batch. A custom same-name utility retained in the target manifest is not decomposed. Re-running an applied migration is idempotent.
+
+Removed-utility advice excludes explicitly registered ordinary CSS classes. Custom tooling hosts can pass the project result’s read-only `nativeClassNames` to `createToolingSession` or `createToolingSessionSync`; this suppresses that advice without changing engine generation. The CLI, MCP and language server retain project registrations automatically.
+
+Review token names that used to work only because two definitions happened to produce equal CSS: they now diagnose ambiguity. Give conflicting families distinct prefixes; use suggested full names only when those names actually exist. Overlapping static names and raw keys now replace only their own entry, retaining unrelated aliases. Previously shadowed declarations and resources may therefore change; compare saved output before publishing.
+
+Bare `flex` still means `display:flex`. `flex:1` and `flex:hover` select the native property; write `display:flex:hover` for a state. Completion and hover follow this distinction.
+
+Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1s)` is invalid, while `width:calc(1px * 1px / 1px)` has a valid length result. Unknown functions, variables and unresolved percentage contexts remain unknown. Generation preserves declarations; `validation: 'error'` fails atomically for definite errors.
+
+Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
+
+Rebuild native/Wasm bindings (ABI 13), preset manifests and hydration alongside sources. Manifest/hydration envelope v1 and language version 3 remain unchanged; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.

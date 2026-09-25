@@ -362,14 +362,14 @@ Use `prefix-<~namespace>` for named tokens. The former `=namespace` spelling is 
     outline-color: --value();
   }
 
-  size-<~container> {
+  box-<~container> {
     width: --value();
     height: --value();
   }
 }
 ```
 
-These patterns match names such as `font-mono`, `outline-base`, and `size-sm`. A single utility retains its declared namespace fallback order. Different utilities matching the same name with different intent produce an ambiguity diagnostic; use an explicit name such as `font-family-brand` or `font-size-brand`.
+These patterns match names such as `font-mono`, `outline-base`, and `box-sm`. A single utility retains its declared namespace fallback order. Different utilities matching the same name with different intent produce an ambiguity diagnostic; use an explicit name such as `font-family-brand` or `font-size-brand`.
 
 Exact static and enum names are reserved: `bg-cover` remains background size. Resolution selects the longest registered prefix before looking up the token, preserving internal hyphens and never retrying shorter prefixes for a missing token. Use `background-color-cover` to reference a color token named `cover`.
 
@@ -381,7 +381,7 @@ Raw patterns use only `key:<*>` and accept a complete CSS value. Typed matchers 
 
 ```css
 @utilities {
-  size:<*> {
+  box:<*> {
     width: --value();
     height: --value();
   }
@@ -392,7 +392,7 @@ Raw patterns use only `key:<*>` and accept a complete CSS value. Typed matchers 
 }
 ```
 
-`size:20px` emits `width:20px;height:20px`; `size:var(--size)` emits the same properties with `var(--size)`. `size:red` still emits both declarations and tooling reports invalid CSS values. Unknown functions and environment-dependent values are preserved and reported as unknown when they cannot be verified. Values never change the selected utility.
+`box:20px` emits `width:20px;height:20px`; `box:var(--size)` emits the same properties with `var(--size)`. `box:red` still emits both declarations and tooling reports invalid CSS values. Unknown functions and environment-dependent values are preserved and reported as unknown when they cannot be verified. Values never change the selected utility.
 
 Raw patterns do not look up tokens. Use `var(--name)` explicitly, including in functions and multi-value declarations; `$name` is removed. Named colors require a separate token pattern such as `accent-<~color>`.
 
@@ -451,7 +451,7 @@ The winning definition occupies its last source position. Old nested rules, comp
   card { color: red; &:hover { color: blue; } }
   card { padding: 1rem; }
   disabled-card { }
-  size:<*> { @compose display:block; width: --value(); height: --value(); }
+  box:<*> { @compose display:block; width: --value(); height: --value(); }
 }
 ```
 
@@ -619,7 +619,7 @@ Do not put quotes, grouped class syntax, or class tokens that need CSS quoted st
 
 ```css
 .empty-state::before {
-  @compose block size:3rem round;
+  @compose block width:3rem height:3rem round;
   content: '';
 }
 
@@ -1040,3 +1040,14 @@ Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report`
 Markdown and MDX prose, inline code, fences and frontmatter are excluded from automatic generation. Actual HTML/JSX, ESM and expressions are parsed; their ordinary static strings may still be candidates. Register executable examples as virtual sources with their parent source ID, or use `@safelist`. Use explicit `kind: 'raw'` only for deliberate text sources. Parse failures report `SOURCE_PARSE_ERROR`.
 
 Automatic discovery respects project/workspace `.gitignore` files and excludes generated/dependency/output directories. Explicit `@source` may include normally ignored source files; explicit exclusions and Master/bundler outputs remain excluded.
+
+
+## Entry ownership and removed preset sizes
+
+Static matcher names and raw matcher keys each register an independent entry. A later definition in the same layer replaces the entire body for that entry, including nested rules and dependencies; other aliases from the earlier definition remain available. Empty definitions remain registered. Token identity consists of prefix and ordered namespaces; enum identity consists of prefix and the normalized key set.
+
+Different token definitions that resolve the same class are ambiguous even when their current inline values or generated CSS happen to be equal. The same token identity may emit in different layers. Diagnostics suggest only names actually registered in the manifest; otherwise define distinct prefixes.
+
+The complete entry determines intent: `flex` emits `display:flex`, while `flex:1` and `flex:hover` are native `flex` values. For a display state use `display:flex:hover`. Unknown CSS values remain generated with diagnostics; they never switch the selected entry.
+
+The preset no longer defines `size`, `min-size` or `max-size`, including their named token forms. Use explicit width and height properties. The `box` definitions above are author-defined examples, not preset utilities. Projects may define their own `size` utilities through the same public authoring contract. Native `@page { size: A4; }`, logical dimensions and other CSS properties are unchanged. See the [RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution).

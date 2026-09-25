@@ -37,7 +37,7 @@ export interface PreviewFixesOptions extends LintProjectOptions {
 async function loadLintState(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const rules = resolveMasterCSSLintRules(options.rules)
   const manifest = await loadWorkspaceManifest(context, options.context)
-  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   const files = await resolveSourceFiles(
     context,
     options.patterns ?? DEFAULT_LINT_SOURCE_PATTERNS,
@@ -85,7 +85,7 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
   const rules = resolveMasterCSSLintRules(options.rules)
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context, options.context)
-  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   try {
     const files = [lintMasterCSSContent({ content: options.content, filePath, rules, lintSession })]
 

@@ -40,7 +40,7 @@ export default async function ArticleHeader(props: any) {
           )}>
             <ChevronLeftSvg className={clsx(
               'inline-block ml:-0.313rem mr:0.313rem stroke-text-muted stroke-width:2',
-              date ? 'size:20px my:-0.25rem' : 'size:16px my:-0.188rem'
+              date ? 'width:20px height:20px my:-0.25rem' : 'width:16px height:16px my:-0.188rem'
             )} />
             {children}
           </Link>
@@ -77,7 +77,7 @@ export default async function ArticleHeader(props: any) {
           {end}
         </div>
         {icon && <div className='grid flex:0|0|auto place-content:center mx:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
-          <div className="grid place-content:center size:4.5rem size:5rem@sm" style={headerIconSlotStyle}>
+          <div className="grid place-content:center width:4.5rem height:4.5rem width:5rem@sm height:5rem@sm" style={headerIconSlotStyle}>
             {icon}
           </div>
         </div>}

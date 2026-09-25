@@ -1,7 +1,8 @@
 import { readStylesheetText } from './helpers/stylesheet-output'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import masterCSSStylesheetLoader from '../src/stylesheet-loader'
 
@@ -30,10 +31,46 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
     }
 
     masterCSSStylesheetLoader.call(context, source)
-  }).then((content) => ({ content: readStylesheetText(resourcePath, content), dependencies }))
+  }).then((content) => ({ content: readStylesheetText(resourcePath, content), code: content, dependencies }))
 }
 
 describe('Next style CSS loader', () => {
+  it('relocates global token URLs through the resource delivery graph', async () => {
+    const root = createFixture()
+    const image = join(root, 'app/pattern.svg')
+    const tokens = join(root, 'app/tokens.css')
+    writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    writeFileSync(tokens, '@theme { --image-probe: url("./pattern.svg"); }')
+    const file = join(root, 'app/Pattern.module.css')
+    const result = await runStylesheetLoader(root, file, '@reference "./tokens.css"; .card { background-image: var(--image-probe); }')
+    const entry = fileURLToPath(new URL(result.code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
+    const globalCSS = readFileSync(entry, 'utf8')
+    const href = globalCSS.match(/url\(["']?([^"')]+)["']?\)/)![1]
+    expect(existsSync(fileURLToPath(new URL(href, pathToFileURL(entry))))).toBe(true)
+    expect(result.dependencies).toContain(image)
+    expect(result.dependencies).toContain(tokens)
+    expect(result.code).toContain('var(--image-probe)')
+    expect(globalCSS).toContain('sourceMappingURL=')
+  })
+  it('shares global resources across Modules and republishes referenced changes', async () => {
+    const root = createFixture()
+    const tokens = join(root, 'app/tokens.css')
+    const source = '@reference "./tokens.css"; .card { color: var(--color-shared); }'
+    writeFileSync(tokens, '@theme { --color-shared: red; }')
+    const a = join(root, 'app/A.module.css')
+    const b = join(root, 'app/B.module.css')
+    const first = await runStylesheetLoader(root, a, source)
+    const second = await runStylesheetLoader(root, b, source)
+    const asset = (file: string, code: string) => fileURLToPath(new URL(code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
+    expect(asset(a, first.code)).toBe(asset(b, second.code))
+    expect(second.dependencies).toContain(tokens)
+    expect(second.dependencies).toContain(asset(b, second.code))
+    writeFileSync(tokens, '@theme { --color-shared: blue; }')
+    const changed = await runStylesheetLoader(root, a, source)
+    expect(asset(a, changed.code)).not.toBe(asset(a, first.code))
+    expect(changed.content).toContain('--color-shared:blue')
+    expect(changed.code).not.toContain('--color-shared:')
+  })
   it('derives native CSS from @master/css instead of hardcoding a package subpath', async () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
@@ -175,9 +212,10 @@ describe('Next style CSS loader', () => {
     expect(result.content).toContain('--color-brand:#abcdef')
     expect(result.content).not.toContain('@reference')
     if (name.endsWith('.module.css')) {
-      expect(result.content).not.toMatch(/:root\s*\{--color-brand/)
-      expect(result.content).not.toMatch(/:host\s*\{--color-brand/)
-      expect(result.content).toMatch(/\.button\s*\{--color-brand:#123456\}/)
+      expect(result.code).toMatch(/^@import /)
+      expect(result.content).toMatch(/:root\s*\{--color-brand/)
+      expect(result.code).not.toContain('--color-brand:#')
+      expect(result.content).not.toMatch(/\.button\s*\{--color-brand:/)
     }
   })
 

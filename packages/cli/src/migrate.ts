@@ -9,7 +9,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 export interface MigrateOptions {
-  from?: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities'
+  from?: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing'
   sourceVersion?: string
   cwd?: string
   manifest?: string
@@ -28,7 +28,7 @@ const languageByExtension: Record<string, string> = {
 
 /** Filesystem orchestration only. All syntax and equivalence decisions are Rust-owned. */
 export default function runMigrate(sourcePaths: string[], options: MigrateOptions = {}) {
-  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named, rc-native, rc-managed or rc-utilities.')
+  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named, rc-native, rc-managed, rc-utilities or rc-sizing.')
   const cwd = path.resolve(options.cwd || process.cwd())
   const manifestPath = path.resolve(cwd, options.manifest || 'master.rc.manifest.json')
   // An unreadable original manifest is fatal. Never substitute the new preset

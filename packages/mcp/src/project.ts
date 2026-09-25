@@ -20,6 +20,7 @@ export type SemanticContext = 'project' | 'preset'
 
 export async function loadWorkspaceManifest(context: MasterCSSMCPContext, requested: SemanticContext = 'project', explicitEntries?: readonly string[]) {
   let entries: readonly string[] = []
+  const nativeClassNames: readonly string[] = []
   let versions: ReturnType<typeof getToolingBindingInfo> | undefined
   try {
     versions = getToolingBindingInfo()
@@ -27,19 +28,20 @@ export async function loadWorkspaceManifest(context: MasterCSSMCPContext, reques
       entries = explicitEntries ?? await discoverManifestEntries({ root: context.root })
       if (!entries.length) return {
         status: 'error' as const, reason: 'entry-not-found' as const,
-        entries, dependencies: [], warnings: [], diagnostics: [],
+        entries, nativeClassNames, dependencies: [], warnings: [], diagnostics: [],
         context: requested, versions, fingerprint: null,
         error: 'No project CSS entry was found. Add a project entry or explicitly select context: "preset".'
       }
     }
     const result = requested === 'preset'
-      ? { manifest: defaultManifest, entries: [], dependencies: [], diagnostics: [] }
+      ? { manifest: defaultManifest, nativeClassNames, entries: [], dependencies: [], diagnostics: [] }
       : await loadProjectManifest({ root: context.root, entries, baseManifest: { version: 1, languageVersion: 3 } })
     return {
       status: 'loaded' as const,
       context: requested, versions,
       fingerprint: manifestFingerprint(result.manifest),
       manifest: result.manifest,
+      nativeClassNames: result.nativeClassNames,
       entries: result.entries,
       dependencies: result.dependencies ?? [],
       diagnostics: result.diagnostics,
@@ -49,7 +51,7 @@ export async function loadWorkspaceManifest(context: MasterCSSMCPContext, reques
     return {
       status: 'error' as const, reason: 'entry-load-failed' as const,
       context: requested, versions, fingerprint: null,
-      entries, dependencies: [] as string[], warnings: [] as string[],
+      entries, nativeClassNames, dependencies: [] as string[], warnings: [] as string[],
       diagnostics: error && typeof error === 'object' && 'diagnostics' in error && Array.isArray(error.diagnostics)
         ? error.diagnostics : error && typeof error === 'object' && 'diagnostic' in error ? [error.diagnostic] : [],
       error: getErrorMessage(error)
@@ -68,7 +70,7 @@ export function requireWorkspaceManifest(result: Awaited<ReturnType<typeof loadW
 }
 
 export function manifestMetadata(result: Awaited<ReturnType<typeof loadWorkspaceManifest>>) {
-  const { manifest: _manifest, ...metadata } = { manifest: undefined, ...result }
+  const { manifest: _manifest, nativeClassNames: _nativeClassNames, ...metadata } = { manifest: undefined, ...result }
   return metadata
 }
 

@@ -471,8 +471,10 @@ export async function transformLocalStylesheet(
   }
   const {
     emittedGlobals,
+    generatedGlobals = 'inline',
     ...compileOptions
   } = options
+  if (generatedGlobals !== 'inline' && generatedGlobals !== 'separate') throw new TypeError('generatedGlobals must be inline or separate.')
   if (options.delivery) {
     const compiled = await compileDeliveredSource(cleanStyleRequest(id), await preprocessStylesheet(source, id, options), {
       ...compileOptions,
@@ -485,9 +487,10 @@ export async function transformLocalStylesheet(
       includeGeneratedCSS: false,
       emittedGlobals
     })
-    const code = [compiled.directives.css, rendered.generatedCSS].filter(Boolean).join('\n\n')
+    const code = [compiled.directives.css, generatedGlobals === 'inline' && rendered.generatedCSS].filter(Boolean).join('\n\n')
     return {
       code, transformed: true, dependencies: compiled.directives.dependencies,
+      ...(generatedGlobals === 'separate' && rendered.generatedCSS ? { globalStylesheet: { css: rendered.generatedCSS } } : {}),
       stylesheets: compiled.stylesheets.filter(asset => asset.id !== compiled.entry).map(({ id, href, css }) => ({ id, href, css })),
       resources: compiled.resources,
       result: { ...compiled.directives, css: code, generatedCSS: rendered.generatedCSS }
@@ -507,12 +510,13 @@ export async function transformLocalStylesheet(
     ...result,
     dependencies: finalizedResult.dependencies,
     warnings: finalizedResult.warnings,
-    css: renderedCSS.css,
-    sourceMap: outputMap(renderedCSS.css),
+    css: generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css,
+    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css),
     generatedCSS: renderedCSS.generatedCSS
   }
   return {
     code: transformedResult.css || transformedResult.nativeCSS || '',
+    ...(generatedGlobals === 'separate' && renderedCSS.generatedCSS ? { globalStylesheet: { css: renderedCSS.generatedCSS } } : {}),
     dependencies: [...new Set([cleanStyleRequest(id), ...(transformedResult.dependencies || [])])],
     transformed: true,
     result: transformedResult

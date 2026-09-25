@@ -1,0 +1,63 @@
+{
+  "runs": [
+    {
+      "bundler": "turbo",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1566.4514579999995,
+          "burstMs": 1567.5506250000017,
+          "singleStarted": 1790348867036,
+          "burstStarted": 1790348868603,
+          "finished": 1790348870170
+        },
+        {
+          "singleMs": 1482.4324579999993,
+          "burstMs": 1349.0459169999995,
+          "singleStarted": 1790348870170,
+          "burstStarted": 1790348871653,
+          "finished": 1790348873002
+        },
+        {
+          "singleMs": 1567.7263749999984,
+          "burstMs": 1350.0824170000014,
+          "singleStarted": 1790348873002,
+          "burstStarted": 1790348874570,
+          "finished": 1790348875920
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain."
+    },
+    {
+      "bundler": "webpack",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1265.4989169999972,
+          "burstMs": 1267.6923339999994,
+          "singleStarted": 1790348889209,
+          "burstStarted": 1790348890475,
+          "finished": 1790348891742
+        },
+        {
+          "singleMs": 1299.9984170000025,
+          "burstMs": 1266.4860000000044,
+          "singleStarted": 1790348891742,
+          "burstStarted": 1790348893042,
+          "finished": 1790348894309
+        },
+        {
+          "singleMs": 1233.3035419999942,
+          "burstMs": 1233.2612920000029,
+          "singleStarted": 1790348894309,
+          "burstStarted": 1790348895542,
+          "finished": 1790348896776
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain."
+    }
+  ],
+  "note": "Current revision HMR only; no matched baseline HMR measurement in this run."
+}

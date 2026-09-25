@@ -14,7 +14,7 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   const Nav = ({ definedMetadata, navigatorIconClass }: any) =>
     <Link href={definedMetadata.pathname} passHref className="flex-col flex:1|1|100% justify-start! r-sm flex:1|1|50%@sm">
       <div className='flex items-center'>
-        <IconChevronLeft className={clsx('size:14px stroke-text-subtle vertical-align:middle', navigatorIconClass)} />
+        <IconChevronLeft className={clsx('width:14px height:14px stroke-text-subtle vertical-align:middle', navigatorIconClass)} />
         <span className="font-xs text-muted">{$(definedMetadata.category)}</span>
       </div>
       <div className="clamp-lines:1 w:100% mt-sm font-md text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>

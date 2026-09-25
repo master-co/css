@@ -9,24 +9,24 @@ A circular clip hides paint outside its boundary. The outer outline marks the un
 
 ```html
 <!-- No clip · complete square -->
-<div class="size:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block size:160px max-w:100% clip-none
+  class="block width:160px height:160px max-w:100% clip-none
          object-cover object-right" />
 </div>
 ```
 
 ```html
 <!-- Circle · 60px radius -->
-<div class="size:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block size:160px max-w:100% object-cover
+  class="block width:160px height:160px max-w:100% object-cover
          object-right clip-path:circle(60px)" />
 </div>
 ```
@@ -83,12 +83,12 @@ Widen to `sm` to restore the complete image with `clip-none`. Print also shows t
 
 ```html
 <!-- Circle → full image at sm -->
-<div class="size:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block size:160px max-w:100% object-cover
+  class="block width:160px height:160px max-w:100% object-cover
          object-right clip-path:circle(60px)
          clip-none@print clip-none@screen@sm" />
 </div>

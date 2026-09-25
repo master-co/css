@@ -15,6 +15,8 @@ export { cssValueStatus, validateRuleDeclarations, CSS_VALUE_CHECK } from './val
 
 export function createToolingSessionSync(options: {
   readonly manifest: MasterCSSManifest
+  /** Explicit native class registrations; suppresses retired-utility advice only. */
+  readonly nativeClassNames?: readonly string[]
 }): MasterCSSToolingSession {
   const tooling = createToolingBindingSync()
   const lexer = tooling.createLexerSession()
@@ -29,10 +31,11 @@ export function createToolingSessionSync(options: {
     source: bindSourceExtractor('native', source),
     validator: bindValidatorSession(
       'native',
-      validator
+      validator,
+      options.nativeClassNames
     ),
     lint: bindLintSession(lint, lintValidator, lintLanguage),
-    language: bindLanguageSession('native', language)
+    language: bindLanguageSession('native', language, options.nativeClassNames)
   })
 }
 

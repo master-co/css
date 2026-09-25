@@ -63,7 +63,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
 
                 return (
                   <div key={segment.id} className="inline-flex items-center gap-2xs font-xs text-muted">
-                    <span className={clsx('inline-block size:0.625rem r-xs', colorClasses.background)} />
+                    <span className={clsx('inline-block width:0.625rem height:0.625rem r-xs', colorClasses.background)} />
                     <span><Translate>{segment.label}</Translate></span>
                     <span className="text-strong">{valueLabel}</span>
                   </div>

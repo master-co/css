@@ -604,3 +604,18 @@ test('rejects script config paths', async () => {
     rmSync(cwd, { recursive: true, force: true })
   }
 })
+
+
+test('projects immutable native registrations from imported CSS for tooling', async () => {
+  const root = createFixture()
+  try {
+    writeFileSync(join(root, 'index.css'), '@master entry; @import "./native.css";')
+    writeFileSync(join(root, 'native.css'), String.raw`.size\:20px { color: red; }`)
+    const options = { root, entries: [join(root, 'index.css')], baseManifest: defaultManifest }
+    for (const result of [await loadProjectManifest(options), loadProjectManifestSync(options)]) {
+      expect(result.nativeClassNames).toContain('size:20px')
+      expect(Object.isFrozen(result.nativeClassNames)).toBe(true)
+      expect(result.manifest).not.toHaveProperty('nativeClassNames')
+    }
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
