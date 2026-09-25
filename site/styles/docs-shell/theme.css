@@ -4,7 +4,7 @@
 .light { color-scheme: light; }
 .dark { color-scheme: dark; }
 
-@theme static {
+@theme {
   --content-hash: " #";
   --content-external: " ↗";
   --font-sans: "Geist", "Noto Sans TC";
@@ -13,8 +13,6 @@
   --font-feature-mono: "cv01", "cv02", "cv29";
   --radius-card: 0.75rem;
   --radius-panel: 1rem;
-  --color-review-link: var(--color-text-link);
-  --spacing-review-detail: var(--spacing-3xs);
 
   @keyframes slide-to-right {
     from {
@@ -27,7 +25,7 @@
   }
 }
 
-@theme static light {
+@theme light {
   --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, var(--color-line-muted) 4.5%, transparent 0, transparent 50%, var(--color-line-muted) 0, var(--color-line-muted) 54.5%, transparent 0) transparent;
   --stripe-pink: 0 / 7.5px 7.5px linear-gradient(135deg, color-mix(in oklab, var(--color-pink) 40%, transparent) 4.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent) 50%, color-mix(in oklab, var(--color-pink) 40%, transparent) 0, color-mix(in oklab, var(--color-pink) 40%, transparent) 54.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent));
   --tiny: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='black' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E") center;
@@ -46,7 +44,7 @@
   --color-text-info: var(--color-cyan-70);
 }
 
-@theme static dark {
+@theme dark {
   --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, var(--color-line-muted) 4.5%, transparent 0, transparent 50%, var(--color-line-muted) 0, var(--color-line-muted) 54.5%, transparent 0) transparent;
   --stripe-pink: 0 / 7.5px 7.5px linear-gradient(135deg, color-mix(in oklab, var(--color-pink) 40%, transparent) 4.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent) 50%, color-mix(in oklab, var(--color-pink) 40%, transparent) 0, color-mix(in oklab, var(--color-pink) 40%, transparent) 54.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent));
   --tiny: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='white' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E") center;

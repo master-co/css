@@ -27,6 +27,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
   } as never)
 
   const config = updateConfig.mock.calls[0]?.[0] as {
+    build?: { inlineStylesheets?: string },
     vite?: {
       plugins?: unknown[],
       ssr?: { external?: string[] },
@@ -40,6 +41,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
     injectScript,
     plugins,
     pluginNames: plugins.map(({ name }) => name),
+    buildConfig: config?.build,
     viteConfig: config?.vite
   }
 }
@@ -99,6 +101,7 @@ describe('@master/css-astro integration', () => {
     const result = await setup()
     expect(result.addMiddleware).not.toHaveBeenCalled()
     expect(result.injectScript).not.toHaveBeenCalled()
+    expect(result.buildConfig?.inlineStylesheets).toBe('never')
   })
 
   it('preloads the runtime manifest JSON in runtime static builds', async () => {

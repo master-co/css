@@ -1,0 +1,36 @@
+@reference "../../../../globals.css";
+.review-text-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
+.review-text-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
+.review-text-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }
+.review-text-intro { max-width: 67ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.65; }
+.review-text-reviewNote { max-width: 67ch; margin: 1.5rem 0 3.5rem; padding: .8rem 1rem; border-left: 2px solid var(--color-blue-60); background: var(--color-surface-raised); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
+.review-text-review section + section { margin-top: 4rem; }
+.review-text-review h2 { margin: 0 0 1.35rem; font-size: 1.25rem; font-weight: 570; line-height: 1.3; letter-spacing: -.02em; }
+.review-text-comparison { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.review-text-option { min-width: 0; }
+.review-text-optionHeading { display: flex; align-items: baseline; gap: .75rem; padding: 0 .25rem .9rem; border-bottom: 1px solid var(--color-line-subtle); }
+.review-text-optionHeading > span { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
+.review-text-optionHeading h3 { margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
+.review-text-optionHeading p { margin: .125rem 0 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.4; }
+.review-text-optionNote, .review-text-sectionCopy { margin: .75rem .25rem 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
+.review-text-sectionCopy { margin: -1rem 0 1rem; max-width: 65ch; font-size: .8125rem; }
+.review-text-comparison .demo, .review-text-comparison .site-demo { margin: 1rem 0 0; min-height: 11rem; }
+.review-text-comparison .site-demo { display: flex; align-items: center; }
+.review-text-comparison .demo-canvas { width: 100%; }
+.review-text-textStage { width: 100%; max-width: 17rem; margin: 0 auto; }
+.review-text-roleStack { display: grid; gap: 0; width: min(100%, 42rem); margin: 0 auto; }
+.review-text-roleRow { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: 1.5rem; align-items: baseline; padding: 1.25rem 0; border-bottom: 1px solid var(--color-demo-line); }
+.review-text-roleRow:last-child { border-bottom: 0; }
+.review-text-roleRow > span, .review-text-pairLabel { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
+.review-text-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
+.review-text-sectionHeading h2 { margin-bottom: .25rem; }
+.review-text-sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }
+.review-text-sectionHeading a { color: var(--color-blue-60); font-size: .8125rem; text-decoration: none; }
+.review-text-sectionHeading a:hover { text-decoration: underline; }
+.review-text-sectionHeading a:focus-visible { outline: 2px solid var(--color-blue-60); outline-offset: 4px; border-radius: 2px; }
+.review-text-actualPair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.review-text-actualPair > div { min-width: 0; }
+.review-text-actualPair .site-demo { margin: .75rem 0 0; }
+@media (max-width: 70rem) { .review-text-comparison { grid-template-columns: 1fr; } }
+@media (max-width: 50rem) { .review-text-actualPair { grid-template-columns: 1fr; } }
+@media (max-width: 28rem) { .review-text-roleRow { grid-template-columns: 1fr; gap: .5rem; } }

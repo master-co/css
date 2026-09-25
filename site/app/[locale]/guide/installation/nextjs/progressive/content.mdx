@@ -51,3 +51,5 @@ export default function Home() {
   )
 }
 ```
+
+(!) Turbopack cannot currently compile Master CSS directives inside CSS Modules. Use a page-imported ordinary CSS file with `@reference` for local project-token styles, and scope its classes to the page. Native CSS Modules without Master directives still work; the Next.js Webpack path can compile directive-bearing CSS Modules.

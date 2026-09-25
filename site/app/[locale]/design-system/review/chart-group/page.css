@@ -1,0 +1,31 @@
+@reference "../../../../globals.css";
+.review-chart-group-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
+.review-chart-group-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
+.review-chart-group-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }
+.review-chart-group-intro { max-width: 67ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.65; }
+.review-chart-group-reviewNote { max-width: 67ch; margin: 1.5rem 0 1rem; padding: .8rem 1rem; border-left: 2px solid var(--color-blue-60); background: var(--color-surface-raised); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
+.review-chart-group-themeControl { display: inline-flex; align-items: center; gap: .75rem; margin: 0 0 2.5rem; color: var(--color-text-muted); font-size: .75rem; }
+.review-chart-group-themeSelect { position: relative; display: inline-flex; align-items: center; min-height: 2.25rem; padding: .4rem .75rem; border: 1px solid var(--color-line-base); border-radius: var(--radius-sm); background: var(--color-surface-raised); color: var(--color-text-body); font-family: var(--font-family-mono); }
+.review-chart-group-themeSelect:focus-within { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
+.review-chart-group-review section + section { margin-top: 4rem; }
+.review-chart-group-review h2 { margin: 0 0 .5rem; font-size: 1.25rem; font-weight: 570; line-height: 1.3; letter-spacing: -.02em; }
+.review-chart-group-sectionCopy { margin: 0 0 1.25rem; max-width: 65ch; color: var(--color-text-muted); font-size: .8125rem; line-height: 1.55; }
+.review-chart-group-options { display: grid; gap: 2.5rem; }
+.review-chart-group-option { min-width: 0; }
+.review-chart-group-optionHeading { display: flex; align-items: baseline; gap: .75rem; padding: 0 .25rem .7rem; border-bottom: 1px solid var(--color-line-subtle); }
+.review-chart-group-optionHeading > span { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
+.review-chart-group-optionHeading h3 { margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
+.review-chart-group-optionHeading p { margin: .125rem 0 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.4; }
+.review-chart-group-optionPreview { max-width: 42rem; min-width: 0; margin: .85rem 0 0; padding: 1.25rem 1rem 1.35rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
+.review-chart-group-optionNote { margin: .7rem .25rem 0; max-width: 70ch; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
+.review-chart-group-original h4 { margin: 0 0 1rem; color: var(--color-text-strong); font-size: 1rem; font-weight: 500; }
+.review-chart-group-previousGroup { display: grid; gap: var(--spacing-md); padding-block: var(--spacing-sm); }
+.review-chart-group-previousHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-2xs) var(--spacing-sm); border-bottom: 1px solid var(--color-demo-line); padding-bottom: var(--spacing-xs); }
+.review-chart-group-previousHeading h4 { margin: 0; color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: 550; }
+.review-chart-group-previousHeading > span { color: var(--color-text-muted); font-size: var(--font-size-xs); }
+.review-chart-group-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
+.review-chart-group-sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }
+.review-chart-group-sectionHeading a { color: var(--color-blue-60); font-size: .8125rem; text-decoration: none; }
+.review-chart-group-sectionHeading a:hover { text-decoration: underline; }
+.review-chart-group-sectionHeading a:focus-visible { outline: 2px solid var(--color-blue-60); outline-offset: 4px; border-radius: 2px; }
+.review-chart-group-realUse { max-width: 42rem; padding: 1.25rem 1rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-raised); }

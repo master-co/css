@@ -58,6 +58,12 @@ export function createMasterCSSAstroIntegration(
             break
         }
         updateConfig({
+          build: {
+            // Master CSS may split referenced local styles into a CSS import
+            // graph. Astro's inline CSS mode loses the asset base for those
+            // imports, so keep the entry stylesheet external.
+            inlineStylesheets: 'never'
+          },
           vite: {
             define: { __MASTER_CSS_ASTRO_PROGRESSIVE__: JSON.stringify(options.mode === 'progressive') },
             // Vite owns one manifest/emitted-globals pipeline. Astro owns

@@ -1,5 +1,7 @@
 @import '@master/css';
 @source './app.vue';
+@theme light { --color-probe: #123456; }
+@theme dark { --color-probe: #abcdef; }
 
 @layer components {
   .box {

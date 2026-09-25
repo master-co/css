@@ -471,6 +471,31 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
+  test.each(['Button.css', 'Button.module.css'])('emits native token references in local %s without a utility class', async (name) => {
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-native-reference-'))
+    const entryPath = path.join(root, 'app.css')
+    const localPath = path.join(root, name)
+    try {
+      writeFileSync(entryPath, [
+        '@master entry;',
+        '@theme light { --color-brand: #123456; }',
+        '@theme dark { --color-brand: #abcdef; }'
+      ].join('\n'))
+      const result = await transformStyleSource(localPath, '@reference "./app.css"; .button { color: var(--color-brand); }', {
+        projectDir: root,
+        masterImport: '../node_modules/.master-css/master-utilities.css'
+      })
+
+      expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
+      expect(result.code).toContain('--color-brand:#123456')
+      expect(result.code).toContain('--color-brand:#abcdef')
+      expect(result.code).not.toContain('@reference')
+      expect(result.dependencies).toContain(entryPath)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('leaves ordinary CSS unchanged in the style loader helper', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
     const modulePath = path.join(root, 'Button.module.css')

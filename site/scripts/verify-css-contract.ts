@@ -104,6 +104,13 @@ if (!expected) {
 }
 
 async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot> {
+    for (const sourceDirectory of ['app', 'components', 'docs-shell', 'styles']) {
+        for (const file of await listFiles(path.join(siteDir, sourceDirectory))) {
+            if (file.endsWith('.module.css')) {
+                throw new Error(`Site runtime styles must use route or component CSS: ${path.relative(siteDir, file)}`)
+            }
+        }
+    }
     if (!await exists(outDir)) {
         throw new Error(`Missing ${outDir}. Run \`pnpm build:site\` first.`)
     }
@@ -211,21 +218,27 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
         reference: '.reference-document',
         benchmark: '.benchmark-bars',
         demo: '.site-demo',
-        button: '.btn{'
+        button: '.btn{',
+        review: '.review-asset-'
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
-        '/': { reference: false, benchmark: false, demo: false, button: false },
-        '/play': { reference: false, benchmark: false, demo: false, button: false },
+        '/': { reference: false, benchmark: false, demo: false, button: false, review: false },
+        '/play': { reference: false, benchmark: false, demo: false, button: false, review: false },
         '/guide': { reference: false, benchmark: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/guide/benchmarks': { benchmark: true, reference: false },
         '/design-system': { demo: true, benchmark: true, reference: false },
-        '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false }
+        '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false },
+        '/design-system/review/asset': { review: true, reference: false, benchmark: false }
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
         if (css.includes(selectors[group as keyof typeof selectors]) !== present) {
             throw new Error(`${route} ${present ? 'is missing' : 'unexpectedly includes'} ${group} styles.`)
         }
+    }
+    const reviewRoute = route.match(/^\/design-system\/review\/([a-z-]+)$/)
+    if (reviewRoute && !css.includes(`.review-${reviewRoute[1]}-`)) {
+        throw new Error(`${route} is missing its page-local review styles.`)
     }
     const requiredVariables: Record<string, string[]> = {
         '/': ['--color-text-subtle:', '--color-surface-muted:'],

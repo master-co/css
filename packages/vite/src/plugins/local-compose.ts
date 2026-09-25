@@ -149,7 +149,18 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         }
         let output = result.code
         if (inline) registerLocalInlineStylesheet(context, id, result)
-        else if (context.config?.command === 'build') output = registerLocalStylesheet(context, id, result)
+        else if (context.config?.command === 'build') {
+          // Vue scopes selectors after this transform. Keep native rules in
+          // that pipeline, while the generated theme rules remain global.
+          const scopedVueStyle = id.includes('?vue&') && /(?:^|[?&])scoped(?:=|&|$)/u.test(id)
+          if (scopedVueStyle && result.compilation && !result.stylesheets?.length) {
+            const { nativeCSS, generatedCSS } = result.compilation
+            if (generatedCSS) {
+              const slot = registerLocalStylesheet(context, id, { ...result, code: generatedCSS })
+              output = `${nativeCSS}\n:global(${slot.slice(0, slot.indexOf('{'))})${slot.slice(slot.indexOf('{'))}`
+            } else output = nativeCSS
+          } else output = registerLocalStylesheet(context, id, result)
+        }
         else if (context.config?.command === 'serve') output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: emittedGlobalsResult.emittedGlobals }, '#master-css-local-slot{--slot:0}')
         return {
           code: output,

@@ -558,6 +558,23 @@ function applyMasterCSSStaticTurbopackConfig(
     ],
     type: 'css' as const
   }
+  // Static publication owns entry stylesheets, but local styles still need
+  // directive lowering and referenced theme resources before Next emits CSS.
+  // Keep CSS Modules on Next's built-in path: Turbopack cannot process the
+  // transformed inner CSS asset produced by a custom module stylesheet loader.
+  const localStyleRule = {
+    condition: {
+      all: [
+        { path: /\.(css|scss|sass)$/ },
+        { not: { path: /\.module\.(css|scss|sass)$/ } },
+        { not: { content: createManifestEntryPattern() } },
+        { any: [{ content: MASTER_CSS_STYLE_CONTENT_PATTERN }, { path: /\.(scss|sass)$/ }] },
+        { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+      ]
+    },
+    loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
+    type: 'css' as const
+  }
   return {
     ...turbopackConfig,
     rules: {
@@ -565,6 +582,7 @@ function applyMasterCSSStaticTurbopackConfig(
       '*': [
         ...sourceRules,
         cssImportRule,
+        localStyleRule,
         ...starRules
       ]
     } satisfies TurbopackRules

@@ -79,3 +79,21 @@ test('nested CSS and resource edits change the real entry content hash and prese
     expect(resourceEdit.files).not.toContain(firstResource)
   } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120000)
+
+test.each(['local.css', 'local.module.css'])('delivers referenced native theme variables from %s', async localName => {
+  const root = fixture()
+  try {
+    writeFileSync(join(root, 'entry.js'), `import "./entry.css"; import "./${localName}"`)
+    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}')
+    writeFileSync(join(root, localName), '@reference "./entry.css";.button{color:var(--color-brand)}')
+    const result = await build(root)
+    const css = Object.values(result.contents).join('\n')
+    const variable = localName.endsWith('.module.css') ? css.match(/color:var\((--[\w-]+)\)/)?.[1] : '--color-brand'
+    expect(variable).toBeTruthy()
+    expect(css).toContain(`color:var(${variable})`)
+    expect(css).toContain(`${variable}:#123456`)
+    expect(css).toContain(`${variable}:#abcdef`)
+    expect(css).not.toContain('@reference')
+    expect(css).toMatch(localName.endsWith('.module.css') ? /\.[\w-]+\{color:var\(/ : /\.button\{color:var\(/)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+}, 120000)

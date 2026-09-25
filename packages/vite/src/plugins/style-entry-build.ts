@@ -86,7 +86,11 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
             replacedAny = true
             for (const asset of graph.assets) {
               const fileName = posix.join(posix.dirname(eachCssFileName), asset.href)
-              this.emitFile({ type: 'asset', fileName, source: asset.css })
+              // These are already-final CSS graph assets referenced by @import
+              // from the host stylesheet. Astro prunes CSS assets without a
+              // page ownership record, so avoid classifying them as new host
+              // stylesheets merely by their asset name.
+              this.emitFile({ type: 'asset', fileName, name: 'master-css-generated', source: asset.css })
             }
             for (const resource of graph.resources ?? []) {
               const fileName = posix.join(posix.dirname(eachCssFileName), resource.href)

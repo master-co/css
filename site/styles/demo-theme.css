@@ -1,9 +1,9 @@
-@theme static {
+@theme {
   --demo-radius: var(--radius-md);
   --demo-grid-size: 1.25rem;
 }
 
-@theme static light {
+@theme light {
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
@@ -17,7 +17,7 @@
   --color-demo-on-solid: var(--color-white);
 }
 
-@theme static dark {
+@theme dark {
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
@@ -31,7 +31,7 @@
   --color-demo-on-solid: var(--color-black);
 }
 
-@theme static {
+@theme {
   --demo-asset-preview-size: 11rem;
   --color-demo-asset-light: var(--color-white);
   --color-demo-asset-dark: var(--color-gray-95);

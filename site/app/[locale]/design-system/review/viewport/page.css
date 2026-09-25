@@ -1,0 +1,32 @@
+@reference "../../../../globals.css";
+.review-viewport-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
+.review-viewport-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
+.review-viewport-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }
+.review-viewport-intro { max-width: 67ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.65; }
+.review-viewport-reviewNote { max-width: 67ch; margin: 1.5rem 0 3.5rem; padding: .8rem 1rem; border-left: 2px solid var(--color-blue-60); background: var(--color-surface-raised); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
+.review-viewport-review section + section { margin-top: 4rem; }
+.review-viewport-review h2 { margin: 0 0 .5rem; font-size: 1.25rem; font-weight: 570; line-height: 1.3; letter-spacing: -.02em; }
+.review-viewport-sectionCopy { margin: 0 0 1.25rem; max-width: 65ch; color: var(--color-text-muted); font-size: .8125rem; line-height: 1.55; }
+.review-viewport-options { display: grid; gap: 1.5rem; }
+.review-viewport-option { min-width: 0; }
+.review-viewport-optionHeading { display: flex; align-items: baseline; gap: .75rem; padding: 0 .25rem .7rem; border-bottom: 1px solid var(--color-line-subtle); }
+.review-viewport-optionHeading > span { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
+.review-viewport-optionHeading h3 { margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
+.review-viewport-optionHeading p { margin: .125rem 0 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.4; }
+.review-viewport-optionPreview .demo, .review-viewport-optionPreview .site-demo { margin: .75rem 0 0; }
+.review-viewport-optionNote { margin: .65rem .25rem 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
+.review-viewport-current, .review-viewport-candidate { min-width: 0; }
+.review-viewport-current .demo-viewport-frame { padding: 0; background: transparent; }
+.review-viewport-current .demo-viewport-shell { outline: 0; border-radius: 0; background: transparent; }
+.review-viewport-current .demo-viewport-toolbar { gap: var(--spacing-xs); border: 0; border-top: 1px solid var(--color-demo-line); border-radius: 0; background: transparent; }
+.review-viewport-current .demo-viewport-status { color: var(--color-demo-muted); font: .625rem var(--font-family-mono); }
+.review-viewport-current .demo-viewport-presets { padding: 0; gap: var(--spacing-xs); border: 0; border-radius: 0; background: transparent; }
+.review-viewport-current .demo-viewport-presets .demo-button { min-height: 2rem; border-color: var(--color-demo-line); background: var(--color-demo-surface); }
+.review-viewport-current .demo-viewport-presets .demo-button[aria-pressed="true"] { border-color: var(--color-demo-blue); background: var(--color-demo-surface); box-shadow: none; }
+.review-viewport-current .demo-viewport-width { min-height: 0; }
+.review-viewport-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
+.review-viewport-sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }
+.review-viewport-sectionHeading a { color: var(--color-blue-60); font-size: .8125rem; text-decoration: none; }
+.review-viewport-sectionHeading a:hover { text-decoration: underline; }
+.review-viewport-sectionHeading a:focus-visible { outline: 2px solid var(--color-blue-60); outline-offset: 4px; border-radius: 2px; }
+.review-viewport-review section:last-child > .demo, .review-viewport-review section:last-child > .site-demo { margin: .75rem 0 0; }

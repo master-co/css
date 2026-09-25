@@ -155,20 +155,30 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toContain(globalsPath)
   })
 
-  it('emits a theme variable used by native CSS in a referenced local stylesheet', async () => {
+  it.each(['button.css', 'button.module.css'])('emits mode variables used by native CSS in referenced %s', async (name) => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
-    writeFileSync(globalsPath, '@master entry; @theme { --color-brand: #123456; }')
+    writeFileSync(globalsPath, [
+      '@master entry;',
+      '@theme light { --color-brand: #123456; }',
+      '@theme dark { --color-brand: #abcdef; }'
+    ].join('\n'))
 
     const result = await runStylesheetLoader(
       root,
-      join(root, 'app/button.css'),
+      join(root, 'app', name),
       '@reference "./globals.css"; .button { color: var(--color-brand); }'
     )
 
     expect(result.content).toMatch(/color:\s*var\(--color-brand\)/)
-    expect(result.content).toContain('--color-brand:')
+    expect(result.content).toContain('--color-brand:#123456')
+    expect(result.content).toContain('--color-brand:#abcdef')
     expect(result.content).not.toContain('@reference')
+    if (name.endsWith('.module.css')) {
+      expect(result.content).not.toMatch(/:root\s*\{--color-brand/)
+      expect(result.content).not.toMatch(/:host\s*\{--color-brand/)
+      expect(result.content).toMatch(/\.button\s*\{--color-brand:#123456\}/)
+    }
   })
 
   it('emits referenced default theme variables for page-level CSS', async () => {

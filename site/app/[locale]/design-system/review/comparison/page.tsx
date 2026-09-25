@@ -3,7 +3,7 @@ import OriginalDemo from '~/site/docs-shell/components/Demo'
 import Demo from '~/site/components/demo/Demo'
 import { DemoComparison } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/app/[locale]/guide/elevation/components/ShadowTokens'
-import styles from './page.module.css'
+import './page.css'
 
 export const metadata = {
   title: 'Demo comparison review',
@@ -17,10 +17,10 @@ const specimens = [
 
 function ShadowSpecimens() {
   return specimens.map(({ key, utility, role, description }) => (
-    <div className={`${styles.specimen} surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
-      <code className={styles.utility}>{utility}</code>
-      <div className={styles.role}>{role}</div>
-      <p className={styles.description}>{description}</p>
+    <div className={`review-comparison-specimen surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
+      <code className="review-comparison-utility">{utility}</code>
+      <div className="review-comparison-role">{role}</div>
+      <p className="review-comparison-description">{description}</p>
     </div>
   ))
 }
@@ -38,7 +38,7 @@ const options = [
   {
     number: '02', title: 'Previous', detail: 'Earlier shared DemoComparison',
     note: 'The earlier auto-fit grid uses a 14rem minimum and the medium gap.',
-    preview: <Demo><div className={styles.previous}><ShadowSpecimens /></div></Demo>
+    preview: <Demo><div className="review-comparison-previous"><ShadowSpecimens /></div></Demo>
   },
   {
     number: '03', title: 'Adopted', detail: 'Shared DemoComparison',
@@ -48,31 +48,31 @@ const options = [
 ] as const
 
 export default function Page() {
-  return <main className={styles.review}>
-    <div className={styles.kicker}>Design system · Component review 07</div>
+  return <main className="review-comparison-review">
+    <div className="review-comparison-kicker">Design system · Component review 07</div>
     <h1>Demo comparison</h1>
-    <p className={styles.intro}>The original Guide arranges related examples in a spacious responsive grid. The approved shared comparison preserves that calm rhythm and keeps specimens readable before it asks them to sit side by side.</p>
-    <div className={styles.reviewNote} role="note">Approved direction: <code>DemoComparison</code> uses wider reading columns and a larger gap. It adds no frame, padding, labels, child wrappers or paint that could change the CSS lesson.</div>
+    <p className="review-comparison-intro">The original Guide arranges related examples in a spacious responsive grid. The approved shared comparison preserves that calm rhythm and keeps specimens readable before it asks them to sit side by side.</p>
+    <div className="review-comparison-reviewNote" role="note">Approved direction: <code>DemoComparison</code> uses wider reading columns and a larger gap. It adds no frame, padding, labels, child wrappers or paint that could change the CSS lesson.</div>
 
     <section aria-labelledby="comparison-options">
       <h2 id="comparison-options">Two elevation specimens</h2>
-      <p className={styles.sectionCopy}>The same <code>shadow-sm</code> and <code>shadow-lg</code> cards appear in each treatment. Resize the page to see when the pair stacks.</p>
-      <div className={styles.options}>
-        {options.map(({ number, title, detail, note, preview }) => <article className={styles.option} key={number}>
-          <div className={styles.optionHeading}><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
-          <div className={styles.optionPreview}>{preview}</div>
-          <p className={styles.optionNote}>{note}</p>
+      <p className="review-comparison-sectionCopy">The same <code>shadow-sm</code> and <code>shadow-lg</code> cards appear in each treatment. Resize the page to see when the pair stacks.</p>
+      <div className="review-comparison-options">
+        {options.map(({ number, title, detail, note, preview }) => <article className="review-comparison-option" key={number}>
+          <div className="review-comparison-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+          <div className="review-comparison-optionPreview">{preview}</div>
+          <p className="review-comparison-optionNote">{note}</p>
         </article>)}
       </div>
     </section>
 
     <section aria-labelledby="comparison-real-use">
-      <div className={styles.sectionHeading}>
+      <div className="review-comparison-sectionHeading">
         <div><h2 id="comparison-real-use">Actual Guide use</h2><p>The elevation guide keeps its original six-card shadow scale.</p></div>
         <Link href="/guide/elevation">Open /guide/elevation</Link>
       </div>
       <ShadowScaleDemo />
-      <p className={styles.optionNote}>The shared layout is available for future comparisons. The existing Guide grid remains intact.</p>
+      <p className="review-comparison-optionNote">The shared layout is available for future comparisons. The existing Guide grid remains intact.</p>
     </section>
   </main>
 }

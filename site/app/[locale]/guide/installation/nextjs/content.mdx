@@ -51,3 +51,5 @@ export default function Home() {
   )
 }
 ```
+
+(!) With Turbopack, do not put Master CSS directives such as `@reference` or `@compose` in CSS Modules. Next.js currently cannot pass a transformed CSS Module through a custom stylesheet loader. Native CSS Modules without Master directives still work. For route styles that use project tokens, import an ordinary CSS file from the page, give its classes a page-specific prefix, and add `@reference` pointing to the global Master CSS entry. The Next.js Webpack path can compile Master directives in CSS Modules.

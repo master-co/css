@@ -4,7 +4,7 @@ import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 import { BenchmarkDataTable } from '~/site/components/benchmarks'
 import BenchmarkScrollRegion from '~/site/components/benchmarks/BenchmarkScrollRegion'
 import { StaticCSSBytesTable } from '~/site/app/[locale]/guide/benchmarks/components/StaticTailwindComparison'
-import styles from './page.module.css'
+import './page.css'
 
 export const metadata = {
   title: 'Benchmark data table review',
@@ -23,7 +23,7 @@ function SampleTable() {
 }
 
 function PreviousDataTable() {
-  return <details className={styles.previousData}>
+  return <details className="review-data-table-previousData">
     <summary>Recorded CSS output<span>Complete data · scroll for more columns</span></summary>
     <BenchmarkScrollRegion title="Recorded CSS output"><SampleTable /></BenchmarkScrollRegion>
   </details>
@@ -36,27 +36,27 @@ const options = [
 ] as const
 
 export default function Page() {
-  return <main className={styles.review}>
-    <div className={styles.kicker}>Design system · Component review 22</div>
+  return <main className="review-data-table-review">
+    <div className="review-data-table-kicker">Design system · Component review 22</div>
     <h1>Benchmark data table</h1>
-    <p className={styles.intro}>A complete measurement table needs a compact entrance and an obvious way to inspect every column. The Guide’s original expansion pattern remains visible alongside the newer native disclosure.</p>
-    <div className={styles.reviewNote} role="note">Adopted shared style: <code>BenchmarkDataTable</code> now uses the refined native disclosure. The published Guide keeps its original Expand control.</div>
-    <label htmlFor="data-table-review-theme" className={styles.themeControl}><span>Preview theme</span><span className={styles.themeSelect}>Light · Dark · System<ThemeSelect id="data-table-review-theme" aria-label="Preview theme" /></span></label>
+    <p className="review-data-table-intro">A complete measurement table needs a compact entrance and an obvious way to inspect every column. The Guide’s original expansion pattern remains visible alongside the newer native disclosure.</p>
+    <div className="review-data-table-reviewNote" role="note">Adopted shared style: <code>BenchmarkDataTable</code> now uses the refined native disclosure. The published Guide keeps its original Expand control.</div>
+    <label htmlFor="data-table-review-theme" className="review-data-table-themeControl"><span>Preview theme</span><span className="review-data-table-themeSelect">Light · Dark · System<ThemeSelect id="data-table-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="data-table-options">
       <h2 id="data-table-options">Disclosure treatments</h2>
-      <p className={styles.sectionCopy}>Open each treatment with click or keyboard. At phone width, focus the table region and use arrow keys to inspect hidden columns.</p>
-      <div className={styles.options}>{options.map(({ number, title, detail, preview, note }) => <article className={styles.option} key={number}>
-        <div className={styles.optionHeading}><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
-        <div className={styles.optionPreview}>{preview}</div>
-        <p className={styles.optionNote}>{note}</p>
+      <p className="review-data-table-sectionCopy">Open each treatment with click or keyboard. At phone width, focus the table region and use arrow keys to inspect hidden columns.</p>
+      <div className="review-data-table-options">{options.map(({ number, title, detail, preview, note }) => <article className="review-data-table-option" key={number}>
+        <div className="review-data-table-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        <div className="review-data-table-optionPreview">{preview}</div>
+        <p className="review-data-table-optionNote">{note}</p>
       </article>)}</div>
     </section>
 
     <section aria-labelledby="data-table-real-use">
-      <div className={styles.sectionHeading}><div><h2 id="data-table-real-use">Actual Guide use</h2><p>The live static CSS table still uses its original expansion control and committed measurements.</p></div><Link href="/guide/benchmarks#static-css-output-structure-and-production-build">Open /guide/benchmarks</Link></div>
-      <div className={styles.realUse}><StaticCSSBytesTable /></div>
-      <p className={styles.optionNote}>Only the shared Design System disclosure is being considered. The Guide’s table content and surrounding interpretation remain intact.</p>
+      <div className="review-data-table-sectionHeading"><div><h2 id="data-table-real-use">Actual Guide use</h2><p>The live static CSS table still uses its original expansion control and committed measurements.</p></div><Link href="/guide/benchmarks#static-css-output-structure-and-production-build">Open /guide/benchmarks</Link></div>
+      <div className="review-data-table-realUse"><StaticCSSBytesTable /></div>
+      <p className="review-data-table-optionNote">Only the shared Design System disclosure is being considered. The Guide’s table content and surrounding interpretation remain intact.</p>
     </section>
   </main>
 }

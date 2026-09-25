@@ -34,6 +34,18 @@ function hasMasterStyleDirective(source: string) {
   return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
+function scopeModuleThemeVariables(code: string, generatedCSS: string | undefined, classNames: readonly string[] | undefined) {
+  if (!generatedCSS || !classNames?.length || !code.includes(generatedCSS)) return code
+  // Next's CSS Module pipeline requires a local class in every selector.
+  // Variables referenced by a module can live on its own classes: descendants
+  // inherit them, and mode queries retain the same conditions.
+  const localSelector = [...new Set(classNames)].map(name => `.${name.replace(/(^[0-9]|[^a-zA-Z0-9_-])/gu, char => `\\${char.codePointAt(0)!.toString(16)} `)}`).join(',')
+  const scoped = generatedCSS
+    .replace(/:root\s*,\s*:host(?=\s*\{)|:host\s*,\s*:root(?=\s*\{)/gu, localSelector)
+    .replace(/:root(?=\s*\{)|:host(?=\s*\{)/gu, localSelector)
+  return code.replace(generatedCSS, scoped)
+}
+
 function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
   try {
     const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
@@ -145,7 +157,9 @@ async function transformStyleSource(resourcePath: string, source: string, projec
       })
       dependencies.push(...projectManifest.dependencies, ...(result.dependencies || []))
       return {
-        code: result.code,
+        code: /\.module\.(?:css|scss|sass)$/u.test(resourcePath)
+          ? scopeModuleThemeVariables(result.code, result.compilation?.generatedCSS, result.compilation?.nativeClassNames)
+          : result.code,
         sourceMap: result.sourceMap,
         dependencies
       }

@@ -99,6 +99,7 @@ packages/nuxt/playground/.output
 **/blob-report/
 **/playwright/.cache/
 **/.svelte-kit
+**/.astro
 
 # generated llms.txt indexes (regenerated at build time)
 site/public/llms.txt

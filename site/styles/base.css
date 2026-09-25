@@ -1,11 +1,11 @@
-@theme static light {
+@theme light {
   --color-yellow: var(--color-yellow-40);
   --color-yellow-hover: var(--color-yellow-50);
   --color-on-yellow: var(--color-yellow-95);
   --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
 }
 
-@theme static dark {
+@theme dark {
   --color-yellow: var(--color-yellow-50);
   --color-yellow-hover: var(--color-yellow-40);
   --color-on-yellow: var(--color-yellow-95);

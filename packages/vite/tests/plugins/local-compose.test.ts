@@ -167,6 +167,31 @@ describe('LocalComposePlugin', () => {
     }
   })
 
+  test.each(['Button.css', 'Button.module.css'])('emits native token references in local %s without a utility class', async (name) => {
+    const root = createFixture()
+    try {
+      writeFileSync(path.join(root, 'app.css'), [
+        '@master entry;',
+        '@theme light { --color-brand: #123456; }',
+        '@theme dark { --color-brand: #abcdef; }'
+      ].join('\n'))
+      const plugin = LocalComposePlugin({} as any, createContext(root))
+      const result = await (plugin as any).transform.call(
+        { addWatchFile: vi.fn() },
+        '@reference "../app.css"; .button { color: var(--color-brand); }',
+        path.join(root, 'src', name)
+      )
+
+      expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
+      expect(result.code).toContain('--color-brand:#123456')
+      expect(result.code).toContain('--color-brand:#abcdef')
+      expect(result.code).not.toContain('@reference')
+      expect(result.code).not.toContain('master-css-slot')
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
     const root = createFixture()
     try {
