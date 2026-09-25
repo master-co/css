@@ -1,11 +1,12 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { once } from 'node:events'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { chromium, type Browser } from '@playwright/test'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -56,7 +57,7 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
     private: true,
     type: 'module'
   }, null, 2))
-  const nextIntegrationURL = pathToFileURL(join(packageDir, 'dist/index.js')).href
+  const nextIntegrationURL = pathToFileURL(process.env.MASTER_NEXT_HMR_INTEGRATION ?? join(packageDir, 'dist/index.js')).href
   writeFileSync(join(fixtureDir, 'next.config.js'), [
     `import { withMasterCSS } from ${JSON.stringify(nextIntegrationURL)}`,
     '',
@@ -71,17 +72,27 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
     `}`,
     ''
   ].join('\n'))
+  writePage(fixtureDir, 11)
+  writeModules(fixtureDir, 20)
+  writeFileSync(join(fixtureDir, 'app/globals.css'), createGlobalsCSS(compose))
+}
+
+function writePage(fixtureDir: string, padding: number) {
   writeFileSync(join(fixtureDir, 'app/page.jsx'), [
     `'use client'`,
     `import { useEffect, useState } from 'react'`,
+    ...Array.from({ length: 10 }, (_, index) => `import { value as value${index} } from './value-${index}'`),
     `export default function Page() {`,
-    `    const [hydrated, setHydrated] = useState(false)`,
-    `    useEffect(() => setHydrated(true), [])`,
-    `    return <main data-hydrated={hydrated}><div id="cascade" className="box block">Cascade</div><div id="probe" className="probe">Probe</div></main>`,
-    `}`,
-    ''
+    `  const [hydrated, setHydrated] = useState(false)`,
+    `  useEffect(() => setHydrated(true), [])`,
+    `  return <main data-hydrated={hydrated}><div id="cascade" className="box block">Cascade</div><div id="probe" className="probe">Probe</div>`,
+    `<div id="incremental" className="p:${padding}px">Incremental</div>`,
+    ...Array.from({ length: 10 }, (_, index) => `<div id="module-${index}" className={value${index}}>Module</div>`),
+    `</main>`, `}`
   ].join('\n'))
-  writeFileSync(join(fixtureDir, 'app/globals.css'), createGlobalsCSS(compose))
+}
+function writeModules(fixtureDir: string, padding: number) {
+  for (let index = 0; index < 10; index++) writeFileSync(join(fixtureDir, `app/value-${index}.jsx`), `export const value = 'p:${padding + index}px'`)
 }
 
 function buildPackage() {
@@ -97,12 +108,12 @@ function buildPackage() {
   })
 }
 
-function startNextDev(fixtureDir: string, port: number) {
+function startNextDev(fixtureDir: string, port: number, bundler: 'turbo' | 'webpack', pipelineReport?: string) {
   const output = { text: '' }
   const child = spawn(process.execPath, [
     nextBin,
     'dev',
-    '--turbo',
+    `--${bundler}`,
     '--hostname',
     '127.0.0.1',
     '--port',
@@ -112,7 +123,11 @@ function startNextDev(fixtureDir: string, port: number) {
     env: {
       ...process.env,
       NEXT_TELEMETRY_DISABLED: '1',
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      ...(pipelineReport ? {
+        MASTER_NEXT_HMR_PIPELINE_REPORT: pipelineReport,
+        NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${new URL('./helpers/static-hmr-metrics.mjs', import.meta.url).href}`
+      } : {})
     },
     stdio: ['ignore', 'pipe', 'pipe']
   })
@@ -145,7 +160,7 @@ async function waitForServer(url: string, child: ChildProcess, output: { text: s
       throw new Error(`Next dev exited early.\n${output.text}`)
     }
     try {
-      const response = await fetch(url)
+      const response = await fetch(url, { signal: AbortSignal.timeout(5000) })
       if (response.status < 500) return
     } catch {
       // Server is still starting.
@@ -168,7 +183,7 @@ async function expectDisplay(browser: Browser, url: string, display: string) {
 }
 
 describe('Next dev HMR', () => {
-  it('updates Master CSS without a full reload', async () => {
+  it.each(['turbo', 'webpack'] as const)('updates Master CSS without a full reload (%s)', async bundler => {
     buildPackage()
     const workspaceDir = join(packageDir, 'e2e/dev-hmr-workspaces')
     mkdirSync(workspaceDir, { recursive: true })
@@ -177,9 +192,21 @@ describe('Next dev HMR', () => {
     const url = `http://127.0.0.1:${port}`
     let browser: Browser | undefined
     const globalsPath = join(fixtureDir, 'app/globals.css')
+    const metricsDir = process.env.MASTER_NEXT_HMR_REPORT ? mkdtempSync(join(tmpdir(), 'next-hmr-metrics-')) : undefined
+    const pipelineReport = metricsDir && join(metricsDir, 'pipeline.jsonl')
 
     writeFixture(fixtureDir)
-    const { child, output } = startNextDev(fixtureDir, port)
+    const { child, output } = startNextDev(fixtureDir, port, bundler, pipelineReport)
+    let cleaned = false
+    const cleanup = async () => {
+      if (cleaned) return
+      cleaned = true
+      await browser?.close()
+      await stopNextDev(child)
+      rmSync(fixtureDir, { recursive: true, force: true })
+      if (metricsDir) rmSync(metricsDir, { recursive: true, force: true })
+    }
+    onTestFinished(cleanup)
 
     try {
       await waitForServer(url, child, output)
@@ -199,13 +226,38 @@ describe('Next dev HMR', () => {
         const probe = document.getElementById('probe')
         return probe && getComputedStyle(probe).display === 'flex'
       })
+      const samples: { singleMs: number, burstMs: number, singleStarted: number, burstStarted: number, finished: number }[] = []
+      for (let round = 0; round < 4; round++) {
+        const padding = 50 + round * 20
+        const singleStarted = Date.now()
+        let started = performance.now()
+        writePage(fixtureDir, padding)
+        await page.waitForFunction(value => getComputedStyle(document.getElementById('incremental')!).padding === `${value}px`, padding)
+        const singleMs = performance.now() - started
+        const burstStarted = Date.now()
+        started = performance.now()
+        writeModules(fixtureDir, padding + 1)
+        await page.waitForFunction(value => Array.from({ length: 10 }, (_, index) =>
+          getComputedStyle(document.getElementById(`module-${index}`)!).padding === `${value + index}px`).every(Boolean), padding + 1)
+        if (round > 0) samples.push({ singleMs, burstMs: performance.now() - started, singleStarted, burstStarted, finished: Date.now() })
+      }
+      if (process.env.MASTER_NEXT_HMR_REPORT && pipelineReport) {
+        // Observe deferred notifications separately from the visible style update.
+        await delay(1000)
+        const idleStarted = Date.now()
+        await delay(2000)
+        const publications = readFileSync(pipelineReport, 'utf8').trim().split('\n').map(line => JSON.parse(line) as { started: number, finished: number, composeCalls: number })
+        const idle = publications.filter(row => row.started >= idleStarted)
+        appendFileSync(process.env.MASTER_NEXT_HMR_REPORT,
+          JSON.stringify({ bundler, node: process.version, samples, publications, idle,
+            note: 'File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.' }) + '\n')
+        expect(idle.reduce((sum, row) => sum + row.composeCalls, 0)).toBe(0)
+      }
       await expect(page.evaluate(() => {
         return (window as unknown as { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER
       })).resolves.toBe('preserve')
     } finally {
-      await browser?.close()
-      await stopNextDev(child)
-      rmSync(workspaceDir, { recursive: true, force: true })
+      await cleanup()
     }
   }, 180000)
 })

@@ -26,6 +26,7 @@ import {
 import { registerOptions, resolveOptions, type MasterCSSNextOptions } from './options'
 import { composeWebpackStylesheets } from './webpack-stylesheets'
 import { createWebpackVirtualModulesPlugin } from './webpack-virtual-modules'
+import { staticWatchIgnores } from './static-watch'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
 type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
@@ -256,6 +257,7 @@ function applyMasterCSSWebpackConfig(
   config.module ??= {}
   config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY, staticStatePath ? { staticStatePath } : {})
   if (staticStatePath) {
+    config.watchOptions = { ...config.watchOptions, ignored: staticWatchIgnores(config.watchOptions?.ignored) }
     config.module.rules.push({
       test: /\.[mc]?[jt]sx?$/,
       exclude: /[/\\]node_modules[/\\]/,

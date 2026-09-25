@@ -265,6 +265,37 @@ export async function resolveStylesheet(
   return createStylesheetResolution(normalizedId, source, options, resolved)
 }
 
+export interface MasterCSSStylesheetDependencies {
+  /** References are resolved while lowering; this import inventory cannot prove their context unchanged. */
+  readonly hasReferences: boolean
+  readonly dependencies: readonly string[]
+  readonly edges: readonly Readonly<{ from: string, specifier: string, resolved: string }>[]
+}
+
+/** Resolve the complete delivery graph, including package CSS, without lowering or flattening.
+ * Unlike classification-only dependency collection, resolution failures propagate.
+ */
+export function resolveStylesheetDependenciesSync(
+  id: string,
+  source: string,
+  options: MasterCSSStylesheetDependencyOptions = {}
+): MasterCSSStylesheetDependencies {
+  options.signal?.throwIfAborted()
+  const filename = cleanStyleRequest(id)
+  let hasReferences = false
+  const graph = prepareCSSImportGraph(filename, source, { projectDir: options.projectDir }, text => {
+    const analysis = analyzeCSSDependencies(text)
+    hasReferences ||= analysis.sourceWithoutReferences !== text
+    return analysis
+  })
+  options.signal?.throwIfAborted()
+  return Object.freeze({
+    hasReferences,
+    dependencies: Object.freeze(Object.keys(graph.files)),
+    edges: Object.freeze(graph.edges.map(edge => Object.freeze({ ...edge })))
+  })
+}
+
 export function collectStylesheetDependenciesSync(
   id: string,
   source?: string,

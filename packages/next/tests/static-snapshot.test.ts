@@ -91,6 +91,7 @@ test('a source edit during composition retries with a complete fresh snapshot', 
       await writeFile(source, '<div className="p:29px"/>')
       return result
     })
+    await writeFile(source, '<div className="p:12px"/>')
     await scanStaticModule(state.statePath, source, '')
     const css = await cssGraph(state.outputPath)
     expect(css).toContain('padding:29px')

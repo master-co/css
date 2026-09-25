@@ -127,6 +127,7 @@ test('a configuration change during composition rejects the older publisher', as
       await writeStaticState(root, state.outputPath, state.statePath, state.scanLogPath, next)
       return result
     })
+    writeFileSync(join(root, 'app/page.tsx'), '<main className="p:20px" />')
     await expect(session.write()).rejects.toThrow('configuration changed')
     expect(readFileSync(state.outputPath, 'utf8')).toBe(previous)
     spy.mockRestore()

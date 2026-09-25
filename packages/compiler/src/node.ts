@@ -30,6 +30,8 @@ export {
 } from './index'
 export {
   collectStylesheetDependenciesSync,
+  resolveStylesheetDependenciesSync,
+  type MasterCSSStylesheetDependencies,
   composeStylesheetHostSync,
   resolveStylesheetSync,
   type MasterCSSStylesheetDependencyOptions,

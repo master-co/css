@@ -34,6 +34,7 @@
 - `src/index.ts`
 - `src/adapter.ts`
 - `src/static.ts`
+- `src/static-snapshot.ts`, `src/static-cache.ts`, `src/static-queue.ts`
 - `src/static-css-loader.ts`
 - `src/static-loader.ts`
 - `src/css-manifest-loader.ts`
@@ -50,6 +51,22 @@
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
+
+## Static Publication Invariants
+
+- Each snapshot hashes the same raw bytes supplied to extraction. Later verification
+  captures fresh bytes; a file timestamp is never publication-cache evidence.
+- Publication receipts are disposable, versioned internal files. Under the project
+  lock, verify the full current inventory, configuration/tool identity and every
+  output digest before reuse. Cache hits must still expose complete host dependencies.
+- Stylesheet collections may be retained only while entries, order, processed inputs
+  and dependencies are unchanged. Explicit `@source` includes and `@reference` context conservatively rebuild
+  because their discovery/lowering is not fully represented by the import inventory.
+- Module notifications share work only before snapshot capture; explicit stylesheet
+  inputs remain ordered. Publish assets before the entry and the receipt after it.
+- Webpack root-context watching excludes publication locks, receipts, processed-input
+  storage, scan logs and atomic temporary files. Generated CSS/assets and configuration
+  state remain observable; do not ignore the entire `.master` directory.
 
 ## Safe Changes
 

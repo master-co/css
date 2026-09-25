@@ -25,7 +25,9 @@
 ## Public Surface
 
 - Universal root async compiler sessions.
-- Native-only `./node` sync session.
+- Native-only `./node` sync session, including `resolveStylesheetDependenciesSync`
+  for immutable complete import edges and files without CSS lowering or flattening.
+  Use this for build-cache evidence; classification-only resolution omits package CSS.
 - Async Node project APIs under `./project` and sync variants under `./project/sync`.
 - Node stylesheet orchestration under `./stylesheet`.
 - Wasm-only stylesheet compilation under `./stylesheet/browser`.

@@ -177,12 +177,56 @@ Next's 100-TSX-source fixture measured cold setup 115.7→238.3ms, unchanged mod
 0.71→163.81ms and edited module 84.74→163.73ms. The new publisher locks, reads a
 complete source/dependency snapshot, registers stylesheets and checks the inputs
 again before publication. The old incremental path could skip that work while
-retaining stale contributions. This is a substantial remaining performance cost;
-it must not be described as passing the 5% threshold.
+retaining stale contributions. This is a substantial performance cost requiring
+remeasurement and attribution; 5% is a review threshold, not an automatic veto.
 The second run confirms the result: cold setup 127.3→251.2ms, unchanged module
 0.89→176.41ms and edited module 94.35→173.96ms. A future optimization must reuse
 validated work while retaining the lock, complete-input comparison, changed-input
 retry and assets-before-entry guarantees; skipping those checks is not a fix.
+
+## Next static publication follow-up
+
+The follow-up starts at `e57b4a8c3`, with the complete-snapshot correctness contract
+already present. Each snapshot now shares raw source bytes between extraction and
+fingerprinting. Unchanged stylesheet collections are retained, and a versioned
+publication receipt lets independent workers reuse outputs only after complete
+input and output-content verification inside the publication lock. Notifications
+can share a round only until capture begins; explicit preprocessed inputs remain
+ordered. Missing/corrupt receipts or missing outputs cause a rebuild.
+
+The compiler's Node API adds `resolveStylesheetDependenciesSync`, a readonly full
+import inventory including package CSS and resolved edges. Next does not duplicate
+CSS import semantics. Explicit `@source` includes and `@reference` context still
+take the conservative rebuild path because this inventory cannot prove their
+discovery/lowering unchanged. There are no new Next settings or binding ABI changes.
+
+Actual Webpack HMR exposed feedback from publication bookkeeping in root-context
+watch dependencies. The adapter now ignores locks, receipts, input storage, scan
+logs and atomic temporary files while keeping generated CSS/assets and the state
+file observable. Turbopack and Webpack fixtures check actual computed styles and
+preserved browser state; optional child-process metrics separate publication work
+from full HMR and observe deferred work after the visible update.
+
+Reproduce pipeline measurements with `scripts/benchmark-next-static.mjs`, using
+the same release native binding for both built revisions. The harness covers
+100/1,000/5,000 sources, unchanged inputs, one edit and ten concurrent notifications;
+it records median/p95, source reads, registration/composition calls and lock
+acquisition. `MASTER_NEXT_HMR_REPORT` enables separate real-bundler observations.
+Raw paired data, retests and validation logs remain outside the repository at
+`/tmp/master-next-static-optimization/`; benchmark history is not committed.
+
+Follow-up validation passed compiler tests (451), Next tests (191, including both
+playground production bundlers), Next e2e (4), both packages' lint/type-check/build,
+and package contracts, API census, dependency boundaries and AI/source-budget checks.
+The public API goldens intentionally add only the compiler dependency query and
+its result type. No Rust, binding or runtime-core source changed in this follow-up.
+
+The accepted tradeoff is full content verification proportional to the source
+inventory, including cache hits and cross-worker reuse. Returning to the old
+incomplete-snapshot timing is not a release condition. Avoidable repeated
+composition and watcher feedback are regressions; explained consistency overhead
+is retained. These small fixtures do not establish an HMR latency guarantee for
+large applications or projects using the conservative directive path.
 
 ## Logs and remaining release gates
 
@@ -199,5 +243,7 @@ Release is not certified by this change:
    `rc87-38e614a90e947c6e` (saved target digest `5edf…`, current `e83c…`). The exact
    archived HEAD reproduces the same failure. Historical review metadata remains
    intact; this work does not manufacture a replacement approval.
-3. Next full-snapshot cost remains above the performance threshold; it needs
-   optimization or an explicit release tradeoff using these paired measurements.
+
+The earlier Next full-snapshot performance gate is superseded by the explicit
+tradeoff and repeatable follow-up checks above. This does not clear the unrelated
+browser and migration gates.

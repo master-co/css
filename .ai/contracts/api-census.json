@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 916,
+    "records": 918,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 732,
+      "export": 734,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -4707,6 +4707,33 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSStylesheetDependencies",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSStylesheetDependencies"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-compiler:./node#MasterCSSStylesheetDependencyOptions",
       "package": "@master/css-compiler",
       "subpath": "./node",
@@ -4819,6 +4846,33 @@
       "package": "@master/css-compiler",
       "subpath": "./node",
       "name": "migrateRCSync"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#resolveStylesheetDependenciesSync",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "resolveStylesheetDependenciesSync"
     },
     {
       "kind": "export",

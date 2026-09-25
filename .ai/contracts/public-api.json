@@ -375,6 +375,7 @@
           "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSStylesheetAsset",
           "MasterCSSStylesheetBundle",
+          "MasterCSSStylesheetDependencies",
           "MasterCSSStylesheetDependencyOptions",
           "MasterCSSStylesheetHostOptions",
           "MasterCSSStylesheetResolution",
@@ -387,6 +388,7 @@
           "createCompilerSync",
           "inspectCSSSync",
           "migrateRCSync",
+          "resolveStylesheetDependenciesSync",
           "resolveStylesheetSync"
         ],
         "./project": [
@@ -465,7 +467,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "710409adbbfcb3ac"
+      "surface": "ef2ef9d00e3f6704"
     },
     "@master/create-css": {
       "directory": "create",
