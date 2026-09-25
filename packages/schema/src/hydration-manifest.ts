@@ -6,12 +6,20 @@ export const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-man
 export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
 export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
+export interface MasterCSSConditionRange {
+  readonly domain: string
+  readonly feature: string
+  readonly unit: string
+  readonly lower: { readonly value: number, readonly inclusive: boolean } | null
+  readonly upper: { readonly value: number, readonly inclusive: boolean } | null
+}
+
 export interface MasterCSSRulePriority {
   /** Token values sort before raw values within the same cascade tier. */
   readonly valuePriority?: -1 | 0
   /** Parsed declaration identity, independent of public aliases. */
   readonly sortKey?: string
-  readonly features?: readonly (readonly [string, number, number])[]
+  readonly features: readonly MasterCSSConditionRange[]
   readonly conditions?: readonly string[]
   readonly selector: number
 }

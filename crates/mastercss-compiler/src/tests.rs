@@ -251,7 +251,7 @@ fn lowers_static_theme_keyframes_outside_layers() {
 }
 
 #[test]
-fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
+fn preserves_native_theme_functions_dollars_and_pipes() {
     let result = compile_css_directives(
         "@theme {\n\
                --color-muted: --alpha(var(--color-primary) / .5);\n\
@@ -267,23 +267,24 @@ fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
             "variables": [
                 {
                     "name": "color-muted",
-                    "value": "color-mix(in oklab,var(--color-primary) 50%,transparent)"
+                    "value": "--alpha(var(--color-primary) / .5)"
                 },
                 { "name": "content-quoted", "value": "\"a | b\"" },
-                { "name": "content-piped", "value": "a   b" }
+                { "name": "content-piped", "value": "a | b" }
             ]
         })
     );
 
-    let error = compile_css_directives(
-        "@theme { --color-brand: $color-blue-60; }",
+    let result = compile_css_directives(
+        "@theme { --money: $100; --pipe: a|b; } .data { --value: --value(); --money: $100; --pipe:a|b; }",
         &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err();
-    assert_eq!(
-        error.to_string(),
-        "Stylesheet values use native CSS variable references. Replace \"$color-blue-60\" with \"var(--color-blue-60)\"."
-    );
+    ).unwrap();
+    let variables = serde_json::to_value(result.manifest_input).unwrap();
+    assert_eq!(variables["variables"][0]["value"], "$100");
+    assert_eq!(variables["variables"][1]["value"], "a|b");
+    assert!(result.native_css.contains("--value()"));
+    assert!(result.native_css.contains("$100"));
+    assert!(result.native_css.contains("a|b"));
 }
 
 #[test]

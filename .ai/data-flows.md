@@ -78,7 +78,7 @@ Risks:
 source files or build-tool modules
   -> @master/css-tooling/scanner
   -> Rust built-in extraction plus private official Vue/Svelte adapters
-  -> host native-CSS capability oracle
+  -> owner-scoped source replacement and shared class reference counts
   -> Rust classification and engine transition
   -> @master/css-compiler/project discovers managed CSS entries
   -> @master/css-compiler/stylesheet compiles directives and native CSS
@@ -102,6 +102,9 @@ Risks:
 - False positives increase CSS output; false negatives omit required CSS.
 - Static rendering cannot infer arbitrary truncated dynamic strings.
 - Source adapters are first-party implementation details, not a public registration API.
+- Markdown/MDX AST extraction excludes prose, fences, inline code and frontmatter; live examples have parented virtual sources. Parse failure never becomes an empty update or raw fallback.
+- `scanSource` replaces; `removeSource` withdraws virtual descendants; `reconcileSources` replaces exact owner membership. Native registrations and safelists have explicit owners.
+- Node discovery shares project/workspace `.gitignore` policy. Explicit excludes and current build outputs win over includes.
 - Stylesheet import order, extraction directives, and native CSS pruning affect exact bytes.
 
 ## Runtime
@@ -163,7 +166,7 @@ class policy and source ranges stay in Rust tooling sessions.
 ```txt
 class list or project inputs
   -> Rust lint / scanner / report sessions in @master/css-tooling
-  -> TypeScript host supplies source locations and CSS capability results
+  -> tooling reports CSS syntax/value knowledge without filtering emitted rules
   -> @master/eslint-plugin-css adapts diagnostics and edit plans to ESLint
   -> @master/css-compiler/diagnostics orchestrates complete project inspection
   -> CLI and MCP format or transport the report

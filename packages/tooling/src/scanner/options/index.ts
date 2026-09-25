@@ -54,6 +54,8 @@ const defaultExclude = Object.freeze([
 export interface MasterCSSScannerConfiguration {
   verbose?: number
   path?: string
+  /** Actual bundler output directories, always excluded from source input. */
+  outputDirectories?: readonly string[]
   exclude?: readonly string[]
   safelist?: readonly string[]
   blocklist?: readonly (string | RegExp)[]

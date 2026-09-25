@@ -26,7 +26,7 @@ export interface MasterCSSCompileOptions {
   /** Keep untouched native source for host transforms; incompatible with class pruning. */
   readonly preserveNativeSource?: boolean
   /** Report CSS value errors by default; error rejects the complete output. */
-  readonly cssValuePolicy?: 'report' | 'error'
+  readonly validation?: 'report' | 'error'
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
 

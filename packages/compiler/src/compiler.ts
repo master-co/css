@@ -1,4 +1,4 @@
-import { validateCompiledCSS } from './value-validation'
+import { validateCompiledCSS, type ValidationSource } from './value-validation'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -87,7 +87,8 @@ function directiveSummary(result: CompileCSSResult) {
 export function toMasterCSSCompileResultInternal(
   result: CompileCSSResult,
   onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
-  cssValuePolicy?: 'report' | 'error'
+  validation?: 'report' | 'error',
+  origin?: Omit<ValidationSource, 'css'>
 ): MasterCSSCompileResult {
   return Object.freeze({
     css: result.css,
@@ -97,7 +98,7 @@ export function toMasterCSSCompileResultInternal(
     dependencies: Object.freeze([...result.dependencies]),
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
-    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css }], { onDiagnostic, cssValuePolicy })]),
+    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings ?? result.nativeMappings, ...origin }], { onDiagnostic, validation })]),
     directiveSummary: directiveSummary(result)
   })
 }
@@ -112,13 +113,15 @@ interface InternalManifestCompileResult {
   readonly warnings: readonly string[]
   readonly manifest: MasterCSSManifest
   readonly directives: CompileCSSResult
+  readonly outputMappings?: CompileCSSResult['outputMappings']
+  readonly sourceTexts?: Record<string, string>
 }
 
 /** @internal */
 export function toMasterCSSCompileManifestResultInternal(
   result: InternalManifestCompileResult,
   onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
-  cssValuePolicy?: 'report' | 'error'
+  validation?: 'report' | 'error'
 ): MasterCSSCompileManifestResult {
   return Object.freeze({
     css: result.css,
@@ -127,7 +130,7 @@ export function toMasterCSSCompileManifestResultInternal(
     dependencies: Object.freeze([...result.dependencies]),
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
-    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css }], { onDiagnostic, cssValuePolicy })]),
+    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings, sources: result.sourceTexts }], { onDiagnostic, validation })]),
     directiveSummary: directiveSummary(result.directives),
     manifest: Object.freeze(result.manifest),
     directives: toMasterCSSCompileResultInternal(result.directives)
@@ -167,7 +170,8 @@ export class MasterCSSCompiler implements Disposable {
     return toMasterCSSCompileResultInternal(
       this.#session.compileCSS(source, options),
       options.onDiagnostic,
-      options.cssValuePolicy
+      options.validation,
+      { source: options.from ?? '<stylesheet>', sources: { [options.from ?? '<stylesheet>']: source } }
     )
   }
 
@@ -177,7 +181,8 @@ export class MasterCSSCompiler implements Disposable {
   ): MasterCSSCompileManifestResult {
     this.assertActive()
     const rawDirectives = this.#session.compileCSS(source, options)
-    const directives = toMasterCSSCompileResultInternal(rawDirectives)
+    const origin = { source: options.from ?? '<stylesheet>', sources: { [options.from ?? '<stylesheet>']: source } }
+    const directives = toMasterCSSCompileResultInternal(rawDirectives, undefined, undefined, origin)
     if (rawDirectives.references?.length) {
       throw new MasterCSSError({
         code: 'UNRESOLVED_REFERENCE',
@@ -196,11 +201,12 @@ export class MasterCSSCompiler implements Disposable {
       manifest: MasterCSSManifest
       warnings: string[]
       generatedCSS: string
+      outputMappings?: CompileCSSResult['outputMappings']
       css?: string
     }
     const generatedCSS = lowered.generatedCSS || ''
     const css = lowered.css ?? [rawDirectives.nativeCSS, generatedCSS].filter(Boolean).join('\n')
-    const diagnostics = Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...validateCompiledCSS([{ css, source: options.from }], options)])
+    const diagnostics = Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...validateCompiledCSS([{ css, mappings: lowered.outputMappings ?? rawDirectives.nativeMappings, ...origin }], options)])
     return Object.freeze({
       css,
       nativeCSS: rawDirectives.nativeCSS,
@@ -254,7 +260,7 @@ export class MasterCSSCompiler implements Disposable {
     const directives = toMasterCSSCompileResultInternal(result.directives)
     return Object.freeze({
       ...directives,
-      diagnostics: Object.freeze([...directives.diagnostics, ...validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id })), options)]),
+      diagnostics: Object.freeze([...directives.diagnostics, ...validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id, mappings: asset.outputMappings, sources: request.graph.files })), options)]),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(stylesheet => Object.freeze({ ...stylesheet }))),
       manifest: Object.freeze(result.manifest),

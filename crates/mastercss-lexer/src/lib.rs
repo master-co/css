@@ -2,8 +2,14 @@
 
 mod query;
 mod selector;
-pub use query::{NativeQuery, canonical_native_content, decode_native_content, parse_native_query};
-pub use selector::{replace_nesting_selector, valid_mode_name, valid_mode_selector};
+pub use query::{
+    NativeQuery, canonical_native_content, decode_native_content, native_content,
+    native_query_structure, parse_native_query, query_requires_css,
+};
+pub use selector::{
+    replace_class_selector, replace_nesting_selector, replace_rule_class_selector,
+    split_selector_list, valid_mode_name, valid_mode_selector, valid_selector_structure,
+};
 
 use mastercss_schema::{LEXER_BATCH_VERSION, SourceRange};
 use serde::{Deserialize, Serialize};

@@ -21,22 +21,15 @@ export interface MasterCSSWasmToolingLoadOptions {
 
 interface MasterCSSToolingWasmScannerProviderSession {
   scan(source: string, content: string): unknown
-  cachedSourceCandidates(source: string, content: string): string[] | null
-  extractCandidates(source: string, content: string): string[]
-  nativeDeclarationCandidates(candidates: string[]): unknown
+  extractCandidates(source: string, content: string, options: unknown): string[]
   collectCandidates(candidates: string[]): string[]
   filterCandidates(candidates: string[], blocklist: unknown): string[]
-  invalidGeneratedClasses(batch: unknown, ruleSupport: boolean[][]): string[]
-  scanCandidates(
-    source: string,
-    content: string,
-    candidates: string[],
-    blocklist: unknown,
-    nativeSupport: boolean[],
-    invalidGeneratedClasses: string[]
-  ): unknown
+  scanCandidates(source: string, content: string, candidates: string[], blocklist: unknown, options: unknown): unknown
+  removeSource(source: string, options: unknown): unknown
+  reconcileSources(owner: string, inputs: unknown): unknown
+  removeOwner(owner: string): unknown
   ensureClasses(classNames: string[]): unknown
-  registerNativeClasses(classNames: string[]): boolean
+  registerNativeClasses(owner: string, classNames: string[]): boolean
   reset(): void
   state(): unknown
   dispose(): void

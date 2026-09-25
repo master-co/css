@@ -11,12 +11,12 @@ test('BH-0012 scans native ESM module class strings', async () => {
   }
 })
 
-test('audit control: accumulated sources are cleared by reset and can be rescanned', async () => {
+test('audit control: replaced sources are cleared by reset and can be rescanned', async () => {
   const scanner = await new MasterCSSScanner({ verbose: 0 }).init()
   try {
     await scanner.scan('a.html', '<div class="block"></div>')
     await scanner.scan('a.html', '<div class="hidden"></div>')
-    expect([...scanner.validClasses]).toEqual(['block', 'hidden'])
+    expect([...scanner.validClasses]).toEqual(['hidden'])
     await scanner.reset()
     expect(scanner.state.cachedSources).toBe(0)
     expect(scanner.css.text).toBe('')

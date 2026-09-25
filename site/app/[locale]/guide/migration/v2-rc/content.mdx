@@ -1,4 +1,4 @@
-This guide upgrades both **RC before named tokens (`rc-legacy`)** and **RC with named tokens before the final semantic contract (`rc-named`)** to language v2. The first profile requires both stages below; the second already uses hyphenated tokens and begins with the final semantics stage. Check the exact installed RC versions and the project's resolved manifest before applying any mapping. RC releases did not all have identical behavior.
+This guide upgrades three saved RC contracts to language v2: **`rc-legacy`** before named tokens, **`rc-named`** before explicit modes and native queries, and **`rc-native`** before the native-value boundaries, simple-query subset and deterministic source lifecycle. Check the exact installed RC versions and resolved manifest first; RC releases did not all have identical behavior. Follow stages 2–7 for applicable earlier changes, then stage 9 for the current boundary contract.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -173,7 +173,7 @@ Regenerate artifacts from their source definitions. Manifest and hydration envel
 - Replace global mode settings with ordered `modes` activation definitions, and remove `rootSize`, `defaultMode`, `modeTrigger`, and `settings.modes`.
 - Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
 - Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
-- Update native and Wasm providers together to **binding ABI 9**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
+- Update native and Wasm providers together to **binding ABI 10**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
 - Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
 
 See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
@@ -245,7 +245,7 @@ Use complete media, supports, and container syntax, including native parentheses
 
 ```text name="Language v2 queries"
 grid-cols:2@media((aspect-ratio>=1.5))
-display:grid@supports(selector(:has(*)))
+display:grid@supports((display:grid))
 grid-cols:2@container(card|(width>=40rem))
 gap:1rem@container(style(--density:compact))
 ```
@@ -321,11 +321,11 @@ filenames or manually assembled URLs.
 
 Remove output-affecting `supportsNativeDeclaration` callbacks. Normal generation
 preserves even known-invalid native values and reports them separately. Check
-`matchStatus`, `cssValueStatus`, and `browserSupport`; the former `valid` or
+`matchStatus`, `cssSyntaxStatus`, `cssValueStatus`, and `browserSupport`; the former `valid` or
 `matched` booleans cannot represent these distinctions. Managed declarations are
 validated too: `grid-cols:2.5` may match but its `repeat()` count is invalid.
 
-Use `cssValuePolicy: 'error'` in compiler APIs or `master-css generate --strict`
+Use `validation: 'error'` in compiler APIs or `master-css generate --strict`
 for atomic failure on known-invalid values. Unknown capabilities and `var()`
 results remain unverified, rather than being silently removed. Review CSS that
 was previously suppressed by a host validator and now reaches the browser.
@@ -333,7 +333,7 @@ was previously suppressed by a host validator and now reaches the browser.
 MCP uses project context by default. A missing entry and an entry that fails to
 compile return distinct structured errors; neither silently selects the preset.
 Select `context: "preset"` explicitly for isolated preset queries. Consumers must
-read result version 2, full diagnostic and dependency arrays, context metadata,
+read result version 3, full diagnostic and dependency arrays, context metadata,
 manifest fingerprint, language version, and binding version. Update editor,
 CLI, native, Wasm, server, and hydration consumers together. Ordinary canonical
 autofix does not perform version migration or infer pixel/rem equivalence.
@@ -353,3 +353,73 @@ autofix does not perform version migration or infer pixel/rem equivalence.
 - Confirm that official source paths and executable examples no longer rely on RC token syntax, `$name`, `base-unit`, or Master length `x`.
 
 Keep the saved baseline and manual-review decisions with the upgrade change. Remove obsolete RC artifacts only after all rendering paths and important screens validate.
+
+
+---
+
+## 9. RC-native boundary and deterministic-build migration
+
+Select the profile matching the **saved installation**, not the version you are installing:
+
+| Profile | Saved starting contract |
+| --- | --- |
+| `rc-legacy` | Colon tokens, length `x`, `$name`, inferred queries and global mode settings |
+| `rc-named` | Named tokens and native declaration semantics, before explicit modes and native-query semantics |
+| `rc-native` | Explicit `@mode`, preserved native values and native query suffixes, before the simple-query and source-lifecycle contract |
+
+Every profile requires the actual package version and saved resolved manifest. `rc-native` does not apply the old mode or root-size conversions.
+
+```sh
+master-css migrate src --from rc-native --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json
+master-css migrate src --from rc-native --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json --entry src/master.css --write
+```
+
+Preview is the default. A batch containing any manual-review item writes nothing. The tool checks source contents again before writing. Use `--entry` when the project has multiple Master entries; preview still shows the complete proposed CSS.
+
+### Keep native values native
+
+The compiler no longer treats `--alpha()` as a macro. A confirmed old macro call migrates from the following **historical RC source**:
+
+```text name="Historical RC-native macro; display only"
+color: --alpha(var(--color-brand) / .5);
+```
+
+```css name="New native declaration"
+color: color-mix(in oklab, var(--color-brand) 50%, transparent);
+```
+
+The migration preserves the old `oklab` space and proportions. A project defining native `@function --alpha` requires manual review. Ordinary declarations preserve `--value()` as a native call; only managed patterns substitute it. Native custom-property streams such as `--pipe:a|b` and `--money:$100` keep their spelling. They receive structure checks and an unknown value-grammar status when their type is not known.
+
+### Move complex class queries into CSS
+
+Classes retain named conditions, a single media type, one boolean feature/declaration/range, one supports declaration, and a container name with one size or custom-property style query. Functions inside a single value may remain. Repeated simple suffixes retain their wrapper order.
+
+Top-level `and`, `or`, `not`, `only`, query lists, `selector()`, compound style queries and literal-pipe syntax belong in CSS. The engine reports `MASTER_QUERY_REQUIRES_CSS` and includes a CSS template; no quoted-query or new escape syntax is introduced.
+
+```css name="New complex condition definition"
+@custom-variant language-selector {
+  @supports selector([lang|=en]) {
+    @slot;
+  }
+}
+```
+
+```html name="New named condition"
+<div class="display:block@language-selector"></div>
+```
+
+The migrator proposes names such as `migrated-query-<stable-digest>` independent of file order. Literal pipes that may have been misdecoded, invalid old queries, generated-selector references, dynamic source and cascade changes require review. Equivalent ranges now share sorting data while retaining original output wrappers; compare overlapping rules against saved CSS and computed styles.
+
+### Update source and tool consumers
+
+A source update now replaces its previous class set. Empty content and deletion release rules and resources after their final reference disappears. Custom scanner hosts must use `scanSource`, `removeSource`, `reconcileSources`, `registerNativeClasses(owner, names)` and `removeOwner`, and preserve ownership for virtual examples. Candidate collection does not register usage.
+
+Markdown/MDX display text, code fences, inline code and frontmatter no longer generate CSS automatically. Actual JSX/HTML, ESM and expressions still do. Register live examples as parented virtual sources or safelist them. Parsing failures report `SOURCE_PARSE_ERROR`; they do not fall back to raw text or clear previous successful output.
+
+Use `validation: 'report' | 'error'` for compiler/stylesheet APIs. The former `cssValuePolicy` option is rejected. Strict syntax/value errors fail the whole result; unknown capabilities alone do not fail. `cssSyntaxStatus`, `cssValueStatus`, `matchStatus` and `browserSupport` describe separate checks; an unchecked browser is `not-checked`.
+
+Upgrade bindings and tools together: ABI **10**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 2`; regenerate hydration priorities rather than filling missing fields with RC defaults.
+
+MCP v3 returns `{ version, metadata, diagnostics, result }`. `result` is either `{ status: 'success', data }` or `{ status: 'error', error: { code, message } }`. Read the published output schema. JSON text equals `structuredContent`; errors also set `isError`. Unavailable context/fingerprint data is null and dependencies remain explicit arrays.
+
+Finally verify cold and incremental builds using the same source set: replace, empty, delete and rename a file; change `.gitignore`; exercise shared classes and live examples; test Next worker publication and custom `distDir`. Confirm failed builds retain only the last complete development output and fail production. Compare static, SSR, runtime and progressive output, themes, hydration and browser styles before releasing.

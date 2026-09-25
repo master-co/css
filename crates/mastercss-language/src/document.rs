@@ -26,6 +26,29 @@ pub(crate) fn collect_document_contexts_indexed(
             unescape: Vec::new(),
         }];
     }
+    if matches!(language_id.as_str(), "markdown" | "mdx") {
+        let extracted =
+            mastercss_source::extract_source_result(&mastercss_source::SourceExtractionInputIr {
+                source: format!(
+                    "document.{}",
+                    if language_id == "mdx" { "mdx" } else { "md" }
+                ),
+                content: source.into(),
+                kind: mastercss_source::SourceExtractorKind::Auto,
+                owner: None,
+            });
+        let allowed = markdown_class_contexts(source, positions, settings);
+        return extracted
+            .occurrences
+            .into_iter()
+            .filter(|item| markdown_class_occurrence(item, &allowed))
+            .map(|item| ClassListContextIr {
+                start: item.context_range.start,
+                end: item.context_range.end,
+                unescape: Vec::new(),
+            })
+            .collect();
+    }
     let mut contexts = Vec::new();
     if matches!(language_id.as_str(), "css" | "scss" | "less") {
         collect_css_directive_contexts(source, positions, 0..source.len(), &mut contexts);
@@ -53,6 +76,30 @@ pub(crate) fn collect_document_contexts_indexed(
         collect_braced_class_bindings(source, positions, &mut contexts);
     }
     contexts
+}
+
+// Extraction deliberately accepts all static strings. Editor diagnostics and
+// fixes still require a configured class context; prose props are not class lists.
+pub(crate) fn markdown_class_contexts(
+    source: &str,
+    positions: &DocumentIndex,
+    settings: &LanguageDocumentSettingsIr,
+) -> Vec<ClassListContextIr> {
+    let mut contexts = Vec::new();
+    collect_markup_attribute_contexts(source, positions, &mut contexts, settings);
+    collect_script_string_contexts(source, positions, &mut contexts, settings);
+    collect_braced_class_bindings(source, positions, &mut contexts);
+    contexts
+}
+
+pub(crate) fn markdown_class_occurrence(
+    item: &mastercss_source::SourceOccurrenceIr,
+    contexts: &[ClassListContextIr],
+) -> bool {
+    item.included
+        && contexts.iter().any(|context| {
+            context.start <= item.context_range.start && context.end >= item.context_range.end
+        })
 }
 
 pub(crate) fn push_byte_context(

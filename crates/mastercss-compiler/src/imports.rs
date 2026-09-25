@@ -5,8 +5,7 @@ use super::{
     ParserOptions, PreparedCssImportProvider, PrinterOptions, ResolvedCssImportGraph,
     StandaloneCssDirectiveStatement, StyleSheet, filter_native_css_rules,
     find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
-    normalize_stylesheet_value, parse_css_import_source, remove_css_reference_statements,
-    utf16_to_byte_offset,
+    parse_css_import_source, remove_css_reference_statements, utf16_to_byte_offset,
 };
 use crate::source_spans::MappedSource;
 use lightningcss::{rules::CssRule, traits::ToCss};
@@ -549,12 +548,6 @@ pub fn compile_native_css(
         .code
         .trim()
         .to_owned();
-    let css =
-        normalize_stylesheet_value(&css, false).map_err(|message| CompilerError::Directive {
-            message,
-            filename: options.from.clone(),
-            range: None,
-        })?;
 
     Ok(CompileNativeCssResult {
         native_css: css.clone(),

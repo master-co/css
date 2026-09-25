@@ -45,6 +45,7 @@ function makeFakeCompiler(options: {
   const assets = options.assets || {}
   const compilation = {
     fileDependencies: new Set<string>(),
+    missingDependencies: new Set<string>(),
     entrypoints: new Map(options.entryFiles ? [[
       'master-css-runtime',
       {

@@ -129,7 +129,9 @@ pub enum ErrorCode {
     SessionDisposed,
     InvalidInput,
     ClassSyntaxError,
+    SourceParseError,
     UnknownCondition,
+    MasterQueryRequiresCss,
     UndefinedMode,
     AmbiguousToken,
     UnknownToken,
@@ -137,7 +139,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 24] = [
+    pub const ALL: [Self; 26] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -157,7 +159,9 @@ impl ErrorCode {
         Self::SessionDisposed,
         Self::InvalidInput,
         Self::ClassSyntaxError,
+        Self::SourceParseError,
         Self::UnknownCondition,
+        Self::MasterQueryRequiresCss,
         Self::UndefinedMode,
         Self::AmbiguousToken,
         Self::UnknownToken,
@@ -185,7 +189,9 @@ impl ErrorCode {
             Self::SessionDisposed => "SESSION_DISPOSED",
             Self::InvalidInput => "INVALID_INPUT",
             Self::ClassSyntaxError => "CLASS_SYNTAX_ERROR",
+            Self::SourceParseError => "SOURCE_PARSE_ERROR",
             Self::UnknownCondition => "UNKNOWN_CONDITION",
+            Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UndefinedMode => "UNDEFINED_MODE",
             Self::AmbiguousToken => "AMBIGUOUS_TOKEN",
             Self::UnknownToken => "UNKNOWN_TOKEN",

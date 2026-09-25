@@ -59,7 +59,7 @@ export interface CompileRenderedStylesheetResult extends CompileCSSResult {
 }
 
 export interface TransformLocalStylesheetResult {
-  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap?: string }[]
   resources?: readonly StylesheetResourceAsset[]
   code: string
   dependencies: string[]
@@ -91,7 +91,7 @@ export interface CreateExtractedCSSOptions extends CompileStylesheetOptions {
 }
 
 export interface CreateExtractedCSSResult {
-  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap?: string }[]
   resources?: readonly StylesheetResourceAsset[]
   dependencies?: readonly string[]
   css: string
@@ -111,7 +111,7 @@ export interface ScannerClassState extends Iterable<string> {
 export interface ScannerState {
   cwd: string
   options: StylesheetSourceOptions
-  customOptions?: {
+  customOptions?: StylesheetSourceOptions & {
     manifest?: MasterCSSManifest
   }
   css: ScannerCSSState
@@ -119,7 +119,7 @@ export interface ScannerState {
   validClasses: ScannerClassState
   usedNativeClasses: ScannerClassState
   nativeClassNames: ScannerClassState
-  registerNativeClasses?: (classNames: string[]) => boolean
+  registerNativeClasses?: (owner: string, classNames: string[]) => boolean
   emit?: (event: 'change') => unknown
 }
 

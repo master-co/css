@@ -218,7 +218,7 @@ describe('Next static mode', () => {
     expect(readStaticCSS(outputPath)).not.toContain('.unused')
   })
 
-  it('adds output and managed CSS entry files as CSS loader dependencies for dev updates', async () => {
+  it('tracks original inputs without adding generated outputs as watcher dependencies', async () => {
     const root = createFixture()
     writeFileSync(join(root, 'theme.css'), '@theme { --color-primary: #00f; }')
     writeFileSync(join(root, 'app/globals.css'), `
@@ -237,7 +237,7 @@ describe('Next static mode', () => {
       '@import "@master/css";'
     )
 
-    expect(result.dependencies).toContain(outputPath)
+    expect(result.dependencies).not.toContain(outputPath)
     expect(result.dependencies).toContain(join(root, 'app/globals.css'))
     expect(result.dependencies).toContain(join(root, 'theme.css'))
   })
@@ -274,6 +274,7 @@ describe('Next static mode', () => {
     const source = `
       export const mainClass = 'block m:0'
     `
+    writeFileSync(modulePath, source)
     await expect(runStaticLoader(statePath, modulePath, source)).resolves.toBe(source)
 
     const css = readStaticCSS(outputPath)

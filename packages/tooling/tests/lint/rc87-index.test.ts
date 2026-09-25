@@ -343,46 +343,14 @@ describe('source content linting', () => {
     })
   })
 
-  test('lints and fixes class lists inside mdx fenced html examples', () => {
-    const content = [
-      '```html',
-      '<button class="inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60">',
-      '    Save',
-      '</button>',
-      '```'
-    ].join('\n')
-    const result = lintMasterCSSContent({
-      content,
-      filePath: '/project/content.mdx',
-      css
-    })
-
-    expect(result).toMatchObject({
-      languageId: 'mdx',
-      sourceKind: 'source'
-    })
-    expect(result.diagnostics.map((diagnostic) => diagnostic.ruleId)).toEqual([
-      'sort-classes'
-    ])
-    expect(fixMasterCSSContent({
-      content,
-      filePath: '/project/content.mdx',
-      css
-    })).toBe([
-      '```html',
-      '<button class="inline-flex align-items:center gap:0.5rem py-xs px-md r-md bg-blue-60 fg-white">',
-      '    Save',
-      '</button>',
-      '```'
-    ].join('\n'))
+  test('leaves MDX fenced examples untouched', () => {
+    const content = '```html\n<button class="fg-white p:1rem">Save</button>\n```'
+    expect(lintMasterCSSContent({ content, filePath: '/project/content.mdx', css }).diagnostics).toEqual([])
+    expect(fixMasterCSSContent({ content, filePath: '/project/content.mdx', css })).toBe(content)
   })
 
   test('passes rule options to source content diagnostics', () => {
-    const content = [
-      '```html',
-      '<div class="btn font-size:15px w:17px"></div>',
-      '```'
-    ].join('\n')
+    const content = '<div class="btn font-size:15px w:17px"></div>'
     const result = lintMasterCSSContent({
       content,
       filePath: '/project/content.mdx',

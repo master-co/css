@@ -4,6 +4,18 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use wasm_bindgen::prelude::*;
 
+fn json_value<T: Serialize + ?Sized>(value: &T) -> Result<JsValue, JsValue> {
+    value
+        .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+        .map_err(|error| JsValue::from_str(&error.to_string()))
+}
+
+fn source_scanner_error(error: mastercss_scanner::ScannerError) -> JsValue {
+    JsValue::from_str(
+        &serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
+    )
+}
+
 fn scanner_error(error: mastercss_engine::EngineError) -> JsValue {
     JsValue::from_str(
         &serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
@@ -21,7 +33,7 @@ fn invalid_lint_request(message: impl Into<String>) -> JsValue {
 }
 
 fn serialize_classes(classes: &[String]) -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(classes).map_err(|error| JsValue::from_str(&error.to_string()))
+    json_value(classes)
 }
 
 #[wasm_bindgen]
@@ -199,8 +211,7 @@ impl ToolingLintSession {
             .inner
             .native_declaration_candidates(class_names)
             .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&candidates)
-            .map_err(|error| JsValue::from_str(&error.to_string()))
+        json_value(&candidates)
     }
 
     #[wasm_bindgen(js_name = resolveValidation)]
@@ -462,8 +473,7 @@ impl ToolingValidatorSession {
             .inner
             .native_declaration_candidates(class_names)
             .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&candidates)
-            .map_err(|error| JsValue::from_str(&error.to_string()))
+        json_value(&candidates)
     }
 
     #[wasm_bindgen(js_name = generateClasses)]
@@ -484,7 +494,7 @@ impl ToolingValidatorSession {
             .inner
             .generate_classes(class_names, native_support.as_deref())
             .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&result).map_err(|error| JsValue::from_str(&error.to_string()))
+        json_value(&result)
     }
 
     pub fn dispose(&mut self) {
@@ -498,43 +508,28 @@ impl ToolingScannerSession {
     pub fn new(manifest_json: &str) -> Result<ToolingScannerSession, JsValue> {
         Ok(Self {
             inner: mastercss_scanner::ScannerSession::create(manifest_json)
-                .map_err(scanner_error)?,
+                .map_err(source_scanner_error)?,
         })
     }
 
     pub fn scan(&mut self, source: &str, content: &str) -> Result<JsValue, JsValue> {
-        let update = self.inner.scan(source, content).map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = cachedSourceCandidates)]
-    pub fn cached_source_candidates(
-        &self,
-        source: &str,
-        content: &str,
-    ) -> Result<JsValue, JsValue> {
-        self.inner
-            .cached_source_candidates(source, content)
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
+        let update = self
+            .inner
+            .scan(source, content)
+            .map_err(source_scanner_error)?;
+        json_value(&update)
     }
 
     #[wasm_bindgen(js_name = extractCandidates)]
-    pub fn extract_candidates(&self, source: &str, content: &str) -> Vec<String> {
-        mastercss_scanner::extract_source_candidates(source, content)
-    }
-
-    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
-    pub fn native_declaration_candidates(
+    pub fn extract_candidates(
         &self,
-        candidates: Vec<String>,
-    ) -> Result<JsValue, JsValue> {
-        let candidates = self
-            .inner
-            .native_declaration_candidates(candidates)
-            .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&candidates)
-            .map_err(|error| JsValue::from_str(&error.to_string()))
+        source: &str,
+        content: &str,
+        options: JsValue,
+    ) -> Result<Vec<String>, JsValue> {
+        let options = serde_wasm_bindgen::from_value(options)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        mastercss_scanner::extract(source, content, &options).map_err(source_scanner_error)
     }
 
     #[wasm_bindgen(js_name = collectCandidates)]
@@ -552,22 +547,9 @@ impl ToolingScannerSession {
             Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
         >(blocklist)
         .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        Ok(self.inner.pending_candidates(&candidates, &blocklist))
-    }
-
-    #[wasm_bindgen(js_name = invalidGeneratedClasses)]
-    pub fn invalid_generated_classes(
-        &self,
-        batch: JsValue,
-        rule_support: JsValue,
-    ) -> Result<Vec<String>, JsValue> {
-        let batch = serde_wasm_bindgen::from_value::<mastercss_schema::ValidatorBatchIr>(batch)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        let rule_support = serde_wasm_bindgen::from_value::<Vec<Vec<bool>>>(rule_support)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        Ok(mastercss_scanner::invalid_generated_classes(
-            &batch,
-            &rule_support,
+        Ok(mastercss_scanner::filter_blocklisted_candidates(
+            &candidates,
+            &blocklist,
         ))
     }
 
@@ -578,33 +560,50 @@ impl ToolingScannerSession {
         content: &str,
         candidates: Vec<String>,
         blocklist: JsValue,
-        native_support: JsValue,
-        invalid_generated_classes: Vec<String>,
+        options: JsValue,
     ) -> Result<JsValue, JsValue> {
-        let blocklist = serde_wasm_bindgen::from_value::<
-            Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
-        >(blocklist)
-        .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        let native_support = if native_support.is_null() || native_support.is_undefined() {
-            Vec::new()
-        } else {
-            serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-                .map_err(|error| JsValue::from_str(&error.to_string()))?
-        };
+        let blocklist: Vec<mastercss_schema::CssDirectiveBlocklistEntry> =
+            serde_wasm_bindgen::from_value(blocklist)
+                .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        let options = serde_wasm_bindgen::from_value(options)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?;
         let update = self
             .inner
-            .scan_pending_candidates(
-                source,
-                content,
-                candidates,
-                &blocklist,
-                &native_support,
-                &invalid_generated_classes
-                    .into_iter()
-                    .collect::<HashSet<_>>(),
-            )
-            .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
+            .scan_candidates(source, content, candidates, &blocklist, &options)
+            .map_err(source_scanner_error)?;
+        json_value(&update)
+    }
+
+    #[wasm_bindgen(js_name = removeSource)]
+    pub fn remove_source(&mut self, source: &str, options: JsValue) -> Result<JsValue, JsValue> {
+        let options = serde_wasm_bindgen::from_value(options)?;
+        json_value(
+            &self
+                .inner
+                .remove_source(source, &options)
+                .map_err(source_scanner_error)?,
+        )
+    }
+
+    #[wasm_bindgen(js_name = reconcileSources)]
+    pub fn reconcile_sources(&mut self, owner: &str, inputs: JsValue) -> Result<JsValue, JsValue> {
+        let inputs = serde_wasm_bindgen::from_value(inputs)?;
+        json_value(
+            &self
+                .inner
+                .reconcile_sources(owner, inputs)
+                .map_err(source_scanner_error)?,
+        )
+    }
+
+    #[wasm_bindgen(js_name = removeOwner)]
+    pub fn remove_owner(&mut self, owner: &str) -> Result<JsValue, JsValue> {
+        json_value(
+            &self
+                .inner
+                .remove_owner(owner)
+                .map_err(source_scanner_error)?,
+        )
     }
 
     #[wasm_bindgen(js_name = ensureClasses)]
@@ -612,23 +611,22 @@ impl ToolingScannerSession {
         let transition = self
             .inner
             .ensure_classes(class_names)
-            .map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&transition)
-            .map_err(|error| JsValue::from_str(&error.to_string()))
+            .map_err(source_scanner_error)?;
+        json_value(&transition)
     }
 
     #[wasm_bindgen(js_name = registerNativeClasses)]
-    pub fn register_native_classes(&mut self, class_names: Vec<String>) -> bool {
-        self.inner.register_native_classes(class_names)
+    pub fn register_native_classes(&mut self, owner: &str, class_names: Vec<String>) -> bool {
+        self.inner.register_native_classes(owner, class_names)
     }
 
     pub fn reset(&mut self) -> Result<(), JsValue> {
-        self.inner.reset().map_err(scanner_error)
+        self.inner.reset().map_err(source_scanner_error)
     }
 
     pub fn state(&self) -> Result<JsValue, JsValue> {
-        let state = self.inner.state().map_err(scanner_error)?;
-        serde_wasm_bindgen::to_value(&state).map_err(|error| JsValue::from_str(&error.to_string()))
+        let state = self.inner.state().map_err(source_scanner_error)?;
+        json_value(&state)
     }
 
     pub fn dispose(&mut self) {
@@ -638,7 +636,7 @@ impl ToolingScannerSession {
 
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(&mastercss_schema::BindingInfo::new(
+    json_value(&mastercss_schema::BindingInfo::new(
         env!("CARGO_PKG_VERSION"),
         "wasm32-unknown-unknown",
         "tooling",
@@ -652,5 +650,4 @@ pub fn binding_info() -> Result<JsValue, JsValue> {
             "validator",
         ],
     ))
-    .map_err(|error| JsValue::from_str(&error.to_string()))
 }

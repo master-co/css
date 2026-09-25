@@ -8,6 +8,8 @@
 
 - MCP server lifecycle and stdio transport wiring.
 - MCP tool, resource, and prompt registration.
+- Version 3 fixed-object envelopes with required result unions, concrete payload schemas, identical JSON/structuredContent and isError on failures.
+- Project context by default; manifest load failure never falls back to a preset. Metadata records actual context and unavailable values explicitly.
 - Workspace root containment and two-step write confirmation for generated fixes.
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
 - Contributor routing across npm workspaces and Rust crates, including Cargo manifests, crate-local AI notes, risk packs, and scoped validation commands.

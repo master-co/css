@@ -565,6 +565,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6"
 
 [[package]]
+name = "markdown"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5cab8f2cadc416a82d2e783a1946388b31654d391d1c7d92cc1f03e295b1deb"
+dependencies = [
+ "unicode-id",
+]
+
+[[package]]
 name = "mastercss-binding-native"
 version = "0.0.0"
 dependencies = [
@@ -688,6 +697,7 @@ dependencies = [
  "mastercss-engine",
  "mastercss-lexer",
  "mastercss-schema",
+ "mastercss-source",
  "serde",
  "serde_json",
  "thiserror",
@@ -761,6 +771,7 @@ name = "mastercss-source"
 version = "0.0.0"
 dependencies = [
  "htmlparser",
+ "markdown",
  "mastercss-lexer",
  "mastercss-schema",
  "oxc_allocator",
@@ -1549,6 +1560,12 @@ name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
+
+[[package]]
+name = "unicode-id"
+version = "0.3.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "65dd75ab2d9d379dbe86d4059e91d8b5a6e7054865eaba1ddbfc7a817ff96392"
 
 [[package]]
 name = "unicode-id-start"

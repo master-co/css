@@ -38,9 +38,11 @@ test('uses explicit compiled manifests', async () => {
   await expect(
     scanner.collectCandidates('test.tsx',
       `
-      <h1 className={'rel ' + styles.title}>
-      <h1 className="{styles.title + ' ' + 'blue-btn'}">
-      <button className="test btn">
+      <>
+        <h1 className={'rel ' + styles.title} />
+        <h1 className={styles.title + ' ' + ' blue-btn'} />
+        <button className="test btn" />
+      </>
     `)
   ).resolves.toEqual(['rel', 'blue-btn', 'test', 'btn'])
   await scanner.reset({ manifest })

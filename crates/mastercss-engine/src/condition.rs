@@ -1,6 +1,6 @@
 use super::{
-    ConditionFeature, EngineSettings, JS_MAX_SAFE_INTEGER, ManifestCondition, ManifestProjection,
-    UtilityLayerName, Value, natural_compare,
+    ConditionFeature, EngineSettings, ManifestCondition, ManifestProjection, UtilityLayerName,
+    Value, natural_compare,
 };
 
 pub(crate) fn resolve_layer_condition(
@@ -24,28 +24,26 @@ pub(crate) fn resolve_layer_condition(
 pub(crate) fn render_condition_token(
     token: &str,
     manifest: &ManifestProjection,
-) -> Option<(String, String, Vec<ConditionFeature>)> {
+) -> Option<(String, String)> {
     if let Some(condition) = manifest.conditions.get(token) {
         let wrapper = render_manifest_condition(condition, None);
-        let features = native_query_features(&wrapper);
-        return Some((condition.id.clone(), wrapper, features));
+        return Some((condition.id.clone(), wrapper));
     }
     let query = mastercss_lexer::parse_native_query(token)?;
     let wrapper = format!("@{} {}", query.kind, query.prelude);
-    let features = native_query_features(&wrapper);
-    Some((query.kind, wrapper, features))
+    Some((query.kind, wrapper))
 }
 
 /// Only simple ranges with identical units are compared numerically. The unit is
 /// part of the feature identity; rem/em/px never share an assumed root size.
 pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
     let mut features = Vec::new();
-    let body = if let Some(body) = query.strip_prefix("@media ") {
-        body.trim()
+    let (domain, body) = if let Some(body) = query.strip_prefix("@media ") {
+        ("media".to_owned(), body.trim())
     } else if let Some(body) = query.strip_prefix("@container ") {
         let body = body.trim();
         if body.starts_with('(') {
-            body
+            ("container:".to_owned(), body)
         } else {
             let Some((name, body)) = body.split_once(char::is_whitespace) else {
                 return features;
@@ -56,7 +54,7 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
             {
                 return features;
             }
-            body.trim()
+            (format!("container:{name}"), body.trim())
         }
     } else {
         return features;
@@ -78,7 +76,13 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
             return Vec::new();
         }
     }
-    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
+    for feature in &mut features {
+        feature.domain = domain.clone();
+    }
+    features.sort_by(|left, right| {
+        natural_compare(&left.feature, &right.feature)
+            .then_with(|| natural_compare(&left.unit, &right.unit))
+    });
     features
 }
 
@@ -172,20 +176,52 @@ pub(crate) fn add_condition_feature(
     operator: &str,
     value: f64,
 ) {
-    let feature = if let Some(feature) = features.iter_mut().find(|feature| feature.0 == name) {
-        feature
-    } else {
-        features.push((name.to_owned(), 0.0, JS_MAX_SAFE_INTEGER));
-        features.last_mut().expect("inserted condition feature")
+    use mastercss_schema::{ConditionBoundIr, ConditionRangeIr};
+    let (name, unit) = name.split_once(':').unwrap_or((name, ""));
+    let mut source = ConditionRangeIr {
+        domain: String::new(),
+        feature: name.into(),
+        unit: unit.into(),
+        lower: None,
+        upper: None,
+    };
+    let bound = ConditionBoundIr {
+        value,
+        inclusive: operator.contains('='),
     };
     match operator {
-        ">" | ">=" => feature.1 = feature.1.max(value),
-        "<" | "<=" => feature.2 = feature.2.min(value),
+        ">" | ">=" => source.lower = Some(bound),
+        "<" | "<=" => source.upper = Some(bound),
         "=" => {
-            feature.1 = value;
-            feature.2 = value;
+            source.lower = Some(bound.clone());
+            source.upper = Some(bound);
         }
-        _ => {}
+        _ => return,
+    }
+    if let Some(target) = features
+        .iter_mut()
+        .find(|feature| feature.feature == name && feature.unit == unit)
+    {
+        intersect_range(target, &source);
+    } else {
+        features.push(source);
+    }
+}
+
+fn intersect_range(target: &mut ConditionFeature, source: &ConditionFeature) {
+    if let Some(bound) = &source.lower {
+        match &mut target.lower {
+            Some(current) if current.value == bound.value => current.inclusive &= bound.inclusive,
+            Some(current) if current.value > bound.value => {}
+            _ => target.lower = Some(bound.clone()),
+        }
+    }
+    if let Some(bound) = &source.upper {
+        match &mut target.upper {
+            Some(current) if current.value == bound.value => current.inclusive &= bound.inclusive,
+            Some(current) if current.value < bound.value => {}
+            _ => target.upper = Some(bound.clone()),
+        }
     }
 }
 
@@ -193,19 +229,54 @@ pub(crate) fn merge_condition_features(
     target: &mut Vec<ConditionFeature>,
     source: &[ConditionFeature],
 ) {
-    for (name, min, max) in source {
-        if let Some(feature) = target.iter_mut().find(|feature| feature.0 == *name) {
-            if *min != 0.0 {
-                feature.1 = *min;
-            }
-            if *max != JS_MAX_SAFE_INTEGER {
-                feature.2 = *max;
-            }
+    for source in source {
+        if let Some(target) = target.iter_mut().find(|target| {
+            target.domain == "media"
+                && target.domain == source.domain
+                && target.feature == source.feature
+                && target.unit == source.unit
+        }) {
+            intersect_range(target, source);
         } else {
-            target.push((name.clone(), *min, *max));
+            target.push(source.clone());
         }
     }
-    target.sort_by(|left, right| natural_compare(&left.0, &right.0));
+    target.sort_by(|left, right| {
+        natural_compare(&left.domain, &right.domain)
+            .then_with(|| natural_compare(&left.feature, &right.feature))
+            .then_with(|| natural_compare(&left.unit, &right.unit))
+    });
+}
+
+/// Ordering evidence is independent of emission. Only a wholly numeric media
+/// conjunction can be intersected across wrappers; container ancestry stays ordered.
+pub fn condition_priority(wrappers: &[(String, String)]) -> (Vec<ConditionFeature>, Vec<String>) {
+    let parsed = wrappers
+        .iter()
+        .map(|(_, wrapper)| native_query_features(wrapper))
+        .collect::<Vec<_>>();
+    let media_conjunction = wrappers
+        .iter()
+        .zip(&parsed)
+        .all(|((kind, _), features)| kind == "media" && !features.is_empty());
+    let mut features = Vec::new();
+    let mut conditions = Vec::new();
+    for (index, ((_, wrapper), ranges)) in wrappers.iter().zip(parsed).enumerate() {
+        if ranges.is_empty() {
+            conditions.push(format!(
+                "{index}:{}",
+                mastercss_lexer::canonical_native_content(wrapper)
+            ));
+        } else if media_conjunction {
+            merge_condition_features(&mut features, &ranges);
+        } else {
+            for mut range in ranges {
+                range.domain = format!("{index}:{}", range.domain);
+                features.push(range);
+            }
+        }
+    }
+    (features, conditions)
 }
 
 pub(crate) fn render_manifest_condition(

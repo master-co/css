@@ -17,7 +17,7 @@ test('AI inspection workflows preserve project context, statuses and complete al
       expect(actual).toMatchObject({
         className: expected.className,
         matchStatus: expected.matchStatus,
-        cssValueStatus: expected.cssValueStatus,
+        cssSyntaxStatus: expected.cssSyntaxStatus, cssValueStatus: expected.cssValueStatus,
         browserSupport: 'not-checked'
       })
       if (expected.code) expect(actual.diagnostics?.map(item => item.code)).toContain(expected.code)

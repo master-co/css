@@ -1,5 +1,5 @@
 ## Overview [sr-only] \{#overview\}
-Append a named condition or a complete native query to a class. The outer parentheses delimit the Master CSS suffix; parentheses inside it belong to CSS.
+Append a named condition or a simple native query to a class. The outer parentheses delimit the Master CSS suffix; parentheses inside it belong to CSS.
 
 ```html
 <div class="hidden@sm">Hidden at the named breakpoint</div>
@@ -66,16 +66,14 @@ Use the preset's `@starting-style` variant to define a transition's initial valu
 
 <Class2CSS>{['opacity:0@starting-style', 'transition:opacity|250ms@motion']}</Class2CSS>
 
-## Complete native queries \{#arbitrary-conditions-and-queries\}
+## Simple native queries \{#arbitrary-conditions-and-queries\}
 
 | Purpose | Suffix |
 | --- | --- |
 | Viewport width | `@media((width>=800px))` |
 | Aspect ratio | `@media((aspect-ratio>=1.5))` |
 | Resolution | `@media((resolution>=2x))` |
-| Type and feature | `@media(screen\|and\|(width>=50rem))` |
 | Supports declaration | `@supports((display:grid))` |
-| Supports selector | `@supports(selector(:has(*)))` |
 | Nearest size container | `@container((width>=40rem))` |
 | Named container | `@container(card\|(width>=40rem))` |
 | Style container | `@container(style(--density:compact))` |
@@ -86,19 +84,18 @@ Use the preset's `@starting-style` variant to define a transition's initial valu
 
 ```html
 <div class="hidden@media((pointer:coarse))">Fine-pointer controls</div>
-<div class="grid-cols:2@media(screen|and|(width>=50rem))">Responsive content</div>
+<div class="grid-cols:2@media((width>=50rem))">Responsive content</div>
 ```
 
-<Class2CSS>{['hidden@media((pointer:coarse))', 'grid-cols:2@media(screen|and|(width>=50rem))']}</Class2CSS>
+<Class2CSS>{['hidden@media((pointer:coarse))', 'grid-cols:2@media((width>=50rem))']}</Class2CSS>
 
 ### Supports \{#supportsfeature\}
 
 ```html
 <div class="grid@supports((display:grid))">Content</div>
-<div class="border-width:2px@supports(selector(:has(*)))">Relational selectors available</div>
 ```
 
-<Class2CSS>{['grid@supports((display:grid))', 'border-width:2px@supports(selector(:has(*)))']}</Class2CSS>
+<Class2CSS>{['grid@supports((display:grid))']}</Class2CSS>
 
 ### Containers \{#containersize\}
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
@@ -119,16 +116,15 @@ Style queries use their native form:
 </div>
 ```
 
-## Ranges and logical operators \{#comparison-operators\}
-Use native CSS comparisons and `and`, `or` or `not` inside a complete query. Do not abbreviate feature names or omit units.
+## Ranges \{#comparison-operators\}
+Use native CSS comparisons, including chained ranges. Put `and`, `or` and `not` in a CSS custom variant. Do not abbreviate feature names or omit units.
 
 ```html
 <div class="hidden@media((width<40rem))">Hidden below 40rem</div>
 <div class="grid-cols:2@media((40rem<=width<64rem))">Two columns within a range</div>
-<div class="hidden@media(not|screen)">Hidden outside screen media</div>
 ```
 
-<Class2CSS>{['hidden@media((width<40rem))', 'grid-cols:2@media((40rem<=width<64rem))', 'hidden@media(not|screen)']}</Class2CSS>
+<Class2CSS>{['hidden@media((width<40rem))', 'grid-cols:2@media((40rem<=width<64rem))']}</Class2CSS>
 
 ## Combining wrappers \{#grouping-conditions\}
 Multiple suffixes preserve their nesting and source order, including repeated wrappers of the same kind:
@@ -143,3 +139,30 @@ Comparable ranges in the same unit retain range priority. Incomparable units and
 
 ## Upgrading RC conditions
 The old numeric and feature shorthand forms are historical syntax. Use the [v2 RC migration guide](/guide/migration/v2-rc) to preserve the old generated result, including a project's former root-size assumption. The ordinary compiler never interprets those forms.
+
+## Simple queries in classes
+
+Classes accept one media type, one parenthesized media feature or range, one supports declaration, or one container size or custom-property style query. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
+
+```html
+<div class="hidden@media(print) p-md@media((40rem<=width<64rem))"></div>
+<div class="grid@supports((display:grid)) p-md@container(card|(width>=40rem))"></div>
+<div class="p-md@container(style(--density:compact))"></div>
+```
+
+Define compound queries, query lists, negation, `selector()` and literal pipes in CSS. These class forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting a query does not enable additional syntax.
+
+```css
+@custom-variant wide-screen {
+  @media screen and (width >= 50rem) { @slot; }
+}
+@custom-variant language-selector {
+  @supports selector([lang|=en]) { @slot; }
+}
+```
+
+```html
+<div class="p-md@wide-screen display:block@language-selector"></div>
+```
+
+The class encoding replaces `|` with a space only outside strings, comments and CSS escapes. Native CSS, custom variants and mode definitions do not use that encoding. Repeated simple suffixes preserve their wrapper order. Equivalent media ranges share ordering evidence, while container query domains remain distinct. Different units are never converted for sorting. Within equivalent conditions and the same property scope, direct values follow named tokens.

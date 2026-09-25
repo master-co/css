@@ -415,16 +415,7 @@
       ]
     },
     "master-theme-value": {
-      "patterns": [
-        {
-          "match": "--value(?=\\()",
-          "name": "support.function.misc.master-css"
-        },
-        {
-          "match": "--alpha(?=\\()",
-          "name": "support.function.misc.master-css"
-        }
-      ]
+      "patterns": []
     },
     "master-theme-declaration": {
       "patterns": [
@@ -1139,10 +1130,6 @@
       "patterns": [
         {
           "match": "--value(?=\\()",
-          "name": "support.function.misc.master-css"
-        },
-        {
-          "match": "--alpha(?=\\()",
           "name": "support.function.misc.master-css"
         },
         {

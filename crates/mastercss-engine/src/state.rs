@@ -1,7 +1,7 @@
 use super::{
     ManifestProjection, ManifestSelectorNode, ManifestVariant, StateBranch, add_condition_wrapper,
-    merge_condition_features, parse_raw_condition_wrapper, render_condition_token,
-    render_manifest_condition, resolve_layer_condition,
+    parse_raw_condition_wrapper, render_condition_token, render_manifest_condition,
+    resolve_layer_condition,
 };
 
 pub(crate) fn resolve_state_branches(
@@ -31,6 +31,12 @@ pub(crate) fn resolve_state_branches(
             branches = expand_variant_branches(branches, variant, manifest);
         } else {
             let template = selector_token_to_template(&selector_token, manifest);
+            if template
+                .as_deref()
+                .is_some_and(|selector| !mastercss_lexer::valid_selector_structure(selector))
+            {
+                return Vec::new();
+            }
             for branch in &mut branches {
                 branch.key.push_str(&selector_token);
                 branch.selector_template = template.clone();
@@ -71,12 +77,11 @@ pub(crate) fn resolve_state_branches(
             continue;
         }
 
-        if let Some((id, wrapper, features)) = render_condition_token(&condition_token, manifest) {
+        if let Some((id, wrapper)) = render_condition_token(&condition_token, manifest) {
             for branch in &mut branches {
                 branch.key.push('@');
                 branch.key.push_str(&condition_token);
                 add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper.clone());
-                merge_condition_features(&mut branch.features, &features);
             }
         } else {
             return Vec::new();
@@ -104,8 +109,6 @@ pub(crate) fn expand_mode_branches(
                         Some(format!("{}{guard}", branch.mode_guard.unwrap_or_default()));
                     for raw in &activation.conditions {
                         if let Some((id, wrapper)) = parse_raw_condition_wrapper(raw) {
-                            let features = super::condition::native_query_features(&wrapper);
-                            merge_condition_features(&mut branch.features, &features);
                             add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper);
                         }
                     }
@@ -229,12 +232,6 @@ pub(crate) fn expand_variant_branches(
                                 &condition.id,
                                 wrapper,
                             );
-                            merge_condition_features(
-                                &mut branch.features,
-                                &super::condition::native_query_features(
-                                    &render_manifest_condition(condition, None),
-                                ),
-                            );
                         }
                     } else {
                         for raw in &variant_branch.conditions {
@@ -261,7 +258,10 @@ pub(crate) fn compose_selector_templates(
     if next == "&" {
         return current.map(str::to_owned);
     }
-    Some(next.replace('&', current.unwrap_or("&")))
+    Some(
+        mastercss_lexer::replace_nesting_selector(next, current.unwrap_or("&"))
+            .unwrap_or_else(|| next.to_owned()),
+    )
 }
 
 pub(crate) fn selector_token_to_template(

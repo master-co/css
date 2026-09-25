@@ -140,30 +140,15 @@ export interface MasterCSSLintBindingSession extends MasterCSSToolingBindingSess
 
 export interface MasterCSSScannerBindingSession extends MasterCSSToolingBindingSession {
   scan(source: string, content: string): MasterCSSScannerUpdate
-  cachedSourceCandidates(source: string, content: string): readonly string[] | null
-  extractCandidates(source: string, content: string): readonly string[]
-  nativeDeclarationCandidates(
-    candidates: readonly string[]
-  ): readonly MasterCSSNativeDeclarationCandidate[]
+  extractCandidates(source: string, content: string, options?: import('./protocol').MasterCSSScannerSourceOptions): readonly string[]
   collectCandidates(candidates: readonly string[]): readonly string[]
-  filterCandidates(
-    candidates: readonly string[],
-    blocklist: readonly (string | MasterCSSRegex)[]
-  ): readonly string[]
-  invalidGeneratedClasses(
-    batch: MasterCSSValidatorBatch,
-    ruleSupport: readonly (readonly boolean[])[]
-  ): readonly string[]
-  scanCandidates(
-    source: string,
-    content: string,
-    candidates: readonly string[],
-    blocklist: readonly (string | MasterCSSRegex)[],
-    nativeSupport: readonly boolean[],
-    invalidGeneratedClasses: readonly string[]
-  ): MasterCSSScannerUpdate
+  filterCandidates(candidates: readonly string[], blocklist: readonly (string | MasterCSSRegex)[]): readonly string[]
+  scanCandidates(source: string, content: string, candidates: readonly string[], blocklist: readonly (string | MasterCSSRegex)[], options?: import('./protocol').MasterCSSScannerSourceOptions): MasterCSSScannerUpdate
+  removeSource(source: string, options?: import('./protocol').MasterCSSScannerSourceOptions): MasterCSSScannerUpdate
+  reconcileSources(owner: string, inputs: readonly import('./protocol').MasterCSSScannerSourceInput[]): MasterCSSScannerUpdate
+  removeOwner(owner: string): MasterCSSScannerUpdate
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
-  registerNativeClassNames(classNames: readonly string[]): boolean
+  registerNativeClassNames(owner: string, classNames: readonly string[]): boolean
   reset(): void
   snapshot(): MasterCSSScannerState
 }

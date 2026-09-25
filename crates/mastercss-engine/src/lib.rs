@@ -19,8 +19,7 @@ use serde_json::{Map, Value};
 use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
-const JS_MAX_SAFE_INTEGER: f64 = 9_007_199_254_740_991.0;
-type ConditionFeature = (String, f64, f64);
+type ConditionFeature = mastercss_schema::ConditionRangeIr;
 
 fn is_false(value: &bool) -> bool {
     !value
@@ -302,7 +301,6 @@ struct StateBranch {
     mode: Option<String>,
     mode_guard: Option<String>,
     important: bool,
-    features: Vec<ConditionFeature>,
 }
 
 #[derive(Debug, Clone)]
@@ -439,9 +437,9 @@ mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
-    add_condition_wrapper, format_standard_number, merge_condition_features,
-    normalize_dynamic_value, parse_raw_condition_wrapper, render_condition_token,
-    render_manifest_condition, resolve_layer_condition,
+    add_condition_wrapper, format_standard_number, normalize_dynamic_value,
+    parse_raw_condition_wrapper, render_condition_token, render_manifest_condition,
+    resolve_layer_condition,
 };
 pub(crate) use manifest::{
     BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
@@ -472,8 +470,9 @@ pub(crate) use value_syntax::{
     normalize_css_math_functions,
 };
 
-pub use condition::native_query_features;
+pub use condition::{condition_priority, native_query_features};
 pub use manifest::{builtin_key_aliases, builtin_token_namespaces};
+pub use utility::compare_condition_features;
 pub use utility::{compare_rule_priority, natural_compare};
 
 #[cfg(test)]

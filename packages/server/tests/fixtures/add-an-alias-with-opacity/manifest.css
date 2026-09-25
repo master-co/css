@@ -3,9 +3,9 @@
 }
 
 @theme {
-  --color-primary: --alpha(var(--color-black) / 50%);
+  --color-primary: color-mix(in oklab, var(--color-black) 50%, transparent);
 }
 
 @theme {
-  --color-secondary: --alpha(var(--color-primary) / 50%);
+  --color-secondary: color-mix(in oklab, var(--color-primary) 50%, transparent);
 }

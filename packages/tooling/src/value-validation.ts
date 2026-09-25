@@ -1,3 +1,4 @@
+import { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'
 import { definitionSyntax, generate, lexer, parse, property as propertyName, walk, version as cssTreeVersion } from 'css-tree'
 import type { MasterCSSDiagnostic, MasterCSSValueStatus } from '@master/css-binding/tooling'
 
@@ -9,7 +10,7 @@ export interface DeclarationValidation {
   readonly range?: { readonly start: number, readonly end: number }
 }
 
-export const CSS_VALUE_CHECK = Object.freeze({ name: 'css-tree', version: cssTreeVersion, phase: 'css-value' as const })
+export const CSS_VALUE_CHECK = Object.freeze({ name: 'css-tree', version: cssTreeVersion, phase: 'css-value' as const, scope: 'expanded-declarations' as const })
 
 const units = new Set(Object.values((lexer as typeof lexer & { units: Record<string, string[]> }).units).flat().map((unit) => unit.toLowerCase()))
 const cache = new Map<string, MasterCSSValueStatus>()
@@ -37,6 +38,7 @@ function validateValue(property: string, value: string, atRule?: string): Master
   const key = `${atRule ?? ''}\0${property}\0${value}`
   const cached = cache.get(key)
   if (cached) return cached
+  if (propertyName(property).custom) return 'unknown'
   let status: MasterCSSValueStatus
   try {
     const ast = parse(value, { context: 'value' })
@@ -80,7 +82,9 @@ function validateValue(property: string, value: string, atRule?: string): Master
 
 export function validateRuleDeclarations(text: string): DeclarationValidation[] {
   const declarations: DeclarationValidation[] = []
-  const ast = parse(text, { positions: true, parseAtrulePrelude: false, parseRulePrelude: false })
+  let ast
+  try { ast = parse(text, { positions: true, parseAtrulePrelude: false, parseRulePrelude: false, parseCustomProperty: false }) }
+  catch { return declarations }
   walk(ast, {
     visit: 'Declaration',
     enter(node) {
@@ -93,6 +97,7 @@ export function validateRuleDeclarations(text: string): DeclarationValidation[] 
 }
 
 export function withCSSValueValidation<T extends {
+  readonly cssSyntaxStatus?: import('@master/css-binding/tooling').MasterCSSSyntaxStatus
   readonly className: string
   readonly rules: readonly { readonly text: string }[]
   readonly diagnostics?: readonly MasterCSSDiagnostic[]
@@ -115,5 +120,10 @@ export function withCSSValueValidation<T extends {
   const cssValueStatus: MasterCSSValueStatus = declarations.some((d) => d.status === 'invalid') ? 'invalid'
     : declarations.some((d) => d.status === 'unknown') ? 'unknown'
       : declarations.length ? 'valid' : 'not-checked'
-  return { ...result, cssValueStatus, browserSupport: 'not-checked' as const, checks: [CSS_VALUE_CHECK], declarations, diagnostics }
+  const syntax = result.rules.map(rule => cssSyntaxStatus(rule.text))
+  const syntaxStatus: import('@master/css-binding/tooling').MasterCSSSyntaxStatus = result.cssSyntaxStatus === 'invalid' || syntax.includes('invalid') ? 'invalid'
+    : syntax.includes('unknown') ? 'unknown' : syntax.length ? 'valid' : result.cssSyntaxStatus ?? 'not-checked'
+  if (syntax.includes('invalid')) diagnostics.push({ code: 'CSS_PARSE_ERROR', phase: 'css-syntax', severity: 'error', message: 'Invalid CSS token structure in expanded declarations, selectors or queries', range: { start: 0, end: result.className.length }, notes: [] })
+  const checks = [...(syntax.length ? [CSS_SYNTAX_CHECK] : []), ...(declarations.length ? [CSS_VALUE_CHECK] : [])]
+  return { ...result, cssSyntaxStatus: syntaxStatus, cssValueStatus, browserSupport: 'not-checked' as const, checks, declarations, diagnostics }
 }

@@ -27,7 +27,7 @@ export interface MasterCSSDiagnostic {
   readonly version: typeof MASTER_CSS_DIAGNOSTIC_VERSION
   readonly code: string
   readonly domain: MasterCSSDiagnosticDomain
-  readonly phase?: 'match' | 'css-value' | 'browser-support' | 'compiler'
+  readonly phase?: 'match' | 'css-syntax' | 'css-value' | 'browser-support' | 'compiler'
   readonly severity: MasterCSSDiagnosticSeverity
   readonly message: string
   readonly source?: string

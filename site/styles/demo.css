@@ -7,7 +7,7 @@
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
-  --color-demo-grid: --alpha(var(--color-gray-50) / 9%);
+  --color-demo-grid: color-mix(in oklab, var(--color-gray-50) 9%, transparent);
   --color-demo-text: var(--color-text-body);
   --color-demo-muted: var(--color-text-muted);
   --color-demo-blue: var(--color-blue-60);
@@ -21,7 +21,7 @@
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
-  --color-demo-grid: --alpha(var(--color-gray-50) / 12%);
+  --color-demo-grid: color-mix(in oklab, var(--color-gray-50) 12%, transparent);
   --color-demo-text: var(--color-text-body);
   --color-demo-muted: var(--color-text-muted);
   --color-demo-blue: var(--color-blue-40);

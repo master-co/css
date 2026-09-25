@@ -115,24 +115,20 @@ const frontmatterClasses = 'fg-red'
     ])
   })
 
-  test('warns once per peer and falls back to text extraction when an optional framework parser is missing', async () => {
+  test('reports missing framework parsers without raw fallback', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     setOptionalPeerImporterForTest(async () => {
       throw new Error('missing peer')
     })
 
     await expect(extractVueClasses('App.vue', '<template><div class="block"></div></template>'))
-      .resolves
-      .toEqual(['block'])
+      .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
     await expect(extractVueClasses('Other.vue', '<template><div class="fg-red"></div></template>'))
-      .resolves
-      .toEqual(['fg-red'])
+      .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
     await expect(extractSvelteClasses('Component.svelte', '<div class="p:1rem"></div>'))
-      .resolves
-      .toEqual(['p:1rem'])
+      .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
     await expect(extractSvelteClasses('Other.svelte', '<div class="mx:auto"></div>'))
-      .resolves
-      .toEqual(['mx:auto'])
+      .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
 
     expect(warn).toHaveBeenCalledTimes(2)
     expect(warn.mock.calls[0]?.[0]).toContain('Optional Vue SFC parser "vue/compiler-sfc" could not be loaded')

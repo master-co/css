@@ -22,10 +22,14 @@ pub(crate) fn create_selector_text(
     let mut selector = branch
         .selector_template
         .as_deref()
-        .map(|template| template.replace('&', &body))
+        .map(|template| {
+            mastercss_lexer::replace_nesting_selector(template, &body)
+                .unwrap_or_else(|| template.to_owned())
+        })
         .unwrap_or(body);
     if let Some(template) = declaration_selector {
-        selector = template.replace('&', &selector);
+        selector = mastercss_lexer::replace_nesting_selector(template, &selector)
+            .unwrap_or_else(|| template.to_owned());
     }
     selector
 }
@@ -35,7 +39,10 @@ pub(crate) fn composition_selector(branch: &StateBranch, _manifest: &ManifestPro
     branch
         .selector_template
         .as_deref()
-        .map(|template| template.replace('&', &anchor))
+        .map(|template| {
+            mastercss_lexer::replace_nesting_selector(template, &anchor)
+                .unwrap_or_else(|| template.to_owned())
+        })
         .unwrap_or(anchor)
 }
 

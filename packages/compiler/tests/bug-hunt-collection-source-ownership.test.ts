@@ -37,3 +37,22 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
     expect(text(all)).toContain('.owner-b')
   } finally { await scanner.dispose();rmSync(root, { recursive: true, force: true }) }
 })
+
+test('strict registration failure retains both the successful stylesheet and native owners', async () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-strict-owner-')))
+  const scanner = new MasterCSSScanner({}, root)
+  using collection = createStylesheetCollection()
+  try {
+    await scanner.init()
+    const id = join(root, 'app.css')
+    const options = { baseManifest: scanner.css.manifest, projectDir: root, validation: 'error' as const }
+    await collection.register(scanner, id, '@master entry;.previous{padding:1px}', options)
+    expect(scanner.nativeClassNames.has('previous')).toBe(true)
+    await expect(collection.register(scanner, id, '@master entry;.failed{font:16px}', options)).rejects.toThrow('Strict CSS validation failed')
+    expect(scanner.nativeClassNames.has('previous')).toBe(true)
+    expect(scanner.nativeClassNames.has('failed')).toBe(false)
+    const result = await collection.compose({ ...options, scanner })
+    expect(result.css).toContain('.previous')
+    expect(result.css).not.toContain('.failed')
+  } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }
+})

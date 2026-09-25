@@ -90,7 +90,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
-    version: 2,
+    version: 3,
     classes: [
       { className: 'block', matchStatus: 'matched', rules: [{ text: '.block{display:block}' }] },
       { className: 'unknown', matchStatus: 'unmatched', rules: [] }
@@ -248,33 +248,33 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 3,
+    version: 4,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 3,
+    version: 4,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 3,
+    version: 4,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 3,
+    version: 4,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
     sourceFormat: { syntax: 'rgb' }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 3,
+    version: 4,
     tokens: [{
       range: { start: 8, end: 12 },
       expression: { kind: 'literal', value: '#123' }
@@ -284,7 +284,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   language.free()
 
   expect(tooling.createInspectionReport({
-    version: 2,
+    version: 3,
     cwd: '/project',
     patterns: ['index.html'],
     files: [],
@@ -293,7 +293,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     stylesheets: {},
     css: { text: '😀' }
   })).toMatchObject({
-    version: 2,
+    version: 3,
     // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
     // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
     css: { bytes: 4, included: false },

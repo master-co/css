@@ -20,7 +20,7 @@ async function setup(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', 
   writeFileSync(style, (managed ? '@master entry;' : '') + '@reference "./missing/nested/tokens.css";.target{@compose paint;}')
   writeFileSync(join(root, 'entry.js'), 'import "./style.css"')
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
-  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), { name: 'recovery-event-observer', watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
+  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), { name: 'recovery-event-observer', transform(code, id) { if (id.endsWith('/style.css')) trace('transformed-style', code) }, watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
   if (!('on' in result)) throw new Error('Expected build watcher')
   const events: { code: string, error?: unknown }[] = [], closing: Promise<void>[] = []
   let terminal: { code: string, error?: unknown } | undefined, closed = false
@@ -49,7 +49,10 @@ for (const managed of [false, true]) for (const mode of ['static', 'runtime', 'p
       state.write('@utilities{paint{padding:3rem}}')
       expect((await state.next()).code).toBe('BUNDLE_END');expect(state.output()).toContain('padding:3rem')
       writeFileSync(state.style, '.target{padding:4rem}')
-      expect((await state.next()).code).toBe('BUNDLE_END');expect(state.output()).toContain('padding:4rem')
+      expect((await state.next()).code).toBe('BUNDLE_END')
+      // Recovery can already have queued a rebuild when this edit arrives.
+      // Assert the eventual authored output, not the identity of the next event.
+      await vi.waitFor(() => expect(state.output()).toContain('padding:4rem'), { timeout: watchDeadline })
       const before = state.cacheFiles().map(file => [file, statSync(file).mtimeMs] as const)
       state.write('@utilities{paint{padding:99rem}}')
       await delay(350)

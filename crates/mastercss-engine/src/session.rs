@@ -475,6 +475,16 @@ impl EngineSession {
             } else {
                 mastercss_schema::MatchStatus::Unmatched
             },
+            css_syntax_status: if diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError)
+            {
+                mastercss_schema::CssSyntaxStatus::Invalid
+            } else if rules.is_empty() {
+                mastercss_schema::CssSyntaxStatus::NotChecked
+            } else {
+                mastercss_schema::CssSyntaxStatus::Valid
+            },
             css_value_status: mastercss_schema::CssValueStatus::NotChecked,
             browser_support: mastercss_schema::BrowserSupport::NotChecked,
             rules,

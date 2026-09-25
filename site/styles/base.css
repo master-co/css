@@ -2,14 +2,14 @@
   --color-yellow: var(--color-yellow-40);
   --color-yellow-hover: var(--color-yellow-50);
   --color-on-yellow: var(--color-yellow-95);
-  --color-yellow-line: --alpha(var(--color-black) / 10%);
+  --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
 }
 
 @theme dark {
   --color-yellow: var(--color-yellow-50);
   --color-yellow-hover: var(--color-yellow-40);
   --color-on-yellow: var(--color-yellow-95);
-  --color-yellow-line: --alpha(var(--color-white) / 30%);
+  --color-yellow-line: color-mix(in oklab, var(--color-white) 30%, transparent);
 }
 
 @components {

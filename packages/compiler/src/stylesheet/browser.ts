@@ -1,4 +1,4 @@
-import { validateCompiledCSS } from '../value-validation'
+import { validateCompiledCSS, assertValidationOptions } from '../value-validation'
 import {
   createCompiler,
   type MasterCSSCompileManifestResult
@@ -19,7 +19,7 @@ export interface MasterCSSBrowserStylesheetCompileOptions {
   readonly from?: string
   readonly preserveNativeCSS?: boolean
   readonly pruneNativeCSS?: boolean
-  readonly cssValuePolicy?: 'report' | 'error'
+  readonly validation?: 'report' | 'error'
   /** Keep untouched native source for host transforms; incompatible with class pruning. */
   readonly preserveNativeSource?: boolean
   /** Globals already present outside this render; emit only additional resources. */
@@ -45,6 +45,7 @@ export async function compileBrowserStylesheet(
   source: string,
   options: MasterCSSBrowserStylesheetCompileOptions
 ): Promise<MasterCSSBrowserStylesheetCompileResult> {
+  assertValidationOptions(options)
   const {
     baseManifest,
     classNames,
@@ -67,7 +68,7 @@ export async function compileBrowserStylesheet(
       baseManifest,
       pruneNativeCSS: options.pruneNativeCSS,
       classes: classNames,
-      cssValuePolicy: options.cssValuePolicy,
+      validation: options.validation,
       ...(from ? { from } : {}),
       ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
       ...(preserveNativeSource === undefined ? {} : { preserveNativeSource }),

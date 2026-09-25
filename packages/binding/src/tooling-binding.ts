@@ -77,5 +77,7 @@ export async function createToolingBinding(
   }
 }
 
-export type { MasterCSSDiagnostic, MasterCSSMatchStatus, MasterCSSValueStatus, MasterCSSBrowserSupport } from './protocol'
+export type { MasterCSSDiagnostic, MasterCSSMatchStatus, MasterCSSValueStatus, MasterCSSSyntaxStatus, MasterCSSBrowserSupport } from './protocol'
 export { MASTER_CSS_LANGUAGE_VERSION } from './protocol'
+
+export type { MasterCSSScannerUpdate, MasterCSSScannerState, MasterCSSSourceOccurrence, MasterCSSScannerSourceOptions, MasterCSSScannerSourceInput } from './protocol'

@@ -621,6 +621,8 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
 
   if (resolvedOptions.mode === 'static') {
     return prepareNextStatic(options, {
+      projectDir,
+      distDir: nextConfig.distDir,
       watch: process.env.NODE_ENV === 'development'
     }).then((setup) => {
       if (!setup) return nextConfig

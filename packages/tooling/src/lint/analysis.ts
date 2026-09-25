@@ -75,6 +75,7 @@ export interface MasterCSSLintRawValueCandidate {
 }
 
 export interface MasterCSSLintDocumentAnalysis {
+  readonly diagnostics: readonly import('@master/css-binding/tooling').MasterCSSDiagnostic[]
   readonly classPositions: readonly Readonly<{
     range: Readonly<{ start: number, end: number }>
     contextRange: Readonly<{ start: number, end: number }>

@@ -10,7 +10,7 @@ for (const binding of ['native', 'wasm'] as const) test(`${binding} maps HTML at
   const tooling = await createToolingBinding({ binding, wasm })
   const session = await tooling.createSourceSession()
   try {
-    expect(session.extract({ files: [] })).toEqual({ version: 1, files: [] })
+    expect(session.extract({ files: [] })).toEqual({ version: 2, files: [] })
     const [mapped] = session.extract({ files: [], htmlAttributes: ['é&amp;&#x1f600;\r\n'] }).htmlAttributes!
     expect(mapped.value).toBe('é&😀\n')
     expect(mapped.spans).toEqual([

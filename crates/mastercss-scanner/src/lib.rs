@@ -1,31 +1,100 @@
 #![forbid(unsafe_code)]
 
-use std::collections::{HashMap, HashSet};
-
 use mastercss_engine::{EngineError, EngineSession};
 use mastercss_schema::{
-    CssDirectiveBlocklistEntry, EngineSnapshotIr, EngineTransitionIr, NativeDeclarationCandidateIr,
-    ValidatorBatchIr, filter_css_extraction_candidates, is_css_class_blocklisted,
+    CssDirectiveBlocklistEntry, EngineSnapshotIr, EngineTransitionIr,
+    filter_css_extraction_candidates,
 };
-use serde::Serialize;
+use mastercss_source::{SourceExtractionInputIr, SourceExtractorKind};
+use serde::{Deserialize, Serialize};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
+
+#[derive(Debug)]
+pub enum ScannerError {
+    Engine(EngineError),
+    Source(mastercss_schema::Diagnostic),
+}
+impl From<EngineError> for ScannerError {
+    fn from(error: EngineError) -> Self {
+        Self::Engine(error)
+    }
+}
+impl std::fmt::Display for ScannerError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Engine(error) => error.fmt(formatter),
+            Self::Source(error) => error.message.fmt(formatter),
+        }
+    }
+}
+impl std::error::Error for ScannerError {}
+impl ScannerError {
+    pub fn diagnostic(&self) -> mastercss_schema::Diagnostic {
+        match self {
+            Self::Engine(error) => error.diagnostic(),
+            Self::Source(error) => error.clone(),
+        }
+    }
+}
+
+fn project_owner() -> String {
+    "project".into()
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ScannerSourceOptions {
+    #[serde(default = "project_owner")]
+    pub owner: String,
+    #[serde(default)]
+    pub kind: SourceExtractorKind,
+    #[serde(default)]
+    pub parent_source: Option<String>,
+    /// Host extractor identity/version; part of extraction cache identity.
+    #[serde(default)]
+    pub extractor: String,
+}
+impl Default for ScannerSourceOptions {
+    fn default() -> Self {
+        Self {
+            owner: project_owner(),
+            kind: SourceExtractorKind::Auto,
+            parent_source: None,
+            extractor: String::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScannerSourceInput {
+    pub source: String,
+    pub content: String,
+    #[serde(default)]
+    pub options: ScannerSourceOptions,
+    #[serde(default)]
+    pub candidates: Option<Vec<String>>,
+    #[serde(default)]
+    pub blocklist: Vec<CssDirectiveBlocklistEntry>,
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScannerUpdateIr {
     pub changed: bool,
+    pub source_changed: bool,
     pub cache_hit: bool,
     pub candidates: Vec<String>,
     pub valid_classes: Vec<String>,
     pub invalid_classes: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub used_native_classes: Vec<String>,
     pub transition: EngineTransitionIr,
 }
-
 impl ScannerUpdateIr {
     fn unchanged(cache_hit: bool) -> Self {
         Self {
             changed: false,
+            source_changed: false,
             cache_hit,
             candidates: Vec::new(),
             valid_classes: Vec::new(),
@@ -33,6 +102,17 @@ impl ScannerUpdateIr {
             used_native_classes: Vec::new(),
             transition: EngineTransitionIr::empty(),
         }
+    }
+    fn append(&mut self, update: Self) {
+        self.changed |= update.changed;
+        self.source_changed |= update.source_changed;
+        self.candidates.extend(update.candidates);
+        self.valid_classes.extend(update.valid_classes);
+        self.invalid_classes.extend(update.invalid_classes);
+        self.used_native_classes.extend(update.used_native_classes);
+        self.transition
+            .mutations
+            .extend(update.transition.mutations);
     }
 }
 
@@ -42,311 +122,417 @@ pub struct ScannerStateIr {
     pub latent_classes: Vec<String>,
     pub valid_classes: Vec<String>,
     pub invalid_classes: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub native_classes: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub used_native_classes: Vec<String>,
     pub cached_sources: usize,
+    pub sources: Vec<ScannerSourceStateIr>,
     pub engine: EngineSnapshotIr,
 }
-
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScannerSourceStateIr {
+    pub source: String,
+    pub owner: String,
+    pub parent_source: Option<String>,
+    pub kind: SourceExtractorKind,
+    pub extractor: String,
+    pub candidates: Vec<String>,
+}
 #[derive(Debug)]
 struct CachedSource {
+    extracted: bool,
     content: String,
+    policy: String,
     candidates: Vec<String>,
+    active: BTreeSet<String>,
+    parent: Option<String>,
+    kind: SourceExtractorKind,
+    extractor: String,
 }
 
 #[derive(Debug)]
 pub struct ScannerSession {
     manifest_json: String,
     engine: EngineSession,
-    latent_classes: Vec<String>,
-    latent_index: HashSet<String>,
-    valid_classes: Vec<String>,
-    valid_index: HashSet<String>,
-    invalid_classes: Vec<String>,
-    invalid_index: HashSet<String>,
-    native_classes: Vec<String>,
-    native_index: HashSet<String>,
-    used_native_classes: Vec<String>,
-    used_native_index: HashSet<String>,
-    source_contents: HashMap<String, CachedSource>,
+    sources: BTreeMap<(String, String), CachedSource>,
+    references: BTreeMap<String, usize>,
+    valid: BTreeSet<String>,
+    invalid: BTreeSet<String>,
+    native_owners: BTreeMap<String, BTreeSet<String>>,
 }
-
 impl ScannerSession {
-    pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
+    pub fn create(manifest_json: &str) -> Result<Self, ScannerError> {
         Ok(Self {
-            manifest_json: manifest_json.to_owned(),
+            manifest_json: manifest_json.into(),
             engine: EngineSession::create(manifest_json)?,
-            latent_classes: Vec::new(),
-            latent_index: HashSet::new(),
-            valid_classes: Vec::new(),
-            valid_index: HashSet::new(),
-            invalid_classes: Vec::new(),
-            invalid_index: HashSet::new(),
-            native_classes: Vec::new(),
-            native_index: HashSet::new(),
-            used_native_classes: Vec::new(),
-            used_native_index: HashSet::new(),
-            source_contents: HashMap::new(),
+            sources: BTreeMap::new(),
+            references: BTreeMap::new(),
+            valid: BTreeSet::new(),
+            invalid: BTreeSet::new(),
+            native_owners: BTreeMap::new(),
         })
     }
-
-    pub fn scan(&mut self, source: &str, content: &str) -> Result<ScannerUpdateIr, EngineError> {
-        if self.cached_source_candidates(source, content).is_some() {
-            return Ok(ScannerUpdateIr::unchanged(true));
-        }
-        let candidates = extract_source_candidates(source, content);
-        self.scan_candidates(source, content, candidates, &[], &[], &HashSet::new())
+    pub fn scan(&mut self, source: &str, content: &str) -> Result<ScannerUpdateIr, ScannerError> {
+        self.scan_source(source, content, &ScannerSourceOptions::default(), &[])
     }
-
-    pub fn native_declaration_candidates<I, S>(
+    pub fn scan_source(
+        &mut self,
+        source: &str,
+        content: &str,
+        options: &ScannerSourceOptions,
+        blocklist: &[CssDirectiveBlocklistEntry],
+    ) -> Result<ScannerUpdateIr, ScannerError> {
+        let candidates = self
+            .cached_extraction(source, content, options)
+            .map(Ok)
+            .unwrap_or_else(|| extract(source, content, options))?;
+        let update = self.scan_candidates(source, content, candidates, blocklist, options)?;
+        self.sources
+            .get_mut(&(options.owner.clone(), source.into()))
+            .unwrap()
+            .extracted = true;
+        Ok(update)
+    }
+    fn cached_extraction(
         &self,
-        candidates: I,
-    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        self.engine.native_declaration_candidates(candidates)
+        source: &str,
+        content: &str,
+        options: &ScannerSourceOptions,
+    ) -> Option<Vec<String>> {
+        self.sources
+            .get(&(options.owner.clone(), source.into()))
+            .filter(|old| {
+                old.extracted
+                    && old.content == content
+                    && old.kind == options.kind
+                    && old.extractor == options.extractor
+            })
+            .map(|old| old.candidates.clone())
     }
-
     pub fn scan_candidates(
         &mut self,
         source: &str,
         content: &str,
-        extracted_candidates: Vec<String>,
+        candidates: Vec<String>,
         blocklist: &[CssDirectiveBlocklistEntry],
-        native_support: &[bool],
-        invalid_generated_classes: &HashSet<String>,
-    ) -> Result<ScannerUpdateIr, EngineError> {
-        let support_candidates = filter_blocklisted_candidates(&extracted_candidates, blocklist);
-        self.commit_candidates(
-            source,
-            content,
-            extracted_candidates,
-            blocklist,
-            &support_candidates,
-            native_support,
-            invalid_generated_classes,
-        )
+        options: &ScannerSourceOptions,
+    ) -> Result<ScannerUpdateIr, ScannerError> {
+        self.engine.ensure_class_rules(Vec::<String>::new())?;
+        let key = (options.owner.clone(), source.into());
+        let policy = format!(
+            "{:?}\0{}\0{}",
+            options.kind,
+            options.extractor,
+            serde_json::to_string(blocklist).expect("blocklist serializes")
+        );
+        if self.sources.get(&key).is_some_and(|old| {
+            old.content == content
+                && old.policy == policy
+                && old.candidates == candidates
+                && old.parent == options.parent_source
+        }) {
+            let mut update = ScannerUpdateIr::unchanged(true);
+            update.candidates = candidates;
+            return Ok(update);
+        }
+        let active = filter_blocklisted_candidates(&candidates, blocklist)
+            .into_iter()
+            .collect::<BTreeSet<_>>();
+        let previous = self
+            .sources
+            .get(&key)
+            .map(|s| s.active.clone())
+            .unwrap_or_default();
+        let mut update = self.replace_contribution(&previous, &active)?;
+        update.source_changed = true;
+        update.candidates = candidates.clone();
+        self.sources.insert(
+            key,
+            CachedSource {
+                extracted: false,
+                content: content.into(),
+                policy,
+                candidates,
+                active,
+                parent: options.parent_source.clone(),
+                kind: options.kind,
+                extractor: options.extractor.clone(),
+            },
+        );
+        Ok(update)
     }
-
-    /// Candidates that still require host validation, in commit order.
-    pub fn pending_candidates(
-        &self,
-        candidates: &[String],
-        blocklist: &[CssDirectiveBlocklistEntry],
-    ) -> Vec<String> {
+    fn replace_contribution(
+        &mut self,
+        previous: &BTreeSet<String>,
+        active: &BTreeSet<String>,
+    ) -> Result<ScannerUpdateIr, ScannerError> {
+        let before_native = self.used_native();
+        let mut update = ScannerUpdateIr::unchanged(false);
+        let mut removed = Vec::new();
+        for class in previous.difference(active) {
+            let count = self
+                .references
+                .get_mut(class)
+                .expect("source reference exists");
+            *count -= 1;
+            if *count == 0 {
+                self.references.remove(class);
+                self.valid.remove(class);
+                self.invalid.remove(class);
+                removed.push(class.clone());
+            }
+        }
+        update
+            .transition
+            .mutations
+            .extend(self.engine.delete_class_rules(&removed)?.mutations);
+        let mut added = Vec::new();
+        for class in active.difference(previous) {
+            let count = self.references.entry(class.clone()).or_default();
+            *count += 1;
+            if *count != 1 {
+                continue;
+            }
+            added.push(class);
+        }
+        update
+            .transition
+            .mutations
+            .extend(self.engine.ensure_class_rules(&added)?.mutations);
+        for class in added {
+            let valid =
+                self.engine.inspect(class)?.match_status == mastercss_schema::MatchStatus::Matched;
+            if valid {
+                self.valid.insert(class.clone());
+                update.valid_classes.push(class.clone());
+            } else {
+                self.invalid.insert(class.clone());
+                update.invalid_classes.push(class.clone());
+            }
+        }
+        let used_native = self.used_native();
+        update.changed = !update.transition.mutations.is_empty() || used_native != before_native;
+        update.used_native_classes = used_native.difference(&before_native).cloned().collect();
+        Ok(update)
+    }
+    pub fn remove_source(
+        &mut self,
+        source: &str,
+        options: &ScannerSourceOptions,
+    ) -> Result<ScannerUpdateIr, ScannerError> {
+        self.engine.ensure_class_rules(Vec::<String>::new())?;
+        let mut pending = vec![source.to_owned()];
+        let mut update = ScannerUpdateIr::unchanged(false);
+        let mut visited = BTreeSet::new();
+        while let Some(source) = pending.pop() {
+            if !visited.insert(source.clone()) {
+                continue;
+            }
+            pending.extend(
+                self.sources
+                    .iter()
+                    .filter(|((owner, _), value)| {
+                        *owner == options.owner && value.parent.as_deref() == Some(&source)
+                    })
+                    .map(|((_, source), _)| source.clone()),
+            );
+            if let Some(old) = self.sources.remove(&(options.owner.clone(), source)) {
+                update.append(self.replace_contribution(&old.active, &BTreeSet::new())?);
+                update.source_changed = true;
+            }
+        }
+        Ok(update)
+    }
+    pub fn reconcile_sources(
+        &mut self,
+        owner: &str,
+        mut inputs: Vec<ScannerSourceInput>,
+    ) -> Result<ScannerUpdateIr, ScannerError> {
+        // Resolve the entire proposed snapshot before changing any contribution.
+        let mut seen = BTreeSet::new();
+        let mut extracted = BTreeSet::new();
+        for input in &mut inputs {
+            if !seen.insert(input.source.clone()) {
+                return Err(EngineError::InvalidManifest(format!(
+                    "Duplicate source in owner snapshot: {}",
+                    input.source
+                ))
+                .into());
+            }
+            input.options.owner = owner.into();
+            if input.candidates.is_none() {
+                input.candidates = Some(
+                    self.cached_extraction(&input.source, &input.content, &input.options)
+                        .map(Ok)
+                        .unwrap_or_else(|| {
+                            extract(&input.source, &input.content, &input.options)
+                        })?,
+                );
+                extracted.insert(input.source.clone());
+            }
+        }
+        let mut update = ScannerUpdateIr::unchanged(false);
+        // Add replacements first to retain resources shared by renamed sources.
+        for input in inputs {
+            update.append(self.scan_candidates(
+                &input.source,
+                &input.content,
+                input.candidates.unwrap_or_default(),
+                &input.blocklist,
+                &input.options,
+            )?);
+            if extracted.contains(&input.source) {
+                self.sources
+                    .get_mut(&(owner.into(), input.source))
+                    .unwrap()
+                    .extracted = true;
+            }
+        }
+        let removed = self
+            .sources
+            .keys()
+            .filter(|(source_owner, source)| source_owner == owner && !seen.contains(source))
+            .map(|(_, source)| source.clone())
+            .collect::<Vec<_>>();
+        for source in removed {
+            // A snapshot declares exact membership. An explicitly retained child
+            // may refer to a parent managed outside this scanner; don't recursively
+            // remove that child as an incidental effect of replacing the snapshot.
+            if let Some(old) = self.sources.remove(&(owner.into(), source)) {
+                update.append(self.replace_contribution(&old.active, &BTreeSet::new())?);
+                update.source_changed = true;
+            }
+        }
+        Ok(update)
+    }
+    pub fn remove_owner(&mut self, owner: &str) -> Result<ScannerUpdateIr, ScannerError> {
+        let mut update = self.reconcile_sources(owner, Vec::new())?;
+        if self.native_owners.remove(owner).is_some() {
+            update.changed = true;
+            update.source_changed = true;
+        }
+        Ok(update)
+    }
+    pub fn collect_candidates<I, S>(&self, candidates: I) -> Vec<String>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
         let mut seen = HashSet::new();
         candidates
-            .iter()
-            .filter(|candidate| {
-                !self.latent_index.contains(*candidate)
-                    && !is_css_class_blocklisted(candidate, blocklist)
-                    && seen.insert(candidate.as_str())
-            })
-            .cloned()
+            .into_iter()
+            .map(|s| s.as_ref().to_owned())
+            .filter(|s| seen.insert(s.clone()))
             .collect()
     }
-
-    pub fn cached_source_candidates(&self, source: &str, content: &str) -> Option<&[String]> {
-        if source.is_empty() || content.is_empty() {
-            return None;
-        }
-        self.source_contents
-            .get(source)
-            .filter(|cached| cached.content == content)
-            .map(|cached| cached.candidates.as_slice())
-    }
-
-    /// Commit support resolved for `pending_candidates`, rather than the full input.
-    pub fn scan_pending_candidates(
-        &mut self,
-        source: &str,
-        content: &str,
-        extracted_candidates: Vec<String>,
-        blocklist: &[CssDirectiveBlocklistEntry],
-        native_support: &[bool],
-        invalid_generated_classes: &HashSet<String>,
-    ) -> Result<ScannerUpdateIr, EngineError> {
-        let support_candidates = self.pending_candidates(&extracted_candidates, blocklist);
-        self.commit_candidates(
-            source,
-            content,
-            extracted_candidates,
-            blocklist,
-            &support_candidates,
-            native_support,
-            invalid_generated_classes,
-        )
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    fn commit_candidates(
-        &mut self,
-        source: &str,
-        content: &str,
-        extracted_candidates: Vec<String>,
-        blocklist: &[CssDirectiveBlocklistEntry],
-        _support_candidates: &[String],
-        _native_support: &[bool],
-        _invalid_generated_classes: &HashSet<String>,
-    ) -> Result<ScannerUpdateIr, EngineError> {
-        if content.is_empty() {
-            return Ok(ScannerUpdateIr::unchanged(false));
-        }
-        if self.cached_source_candidates(source, content).is_some() {
-            return Ok(ScannerUpdateIr::unchanged(true));
-        }
-        if !source.is_empty() {
-            self.source_contents.insert(
-                source.to_owned(),
-                CachedSource {
-                    content: content.to_owned(),
-                    candidates: extracted_candidates.clone(),
+    pub fn ensure_classes<I, S>(&mut self, classes: I) -> Result<EngineTransitionIr, ScannerError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let classes = self.collect_candidates(classes);
+        Ok(self
+            .scan_candidates(
+                "safelist",
+                &classes.join(" "),
+                classes.clone(),
+                &[],
+                &ScannerSourceOptions {
+                    owner: "safelist".into(),
+                    ..Default::default()
                 },
-            );
-        }
-
-        let candidates = self.collect_candidates(extracted_candidates);
-        if candidates.is_empty() {
-            return Ok(ScannerUpdateIr::unchanged(false));
-        }
-
-        let mut valid_classes = Vec::new();
-        let mut invalid_classes = Vec::new();
-        let mut used_native_classes = Vec::new();
-        let mut mutations = Vec::new();
-        for candidate in &candidates {
-            if is_css_class_blocklisted(candidate, blocklist) {
-                continue;
-            }
-            if self.native_index.contains(candidate)
-                && self.used_native_index.insert(candidate.clone())
-            {
-                self.used_native_classes.push(candidate.clone());
-                used_native_classes.push(candidate.clone());
-            }
-            if self.valid_index.contains(candidate) || self.invalid_index.contains(candidate) {
-                continue;
-            }
-            let transition = self.engine.ensure_class_rules([candidate])?;
-            let valid = self.engine.inspect(candidate)?.match_status
-                == mastercss_schema::MatchStatus::Matched;
-            if valid {
-                self.valid_index.insert(candidate.clone());
-                self.valid_classes.push(candidate.clone());
-                valid_classes.push(candidate.clone());
-                mutations.extend(transition.mutations);
-            } else {
-                self.invalid_index.insert(candidate.clone());
-                self.invalid_classes.push(candidate.clone());
-                invalid_classes.push(candidate.clone());
-            }
-        }
-
-        Ok(ScannerUpdateIr {
-            changed: true,
-            cache_hit: false,
-            candidates,
-            valid_classes,
-            invalid_classes,
-            used_native_classes,
-            transition: EngineTransitionIr::new(mutations),
-        })
+            )?
+            .transition)
     }
-
-    pub fn collect_candidates<I, S>(&mut self, candidates: I) -> Vec<String>
+    pub fn register_native_classes<I, S>(&mut self, owner: &str, names: I) -> bool
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
-        let mut collected = Vec::new();
-        for candidate in candidates {
-            let candidate = candidate.as_ref();
-            if self.latent_index.insert(candidate.to_owned()) {
-                self.latent_classes.push(candidate.to_owned());
-                collected.push(candidate.to_owned());
-            }
+        let names = names
+            .into_iter()
+            .map(|s| s.as_ref().to_owned())
+            .collect::<BTreeSet<_>>();
+        if self.native_owners.get(owner) == Some(&names) {
+            return false;
         }
-        collected
+        self.native_owners.insert(owner.into(), names);
+        true
     }
-
-    pub fn ensure_classes<I, S>(
-        &mut self,
-        class_names: I,
-    ) -> Result<EngineTransitionIr, EngineError>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        self.engine.ensure_class_rules(class_names)
+    fn native(&self) -> BTreeSet<String> {
+        self.native_owners
+            .values()
+            .flat_map(|names| names.iter().cloned())
+            .collect()
     }
-
-    pub fn register_native_classes<I, S>(&mut self, class_names: I) -> bool
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        let mut changed = false;
-        for class_name in class_names {
-            let class_name = class_name.as_ref();
-            if self.native_index.insert(class_name.to_owned()) {
-                self.native_classes.push(class_name.to_owned());
-                changed = true;
-            }
-            if self.latent_index.contains(class_name)
-                && self.used_native_index.insert(class_name.to_owned())
-            {
-                self.used_native_classes.push(class_name.to_owned());
-                changed = true;
-            }
-        }
-        changed
+    fn used_native(&self) -> BTreeSet<String> {
+        self.native()
+            .into_iter()
+            .filter(|name| self.references.contains_key(name))
+            .collect()
     }
-
-    pub fn reset(&mut self) -> Result<(), EngineError> {
-        *self = Self::create(&self.manifest_json)?;
-        Ok(())
-    }
-
-    pub fn state(&self) -> Result<ScannerStateIr, EngineError> {
+    pub fn state(&self) -> Result<ScannerStateIr, ScannerError> {
         Ok(ScannerStateIr {
-            latent_classes: self.latent_classes.clone(),
-            valid_classes: self.valid_classes.clone(),
-            invalid_classes: self.invalid_classes.clone(),
-            native_classes: self.native_classes.clone(),
-            used_native_classes: self.used_native_classes.clone(),
-            cached_sources: self.source_contents.len(),
+            latent_classes: self
+                .sources
+                .values()
+                .flat_map(|s| s.candidates.iter().cloned())
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect(),
+            valid_classes: self.valid.iter().cloned().collect(),
+            invalid_classes: self.invalid.iter().cloned().collect(),
+            native_classes: self.native().into_iter().collect(),
+            used_native_classes: self.used_native().into_iter().collect(),
+            cached_sources: self.sources.len(),
+            sources: self
+                .sources
+                .iter()
+                .map(|((owner, source), value)| ScannerSourceStateIr {
+                    source: source.clone(),
+                    owner: owner.clone(),
+                    parent_source: value.parent.clone(),
+                    kind: value.kind,
+                    extractor: value.extractor.clone(),
+                    candidates: value.candidates.clone(),
+                })
+                .collect(),
             engine: self.engine.snapshot()?,
         })
     }
-
+    pub fn reset(&mut self) -> Result<(), ScannerError> {
+        *self = Self::create(&self.manifest_json)?;
+        Ok(())
+    }
     pub fn dispose(&mut self) {
         self.engine.dispose();
-        self.latent_classes.clear();
-        self.latent_index.clear();
-        self.valid_classes.clear();
-        self.valid_index.clear();
-        self.invalid_classes.clear();
-        self.invalid_index.clear();
-        self.native_classes.clear();
-        self.native_index.clear();
-        self.used_native_classes.clear();
-        self.used_native_index.clear();
-        self.source_contents.clear();
+        self.sources.clear();
+        self.references.clear();
+        self.valid.clear();
+        self.invalid.clear();
+        self.native_owners.clear();
     }
 }
 
-pub fn extract_source_candidates(source: &str, content: &str) -> Vec<String> {
-    mastercss_source::extract_source(&mastercss_source::SourceExtractionInputIr {
+pub fn extract(
+    source: &str,
+    content: &str,
+    options: &ScannerSourceOptions,
+) -> Result<Vec<String>, ScannerError> {
+    let result = mastercss_source::extract_source_result(&SourceExtractionInputIr {
         source: source.into(),
         content: content.into(),
-        kind: mastercss_source::SourceExtractorKind::Auto,
-    })
+        kind: options.kind,
+        owner: Some(options.owner.clone()),
+    });
+    if let Some(error) = result.diagnostics.first() {
+        return Err(ScannerError::Source(error.clone()));
+    }
+    Ok(result.candidates)
 }
-
+pub fn extract_source_candidates(source: &str, content: &str) -> Result<Vec<String>, ScannerError> {
+    extract(source, content, &ScannerSourceOptions::default())
+}
 pub fn filter_blocklisted_candidates<I, S>(
     candidates: I,
     blocklist: &[CssDirectiveBlocklistEntry],
@@ -358,173 +544,5 @@ where
     filter_css_extraction_candidates(candidates, blocklist)
 }
 
-pub fn invalid_generated_classes(
-    batch: &ValidatorBatchIr,
-    rule_support: &[Vec<bool>],
-) -> Vec<String> {
-    batch
-        .classes
-        .iter()
-        .enumerate()
-        .filter_map(|(class_index, class_result)| {
-            if class_result.match_status != mastercss_schema::MatchStatus::Matched {
-                return None;
-            }
-            let support = rule_support.get(class_index);
-            class_result
-                .rules
-                .iter()
-                .enumerate()
-                .any(|(rule_index, _)| {
-                    !support
-                        .and_then(|values| values.get(rule_index))
-                        .copied()
-                        .unwrap_or(false)
-                })
-                .then(|| class_result.class_name.clone())
-        })
-        .collect()
-}
-
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn manifest() -> String {
-        serde_json::json!({
-            "version": 1,"languageVersion":2,
-            "utilities": [
-                {
-                    "id": "display-block",
-                    "name": "block",
-                    "type": 0,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "display": "block" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "block" }]
-                },
-                {
-                    "id": "color-red",
-                    "name": "fg-red",
-                    "type": 0,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "color": "red" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "fg-red" }]
-                }
-            ]
-        })
-        .to_string()
-    }
-
-    #[test]
-    fn caches_sources_and_tracks_valid_invalid_candidates_in_insertion_order() {
-        let mut scanner = ScannerSession::create(&manifest()).unwrap();
-        let first = scanner
-            .scan(
-                "App.tsx",
-                "export const App = () => <div className=\"block unknown fg-red\" />",
-            )
-            .unwrap();
-        assert!(first.changed);
-        assert_eq!(first.valid_classes, ["block", "fg-red"]);
-        assert_eq!(first.invalid_classes, ["unknown"]);
-        assert_eq!(first.transition.mutations.len(), 2);
-
-        let cached = scanner
-            .scan(
-                "App.tsx",
-                "export const App = () => <div className=\"block unknown fg-red\" />",
-            )
-            .unwrap();
-        assert!(!cached.changed);
-        assert!(cached.cache_hit);
-
-        let changed = scanner
-            .scan(
-                "App.tsx",
-                "export const App = () => <div className=\"block\" />",
-            )
-            .unwrap();
-        assert!(!changed.changed);
-        assert!(!changed.cache_hit);
-        assert_eq!(scanner.state().unwrap().cached_sources, 1);
-    }
-
-    #[test]
-    fn reset_recreates_engine_and_clears_all_scanner_state() {
-        let mut scanner = ScannerSession::create(&manifest()).unwrap();
-        scanner
-            .scan("index.html", "<div class=\"block\"></div>")
-            .unwrap();
-        scanner.reset().unwrap();
-        let state = scanner.state().unwrap();
-        assert!(state.latent_classes.is_empty());
-        assert!(state.engine.rules.is_empty());
-        assert_eq!(state.cached_sources, 0);
-    }
-
-    #[test]
-    fn commits_host_css_validation_and_ordered_native_support() {
-        let mut scanner = ScannerSession::create(&manifest()).unwrap();
-        let update = scanner
-            .scan_candidates(
-                "index.html",
-                "changed",
-                vec!["bad".into(), "made-up:value".into()],
-                &[],
-                &[true],
-                &HashSet::from(["bad".into()]),
-            )
-            .unwrap();
-        assert_eq!(update.invalid_classes, ["bad"]);
-        assert_eq!(update.valid_classes, ["made-up:value"]);
-        assert_eq!(
-            scanner.state().unwrap().engine.text,
-            "@layer utilities{.made-up\\:value{made-up:value}}"
-        );
-    }
-
-    #[test]
-    fn matches_compiler_blocklist_values_without_changing_regex_dialects() {
-        let blocklist = vec![
-            CssDirectiveBlocklistEntry::Exact("exact".into()),
-            CssDirectiveBlocklistEntry::Pattern {
-                source: "^debug\\-.*$".into(),
-                flags: String::new(),
-            },
-            CssDirectiveBlocklistEntry::Pattern {
-                source: "^icon\\-.$".into(),
-                flags: String::new(),
-            },
-        ];
-        assert!(is_css_class_blocklisted("exact", &blocklist));
-        assert!(is_css_class_blocklisted("debug-card", &blocklist));
-        assert!(is_css_class_blocklisted("icon-a", &blocklist));
-        assert!(!is_css_class_blocklisted("icon-😀", &blocklist));
-        assert!(!is_css_class_blocklisted("debug", &blocklist));
-        assert!(!is_css_class_blocklisted("icon-long", &blocklist));
-
-        let scanner_blocklist = vec![CssDirectiveBlocklistEntry::Pattern {
-            source: "^bg:".into(),
-            flags: "g".into(),
-        }];
-        assert!(is_css_class_blocklisted("bg:red", &scanner_blocklist));
-        assert!(!is_css_class_blocklisted("fg:red", &scanner_blocklist));
-    }
-
-    #[test]
-    fn owns_generated_rule_validation_classification() {
-        let mut validator = mastercss_validator::ValidatorSession::create(&manifest()).unwrap();
-        let batch = validator
-            .generate_classes(["block", "unknown"], None)
-            .unwrap();
-        assert_eq!(
-            invalid_generated_classes(&batch, &[vec![false], vec![]]),
-            ["block"]
-        );
-        assert!(invalid_generated_classes(&batch, &[vec![true], vec![]]).is_empty());
-    }
-}
+mod tests;

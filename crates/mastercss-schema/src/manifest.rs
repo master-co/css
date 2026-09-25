@@ -20,6 +20,7 @@ pub struct Diagnostic {
 pub enum DiagnosticPhase {
     Match,
     CssValue,
+    CssSyntax,
     BrowserSupport,
     Compiler,
 }

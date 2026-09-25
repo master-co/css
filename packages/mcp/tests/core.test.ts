@@ -131,7 +131,10 @@ function parseToolJSON(result: Awaited<ReturnType<Client['callTool']>>) {
   const content = (result as { content: { type: string, text?: string }[] }).content[0]
   if (!content || content.type !== 'text') throw new Error('Expected text content.')
   try {
-    return JSON.parse(content.text || '') as any
+    const envelope = JSON.parse(content.text || '')
+    expect(envelope.version).toBe(3)
+    expect(envelope.result.status).toBe('success')
+    return envelope.result.data as any
   } catch (error) {
     throw new Error(`Expected JSON tool result, received: ${content.text}`)
   }
@@ -260,7 +263,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_setup_audit',
         arguments: {}
       }))
-      expect(audit.version).toBe(2)
+      expect(audit.version).toBe(1)
       expect(audit.manifest.entries).toHaveLength(1)
       expect(audit.packages.declared).toContainEqual(expect.objectContaining({
         name: '@master/css'
@@ -295,7 +298,7 @@ describe('@master/css-mcp', () => {
           entryPath: 'master.css'
         }
       }))
-      expect(directives.version).toBe(2)
+      expect(directives.version).toBe(1)
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
@@ -321,7 +324,7 @@ describe('@master/css-mcp', () => {
           patterns: ['index.html']
         }
       }))
-      expect(trace.version).toBe(2)
+      expect(trace.version).toBe(1)
       expect(trace.status).toBe('present')
       expect(trace.reason).toBe('generated')
       expect(trace.detected).toBe(true)
@@ -355,7 +358,7 @@ describe('@master/css-mcp', () => {
           filePath: 'src/App.tsx'
         }
       }))
-      expect(extracted.version).toBe(2)
+      expect(extracted.version).toBe(1)
       expect(extracted.files[0].languageId).toBe('typescriptreact')
       expect(extracted.files[0].classes).toEqual(expect.arrayContaining([
         expect.objectContaining({
@@ -373,7 +376,7 @@ describe('@master/css-mcp', () => {
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(2)
+      expect(manifest.version).toBe(1)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({
@@ -467,7 +470,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(1)
       expect(report.audience).toBe('master-css-repository-contributors')
       expect(report.status).toBe('loaded')
       expect(report.affectedPackages).toContainEqual(expect.objectContaining({
@@ -851,7 +854,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(3)
       expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
       expect(report.files[0].discovered.invalid).toContain('p-missing')
@@ -882,7 +885,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(3)
       expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
       expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))

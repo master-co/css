@@ -1,10 +1,29 @@
 use super::*;
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConditionBoundIr {
+    pub value: f64,
+    pub inclusive: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConditionRangeIr {
+    pub domain: String,
+    pub feature: String,
+    pub unit: String,
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub lower: Option<ConditionBoundIr>,
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub upper: Option<ConditionBoundIr>,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RulePriorityIr {
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub features: Vec<(String, f64, f64)>,
+    /// Required even for an unconditional rule: old RC priorities must be rebuilt.
+    pub features: Vec<ConditionRangeIr>,
     pub selector: i32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub conditions: Vec<String>,
@@ -191,6 +210,7 @@ pub struct EngineInspectionIr {
     pub version: u32,
     pub class_name: String,
     pub match_status: MatchStatus,
+    pub css_syntax_status: CssSyntaxStatus,
     pub css_value_status: CssValueStatus,
     pub browser_support: BrowserSupport,
     pub rules: Vec<GeneratedRuleIr>,
@@ -218,6 +238,15 @@ pub enum MatchStatus {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum CssValueStatus {
+    Valid,
+    Invalid,
+    Unknown,
+    NotChecked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CssSyntaxStatus {
     Valid,
     Invalid,
     Unknown,

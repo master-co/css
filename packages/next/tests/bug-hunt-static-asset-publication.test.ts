@@ -1,9 +1,10 @@
+import { resolveOptions } from '../src/options'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { expect, test } from 'vitest'
-import { addStaticCSSDependencies, prepareNextStatic, transformStaticStyleSource } from '../src/static'
+import { expect, test, vi } from 'vitest'
+import { addStaticCSSDependencies, prepareNextStatic, transformStaticStyleSource, writeStaticState, readStaticState } from '../src/static'
 import staticLoader from '../src/static-css-loader'
 
 async function cleanup(root: string) {
@@ -104,8 +105,32 @@ test('static CSS loader reports newly discovered resource dependencies in the sa
       async: () => (error, content) => error ? reject(error) : resolve(content)
     }, source))
     expect(dependencies).toContain(image)
-    expect(dependencies.some(file => dirname(file) === dirname(state.outputPath) && file.endsWith('.css') && file !== state.outputPath)).toBe(true)
+    expect(dependencies.some(file => dirname(file) === dirname(state.outputPath) && file.endsWith('.css') && file !== state.outputPath)).toBe(false)
     const outputFiles = readdirSync(dirname(state.outputPath)).filter(file => file.endsWith('.svg'))
-    for (const file of outputFiles) expect(dependencies).toContain(join(dirname(state.outputPath), file))
+    for (const file of outputFiles) expect(dependencies).not.toContain(join(dirname(state.outputPath), file))
+  } finally { await cleanup(root) }
+})
+
+test('a configuration change during composition rejects the older publisher', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'next-static-config-race-'))
+  try {
+    mkdirSync(join(root, 'app'))
+    writeFileSync(join(root, 'app/globals.css'), '@master entry;')
+    writeFileSync(join(root, 'app/page.tsx'), '<main className="p:19px" />')
+    const state = (await prepareNextStatic({}, { projectDir: root }))!
+    const previous = readFileSync(state.outputPath, 'utf8')
+    const session = [...globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__!.entries()].find(([key]) => key.startsWith(root + '\0'))![1]
+    const compose = session.stylesheets.compose.bind(session.stylesheets)
+    const next = resolveOptions({ mode: 'static', scanner: { ...readStaticState(state.statePath).options.scanner, blocklist: ['p:19px'] } })
+    const spy = vi.spyOn(session.stylesheets, 'compose').mockImplementationOnce(async options => {
+      const result = await compose(options)
+      await writeStaticState(root, state.outputPath, state.statePath, state.scanLogPath, next)
+      return result
+    })
+    await expect(session.write()).rejects.toThrow('configuration changed')
+    expect(readFileSync(state.outputPath, 'utf8')).toBe(previous)
+    spy.mockRestore()
+    await prepareNextStatic(next, { projectDir: root })
+    expect(readCSSGraph(state.outputPath)).not.toContain('padding:19px')
   } finally { await cleanup(root) }
 })

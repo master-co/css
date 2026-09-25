@@ -1,7 +1,8 @@
-import { validateCompiledCSS } from '../value-validation'
+import { stylesheetValidationSource } from './output-map'
+import { validateCompiledCSS, assertValidationOptions } from '../value-validation'
 import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
 import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
-import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, type CSSImportFileResolver } from '../node-imports'
+import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, normalizeStylesheetGraphID, type CSSImportFileResolver } from '../node-imports'
 export type { CSSImportFileResolver as MasterCSSStylesheetImportResolver, CSSImportSource as MasterCSSStylesheetImportSource } from '../node-imports'
 import { analyzeCSSDependencies, inspectCSS } from '../node-compiler'
 export type { StylesheetDeliveryOptions as MasterCSSStylesheetDeliveryOptions, StylesheetResourceAsset as MasterCSSStylesheetResourceAsset } from './delivery'
@@ -303,6 +304,7 @@ export async function compileStylesheet(
   source: string,
   options: MasterCSSStylesheetCompileOptions
 ): Promise<MasterCSSCompileResult> {
+  assertValidationOptions(options)
   const compileOptions = abortableOptions(options)
   const result = await compileStylesheetInternal(id, source, {
     ...compileOptions,
@@ -310,7 +312,7 @@ export async function compileStylesheet(
   })
   options.signal?.throwIfAborted()
   return freezeCompilation(
-    toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
+    toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
   )
 }
 
@@ -319,16 +321,17 @@ export async function compileRenderedStylesheet(
   source: string,
   options: MasterCSSRenderedStylesheetCompileOptions
 ): Promise<MasterCSSCompiledStylesheet> {
+  assertValidationOptions(options)
   const compileOptions = abortableOptions(options)
   const result = await compileRenderedStylesheetInternal(id, source, {
     ...compileOptions,
     loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
   })
   options.signal?.throwIfAborted()
-  const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
+  const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
   return Object.freeze({
     ...compilation,
-    diagnostics: Object.freeze([...compilation.diagnostics, ...validateCompiledCSS((result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id })), options)]),
+    diagnostics: Object.freeze([...compilation.diagnostics, ...validateCompiledCSS((result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap)), options)]),
     ...(result.stylesheets ? {
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(({ id, href, css, sourceMap }) => Object.freeze({ id, href, css, sourceMap }))),
@@ -346,6 +349,7 @@ export async function collectStylesheetEmittedGlobals(
   emittedGlobals: Required<MasterCSSEmittedGlobals>
   dependencies: readonly string[]
 }>> {
+  assertValidationOptions(options)
   const compileOptions = abortableOptions(options)
   const result = await createStyleEntryEmittedGlobals([...entries], {
     ...compileOptions,
@@ -363,6 +367,7 @@ export async function transformStylesheet(
   source: string,
   options: MasterCSSStylesheetTransformOptions
 ): Promise<MasterCSSStylesheetTransformResult> {
+  assertValidationOptions(options)
   const compileOptions = abortableOptions(options)
   const result = await transformLocalStylesheet(id, source, {
     ...compileOptions,
@@ -371,7 +376,7 @@ export async function transformStylesheet(
   options.signal?.throwIfAborted()
   return Object.freeze({
     code: result.code,
-    diagnostics: validateCompiledCSS([{ css: result.code, source: id }, ...(result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id }))], options),
+    diagnostics: validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
     ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
     transformed: result.transformed,
@@ -382,7 +387,7 @@ export async function transformStylesheet(
         compilation: toMasterCSSCompileResultInternal(
           result.result,
           options.onDiagnostic,
-          options.cssValuePolicy
+          options.validation
         )
       }
       : {})
@@ -394,6 +399,8 @@ let bindStylesheetCollection: () => MasterCSSStylesheetCollection
 export class MasterCSSStylesheetCollection implements Disposable {
   readonly #sources: StylesheetSources = new Map()
   #disposed = false
+  #scanners = new Map<string, MasterCSSScanner>()
+  #sourceIDs = new Map<string, string>()
 
   private constructor() { }
 
@@ -409,6 +416,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options: MasterCSSStylesheetCompileOptions
   ): Promise<MasterCSSCompileResult> {
     this.assertActive()
+    assertValidationOptions(options)
     let compileOptions = abortableOptions(options)
     const resolveImport = compileOptions.delivery?.resolveImport
     if (resolveImport) {
@@ -421,9 +429,14 @@ export class MasterCSSStylesheetCollection implements Disposable {
         return result
       } } }
     }
+    const previousSources = new Map(this.#sources)
+    const stagedSources = new Map(previousSources)
+    const nativeRegistrations: [string, string[]][] = []
+    const stagedScanner = Object.create(scanner) as MasterCSSScanner
+    stagedScanner.registerNativeClasses = (owner, names) => { nativeRegistrations.push([owner, names]); return false }
     const result = await registerStylesheetSource(
-      scanner,
-      this.#sources,
+      stagedScanner,
+      stagedSources,
       id,
       source,
       {
@@ -432,16 +445,32 @@ export class MasterCSSStylesheetCollection implements Disposable {
       }
     )
     options.signal?.throwIfAborted()
-    return toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
+    const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
+    this.assertActive()
+    for (const [key, staged] of stagedSources) {
+      if (previousSources.get(key) === staged) continue
+      this.#sources.set(key, staged)
+      this.#scanners.set(key, scanner)
+      this.#sourceIDs.set(id, key)
+    }
+    for (const [owner, names] of nativeRegistrations) scanner.registerNativeClasses(owner, names)
+    return compilation
   }
 
   delete(id: string): boolean {
     this.assertActive()
-    return this.#sources.delete(cleanStyleRequest(id))
+    const key = this.#sourceIDs.get(id) ?? normalizeStylesheetGraphID(cleanStyleRequest(id))
+    this.#sourceIDs.delete(id)
+    this.#scanners.get(key)?.removeOwner(key)
+    this.#scanners.delete(key)
+    return this.#sources.delete(key)
   }
 
   clear(): void {
     this.assertActive()
+    for (const [id, scanner] of this.#scanners) { if (scanner.initialized) scanner.removeOwner(id) }
+    this.#scanners.clear()
+    this.#sourceIDs.clear()
     this.#sources.clear()
   }
 
@@ -462,7 +491,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options.signal?.throwIfAborted()
     return Object.freeze({
       css: result.css,
-      diagnostics: validateCompiledCSS([{ css: result.css }, ...(result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id }))], options),
+      diagnostics: validateCompiledCSS([{ css: result.css }, ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
       ...(result.stylesheets ? { stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.resources ? { resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.dependencies ? { dependencies: Object.freeze([...result.dependencies]) } : {}),
@@ -490,6 +519,9 @@ export class MasterCSSStylesheetCollection implements Disposable {
   dispose(): void {
     if (this.#disposed) return
     this.#disposed = true
+    for (const [id, scanner] of this.#scanners) { if (scanner.initialized) scanner.removeOwner(id) }
+    this.#scanners.clear()
+    this.#sourceIDs.clear()
     this.#sources.clear()
   }
 

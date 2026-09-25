@@ -1,5 +1,7 @@
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { build, type PluginOption } from 'vite'
 import { describe, expect, test } from 'vitest'
 import masterCSS from '../../src/core'
@@ -19,12 +21,14 @@ async function buildCSSFixture({
   setup,
   stylesheet
 }: BuildCSSFixtureOptions) {
-  const tmpRoot = join(process.cwd(), 'tmp')
+  const tmpRoot = join(tmpdir(), 'master-css-vite-fixtures')
   mkdirSync(tmpRoot, { recursive: true })
   const root = mkdtempSync(join(tmpRoot, prefix))
 
   try {
     mkdirSync(join(root, 'src'), { recursive: true })
+    mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
+    symlinkSync(fileURLToPath(new URL('../../../css', import.meta.url)), join(root, 'node_modules/@master/css'), 'dir')
     writeFileSync(join(root, 'index.html'), [
       `<main${appClass ? ` class="${appClass}"` : ''}></main>`,
       '<script type="module" src="/src/main.ts"></script>'

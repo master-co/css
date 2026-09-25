@@ -1,8 +1,12 @@
+import { cssSyntaxStatus, CSS_SYNTAX_CHECK } from '../src/syntax-validation'
 import { describe, expect, it } from 'vitest'
 import { cssValueStatus, withCSSValueValidation, validateRuleDeclarations, CSS_VALUE_CHECK } from '../src/value-validation'
 
 describe('CSS validation reports knowledge without changing declarations', () => {
   it.each([
+    ['--pipe', 'a|b', 'unknown'],
+    ['--money', '$100', 'unknown'],
+    ['--data', '{"x": [1, 2]}', 'unknown'],
     ['font', '16px', 'invalid'],
     ['padding', 'red', 'invalid'],
     ['grid-template-columns', 'repeat(2.5,minmax(0,1fr))', 'invalid'],
@@ -39,7 +43,13 @@ describe('CSS validation reports knowledge without changing declarations', () =>
     expect(result.declarations.map(declaration => declaration.status)).toEqual(['valid', 'invalid'])
     expect(result.cssValueStatus).toBe('invalid')
     expect(result.browserSupport).toBe('not-checked')
-    expect(result.checks).toEqual([CSS_VALUE_CHECK])
+    expect(result.checks).toEqual([CSS_SYNTAX_CHECK, CSS_VALUE_CHECK])
     expect(result.diagnostics[0]).toMatchObject({ code: 'CSS_VALUE_INVALID', phase: 'css-value', severity: 'error' })
   })
+})
+
+it('checks custom-property structure separately from its unknown value grammar', () => {
+  expect(cssSyntaxStatus('.a{--data:{"x":[1,2]};--money:$100;--pipe:a|b}')).toBe('valid')
+  expect(cssSyntaxStatus('.a{--data:{"x":[1,2]}')).toBe('invalid')
+  expect(cssSyntaxStatus('.a{--value:"unterminated}')).toBe('invalid')
 })

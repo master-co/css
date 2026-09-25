@@ -113,6 +113,7 @@ interface ClassListContext {
   unescape?: string | false
   directive?: SourceRange
   classNames: string[]
+  transformed: boolean
 }
 
 const languageByExtension: Record<string, string> = {
@@ -200,11 +201,10 @@ function inferClassSourceKind(content: string, range: SourceRange): Exclude<Mast
 function collectClassListContexts(
   content: string,
   filePath: string,
-  lintSession: Pick<MasterCSSToolingSession, 'analyzeLintDocument'>
+  lintSession: Pick<MasterCSSToolingSession, 'analyzeLintDocument' | 'tokenizeClassList'>,
+  analysis = lintSession.analyzeLintDocument(content, getLanguageId(filePath))
 ): ClassListContext[] {
-  const positions = lintSession
-    .analyzeLintDocument(content, getLanguageId(filePath))
-    .classPositions
+  const positions = analysis.classPositions
   const contexts = new Map<string, ClassListContext>()
   for (const position of positions) {
     const contextRange = position.contextRange
@@ -212,6 +212,7 @@ function collectClassListContexts(
     const existing = contexts.get(key)
     if (existing) {
       existing.classNames.push(position.token)
+      existing.transformed ||= position.raw !== position.token
       continue
     }
     const directive = findComposeDirective(content, contextRange)
@@ -221,10 +222,15 @@ function collectClassListContexts(
       sourceKind: directive ? 'compose-directive' : inferClassSourceKind(content, contextRange),
       unescape: detectClassListUnescape(content, contextRange),
       classNames: [position.token],
+      transformed: position.raw !== position.token,
       ...(directive ? { directive } : {})
     })
   }
-  return [...contexts.values()].sort((a, b) => a.range.start - b.range.start || a.range.end - b.range.end)
+  return [...contexts.values()].map(context => {
+    const tokens = lintSession.tokenizeClassList(context.text, context.unescape).map(item => item.token)
+    context.transformed ||= tokens.length !== context.classNames.length || tokens.some((token, index) => token !== context.classNames[index])
+    return context
+  }).sort((a, b) => a.range.start - b.range.start || a.range.end - b.range.end)
 }
 
 function offsetToLocation(content: string, offset: number): MasterCSSLintSourceLocation {
@@ -278,6 +284,7 @@ function createContextLintDiagnostics(
 }
 
 function toSourceFix(context: ClassListContext, fix: MasterCSSLintFix): MasterCSSLintSourceFix | undefined {
+  if (context.transformed) return
   if (fix.scope === 'directive') {
     if (!context.directive) return
     return {
@@ -310,7 +317,7 @@ function toSourceDiagnostic(
   context: ClassListContext,
   diagnostic: MasterCSSLintDiagnostic
 ): MasterCSSLintSourceDiagnostic {
-  const range = {
+  const range = context.transformed ? context.range : {
     start: context.range.start + diagnostic.range.start,
     end: context.range.start + diagnostic.range.end
   }
@@ -333,7 +340,21 @@ function toSourceDiagnostic(
 export function lintMasterCSSContent(options: MasterCSSLintContentOptions): MasterCSSLintFileResult {
   const diagnostics: MasterCSSLintSourceDiagnostic[] = []
   const rules = resolveRules(options.rules)
-  for (const context of collectClassListContexts(options.content, options.filePath, options.lintSession)) {
+  const document = options.lintSession.analyzeLintDocument(options.content, getLanguageId(options.filePath))
+  for (const diagnostic of document.diagnostics ?? []) {
+    if (diagnostic.severity === 'info') continue
+    const range = diagnostic.range ?? { start: 0, end: 0 }
+    diagnostics.push({
+      code: diagnostic.code,
+      severity: diagnostic.severity,
+      message: diagnostic.message,
+      range,
+      loc: toLocationRange(options.content, range),
+      source: 'Master CSS',
+      sourceKind: 'class-expression'
+    })
+  }
+  for (const context of collectClassListContexts(options.content, options.filePath, options.lintSession, document)) {
     diagnostics.push(...createContextLintDiagnostics(context, rules, options).map((diagnostic) => toSourceDiagnostic(options.content, context, diagnostic)))
   }
   const languageId = getLanguageId(options.filePath)
@@ -374,6 +395,7 @@ function applyFixes(content: string, fixes: MasterCSSLintSourceFix[]) {
 }
 
 function fixClassListText(context: ClassListContext, rules: Record<MasterCSSLintRuleId, boolean>, options: MasterCSSLintContentOptions) {
+  if (context.transformed) return context.text
   let fixed = context.text
   for (let pass = 0; pass < MAX_FIX_PASSES; pass++) {
     const nextContext: ClassListContext = {

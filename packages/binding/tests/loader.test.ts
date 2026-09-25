@@ -155,27 +155,27 @@ describe('native target resolution', () => {
     } as never)
     try {
       expect(language.classifyClassNames(['block:hover', 'unknown'])).toMatchObject({
-        version: 3,
+        version: 4,
         classes: [
           { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
           { className: 'unknown', kind: 'unknown' }
         ]
       })
       expect(language.inspectClassName('block:hover')).toMatchObject({
-        version: 3,
+        version: 4,
         className: 'block:hover',
         kind: 'semantic',
         text: '@layer utilities{.block\\:hover:hover{display:block}}'
       })
       expect(language.completionIndex()).toMatchObject({
-        version: 3,
+        version: 4,
         classEntries: expect.arrayContaining([
           expect.objectContaining({ label: 'block', kind: 'value' }),
           expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
         ])
       })
       expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-        version: 3,
+        version: 4,
         colorToken: 'rgba(0|0|0/.5)',
         editable: true,
         sourceFormat: { syntax: 'rgb' }
@@ -184,7 +184,7 @@ describe('native target resolution', () => {
         className: 'color:#123',
         start: 2
       }])).toEqual({
-        version: 3,
+        version: 4,
         tokens: [{
           range: { start: 8, end: 12 },
           expression: { kind: 'literal', value: '#123' }

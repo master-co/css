@@ -552,8 +552,9 @@ function getStylesheetOptionClasses(
   try {
     for (const sourcePath of resolveStylesheetSourcePaths(options, projectDir)) {
       const absolutePath = resolve(projectDir, sourcePath)
-      if (!existsSync(absolutePath)) continue
-      for (const className of tooling.extractClassCandidates(readFileSync(absolutePath, 'utf-8'))) {
+      const extracted = tooling.extractSource({ files: [{ source: absolutePath, content: readFileSync(absolutePath, 'utf-8') }] }).files[0]
+      if (extracted.diagnostics.length) throw new Error(`${absolutePath}: ${extracted.diagnostics[0].message}`)
+      for (const className of extracted.candidates) {
         classes.add(className)
       }
     }
@@ -570,7 +571,7 @@ function getStyleSourceClasses(
   projectDir?: string
 ) {
   if (!hasStylesheetDirectives(styleSource.directives)) return baseClasses
-  const scopedOptions = mergeStylesheetSourceOptions(scanner.options, styleSource.directives)
+  const scopedOptions = mergeStylesheetSourceOptions({ ...scanner.options, exclude: scanner.customOptions ? scanner.customOptions.exclude : scanner.options.exclude }, styleSource.directives)
   const classes = hasStylesheetSourceDirectives(styleSource.directives)
     ? getStylesheetOptionClasses(scopedOptions, scanner.css.manifest, projectDir)
     : [

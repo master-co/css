@@ -56,7 +56,7 @@ impl WasmEngineSession {
             .inner
             .ensure_class_rules(class_names)
             .map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
+        render_value(&transition)
     }
 
     #[wasm_bindgen(js_name = deleteClassRules)]
@@ -65,7 +65,7 @@ impl WasmEngineSession {
             .inner
             .delete_class_rules(class_names)
             .map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
+        render_value(&transition)
     }
 
     #[wasm_bindgen(js_name = registerEmittedGlobals)]
@@ -77,7 +77,7 @@ impl WasmEngineSession {
             .inner
             .register_emitted_globals(emitted_globals_json)
             .map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
+        render_value(&transition)
     }
 
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
@@ -89,28 +89,28 @@ impl WasmEngineSession {
             .inner
             .native_declaration_candidates(class_names)
             .map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&candidates).map_err(serialization_error)
+        render_value(&candidates)
     }
 
     pub fn refresh(&mut self, manifest_json: &str) -> Result<JsValue, JsValue> {
         let transition = self.inner.refresh(manifest_json).map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
+        render_value(&transition)
     }
 
     #[wasm_bindgen(js_name = executionState)]
     pub fn execution_state(&self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
         let state = self.inner.execution_state(class_names).map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&state).map_err(serialization_error)
+        render_value(&state)
     }
 
     pub fn snapshot(&self) -> Result<JsValue, JsValue> {
         let snapshot = self.inner.snapshot().map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&snapshot).map_err(serialization_error)
+        render_value(&snapshot)
     }
 
     pub fn inspect(&self, class_name: &str) -> Result<JsValue, JsValue> {
         let inspection = self.inner.inspect(class_name).map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&inspection).map_err(serialization_error)
+        render_value(&inspection)
     }
 
     pub fn dispose(&mut self) {

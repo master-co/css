@@ -1,4 +1,4 @@
-use super::{Ordering, UNKNOWN_PROPERTY_GROUP_ORDER, UNKNOWN_PROPERTY_ORDER, natural_compare};
+use super::{UNKNOWN_PROPERTY_GROUP_ORDER, UNKNOWN_PROPERTY_ORDER};
 
 pub(crate) fn get_property_order(property: &str) -> (u8, u8) {
     if property == "position" {
@@ -198,28 +198,4 @@ pub(crate) fn property_prefix(property: &str, prefix: &str) -> bool {
     property == prefix || property.starts_with(&format!("{prefix}-"))
 }
 
-pub(crate) fn compare_condition_features(
-    left: &[(String, f64, f64)],
-    right: &[(String, f64, f64)],
-) -> Ordering {
-    for index in 0..left.len().max(right.len()) {
-        let Some(left) = left.get(index) else {
-            return Ordering::Less;
-        };
-        let Some(right) = right.get(index) else {
-            return Ordering::Greater;
-        };
-        let order = natural_compare(&left.0, &right.0)
-            .then_with(|| {
-                (right.2 - right.1)
-                    .partial_cmp(&(left.2 - left.1))
-                    .unwrap_or(Ordering::Equal)
-            })
-            .then_with(|| right.1.partial_cmp(&left.1).unwrap_or(Ordering::Equal))
-            .then_with(|| right.2.partial_cmp(&left.2).unwrap_or(Ordering::Equal));
-        if order != Ordering::Equal {
-            return order;
-        }
-    }
-    Ordering::Equal
-}
+pub(crate) use mastercss_engine::compare_condition_features;

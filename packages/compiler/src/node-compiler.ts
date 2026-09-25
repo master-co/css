@@ -95,6 +95,7 @@ type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
 }
 
 export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
+  sourceTexts?: Record<string, string>
   manifest: MasterCSSManifest
   resolutionManifest: MasterCSSManifest
   directives: CompileCSSResult
@@ -540,7 +541,7 @@ export function compileCSSManifestGraph(
   for (const warning of warnings) options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   const entry = compiled.stylesheets.find(sheet => sheet.id === compiled.entry)!
   return {
-    ...directives, dependencies, warnings, css: entry.css, outputMappings: entry.outputMappings,
+    ...directives, dependencies, warnings, css: entry.css, outputMappings: entry.outputMappings, sourceTexts: graph.files,
     manifest: compiled.manifest, resolutionManifest: compiled.resolutionManifest,
     directives, stylesheets: compiled.stylesheets
   }

@@ -94,7 +94,7 @@ describe('inspect command', () => {
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(3)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -192,7 +192,7 @@ describe('lint command', () => {
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(3)
       expect(report.manifest.status).toBe('loaded')
       expect(report.files).toHaveLength(1)
       expect(report.files[0].diagnostics.map((diagnostic: TestDiagnostic) => diagnostic.code)).toEqual(expect.arrayContaining([

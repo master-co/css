@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
+vi.mock('node:fs/promises', () => ({ readFile: vi.fn(async () => '<div class="bg-white"/>') }))
+
 vi.mock('@master/css-tooling/scanner/node', () => {
   return {
     MasterCSSScanner: class {
@@ -12,6 +14,9 @@ vi.mock('@master/css-tooling/scanner/node', () => {
           this.options = { ...opts }
         }
       }
+      sourcePolicyDependencies = []
+      isModuleAllowed() { return true }
+      removeSource() {}
       async init() { return this }
       async scanModule(id: string, _code: string) {
         this.scanModuleCalls.push(id)
@@ -118,10 +123,9 @@ describe('shared scanner plugins', () => {
       expect(calls).toEqual([
         '/proj/src/data.json',
         '/proj/src/icon.png',
-        '/proj/src/icon.svg?url',
+        '/proj/src/icon.svg',
         '/proj/src/audio.mp3',
         '/proj/src/style.css',
-        '/proj/src/App.vue?vue&type=style&index=0&lang.css',
       ])
     })
 
@@ -134,10 +138,18 @@ describe('shared scanner plugins', () => {
       expect(calls).toEqual([])
     })
 
-    test('does not wait for Vite request idle during dev server setup', () => {
-      const usageGraphPlugin = UsageGraphPlugin({} as any, {} as any)
-
-      expect(usageGraphPlugin).not.toHaveProperty('configureServer')
+    test('watches policy files without adding dev import edges or waiting for request idle', async () => {
+      const ctx: any = {}
+      const scannerPlugin = ScannerPlugin({} as any, ctx) as any
+      await scannerPlugin.configResolved.call({}, fakeViteConfig)
+      ctx.scanner.sourcePolicyDependencies = ['/proj/.gitignore']
+      const plugin = UsageGraphPlugin({} as any, ctx) as any
+      const watcher = { add: vi.fn() }, waitForRequestsIdle = vi.fn(), addWatchFile = vi.fn()
+      expect(plugin.configureServer({ watcher, waitForRequestsIdle })).toBeUndefined()
+      await plugin.transform.call({ addWatchFile }, '"flex"', '/proj/src/app.ts')
+      expect(watcher.add).toHaveBeenCalledWith('/proj/.gitignore')
+      expect(waitForRequestsIdle).not.toHaveBeenCalled()
+      expect(addWatchFile).not.toHaveBeenCalled()
     })
 
     test('build transformIndexHtml feeds HTML to scanModule', async () => {

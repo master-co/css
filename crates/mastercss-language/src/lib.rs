@@ -71,6 +71,7 @@ pub struct LanguageDocumentSettingsIr {
 pub struct LanguageDocumentIr {
     pub version: u32,
     pub class_positions: Vec<ClassPositionIr>,
+    pub diagnostics: Vec<mastercss_schema::Diagnostic>,
     pub semantic_tokens: Vec<SemanticTokenInputIr>,
     pub semantic_token_data: Vec<u32>,
 }
@@ -113,6 +114,7 @@ pub struct LanguageInspectionIr {
     pub version: u32,
     pub class_name: String,
     pub match_status: mastercss_schema::MatchStatus,
+    pub css_syntax_status: mastercss_schema::CssSyntaxStatus,
     pub css_value_status: mastercss_schema::CssValueStatus,
     pub browser_support: mastercss_schema::BrowserSupport,
     pub kind: ClassSemanticKind,

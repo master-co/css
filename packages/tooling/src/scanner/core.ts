@@ -1,3 +1,6 @@
+import { SourcePolicy } from './source-policy'
+import type { ScannerSourceOptions, ScannerSourceInput } from './binding-session'
+export type { ScannerSourceOptions, ScannerSourceInput } from './binding-session'
 import {
   defaultScannerOptions,
   type MasterCSSScannerOptions,
@@ -60,6 +63,7 @@ interface ScannerResetOptions {
 
 export interface MasterCSSScannerSourceResult {
   readonly changed: boolean
+  readonly sourceChanged: boolean
   /** All candidates extracted from this input, including previously scanned classes. */
   readonly candidates: readonly string[]
 }
@@ -192,6 +196,8 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   readonly invalidClasses = new ScannerStateSetView(() => this.state.invalidClasses)
   readonly nativeClassNames = new ScannerStateSetView(() => this.state.nativeClasses || [])
   readonly usedNativeClasses = new ScannerStateSetView(() => this.state.usedNativeClasses || [])
+  /** Current successful source snapshot, including empty and virtual inputs. */
+  get sources() { return this.state.sources }
   initialized = false
   initializing?: Promise<this>
   resetDependencies: string[] = []
@@ -200,6 +206,13 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   private bindingState?: BindingScannerState
   private currentManifest: MasterCSSManifest
   private lifecycleGeneration = 0
+  private sourcePolicy?: SourcePolicy
+  private sourceRevisions = new Map<string, number>()
+  private ownerRevisions = new Map<string, number>()
+  private ownerSnapshots = new Map<string, Promise<unknown>>()
+  private sourceParents = new Map<string, string>()
+  private committedSources = new Map<string, string>()
+  private extractionCache = new Map<string, { content: string, candidates: string[] }>()
 
   /** Precompiled minimatch patterns for per-module allow/exclude checks. */
   private sourceMatchers?: SourceMatchers
@@ -249,9 +262,17 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       return this
     }
     this.options = options
+    this.customOptions = customOptions
     this.resetDependencies = []
+    this.committedSources.clear()
+    this.extractionCache.clear()
+    this.sourceRevisions.clear()
+    this.ownerRevisions.clear()
+    this.ownerSnapshots.clear()
+    this.sourceParents.clear()
     this.sourceMatchers = undefined
-    this.sourceMatcherOptions = undefined
+    this.sourceMatcherOptions = { exclude: options.exclude }
+    this.getSourceMatchers()
     this.currentManifest = options.manifest
     this.bindingSession = bindingSession
     try {
@@ -279,6 +300,12 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     this.bindingSession = undefined
     this.bindingState = undefined
     this.resetDependencies = []
+    this.committedSources.clear()
+    this.extractionCache.clear()
+    this.sourceRevisions.clear()
+    this.ownerRevisions.clear()
+    this.ownerSnapshots.clear()
+    this.sourceParents.clear()
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
     this.initialized = false
@@ -300,6 +327,12 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     this.bindingSession = undefined
     this.bindingState = undefined
     this.resetDependencies = []
+    this.committedSources.clear()
+    this.extractionCache.clear()
+    this.sourceRevisions.clear()
+    this.ownerRevisions.clear()
+    this.ownerSnapshots.clear()
+    this.sourceParents.clear()
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
     this.initialized = false
@@ -333,63 +366,112 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
    * @param content
    * @returns Promise<string[]> Latent classes
    */
-  async collectCandidates(source: string, content: string): Promise<string[]> {
-    if (!source || !content) {
-      return []
-    }
-    const adapter = this.resolveSourceAdapter(source)
-    const extractedClasses = adapter
-      ? await adapter.extract({ source, content })
-      : this.getBindingSession().extractCandidates(source, content)
-    const latentClasses = this.getBindingSession().collectCandidates(extractedClasses)
-    this.bindingState = undefined
-    return latentClasses
+  async collectCandidates(source: string, content: string, options: ScannerSourceOptions = {}): Promise<string[]> {
+    return [...await this.extractCandidates(source, content, options)]
   }
 
-  /**
-   * @description Extract trusted content candidates and scan.
-   * @param source
-   * @param content
-   * @returns string[] Latent classes
-   */
+  private async extractCandidates(source: string, content: string, options: ScannerSourceOptions) {
+    const key = JSON.stringify([options.owner ?? 'project', source, options.kind ?? 'auto', options.extractor ?? ''])
+    const cached = this.extractionCache.get(key)
+    if (cached?.content === content) return cached.candidates
+    const adapter = options.kind && options.kind !== 'auto' ? undefined : this.resolveSourceAdapter(source)
+    const candidates = adapter ? await adapter.extract({ source, content }) : this.getBindingSession().extractCandidates(source, content, options)
+    this.extractionCache.set(key, { content, candidates })
+    return candidates
+  }
+
   async scan(source: string, content: string): Promise<boolean> {
     return (await this.scanSource(source, content)).changed
   }
 
-  /** Scan through the built-in adapters and retain this input's candidates. */
-  async scanSource(source: string, content: string): Promise<MasterCSSScannerSourceResult> {
-    if (!content) {
-      return { changed: false, candidates: [] }
-    }
-    const time = process.hrtime()
-    const session = this.getBindingSession()
-    const cachedCandidates = session.cachedSourceCandidates(source, content)
-    if (cachedCandidates !== null) {
-      return { changed: false, candidates: cachedCandidates }
-    }
-    const adapter = this.resolveSourceAdapter(source)
-    const extractedClasses = adapter
-      ? await adapter.extract({ source, content })
-      : this.getBindingSession().extractCandidates(source, content)
+  async scanSource(source: string, content: string, options: ScannerSourceOptions = {}): Promise<MasterCSSScannerSourceResult> {
+    this.getBindingSession()
     const blocklist = serializeScannerBlocklist(this.options.blocklist)
-    // A new source changes cachedSources even when it contributes no new class.
-    this.bindingState = undefined
-    const update = session.scanCandidates(
-      source,
-      content,
-      extractedClasses,
-      blocklist
-    )
-    const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
-    if (changedClasses.length) {
-      if (this.options.verbose) {
-        const spentTime = process.hrtime(time)
-        const spent = Math.round(((spentTime[0] * 1e9 + spentTime[1]) / 1e6) * 10) / 10
-        logger.success(`${path.relative(this.cwd, source)} ${changedClasses.length} classes inserted in ${spent}ms ${this.options.verbose > 1 ? changedClasses.join(', ') : ''}`)
-      }
-      this.emit('change')
+    const key = JSON.stringify([options.owner ?? 'project', source])
+    const identity = JSON.stringify([content, options, blocklist])
+    const revision = (this.sourceRevisions.get(key) ?? 0) + 1
+    this.sourceRevisions.set(key, revision)
+    const owner = options.owner ?? 'project'
+    const ancestors = this.sourceAncestors(owner, source, new Map([[key, options.parentSource]]))
+    const ownerRevision = this.ownerRevisions.get(owner) ?? 0
+    const snapshot = this.ownerSnapshots.get(owner)
+    const generation = this.lifecycleGeneration
+    const candidates = await this.extractCandidates(source, content, options)
+    await snapshot?.catch(() => undefined)
+    if (ancestors.some(([parent, revision]) => (this.sourceRevisions.get(parent) ?? 0) !== revision)) return { changed: false, sourceChanged: false, candidates }
+    if (generation !== this.lifecycleGeneration || revision !== this.sourceRevisions.get(key) || ownerRevision !== (this.ownerRevisions.get(owner) ?? 0)) return { changed: false, sourceChanged: false, candidates }
+    if (this.committedSources.get(key) === identity) return { changed: false, sourceChanged: false, candidates }
+    const update = this.getBindingSession().scanCandidates(source, content, candidates, blocklist, options)
+    if (options.parentSource) this.sourceParents.set(key, options.parentSource)
+    else this.sourceParents.delete(key)
+    const result = this.applyUpdate(update)
+    this.committedSources.set(key, identity)
+    return result
+  }
+
+  removeSource(source: string, options: ScannerSourceOptions = {}): MasterCSSScannerSourceResult {
+    const key = JSON.stringify([options.owner ?? 'project', source])
+    this.sourceRevisions.set(key, (this.sourceRevisions.get(key) ?? 0) + 1)
+    this.committedSources.clear()
+    return this.applyUpdate(this.getBindingSession().removeSource(source, options))
+  }
+
+  private sourceAncestors(owner: string, source: string, proposed = new Map<string, string | undefined>()): [string, number][] {
+    const ancestors: [string, number][] = []
+    const seen = new Set<string>()
+    let key = JSON.stringify([owner, source])
+    while (!seen.has(key)) {
+      seen.add(key)
+      ancestors.push([key, this.sourceRevisions.get(key) ?? 0])
+      const parent = proposed.has(key) ? proposed.get(key) : this.sourceParents.get(key)
+      if (!parent) break
+      key = JSON.stringify([owner, parent])
     }
-    return { changed: update.changed, candidates: extractedClasses }
+    return ancestors
+  }
+
+  reconcileSources(owner: string, inputs: readonly ScannerSourceInput[]): Promise<MasterCSSScannerSourceResult> {
+    const task = this.reconcileOwner(owner, inputs)
+    this.ownerSnapshots.set(owner, task)
+    void task.finally(() => {
+      if (this.ownerSnapshots.get(owner) === task) this.ownerSnapshots.delete(owner)
+    }).catch(() => undefined)
+    return task
+  }
+
+  private async reconcileOwner(owner: string, inputs: readonly ScannerSourceInput[]): Promise<MasterCSSScannerSourceResult> {
+    const revision = (this.ownerRevisions.get(owner) ?? 0) + 1
+    this.ownerRevisions.set(owner, revision)
+    const generation = this.lifecycleGeneration
+    const proposed = new Map(inputs.map(input => [JSON.stringify([owner, input.source]), input.options?.parentSource]))
+    const revisions = new Map(inputs.map(input => [input.source, this.sourceAncestors(owner, input.source, proposed)]))
+    const prepared = await Promise.all(inputs.map(async input => {
+      const options = { ...input.options, owner }
+      return { ...input, options, candidates: input.candidates ?? await this.extractCandidates(input.source, input.content, options), blocklist: input.blocklist ?? serializeScannerBlocklist(this.options.blocklist) }
+    }))
+    if (generation !== this.lifecycleGeneration || revision !== this.ownerRevisions.get(owner)) return { changed: false, sourceChanged: false, candidates: prepared.flatMap(input => input.candidates) }
+    const retained = prepared.filter(input =>
+      revisions.get(input.source)!.every(([key, revision]) => (this.sourceRevisions.get(key) ?? 0) === revision)
+    )
+    const update = this.getBindingSession().reconcileSources(owner, retained)
+    this.committedSources.clear()
+    for (const key of this.sourceParents.keys()) if (JSON.parse(key)[0] === owner) this.sourceParents.delete(key)
+    for (const input of retained) if (input.options.parentSource) this.sourceParents.set(JSON.stringify([owner, input.source]), input.options.parentSource)
+    return this.applyUpdate(update)
+  }
+
+  removeOwner(owner: string): MasterCSSScannerSourceResult {
+    this.ownerRevisions.set(owner, (this.ownerRevisions.get(owner) ?? 0) + 1)
+    this.committedSources.clear()
+    return this.applyUpdate(this.getBindingSession().removeOwner(owner))
+  }
+
+  private applyUpdate(update: import('./binding-session').BindingScannerUpdate): MasterCSSScannerSourceResult {
+    this.bindingState = undefined
+    const inserted = [...update.validClasses, ...(update.usedNativeClasses ?? [])]
+    if (inserted.length && this.options.verbose) logger.success(`${inserted.length} classes inserted${this.options.verbose > 1 ? ' ' + inserted.join(', ') : ''}`)
+    if (update.changed) this.emit('change')
+    return { changed: update.changed, sourceChanged: update.sourceChanged, candidates: update.candidates }
   }
 
   async scanModule(source: string, content: string): Promise<boolean> {
@@ -407,6 +489,8 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       !this.sourceMatchers ||
       this.sourceMatcherOptions?.exclude !== exclude
     ) {
+      const explicitExclude = this.sourceMatcherOptions?.exclude !== exclude ? exclude : this.customOptions.exclude
+      this.sourcePolicy = new SourcePolicy(this.cwd, { exclude: explicitExclude, outputDirectories: this.options.outputDirectories })
       this.sourceMatcherOptions = { exclude }
       this.sourceMatchers = {
         exclude: createSourceMatchers(exclude)
@@ -424,11 +508,18 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     if (exclude.length && matchesAnySource(sources, exclude)) {
       return false
     }
-    return true
+    return this.sourcePolicy?.accepts(cleanSourceRequest(source)) ?? false
   }
 
-  registerNativeClasses(classNames: string[]) {
-    const changed = this.getBindingSession().registerNativeClasses(classNames)
+  isSourceAllowed(source: string, options: { explicit?: boolean } = {}): boolean {
+    this.getSourceMatchers()
+    return this.sourcePolicy?.accepts(source, options.explicit) ?? false
+  }
+
+  get sourcePolicyDependencies() { return [...(this.sourcePolicy?.dependencies ?? [])] }
+
+  registerNativeClasses(owner: string, classNames: string[]) {
+    const changed = this.getBindingSession().registerNativeClasses(owner, classNames)
     this.bindingState = undefined
     if (changed) this.emit('change')
     return changed

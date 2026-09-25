@@ -146,7 +146,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
     match: '\\$[_a-zA-Z-][_a-zA-Z0-9-]*',
     name: 'variable.other.master-css'
   }))
-  findGrammarPattern(themeValue, (pattern) => pattern.match === '--alpha(?=\\()' && pattern.name === 'support.function.misc.master-css')
+  expect(JSON.stringify(themeValue)).not.toContain('--alpha')
 
   const composePrelude = grammarEntry('master-compose-prelude')
   expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])

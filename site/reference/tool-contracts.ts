@@ -74,7 +74,7 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
       '## Example', `Call \`${tool.name}\` from a connected MCP client with these arguments:`,
       fence('json name=Arguments', JSON.stringify(editorial.example, null, 2)), editorial.exampleNote,
       '## Output', editorial.output,
-      'Successful calls return the same JSON in `structuredContent` and text content, with the advertised output schema, diagnostics, context, package/language/binding versions, and manifest fingerprint. Check `isError` on the tool result, then the report’s own status and diagnostics: an MCP call can succeed while reporting a project error.',
+      'Every tool returns an object with `version: 3`, `metadata`, `diagnostics` and `result`. Success payload fields described above live in `result.data`; failure has `result.status: "error"` and a required `{ code, message }` error. JSON text equals `structuredContent`. Tool errors set `isError`. Metadata records actual context, package/language/binding versions, manifest fingerprint, entries and dependencies; unavailable information is null or an empty array.',
       tool.outputSchema ? fence('json disclosure=output-schema', JSON.stringify(tool.outputSchema, null, 2)) : 'The server does not advertise an output JSON Schema for this tool.',
       '## Project context and lifecycle', editorial.lifecycle,
       'The local stdio server uses the workspace passed to `--root`. Confirm the root and intended CSS entries with `mastercss_workspace_info` before relying on project-dependent values.',

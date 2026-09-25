@@ -11,7 +11,7 @@ analysis, and the dependency-light diagnostics bridge.
 - Universal, native-only Node, and tooling-Wasm session loading.
 - Feature subpaths under `lexer`, `source`, `scanner`, `validator`, `lint`, and
   `language`.
-- Host CSS capability checks and source/file orchestration around Rust IR.
+- CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
 - Rust-generated, read-only built-in registry data for documentation and tooling.
 - Private first-party Vue and Svelte extraction adapters used by the scanner.
 
@@ -54,7 +54,9 @@ language crates now expose domain modules instead of monolithic `lib.rs` files.
 
 - UTF-16 and source range correctness.
 - Extraction false positives/negatives.
-- Native CSS capability coordination.
+- Independent match/syntax/value/browser statuses and truthful executed-check metadata.
+- Owner-scoped replacement/removal, exact snapshot membership and failed-update atomicity.
+- Markdown/MDX display isolation and original UTF-16 occurrence provenance.
 - Lint edit plans and scanner state parity.
 - Browser bundles accidentally importing Node code or native bindings.
 

@@ -115,6 +115,25 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         )];
     }
     for token in super::state::split_state_token(source).1 {
+        if mastercss_lexer::query_requires_css(&token) {
+            let (kind, body) = token.split_once('(').expect("recognized query");
+            let prelude =
+                mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
+                    .unwrap_or_default();
+            let mut diagnostic = error(
+                super::ErrorCode::MasterQueryRequiresCss,
+                format!(
+                    "Complex @{kind} queries belong in CSS; define @custom-variant and use its name"
+                ),
+            );
+            diagnostic.notes.push(format!(
+                "@custom-variant query-name {{ @{kind} {prelude} {{ @slot; }} }}"
+            ));
+            diagnostic.notes.push(
+                "Use @query-name. Verify literal pipes in the CSS query before copying.".into(),
+            );
+            return vec![diagnostic];
+        }
         if !manifest.modes.iter().any(|mode| mode.name == token)
             && !manifest
                 .variants
@@ -128,6 +147,18 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
                 format!(
                     "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
                 ),
+            )];
+        }
+    }
+    for (_, matched) in matching_utilities(source, manifest) {
+        let selector = super::state::split_state_token(&matched.state_token).0;
+        if !selector.is_empty()
+            && super::state::selector_token_to_template(&selector, manifest)
+                .is_some_and(|template| !mastercss_lexer::valid_selector_structure(&template))
+        {
+            return vec![error(
+                super::ErrorCode::ClassSyntaxError,
+                format!("Invalid selector structure: {selector}"),
             )];
         }
     }

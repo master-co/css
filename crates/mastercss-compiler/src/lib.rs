@@ -688,8 +688,7 @@ pub(crate) use pattern::{
 };
 pub(crate) use syntax::{
     collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
-    directive_error, directive_range, is_alias_character, next_char_end,
-    normalize_stylesheet_value, normalize_theme_stylesheet_value, parse_theme_prelude,
+    directive_error, directive_range, is_alias_character, next_char_end, parse_theme_prelude,
     preserve_compatible_literal_spelling, ranged_directive_diagnostic, theme_value,
 };
 pub(crate) use theme::{lower_settings_rule, lower_theme_rule};

@@ -1,18 +1,20 @@
+import { discoverManifestEntriesSync } from '@master/css-compiler/project/sync'
 import fs from 'node:fs'
 import path from 'node:path'
 import fg from 'fast-glob'
-import { migrateRCSync } from '@master/css-compiler/node'
+import { migrateRCSync, resolveStylesheetSync } from '@master/css-compiler/node'
 import type { MasterCSSRCMigrationResult } from '@master/css-compiler'
 import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 export interface MigrateOptions {
-  from?: 'rc-legacy' | 'rc-named'
+  from?: 'rc-legacy' | 'rc-named' | 'rc-native'
   sourceVersion?: string
   cwd?: string
   manifest?: string
   targetManifest?: string
+  entry?: string
   write?: boolean
 }
 
@@ -26,7 +28,7 @@ const languageByExtension: Record<string, string> = {
 
 /** Filesystem orchestration only. All syntax and equivalence decisions are Rust-owned. */
 export default function runMigrate(sourcePaths: string[], options: MigrateOptions = {}) {
-  if (!options.from) throw new Error('Migration requires --from rc-legacy or --from rc-named.')
+  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named or rc-native.')
   const cwd = path.resolve(options.cwd || process.cwd())
   const manifestPath = path.resolve(cwd, options.manifest || 'master.rc.manifest.json')
   // An unreadable original manifest is fatal. Never substitute the new preset
@@ -46,17 +48,21 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     cwd, absolute: true, onlyFiles: true, unique: true,
     ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**']
   }).sort()
+  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...discoverManifestEntriesSync({ root: cwd })]
+  if (entries.length === 1 && !paths.includes(entries[0])) paths.push(entries[0])
   const files = paths.map(filePath => ({
     filePath,
     source: fs.readFileSync(filePath, 'utf8'),
     languageId: languageByExtension[path.extname(filePath)] || 'html'
   }))
   const language = createLanguageSessionSync({ manifest: targetManifest })
+  const sourceErrors = new Map<number, readonly { message: string }[]>()
   const contexts: { file: number, positions: ReturnType<typeof language.analyzeDocument>['classPositions'] }[] = []
   try {
     for (const [file, input] of files.entries()) {
       if (input.languageId === 'css') continue
       const analysis = language.analyzeDocument({ source: input.source, languageId: input.languageId })
+      if (analysis.diagnostics.length) sourceErrors.set(file, analysis.diagnostics)
       const groups = new Map<string, typeof analysis.classPositions[number][]>()
       for (const position of analysis.classPositions) {
         const key = `${position.contextRange.start}:${position.contextRange.end}`
@@ -68,9 +74,19 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     }
   } finally { language.dispose() }
   const stylesheets = files.filter(file => file.languageId === 'css')
+  // Imports are read-only migration context even when the caller selected only
+  // the entry. A native function in an imported sheet can shadow an RC macro.
+  const dependencySources = new Map<string, string>()
+  for (const entry of new Set([...entries, ...stylesheets.map(file => file.filePath)])) {
+    const source = files.find(file => file.filePath === entry)?.source ?? fs.readFileSync(entry, 'utf8')
+    const resolved = resolveStylesheetSync(entry, source, { projectDir: cwd, preserveImports: true })
+    for (const dependency of resolved?.dependencies ?? [entry]) {
+      if (!files.some(file => file.filePath === dependency)) dependencySources.set(dependency, fs.readFileSync(dependency, 'utf8'))
+    }
+  }
   const result = migrateRCSync({ from: options.from, sourceVersion, manifest, targetManifest, targetIsPreset: !options.targetManifest,
     classLists: contexts.map(context => context.positions.map(position => position.token)),
-    stylesheets: stylesheets.map(file => file.source),
+    stylesheets: [...stylesheets.map(file => file.source), ...dependencySources.values()],
     documents: files.map(file => file.languageId === 'css' ? '' : file.source)
   })
   const reports = files.map(file => ({
@@ -79,6 +95,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     review: [] as { before: string, notes: readonly string[] }[],
     written: false
   }))
+  for (const [index, diagnostics] of sourceErrors) reports[index].review.push({ before: '(source)', notes: diagnostics.map(diagnostic => diagnostic.message) })
   if (result.notes.length && reports.length) reports[0].review.push({ before: '(configuration)', notes: result.notes })
   for (const [index, notes] of result.documents.entries()) {
     if (notes.length) reports[index].review.push({ before: '(source)', notes })
@@ -104,7 +121,12 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     report.edits.push(...stylesheet.edits.map(edit => ({ ...edit.range, before: edit.before, after: edit.after })))
     if (stylesheet.notes.length) report.review.push({ before: '(stylesheet)', notes: stylesheet.notes })
   }
-  if (result.configurationCSS && !stylesheets.some(file => file.source.includes('@settings') || file.source.includes('@mode ')) && reports.length) {
+  if (result.configurationCSS && options.from === 'rc-native') {
+    const entry = entries.length === 1 ? files.findIndex(file => file.filePath === entries[0]) : -1
+    if (entry >= 0) reports[entry].edits.push({ start: files[entry].source.length, end: files[entry].source.length, before: '', after: `\n${result.configurationCSS}` })
+    else if (reports.length) reports[0].review.push({ before: '(entry)', notes: ['Select a unique Master CSS entry with --entry to write the proposed custom variants.'] })
+  }
+  if (options.from !== 'rc-native' && result.configurationCSS && !stylesheets.some(file => file.source.includes('@settings') || file.source.includes('@mode ')) && reports.length) {
     reports[0].review.push({ before: '(configuration)', notes: ['Add the proposed configurationCSS to the project entry, regenerate --target-manifest, and review delivery mode and native pruning before applying this batch.'] })
   }
   for (const report of reports) {
@@ -117,6 +139,9 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
   // selectors, and cascade changes may have cross-file dependencies.
   if (options.write && !reports.some(report => report.review.length)) {
     // Check every input before publishing the first edit.
+    for (const [file, source] of dependencySources) {
+      if (fs.readFileSync(file, 'utf8') !== source) throw new Error(`Migration dependency changed while planning: ${file}`)
+    }
     for (const [index, file] of files.entries()) {
       if (fs.readFileSync(file.filePath, 'utf8') !== file.source) throw new Error(`Source changed while planning migration: ${reports[index].path}`)
     }

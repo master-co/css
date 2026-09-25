@@ -32,6 +32,43 @@ impl Migration {
             edits: Vec::new(),
             notes: Vec::new(),
         };
+        // Only declaration values were RC macros. A native function declaration
+        // anywhere in the selected source set makes the name ambiguous.
+        for statement in &statements {
+            let Some(colon) = tokens
+                .get(statement.tokens.start + 1)
+                .filter(|token| token.kind == CssSyntaxKind::Delim(':'))
+            else {
+                continue;
+            };
+            let mut index = statement.tokens.start + 2;
+            while index < statement.tokens.end {
+                let token = &tokens[index];
+                if matches!(&token.kind, CssSyntaxKind::Function(name) if name == "--alpha")
+                    && token.bytes.start >= colon.bytes.end
+                {
+                    if self.native_alpha {
+                        result.notes.push("Native @function --alpha collides with the RC macro; review all calls manually".into());
+                        break;
+                    }
+                    if let Some(close) = token.close {
+                        match super::native::alpha(
+                            &source[token.bytes.end..tokens[close].bytes.start],
+                        ) {
+                            Ok(after) => add_edit(
+                                &mut result,
+                                source,
+                                token.bytes.start,
+                                tokens[close].bytes.end,
+                                after,
+                            ),
+                            Err(note) => result.notes.push(note),
+                        }
+                    }
+                }
+                index += 1;
+            }
+        }
         for statement in &statements {
             let Some(first) = tokens.get(statement.tokens.start) else {
                 continue;
@@ -110,7 +147,8 @@ impl Migration {
                     ));
                 }
             }
-            if statement.has_block
+            if !self.native_profile()
+                && statement.has_block
                 && matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if matches!(name.as_ref(), "utilities" | "components" | "defaults"))
             {
                 let Some((key, pattern)) = prelude.trim().split_once(":<") else {
@@ -204,7 +242,7 @@ impl Migration {
                 result.notes.push("Generated selector reference requires manual migration and browser verification".into());
             }
         }
-        if source.contains("@settings") && !source.contains("@mode ") {
+        if !self.native_profile() && source.contains("@settings") && !source.contains("@mode ") {
             add_edit(&mut result, source, 0, 0, self.configuration_css.clone());
         }
         result.edits.sort_by_key(|edit| edit.range.start);

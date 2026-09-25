@@ -173,7 +173,7 @@ pub fn compare_rule_priority(left: &GeneratedRuleIr, right: &GeneratedRuleIr) ->
         .then_with(|| natural_compare(&left.key, &right.key))
 }
 
-pub(crate) fn compare_condition_features(
+pub fn compare_condition_features(
     left: &[ConditionFeature],
     right: &[ConditionFeature],
 ) -> Ordering {
@@ -184,25 +184,52 @@ pub(crate) fn compare_condition_features(
         let Some(right) = right.get(index) else {
             return Ordering::Greater;
         };
-        let name_order = natural_compare(&left.0, &right.0);
-        if name_order != Ordering::Equal {
-            return name_order;
+        let identity = natural_compare(&left.domain, &right.domain)
+            .then_with(|| natural_compare(&left.feature, &right.feature))
+            .then_with(|| natural_compare(&left.unit, &right.unit));
+        if identity != Ordering::Equal {
+            return identity;
         }
-        let left_range = left.2 - left.1;
-        let right_range = right.2 - right.1;
-        let range_order = right_range
-            .partial_cmp(&left_range)
-            .unwrap_or(Ordering::Equal);
-        if range_order != Ordering::Equal {
-            return range_order;
-        }
-        let min_order = right.1.partial_cmp(&left.1).unwrap_or(Ordering::Equal);
-        if min_order != Ordering::Equal {
-            return min_order;
-        }
-        let max_order = right.2.partial_cmp(&left.2).unwrap_or(Ordering::Equal);
-        if max_order != Ordering::Equal {
-            return max_order;
+        let lower = |range: &ConditionFeature| {
+            range
+                .lower
+                .as_ref()
+                .map_or(f64::NEG_INFINITY, |bound| bound.value)
+        };
+        let upper = |range: &ConditionFeature| {
+            range
+                .upper
+                .as_ref()
+                .map_or(f64::INFINITY, |bound| bound.value)
+        };
+        let width = |range: &ConditionFeature| upper(range) - lower(range);
+        let unbounded_order = if left.upper.is_none() && right.upper.is_none() {
+            lower(left).total_cmp(&lower(right))
+        } else if left.lower.is_none() && right.lower.is_none() {
+            upper(right).total_cmp(&upper(left))
+        } else {
+            Ordering::Equal
+        };
+        let order = unbounded_order
+            .then_with(|| width(right).total_cmp(&width(left)))
+            .then_with(|| lower(right).total_cmp(&lower(left)))
+            .then_with(|| upper(right).total_cmp(&upper(left)))
+            .then_with(|| {
+                right
+                    .lower
+                    .as_ref()
+                    .map(|bound| bound.inclusive)
+                    .cmp(&left.lower.as_ref().map(|bound| bound.inclusive))
+            })
+            .then_with(|| {
+                right
+                    .upper
+                    .as_ref()
+                    .map(|bound| bound.inclusive)
+                    .cmp(&left.upper.as_ref().map(|bound| bound.inclusive))
+            });
+        if order != Ordering::Equal {
+            return order;
         }
     }
     Ordering::Equal

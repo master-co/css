@@ -174,9 +174,15 @@ Inspect the project with MCP tools first. Do not edit yet. Return an incremental
 ---
 
 ## Machine-readable results
-Project scan, lint, setup audit, directive inspection, class extraction, class tracing, CSS comparison, manifest query, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` and generated detail objects may gain fields as diagnostics become more precise.
+Every tool returns a version 3 object with `metadata`, `diagnostics` and a required `result`. Success has `result: { status: 'success', data }`; failure has `result: { status: 'error', error: { code, message } }`. Tool failures also set MCP `isError`. JSON text and `structuredContent` contain the same object. Use the tool's published `outputSchema` to validate both branches.
 
-For CLI fallback reports, `cwd` is the command root. For MCP reports, `root` is the configured workspace root.
+`metadata` includes package/language/binding versions, the context actually used, manifest fingerprint, entries and dependencies. Unavailable manifest information is null or an empty array. Project context is the default: an absent entry or failed compilation returns an error, without switching to the preset. Request `context: 'preset'` explicitly for preset-only queries.
+
+Class inspection separates `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport`. Check records identify their name, version, phase and scope. A CSS grammar error is different from an unknown future capability; `var()` does not establish a computed value. Browser support stays `not-checked` unless a browser check was actually executed. Preserve diagnostics, dependency arrays and ambiguous-name alternatives when consuming reports.
+
+Markdown/MDX extraction distinguishes live markup and code from display text, and returns original UTF-16 occurrence ranges with inclusion/exclusion reasons. The CLI, editor and MCP share Rust extraction and matching. CLI report versions are independent of the MCP envelope; read each report's declared version.
+
+For CLI reports, `cwd` is the command root. For MCP payloads, `root` is the configured workspace root.
 
 ---
 

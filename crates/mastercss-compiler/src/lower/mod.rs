@@ -99,7 +99,7 @@ struct StyleMergeBucket {
     events: Vec<StyleMergeEvent>,
 }
 
-type StyleConditionFeature = (String, f64, f64);
+type StyleConditionFeature = mastercss_schema::ConditionRangeIr;
 
 mod api;
 mod merge;

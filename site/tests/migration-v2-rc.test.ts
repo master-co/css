@@ -28,11 +28,15 @@ test('the portable guide preserves the upgrade workflow and labels historical sy
   assert.match(markdown, /exact installed RC versions/)
   assert.match(markdown, /\/guide\/migration#frameworks/)
   assert.match(markdown, /RC reference — not executed/)
-  assert.match(markdown, /master-css migrate src --manifest master.rc.manifest.json --write/)
+  assert.match(markdown, /master-css migrate src app.css --from rc-legacy --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json --write/)
   assert.match(markdown, /Do not initialize the old and new Master runtimes/)
   assert.match(markdown, /root-size/)
   assert.match(markdown, /image-set/)
-  assert.match(markdown, /binding ABI 8/)
+  assert.match(markdown, /binding ABI 10/)
+  for (const profile of ['rc-legacy', 'rc-named', 'rc-native']) assert.ok(markdown.includes(profile))
+  assert.match(markdown, /MASTER_QUERY_REQUIRES_CSS/)
+  assert.match(markdown, /color-mix/)
+  assert.match(markdown, /cssSyntaxStatus/)
 })
 
 test('new guide examples follow the native and named-token contract', () => {

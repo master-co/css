@@ -83,8 +83,7 @@ pub(crate) fn compile_manifest(
                             return true;
                         };
                         !matches!(kind, "media" | "supports")
-                            || mastercss_lexer::parse_native_query(&format!("{kind}({prelude})"))
-                                .is_none()
+                            || !mastercss_lexer::native_query_structure(prelude)
                     })
             })
         {
@@ -93,6 +92,21 @@ pub(crate) fn compile_manifest(
                 mode.name
             )));
         }
+    }
+    for mode in &mut projection.modes {
+        mode.branches = mode
+            .branches
+            .iter()
+            .flat_map(|branch| {
+                mastercss_lexer::split_selector_list(&branch.selector)
+                    .into_iter()
+                    .map(|selector| {
+                        let mut branch = branch.clone();
+                        branch.selector = selector.to_owned();
+                        branch
+                    })
+            })
+            .collect();
     }
     for variable in projection.compiled_variables.values() {
         for value in &variable.modes {

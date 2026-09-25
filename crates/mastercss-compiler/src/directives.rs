@@ -5,8 +5,7 @@ use super::{
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
     lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
-    normalize_stylesheet_value, rewrite_managed_variant_directives, validate_compose_syntax,
-    validate_condition_variant_syntax,
+    rewrite_managed_variant_directives, validate_compose_syntax, validate_condition_variant_syntax,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -470,9 +469,5 @@ fn print_native_css(
             filename: filename.into(),
         })?
         .code;
-    normalize_stylesheet_value(css.trim(), false).map_err(|message| CompilerError::Directive {
-        message,
-        filename: filename.into(),
-        range: None,
-    })
+    Ok(css.trim().to_owned())
 }

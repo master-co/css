@@ -40,3 +40,5 @@ export function createToolingSessionSync(options: {
 export function getToolingBindingInfo() {
   return createToolingBindingSync().info
 }
+
+export { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'

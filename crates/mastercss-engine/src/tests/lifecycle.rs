@@ -18,7 +18,7 @@ fn executes_language_v2_parser_cases_and_historical_rejections() {
         }
         let actual = match case.kind.as_str() {
             "condition" => render_condition_token(&case.input, &engine.compiled)
-                .map(|(_, wrapper, _)| wrapper)
+                .map(|(_, wrapper)| wrapper)
                 .expect("condition parity case renders"),
             "selector" => selector_token_to_template(&case.input, &engine.compiled)
                 .expect("selector parity case renders"),

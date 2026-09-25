@@ -1624,6 +1624,9 @@ importers:
       defu:
         specifier: ^6.1.7
         version: 6.1.7
+      ignore:
+        specifier: ^7.0.8
+        version: 7.0.8
       mdn-data:
         specifier: ^2.35.0
         version: 2.35.0

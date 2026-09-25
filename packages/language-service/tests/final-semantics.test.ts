@@ -12,7 +12,7 @@ test('editor inspection shares the CLI and AI workflow conclusions and keeps CSS
   try {
     for (const expected of workflows.cases) {
       const actual = service.session.inspectClassName(expected.className)
-      expect(actual).toMatchObject({ matchStatus: expected.matchStatus, cssValueStatus: expected.cssValueStatus, browserSupport: 'not-checked' })
+      expect(actual).toMatchObject({ matchStatus: expected.matchStatus, cssSyntaxStatus: expected.cssSyntaxStatus, cssValueStatus: expected.cssValueStatus, browserSupport: 'not-checked' })
       if (expected.code) expect(actual.diagnostics?.map(item => item.code)).toContain(expected.code)
       const doc = createDoc('html', `<div class="${expected.className}"></div>`)
       const hover = service.inspectSyntax(doc, doc.positionAt(13))

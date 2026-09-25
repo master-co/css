@@ -63,6 +63,7 @@ pub struct ValidatedClassInspection {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationCheck {
+    pub scope: String,
     pub name: String,
     pub version: String,
     pub phase: mastercss_schema::DiagnosticPhase,
@@ -726,7 +727,7 @@ mod tests {
     #[test]
     fn composes_stable_reports_and_utf8_css_sizes() {
         let report = create_inspection_report(input()).unwrap();
-        assert_eq!(report.version, 2);
+        assert_eq!(report.version, DIAGNOSTICS_REPORT_VERSION);
         assert_eq!(report.css.bytes, 4);
         assert_eq!(report.summary.errors, 1);
         assert_eq!(report.summary.warnings, 0);

@@ -65,6 +65,13 @@ impl NodeRenderSession {
     }
 }
 
+fn scanner_error(error: mastercss_scanner::ScannerError) -> Error {
+    Error::new(
+        Status::GenericFailure,
+        serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
+    )
+}
+
 #[napi(js_name = "ScannerSession")]
 pub struct NodeScannerSession {
     inner: RustScannerSession,
@@ -75,33 +82,25 @@ impl NodeScannerSession {
     #[napi(constructor)]
     pub fn new(manifest_json: String) -> Result<Self> {
         Ok(Self {
-            inner: RustScannerSession::create(&manifest_json).map_err(to_napi_error)?,
+            inner: RustScannerSession::create(&manifest_json).map_err(scanner_error)?,
         })
     }
 
     #[napi]
     pub fn scan(&mut self, source: String, content: String) -> Result<String> {
-        to_json(&self.inner.scan(&source, &content).map_err(to_napi_error)?)
+        to_json(&self.inner.scan(&source, &content).map_err(scanner_error)?)
     }
 
     #[napi]
-    pub fn cached_source_candidates(&self, source: String, content: String) -> Result<String> {
-        to_json(&self.inner.cached_source_candidates(&source, &content))
-    }
-
-    #[napi]
-    pub fn extract_candidates(&self, source: String, content: String) -> Vec<String> {
-        mastercss_scanner::extract_source_candidates(&source, &content)
-    }
-
-    #[napi]
-    pub fn native_declaration_candidates(&self, candidates: Vec<String>) -> Result<String> {
-        to_json(
-            &self
-                .inner
-                .native_declaration_candidates(candidates)
-                .map_err(to_napi_error)?,
-        )
+    pub fn extract_candidates(
+        &self,
+        source: String,
+        content: String,
+        options_json: String,
+    ) -> Result<Vec<String>> {
+        let options = serde_json::from_str(&options_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        mastercss_scanner::extract(&source, &content, &options).map_err(scanner_error)
     }
 
     #[napi]
@@ -119,20 +118,9 @@ impl NodeScannerSession {
             &blocklist_json,
         )
         .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
-        Ok(self.inner.pending_candidates(&candidates, &blocklist))
-    }
-
-    #[napi]
-    pub fn invalid_generated_classes(
-        &self,
-        batch_json: String,
-        rule_support: Vec<Vec<bool>>,
-    ) -> Result<Vec<String>> {
-        let batch = serde_json::from_str::<mastercss_schema::ValidatorBatchIr>(&batch_json)
-            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
-        Ok(mastercss_scanner::invalid_generated_classes(
-            &batch,
-            &rule_support,
+        Ok(mastercss_scanner::filter_blocklisted_candidates(
+            &candidates,
+            &blocklist,
         ))
     }
 
@@ -143,28 +131,48 @@ impl NodeScannerSession {
         content: String,
         candidates: Vec<String>,
         blocklist_json: String,
-        native_support: Vec<bool>,
-        invalid_generated_classes: Vec<String>,
+        options_json: String,
     ) -> Result<String> {
-        let blocklist = serde_json::from_str::<Vec<mastercss_schema::CssDirectiveBlocklistEntry>>(
-            &blocklist_json,
-        )
-        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        let blocklist: Vec<mastercss_schema::CssDirectiveBlocklistEntry> =
+            serde_json::from_str(&blocklist_json)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        let options = serde_json::from_str(&options_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
         to_json(
             &self
                 .inner
-                .scan_pending_candidates(
-                    &source,
-                    &content,
-                    candidates,
-                    &blocklist,
-                    &native_support,
-                    &invalid_generated_classes
-                        .into_iter()
-                        .collect::<HashSet<_>>(),
-                )
-                .map_err(to_napi_error)?,
+                .scan_candidates(&source, &content, candidates, &blocklist, &options)
+                .map_err(scanner_error)?,
         )
+    }
+
+    #[napi]
+    pub fn remove_source(&mut self, source: String, options_json: String) -> Result<String> {
+        let options = serde_json::from_str(&options_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .remove_source(&source, &options)
+                .map_err(scanner_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn reconcile_sources(&mut self, owner: String, inputs_json: String) -> Result<String> {
+        let inputs = serde_json::from_str(&inputs_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .reconcile_sources(&owner, inputs)
+                .map_err(scanner_error)?,
+        )
+    }
+
+    #[napi]
+    pub fn remove_owner(&mut self, owner: String) -> Result<String> {
+        to_json(&self.inner.remove_owner(&owner).map_err(scanner_error)?)
     }
 
     #[napi]
@@ -173,23 +181,23 @@ impl NodeScannerSession {
             &self
                 .inner
                 .ensure_classes(class_names)
-                .map_err(to_napi_error)?,
+                .map_err(scanner_error)?,
         )
     }
 
     #[napi]
-    pub fn register_native_classes(&mut self, class_names: Vec<String>) -> bool {
-        self.inner.register_native_classes(class_names)
+    pub fn register_native_classes(&mut self, owner: String, class_names: Vec<String>) -> bool {
+        self.inner.register_native_classes(&owner, class_names)
     }
 
     #[napi]
     pub fn reset(&mut self) -> Result<()> {
-        self.inner.reset().map_err(to_napi_error)
+        self.inner.reset().map_err(scanner_error)
     }
 
     #[napi]
     pub fn state(&self) -> Result<String> {
-        to_json(&self.inner.state().map_err(to_napi_error)?)
+        to_json(&self.inner.state().map_err(scanner_error)?)
     }
 
     #[napi]

@@ -102,6 +102,8 @@ impl EngineSession {
                     } else {
                         0
                     };
+                    let (features, conditions) =
+                        super::condition::condition_priority(&branch.condition_wrappers);
                     let priority = RulePriorityIr {
                         value_priority: if matched.matcher_type == super::UtilityMatcherType::Token
                         {
@@ -110,12 +112,8 @@ impl EngineSession {
                             0
                         },
                         sort_key: super::named::sort_key(utility, &matched),
-                        features: branch.features.clone(),
-                        conditions: branch
-                            .condition_wrappers
-                            .iter()
-                            .map(|(_, value)| mastercss_lexer::canonical_native_content(value))
-                            .collect(),
+                        features,
+                        conditions,
                         selector: selector_priority(branch.selector_template.as_deref()),
                     };
                     let base_selector = composition_selector(&branch, &self.compiled);
@@ -123,7 +121,10 @@ impl EngineSession {
                     for (_, declarations, rule_selector, rule_conditions) in emitted_rules {
                         let selector = rule_selector
                             .as_deref()
-                            .map(|template| template.replace('&', &base_selector))
+                            .map(|template| {
+                                mastercss_lexer::replace_nesting_selector(template, &base_selector)
+                                    .unwrap_or_else(|| template.to_owned())
+                            })
                             .unwrap_or_else(|| base_selector.clone());
                         let mut conditions = branch_conditions.clone();
                         conditions.extend(rule_conditions);
@@ -259,24 +260,25 @@ impl EngineSession {
                             layer,
                             utility_type: utility.utility_type,
                             sort_tier,
-                            priority: RulePriorityIr {
-                                value_priority: if matched.matcher_type
-                                    == super::UtilityMatcherType::Token
-                                {
-                                    -1
-                                } else {
-                                    0
-                                },
-                                sort_key: super::named::sort_key(utility, &matched),
-                                features: branch.features.clone(),
-                                conditions: branch
-                                    .condition_wrappers
-                                    .iter()
-                                    .map(|(_, value)| {
-                                        mastercss_lexer::canonical_native_content(value)
-                                    })
-                                    .collect(),
-                                selector: selector_priority(branch.selector_template.as_deref()),
+                            priority: {
+                                let (features, conditions) = super::condition::condition_priority(
+                                    &branch.condition_wrappers,
+                                );
+                                RulePriorityIr {
+                                    value_priority: if matched.matcher_type
+                                        == super::UtilityMatcherType::Token
+                                    {
+                                        -1
+                                    } else {
+                                        0
+                                    },
+                                    sort_key: super::named::sort_key(utility, &matched),
+                                    features,
+                                    conditions,
+                                    selector: selector_priority(
+                                        branch.selector_template.as_deref(),
+                                    ),
+                                }
                             },
                             text,
                             nodes: if node_texts.len() > 1 {
@@ -323,13 +325,24 @@ impl EngineSession {
             for mut rule in self.generate_class_rules_with_mode(&nested, mode) {
                 rule.ir.class_name = class_name.into();
                 rule.ir.key = format!("{class_name}\0group:{index}\0{}", rule.ir.key);
-                rule.ir.text = rule.ir.text.replace(&nested_selector, &group_selector);
-                rule.ir.selector_text = rule
-                    .ir
-                    .selector_text
-                    .map(|selector| selector.replace(&nested_selector, &group_selector));
+                rule.ir.text = mastercss_lexer::replace_rule_class_selector(
+                    &rule.ir.text,
+                    &nested_selector,
+                    &group_selector,
+                );
+                rule.ir.selector_text = rule.ir.selector_text.map(|selector| {
+                    mastercss_lexer::replace_class_selector(
+                        &selector,
+                        &nested_selector,
+                        &group_selector,
+                    )
+                });
                 for node in &mut rule.ir.nodes {
-                    node.text = node.text.replace(&nested_selector, &group_selector);
+                    node.text = mastercss_lexer::replace_rule_class_selector(
+                        &node.text,
+                        &nested_selector,
+                        &group_selector,
+                    );
                 }
                 generated.push(rule);
             }

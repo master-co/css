@@ -1,3 +1,4 @@
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import fg from 'fast-glob'
 import {
@@ -23,6 +24,7 @@ export function hasLocalStyleDirectives(source: string, from?: string) {
 }
 
 export interface StylesheetSourceOptions {
+  outputDirectories?: readonly string[]
   include?: readonly string[]
   exclude?: readonly string[]
   safelist?: readonly string[]
@@ -145,12 +147,13 @@ export function collectStylesheetDirectivesFromCSSGraph(
 
 export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, cwd = process.cwd()) {
   const paths = new Set<string>()
+  const policy = new SourcePolicy(cwd, options)
   if (options.include?.length) {
     for (const sourcePath of fg.sync([...options.include], {
       cwd,
       ignore: options.exclude ? [...options.exclude] : undefined
     })) {
-      if (sourcePath) paths.add(sourcePath)
+      if (sourcePath && policy.accepts(sourcePath, true)) paths.add(sourcePath)
     }
   }
   return [...paths]

@@ -1,3 +1,4 @@
+import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -100,4 +101,57 @@ it('requires an explicit profile and the actual saved package version', () => {
   const cwd = project()
   expect(() => runMigrate([], { cwd })).toThrow('--from')
   expect(() => runMigrate([], { cwd, from: 'rc-named' })).toThrow('actual RC package version')
+})
+
+function nativeProject() {
+  const cwd = project()
+  fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), JSON.stringify({ ...preset, packageVersion: '2.0.0-rc.native' }))
+  fs.writeFileSync(path.join(cwd, 'app.css'), '@master entry;')
+  fs.writeFileSync(path.join(cwd, 'index.html'), '<div class="display:block@supports(selector(:has(*)))"></div>')
+  return cwd
+}
+it('migrates native RC queries and alpha into a unique entry and can be repeated', () => {
+  const cwd = nativeProject()
+  fs.appendFileSync(path.join(cwd, 'app.css'), '.card{color:--alpha(red / .5)}')
+  const options = { cwd, from: 'rc-native' as const }
+  const preview = runMigrate(['index.html', 'app.css'], options)
+  expect(preview.files.every(file => !file.written)).toBe(true)
+  expect(preview.configurationCSS).toContain('@custom-variant migrated-query-')
+  const written = runMigrate(['index.html', 'app.css'], { ...options, write: true })
+  expect(written.files.flatMap(file => file.review)).toEqual([])
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toContain('color-mix(in oklab,red 50%,transparent)')
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toMatch(/@migrated-query-[a-f0-9]+/)
+  const repeated = runMigrate(['index.html', 'app.css'], { ...options, write: true })
+  expect(repeated.files.every(file => !file.edits.length && !file.review.length && !file.written)).toBe(true)
+  expect(repeated.configurationCSS).toBe('')
+})
+it('native RC requires an entry choice for multiple entries and preserves a batch with parse errors', () => {
+  const cwd = nativeProject()
+  fs.writeFileSync(path.join(cwd, 'second.css'), '@master entry;')
+  const options = { cwd, from: 'rc-native' as const, write: true }
+  const ambiguous = runMigrate(['index.html', '*.css'], options)
+  expect(ambiguous.configurationCSS).toContain('@custom-variant')
+  expect(ambiguous.files.flatMap(file => file.review).some(item => item.notes.some(note => note.includes('--entry')))).toBe(true)
+  expect(ambiguous.files.every(file => !file.written)).toBe(true)
+  fs.writeFileSync(path.join(cwd, 'broken.mdx'), 'export const broken =' )
+  const invalid = runMigrate(['index.html', '*.css', '*.mdx'], { ...options, entry: 'app.css' })
+  expect(invalid.files.find(file => file.path === 'broken.mdx')?.review.length).toBeGreaterThan(0)
+  expect(invalid.files.every(file => !file.written)).toBe(true)
+  const selected = runMigrate(['index.html', '*.css'], { ...options, entry: 'app.css' })
+  expect(selected.files.find(file => file.path === 'app.css')?.written).toBe(true)
+  expect(selected.files.find(file => file.path === 'second.css')?.written).toBe(false)
+})
+
+it('reads imported native functions as context without writing unselected dependencies', () => {
+  const cwd = nativeProject()
+  const source = '@import "./functions.css"; @master entry; .card{color:--alpha(red / .5)}'
+  const functions = '@function --alpha(--color <color>) { result: var(--color); }'
+  fs.writeFileSync(path.join(cwd, 'app.css'), source)
+  fs.writeFileSync(path.join(cwd, 'functions.css'), functions)
+  const result = runMigrate(['index.html', 'app.css'], { cwd, from: 'rc-native', write: true })
+  expect(result.files.flatMap(file => file.review).flatMap(item => item.notes).join(' ')).toContain('Native @function --alpha')
+  expect(result.files.every(file => !file.written)).toBe(true)
+  expect(result.files.some(file => file.path === 'functions.css')).toBe(false)
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(source)
+  expect(fs.readFileSync(path.join(cwd, 'functions.css'), 'utf8')).toBe(functions)
 })

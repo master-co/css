@@ -1,104 +1,56 @@
-import { createToolingBinding } from '@master/css-binding/tooling'
+import { createToolingBinding, type MasterCSSScannerSourceOptions, type MasterCSSScannerSourceInput, type MasterCSSScannerUpdate, type MasterCSSScannerState } from '@master/css-binding/tooling'
 import { createToolingBindingSync } from '@master/css-binding/tooling/node'
-import type {
-  MasterCSSBindingLoadOptions,
-  MasterCSSEngineSnapshot,
-  MasterCSSEngineTransition
-} from '@master/css-binding/tooling'
+import type { MasterCSSBindingLoadOptions } from '@master/css-binding/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-export interface BindingScannerUpdate {
-  changed: boolean
-  cacheHit: boolean
-  candidates: string[]
-  validClasses: string[]
-  invalidClasses: string[]
-  usedNativeClasses?: string[]
-  transition: MasterCSSEngineTransition
-}
-
-export interface BindingScannerState {
-  latentClasses: string[]
-  validClasses: string[]
-  invalidClasses: string[]
-  nativeClasses?: string[]
-  usedNativeClasses?: string[]
-  cachedSources: number
-  engine: MasterCSSEngineSnapshot
-}
+export type BindingScannerUpdate = MasterCSSScannerUpdate
+export type BindingScannerState = MasterCSSScannerState
+export type ScannerSourceOptions = MasterCSSScannerSourceOptions
+export type ScannerSourceInput = MasterCSSScannerSourceInput
+export type BindingScannerBlocklist = string | Readonly<{ source: string, flags: string }>
 
 export interface BindingScannerSession {
   readonly binding: 'native' | 'wasm'
-  cachedSourceCandidates(source: string, content: string): readonly string[] | null
-  extractCandidates(source: string, content: string): string[]
+  extractCandidates(source: string, content: string, options?: ScannerSourceOptions): string[]
   collectCandidates(candidates: string[]): string[]
   filterCandidates(candidates: string[], blocklist: BindingScannerBlocklist[]): string[]
-  scanCandidates(
-    source: string,
-    content: string,
-    candidates: string[],
-    blocklist: BindingScannerBlocklist[]
-  ): BindingScannerUpdate
+  scanCandidates(source: string, content: string, candidates: string[], blocklist: BindingScannerBlocklist[], options?: ScannerSourceOptions): BindingScannerUpdate
+  removeSource(source: string, options?: ScannerSourceOptions): BindingScannerUpdate
+  reconcileSources(owner: string, inputs: readonly ScannerSourceInput[]): BindingScannerUpdate
+  removeOwner(owner: string): BindingScannerUpdate
   ensureClasses(classNames: string[]): void
-  registerNativeClasses(classNames: string[]): boolean
+  registerNativeClasses(owner: string, classNames: string[]): boolean
   reset(): void
   state(): BindingScannerState
   dispose(): void
 }
 
-export type BindingScannerBlocklist = string | Readonly<{
-  source: string
-  flags: string
-}>
-
 export function serializeScannerBlocklist(blocklist: Iterable<string | RegExp> = []): BindingScannerBlocklist[] {
-  return [...blocklist].map((entry) => typeof entry === 'string'
-    ? entry
-    : { source: entry.source, flags: entry.flags })
+  return [...blocklist].map((entry) => typeof entry === 'string' ? entry : { source: entry.source, flags: entry.flags })
 }
 
-function bindScannerSession(
-  binding: BindingScannerSession['binding'],
-  session: ReturnType<ReturnType<typeof createToolingBindingSync>['createScannerSession']>
-): BindingScannerSession {
+function bindScannerSession(binding: BindingScannerSession['binding'], session: ReturnType<ReturnType<typeof createToolingBindingSync>['createScannerSession']>): BindingScannerSession {
   return {
     binding,
-    cachedSourceCandidates: (source, content) => session.cachedSourceCandidates(source, content),
-    extractCandidates: (source, content) => [...session.extractCandidates(source, content)],
-    scanCandidates(source, content, candidates, blocklist) {
-      return session.scanCandidates(
-        source,
-        content,
-        candidates,
-        blocklist,
-        [],
-        []
-      ) as BindingScannerUpdate
-    },
+    extractCandidates: (source, content, options) => [...session.extractCandidates(source, content, options)],
     collectCandidates: (candidates) => [...session.collectCandidates(candidates)],
     filterCandidates: (candidates, blocklist) => [...session.filterCandidates(candidates, blocklist)],
-    ensureClasses(classNames) {
-      session.ensureClassRules(classNames)
-    },
-    registerNativeClasses: (classNames) => session.registerNativeClassNames(classNames),
-    reset: () => session.reset(),
-    state: () => session.snapshot() as BindingScannerState,
-    dispose() {
-      session.dispose()
-    }
+    scanCandidates: (source, content, candidates, blocklist, options) => session.scanCandidates(source, content, candidates, blocklist, options),
+    removeSource: (source, options) => session.removeSource(source, options),
+    reconcileSources: (owner, inputs) => session.reconcileSources(owner, inputs),
+    removeOwner: (owner) => session.removeOwner(owner),
+    ensureClasses: (classes) => { session.ensureClassRules(classes) },
+    registerNativeClasses: (owner, classes) => session.registerNativeClassNames(owner, classes),
+    reset: () => session.reset(), state: () => session.snapshot(), dispose: () => session.dispose()
   }
 }
 
 export function createNativeScannerSession(manifest: MasterCSSManifest): BindingScannerSession {
   const tooling = createToolingBindingSync()
-  return bindScannerSession(
-    tooling.binding,
-    tooling.createScannerSession(manifest)
-  )
+  return bindScannerSession(tooling.binding, tooling.createScannerSession(manifest))
 }
 
 export async function createScannerSession(manifest: MasterCSSManifest, options: MasterCSSBindingLoadOptions = {}): Promise<BindingScannerSession> {
   const tooling = await createToolingBinding(options)
-  const scanner = await tooling.createScannerSession(manifest)
-  return bindScannerSession(tooling.binding, scanner)
+  return bindScannerSession(tooling.binding, await tooling.createScannerSession(manifest))
 }

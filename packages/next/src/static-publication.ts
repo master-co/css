@@ -30,7 +30,8 @@ export async function publishFile(file: string, bytes: Buffer, immutable: boolea
 
 /** Publish complete compiler output before replacing the fixed host entry. */
 export async function publishStaticStylesheets(outputPath: string,
-  compose: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<MasterCSSStylesheetComposition>) {
+  compose: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<MasterCSSStylesheetComposition>,
+  verifySnapshot: () => Promise<void> = async () => {}) {
   const resourceBytes = new Map<string, Buffer>()
   const readResource = (file: string) => {
     let bytes = resourceBytes.get(file)
@@ -60,7 +61,12 @@ export async function publishStaticStylesheets(outputPath: string,
   }
   for (const asset of composition.stylesheets ?? []) add(asset.href, Buffer.from(asset.css))
   for (const asset of composition.resources ?? []) add(asset.href, readResource(asset.file))
+  await verifySnapshot()
   for (const [file, bytes] of assets) await publishFile(file, bytes, true)
+  await verifySnapshot()
+  for (const [file, bytes] of resourceBytes) {
+    if (!bytes.equals(await readFile(file))) throw Object.assign(new Error('Master CSS resource changed during publication'), { code: 'MASTER_SNAPSHOT_CHANGED' })
+  }
   await publishFile(outputPath, Buffer.from(composition.css), false)
   // Keep immutable prior revisions for host builds still resolving older imports.
   return { dependencies: composition.dependencies ?? [], outputFiles: [outputPath, ...assets.keys()] }

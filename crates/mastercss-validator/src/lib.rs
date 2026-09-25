@@ -52,6 +52,7 @@ impl ValidatorSession {
                 Ok(ValidatorClassIr {
                     class_name: class_name.clone(),
                     match_status: inspection.match_status,
+                    css_syntax_status: inspection.css_syntax_status,
                     css_value_status: inspection.css_value_status,
                     browser_support: inspection.browser_support,
                     rules: inspection.rules,
@@ -92,7 +93,7 @@ mod tests {
         let first = session
             .generate_classes(["block", "unknown"], None)
             .unwrap();
-        assert_eq!(first.version, 2);
+        assert_eq!(first.version, VALIDATOR_BATCH_VERSION);
         assert!(first.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
         assert_eq!(first.classes[0].rules[0].text, ".block{display:block}");
         assert!(first.classes[1].match_status != mastercss_schema::MatchStatus::Matched);

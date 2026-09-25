@@ -24,7 +24,7 @@ describe('@master/css-compiler/diagnostics', () => {
         classes: ['block', 'never-generated-class']
       })
 
-      expect(report.version).toBe(2)
+      expect(report.version).toBe(3)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -66,7 +66,7 @@ describe('@master/css-compiler/diagnostics', () => {
       expect(byName.get('grid-cols:2.5')?.cssValueStatus).toBe('invalid')
       expect(byName.get('width:future(2qu)')?.cssValueStatus).toBe('unknown')
       expect(byName.get('padding:var(--space)')?.cssValueStatus).toBe('unknown')
-      expect(byName.get('font:16px')?.checks).toEqual([expect.objectContaining({ name: 'css-tree', phase: 'css-value', version: expect.any(String) })])
+      expect(byName.get('font:16px')?.checks).toEqual([expect.objectContaining({ name: 'css-tree', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: 'css-tree', phase: 'css-value', scope: 'expanded-declarations', version: expect.any(String) })])
       expect(report.diagnostics.filter(item => item.code === 'CSS_VALUE_INVALID')).toHaveLength(2)
       expect(report.diagnostics.some(item => item.message.includes('ordinary'))).toBe(false)
       expect(report.summary.errors).toBe(2)

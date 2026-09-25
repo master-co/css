@@ -1,5 +1,6 @@
 import { SourceMap } from 'node:module'
-import { pathToFileURL } from 'node:url'
+import { pathToFileURL, fileURLToPath } from 'node:url'
+import type { ValidationSource } from '../value-validation'
 import type { CSSDirectiveSourceReference, CSSOutputMapping } from '@master/css-schema/css-directives'
 
 type MapPayload = ConstructorParameters<typeof SourceMap>[0]
@@ -134,4 +135,29 @@ export function stylesheetInputMap(code: string, context: StylesheetOutputContex
     points.push({ offset: end })
   }
   return serializeMap(code, points)
+}
+
+/** Map validation to the same authoring segments as browser devtools. */
+export function stylesheetValidationSource(css: string, source?: string, sourceMap?: string, mappings?: readonly CSSOutputMapping[]): ValidationSource {
+  if (!sourceMap) return { css, source, mappings }
+  let payload: MapPayload, map: SourceMap
+  try { payload = JSON.parse(sourceMap) as MapPayload; map = new SourceMap(payload) }
+  catch { return { css, source } }
+  const locate = positions(css)
+  return { css, source, locate(range) {
+    const start = locate(range.start), end = locate(range.end)
+    const entry = map.findEntry(start.line, start.column)
+    if (!('originalSource' in entry) || !entry.originalSource || entry.generatedLine !== start.line) return
+    const url = new URL(entry.originalSource, pathToFileURL(source ?? '/'))
+    const file = url.protocol === 'file:' ? fileURLToPath(url) : url.href
+    const original = payload.sourcesContent?.[payload.sources.indexOf(entry.originalSource)]?.split(/\r\n?|\n/)[entry.originalLine]
+    const generated = css.split(/\r\n?|\n/)[start.line]
+    const offset = start.column - entry.generatedColumn, length = end.column - entry.generatedColumn
+    const exact = start.line === end.line && offset >= 0 && length >= offset && original !== undefined
+      && original.slice(entry.originalColumn, entry.originalColumn + length) === generated.slice(entry.generatedColumn, end.column)
+    return { source: file, range: {
+      start: { line: entry.originalLine, character: entry.originalColumn + (exact ? offset : 0) },
+      end: { line: entry.originalLine, character: entry.originalColumn + (exact ? length : 0) }
+    } }
+  } }
 }

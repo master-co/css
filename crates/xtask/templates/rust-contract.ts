@@ -15,7 +15,7 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
 export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native'
   readonly sourceVersion: string
   readonly manifest: Readonly<Record<string, unknown>>
   readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -34,7 +34,7 @@ export interface MasterCSSRCClassMigration {
 
 export interface MasterCSSRCMigrationResult {
   readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native'
   readonly sourceVersion: string
   readonly configurationCSS: string
   readonly notes: readonly string[]
@@ -157,6 +157,7 @@ export interface MasterCSSEngineResources {
 }
 
 export type MasterCSSMatchStatus = 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
+export type MasterCSSSyntaxStatus = 'valid' | 'invalid' | 'unknown' | 'not-checked'
 export type MasterCSSValueStatus = 'valid' | 'invalid' | 'unknown' | 'not-checked'
 export type MasterCSSBrowserSupport = 'supported' | 'unsupported' | 'unknown' | 'not-checked'
 
@@ -164,6 +165,7 @@ export interface MasterCSSEngineInspection {
   version: 1
   className: string
   matchStatus: MasterCSSMatchStatus
+  cssSyntaxStatus: MasterCSSSyntaxStatus
   cssValueStatus: MasterCSSValueStatus
   browserSupport: MasterCSSBrowserSupport
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
@@ -219,12 +221,13 @@ export interface MasterCSSLexerBatch {
   escapedIdentifiers: string[]
 }
 
-export type MasterCSSSourceExtractorKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro'
+export type MasterCSSSourceExtractorKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro' | 'markdown' | 'mdx'
 
 export interface MasterCSSSourceExtractionInput {
   source: string
   content: string
   kind?: MasterCSSSourceExtractorKind
+  owner?: string
 }
 
 export interface MasterCSSSourceBatchRequest {
@@ -232,9 +235,39 @@ export interface MasterCSSSourceBatchRequest {
   htmlAttributes?: string[]
 }
 
+export interface MasterCSSSourceOccurrence {
+  candidate: string
+  source: string
+  contextRange: MasterCSSSourceRange
+  range: MasterCSSSourceRange
+  rangeKind: 'token' | 'expression'
+  extractor: string
+  contentKind: string
+  owner: string
+  included: boolean
+  reason: string
+}
+
 export interface MasterCSSSourceExtraction {
   source: string
   candidates: string[]
+  occurrences: MasterCSSSourceOccurrence[]
+  diagnostics: MasterCSSDiagnostic[]
+}
+
+export interface MasterCSSScannerSourceOptions {
+  readonly owner?: string
+  readonly kind?: MasterCSSSourceExtractorKind
+  readonly parentSource?: string
+  readonly extractor?: string
+}
+
+export interface MasterCSSScannerSourceInput {
+  readonly source: string
+  readonly content: string
+  readonly options?: MasterCSSScannerSourceOptions
+  readonly candidates?: readonly string[]
+  readonly blocklist?: readonly (string | MasterCSSRegex)[]
 }
 
 export interface MasterCSSSourceBatch {
@@ -248,6 +281,7 @@ export interface MasterCSSSourceBatch {
 
 export interface MasterCSSScannerUpdate {
   changed: boolean
+  sourceChanged: boolean
   cacheHit: boolean
   candidates: string[]
   validClasses: string[]
@@ -263,6 +297,7 @@ export interface MasterCSSScannerState {
   nativeClasses?: string[]
   usedNativeClasses?: string[]
   cachedSources: number
+  sources: { source: string, owner: string, parentSource: string | null, kind: MasterCSSSourceExtractorKind, extractor: string, candidates: string[] }[]
   engine: MasterCSSEngineSnapshot
 }
 
@@ -341,7 +376,7 @@ export interface MasterCSSStylesheetError {
 export interface MasterCSSValidatedClassInspection extends Omit<MasterCSSValidatorClass, 'rules' | 'diagnostics'> {
   readonly rules: readonly MasterCSSValidatorClass['rules'][number][]
   readonly diagnostics?: readonly MasterCSSDiagnostic[]
-  readonly checks: readonly { readonly name: string, readonly version: string, readonly phase: MasterCSSDiagnostic['phase'] }[]
+  readonly checks: readonly { readonly name: string, readonly version: string, readonly phase: MasterCSSDiagnostic['phase'], readonly scope: string }[]
   readonly declarations: readonly { readonly property: string, readonly value: string, readonly status: MasterCSSValueStatus, readonly range?: MasterCSSSourceRange }[]
 }
 
@@ -443,6 +478,7 @@ export interface MasterCSSInspectionReport {
 export interface MasterCSSValidatorClass {
   className: string
   matchStatus: MasterCSSMatchStatus
+  cssSyntaxStatus: MasterCSSSyntaxStatus
   cssValueStatus: MasterCSSValueStatus
   browserSupport: MasterCSSBrowserSupport
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
@@ -625,6 +661,7 @@ export interface MasterCSSLanguageSemanticToken {
 export interface MasterCSSLanguageDocument {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   classPositions: MasterCSSLanguageClassPosition[]
+  diagnostics: MasterCSSDiagnostic[]
   semanticTokens: MasterCSSLanguageSemanticToken[]
   semanticTokenData: number[]
 }
@@ -691,6 +728,7 @@ export interface MasterCSSLanguageInspection {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   className: string
   matchStatus: MasterCSSMatchStatus
+  cssSyntaxStatus: MasterCSSSyntaxStatus
   cssValueStatus: MasterCSSValueStatus
   browserSupport: MasterCSSBrowserSupport
   kind: MasterCSSLanguageClassKind
@@ -1042,7 +1080,7 @@ export type MasterCSSErrorCode =
 {{MASTER_CSS_ERROR_CODES}}
 
 export interface MasterCSSDiagnostic {
-  phase: 'match' | 'css-value' | 'browser-support' | 'compiler'
+  phase: 'match' | 'css-syntax' | 'css-value' | 'browser-support' | 'compiler'
   severity: 'error' | 'warning' | 'info'
   code: MasterCSSErrorCode
   message: string

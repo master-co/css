@@ -25,18 +25,14 @@ jsxTester.run('mdx sort classes', OrderRule, {
     },
     {
       code: [
-        '```html',
         '<button class="inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60">',
         '    Save',
         '</button>',
-        '```'
       ].join('\n'),
       output: [
-        '```html',
         '<button class="inline-flex align-items:center gap:0.5rem py-xs px-md r-md bg-blue-60 fg-white">',
         '    Save',
         '</button>',
-        '```'
       ].join('\n'),
       errors: [{ messageId: 'invalidClassOrder' }],
       filename: 'test.mdx',
@@ -59,14 +55,10 @@ jsxTester.run('mdx no conflicting classes', CollisionRule, {
     },
     {
       code: [
-        '```html',
         '<div class="m:10px m:20px">Simple</div>',
-        '```'
       ].join('\n'),
       output: [
-        '```html',
         '<div class="m:20px">Simple</div>',
-        '```'
       ].join('\n'),
       errors: [
         { messageId: 'collisionClass' }
@@ -82,9 +74,7 @@ jsxTester.run('mdx no invalid classes', InvalidRule, {
   invalid: [
     {
       code: [
-        '```html',
         '<div class="btn">Simple</div>',
-        '```'
       ].join('\n'),
       options: [{ disallowUnknownClass: true }],
       errors: [{ messageId: 'disallowUnknownClass' }],
@@ -98,20 +88,16 @@ jsxTester.run('mdx prefer canonical classes', PreferCanonicalRule, {
   valid: [
 {
       code: [
-        '```html',
         '<div class="font-size:16px">Simple</div>',
-        '```'
       ].join('\n'),
       filename: 'test.mdx',
       languageOptions: mdxLanguageOptions
     },
 {
 code: [
-        '```html',
         '<button class="inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60">',
         '    Save',
         '</button>',
-        '```'
       ].join('\n'),
 filename: 'test.mdx',
 languageOptions: mdxLanguageOptions
@@ -127,9 +113,7 @@ jsxTester.run('mdx no unapproved raw values', RawValueRule, {
   invalid: [
     {
       code: [
-        '```html',
         '<div class="font-size:15px w:17px">Simple</div>',
-        '```'
       ].join('\n'),
       options: [{ allowProperties: ['width'] }],
       errors: [{ messageId: 'unapprovedRawValue' }],
@@ -137,4 +121,15 @@ jsxTester.run('mdx no unapproved raw values', RawValueRule, {
       languageOptions: mdxLanguageOptions
     },
   ],
+})
+
+for (const [name, rule] of [
+  ['order', OrderRule], ['conflict', CollisionRule], ['invalid', InvalidRule],
+  ['canonical', PreferCanonicalRule], ['raw', RawValueRule]
+] as const) jsxTester.run(`mdx preserves display content: ${name}`, rule, {
+  valid: [{
+    code: ['```html', '<div class="font:mono m:10px m:20px w:17px padding-md">Old RC example</div>', '```',
+      '', '`<div class="padding:1px.<br"/>`', '', '<Card title="Not classes.<bad" source=".a { color:red }"/>'].join('\n'),
+    filename: 'display.mdx', languageOptions: mdxLanguageOptions
+  }], invalid: []
 })

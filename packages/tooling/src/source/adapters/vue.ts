@@ -1,3 +1,4 @@
+import { MasterCSSError } from '@master/css-schema'
 import { extractClassCandidatesNative as extractClassCandidates } from '../native'
 import { extractOxcClasses } from './oxc'
 import { loadOptionalPeer } from './optional-peer'
@@ -25,12 +26,14 @@ async function loadVueCompiler() {
 }
 
 export async function extractVueClasses(source: string, content: string): Promise<string[]> {
+  if (!content.trim()) return []
   const compiler = await loadVueCompiler()
-  if (!compiler) return extractClassCandidates(content)
+  if (!compiler) throw new MasterCSSError({ code: 'SOURCE_PARSE_ERROR', domain: 'tooling', message: `Cannot parse ${source}: install the framework compiler or explicitly select kind: 'raw'.` })
 
   try {
     const classes = new Set<string>()
-    const { descriptor } = compiler.parse(content, { filename: source })
+    const { descriptor, errors } = compiler.parse(content, { filename: source })
+    if (errors.length) throw new Error(errors.map(String).join("; "))
 
     if (descriptor.template?.content) {
       add(classes, extractClassCandidates(descriptor.template.content))
@@ -43,8 +46,8 @@ export async function extractVueClasses(source: string, content: string): Promis
     }
 
     return [...classes]
-  } catch {
-    return extractClassCandidates(content)
+  } catch (error) {
+    throw new MasterCSSError({ code: 'SOURCE_PARSE_ERROR', domain: 'tooling', message: `Cannot parse ${source}: ${String(error)}` }, { cause: error })
   }
 }
 

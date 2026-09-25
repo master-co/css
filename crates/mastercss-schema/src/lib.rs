@@ -17,14 +17,14 @@ use thiserror::Error;
 pub const MANIFEST_VERSION: u32 = 1;
 pub const LANGUAGE_VERSION: u32 = 2;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
-pub const BINDING_ABI_VERSION: u32 = 9;
+pub const BINDING_ABI_VERSION: u32 = 10;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
-pub const VALIDATOR_BATCH_VERSION: u32 = 2;
-pub const DIAGNOSTICS_REPORT_VERSION: u32 = 2;
+pub const VALIDATOR_BATCH_VERSION: u32 = 3;
+pub const DIAGNOSTICS_REPORT_VERSION: u32 = 3;
 pub const LINT_BATCH_VERSION: u32 = 1;
-pub const LANGUAGE_BATCH_VERSION: u32 = 3;
+pub const LANGUAGE_BATCH_VERSION: u32 = 4;
 pub const LEXER_BATCH_VERSION: u32 = 1;
-pub const SOURCE_BATCH_VERSION: u32 = 1;
+pub const SOURCE_BATCH_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -87,6 +87,7 @@ pub struct EmittedGlobals {
 pub struct ValidatorClassIr {
     pub class_name: String,
     pub match_status: MatchStatus,
+    pub css_syntax_status: CssSyntaxStatus,
     pub css_value_status: CssValueStatus,
     pub browser_support: BrowserSupport,
     pub rules: Vec<GeneratedRuleIr>,

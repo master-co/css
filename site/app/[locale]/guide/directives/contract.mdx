@@ -939,9 +939,9 @@ outer parentheses belong to Master; parentheses inside them belong to CSS:
 width:10px@sm
 width:20px@media((width>=800px))
 width:30px@media((aspect-ratio>=1.5))
-width:40px@media(screen|and|(width>=50rem))
+width:40px@media((width>=50rem))
 display:grid@supports((display:grid))
-display:grid@supports(selector(:has(*)))
+display:grid@supports((display:grid))
 width:50px@container(card|(width>=40rem))
 width:60px@container(style(--density:compact))
 ```
@@ -965,8 +965,35 @@ and `browserSupport` (`supported`, `unsupported`, `unknown`, `not-checked`).
 Checks report their validator version. Browser support remains `not-checked`
 unless a target browser was actually queried.
 
-Compiler APIs accept `cssValuePolicy: 'error'` to reject known-invalid values in
+Compiler APIs accept `validation: 'error'` to reject known-invalid values in
 the complete result before returning any assets; the default `'report'` preserves
 CSS and diagnostics. CLI builds opt in with `master-css generate --strict`.
 Unknown capabilities do not fail this policy. Syntax and name-resolution errors
 remain distinct from native value validity.
+
+## Native value boundaries
+
+Stylesheet declarations and `@theme` values use native CSS token streams. Master CSS preserves `$`, `|`, strings, escapes and custom functions. Untyped custom properties such as `--pipe: a|b` and `--money: $100` have an unknown value grammar; that does not prevent generation.
+
+`--value()` is a Master placeholder only inside managed utility patterns. Ordinary declarations preserve calls to a native function with that name. `--alpha()` has no compiler meaning. Use native `color-mix()` for opacity expressions:
+
+```css
+@theme {
+  --color-muted: color-mix(in oklab, var(--color-primary) 50%, transparent);
+}
+```
+
+For conditions outside the [simple class query subset](/guide/conditional-queries), define a named `@custom-variant` in CSS. Mode and variant queries keep their native query syntax and do not decode class whitespace.
+
+Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report` as the default. Report mode preserves declarations and returns diagnostics. Error mode rejects the entire result for definite syntax or value errors; unknown capabilities alone do not fail the build. The former `cssValuePolicy` option produces a configuration error.
+
+
+### Source ownership and document extraction
+
+`scanSource(source, content, { owner, kind, parentSource })` replaces that source's contribution, including an empty string. `removeSource` also removes its virtual children. `reconcileSources(owner, inputs)` replaces the owner's complete source snapshot; `removeOwner` revokes its sources and native-class registrations. `registerNativeClasses(owner, names)` replaces a stylesheet's native names. Shared classes and their token/animation resources remain until their last owner releases them.
+
+`changed` reports data affecting generation or pruning. `sourceChanged` separately reports source/provenance changes. Candidate collection is pure. A parse or read error is not an empty source: development retains the last successful output and production fails.
+
+Markdown and MDX prose, inline code, fences and frontmatter are excluded from automatic generation. Actual HTML/JSX, ESM and expressions are parsed; their ordinary static strings may still be candidates. Register executable examples as virtual sources with their parent source ID, or use `@safelist`. Use explicit `kind: 'raw'` only for deliberate text sources. Parse failures report `SOURCE_PARSE_ERROR`.
+
+Automatic discovery respects project/workspace `.gitignore` files and excludes generated/dependency/output directories. Explicit `@source` may include normally ignored source files; explicit exclusions and Master/bundler outputs remain excluded.

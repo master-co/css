@@ -30,7 +30,8 @@ pub(super) fn compile_variants(
         {
             let mut branch = object(branch)?.clone();
             if let Some(selector) = branch.get("selector").and_then(Value::as_str) {
-                let bodyless = selector.replace('&', "");
+                let bodyless = mastercss_lexer::replace_nesting_selector(selector, "")
+                    .unwrap_or_else(|| selector.to_owned());
                 let nodes = compile_selector(&bodyless);
                 if !nodes.is_empty() {
                     branch.insert("selectorNodes".into(), Value::Array(nodes));
@@ -167,11 +168,6 @@ pub(super) fn compile_declarations(
         if pattern {
             compiled.insert(property.clone(), value_placeholder_parts(value)?);
         } else {
-            if value.contains("--value") {
-                return Err(manifest_error(
-                    "--value() is only supported inside managed pattern declarations",
-                ));
-            }
             compiled.insert(property.clone(), Value::String(value.into()));
         }
     }

@@ -50,22 +50,15 @@ export interface NativeEngineSession {
 
 export interface NativeScannerSession {
   scan(source: string, content: string): string
-  cachedSourceCandidates(source: string, content: string): string
-  extractCandidates(source: string, content: string): string[]
-  nativeDeclarationCandidates(candidates: string[]): string
+  extractCandidates(source: string, content: string, optionsJSON: string): string[]
   collectCandidates(candidates: string[]): string[]
   filterCandidates(candidates: string[], blocklistJSON: string): string[]
-  invalidGeneratedClasses(batchJSON: string, ruleSupport: boolean[][]): string[]
-  scanCandidates(
-    source: string,
-    content: string,
-    candidates: string[],
-    blocklistJSON: string,
-    nativeSupport: boolean[],
-    invalidGeneratedClasses: string[]
-  ): string
+  scanCandidates(source: string, content: string, candidates: string[], blocklistJSON: string, optionsJSON: string): string
+  removeSource(source: string, optionsJSON: string): string
+  reconcileSources(owner: string, inputsJSON: string): string
+  removeOwner(owner: string): string
   ensureClasses(classNames: string[]): string
-  registerNativeClasses(classNames: string[]): boolean
+  registerNativeClasses(owner: string, classNames: string[]): boolean
   reset(): void
   state(): string
   dispose(): void

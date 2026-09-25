@@ -6,7 +6,7 @@ Static scanning reads source text; it does not run your application. When a comp
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
 
-Avoid assembling the utility from separate `bg:` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.
+Avoid assembling the utility from separate `bg-` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.
 
 ## Find why a style is missing
 
@@ -27,3 +27,6 @@ See [Extraction](/reference/rules/extraction) for source boundaries and validati
 - <a id="runtime-values"></a> [Runtime values](/reference/rules/extraction#runtime-values)
 - <a id="included-and-excluded-classes"></a> [Included and excluded classes](/reference/rules/extraction#included-and-excluded-classes)
 - <a id="checklist"></a> [Checklist](/reference/rules/extraction#checklist)
+
+- <a id="markdown-and-mdx"></a> [Markdown and MDX display boundaries](/reference/rules/extraction#markdown-and-mdx)
+- <a id="scanner-hosts"></a> [Scanner source lifecycle](/reference/rules/extraction#scanner-hosts)

@@ -79,13 +79,14 @@ function resolveSourcePaths(
   scanner: MasterCSSScanner,
   fg: FastGlob,
   sourcePatterns: string[],
-  ignore: readonly string[] = []
+  ignore: readonly string[] = [],
+  explicit = false
 ) {
   return fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd: scanner.cwd,
     ignore: normalizeGlobPatterns(ignore)
   })
-    .filter(Boolean)
+    .filter(source => source && scanner.isSourceAllowed(source, { explicit }))
 }
 
 async function scanSourceFile(scanner: MasterCSSScanner, source: string) {
@@ -94,7 +95,7 @@ async function scanSourceFile(scanner: MasterCSSScanner, source: string) {
 }
 
 async function scanSourceFiles(scanner: MasterCSSScanner, sourcePaths: string[]) {
-  await Promise.all(sourcePaths.map((source) => scanSourceFile(scanner, source)))
+  await scanner.reconcileSources('project', sourcePaths.map(source => ({ source, content: fs.readFileSync(path.resolve(scanner.cwd, source), 'utf8') })))
 }
 
 async function prepareScanner(
@@ -168,9 +169,6 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
   const scanner = new MasterCSSScanner({
     manifest: defaultManifest,
     binding: options.binding,
-    exclude: specifiedSourcePaths.length
-      ? undefined
-      : ['**/node_modules/**', 'node_modules'],
     verbose: verbose ? +verbose : undefined
   }, cwd)
   const { createStylesheetCollection } = await loadStylesheetModule()
@@ -207,7 +205,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       baseManifest: defaultManifest,
       projectDir: scanner.cwd,
       pruneNativeCSS: options.pruneNativeCSS,
-      cssValuePolicy: options.strict ? 'error' : 'report',
+      validation: options.strict ? 'error' : 'report',
       onDiagnostic: diagnostic => { if (diagnostic.severity === 'error') process.stderr.write(`${diagnostic.code}: ${diagnostic.message}\n`) },
       delivery
     })
@@ -244,7 +242,8 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
     scanner,
     fg,
     sourcePatterns,
-    specifiedSourcePaths.length ? [] : scanner.options.exclude
+    specifiedSourcePaths.length ? [] : scanner.options.exclude,
+    specifiedSourcePaths.length > 0
   ).filter(file => !options.export || !outputFiles.has(path.resolve(scanner.cwd, file)))
   if (watch) {
     const chokidar = await loadChokidar()
@@ -296,10 +295,10 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       pipelineReady = false
       attemptedDependencies.clear()
       missingDependencies.clear()
-      if (!initial) await scanner.reset(scanner.customOptions, { emit: false })
+      // Reconcile the successful source snapshot without discarding prior state.
       await prepareScanner(scanner, stylesheets, scanPaths(), delivery)
       await writeOutput()
-      await syncDependencies([...scanner.resetDependencies, ...attemptedDependencies])
+      await syncDependencies([...scanner.resetDependencies, ...scanner.sourcePolicyDependencies, ...attemptedDependencies])
       pipelineReady = true
       missingDependencies.clear()
       process.stderr.write(initial ? '\nStart watching source changes\n' : '\nRestart watching source changes\n')
@@ -337,12 +336,17 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
         if (!sourcePlan.matches(source)) return
         void enqueue(async () => {
           if (!pipelineReady) return rebuild()
-          await scanSourceFile(scanner, source)
+          if (scanner.isSourceAllowed(source, { explicit: specifiedSourcePaths.length > 0 })) await scanSourceFile(scanner, source)
+          else scanner.removeSource(source)
           await writeOutput()
         })
       }
       sourceWatcher.on('add', scanChangedSource)
       sourceWatcher.on('change', scanChangedSource)
+      sourceWatcher.on('unlink', source => {
+        if (!sourcePlan.matches(source)) return
+        void enqueue(async () => { scanner.removeSource(source); await writeOutput() })
+      })
       watchers.push(sourceWatcher)
       await waitForWatcherReady(sourceWatcher)
     }

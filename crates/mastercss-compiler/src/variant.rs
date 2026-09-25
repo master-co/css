@@ -60,7 +60,9 @@ pub(crate) fn collect_custom_variant_branches(
                     });
                 }
                 let selectors = printed_selectors(&style.selectors.0, filename)?;
-                if selectors.iter().any(|selector| !selector.contains('&')) {
+                if selectors.iter().any(|selector| {
+                    mastercss_lexer::replace_nesting_selector(selector, "").is_none()
+                }) {
                     return Err(CompilerError::Directive {
                         message: format!(
                             "@custom-variant {token} selector value must include \"&\""
@@ -73,7 +75,8 @@ pub(crate) fn collect_custom_variant_branches(
                     collect_custom_variant_branches(
                         style.rules.0.clone(),
                         token,
-                        &child_selector.replace('&', selector),
+                        &mastercss_lexer::replace_nesting_selector(&child_selector, selector)
+                            .unwrap_or_else(|| child_selector.to_owned()),
                         conditions,
                         layer,
                         filename,
@@ -415,11 +418,10 @@ pub(crate) fn combine_managed_selectors(parent: &[String], child: &[String]) -> 
     let mut selectors = Vec::with_capacity(parent.len() * child.len());
     for child in child {
         for parent in parent {
-            selectors.push(if child.contains('&') {
-                child.replace('&', parent)
-            } else {
-                format!("{parent} {child}")
-            });
+            selectors.push(
+                mastercss_lexer::replace_nesting_selector(child, parent)
+                    .unwrap_or_else(|| format!("{parent} {child}")),
+            );
         }
     }
     selectors

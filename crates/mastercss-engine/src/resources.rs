@@ -204,7 +204,9 @@ impl EngineSession {
         let candidate = self.parse_native_declaration_candidate(class_name)?;
         let (_, state) = split_dynamic_value_state(class_name.split_once(':')?.1);
         let value = candidate.ir.value;
-        if super::utility::contains_legacy_variable_reference(&value) {
+        if !candidate.ir.property.starts_with("--")
+            && super::utility::contains_legacy_variable_reference(&value)
+        {
             return None;
         }
         mastercss_lexer::decode_native_content(&value)?;

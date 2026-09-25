@@ -63,3 +63,13 @@ it('preserves native declarations while reporting invalid CSS values', () => {
     validator.dispose()
   }
 })
+
+it('records only checks performed on emitted CSS', () => {
+  const validator = createTestToolingSession(defaultManifest)
+  try {
+    const [unmatched, invalid, custom] = validator.validateClassNames(['ordinary-card', 'padding:red', '--money:$100']).classes
+    expect(unmatched.checks).toEqual([])
+    expect(invalid.checks.map(check => check.phase)).toEqual(['css-syntax', 'css-value'])
+    expect(custom).toMatchObject({ cssSyntaxStatus: 'valid', cssValueStatus: 'unknown' })
+  } finally { validator.dispose() }
+})

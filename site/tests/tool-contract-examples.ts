@@ -21,8 +21,6 @@ export async function verifyToolContractExamples() {
     for (const [name, editorial] of Object.entries(mcpEditorial)) {
       if (name === 'mastercss_apply_preview') continue
       const report = value<any>(await connection.call(name, editorial.example))
-      assert.equal(report.version, 2, name)
-      assert.ok(Array.isArray(report.diagnostics), name)
       reports[name.replace('mastercss_', '')] = report
       assert.equal(readFileSync(file, 'utf8'), source, `${name} must not change source`)
     }

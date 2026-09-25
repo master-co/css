@@ -1,3 +1,4 @@
+import { assertValidationOptions } from './value-validation'
 import {
   createCompilerBindingSession as createBindingSession,
   type MasterCSSBindingLoadOptions,
@@ -57,6 +58,7 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
     migrateRC: (request) => session.migrateRC(request),
     inspectCSS: (source: string) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
+      assertValidationOptions(options)
       return reviveCompileResult(session.compileCSSDirectives(source, {
         from: options.from || 'master.css',
         preserveNativeCSS: options.preserveNativeCSS !== false,

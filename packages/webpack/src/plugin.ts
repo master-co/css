@@ -265,6 +265,7 @@ export class MasterCSSWebpackPlugin {
       ...this.defaultManifestDependencies,
       ...this.stylesheets.snapshot().dependencies,
       ...Array.from(this.stylesheetDependencyFallbacks.values()).flat(),
+      ...this.scanner.sourcePolicyDependencies,
       ...this.scanner.resetDependencies
     ])]
   }
@@ -340,6 +341,7 @@ export class MasterCSSWebpackPlugin {
     const changedEntries = entries.filter(([file]) => rebuiltPaths.has(file)
       || !Object.prototype.hasOwnProperty.call(this.moduleContentByPath, file))
     for (const file of removedPaths) {
+      this.scanner.removeSource(file)
       delete this.moduleContentByPath[file]
       this.stylesheets.delete(file)
       this.stylesheetDependencyFallbacks.delete(cleanStylesheetModuleRequest(file))
@@ -347,11 +349,7 @@ export class MasterCSSWebpackPlugin {
     for (const [file, content] of entries) this.moduleContentByPath[file] = content
     if (!removedPaths.length) return changedEntries.length ? changedEntries : undefined
 
-    // Scanner contributions are owned by its Rust session. Rebuild that session
-    // from the surviving sources, retaining the configured manifest and safelist.
-    // Suppress reset replay: the caller already has this compilation's sources.
-    await this.scanner.reset(this.scanner.customOptions, { emit: false })
-    return entries
+    return changedEntries
   }
 
   private async processModuleContents(entries: [string, string][], isGeneratedCSSModulePath: (modulePath: string) => boolean) {
@@ -398,7 +396,11 @@ export class MasterCSSWebpackPlugin {
         }
         continue
       }
-      insertEntries.push([modulePath, content])
+      const original = modulePath.split('?')[0]
+      if (/\.(?:mdx?|vue|svelte)$/.test(original)) {
+        if (original !== modulePath) continue
+        insertEntries.push([original, readFileSync(original, 'utf8')])
+      } else insertEntries.push([modulePath, content])
     }
 
     await Promise.all(styleEntries.map(([modulePath, content]) =>
@@ -548,6 +550,10 @@ export class MasterCSSWebpackPlugin {
 
   apply(compiler: Compiler) {
     if (!this.pluginOptions.enabled) return
+    this.customOptions = {
+      ...this.customOptions,
+      outputDirectories: [...(this.customOptions.outputDirectories ?? []), ...(compiler.options.output.path ? [compiler.options.output.path] : [])]
+    }
     const context = this.createContext(compiler)
     for (const plugin of this.createSubPlugins(context)) {
       plugin.apply(compiler)

@@ -1,3 +1,4 @@
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { renderClassNamesSync } from '@master/css/node'
@@ -36,7 +37,8 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
     ignore,
     onlyFiles: true
   })
-  return Promise.all(sources.map((source) => context.resolveExistingFile(source)))
+  const policy = new SourcePolicy(context.root, { exclude: ignore })
+  return Promise.all(sources.filter(source => policy.accepts(source, patterns !== DEFAULT_SOURCE_PATTERNS)).map((source) => context.resolveExistingFile(source)))
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {

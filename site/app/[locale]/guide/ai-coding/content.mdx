@@ -97,6 +97,12 @@ When your AI client supports the Model Context Protocol, connect it to the [Mast
 }
 ```
 
+Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately; an unknown value is not a failed match, and an unchecked browser is not verified support. Manifest load failure requires fixing the project context rather than silently answering from a preset.
+
+Keep complex queries in CSS `@custom-variant` definitions. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes. See the three saved-version profiles in the [v2 RC migration guide](/guide/migration/v2-rc).
+
+The shared CLI/editor/MCP workflow fixtures check tool consistency. They do not measure model generation accuracy.
+
 Use MCP for project-aware AI tool calls. When an agent cannot use MCP, fall back to the CLI JSON commands in the review workflow below.
 
 ---

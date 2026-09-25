@@ -24,3 +24,5 @@ export async function validateClassNames(
 }
 
 export { cssValueStatus, validateRuleDeclarations, CSS_VALUE_CHECK, type DeclarationValidation } from '../value-validation'
+
+export { cssSyntaxStatus, CSS_SYNTAX_CHECK } from '../syntax-validation'

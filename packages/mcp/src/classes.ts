@@ -59,10 +59,10 @@ function extractFromContent(
   discovered?: Parameters<typeof classifyExtractedClass>[2]
 ) {
   const document = createMCPTextDocument(filePath, content)
-  return session.analyzeDocument({
-    source: content,
-    languageId: document.languageId
-  }).classPositions.map((position) => {
+  const extracted = session.extractSource({ files: [{ source: filePath, content }] }).files[0]
+  if (extracted.diagnostics.length) throw Object.assign(new Error(extracted.diagnostics[0].message), { code: 'SOURCE_PARSE_ERROR', diagnostics: extracted.diagnostics })
+  const classes = extracted.occurrences.filter(occurrence => occurrence.included).map(occurrence => {
+    const position = { token: occurrence.candidate, range: occurrence.range, raw: content.slice(occurrence.range.start, occurrence.range.end), contextRange: occurrence.contextRange }
     const inspection = compactClassInspection(session, position.token, undefined, includeRules)
     return {
       raw: position.raw,
@@ -73,14 +73,17 @@ function extractFromContent(
         end: document.positionAt(position.range.end)
       },
       contextRange: position.contextRange,
-      sourceKind: 'class-position',
+      sourceKind: occurrence.contentKind,
+      provenance: occurrence,
       status: classifyExtractedClass(position.token, inspection, discovered),
       matchStatus: inspection.matchStatus,
+      cssSyntaxStatus: inspection.cssSyntaxStatus,
       cssValueStatus: inspection.cssValueStatus,
       browserSupport: inspection.browserSupport,
       inspection
     }
   })
+  return { classes, occurrences: extracted.occurrences }
 }
 
 export async function extractClasses(context: MasterCSSMCPContext, options: ExtractClassesOptions = {}) {
@@ -90,7 +93,8 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
   try {
     if (options.content !== undefined) {
       const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
-      const classes = extractFromContent(session, filePath, options.content, includeRules)
+      const extracted = extractFromContent(session, filePath, options.content, includeRules)
+      const { classes } = extracted
       return {
         version: CLASS_EXTRACTION_VERSION,
         root: context.root,
@@ -103,7 +107,7 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
           {
             filePath,
             languageId: getLanguageId(filePath),
-            classes
+            ...extracted
           }
         ],
         summary: {
@@ -128,7 +132,7 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
       return {
         filePath,
         languageId: getLanguageId(filePath),
-        classes: extractFromContent(session, filePath, content, includeRules, discovered)
+        ...extractFromContent(session, filePath, content, includeRules, discovered)
       }
     }))
     const classes = files.flatMap((file) => file.classes)
@@ -236,6 +240,7 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
         reason,
         detected: occurrences.length > 0,
         matchStatus: inspection.matchStatus,
+      cssSyntaxStatus: inspection.cssSyntaxStatus,
       cssValueStatus: inspection.cssValueStatus,
       browserSupport: inspection.browserSupport,
         rules: inspection.rules.length,

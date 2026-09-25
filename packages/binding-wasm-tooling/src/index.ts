@@ -37,22 +37,15 @@ interface GeneratedToolingWasmModule {
   }
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
-    cachedSourceCandidates(source: string, content: string): string[] | null
-    extractCandidates(source: string, content: string): string[]
-    nativeDeclarationCandidates(candidates: string[]): unknown
+    extractCandidates(source: string, content: string, options: unknown): string[]
     collectCandidates(candidates: string[]): string[]
     filterCandidates(candidates: string[], blocklist: unknown): string[]
-    invalidGeneratedClasses(batch: unknown, ruleSupport: boolean[][]): string[]
-    scanCandidates(
-      source: string,
-      content: string,
-      candidates: string[],
-      blocklist: unknown,
-      nativeSupport: boolean[],
-      invalidGeneratedClasses: string[]
-    ): unknown
+    scanCandidates(source: string, content: string, candidates: string[], blocklist: unknown, options: unknown): unknown
+    removeSource(source: string, options: unknown): unknown
+    reconcileSources(owner: string, inputs: unknown): unknown
+    removeOwner(owner: string): unknown
     ensureClasses(classNames: string[]): unknown
-    registerNativeClasses(classNames: string[]): boolean
+    registerNativeClasses(owner: string, classNames: string[]): boolean
     reset(): void
     state(): unknown
     dispose(): void
@@ -164,23 +157,15 @@ export async function createToolingScannerSession(
   const session = new module.ToolingScannerSession(manifestJSON)
   return {
     scan: (source: string, content: string) => session.scan(source, content),
-    cachedSourceCandidates: (source: string, content: string) => session.cachedSourceCandidates(source, content),
-    extractCandidates: (source: string, content: string) => session.extractCandidates(source, content),
-    nativeDeclarationCandidates: (candidates: string[]) => session.nativeDeclarationCandidates(candidates),
+    extractCandidates: (source: string, content: string, options: unknown = {}) => session.extractCandidates(source, content, options),
     collectCandidates: (candidates: string[]) => session.collectCandidates(candidates),
     filterCandidates: (candidates: string[], blocklist: unknown) => session.filterCandidates(candidates, blocklist),
-    invalidGeneratedClasses: (batch: unknown, ruleSupport: boolean[][]) =>
-      session.invalidGeneratedClasses(batch, ruleSupport),
-    scanCandidates: (
-      source: string,
-      content: string,
-      candidates: string[],
-      blocklist: unknown,
-      nativeSupport: boolean[],
-      invalidGeneratedClasses: string[]
-    ) => session.scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses),
+    scanCandidates: (source: string, content: string, candidates: string[], blocklist: unknown, options: unknown = {}) => session.scanCandidates(source, content, candidates, blocklist, options),
+    removeSource: (source: string, options: unknown = {}) => session.removeSource(source, options),
+    reconcileSources: (owner: string, inputs: unknown) => session.reconcileSources(owner, inputs),
+    removeOwner: (owner: string) => session.removeOwner(owner),
     ensureClasses: (classNames: string[]) => session.ensureClasses(classNames),
-    registerNativeClasses: (classNames: string[]) => session.registerNativeClasses(classNames),
+    registerNativeClasses: (owner: string, classNames: string[]) => session.registerNativeClasses(owner, classNames),
     reset: () => session.reset(),
     state: () => session.state(),
     dispose() {

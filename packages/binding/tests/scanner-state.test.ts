@@ -51,14 +51,16 @@ describe('Rust scanner state session', () => {
     expect(scanner.scan('App.tsx', source)).toEqual({
       changed: false,
       cacheHit: true,
-      candidates: [],
+      sourceChanged: false,
+      candidates: ['block', 'unknown', 'fg-red'],
+      usedNativeClasses: [],
       validClasses: [],
       invalidClasses: [],
       transition: { version: 1, mutations: [] }
     })
 
     expect(scanner.snapshot()).toMatchObject({
-      latentClasses: ['block', 'unknown', 'fg-red'],
+      latentClasses: ['block', 'fg-red', 'unknown'],
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       cachedSources: 1,

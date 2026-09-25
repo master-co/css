@@ -3,7 +3,7 @@ import {
   type MasterCSSManifestUtility
 } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import {
   compactConditions,
   compactUtility,
@@ -58,48 +58,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
   const namespace = options.namespace
   const limit = options.limit ?? 50
 
-  if (manifest.status === 'error') {
-    return {
-      version: MANIFEST_QUERY_VERSION,
-      root: context.root,
-      manifest: {
-        ...manifestMetadata(manifest),
-      status: manifest.status,
-        entries: manifest.entries,
-        error: manifest.error
-      },
-      inputs: {
-        query: options.query,
-        kind,
-        namespace,
-        limit
-      },
-      results: {
-        tokens: [],
-        utilities: [],
-        variants: [],
-        modes: [],
-        conditions: [],
-        aliases: []
-      },
-      diagnostics: [
-        {
-          code: 'manifest-load-error',
-          severity: 'error' as const,
-          message: manifest.error,
-          source: 'Master CSS',
-          sourceKind: 'manifest'
-        }
-      ],
-      summary: {
-        total: 0,
-        returned: 0,
-        status: 'error'
-      }
-    }
-  }
-
-  const activeManifest = manifest.manifest
+  const activeManifest = requireWorkspaceManifest(manifest)
   const variables = flattenMasterCSSManifestVariables(activeManifest.variables)
     .filter((variable) => !namespace || variable.namespace === namespace)
     .filter((variable) => matchesAny([

@@ -79,59 +79,32 @@ pub(super) fn compare_rule_priority(
 }
 
 pub(super) fn compare_features(left: &RulePriorityIr, right: &RulePriorityIr) -> Ordering {
-    for index in 0..left.features.len().max(right.features.len()) {
-        let Some(left) = left.features.get(index) else {
-            return Ordering::Less;
-        };
-        let Some(right) = right.features.get(index) else {
-            return Ordering::Greater;
-        };
-        let order = natural_compare(&left.0, &right.0)
-            .then_with(|| {
-                (right.2 - right.1)
-                    .partial_cmp(&(left.2 - left.1))
-                    .unwrap_or(Ordering::Equal)
-            })
-            .then_with(|| right.1.partial_cmp(&left.1).unwrap_or(Ordering::Equal))
-            .then_with(|| right.2.partial_cmp(&left.2).unwrap_or(Ordering::Equal));
-        if order != Ordering::Equal {
-            return order;
-        }
-    }
-    Ordering::Equal
+    mastercss_engine::compare_condition_features(&left.features, &right.features)
+        .then_with(|| left.conditions.cmp(&right.conditions))
 }
 
 pub(super) fn style_condition_features(conditions: &[String]) -> Vec<StyleConditionFeature> {
-    conditions
-        .iter()
-        .flat_map(|condition| mastercss_engine::native_query_features(condition))
-        .collect()
+    mastercss_engine::condition_priority(
+        &conditions
+            .iter()
+            .map(|condition| {
+                let kind = condition
+                    .trim_start_matches('@')
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or_default();
+                (kind.to_owned(), condition.clone())
+            })
+            .collect::<Vec<_>>(),
+    )
+    .0
 }
 
 pub(super) fn compare_style_condition_features(
     left: &[StyleConditionFeature],
     right: &[StyleConditionFeature],
 ) -> Ordering {
-    for index in 0..left.len().max(right.len()) {
-        let Some(left) = left.get(index) else {
-            return Ordering::Less;
-        };
-        let Some(right) = right.get(index) else {
-            return Ordering::Greater;
-        };
-        let order = natural_compare(&left.0, &right.0)
-            .then_with(|| {
-                (right.2 - right.1)
-                    .partial_cmp(&(left.2 - left.1))
-                    .unwrap_or(Ordering::Equal)
-            })
-            .then_with(|| right.1.partial_cmp(&left.1).unwrap_or(Ordering::Equal))
-            .then_with(|| right.2.partial_cmp(&left.2).unwrap_or(Ordering::Equal));
-        if order != Ordering::Equal {
-            return order;
-        }
-    }
-    Ordering::Equal
+    mastercss_engine::compare_condition_features(left, right)
 }
 
 pub(super) fn compare_style_merge_buckets(

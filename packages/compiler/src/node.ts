@@ -1,4 +1,5 @@
-import { validateCompiledCSS } from './value-validation'
+import { stylesheetValidationSource } from './stylesheet/output-map'
+import { validateCompiledCSS, assertValidationOptions } from './value-validation'
 import {
   MasterCSSCompiler,
   bindCompilerSessionInternal,
@@ -90,6 +91,7 @@ export function compileManifestFileSync(
   file: string,
   options: MasterCSSCompileManifestFileOptions | MasterCSSCompileManifestFileDeliveryOptions
 ): MasterCSSCompileManifestResult | MasterCSSCompileManifestFileResult {
+  assertValidationOptions(options)
   if ('delivery' in options) {
     const result = compileDeliveredFile(file, {
       ...options,
@@ -97,8 +99,8 @@ export function compileManifestFileSync(
       preserveNativeCSS: options.preserveNativeCSS ?? true
     })
     return Object.freeze({
-      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic, options.cssValuePolicy),
-      diagnostics: validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id })), options),
+      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic, options.validation),
+      diagnostics: validateCompiledCSS(result.stylesheets.map(asset => stylesheetValidationSource(asset.css, asset.id, undefined, asset.outputMappings)), options),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))),
       resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset })))
@@ -107,7 +109,7 @@ export function compileManifestFileSync(
   return toMasterCSSCompileManifestResultInternal(
     compileCSSManifestFile(file, options),
     options.onDiagnostic,
-    options.cssValuePolicy
+    options.validation
   )
 }
 

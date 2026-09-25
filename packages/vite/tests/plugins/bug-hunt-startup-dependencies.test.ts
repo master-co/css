@@ -70,6 +70,7 @@ test.each([false, true])('BH-0004 failed servers recover independently with shar
       await server.environments.client.transformRequest('/entry.js')
       await expect(server.environments.client.transformRequest('/style.css')).rejects.toThrow('ENOENT')
     }
+    await servers[0].environments.client.waitForRequestsIdle()
     await servers[0].close()
     const send = vi.spyOn(servers[1].ws, 'send')
     fixtures[1].restore()
@@ -77,7 +78,7 @@ test.each([false, true])('BH-0004 failed servers recover independently with shar
     const result = await servers[1].environments.client.transformRequest('/style.css')
     expect(result?.code).toContain('7rem')
     expect(result?.code).not.toContain(fixtures[0].parent)
-  } finally { for (const server of servers) { await server.environments.client.waitForRequestsIdle();await server.close() }for (const f of fixtures) rmSync(f.parent, { recursive: true, force: true }) }
+  } finally { for (const server of servers) { if (!server.httpServer?.listening) continue;await server.environments.client.waitForRequestsIdle();await server.close() }for (const f of fixtures) rmSync(f.parent, { recursive: true, force: true }) }
 })
 
 test.each([false, true])('BH-0004 resource-failing servers recover independently with shared plugins=%s', async shared => {
@@ -91,6 +92,7 @@ test.each([false, true])('BH-0004 resource-failing servers recover independently
       await server.environments.client.transformRequest('/entry.js')
       await expect(server.environments.client.transformRequest('/style.css')).rejects.toThrow('ENOENT')
     }
+    await servers[0].environments.client.waitForRequestsIdle()
     await servers[0].close()
     const send = vi.spyOn(servers[1].ws, 'send')
     fixtures[1].restore()
@@ -98,5 +100,5 @@ test.each([false, true])('BH-0004 resource-failing servers recover independently
     const result = await servers[1].environments.client.transformRequest('/style.css')
     expect(result?.code).toContain('7rem')
     expect(result?.code).not.toContain(fixtures[0].parent)
-  } finally { for (const server of servers) { await server.environments.client.waitForRequestsIdle();await server.close() }for (const f of fixtures) rmSync(f.parent, { recursive: true, force: true }) }
+  } finally { for (const server of servers) { if (!server.httpServer?.listening) continue;await server.environments.client.waitForRequestsIdle();await server.close() }for (const f of fixtures) rmSync(f.parent, { recursive: true, force: true }) }
 })

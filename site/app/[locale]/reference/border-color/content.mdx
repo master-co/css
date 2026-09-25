@@ -120,12 +120,12 @@ Define a semantic line token in each theme, then compile the token declarations 
 ```css name=index.css
 @theme light {
   --color-line-divider:
-    --alpha(var(--color-slate-60) / 40%);
+    color-mix(in oklab, var(--color-slate-60) 40%, transparent);
 }
 
 @theme dark {
   --color-line-divider:
-    --alpha(var(--color-gray-30) / 50%);
+    color-mix(in oklab, var(--color-gray-30) 50%, transparent);
 }
 ```
 

@@ -162,11 +162,17 @@
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSNativeDeclarationCandidate",
           "MasterCSSScannerBindingSession",
+          "MasterCSSScannerSourceInput",
+          "MasterCSSScannerSourceOptions",
+          "MasterCSSScannerState",
+          "MasterCSSScannerUpdate",
           "MasterCSSSourceBatch",
           "MasterCSSSourceBatchRequest",
           "MasterCSSSourceBindingSession",
           "MasterCSSSourceExtractorKind",
+          "MasterCSSSourceOccurrence",
           "MasterCSSSourceRange",
+          "MasterCSSSyntaxStatus",
           "MasterCSSToolingBinding",
           "MasterCSSToolingBindingSession",
           "MasterCSSValidatorBatch",
@@ -188,7 +194,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "4994759483938abb"
+      "surface": "8e819e88c71a3fd1"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -863,6 +869,7 @@
           "MASTER_CSS_HYDRATION_MANIFEST_ATTR",
           "MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME",
           "MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID",
+          "MasterCSSConditionRange",
           "MasterCSSHydrationManifest",
           "MasterCSSHydrationRule",
           "MasterCSSHydrationRuleNode",
@@ -950,7 +957,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "a9ba715bae9500b4"
+      "surface": "5ce528d33b46a232"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1030,9 +1037,11 @@
           "createToolingSession"
         ],
         "./node": [
+          "CSS_SYNTAX_CHECK",
           "CSS_VALUE_CHECK",
           "MasterCSSToolingSession",
           "createToolingSessionSync",
+          "cssSyntaxStatus",
           "cssValueStatus",
           "getToolingBindingInfo",
           "validateRuleDeclarations"
@@ -1075,14 +1084,20 @@
           "MasterCSSScannerConfiguration",
           "MasterCSSScannerOptions",
           "MasterCSSScannerSourceResult",
+          "ScannerSourceInput",
+          "ScannerSourceOptions",
+          "SourcePolicy",
+          "SourcePolicyOptions",
           "createScanner",
           "defaultScannerOptions"
         ],
         "./validator": [
+          "CSS_SYNTAX_CHECK",
           "CSS_VALUE_CHECK",
           "DeclarationValidation",
           "MasterCSSClassValidation",
           "MasterCSSClassValidationResult",
+          "cssSyntaxStatus",
           "cssValueStatus",
           "validateClassNames",
           "validateRuleDeclarations"
@@ -1209,7 +1224,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "5b2f6fc9af02b819"
+      "surface": "0024cc5ce0fdb6ea"
     },
     "@master/css-vite": {
       "directory": "vite",

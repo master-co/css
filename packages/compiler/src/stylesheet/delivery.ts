@@ -196,7 +196,7 @@ export async function registerDeliveredStylesheet(
     : prepareCSSImportGraph(filename, source, graphOptions, analyzeCSSDependencies)
   const directives = mergeStylesheetDirectives(...Object.entries(graph.files).map(([file, text]) => collectStylesheetDirectives(text, graph.baseFiles?.[file] ?? file, scanner.cwd)))
   const result = compileGraph(graph, options, undefined, [], {}, {}, undefined, inlineImports, inlineImports, inlineImports ? collectionHostImports(graph) : {})
-  const scoped = mergeStylesheetSourceOptions(scanner.options, directives)
+  const scoped = mergeStylesheetSourceOptions({ ...scanner.options, exclude: scanner.customOptions ? scanner.customOptions.exclude : scanner.options.exclude }, directives)
   const sourceDependencies = hasStylesheetSourceDirectives(directives)
     ? resolveStylesheetSourcePaths(scoped, scanner.cwd).map(file => resolve(scanner.cwd, file)) : []
   const dependencies = [...new Set([...result.directives.dependencies, ...sourceDependencies])]
@@ -206,7 +206,7 @@ export async function registerDeliveredStylesheet(
   }
   const masterCSS = inlineImports && Object.values(graph.files).some(text => inspectCSS(text).hasMasterCSSImport)
   sources.set(filename, { source, graph, pruneNativeCSS, masterCSS, directives, dependencies, sourceDependencies })
-  scanner.registerNativeClasses?.(result.directives.nativeClassNames)
+  scanner.registerNativeClasses?.(filename, result.directives.nativeClassNames)
   return { ...result.directives, dependencies }
 }
 

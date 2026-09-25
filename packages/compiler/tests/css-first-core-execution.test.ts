@@ -180,7 +180,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       @theme chrisma {
-        --color-primary: --alpha(var(--color-black) / 50%);
+        --color-primary: color-mix(in oklab,var(--color-black) 50%,transparent);
       }
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('bg-primary', 'bg-primary/.5', 'bg-alias')
@@ -194,7 +194,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.utilitiesLayer.text).toContain('.bg-alias{background-color:var(--color-alias)}')
   })
 
-  test('lowers stylesheet --alpha() in theme, managed declarations, and native CSS', () => {
+  test('preserves native --alpha() in theme, managed declarations, and native CSS', () => {
     const result = compileCSSManifest(`
       @theme {
         --color-primary: #123456;
@@ -214,24 +214,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(result.manifest)
 
     css.ensureClassRules('btn', 'bg-muted')
-    expect(css.themeLayer.text).toContain('--color-muted:color-mix(in oklab,var(--color-primary) 50%,transparent)')
-    expect(css.componentsLayer.text).toContain('.btn{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
-    expect(result.nativeCSS).toContain('color: color-mix(in oklab,var(--color-muted) var(--opacity-muted),transparent);')
+    expect(css.themeLayer.text).toContain('--color-muted:--alpha(var(--color-primary) / 50%)')
+    expect(css.componentsLayer.text).toContain('.btn{background-color:--alpha(var(--color-primary) / .5)}')
+    expect(result.nativeCSS).toContain('color: --alpha(var(--color-muted) / var(--opacity-muted));')
   })
 
-  test('rejects stylesheet token alias syntax and invalid --alpha() alpha values', () => {
-    expect(() => compileCSSManifest('@theme { --color-brand: $color-blue-60; }', { baseManifest: defaultManifest }))
-      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
-    expect(() => compileCSSManifest('.native { color: $color-blue-60; }', { baseManifest: defaultManifest }))
-      .toThrow('Replace "$color-blue-60" with "var(--color-blue-60)"')
-    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50); }', { baseManifest: defaultManifest }))
-      .toThrow('numeric alpha must be between 0 and 1')
-    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / foo); }', { baseManifest: defaultManifest }))
-      .toThrow('unsupported alpha value "foo"')
-    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60) / 50% / 20%); }', { baseManifest: defaultManifest }))
-      .toThrow('expected "<color> / <alpha>"')
-    expect(() => compileCSSManifest('@theme { --color-brand: --alpha(var(--color-blue-60)); }', { baseManifest: defaultManifest }))
-      .toThrow('expected "<color> / <alpha>"')
+  test('preserves arbitrary native function arguments and custom-property data', () => {
+    const result = compileCSSManifest('.native { --money: $100; --pipe: a|b; --data:{"color":"red"}; color:--alpha(red / foo); --ordinary:--value(); }', { baseManifest: defaultManifest })
+    expect(result.nativeCSS).toContain('$100')
+    expect(result.nativeCSS).toContain('a|b')
+    expect(result.nativeCSS).toContain('--alpha(red / foo)')
+    expect(result.nativeCSS).toContain('--value()')
   })
 
   test('ignores quoted variable references while collecting theme dependencies', () => {
@@ -720,7 +713,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-display-p3: color(display-p3 0.2 0.4 0.8);
         --color-color-srgb: color(srgb 0.2 0.4 0.8);
         --color-color-rec2020: color(rec2020 0.2 0.4 0.8);
-        --color-soft: --alpha(var(--color-oklch-primary) / .3);
+        --color-soft: color-mix(in oklab,var(--color-oklch-primary) 30%,transparent);
         --color-mix-demo: color-mix(in oklch, red, blue);
       }
     `, { baseManifest: defaultManifest })

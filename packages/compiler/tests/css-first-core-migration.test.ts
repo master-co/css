@@ -372,13 +372,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })).toThrow('--value() must be a standalone CSS value placeholder')
 
-    expect(() => compileCSSManifest(`
-      @utilities {
-        text-center {
-          text-align: --value();
-        }
-      }
-    `, { baseManifest: defaultManifest })).toThrow('--value() is only supported inside managed pattern declarations')
+    const nativeFunction = compileCSSManifest(`
+      @utilities { text-center { text-align: --value(); } }
+    `, { baseManifest: defaultManifest })
+    expect(nativeFunction.manifest.utilities?.find(utility => utility.name === 'text-center')?.emit).toMatchObject({
+      type: 'static', rules: [{ declarations: { 'text-align': '--value()' } }]
+    })
   })
 
   test('rejects unsupported managed dynamic colon syntax', () => {

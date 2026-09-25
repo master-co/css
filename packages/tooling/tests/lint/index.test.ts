@@ -129,3 +129,15 @@ describe('Rust lint session', () => {
     }
   })
 })
+
+it('does not autofix entity-decoded MDX class lists using decoded offsets', () => {
+  const session = createTestToolingSession(createPresetManifest())
+  try {
+    const content = '<div className="p:2px&#32;flex" />'
+    const options = { content, filePath: 'page.mdx', lintSession: session }
+    expect(fixMasterCSSContent(options)).toBe(content)
+    const diagnostics = lintMasterCSSContent(options).diagnostics
+    expect(diagnostics.every(item => !item.fixes?.length)).toBe(true)
+    expect(diagnostics.every(item => item.range.end <= content.length)).toBe(true)
+  } finally { session.dispose() }
+})

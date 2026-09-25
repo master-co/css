@@ -266,7 +266,7 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
         .map_err(|error| CliError::new("CLI_SERIALIZATION_FAILED", error.to_string()))?;
     let mut scanner = ScannerSession::create(&manifest_json)
         .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?;
-    scanner.register_native_classes(&project.native_class_names);
+    scanner.register_native_classes("project-stylesheets", &project.native_class_names);
     let mut source_files = resolve_source_files(&cwd, &args.source_patterns);
     source_files.extend(project.source_plan.files.iter().map(PathBuf::from));
     source_files.sort();
@@ -279,15 +279,15 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
             )
         })?;
         let source = normalize_path(file);
-        let candidates = extract_source_candidates(&source, &content);
+        let candidates = extract_source_candidates(&source, &content)
+            .map_err(|error| CliError::new("SOURCE_PARSE_ERROR", error.to_string()))?;
         scanner
             .scan_candidates(
                 &source,
                 &content,
                 candidates,
                 &project.extraction_policy.blocklist,
-                &[],
-                &HashSet::new(),
+                &mastercss_scanner::ScannerSourceOptions::default(),
             )
             .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?;
     }

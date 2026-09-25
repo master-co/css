@@ -1,4 +1,4 @@
-export type MasterCSSSourceKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro'
+export type MasterCSSSourceKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro' | 'markdown' | 'mdx'
 
 /** Decoded HTML attribute text and indivisible UTF-16 source spans. */
 export interface MasterCSSDecodedHTMLAttribute {
@@ -12,6 +12,7 @@ export interface MasterCSSDecodedHTMLAttribute {
 export interface MasterCSSSourceExtractionInput {
   readonly source: string
   readonly content: string
+  readonly owner?: string
   readonly kind?: MasterCSSSourceKind
 }
 
@@ -22,9 +23,11 @@ export interface MasterCSSSourceExtractionRequest {
 export interface MasterCSSExtractedSource {
   readonly source: string
   readonly candidates: readonly string[]
+  readonly occurrences: readonly import('@master/css-binding/tooling').MasterCSSSourceOccurrence[]
+  readonly diagnostics: readonly import('@master/css-binding/tooling').MasterCSSDiagnostic[]
 }
 
 export interface MasterCSSSourceExtraction {
-  readonly version: 1
+  readonly version: 2
   readonly files: readonly MasterCSSExtractedSource[]
 }

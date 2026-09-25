@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { once } from 'node:events'
 
-export interface ToolResult { content: { type: string, text?: string }[], isError?: boolean }
+export interface ToolResult { content: { type: string, text?: string }[], isError?: boolean, structuredContent?: unknown }
 /** Exercise the documented stdio protocol with the repository's executable source. */
 export async function connect(root: string) {
   const repo = fileURLToPath(new URL('../../', import.meta.url))
@@ -58,7 +58,13 @@ export function value<T>(result: ToolResult): T {
   assert.equal(result.isError, undefined, JSON.stringify(result.content))
   const text = result.content.find(item => item.type === 'text')?.text
   assert.ok(text, 'MCP JSON result')
-  return JSON.parse(text) as T
+  const envelope = JSON.parse(text)
+  assert.deepEqual(result.structuredContent, envelope)
+  assert.equal(envelope.version, 3)
+  assert.ok(Array.isArray(envelope.diagnostics))
+  assert.equal(envelope.result.status, 'success')
+  assert.ok(envelope.metadata)
+  return envelope.result.data as T
 }
 export function errorText(result: ToolResult) {
   assert.equal(result.isError, true)

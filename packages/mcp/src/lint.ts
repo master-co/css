@@ -14,7 +14,7 @@ import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type
 
 const DEFAULT_LINT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
-const LINT_REPORT_VERSION = 2
+const LINT_REPORT_VERSION = 3
 
 export interface LintProjectOptions {
   context?: SemanticContext

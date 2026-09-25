@@ -40,7 +40,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_inspect_class: {
     purpose: 'Check how one class is interpreted by the active manifest. Use `mastercss_trace_class` when the question is whether project scanning actually finds it.',
     fields: { context, className, mode }, example: { className: 'p-md' }, exampleNote: 'Inspect a preset spacing class in the connected workspace.',
-    output: 'The result includes `className`, `matchStatus`, `cssValueStatus`, `browserSupport`, `rules`, semantic inspection data, and the generated `css` string. Check `manifest.status` and entries before using custom tokens. A matched class alone does not establish that it appears in scanned source.',
+    output: 'The result includes `className`, `matchStatus`, `cssSyntaxStatus`, `cssValueStatus`, `browserSupport`, `rules`, semantic inspection data, and the generated `css` string. Check `manifest.status` and entries before using custom tokens. A matched class alone does not establish that it appears in scanned source.',
     lifecycle: readOnly
   },
   mastercss_trace_class: {
@@ -54,14 +54,14 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     purpose: 'Find exact class tokens and source positions in a buffer, or inspect extraction across selected project files.',
     fields: { context, content: 'Source buffer to inspect. When provided, it takes precedence over project patterns, including when the string is empty.', filePath: filePath + ' Defaults to `index.html` in content mode.', patterns, includeRules: 'Include generated rules in each class inspection. Defaults to false.' },
     example: { content: '<button class="flex gap-sm p-md">Save</button>', filePath: 'src/button.html', includeRules: true }, exampleNote: 'This buffer is inspected without writing `src/button.html`.',
-    output: '`files` contains language IDs and class records with tokens, ranges, locations, matching and CSS-value statuses, diagnostics, and inspection data. `inputs.mode` distinguishes content from project mode. `summary` counts files and classes; project mode also includes scanner counts and diagnostics.',
+    output: '`files` contains language IDs and class records with tokens, ranges, locations, matching, CSS-syntax and CSS-value statuses, diagnostics, and inspection data. `inputs.mode` distinguishes content from project mode. `summary` counts files and classes; project mode also includes scanner counts and diagnostics.',
     lifecycle: readOnly
   },
   mastercss_inspect_directives: {
     purpose: 'Inspect directive structure and compilation effects from an entry stylesheet or a CSS buffer. Provide `entryPath` or `content`; an empty arguments object cannot be compiled.',
     fields: { context, content: 'CSS buffer to inspect when `entryPath` is absent.', filePath: 'Virtual path for the CSS buffer. Defaults to `master.css`.', entryPath: 'Existing stylesheet path inside the workspace. Takes precedence over `content`.', preserveNativeCSS: 'Forward the native-CSS preservation option to compilation.' },
     example: { content: '@theme { --color-brand: blue; }', filePath: 'app.css' }, exampleNote: 'Inspect an isolated token definition without changing the project entry.',
-    output: 'Read `status` and `diagnostics`, then `directiveEntries`, manifest and directive summaries, CSS sizes, dependencies, and warnings. A compilation failure can be returned as `status: error` inside a successful MCP result.',
+    output: 'Read `status` and `diagnostics`, then `directiveEntries`, manifest and directive summaries, CSS sizes, dependencies, and warnings. Compilation failures return the error branch of the MCP envelope with diagnostics and `isError`.',
     lifecycle: readOnly
   },
   mastercss_render_css: {
@@ -108,7 +108,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     purpose: 'Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest.',
     fields: { context, content: 'Complete source buffer to lint.', filePath, rules },
     example: { content: '<button class="p-md flex">Save</button>', filePath: 'src/button.html', rules: 'sort-classes' }, exampleNote: 'The virtual HTML path selects the source language; no file is written.',
-    output: '`files` includes the buffer’s diagnostics and fix proposals, with a diagnostic `summary` and manifest status. Fix proposals are data in the result, not applied edits. Manifest-loading failures are reported in the same report.',
+    output: '`files` includes the buffer’s diagnostics and fix proposals, with a diagnostic `summary` and manifest status. Fix proposals are data in the result, not applied edits. Manifest-loading failures return the error envelope without selecting a preset.',
     lifecycle: readOnly
   },
   mastercss_suggest_syntax: {
@@ -122,7 +122,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     purpose: 'Prepare a reviewable diff for native lint fixes or generated CSS output. This request does not apply its changes.',
     fields: { context, mode: 'Preview operation. Defaults to `lint-fixes`.', patterns, rules, includeDirectiveFixes: 'Allow structural directive fixes in lint mode. Defaults to false.', outputPath: 'Target path inside the workspace. Required in `generated-css` mode; its parent directory must exist.', ttlMs },
     example: { mode: 'lint-fixes', patterns: ['src/button.html'], rules: 'sort-classes' }, exampleNote: 'Review `preview.changes` and its diffs before passing a returned token to the apply tool.',
-    output: '`preview` contains changed files, complete proposed text, diffs, hashes, and a summary. A changed result includes `confirmToken` and `expiresAt`. Lint mode includes a `lint` report; generated-CSS mode includes `outputPath` and a scan summary. A lint manifest error can yield an empty preview: inspect the report.',
+    output: '`preview` contains changed files, complete proposed text, diffs, hashes, and a summary. A changed result includes `confirmToken` and `expiresAt`. Lint mode includes a `lint` report; generated-CSS mode includes `outputPath` and a scan summary. Manifest errors return the error envelope; an error must not be interpreted as an empty successful preview.',
     lifecycle: previewLife
   },
   mastercss_preview_directive_format: {

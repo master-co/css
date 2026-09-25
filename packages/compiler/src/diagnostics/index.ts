@@ -225,7 +225,7 @@ export async function createMasterCSSInspectionReport(
       cwd,
       sourcePatterns,
       options.ignore ?? (specifiedPatterns?.length ? [] : scanner.options.exclude)
-    )
+    ).filter(source => scanner.isSourceAllowed(source, { explicit: Boolean(specifiedPatterns?.length) }))
     const resolvedSourcePaths = await Promise.all(sourcePaths.map((source) => resolveFilePath(cwd, source, options.resolveExistingFile)))
     const scans = await Promise.all(sourcePaths.map((source, index) => scanner.scanSource(
       source, fs.readFileSync(resolvedSourcePaths[index], 'utf8')

@@ -90,3 +90,5 @@ const MANIFEST: &str = r##"{
 
 include!("tests/lifecycle.rs");
 include!("tests/syntax.rs");
+
+include!("tests/native_boundaries.rs");

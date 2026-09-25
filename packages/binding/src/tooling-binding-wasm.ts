@@ -49,13 +49,13 @@ export interface MasterCSSToolingWasmProviderContract {
   ): Promise<MasterCSSLintWasmProviderSession>
   createScannerSession(manifestJSON: string): Promise<Readonly<{
     scan: MasterCSSScannerBindingSession['scan']
-    cachedSourceCandidates: MasterCSSScannerBindingSession['cachedSourceCandidates']
     extractCandidates: MasterCSSScannerBindingSession['extractCandidates']
-    nativeDeclarationCandidates: MasterCSSScannerBindingSession['nativeDeclarationCandidates']
     collectCandidates: MasterCSSScannerBindingSession['collectCandidates']
     filterCandidates: MasterCSSScannerBindingSession['filterCandidates']
-    invalidGeneratedClasses: MasterCSSScannerBindingSession['invalidGeneratedClasses']
     scanCandidates: MasterCSSScannerBindingSession['scanCandidates']
+    removeSource: MasterCSSScannerBindingSession['removeSource']
+    reconcileSources: MasterCSSScannerBindingSession['reconcileSources']
+    removeOwner: MasterCSSScannerBindingSession['removeOwner']
     ensureClasses: MasterCSSScannerBindingSession['ensureClassRules']
     registerNativeClasses: MasterCSSScannerBindingSession['registerNativeClassNames']
     reset: MasterCSSScannerBindingSession['reset']
@@ -190,32 +190,15 @@ export async function createWasmToolingBinding(
       const bound: MasterCSSScannerBindingSession = {
         ...withLifecycle(session),
         scan: (source, content) => session.scan(source, content),
-        cachedSourceCandidates: (source, content) => session.cachedSourceCandidates(source, content),
-        extractCandidates: (source, content) => session.extractCandidates(source, content),
-        nativeDeclarationCandidates: (candidates) =>
-          session.nativeDeclarationCandidates([...candidates]),
+        extractCandidates: (source, content, options = {}) => session.extractCandidates(source, content, options),
         collectCandidates: (candidates) => session.collectCandidates([...candidates]),
-        filterCandidates: (candidates, blocklist) =>
-          session.filterCandidates([...candidates], blocklist),
-        invalidGeneratedClasses: (batch, ruleSupport) =>
-          session.invalidGeneratedClasses(batch, ruleSupport.map((values) => [...values])),
-        scanCandidates: (
-          source,
-          content,
-          candidates,
-          blocklist,
-          nativeSupport,
-          invalidGeneratedClasses
-        ) => session.scanCandidates(
-          source,
-          content,
-          [...candidates],
-          blocklist,
-          [...nativeSupport],
-          [...invalidGeneratedClasses]
-        ),
+        filterCandidates: (candidates, blocklist) => session.filterCandidates([...candidates], blocklist),
+        scanCandidates: (source, content, candidates, blocklist, options = {}) => session.scanCandidates(source, content, [...candidates], blocklist, options),
+        removeSource: (source, options = {}) => session.removeSource(source, options),
+        reconcileSources: (owner, inputs) => session.reconcileSources(owner, inputs),
+        removeOwner: (owner) => session.removeOwner(owner),
         ensureClassRules: (classNames) => session.ensureClasses([...classNames]),
-        registerNativeClassNames: (classNames) => session.registerNativeClasses([...classNames]),
+        registerNativeClassNames: (owner, classNames) => session.registerNativeClasses(owner, [...classNames]),
         reset: () => session.reset(),
         snapshot: () => session.state()
       }

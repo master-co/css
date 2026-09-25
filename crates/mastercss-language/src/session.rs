@@ -283,6 +283,17 @@ impl LanguageSession {
                         && context.end == position.context_range.end
                 })
                 .ok_or(LanguageError::InvalidRange)?;
+            if context.unescape.is_empty() {
+                // Decoded entities and JS expressions have a source span, not an
+                // offset-preserving character mapping. Highlight that span only.
+                tokens.push(SemanticTokenInputIr {
+                    start: position.range.start,
+                    end: position.range.end,
+                    token_type: "class".into(),
+                    modifiers: Vec::new(),
+                });
+                continue;
+            }
             let offsets = crate::positions::unescape_offsets(&position.raw, &context.unescape);
             let first = tokens.len();
             self.push_class_semantic_tokens(&position.token, 0, &mut tokens)?;
@@ -379,6 +390,7 @@ impl LanguageSession {
             version: LANGUAGE_BATCH_VERSION,
             class_name: class_name.to_owned(),
             match_status: inspection.match_status,
+            css_syntax_status: inspection.css_syntax_status,
             css_value_status: inspection.css_value_status,
             browser_support: inspection.browser_support,
             kind: semantics.kind,

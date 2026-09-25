@@ -22,7 +22,7 @@ fn css(engine: &mut EngineSession, classes: &[&str]) -> String {
 
 #[test]
 fn native_queries_preserve_dimensions_and_wrapper_nesting() {
-    let mut e = engine("@theme { --breakpoint-sm: 800px; }").unwrap();
+    let mut e = engine("@theme { --breakpoint-sm: 800px; } @custom-variant has-selector { @supports selector(:has(*)) { @slot; } }").unwrap();
     let output = css(
         &mut e,
         &[
@@ -30,7 +30,7 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
             "width:20px@media((width>=800px))",
             "width:30px@media((aspect-ratio>=1.5))",
             "width:40px@media((resolution>=2x))",
-            "width:50px@supports(selector(:has(*)))@supports((display:grid))",
+            "width:50px@has-selector@supports((display:grid))",
             "width:60px@container(card|(width>=40rem))",
             "width:70px@container(style(--density:compact))",
         ],

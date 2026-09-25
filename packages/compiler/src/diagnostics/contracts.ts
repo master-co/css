@@ -76,7 +76,7 @@ export interface MasterCSSStylesheetError {
 }
 
 export interface MasterCSSInspectionReport {
-  readonly version: 2
+  readonly version: 3
   readonly cwd: string
   readonly inputs: Readonly<{
     patterns: readonly string[]

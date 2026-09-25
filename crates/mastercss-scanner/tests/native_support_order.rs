@@ -1,42 +1,33 @@
-use std::collections::HashSet;
-
-use mastercss_scanner::ScannerSession;
+use mastercss_scanner::{ScannerSession, ScannerSourceOptions};
 use mastercss_schema::CssDirectiveBlocklistEntry;
 
 fn scan(scanner: &mut ScannerSession, source: &str, candidates: &[&str]) {
     let blocklist = [CssDirectiveBlocklistEntry::Exact("blocked:value".into())];
-    let supported = scanner
-        .native_declaration_candidates(candidates.iter().filter(|name| **name != "blocked:value"))
-        .unwrap()
-        .iter()
-        .map(|candidate| candidate.property != "made-up")
-        .collect::<Vec<_>>();
     scanner
         .scan_candidates(
             source,
             &candidates.join(" "),
             candidates.iter().map(|name| (*name).into()).collect(),
             &blocklist,
-            &supported,
-            &HashSet::new(),
+            &ScannerSourceOptions::default(),
         )
         .unwrap();
 }
 
 #[test]
-fn unknown_native_capabilities_survive_host_support_results() {
+fn unknown_native_capabilities_are_preserved_without_host_support() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut scanner = ScannerSession::create(manifest).unwrap();
     scan(&mut scanner, "a.html", &["made-up:bad"]);
-    scan(&mut scanner, "b.html", &["made-up:bad", "accent-color:red"]);
+    scan(&mut scanner, "b.html", &["accent-color:red", "made-up:bad"]);
     let state = scanner.state().unwrap();
-    assert_eq!(state.valid_classes, ["made-up:bad", "accent-color:red"]);
+    assert_eq!(state.valid_classes, ["accent-color:red", "made-up:bad"]);
     assert!(state.invalid_classes.is_empty());
     assert!(state.engine.text.contains("accent-color:"));
 }
 
 #[test]
-fn support_alignment_survives_duplicates_groups_blocklists_and_source_order() {
+fn output_is_stable_with_duplicates_groups_blocklists_and_source_order() {
     let inputs: [&[&str]; 3] = [
         &["made-up:bad", "color:red"],
         &[

@@ -2,6 +2,7 @@
 //! runtime engine only receives ordinary, current-contract helper utilities.
 mod conditions;
 mod configuration;
+mod native;
 mod stylesheets;
 mod values;
 
@@ -37,6 +38,7 @@ pub struct RcMigrationRequest {
 pub enum RcMigrationProfile {
     RcLegacy,
     RcNamed,
+    RcNative,
 }
 
 #[derive(Debug, Serialize)]
@@ -85,6 +87,9 @@ struct Migration {
     unchanged_conditions: Vec<String>,
     helper: RefCell<EngineSession>,
     target: RefCell<EngineSession>,
+    target_manifest: RefCell<Value>,
+    query_definitions: RefCell<std::collections::BTreeMap<String, String>>,
+    native_alpha: bool,
     families: Vec<Family>,
     static_families: Vec<StaticFamily>,
     base_unit: f64,
@@ -141,7 +146,16 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
         version: 2,
         from: request.from,
         source_version: request.source_version.clone(),
-        configuration_css: migration.configuration_css.clone(),
+        configuration_css: format!(
+            "{}{}",
+            migration.configuration_css,
+            migration
+                .query_definitions
+                .borrow()
+                .values()
+                .cloned()
+                .collect::<String>()
+        ),
         notes: migration.notes.clone(),
         class_lists,
         stylesheets,
@@ -181,7 +195,21 @@ impl Migration {
                 "Record the actual source package version before migrating",
             ));
         }
-        let configuration = configuration::convert(&request.manifest)?;
+        let configuration = if request.from == RcMigrationProfile::RcNative {
+            configuration::Configuration {
+                manifest: request.manifest.clone(),
+                css: String::new(),
+                notes: Vec::new(),
+                modes: request.manifest["modes"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|mode| mode["name"].as_str().map(str::to_owned))
+                    .collect(),
+            }
+        } else {
+            configuration::convert(&request.manifest)?
+        };
         let mut helper_manifest = configuration.manifest;
         if let Some(settings) = helper_manifest
             .get_mut("settings")
@@ -305,6 +333,9 @@ impl Migration {
                 target_manifest[key] = value.clone();
             }
         }
+        if request.from == RcMigrationProfile::RcNative {
+            native::restore_query_variants(&request.stylesheets, &mut target_manifest)?;
+        }
         Ok(Self {
             profile: request.from,
             original: request.manifest.clone(),
@@ -334,6 +365,12 @@ impl Migration {
                 EngineSession::create(&target_manifest.to_string())
                     .map_err(|err| error(err.to_string()))?,
             ),
+            target_manifest: RefCell::new(target_manifest),
+            query_definitions: RefCell::new(Default::default()),
+            native_alpha: request
+                .stylesheets
+                .iter()
+                .any(|source| native::declares_alpha(source)),
             families,
             static_families,
             base_unit,
@@ -379,14 +416,18 @@ impl Migration {
                 continue;
             }
             // A complete query is also the idempotent target of migration.
-            let complete = token.split_once('(').is_some_and(|(_, body)| {
-                body.starts_with('(') || body.starts_with("selector(") || body.starts_with("style(")
-            });
+            let complete = self.native_profile()
+                || token.split_once('(').is_some_and(|(_, body)| {
+                    body.starts_with('(')
+                        || body.starts_with("selector(")
+                        || body.starts_with("style(")
+                });
             let query = if complete {
                 token.into()
             } else {
                 conditions::decode(&self.original, token)?
             };
+            let query = self.query(&query)?;
             migrated.replace_range(start + 1..end, &query);
         }
         if important {
@@ -402,7 +443,10 @@ impl Migration {
         if source.starts_with('{') {
             return self.group(source);
         }
-        if self.profile == RcMigrationProfile::RcNamed {
+        if matches!(
+            self.profile,
+            RcMigrationProfile::RcNamed | RcMigrationProfile::RcNative
+        ) {
             let diagnostics = self
                 .target
                 .borrow()

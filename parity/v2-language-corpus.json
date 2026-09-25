@@ -1076,7 +1076,8 @@
           "expectedValid": true,
           "expectedPriorities": [
             {
-              "selector": 3
+              "selector": 3,
+              "features": []
             }
           ]
         },
@@ -1086,7 +1087,8 @@
           "expectedValid": true,
           "expectedPriorities": [
             {
-              "selector": 5
+              "selector": 5,
+              "features": []
             }
           ]
         },
@@ -1096,7 +1098,8 @@
           "expectedValid": true,
           "expectedPriorities": [
             {
-              "selector": 4
+              "selector": 4,
+              "features": []
             }
           ]
         }
@@ -2810,7 +2813,20 @@
         "version": 1,
         "languageVersion": 2
       },
-      "expectedError": "Stylesheet values use native CSS variable references. Replace \"$color-blue-50\" with \"var(--color-blue-50)\"."
+      "expectedManifest": {
+        "version": 1,
+        "languageVersion": 2,
+        "variables": {
+          "color": [
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "type": "string",
+              "value": "$color-blue-50"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "rc87-compiler-explicit-negative-variable",

@@ -166,71 +166,13 @@ pub(super) fn variable_dependencies(value: &str) -> Vec<String> {
     dependencies
 }
 
-pub(super) fn unquoted_dollar_alias(value: &str) -> Option<&str> {
-    let mut index = 0;
-    while index < value.len() {
-        let character = value[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = skip_quoted_value(value, index, character);
-            continue;
-        }
-        if value[index..].starts_with("/*") {
-            index = skip_value_comment(value, index);
-            continue;
-        }
-        if character == '$' {
-            let alias = value[index + 1..]
-                .split(|character: char| {
-                    !(character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
-                })
-                .next()
-                .unwrap_or_default();
-            return (!alias.is_empty()).then_some(alias);
-        }
-        index += character.len_utf8();
-    }
-    None
-}
-
-pub(super) fn replace_unquoted_pipes(value: &str) -> String {
-    let mut output = String::with_capacity(value.len());
-    let mut index = 0;
-    while index < value.len() {
-        let character = value[index..].chars().next().unwrap_or_default();
-        let end = if matches!(character, '\'' | '"') {
-            skip_quoted_value(value, index, character)
-        } else if value[index..].starts_with("/*") {
-            skip_value_comment(value, index)
-        } else {
-            index + character.len_utf8()
-        };
-        if end > index + character.len_utf8() {
-            output.push_str(&value[index..end]);
-        } else if character == '|' {
-            output.push(' ');
-        } else {
-            output.push(character);
-        }
-        index = end;
-    }
-    output
-}
-
 pub(super) fn normalize_variable_value(
     value: &Value,
 ) -> Result<(Value, Vec<String>), CompilerError> {
     let Value::String(value) = value else {
         return Ok((value.clone(), Vec::new()));
     };
-    if let Some(alias) = unquoted_dollar_alias(value) {
-        return Err(manifest_error(format!(
-            "Stylesheet values use native CSS variable references. Replace \"${alias}\" with \"var(--{alias})\"."
-        )));
-    }
-    Ok((
-        Value::String(replace_unquoted_pipes(value)),
-        variable_dependencies(value),
-    ))
+    Ok((Value::String(value.clone()), variable_dependencies(value)))
 }
 
 pub(super) fn parse_numeric_value(
@@ -524,7 +466,8 @@ pub(super) fn compile_condition(source: &str) -> Value {
 }
 
 pub(super) fn compile_selector(source: &str) -> Vec<Value> {
-    let source = source.replace('&', "");
+    let source =
+        mastercss_lexer::replace_nesting_selector(source, "").unwrap_or_else(|| source.to_owned());
     let bytes = source.as_bytes();
     let mut nodes = Vec::new();
     let mut index = 0;

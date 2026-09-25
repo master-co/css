@@ -369,8 +369,10 @@ pub(crate) fn collect_class_completion_candidates(
             EngineClassCompletionCandidate {
                 label: token.clone(),
                 kind: EngineClassCompletionKind::Value,
-                detail: selector_token_to_template(token, manifest)
-                    .map(|selector| selector.replace('&', "")),
+                detail: selector_token_to_template(token, manifest).map(|selector| {
+                    mastercss_lexer::replace_nesting_selector(&selector, "")
+                        .unwrap_or_else(|| selector.to_owned())
+                }),
                 documentation_class_name: None,
                 sort_text: None,
                 trigger_suggest: false,

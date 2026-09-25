@@ -16,8 +16,8 @@ fn decimal_conditions_keep_a_single_numeric_value() {
         ("block@media((width>=37.5rem))", "@media (width>=37.5rem)"),
         ("block@media((width:37.5rem))", "@media (width:37.5rem)"),
         (
-            "block@media((height>=600.5px)|and|(height<800.5px))",
-            "@media (height>=600.5px) and (height<800.5px)",
+            "block@media((600.5px<=height<800.5px))",
+            "@media (600.5px<=height<800.5px)",
         ),
     ] {
         let result = engine.inspect(class_name).unwrap();

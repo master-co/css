@@ -17,7 +17,7 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const REPORT_VERSION = 2
+const REPORT_VERSION = 3
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']

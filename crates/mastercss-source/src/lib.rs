@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+mod extraction;
+pub use extraction::{SourceOccurrenceIr, extract_source_result};
 mod html_attribute;
 mod html_class_values;
 mod html_entities;
@@ -12,15 +14,15 @@ use std::path::Path;
 
 use oxc_allocator::Allocator;
 use oxc_ast::ast::{
-    CallExpression, Directive, ExportAllDeclaration, ExportFromDeclaration, Expression,
-    ImportDeclaration, ImportExpression, StringLiteral, TemplateLiteral,
+    BinaryExpression, CallExpression, Directive, ExportAllDeclaration, ExportFromDeclaration,
+    Expression, ImportDeclaration, ImportExpression, StringLiteral, TemplateLiteral,
 };
 use oxc_ast_visit::{Visit, walk};
 use oxc_parser::Parser;
 use oxc_span::SourceType;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SourceExtractorKind {
     #[default]
@@ -29,6 +31,8 @@ pub enum SourceExtractorKind {
     Oxc,
     Html,
     Astro,
+    Markdown,
+    Mdx,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -38,6 +42,8 @@ pub struct SourceExtractionInputIr {
     pub content: String,
     #[serde(default)]
     pub kind: SourceExtractorKind,
+    #[serde(default)]
+    pub owner: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
@@ -53,6 +59,8 @@ pub struct SourceBatchRequestIr {
 pub struct SourceExtractionIr {
     pub source: String,
     pub candidates: Vec<String>,
+    pub occurrences: Vec<SourceOccurrenceIr>,
+    pub diagnostics: Vec<mastercss_schema::Diagnostic>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -65,41 +73,13 @@ pub struct SourceBatchIr {
 }
 
 pub fn extract_source(input: &SourceExtractionInputIr) -> Vec<String> {
-    match input.kind {
-        SourceExtractorKind::Raw => extract_class_candidates(&input.content),
-        SourceExtractorKind::Oxc => extract_oxc_classes(&input.source, &input.content),
-        SourceExtractorKind::Html => extract_html_classes(&input.source, &input.content),
-        SourceExtractorKind::Astro => extract_astro_classes(&input.source, &input.content),
-        SourceExtractorKind::Auto => {
-            let clean_source = input.source.split('?').next().unwrap_or(&input.source);
-            let extension = Path::new(clean_source)
-                .extension()
-                .and_then(|extension| extension.to_str())
-                .unwrap_or_default()
-                .to_ascii_lowercase();
-            match extension.as_str() {
-                "astro" => extract_astro_classes(&input.source, &input.content),
-                "html" | "htm" => extract_html_classes(&input.source, &input.content),
-                "js" | "jsx" | "cjs" | "mjs" | "ts" | "tsx" | "cts" | "mts" => {
-                    extract_oxc_classes(&input.source, &input.content)
-                }
-                _ => extract_class_candidates(&input.content),
-            }
-        }
-    }
+    extract_source_result(input).candidates
 }
 
 pub fn extract_source_batch(request: &SourceBatchRequestIr) -> SourceBatchIr {
     SourceBatchIr {
         version: mastercss_schema::SOURCE_BATCH_VERSION,
-        files: request
-            .files
-            .iter()
-            .map(|input| SourceExtractionIr {
-                source: input.source.clone(),
-                candidates: extract_source(input),
-            })
-            .collect(),
+        files: request.files.iter().map(extract_source_result).collect(),
         html_attributes: request
             .html_attributes
             .iter()
@@ -134,7 +114,7 @@ pub fn extract_oxc_classes(source: &str, content: &str) -> Vec<String> {
     let allocator = Allocator::default();
     let parsed = Parser::new(&allocator, content, source_type).parse();
     if !parsed.diagnostics.is_empty() {
-        return extract_class_candidates(content);
+        return Vec::new();
     }
     let mut visitor = ClassCandidateVisitor::default();
     visitor.visit_program(&parsed.program);
@@ -239,6 +219,16 @@ fn remove_tag_elements(source: &str, tag: &str, mut on_content: impl FnMut(&str)
     output
 }
 
+fn source_url_literal(value: &str) -> bool {
+    value.split_once("://").is_some_and(|(scheme, rest)| {
+        !rest.is_empty()
+            && scheme.starts_with(|c: char| c.is_ascii_alphabetic())
+            && scheme
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || matches!(c, '+' | '-' | '.'))
+    })
+}
+
 fn add_unique_candidates(
     target: &mut Vec<String>,
     seen: &mut HashSet<String>,
@@ -253,13 +243,58 @@ fn add_unique_candidates(
 
 #[derive(Default)]
 struct ClassCandidateVisitor {
+    records: Vec<(String, std::ops::Range<usize>, bool)>,
     candidates: Vec<String>,
     seen: HashSet<String>,
 }
 
 impl ClassCandidateVisitor {
-    fn add_class_string(&mut self, value: &str) {
+    fn add_complete_fragment(
+        &mut self,
+        value: &str,
+        range: std::ops::Range<usize>,
+        open_start: bool,
+        open_end: bool,
+    ) {
+        let start = if open_start {
+            value.find(char::is_whitespace).unwrap_or(value.len())
+        } else {
+            0
+        };
+        let end = if open_end {
+            value.rfind(char::is_whitespace).unwrap_or(0)
+        } else {
+            value.len()
+        };
+        if start < end {
+            self.add_class_string(&value[start..end], range);
+        }
+    }
+
+    fn concatenation(&mut self, expression: &Expression<'_>, open_start: bool, open_end: bool) {
+        match expression {
+            Expression::StringLiteral(literal) => self.add_complete_fragment(
+                &literal.value,
+                literal.span.start as usize + 1..literal.span.end as usize - 1,
+                open_start,
+                open_end,
+            ),
+            Expression::BinaryExpression(binary)
+                if binary.operator == oxc_syntax::operator::BinaryOperator::Addition =>
+            {
+                self.concatenation(&binary.left, open_start, true);
+                self.concatenation(&binary.right, true, open_end);
+            }
+            _ => self.visit_expression(expression),
+        }
+    }
+
+    fn add_class_string(&mut self, value: &str, range: std::ops::Range<usize>) {
+        self.records.push((value.to_owned(), range, false));
         for candidate in extract_class_candidates(value) {
+            if source_url_literal(&candidate) {
+                continue;
+            }
             if self.seen.insert(candidate.clone()) {
                 self.candidates.push(candidate);
             }
@@ -268,8 +303,33 @@ impl ClassCandidateVisitor {
 }
 
 impl<'a> Visit<'a> for ClassCandidateVisitor {
+    fn visit_jsx_attribute(&mut self, attribute: &oxc_ast::ast::JSXAttribute<'a>) {
+        if let Some(oxc_ast::ast::JSXAttributeValue::StringLiteral(literal)) = &attribute.value {
+            let decoded = decode_html_attribute(literal.value.as_str());
+            self.add_class_string(
+                &decoded.value,
+                literal.span.start as usize + 1..literal.span.end as usize - 1,
+            );
+            self.records.last_mut().unwrap().2 = true;
+        } else {
+            walk::walk_jsx_attribute(self, attribute);
+        }
+    }
+
+    fn visit_binary_expression(&mut self, binary: &BinaryExpression<'a>) {
+        if binary.operator == oxc_syntax::operator::BinaryOperator::Addition {
+            self.concatenation(&binary.left, false, true);
+            self.concatenation(&binary.right, true, false);
+        } else {
+            walk::walk_binary_expression(self, binary);
+        }
+    }
+
     fn visit_string_literal(&mut self, literal: &StringLiteral<'a>) {
-        self.add_class_string(literal.value.as_str());
+        self.add_class_string(
+            literal.value.as_str(),
+            literal.span.start as usize + 1..literal.span.end as usize - 1,
+        );
     }
 
     fn visit_template_literal(&mut self, literal: &TemplateLiteral<'a>) {
@@ -284,9 +344,26 @@ impl<'a> Visit<'a> for ClassCandidateVisitor {
                     .as_ref()
                     .unwrap_or(&element.value.raw)
                     .as_str(),
+                literal.span.start as usize + 1..literal.span.end as usize - 1,
             );
         } else {
-            walk::walk_template_literal(self, literal);
+            for (index, element) in literal.quasis.iter().enumerate() {
+                let value = element
+                    .value
+                    .cooked
+                    .as_ref()
+                    .unwrap_or(&element.value.raw)
+                    .as_str();
+                self.add_complete_fragment(
+                    value,
+                    element.span.start as usize..element.span.end as usize,
+                    index > 0,
+                    index < literal.expressions.len(),
+                );
+            }
+            for expression in &literal.expressions {
+                self.visit_expression(expression);
+            }
         }
     }
 

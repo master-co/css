@@ -186,36 +186,15 @@ export function loadNativeToolingBinding(
         const dispose = disposable(session)
         return {
           scan: (source, content) => parse(session.scan(source, content)),
-          cachedSourceCandidates: (source, content) => parse(session.cachedSourceCandidates(source, content)),
-          extractCandidates: (source, content) => session.extractCandidates(source, content),
-          nativeDeclarationCandidates: (candidates) =>
-            parse(session.nativeDeclarationCandidates([...candidates])),
+          extractCandidates: (source, content, options = {}) => session.extractCandidates(source, content, request(options)),
           collectCandidates: (candidates) => session.collectCandidates([...candidates]),
-          filterCandidates: (candidates, blocklist) =>
-            session.filterCandidates([...candidates], request(blocklist)),
-          invalidGeneratedClasses: (batch, ruleSupport) =>
-            session.invalidGeneratedClasses(
-              request(batch),
-              ruleSupport.map((values) => [...values])
-            ),
-          scanCandidates: (
-            source,
-            content,
-            candidates,
-            blocklist,
-            nativeSupport,
-            invalidGeneratedClasses
-          ) => parse(session.scanCandidates(
-            source,
-            content,
-            [...candidates],
-            request(blocklist),
-            [...nativeSupport],
-            [...invalidGeneratedClasses]
-          )),
+          filterCandidates: (candidates, blocklist) => session.filterCandidates([...candidates], request(blocklist)),
+          scanCandidates: (source, content, candidates, blocklist, options = {}) => parse(session.scanCandidates(source, content, [...candidates], request(blocklist), request(options))),
+          removeSource: (source, options = {}) => parse(session.removeSource(source, request(options))),
+          reconcileSources: (owner, inputs) => parse(session.reconcileSources(owner, request(inputs))),
+          removeOwner: (owner) => parse(session.removeOwner(owner)),
           ensureClassRules: (classNames) => parse(session.ensureClasses([...classNames])),
-          registerNativeClassNames: (classNames) =>
-            session.registerNativeClasses([...classNames]),
+          registerNativeClassNames: (owner, classNames) => session.registerNativeClasses(owner, [...classNames]),
           reset: () => session.reset(),
           snapshot: () => parse(session.state()),
           dispose,

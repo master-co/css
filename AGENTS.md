@@ -25,7 +25,7 @@ Master CSS turns markup classes such as `fg:red:hover@sm` into layered CSS acros
 
 Generated rules use those layer blocks without dynamically adding the layer statement. Keyframes remain outside layers. Any CSS output difference is an intentional, explained behavior change covered by tests or fixtures.
 
-Rust is the single semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and host capability callbacks; it must not implement semantic fallbacks.
+Rust is the single semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and diagnostic capability checks; it must not implement semantic fallbacks.
 
 Preserve dependency direction:
 

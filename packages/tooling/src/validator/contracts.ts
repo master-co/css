@@ -5,7 +5,8 @@ export interface MasterCSSClassValidation {
   readonly className: string
   readonly matchStatus: BindingBatch['classes'][number]['matchStatus']
   readonly declarations: readonly import('../value-validation').DeclarationValidation[]
-  readonly checks: readonly { readonly name: string, readonly version: string, readonly phase: import('@master/css-binding/tooling').MasterCSSDiagnostic['phase'] }[]
+  readonly checks: readonly { readonly name: string, readonly version: string, readonly scope: string, readonly phase: import('@master/css-binding/tooling').MasterCSSDiagnostic['phase'] }[]
+  readonly cssSyntaxStatus: BindingBatch['classes'][number]['cssSyntaxStatus']
   readonly cssValueStatus: BindingBatch['classes'][number]['cssValueStatus']
   readonly browserSupport: BindingBatch['classes'][number]['browserSupport']
   readonly rules: readonly MasterCSSHydrationRule[]
@@ -13,6 +14,6 @@ export interface MasterCSSClassValidation {
 }
 
 export interface MasterCSSClassValidationResult {
-  readonly version: 2
+  readonly version: 3
   readonly classes: readonly MasterCSSClassValidation[]
 }

@@ -14,7 +14,7 @@ test('CLI inspection uses the shared final-language workflow conclusions', async
     const report = await inspect(['index.html'], { cwd: root, exitCode: 'never', includeCss: true })
     for (const expected of workflows.cases) {
       const actual = report.inspections.find(item => item.className === expected.className)
-      expect(actual).toMatchObject({ matchStatus: expected.matchStatus, cssValueStatus: expected.cssValueStatus, browserSupport: 'not-checked' })
+      expect(actual).toMatchObject({ matchStatus: expected.matchStatus, cssSyntaxStatus: expected.cssSyntaxStatus, cssValueStatus: expected.cssValueStatus, browserSupport: 'not-checked' })
       if (expected.code) expect(actual?.diagnostics?.map(item => item.code)).toContain(expected.code)
     }
     expect(report.css.text).toContain('padding:red')

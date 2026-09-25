@@ -97,7 +97,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.generatedCSS).not.toContain('@keyframes fade')
   })
 
-  it('emits theme variables referenced by compiled stylesheet --alpha() values', () => {
+  it('emits theme variables referenced by native stylesheet function values', () => {
     const compiled = compileCSSManifest(`
       @theme {
         --color-primary: #ff0000;
@@ -113,7 +113,7 @@ describe('style CSS extraction helpers', () => {
       includeGeneratedCSS: false
     })
 
-    expect(result.nativeCSS).toContain('color-mix(in oklab,var(--color-primary) 50%,transparent)')
+    expect(result.nativeCSS).toContain('--alpha(var(--color-primary) / 50%)')
     expect(result.generatedCSS).toContain('--color-primary:red')
   })
 

@@ -47,7 +47,7 @@ export async function ensureScanner(options: ResolvedMasterCSSVitePluginOptions,
   if (state.scanner) return state.scanner
   if (state.initializing) return state.initializing
   const owner = state
-  const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest, ...options.scanner }, config.root)
+  const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest, ...options.scanner, outputDirectories: [...(options.scanner?.outputDirectories ?? []), ...(config.build?.outDir ? [config.build.outDir] : [])] }, config.root)
   owner.initializing = scanner.init()
     .then(() => {
       scanner.options.verbose = 0

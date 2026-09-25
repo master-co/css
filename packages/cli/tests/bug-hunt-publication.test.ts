@@ -94,6 +94,9 @@ test('BH-0004 watch retries a publication failure without changing the previous 
     chmodSync(directory, 0o755)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block fg-blue"></div>')
     await wait(() => stderr.includes('Restart watching source changes'))
+    // A dependency retry may complete before the queued HTML change. Observe
+    // publication of this source update rather than an earlier restart message.
+    await wait(() => readFileSync(join(directory, 'output.css'), 'utf8').includes('.fg-blue'))
     const after = snapshot(directory)
     expect(Buffer.from(after['output.css'], 'base64').toString()).toContain('.fg-blue')
     for (const [file, bytes] of Object.entries(before)) if (file !== 'output.css' && !file.endsWith('.master-css.json')) expect(after[file]).toBe(bytes)
