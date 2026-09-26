@@ -13,6 +13,10 @@ interface SvelteRange {
   end?: number
 }
 
+interface SvelteScript extends SvelteRange {
+  content?: SvelteRange
+}
+
 interface SvelteAttributeValue extends SvelteRange {
   type?: string
   data?: string
@@ -54,7 +58,15 @@ function addOxc(classes: Set<string>, source: string, content: string) {
   }
 }
 
-function visitMarkup(node: SvelteMarkupNode | undefined, source: string, content: string, classes: Set<string>) {
+function scriptExtension(content: string, script: SvelteScript | undefined): 'js' | 'ts' | 'tsx' {
+  if (script?.start == null || script.content?.start == null) return 'js'
+  const openingTag = content.slice(script.start, script.content.start)
+  const match = /(?:^|\s)lang\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/iu.exec(openingTag)
+  const language = (match?.[1] ?? match?.[2] ?? match?.[3])?.toLowerCase()
+  return language === 'ts' || language === 'tsx' ? language : 'js'
+}
+
+function visitMarkup(node: SvelteMarkupNode | undefined, source: string, content: string, classes: Set<string>, extension: 'js' | 'ts' | 'tsx') {
   if (!node || typeof node !== 'object') return
 
   if (Array.isArray(node.attributes)) {
@@ -62,7 +74,7 @@ function visitMarkup(node: SvelteMarkupNode | undefined, source: string, content
       if (attribute.type === 'Class') {
         addClassString(classes, attribute.name)
         if (attribute.expression?.start != null && attribute.expression?.end != null) {
-          addOxc(classes, `${source}.js`, content.slice(attribute.expression.start, attribute.expression.end))
+          addOxc(classes, `${source}.${extension}`, content.slice(attribute.expression.start, attribute.expression.end))
         }
         continue
       }
@@ -71,17 +83,17 @@ function visitMarkup(node: SvelteMarkupNode | undefined, source: string, content
         if (value.type === 'Text') {
           addClassString(classes, value.data ?? value.raw)
         } else if (value.start != null && value.end != null) {
-          addOxc(classes, `${source}.js`, content.slice(value.start, value.end))
+          addOxc(classes, `${source}.${extension}`, content.slice(value.start, value.end))
         }
       }
     }
   }
 
   for (const child of node.children || []) {
-    visitMarkup(child, source, content, classes)
+    visitMarkup(child, source, content, classes, extension)
   }
   for (const branch of [node.else, node.pending, node.then, node.catch]) {
-    visitMarkup(branch, source, content, classes)
+    visitMarkup(branch, source, content, classes, extension)
   }
 }
 
@@ -98,14 +110,17 @@ export async function extractSvelteClasses(source: string, content: string): Pro
   try {
     const ast = compiler.parse(content)
     const classes = new Set<string>()
+    const moduleExtension = scriptExtension(content, ast.module)
+    const instanceExtension = scriptExtension(content, ast.instance)
 
     if (ast.module?.content) {
-      addOxc(classes, `${source}.js`, content.slice(ast.module.content.start, ast.module.content.end))
+      addOxc(classes, `${source}.${moduleExtension}`, content.slice(ast.module.content.start, ast.module.content.end))
     }
     if (ast.instance?.content) {
-      addOxc(classes, `${source}.js`, content.slice(ast.instance.content.start, ast.instance.content.end))
+      addOxc(classes, `${source}.${instanceExtension}`, content.slice(ast.instance.content.start, ast.instance.content.end))
     }
-    visitMarkup(ast.html as SvelteMarkupNode, source, content, classes)
+    visitMarkup(ast.html as SvelteMarkupNode, source, content, classes,
+      moduleExtension === 'tsx' || instanceExtension === 'tsx' ? 'tsx' : moduleExtension === 'ts' || instanceExtension === 'ts' ? 'ts' : 'js')
 
     return [...classes]
   } catch (error) {

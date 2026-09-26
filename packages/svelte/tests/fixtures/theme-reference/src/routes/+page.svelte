@@ -1,6 +1,13 @@
-<main class="probe">Theme reference probe</main>
+<script lang="ts">
+  import { resolve } from '$app/paths'
+  import './globals.css'
+  // Package checks use the host app's route types, which exclude this fixture route.
+  const unloadedRoute = '/unloaded' as '/'
+</script>
+
+<main class="probe">Loaded project entry</main>
+<a href={resolve(unloadedRoute)}>Unloaded entry route</a>
 
 <style>
-  @reference './globals.css';
-  .probe { color: var(--color-probe); }
+  .probe { @compose probe-tone; animation: project-pulse 1s linear infinite; }
 </style>

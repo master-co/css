@@ -249,4 +249,34 @@ describe('LocalComposePlugin', () => {
       rmSync(root, { recursive: true, force: true })
     }
   })
+
+  test('reloads the page without requesting a deleted project entry', async () => {
+    const root = createFixture()
+    try {
+      const context = createContext(root)
+      const plugin = LocalComposePlugin({} as any, context)
+      const entry = path.join(root, 'app.css')
+      const modulePath = path.join(root, 'src/Button.svelte') + '?svelte&type=style&lang.css'
+      const localModule = { id: modulePath, file: modulePath }
+      const deletedModule = { id: entry, file: entry }
+      const send = vi.fn()
+      await (plugin as any).transform.call(
+        { addWatchFile: vi.fn() },
+        '.button { @compose brand; }',
+        modulePath
+      )
+      rmSync(entry)
+      const result = await (plugin as any).hotUpdate.call({
+        environment: {
+          name: 'client', hot: { send },
+          moduleGraph: { getModuleById: vi.fn((id) => id === modulePath ? localModule : undefined), invalidateModule: vi.fn() }
+        }
+      }, { type: 'delete', file: entry, modules: [deletedModule] })
+
+      expect(result).toEqual([])
+      expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
 })

@@ -159,7 +159,7 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         }
       }))
     },
-    async hotUpdate({ file, modules }) {
+    async hotUpdate({ type, file, modules }) {
       const entriesChanged = /\.(?:css|scss|sass)$/u.test(file)
         && JSON.stringify(await discoverManifestEntries({ root: context.config?.root })) !== JSON.stringify(projectManifestEntries)
       if (!includesFile(projectManifestDependencies, file) && !entriesChanged) return
@@ -170,6 +170,13 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         if (!module) continue
         this.environment.moduleGraph.invalidateModule(module)
         affected.add(module)
+      }
+      // Svelte's HMR plugin tries to reload deleted CSS modules before it can
+      // update their dependent styles. A reload also clears orphaned CSS.
+      const hasSvelteStyle = [...affected].some(module => /\.svelte\?svelte&type=style(?:&|$)/u.test(module.id ?? ''))
+      if (type === 'delete' && entriesChanged && hasSvelteStyle) {
+        if (this.environment.name === 'client') this.environment.hot.send({ type: 'full-reload' })
+        return []
       }
       return [...affected]
     }

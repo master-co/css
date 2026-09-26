@@ -47,6 +47,12 @@
 </h1>
 ```
 
+Component `<style>` blocks can use tokens, modes, shared utilities, and managed
+animations from project CSS entries without `@reference`. Import the entry where
+its global reset, native rules, or generated classes should load. A component
+style receives the theme resources it uses even when that entry is not loaded
+on the same route. Use `@reference` for definitions outside the project context.
+
 
 Static is the default. For browser generation, explicitly use `masterCSS({ mode:
 'runtime' })` in the Vite configuration. For progressive rendering, select
