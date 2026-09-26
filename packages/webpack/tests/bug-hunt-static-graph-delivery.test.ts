@@ -80,12 +80,12 @@ test('nested CSS and resource edits change the real entry content hash and prese
   } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120000)
 
-test.each(['local.css', 'local.module.css'])('delivers referenced native theme variables from %s', async localName => {
+test.each(['local.css', 'local.module.css'])('delivers project theme variables without references from %s', async localName => {
   const root = fixture()
   try {
     writeFileSync(join(root, 'entry.js'), `import "./entry.css"; import "./${localName}"`)
-    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}')
-    writeFileSync(join(root, localName), '@reference "./entry.css";.button{color:var(--color-brand)}')
+    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}@theme{@keyframes pop{to{opacity:.5}}}')
+    writeFileSync(join(root, localName), '.button{color:var(--color-brand);--own:2rem;padding:var(--own);animation:pop 1s}.other{animation:own 1s}@keyframes own{to{opacity:1}}')
     const result = await build(root)
     const css = Object.values(result.contents).join('\n')
     const variable = localName.endsWith('.module.css') ? css.match(/color:var\((--[\w-]+)\)/)?.[1] : '--color-brand'
@@ -93,6 +93,12 @@ test.each(['local.css', 'local.module.css'])('delivers referenced native theme v
     expect(css).toContain(`color:var(${variable})`)
     expect(css).toContain(`${variable}:#123456`)
     expect(css).toContain(`${variable}:#abcdef`)
+    expect(css).toContain('@keyframes pop')
+    expect(css).toMatch(/animation:(?:1s pop|pop 1s)/)
+    if (localName.endsWith('.module.css')) {
+      expect(css).not.toContain('--own:')
+      expect(css).not.toContain('@keyframes own')
+    }
     expect(css).not.toContain('@reference')
     expect(css).toMatch(localName.endsWith('.module.css') ? /\.[\w-]+\{color:var\(/ : /\.button\{color:var\(/)
   } finally { rmSync(root, { recursive: true, force: true }) }

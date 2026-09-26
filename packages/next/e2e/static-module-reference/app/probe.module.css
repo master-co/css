@@ -1,2 +1,1 @@
-@reference './globals.css';
-.probe { color: var(--color-probe); }
+.probe { color: var(--color-probe); animation: project-pulse 1s linear infinite; }

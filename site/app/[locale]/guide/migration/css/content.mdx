@@ -11,7 +11,7 @@ Start with the stylesheet your app already loads.
 2. Keep default source discovery unless the project needs a narrower scan boundary.
 3. Move shared design values into `@theme`.
 4. Convert component-local visual rules into class strings when the markup stays readable.
-5. Keep CSS Modules when a local class name is still the clearest API; use `@reference` when their native declarations need project tokens.
+5. Keep CSS Modules when a local class name is still the clearest API; project tokens are available automatically in supported build integrations.
 6. Delete old CSS only after the affected screens build and visually match.
 
 Avoid converting selectors that describe document structure, third-party internals, browser quirks, or animation timelines better than a class list can.
@@ -75,11 +75,9 @@ Prefer named theme tokens such as `bg-surface`, `p-card`, or `r-card` when the v
 ## Keep CSS Modules when they are the component API
 CSS Modules are still useful when a component exposes a stable local class name, needs selectors that target internal structure, or uses project tokens in local variants.
 
-Use `@reference` when native declarations use project theme variables that the app entry may otherwise omit. It provides compile-time context without importing the app CSS output again.
+Vite, Next.js, and Webpack supply project theme definitions to local stylesheets automatically. Native declarations emit their required variables without importing the app CSS output again.
 
 ```css name=Button.module.css
-@reference "../app.css";
-
 .button {
   display: inline-flex;
   align-items: center;

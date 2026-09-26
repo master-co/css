@@ -1,7 +1,6 @@
 import {
   compileStylesheet,
   resolveStylesheet,
-  collectStylesheetEmittedGlobals,
   transformStylesheet
 } from '@master/css-compiler/stylesheet'
 import {
@@ -25,21 +24,6 @@ interface TransformStyleSourceOptions {
 
 function hasMasterStyleManifestDirective(source: string) {
   return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
-}
-
-async function createGlobalStyleEntryEmittedGlobals(
-  entries: readonly string[],
-  baseManifest: Awaited<ReturnType<typeof loadProjectManifest>>['manifest'],
-  projectDir: string | undefined,
-  dependencies: string[]
-) {
-  if (!entries.length) return
-  const result = await collectStylesheetEmittedGlobals(entries, {
-    baseManifest,
-    projectDir
-  })
-  dependencies.push(...result.dependencies)
-  return result.emittedGlobals
 }
 
 export async function transformStyleSource(
@@ -79,26 +63,26 @@ export async function transformStyleSource(
   }
 
   if (resolution.kind !== 'entry') {
-    if (resolution.kind === 'local') {
+    if (resolution.kind === 'local' || resolution.kind === 'plain') {
       const entries = await discoverManifestEntries({ root: projectDir })
+      if (!entries.length && resolution.kind === 'plain') return { code: source, dependencies }
       const projectManifest = await loadProjectManifest({
         root: projectDir,
         entries,
-        baseManifest: defaultBuildManifest
+        baseManifest: defaultBuildManifest,
+        onDependency: options.onDependency
       })
-      const emittedGlobals = await createGlobalStyleEntryEmittedGlobals(
-        entries,
-        projectManifest.manifest,
-        projectDir,
-        dependencies
-      )
       const result = await transformStylesheet(resourcePath, source, {
         baseManifest: projectManifest.manifest,
         projectDir,
-        emittedGlobals
+        referenceFiles: entries,
+        transformNativeStylesheets: true,
+        generatedGlobals: /\.module\.(?:css|scss|sass)$/u.test(resourcePath) ? 'separate' : 'inline',
+        onDependency: options.onDependency
       })
       return {
         code: result.code,
+        globalStylesheet: result.globalStylesheet,
         dependencies: [...new Set([
           ...projectManifest.dependencies,
           ...result.dependencies

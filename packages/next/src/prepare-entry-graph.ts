@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { pathToFileURL } from 'node:url'
 import { inspectCSS } from '@master/css-compiler'
-import { compileRenderedStylesheet, compileStylesheet } from '@master/css-compiler/stylesheet'
+import { compileRenderedStylesheet, compileStylesheet, type MasterCSSStylesheetCompileOptions } from '@master/css-compiler/stylesheet'
 import { defaultBuildManifest } from '@master/css-internal/project'
 import { createNextModuleGraph } from './prepare-module-graph'
 import { createNextPostCSS } from './prepare-postcss'
@@ -11,7 +11,8 @@ import type { ModuleContext } from './prepare-module'
 import type { NextStylesheetLoaderOptions } from './prepare-stylesheet'
 
 export async function prepareNextEntryGraph(context: ModuleContext, projectDir: string, options: NextStylesheetLoaderOptions,
-  onDependency: (file: string) => void, source: string, sourceMap?: string) {
+  onDependency: (file: string) => void, source: string, sourceMap?: string,
+  definitions: Pick<MasterCSSStylesheetCompileOptions, 'baseManifest' | 'referenceFiles'> = { baseManifest: defaultBuildManifest }) {
   const postcss = options.preprocessed ? createNextPostCSS(context, projectDir, onDependency) : undefined
   const raw = createNextModuleGraph(context, projectDir, options, onDependency, { raw: true })
   const rawEntry = await raw.prepareEntry(source, sourceMap)
@@ -19,7 +20,7 @@ export async function prepareNextEntryGraph(context: ModuleContext, projectDir: 
   const loadSass = () => ({ async compileStringAsync(css: string) { return { css } } })
   const resourceFiles = new Map<string, string>()
   const manifest = await compileRenderedStylesheet(context.resourcePath, rawEntry.source, {
-    baseManifest: defaultBuildManifest, projectDir, preserveNativeCSS: true, loadSass,
+    ...definitions, projectDir, preserveNativeCSS: true, loadSass,
     sourceMap: rawEntry.sourceMap, baseFile: context.resourcePath, onDependency: track,
     delivery: {
       entryURL: './entry.css',
@@ -39,7 +40,7 @@ export async function prepareNextEntryGraph(context: ModuleContext, projectDir: 
       inputs: raw.inputs, retainedImports: raw.retainedImports,
       async transform(_file, input, inputMap) { return { source: input, sourceMap: inputMap, globalAnimations } }
     })
-    return { graph, entry: await graph.prepareEntry(rawEntry.source, rawEntry.sourceMap), manifest: defaultBuildManifest, postcss: false }
+    return { graph, entry: await graph.prepareEntry(rawEntry.source, rawEntry.sourceMap), manifest: definitions.baseManifest, postcss: false }
   }
   const generatedCSS = rebasePostCSSResources(manifest.generatedCSS, context.resourcePath, [...resourceFiles])
   let processedGlobals = manifest.emittedGlobals

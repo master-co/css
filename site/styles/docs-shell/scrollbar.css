@@ -1,5 +1,3 @@
-@reference "../../app/globals.css";
-
 @layer components {
   .scrollbar {
     &::-webkit-scrollbar {

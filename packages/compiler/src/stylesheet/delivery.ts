@@ -8,6 +8,8 @@ import { analyzeCSSDependencies, compileCSS, inspectCSS, resolveCSSReferenceFile
 import { collectStylesheetDirectives, mergeStylesheetDirectives, mergeStylesheetSourceOptions, hasStylesheetSourceDirectives, resolveStylesheetSourcePaths, hasLocalStyleDirectives } from './directives'
 import { renderCompiledManifestCSS } from './render'
 import { resolveReferenceOrigins } from './reference-origins'
+import { referenceFileInputs } from './reference-files'
+import { compilePreparedGraph } from '../prepared-graph-cache'
 import { stylesheetOutputMap } from './output-map'
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import { MasterCSSError } from '@master/css-schema'
@@ -76,7 +78,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   if (new Set(Object.values(prepared.urls)).size !== Object.keys(prepared.urls).length) {
     throw new TypeError('Each stylesheet variant requires a distinct delivery URL.')
   }
-  const references = Object.entries(graph.files).flatMap(([file, source]) => {
+  const references = [...referenceFileInputs(options.referenceFiles), ...Object.entries(graph.files).flatMap(([file, source]) => {
     // Keep parser diagnostics attached to the supplied source identity; only the
     // filesystem lookup of its references uses the host's original source owner.
     const parsed = compileCSS(source, { from: owners[file] ?? file })
@@ -84,7 +86,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
     const references = parsed.references || []
     const owner = graph.baseFiles?.[file] ?? owners[file] ?? file
     return resolveReferenceOrigins(source, references.map(reference => ({ ...reference, file: owner })), owner, graph.sourceMaps?.[file])
-  })
+  })]
   const entryFile = graph.baseFiles?.[graph.entry] ?? owners[graph.entry] ?? graph.entry
   const stack = [...referenceStack, ...(entryFile.startsWith('\0') ? [] : [existsSync(entryFile) ? realpathSync(entryFile) : resolve(entryFile)])]
   const reference = { manifest: undefined as MasterCSSManifest | undefined, dependencies: [] as string[], warnings: [] as string[] }
@@ -94,7 +96,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
     const chain = [...stack, ...(item.file && !item.file.startsWith('\0') ? [existsSync(item.file) ? realpathSync(item.file) : resolve(item.file)] : [])]
     if (chain.includes(realpathSync(file))) throw new Error(`Circular CSS reference: ${[...stack, file].join(' -> ')}`)
     const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }, analyzeCSSDependencies)
-    const compiled = compileGraph(referenceGraph, { ...options, references: undefined, baseManifest: reference.manifest ?? options.baseManifest }, undefined, chain, {}, {}, undefined, metadataOnly)
+    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest }, undefined, chain, {}, {}, undefined, metadataOnly)
     reference.manifest = compiled.manifest
     reference.dependencies.push(...compiled.directives.dependencies)
     reference.warnings.push(...compiled.directives.warnings)
@@ -102,7 +104,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   }
   const binding = createCompilerBindingSessionSync()
   try {
-    const result = binding.compileCSSStylesheetGraph({
+    const result = compilePreparedGraph(binding, {
       graph,
       pruneNativeStylesheets: Object.keys(graph.files).filter(file => {
         const policy = collectStylesheetDirectives(graph.files[file], owners[file] ?? file, options.projectDir)

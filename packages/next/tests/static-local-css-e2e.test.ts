@@ -14,8 +14,9 @@ beforeAll(() => {
 it.each([
   ['static-local-css', '--turbo', false],
   ['static-local-css', '--webpack', false],
-  ['static-module-reference', '--webpack', true]
-] as const)('delivers referenced native theme variables in Next %s %s mode', async (fixture, builder, moduleStyle) => {
+  ['static-module-reference', '--webpack', true],
+  ['static-module-reference', '--turbo', true]
+] as const)('delivers project theme variables without @reference in Next %s %s mode', async (fixture, builder, moduleStyle) => {
   const fixtureDir = join(packageDir, 'e2e', fixture)
   const outDir = join(fixtureDir, 'out')
   execFileSync(join(packageDir, 'node_modules/.bin/next'), ['build', builder], {
@@ -37,7 +38,8 @@ it.each([
     expect(css).toContain('--color-probe:#123456')
     expect(css).toContain('--color-probe:#abcdef')
   } else {
-    expect(css).toContain('@import')
+    // Webpack retains a publication import; Turbopack may bundle the global CSS.
+    if (builder === '--webpack') expect(css).toContain('@import')
     expect(css).not.toMatch(/\.[\w-]+\{--color-probe:/)
   }
   expect(css).not.toContain('@reference')
@@ -70,6 +72,7 @@ it.each([
         await page.goto(`http://127.0.0.1:${address.port}/`)
         expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe(expected)
         if (moduleStyle) {
+          await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).opacity)).toBe('0.5')
           await page.evaluate(() => document.body.setAttribute('data-theme', 'ocean'))
           for (const [link, pathname] of [['Other route', '/other'], ['Home route', '/']] as const) {
             await page.getByRole('link', { name: link }).click()

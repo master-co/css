@@ -60,7 +60,7 @@ describe('LocalComposePlugin', () => {
     }
   })
 
-  test('dedupes theme variables already emitted by global style entries', async () => {
+  test('retains local resources when discovered entries are not guaranteed loaded', async () => {
     const root = createFixture()
     try {
       writeFileSync(path.join(root, 'app.css'), [
@@ -78,7 +78,7 @@ describe('LocalComposePlugin', () => {
       )
 
       expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
-      expect(result.code).not.toContain('--spacing-5xl:')
+      expect(result.code).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-css-slot')
       expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
     } finally {
@@ -178,7 +178,7 @@ describe('LocalComposePlugin', () => {
       const plugin = LocalComposePlugin({} as any, createContext(root))
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '@reference "../app.css"; .button { color: var(--color-brand); }',
+        '.button { color: var(--color-brand); }',
         path.join(root, 'src', name)
       )
 
@@ -235,22 +235,16 @@ describe('LocalComposePlugin', () => {
         '.button { @compose brand; }',
         modulePath
       )
-      const result = await (plugin as any).handleHotUpdate({
-        file: path.join(root, 'app.css'),
-        server: {
-          moduleGraph: {
-            getModuleById: vi.fn((id) => id === modulePath ? module : undefined),
-            invalidateModule
-          },
-          reloadModule,
-          ws: { send }
+      const result = await (plugin as any).hotUpdate.call({
+        environment: {
+          moduleGraph: { getModuleById: vi.fn((id) => id === modulePath ? module : undefined), invalidateModule },
+          reloadModule, hot: { send }
         }
-      })
+      }, { file: path.join(root, 'app.css'), modules: [] })
 
       expect(invalidateModule).toHaveBeenCalledWith(module)
-      expect(reloadModule).toHaveBeenCalledWith(module)
       expect(send).not.toHaveBeenCalled()
-      expect(result).toEqual([])
+      expect(result).toEqual([module])
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

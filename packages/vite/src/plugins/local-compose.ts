@@ -1,13 +1,12 @@
 import { withStylesheetDependencies } from '../utils/failed-stylesheet-dependencies'
 import { withSassDiagnostics } from '../utils/sass-diagnostics'
-import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
+import type { Plugin } from 'vite'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { defaultBuildManifest } from '@master/css-internal/project'
 import {
-  collectStylesheetEmittedGlobals,
   transformStylesheet,
   resolveStylesheet
 } from '@master/css-compiler/stylesheet'
@@ -20,22 +19,15 @@ import { includesFile } from '../utils/path'
 import { captureBuildStylesheetSource, clearBuildStylesheetSources, getBuildImportResolver } from '../utils/build-import-resolver'
 
 import { getSassSourceFile, getPreparedSassSource, getPreparedSassSourceMap, isRawStyleRequest } from '../utils/build-sass-source'
-import { getDevStylesheetDelivery, publishDevStylesheets } from '../utils/dev-stylesheet-delivery'
+import { getDevStylesheetDelivery, publishDevGlobalStylesheet, publishDevStylesheets } from '../utils/dev-stylesheet-delivery'
 import { getBuildStylesheetDelivery } from '../utils/build-stylesheet-delivery'
 import { inlineDelivery, isInlineStylesheet, registerLocalInlineStylesheet } from '../utils/inline-stylesheet'
 import { clearLocalStylesheets, registerLocalStylesheet } from '../utils/local-stylesheet'
-
-function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
-  if (!module) return false
-  server.moduleGraph.invalidateModule(module)
-  return true
-}
 
 export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
   let projectManifestEntries: string[] = []
   let projectManifestDependencies: string[] = []
-  let styleEntryEmittedGlobals: Awaited<ReturnType<typeof collectStylesheetEmittedGlobals>> | undefined
   const localComposeModules = new Set<string>()
 
   const addServerAllow = (paths: string[]) => {
@@ -47,7 +39,10 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
   }
 
   const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
-    if (projectManifest) return projectManifest
+    if (projectManifest) {
+      for (const dependency of projectManifestDependencies) pluginContext.addWatchFile?.(dependency)
+      return projectManifest
+    }
     const root = context.config?.root
     const entries = await discoverManifestEntries({ root })
     projectManifestEntries = [...entries]
@@ -65,7 +60,8 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
     projectManifest = await loadProjectManifest({
       root,
       entries,
-      baseManifest: defaultBuildManifest
+      baseManifest: defaultBuildManifest,
+      onDependency: file => { dependencies.add(file); pluginContext.addWatchFile?.(file) }
     })
     for (const dependency of projectManifest.dependencies) {
       if (dependencies.has(dependency)) continue
@@ -77,23 +73,6 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
     return projectManifest
   }
 
-  const loadStyleEntryEmittedGlobals = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
-    const manifestResult = await loadComposeContext(pluginContext)
-    if (styleEntryEmittedGlobals) return styleEntryEmittedGlobals
-    const dependencies = new Set(projectManifestDependencies)
-    styleEntryEmittedGlobals = await collectStylesheetEmittedGlobals(projectManifestEntries, {
-      baseManifest: manifestResult.manifest,
-      projectDir: context.config?.root
-    })
-    for (const dependency of styleEntryEmittedGlobals.dependencies) {
-      dependencies.add(dependency)
-      pluginContext.addWatchFile?.(dependency)
-    }
-    projectManifestDependencies = [...dependencies]
-    addServerAllow(projectManifestDependencies)
-    return styleEntryEmittedGlobals
-  }
-
   return {
     name: 'master-css:local-compose',
     enforce: 'pre',
@@ -103,7 +82,6 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
       projectManifest = undefined
       projectManifestEntries = []
       projectManifestDependencies = []
-      styleEntryEmittedGlobals = undefined
     },
     async transform(code, id) {
       return withStylesheetDependencies(context, this, id, onDependency => withSassDiagnostics(context, async () => {
@@ -121,21 +99,31 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         const prepared = getPreparedSassSource(context, id)
         const moduleGraph = prepared && (await prepared.prepared).moduleSources
         const nativeModuleGraph = resolution?.kind === 'plain' && Boolean(moduleGraph && moduleGraph.size > 1)
-        if (resolution?.kind !== 'local' && !nativeModuleGraph) return sourceMeta ? { meta: sourceMeta } : undefined
+        if (resolution?.kind !== 'local' && resolution?.kind !== 'plain') return sourceMeta ? { meta: sourceMeta } : undefined
 
         const dependencies = new Set(resolution.dependencies)
         for (const dependency of dependencies) {
           onDependency(dependency)
         }
         const manifestResult = await loadComposeContext(dependencyHost)
-        const emittedGlobalsResult = await loadStyleEntryEmittedGlobals(dependencyHost)
+        // Even a no-op depends on the context: adding a token can make it managed.
+        localComposeModules.add(id)
+        if (!projectManifestEntries.length && resolution.kind === 'plain' && !nativeModuleGraph) return sourceMeta ? { meta: sourceMeta } : undefined
+        const scopedVueStyle = id.includes('?vue&') && /(?:^|[?&])scoped(?:=|&|$)/u.test(id)
+        const compileOptions = {
+          baseManifest: manifestResult.manifest, projectDir: context.config?.root,
+          referenceFiles: projectManifestEntries, transformNativeStylesheets: true,
+          baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), onDependency,
+          generatedGlobals: scopedVueStyle ? 'separate' as const : 'inline' as const
+        }
+        if (resolution.kind === 'plain' && !nativeModuleGraph) {
+          const probe = await transformStylesheet(id, code, compileOptions)
+          if (!probe.transformed) return sourceMeta ? { meta: sourceMeta } : undefined
+        }
         const inline = context.config?.command === 'build' && isInlineStylesheet(id)
         const delivery = inline ? inlineDelivery(context) : getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
         const result = await transformStylesheet(id, code, {
-          transformNativeStylesheets: nativeModuleGraph,
-          baseManifest: manifestResult.manifest,
-          projectDir: context.config?.root,
-          emittedGlobals: emittedGlobalsResult.emittedGlobals,
+          ...compileOptions,
           ...(delivery ? { delivery: {
             ...delivery, baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), resolveImport: getBuildImportResolver(context, dependencyHost),
             onDependency
@@ -152,16 +140,18 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         else if (context.config?.command === 'build') {
           // Vue scopes selectors after this transform. Keep native rules in
           // that pipeline, while the generated theme rules remain global.
-          const scopedVueStyle = id.includes('?vue&') && /(?:^|[?&])scoped(?:=|&|$)/u.test(id)
-          if (scopedVueStyle && result.compilation && !result.stylesheets?.length) {
-            const { nativeCSS, generatedCSS } = result.compilation
-            if (generatedCSS) {
-              const slot = registerLocalStylesheet(context, id, { ...result, code: generatedCSS })
+          if (scopedVueStyle && !result.stylesheets?.length) {
+            if (result.globalStylesheet) {
+              const slot = registerLocalStylesheet(context, id, { ...result, code: result.globalStylesheet.css, globalStylesheet: undefined })
+              const nativeCSS = result.code
               output = `${nativeCSS}\n:global(${slot.slice(0, slot.indexOf('{'))})${slot.slice(slot.indexOf('{'))}`
-            } else output = nativeCSS
+            } else output = result.code
           } else output = registerLocalStylesheet(context, id, result)
         }
-        else if (context.config?.command === 'serve') output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: emittedGlobalsResult.emittedGlobals }, '#master-css-local-slot{--slot:0}')
+        else if (context.config?.command === 'serve') {
+          output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: { variables: {}, animations: {} } }, '#master-css-local-slot{--slot:0}')
+          if (result.globalStylesheet) output = publishDevGlobalStylesheet(context, result.globalStylesheet.css) + '\n' + output
+        }
         return {
           code: output,
           map: null,
@@ -169,20 +159,19 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         }
       }))
     },
-    async handleHotUpdate({ file, server }) {
-      if (!includesFile(projectManifestDependencies, file)) return
+    async hotUpdate({ file, modules }) {
+      const entriesChanged = /\.(?:css|scss|sass)$/u.test(file)
+        && JSON.stringify(await discoverManifestEntries({ root: context.config?.root })) !== JSON.stringify(projectManifestEntries)
+      if (!includesFile(projectManifestDependencies, file) && !entriesChanged) return
       projectManifest = undefined
-      projectManifestEntries = []
-      projectManifestDependencies = []
-      styleEntryEmittedGlobals = undefined
-      let handled = false
+      const affected = new Set(modules)
       for (const moduleId of localComposeModules) {
-        const module = server.moduleGraph.getModuleById(moduleId)
-        handled ||= Boolean(module)
-        invalidateModule(module, server)
-        if (module) await server.reloadModule(module)
+        const module = this.environment.moduleGraph.getModuleById(moduleId)
+        if (!module) continue
+        this.environment.moduleGraph.invalidateModule(module)
+        affected.add(module)
       }
-      if (handled) return []
+      return [...affected]
     }
   }
 }

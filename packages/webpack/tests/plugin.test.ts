@@ -383,7 +383,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('dedupes local theme variables already emitted by global style entries', async () => {
+  test('retains local resources separately when discovered entries are not guaranteed loaded', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-dedupe-'))
     const entryPath = path.join(root, 'app.css')
     const modulePath = path.join(root, 'Home.module.css')
@@ -400,6 +400,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
       expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
       expect(result.code).not.toContain('--spacing-5xl:')
+      expect(result.globalStylesheet?.css).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-utilities.css')
       expect(result.dependencies).toContain(entryPath)
       expect(result.dependencies).toContain(modulePath)
@@ -459,8 +460,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       })
 
       expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
-      expect(result.code).toContain('--spacing-card:2rem')
-      expect(result.code).toContain('@keyframes pop')
+      expect(result.globalStylesheet?.css).toContain('--spacing-card:2rem')
+      expect(result.globalStylesheet?.css).toContain('@keyframes pop')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-utilities.css')
@@ -481,14 +482,15 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '@theme light { --color-brand: #123456; }',
         '@theme dark { --color-brand: #abcdef; }'
       ].join('\n'))
-      const result = await transformStyleSource(localPath, '@reference "./app.css"; .button { color: var(--color-brand); }', {
+      const result = await transformStyleSource(localPath, '.button { color: var(--color-brand); }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
-      expect(result.code).toContain('--color-brand:#123456')
-      expect(result.code).toContain('--color-brand:#abcdef')
+      const globals = result.globalStylesheet?.css ?? result.code
+      expect(globals).toContain('--color-brand:#123456')
+      expect(globals).toContain('--color-brand:#abcdef')
       expect(result.code).not.toContain('@reference')
       expect(result.dependencies).toContain(entryPath)
     } finally {

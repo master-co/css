@@ -1,7 +1,8 @@
 /** @internal Node-only compiler and import-graph implementation. */
 import { readFileSync, realpathSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { compilePreparedGraph } from './prepared-graph-cache'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -90,6 +91,9 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
 }
 
 type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
+  /** Host context definitions retain file URL owners until the host publishes assets. */
+  resolveReferenceResources?: boolean
+  referenceResources?: boolean
   referenceStack?: string[]
   diagnostics?: CompilerDiagnosticRecorder
   sourceText?: string
@@ -426,7 +430,8 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
   }
 }
 
-export function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSManifestSourceOptions = {}) {
+export function resolveCSSReferenceFile(reference: CSSDirectiveReference & { resolvedFile?: string }, options: CompileCSSManifestSourceOptions = {}) {
+  if (reference.resolvedFile) return reference.resolvedFile
   const fromFile = reference.file
     ? isAbsolute(reference.file)
       ? reference.file
@@ -466,6 +471,7 @@ function resolveCSSReferenceContext(
       ...options,
       baseManifest: manifest,
       preserveNativeCSS: false,
+      referenceResources: options.resolveReferenceResources,
       referenceStack: options.referenceStack
     })
     utilitySources.push(...(result.utilitySources || []))
@@ -537,12 +543,24 @@ export function compileCSSManifestGraph(
     return options.mapReferences?.(file, source, references) ?? references
   })
   const referenceContext = resolveCSSReferenceContext(references, options)
-  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => nativeCompiler().compileCSSStylesheetGraph({
+  const resourceDependencies: string[] = []
+  const resourceURLs = options.referenceResources ? Object.fromEntries(Object.entries(graph.files).map(([file, source]) => [file,
+    Object.fromEntries(analyzeCSSDependencies(source).resources.flatMap(({ url }) => {
+      if (url.startsWith('/') || url.startsWith('#') || /^[a-z][a-z\d+.-]*:/i.test(url)) return []
+      const resource = new URL(url, pathToFileURL(file))
+      const owner = fileURLToPath(resource)
+      resourceDependencies.push(owner)
+      options.onDependency?.(owner)
+      return [[url, resource.href]]
+    }))
+  ])) : undefined
+  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => compilePreparedGraph(nativeCompiler(), {
     graph,
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     utilitySources: referenceContext.utilitySources,
+    resourceURLs,
     options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
         pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(options.classes ? { classes: options.classes } : {}) },
@@ -550,7 +568,7 @@ export function compileCSSManifestGraph(
   }))
   const directives = reviveBindingCompileResult(compiled.directives as CompileCSSResult)
   directives.references = references.length ? references : undefined
-  const dependencies = [...new Set([...directives.dependencies, ...referenceContext.dependencies])]
+  const dependencies = [...new Set([...directives.dependencies, ...referenceContext.dependencies, ...resourceDependencies])]
   const warnings = [...new Set([...directives.warnings, ...referenceContext.warnings])]
   for (const warning of warnings) options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   const entry = compiled.stylesheets.find(sheet => sheet.id === compiled.entry)!
@@ -563,7 +581,7 @@ export function compileCSSManifestGraph(
 
 export function createManifestFromCSSResult(
   result: CompileCSSResult,
-  options: CompileCSSManifestSourceOptions & { sourceText?: string, onDependency?: (file: string) => void } = {}
+  options: CompileCSSManifestSourceOptions & { sourceText?: string, onDependency?: (file: string) => void, resolveReferenceResources?: boolean } = {}
 ) {
   return toCompileCSSManifestResult(result, options)
 }

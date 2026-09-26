@@ -204,7 +204,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       join(root, 'app', name),
-      '@reference "./globals.css"; .button { color: var(--color-brand); }'
+      '.button { color: var(--color-brand); }'
     )
 
     expect(result.content).toMatch(/color:\s*var\(--color-brand\)/)
@@ -239,7 +239,7 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toContain(globalsPath)
   })
 
-  it('dedupes referenced default theme variables already emitted by global CSS for page-level CSS', async () => {
+  it('retains local resources when a discovered global entry is not guaranteed loaded', async () => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
     const pagePath = join(root, 'app/page.css')
@@ -255,7 +255,7 @@ describe('Next style CSS loader', () => {
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
-    expect(result.content).not.toContain('--spacing-5xl:')
+    expect(result.content).toContain('--spacing-5xl:')
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@master/css')
     expect(result.dependencies).toContain(pagePath)

@@ -1,5 +1,3 @@
-@reference "../../app/globals.css";
-
 @layer components {
   .monaco-editor {
     --vscode-editor-background: transparent !important;

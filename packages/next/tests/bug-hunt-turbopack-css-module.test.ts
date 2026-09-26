@@ -22,14 +22,14 @@ function stylesheetRules(file: string, source: string) {
 for (const extension of ['css', 'scss', 'sass']) test(`Turbopack preserves CSS Module type for .module.${extension}`, () => {
   const rules = stylesheetRules(`card.module.${extension}`, '.card{@compose p:2rem;}')
   expect(rules).toHaveLength(1)
-  expect(rules[0].type).toBe('css-module')
-  expect(rules[0].as).toBeUndefined() // Preserve the source identity; type handles Sass output.
+  expect(rules[0].type).toBeUndefined()
+  expect(rules[0].as).toBeUndefined() // Preserve Next’s inferred module type and original filename.
 })
 for (const extension of ['scss', 'sass']) test(`Turbopack handles imported directives in .module.${extension} once`, () => {
   const rules = stylesheetRules(`card.module.${extension}`, '@use "parts/card";')
   expect(rules).toHaveLength(1)
-  expect(rules[0].type).toBe('css-module')
-  expect(rules[0].as).toBeUndefined() // Preserve the source identity; type handles Sass output.
+  expect(rules[0].type).toBeUndefined()
+  expect(rules[0].as).toBeUndefined() // Preserve Next’s inferred module type and original filename.
 })
 test('Turbopack keeps global Sass global and forwards configured options', () => {
   const rules = stylesheetRules('globals.scss', '@use "parts/global";')
@@ -37,6 +37,8 @@ test('Turbopack keeps global Sass global and forwards configured options', () =>
   expect(rules[0].type).toBe('css')
   expect(rules[0].loaders).toEqual([expect.objectContaining({ options: { sassOptions: { loadPaths: ['/project/styles'] } } })])
 })
-test('Turbopack leaves native CSS Modules without Master directives to Next', () => {
-  expect(stylesheetRules('card.module.css', '.card{padding:2rem;}')).toEqual([])
+test('Turbopack supplies project context to native CSS Modules without a directive gate', () => {
+  const rules = stylesheetRules('card.module.css', '.card{padding:2rem;}')
+  expect(rules).toHaveLength(1)
+  expect(rules[0].type).toBeUndefined()
 })

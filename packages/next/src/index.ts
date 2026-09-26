@@ -37,7 +37,6 @@ const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.
 const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
 const MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN = createVirtualEmittedGlobalsModulePathPattern()
-const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createManifestEntryPattern().source}|@(compose|at|reference|variant|light|dark)\\b`)
 const NEXT_INSTRUMENTATION_CLIENT_ID = 'private-next-instrumentation-client'
 const MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID = 'private-next-master-css-user-instrumentation-client'
 const NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS = [
@@ -406,29 +405,21 @@ function applyMasterCSSTurbopackConfig(
       all: [
         { path: /\.(css|scss|sass)$/ },
         { not: { path: /\.module\.(css|scss|sass)$/ } },
-        { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
+        { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
         { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
       ]
     },
     loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
     type: 'css' as const
   }
-  // Directives can be introduced by @use/@forward in another Sass file.
-  const importedSassRule = {
-    ...masterCSSStyleRule,
-    condition: { all: [
-      { path: /\.(scss|sass)$/ },
-      { not: { path: /\.module\.(scss|sass)$/ } },
-      { not: { content: MASTER_CSS_STYLE_CONTENT_PATTERN } },
-      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
-    ] }
-  }
   const cssModuleRule = {
     ...masterCSSStyleRule,
-    type: 'css-module' as const,
+    // Preserve Next's inferred Module type. An explicit css-module type also
+    // retypes its internal CSS asset and Turbopack cannot process that wrapper.
+    type: undefined,
     condition: { all: [
       { path: /\.module\.(css|scss|sass)$/ },
-      { any: [{ content: MASTER_CSS_STYLE_CONTENT_PATTERN }, { path: /\.(scss|sass)$/ }] },
+      { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
       { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
     ] }
   }
@@ -460,7 +451,8 @@ function applyMasterCSSTurbopackConfig(
         masterCSSVirtualManifestRule,
         masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
-        ...(includeStyleRule ? [publishedStylesheetMapRule, masterCSSStyleRule, importedSassRule, cssModuleRule] : []),
+        publishedStylesheetMapRule,
+        ...(includeStyleRule ? [masterCSSStyleRule, cssModuleRule] : []),
         ...toRuleArray(configRules)
       ]
     } satisfies TurbopackRules
@@ -559,21 +551,28 @@ function applyMasterCSSStaticTurbopackConfig(
     type: 'css' as const
   }
   // Static publication owns entry stylesheets, but local styles still need
-  // directive lowering and referenced theme resources before Next emits CSS.
-  // Keep CSS Modules on Next's built-in path: Turbopack cannot process the
-  // transformed inner CSS asset produced by a custom module stylesheet loader.
+  // directive lowering and project theme resources before Next emits CSS.
   const localStyleRule = {
     condition: {
       all: [
         { path: /\.(css|scss|sass)$/ },
         { not: { path: /\.module\.(css|scss|sass)$/ } },
         { not: { content: createManifestEntryPattern() } },
-        { any: [{ content: MASTER_CSS_STYLE_CONTENT_PATTERN }, { path: /\.(scss|sass)$/ }] },
+        { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
         { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
       ]
     },
     loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
     type: 'css' as const
+  }
+  const localModuleRule = {
+    ...localStyleRule,
+    type: undefined,
+    condition: { all: [
+      { path: /\.module\.(css|scss|sass)$/ },
+      { not: { content: createManifestEntryPattern() } },
+      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+    ] }
   }
   return {
     ...turbopackConfig,
@@ -583,6 +582,7 @@ function applyMasterCSSStaticTurbopackConfig(
         ...sourceRules,
         cssImportRule,
         localStyleRule,
+        localModuleRule,
         ...starRules
       ]
     } satisfies TurbopackRules

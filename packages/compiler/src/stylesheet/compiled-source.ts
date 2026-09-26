@@ -6,15 +6,17 @@ import { resolveReferenceOrigins } from './reference-origins'
 import { mapStylesheetError } from './source-context'
 import { stylesheetOutputMap, stylesheetOutputMappings, stylesheetInputMap, type StylesheetOutputContext } from './output-map'
 import type { CompileStylesheetOptions } from './types'
+import { referenceFileInputs } from './reference-files'
 
 /** Preserve input origins while joining parsed and lowered compiler output. */
 export function compilePreparedStylesheet(filename: string, css: string, options: CompileStylesheetOptions, resolveImports: boolean): {
-  compileOptions: Omit<CompileStylesheetOptions, 'projectDir' | 'loadSass' | 'baseManifest' | 'sourceMap' | 'baseFile' | 'onDependency' | 'references'>
+  compileOptions: Omit<CompileStylesheetOptions, 'projectDir' | 'loadSass' | 'baseManifest' | 'sourceMap' | 'baseFile' | 'onDependency' | 'references' | 'referenceFiles'>
   finalizedResult: CompileCSSManifestResult
   result: CompileCSSResult
   outputMap: (code: string) => string
 } {
-  const { projectDir, loadSass: _loadSass, baseManifest, sourceMap, baseFile, onDependency, references: suppliedReferences, ...compileOptions } = options
+  const { projectDir, loadSass: _loadSass, baseManifest, sourceMap, baseFile, onDependency, referenceFiles, references: suppliedReferences, ...compileOptions } = options
+  const hostReferences = referenceFileInputs(referenceFiles)
   onDependency?.(baseFile ?? filename)
   let compilationFile = filename
   const compilationSource = css
@@ -28,9 +30,9 @@ export function compilePreparedStylesheet(filename: string, css: string, options
       errorContext = context
       const finalizedResult = compileCSSManifestGraph(graph, {
         ...compileOptions, baseManifest, from: root, root: projectDir, onDependency,
-        referenceStack: [root],
+        referenceStack: [root], resolveReferenceResources: Boolean(referenceFiles?.length),
         mapReferences: (file, text, references) => file === root
-          ? suppliedReferences ?? resolveReferenceOrigins(text, references, baseFile ?? root, sourceMap)
+          ? [...hostReferences, ...(suppliedReferences ?? resolveReferenceOrigins(text, references, baseFile ?? root, sourceMap))]
           : references
       })
       if (finalizedResult.stylesheets.length > 1) {
@@ -44,7 +46,8 @@ export function compilePreparedStylesheet(filename: string, css: string, options
     const result = compileCSS(compilationSource, { ...compileOptions, from: compilationFile })
     if (suppliedReferences) result.references = suppliedReferences
     else if (sourceMap && result.references) result.references = [...resolveReferenceOrigins(css, result.references, baseFile ?? filename, sourceMap)]
-    const finalizedResult = createManifestFromCSSResult(result, { ...compileOptions, onDependency, baseManifest, root: projectDir, from: filename, sourceText: compilationSource })
+    if (hostReferences.length) result.references = [...hostReferences, ...(result.references ?? [])]
+    const finalizedResult = createManifestFromCSSResult(result, { ...compileOptions, onDependency, baseManifest, root: projectDir, from: filename, sourceText: compilationSource, resolveReferenceResources: Boolean(referenceFiles?.length) })
     const mappings = finalizedResult.outputMappings ?? stylesheetOutputMappings(result.nativeCSS, result.nativeMappings, finalizedResult.generatedMappings)
     const outputMap = (code: string) => stylesheetOutputMap(code, mappings, context, finalizedResult.css.length)
     return { compileOptions, finalizedResult, result, outputMap }

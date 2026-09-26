@@ -106,10 +106,9 @@ The imported source becomes part of the project CSS entry graph. Project markup 
 <section class="p-lg content-auto">...</section>
 ```
 
-When a local CSS file only needs the package as compile-time context, use `@reference` instead:
+Packages imported by a project entry are already available to local stylesheets. To add a package only to one stylesheet's compile-time context, use `@reference`:
 
 ```css name=components/Button.module.css
-@reference '../app.css';
 @reference '<package-name>';
 
 .button {
@@ -117,7 +116,7 @@ When a local CSS file only needs the package as compile-time context, use `@refe
 }
 ```
 
-`@reference` makes package tokens, variants, and utilities available while compiling the local stylesheet. It does not import the referenced package's output CSS by itself, so make sure the app entry that imports the package is also loaded by the page. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
+`@reference` makes package tokens, variants, and utilities available while compiling the local stylesheet. Required theme resources are included, but referenced native rules and generated utility classes are not. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
 
 ---
 

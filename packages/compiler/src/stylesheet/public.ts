@@ -40,6 +40,8 @@ import type { SassModule as MasterCSSSassCompiler } from './types'
 export { prepareStylesheetSource as prepareStylesheet } from './index'
 
 export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptions, StylesheetSourceContext {
+  /** Absolute definition files applied before authored @reference and local definitions. Does not load their native CSS or scanning policy. */
+  readonly referenceFiles?: readonly string[]
   readonly delivery?: StylesheetDeliveryOptions
   readonly baseManifest: MasterCSSManifest
   readonly projectDir?: string
@@ -78,7 +80,7 @@ export interface MasterCSSStylesheetTransformResult {
 export interface MasterCSSStylesheetTransformOptions extends MasterCSSStylesheetCompileOptions {
   /** Defaults to inline; separate returns globals outside code for scoped hosts. */
   readonly generatedGlobals?: 'inline' | 'separate'
-  /** With delivery, also process native graphs prepared by a host transformer. */
+  /** Also resolve resource usage in native CSS using the supplied context. */
   readonly transformNativeStylesheets?: boolean
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }

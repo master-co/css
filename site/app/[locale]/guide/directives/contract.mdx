@@ -116,7 +116,9 @@ resources while preserving plugin ordering and source ownership.
 
 ## Reference context \{#reference-context\}
 ### `@reference` \{#reference\}
-Use `@reference` to load another Master CSS stylesheet as compile-time context without including that stylesheet's CSS in the current output. This is useful in CSS Modules and SFC `<style>` blocks that need project tokens, utility definitions, or custom variants for `@compose` and `@variant`.
+The Vite, Next.js, and Webpack integrations supply project definitions automatically to local stylesheets, CSS Modules, and SFC style blocks loaded by the host. Native `var(--*)` declarations, managed animation names, `@compose`, and `@variant` use the same context. Local stylesheets do not become entries, scanning roots, or native pruning roots. CSS without Master directives or references to known theme resources passes through unchanged.
+
+Use `@reference` to add definitions outside that project context, or to make a standalone stylesheet's compilation dependencies explicit. It does not include the referenced stylesheet's native CSS or generated utility classes. Referencing the app entry remains valid, but is redundant in these integrations.
 
 ```css name=Button.module.css
 @reference "../app.css";
@@ -153,7 +155,11 @@ Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-varia
 
 Relative references resolve from the stylesheet that declares them. Package references resolve Master CSS package stylesheet entries or a CSS file exposed by a package export. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
 
-(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes that the loaded global entry has not already emitted.
+(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes those rules need. Merely discovering another entry never suppresses these resources: it does not prove that entry is loaded alongside the local stylesheet. CSS Modules and scoped style hosts must emit generated theme selectors and keyframes globally.
+
+The standalone stylesheet API remains opt-in: pass `referenceFiles` as absolute filesystem paths and set `transformNativeStylesheets: true` to resolve native resource usage without an authored directive. Definition files precede authored references; local definitions override both. Entries discovered by the project API retain its deterministic order. A supplied list preserves the caller's order. Referenced native rules, scanning sources, and class output are not imported. Source-relative resources retain their defining file as owner; without asset delivery, reference-file resources use absolute file URLs for the host bundler to resolve.
+
+`emittedGlobals` is an explicit host assertion that the corresponding resources are already delivered alongside this output. Standalone callers may use it for that purpose. It is not inferred from discovered project entries. Host-supplied reference files and their imports, references, and resource owners contribute dependencies; changed or missing inputs are resolved again before cached compilation results can be reused.
 
 ---
 

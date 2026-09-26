@@ -9,6 +9,9 @@ function resolveStylesheetLoaderPath() {
 export default function StyleEntryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
   return {
     apply(compiler: Compiler) {
+      if (compiler.options.experiments?.css) {
+        compiler.options.module.rules.push({ test: /[/\\]node_modules[/\\]\.master-css[/\\]stylesheets[/\\][a-f0-9]{64}\.css$/, type: 'css/global' })
+      }
       compiler.options.module.rules.push({
         test: /\.(css|scss|sass)$/,
         enforce: 'pre',
@@ -17,6 +20,7 @@ export default function StyleEntryPlugin(context: MasterCSSWebpackContext): Webp
             loader: resolveStylesheetLoaderPath(),
             options: {
               virtualCSSImportModuleId: context.virtualCSSImportModuleId,
+              nativeCSS: Boolean(compiler.options.experiments?.css),
               preserveImports: context.mode === 'static' && compiler.options.mode !== 'development'
             }
           }

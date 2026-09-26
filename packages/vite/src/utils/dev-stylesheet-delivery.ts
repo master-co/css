@@ -31,6 +31,14 @@ export function clearDevStylesheets(context: MasterCSSVitePluginContext) {
   states.delete(context)
 }
 
+/** A separate import keeps generated selectors and keyframes outside SFC scoping. */
+export function publishDevGlobalStylesheet(context: MasterCSSVitePluginContext, css: string) {
+  const state = devStylesheetState(context)
+  const path = state.prefix + `globals-${digest(css)}.css`
+  state.stylesheets.set(path, css.replaceAll(state.origin, ''))
+  return `@import ${JSON.stringify(state.origin + path)};`
+}
+
 /** Give Vite external URLs while its CSS pipeline runs; the post hook makes them same-origin. */
 export function getDevStylesheetDelivery(context: MasterCSSVitePluginContext): MasterCSSStylesheetDeliveryOptions | undefined {
   if (context.config?.command !== 'serve') return

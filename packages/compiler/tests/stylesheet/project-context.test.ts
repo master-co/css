@@ -1,0 +1,142 @@
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { basename, join } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { afterEach, expect, test } from 'vitest'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
+
+const baseManifest: MasterCSSManifest = { version: 1, languageVersion: 3 }
+const roots: string[] = []
+function fixture() {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-project-context-')))
+  roots.push(root)
+  mkdirSync(join(root, 'theme'))
+  const entry = join(root, 'theme', 'tokens #.css')
+  writeFileSync(entry, `
+    @mode night { [data-theme="night"] { @slot; } }
+    @theme { --color-brand: red; --color-action: var(--color-brand); @keyframes pop { to { opacity: .5; } } }
+    @theme night { --color-brand: blue; }
+    @utilities { action { color: var(--color-action); } }
+    @source "./never.html";
+    .never { color: lime; }
+  `)
+  return { root, entry, file: join(root, 'card.css'), options: { baseManifest, projectDir: root, referenceFiles: [entry], transformNativeStylesheets: true } }
+}
+afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
+
+test('native styles receive project tokens, modes, fallbacks and managed animations without an entry or reference', async () => {
+  const f = fixture()
+  const source = '.card { color: var(--external, var(--color-action)); animation: pop 1s; }'
+  const result = await transformStylesheet(f.file, source, f.options)
+  expect(result.transformed).toBe(true)
+  expect(result.code).toContain(source)
+  expect(result.code).toContain('--color-brand:red')
+  expect(result.code).toContain('--color-action:var(--color-brand)')
+  expect(result.code).toContain('[data-theme=night]{--color-brand:blue}')
+  expect(result.code).toContain('@keyframes pop')
+  expect(result.code).not.toMatch(/\.never|@source|@master|\.action\{/)
+  expect(result.dependencies).toContain(f.entry)
+  expect(result.dependencies).not.toContain(join(f.root, 'theme', 'never.html'))
+})
+
+test('host references precede authored references and local definitions, without leaking between calls', async () => {
+  const f = fixture(), override = join(f.root, 'override.css')
+  writeFileSync(override, '@theme { --color-brand: green; }')
+  const source = '@reference "./override.css";.card{@compose action;}'
+  const explicit = await transformStylesheet(f.file, source, f.options)
+  expect(explicit.code).toContain('--color-brand:green')
+  const local = await transformStylesheet(f.file, source + '@theme { --color-brand: purple; }', f.options)
+  expect(local.code).toContain('--color-brand:purple')
+  const next = await transformStylesheet(f.file, '.card{@compose action;}', f.options)
+  expect(next.code).toContain('--color-brand:red')
+  expect(next.code).not.toContain('purple')
+})
+
+test('standalone transformation remains opt-in and keeps unrelated CSS byte-for-byte', async () => {
+  const f = fixture()
+  const source = '/* var(--color-brand) */\r\n.empty { } .x { --label: "var(--color-brand)"; color: var(--external, red); }'
+  writeFileSync(f.entry, '@theme static { --color-brand: red; }')
+  const result = await transformStylesheet(f.file, source, f.options)
+  expect(result.code).toBe(source)
+  expect(result.transformed).toBe(false)
+  expect(result.dependencies).toContain(f.entry)
+  const disabled = await transformStylesheet(f.file, '.x{color:var(--color-brand)}', { ...f.options, transformNativeStylesheets: false })
+  expect(disabled.transformed).toBe(false)
+  const used = await transformStylesheet(f.file, '.x{color:var(--color-brand)}', f.options)
+  expect(used.code).toContain('--color-brand:red')
+})
+
+test('separate globals preserve global mode selectors and external emission remains an explicit host assertion', async () => {
+  const f = fixture()
+  const source = '.card { color: var(--color-action); }'
+  const result = await transformStylesheet(f.file, source, { ...f.options, generatedGlobals: 'separate' })
+  expect(result.code).toBe(source)
+  expect(result.globalStylesheet?.css).toContain(':root,:host')
+  expect(result.globalStylesheet?.css).toContain('[data-theme=night]')
+  const external = await transformStylesheet(f.file, source, { ...f.options, emittedGlobals: { variables: { 'color-action': 1, 'color-brand': 1 } } })
+  expect(external.code).not.toContain('--color-brand:')
+})
+
+test.each([false, true])('definition files retain resource owners and dependencies with delivery=%s', async delivery => {
+  const f = fixture(), image = join(f.root, 'theme', 'pixel.svg')
+  writeFileSync(image, '<svg/>')
+  writeFileSync(f.entry, '@utilities { image { background: url("./pixel.svg?v=1#icon"); } }')
+  const result = await transformStylesheet(f.file, '.card{@compose image;}', { ...f.options,
+    ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
+  })
+  expect(result.dependencies).toContain(f.entry)
+  expect(result.code).toContain(delivery ? '/assets/pixel.svg?v=1#icon' : pathToFileURL(image).href + '?v=1#icon')
+  if (delivery) expect(result.resources).toEqual([{ file: image, href: '/assets/pixel.svg' }])
+})
+
+test('reference files apply to rendered graphs without recursively referencing themselves', async () => {
+  const f = fixture(), child = join(f.root, 'child.css')
+  writeFileSync(child, '.child{@compose action;}')
+  const result = await transformStylesheet(f.file, '@import "./child.css" layer(card);', { ...f.options,
+    delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) }
+  })
+  expect(result.stylesheets?.find(asset => asset.id === child)?.css).toContain('var(--color-action)')
+  expect(result.code).toContain('--color-brand:red')
+  expect(result.code).not.toContain('.never')
+})
+
+test('direct compilation shares definition files and reports missing inputs before failure', async () => {
+  const f = fixture()
+  const result = await compileStylesheet(f.file, '.card{@compose action;}', f.options)
+  expect(result.css).toContain('color:var(--color-action)')
+  const missing = join(f.root, 'missing.css'), dependencies: string[] = []
+  await expect(transformStylesheet(f.file, '.x{color:var(--color-brand)}', { ...f.options, referenceFiles: [missing], onDependency: file => dependencies.push(file) })).rejects.toThrow()
+  expect(dependencies).toContain(missing)
+  await expect(compileStylesheet(f.file, '', { ...f.options, referenceFiles: ['relative.css'] })).rejects.toThrow('absolute')
+})
+
+test('reused compilation observes nested edits, deletion and dependency callbacks', async () => {
+  const f = fixture(), nested = join(f.root, 'theme', 'nested.css')
+  writeFileSync(f.entry, '@import "./nested.css";')
+  writeFileSync(nested, '@theme { --color-brand: red; }')
+  const run = (dependencies: string[]) => transformStylesheet(f.file, '.card{color:var(--color-brand)}', {
+    ...f.options, onDependency: file => dependencies.push(file)
+  })
+  const first = await run([]), watched: string[] = []
+  expect((await run(watched)).code).toBe(first.code)
+  expect(watched).toContain(nested)
+  writeFileSync(nested, '@theme { --color-brand: blue; }')
+  expect((await run([])).code).toContain('--color-brand:blue')
+  rmSync(nested)
+  await expect(run([])).rejects.toThrow()
+  writeFileSync(nested, '@theme { --color-brand: green; }')
+  expect((await run([])).code).toContain('--color-brand:green')
+})
+
+test.each([false, true])('rendered outputs include explicitly referenced resources without exporting definitions, delivery=%s', async delivery => {
+  const f = fixture()
+  const result = await compileRenderedStylesheet(f.file, '@reference "./theme/tokens%20%23.css";.card{color:var(--color-action);animation:pop 1s}', {
+    baseManifest, projectDir: f.root,
+    ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
+  })
+  expect(result.generatedCSS).toContain('--color-action:var(--color-brand)')
+  expect(result.generatedCSS).toContain('@keyframes pop')
+  expect(result.css).not.toContain('.never')
+  expect(JSON.stringify(result.manifest)).not.toContain('color-brand')
+})

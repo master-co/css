@@ -1,14 +1,14 @@
-import { addStaticCSSDependencies, transformStaticStyleSource } from './static'
+import { addStaticCSSDependencies, resolveStaticOutputPath, transformStaticStyleSource } from './static'
 import { prepareNextEntryGraph } from './prepare-entry-graph'
+import { nextGeneratedGlobalAnimations } from './prepare-global-module'
 import type { ModuleContext } from './prepare-module'
 import { deliverNextStylesheet } from './stylesheet-delivery'
-import { dirname, extname, resolve } from 'node:path'
+import { dirname, extname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { prepareNextStylesheet, type NextStylesheetLoaderOptions } from './prepare-stylesheet'
 import {
   compileRenderedStylesheet,
   compileStylesheet,
-  collectStylesheetEmittedGlobals,
   transformStylesheet
 } from '@master/css-compiler/stylesheet'
 import {
@@ -43,22 +43,10 @@ function shouldAddStyleDependencies(resourcePath: string, source: string, projec
   }
 }
 
-async function createGlobalStyleEntryEmittedGlobals(
-  entries: readonly string[],
-  baseManifest: Awaited<ReturnType<typeof loadProjectManifest>>['manifest'],
-  projectDir: string | undefined,
-  dependencies: string[]
-) {
-  if (!entries.length) return
-  const result = await collectStylesheetEmittedGlobals(entries, {
-    baseManifest,
-    projectDir
-  })
-  dependencies.push(...result.dependencies)
-  return result.emittedGlobals
-}
-
 async function transformStyleSource(resourcePath: string, source: string, projectDir: string | undefined, options: NextStylesheetLoaderOptions, onDependency: (file: string) => void, inputMap?: object | string, loaderContext?: LoaderContext) {
+  if (projectDir && (resourcePath === resolveStaticOutputPath(projectDir) || relative(projectDir, resourcePath).replace(/\\/g, '/').startsWith('.master/stylesheets/'))) {
+    return { code: source, dependencies: [], sourceMap: typeof inputMap === 'string' ? inputMap : inputMap ? JSON.stringify(inputMap) : undefined }
+  }
   const rawSass = !options.preprocessed && ['.scss', '.sass'].includes(extname(resourcePath))
   const prepared = rawSass ? await prepareNextStylesheet(resourcePath, source, projectDir, options, onDependency) : undefined
   source = prepared?.source ?? source
@@ -123,29 +111,46 @@ async function transformStyleSource(resourcePath: string, source: string, projec
     }
   }
 
-  if (resolution.kind === 'local') {
+  if (resolution.kind === 'local' || resolution.kind === 'plain') {
       const moduleStyle = /\.module\.(?:css|scss|sass)$/u.test(resourcePath)
       const entries = await discoverManifestEntries({ root: projectDir })
+      loaderContext?.addContextDependency?.(projectDir ?? dirname(resourcePath))
+      if (!entries.length && resolution.kind === 'plain') return { code: source, dependencies, sourceMap }
       const projectManifest = await loadProjectManifest({
         root: projectDir,
         entries,
-        baseManifest: defaultBuildManifest
+        baseManifest: defaultBuildManifest,
+        onDependency
       })
-      const emittedGlobals = await createGlobalStyleEntryEmittedGlobals(
-        entries,
-        projectManifest.manifest,
-        projectDir,
-        dependencies
-      )
       const result = await transformStylesheet(resourcePath, source, {
         baseManifest: projectManifest.manifest,
         loadSass,
         ...context,
         projectDir,
-        emittedGlobals,
+        referenceFiles: entries,
+        transformNativeStylesheets: true,
         generatedGlobals: moduleStyle ? 'separate' : 'inline'
       })
       dependencies.push(...projectManifest.dependencies, ...(result.dependencies || []))
+      if (!result.transformed) return { code: source, dependencies, sourceMap }
+      if (moduleStyle && result.globalStylesheet && nextGeneratedGlobalAnimations(result.globalStylesheet.css).length) {
+        // Managed animation names would be renamed by Next’s final Module pass.
+        // Scope and publish that graph once, retaining the public Module exports.
+        const preparedGraph = await prepareNextEntryGraph(loaderContext ?? { resourcePath }, projectDir ?? dirname(resourcePath), options, onDependency, source, sourceMap, {
+          baseManifest: projectManifest.manifest, referenceFiles: entries
+        })
+        const { graph, entry } = preparedGraph
+        const trackDependency = (file: string) => onDependency(graph.dependencyFile(file))
+        const delivered = await deliverNextStylesheet(resourcePath, projectDir ?? dirname(resourcePath), onDependency, delivery => compileRenderedStylesheet(resourcePath, entry.source, {
+          baseManifest: preparedGraph.manifest,
+          referenceFiles: preparedGraph.postcss ? undefined : entries,
+          projectDir, preserveNativeCSS: true, loadSass,
+          sourceMap: entry.sourceMap, baseFile: resourcePath, onDependency: trackDependency,
+          delivery: { ...delivery, resolveImport: graph.resolveImport, onDependency: trackDependency }
+        }))
+        dependencies.push(...delivered.dependencies.map(file => graph.dependencyFile(file)))
+        return { code: delivered.css + '\n' + entry.exportsCSS, sourceMap: delivered.sourceMap, dependencies, postcss: preparedGraph.postcss }
+      }
       let code = result.code
       let outputMap = result.sourceMap
       if (moduleStyle && result.globalStylesheet) {
@@ -159,7 +164,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
           // depend on the entry revision, so the publication pass can reuse it.
           const delivered = preparedGlobals ??= await transformStylesheet(resourcePath, source, {
             baseManifest: projectManifest.manifest, loadSass, ...context, projectDir,
-            emittedGlobals, generatedGlobals: 'separate', delivery
+            referenceFiles: entries, transformNativeStylesheets: true, generatedGlobals: 'separate', delivery
           })
           dependencies.push(...delivered.dependencies)
           const css = delivered.globalStylesheet?.css ?? ''
@@ -180,9 +185,6 @@ async function transformStyleSource(resourcePath: string, source: string, projec
         sourceMap: outputMap,
         dependencies
       }
-  }
-  if (resolution.kind === 'plain') {
-    return { code: source, dependencies, sourceMap }
   }
 
   return { code: source, dependencies, sourceMap }

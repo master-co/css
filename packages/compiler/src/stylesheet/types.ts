@@ -35,6 +35,8 @@ export interface PreparedStylesheetSource {
 }
 
 export interface CompileStylesheetOptions extends CompileCSSOptions, StylesheetSourceContext {
+  /** Absolute definition files supplied by a host, before authored references. */
+  readonly referenceFiles?: readonly string[]
   /** Internal metadata retained when source collection removes import directives. */
   references?: CompileCSSResult['references']
   delivery?: StylesheetDeliveryOptions

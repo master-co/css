@@ -105,17 +105,15 @@ function createMasterCSSRuntimeTestModule() {
 }
 
 describe('withMasterCSS', () => {
-  it('routes local CSS directives through the Turbopack stylesheet loader', () => {
+  it('routes native CSS and CSS Modules through the project context without a directive gate', () => {
     const config = withMasterCSS({}, { mode: 'progressive' }) as any
-    const rules = config.turbopack.rules['*'] as { condition?: { all?: { content?: RegExp }[] }; loaders?: { loader: string }[] }[]
-    const styleRule = rules.find(rule => rule.loaders?.some(loader => typeof loader.loader === 'string' && loader.loader.endsWith('/stylesheet-loader.js')))
-    const pattern = styleRule?.condition?.all?.find(condition => condition.content)?.content
-
-    expect(pattern).toBeInstanceOf(RegExp)
-    for (const directive of ['@reference "./globals.css";', '@variant sm {}', '@light {}', '@dark {}']) {
-      expect(pattern!.test(directive)).toBe(true)
+    const rules = config.turbopack.rules['*'] as any[]
+    const styleRules = rules.filter(rule => rule.loaders?.some((loader: any) => typeof loader.loader === 'string' && loader.loader.endsWith('/stylesheet-loader.js')))
+    expect(styleRules.map(rule => rule.type)).toEqual(['css', undefined])
+    for (const rule of styleRules) {
+      expect(rule.condition.all.some((condition: any) => condition.content)).toBe(false)
+      expect(rule.condition.all.some((condition: any) => condition.not?.path?.test('/project/.master/stylesheets/' + 'a'.repeat(64) + '/' + 'b'.repeat(64) + '-entry.css'))).toBe(true)
     }
-    expect(pattern!.test('.card { color: red; }')).toBe(false)
   })
 
   it('sets the Next adapter path and registers options', () => {
@@ -234,7 +232,7 @@ describe('withMasterCSS', () => {
             all: [
               { path: /\.(css|scss|sass)$/ },
               { not: { path: /\.module\.(css|scss|sass)$/ } },
-              { content: expect.any(RegExp) },
+              { not: { path: expect.any(RegExp) } },
               { not: { query: /master-css-manifest/ } }
             ]
           },
@@ -518,7 +516,7 @@ describe('withMasterCSS', () => {
           condition: expect.objectContaining({
             all: expect.arrayContaining([
               { path: expect.any(RegExp) },
-              { content: expect.any(RegExp) },
+              { not: { path: expect.any(RegExp) } },
               { not: { query: /master-css-manifest/ } }
             ])
           }),

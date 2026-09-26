@@ -260,11 +260,9 @@ For component-specific styles, native declarations can express the entire rule:
 }
 ```
 
-Use `@reference` in CSS Modules and framework style blocks when the local stylesheet needs project tokens, components, utilities, or variants without including the app CSS again.
+CSS Modules and framework style blocks automatically receive project tokens, utilities, and variants in the Vite, Next.js, and Webpack integrations. Use `@reference` only for additional definition files or standalone compilation.
 
 ```css name=Button.module.css
-@reference "../app.css";
-
 .button {
   @compose inline-flex align-items:center px-md h:2.5rem r-md bg-blue-60 fg-white;
 }
