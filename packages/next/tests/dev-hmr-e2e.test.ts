@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { once } from 'node:events'
-import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -11,6 +11,7 @@ import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const nextBin = fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url))
+const traceLoaderPath = fileURLToPath(new URL('./helpers/static-hmr-trace-loader.mjs', import.meta.url))
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -61,7 +62,22 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
   writeFileSync(join(fixtureDir, 'next.config.js'), [
     `import { withMasterCSS } from ${JSON.stringify(nextIntegrationURL)}`,
     '',
-    `export default withMasterCSS(${JSON.stringify({ reactStrictMode: true, ...(process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT ? { turbopack: { root: process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT } } : {}) })})`,
+    `const configured = withMasterCSS(${JSON.stringify({ reactStrictMode: true, ...(process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT ? { turbopack: { root: process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT } } : {}) })})`,
+    `let result = configured`,
+    `if (process.env.MASTER_NEXT_HMR_TRACE_REPORT) {`,
+    `  result = Promise.resolve(configured).then(config => {`,
+    `  for (const rule of config.turbopack?.rules?.['*'] ?? []) {`,
+    `    for (const entry of rule.loaders ?? []) {`,
+    `      const kind = /(?:static-css-loader|static-loader|stylesheet-loader)\\.js$/.exec(entry.loader)?.[0]`,
+    `      if (!kind) continue`,
+    `      entry.options = { ...entry.options, __masterOriginalLoader: entry.loader, __masterTraceKind: kind }`,
+    `      entry.loader = ${JSON.stringify(traceLoaderPath)}`,
+    `    }`,
+    `  }`,
+    `  return config`,
+    `  })`,
+    `}`,
+    `export default result`,
     ''
   ].join('\n'))
   writeFileSync(join(fixtureDir, 'app/layout.jsx'), [
@@ -126,6 +142,7 @@ function startNextDev(fixtureDir: string, port: number, bundler: 'turbo' | 'webp
       NODE_ENV: 'development',
       ...(pipelineReport ? {
         MASTER_NEXT_HMR_PIPELINE_REPORT: pipelineReport,
+        ...(bundler === 'turbo' ? { MASTER_NEXT_HMR_TRACE_REPORT: join(dirname(pipelineReport), 'loaders.jsonl') } : {}),
         NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${new URL('./helpers/static-hmr-metrics.mjs', import.meta.url).href}`
       } : {})
     },
@@ -183,6 +200,45 @@ async function expectDisplay(browser: Browser, url: string, display: string) {
 }
 
 describe('Next dev HMR', () => {
+  it('updates a direct generated CSS import when sources change or appear (turbo)', async () => {
+    buildPackage()
+    const workspace = join(packageDir, 'e2e/dev-hmr-workspaces')
+    mkdirSync(workspace, { recursive: true })
+    const fixture = mkdtempSync(join(workspace, 'direct-css-'))
+    writeFixture(fixture)
+    writeFileSync(join(fixture, 'app/globals.css'), '')
+    writeFileSync(join(fixture, 'app/layout.jsx'), `import '../.master/next.css'; export default function RootLayout({ children }) { return <html lang="en"><body>{children}</body></html> }`)
+    const port = await getFreePort(), url = `http://127.0.0.1:${port}`
+    const { child, output } = startNextDev(fixture, port, 'turbo')
+    let browser: Browser | undefined
+    try {
+      await waitForServer(url, child, output)
+      browser = await chromium.launch()
+      const page = await browser.newPage()
+      await page.goto(url)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '11px')
+      await page.evaluate(() => { (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER = 'preserve' })
+      writePage(fixture, 77)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '77px')
+      const added = join(fixture, 'app/unimported.jsx')
+      writeFileSync(added, `export const hidden = 'm:37px'`)
+      await page.evaluate(() => {
+        const probe = document.createElement('div')
+        probe.id = 'new-source-probe'
+        probe.className = 'm:37px'
+        document.body.append(probe)
+      })
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '37px')
+      rmSync(added)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '0px')
+      expect(await page.evaluate(() => (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER)).toBe('preserve')
+    } finally {
+      await browser?.close()
+      await stopNextDev(child)
+      rmSync(fixture, { recursive: true, force: true })
+    }
+  }, 180000)
+
   it('updates separated Module theme resources while preserving ancestor inheritance (webpack)', async () => {
     buildPackage()
     const workspace = join(packageDir, 'e2e/dev-hmr-workspaces')
@@ -280,10 +336,12 @@ describe('Next dev HMR', () => {
         const idleStarted = Date.now()
         await delay(2000)
         const publications = readFileSync(pipelineReport, 'utf8').trim().split('\n').map(line => JSON.parse(line) as { started: number, finished: number, composeCalls: number })
+        const loaderReport = join(metricsDir!, 'loaders.jsonl')
+        const loaderEvents = existsSync(loaderReport) ? readFileSync(loaderReport, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : []
         const idle = publications.filter(row => row.started >= idleStarted)
         appendFileSync(process.env.MASTER_NEXT_HMR_REPORT,
-          JSON.stringify({ bundler, node: process.version, samples, publications, idle,
-            note: 'File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.' }) + '\n')
+          JSON.stringify({ bundler, node: process.version, samples, publications, loaderEvents, idle,
+            note: 'File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait and loader calls are separate child-process observations. Idle observes two seconds after a one-second drain.' }) + '\n')
         expect(idle.reduce((sum, row) => sum + row.composeCalls, 0)).toBe(0)
       }
       await expect(page.evaluate(() => {

@@ -488,6 +488,10 @@ describe('withMasterCSS', () => {
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
+      const staticRules = nextConfig.turbopack.rules['*'] as { condition?: { all?: { path?: RegExp, not?: string }[] }, loaders?: { loader: string }[] }[]
+      expect(staticRules.flatMap(rule => rule.loaders ?? []).some(loader => /static-loader\.js$/.test(loader.loader))).toBe(false)
+      expect(staticRules.some(rule => rule.condition?.all?.some(condition => condition.path?.test(join(root, '.master/next.css')))
+        && rule.loaders?.some(loader => /static-css-loader\.js$/.test(loader.loader)))).toBe(true)
       expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
         expect.objectContaining({
           condition: {

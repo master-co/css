@@ -37,6 +37,8 @@ const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.
 const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
 const MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN = createVirtualEmittedGlobalsModulePathPattern()
+const MASTER_CSS_STATIC_OUTPUT_PATTERN = /[/\\]\.master[/\\]next\.css$/
+const MASTER_CSS_STATIC_STYLESHEET_PATTERN = /[/\\]\.master[/\\]next-style-[^/\\]+\.css$/
 const NEXT_INSTRUMENTATION_CLIENT_ID = 'private-next-instrumentation-client'
 const MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID = 'private-next-master-css-user-instrumentation-client'
 const NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS = [
@@ -257,6 +259,8 @@ function applyMasterCSSWebpackConfig(
   config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY, staticStatePath ? { staticStatePath } : {})
   if (staticStatePath) {
     config.watchOptions = { ...config.watchOptions, ignored: staticWatchIgnores(config.watchOptions?.ignored) }
+    // Webpack can publish during the first changed module's rebuild, avoiding
+    // a second compilation after the CSS entry notices the changed output.
     config.module.rules.push({
       test: /\.[mc]?[jt]sx?$/,
       exclude: /[/\\]node_modules[/\\]/,
@@ -459,20 +463,6 @@ function applyMasterCSSTurbopackConfig(
   }
 }
 
-// Keep Next's original module type and RSC transforms, including 'use client'.
-// Setting type: 'ecmascript' bypasses those transforms; `as` on the '*' rule
-// also appends an extension and changes the source's module identity.
-function createStaticSourceRule(path: RegExp) {
-  return {
-    condition: {
-      all: [
-        { not: 'foreign' as const },
-        { path }
-      ]
-    }
-  }
-}
-
 function createCSSManifestImportSourceRules(cssManifestImportLoaderPath: string, projectDir: string) {
   const loader = {
     loader: cssManifestImportLoaderPath,
@@ -502,7 +492,6 @@ function applyMasterCSSStaticTurbopackConfig(
   cssManifestLoaderPath: string,
   cssManifestImportLoaderPath: string,
   stylesheetLoaderPath: string,
-  staticLoaderPath: string,
   staticCSSLoaderPath: string,
   virtualCSSPath: string,
   virtualManifestPath: string,
@@ -513,24 +502,6 @@ function applyMasterCSSStaticTurbopackConfig(
   const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, virtualCSSPath, virtualManifestPath, virtualEmittedGlobalsPath, projectDir, undefined, false)
   const rules = turbopackConfig.rules || {}
   const starRules = toRuleArray(rules['*'])
-  const staticLoader = {
-    loader: staticLoaderPath,
-    options: {
-      statePath
-    }
-  }
-  const sourceRules = [
-    createStaticSourceRule(/\.tsx$/),
-    createStaticSourceRule(/\.ts$/),
-    createStaticSourceRule(/\.mts$/),
-    createStaticSourceRule(/\.cts$/),
-    createStaticSourceRule(/\.jsx$/),
-    createStaticSourceRule(/\.js$/),
-    createStaticSourceRule(/\.cjs$/)
-  ].map((rule) => ({
-    ...rule,
-    loaders: [staticLoader]
-  }))
   const cssImportRule = {
     condition: {
       all: [
@@ -550,6 +521,13 @@ function applyMasterCSSStaticTurbopackConfig(
     ],
     type: 'css' as const
   }
+  // A direct generated CSS import has no source stylesheet loader to own the
+  // inventory. Let that CSS module watch and refresh it.
+  const generatedCSSRule = {
+    condition: { all: [{ not: 'foreign' as const }, { path: MASTER_CSS_STATIC_OUTPUT_PATTERN }] },
+    loaders: [{ loader: staticCSSLoaderPath, options: { statePath } }],
+    type: 'css' as const
+  }
   // Static publication owns entry stylesheets, but local styles still need
   // directive lowering and project theme resources before Next emits CSS.
   const localStyleRule = {
@@ -558,6 +536,8 @@ function applyMasterCSSStaticTurbopackConfig(
         { path: /\.(css|scss|sass)$/ },
         { not: { path: /\.module\.(css|scss|sass)$/ } },
         { not: { content: createManifestEntryPattern() } },
+        { not: { path: MASTER_CSS_STATIC_OUTPUT_PATTERN } },
+        { not: { path: MASTER_CSS_STATIC_STYLESHEET_PATTERN } },
         { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
         { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
       ]
@@ -579,7 +559,7 @@ function applyMasterCSSStaticTurbopackConfig(
     rules: {
       ...rules,
       '*': [
-        ...sourceRules,
+        generatedCSSRule,
         cssImportRule,
         localStyleRule,
         localModuleRule,
@@ -661,7 +641,6 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
           cssManifestLoaderPath,
           cssManifestImportLoaderPath,
           stylesheetLoaderPath,
-          resolveStaticLoaderPath(),
           resolveStaticCSSLoaderPath(),
           turbopackVirtualCSSPath,
           turbopackVirtualManifestPath,

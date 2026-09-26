@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -58,10 +58,14 @@ function runStaticCSSLoader(statePath: string, resourcePath: string, source: str
 
 function runStaticCSSLoaderWithDependencies(statePath: string, resourcePath: string, source: string) {
   const dependencies: string[] = []
+  const contexts: string[] = []
+  const missing: string[] = []
   return new Promise<string>((resolve, reject) => {
     const context: ThisParameterType<typeof masterCSSNextStaticCSSLoader> = {
       resourcePath,
       addDependency: (dependency) => dependencies.push(dependency),
+      addContextDependency: (directory) => contexts.push(directory),
+      addMissingDependency: (file) => missing.push(file),
       cacheable: () => undefined,
       getOptions: () => ({ statePath }),
       async: () => (error, content) => {
@@ -74,7 +78,7 @@ function runStaticCSSLoaderWithDependencies(statePath: string, resourcePath: str
     }
 
     masterCSSNextStaticCSSLoader.call(context, source)
-  }).then((content) => ({ content, dependencies }))
+  }).then((content) => ({ content, dependencies, contexts, missing }))
 }
 
 describe('Next static mode', () => {
@@ -109,6 +113,72 @@ describe('Next static mode', () => {
     expect(css).toContain('text-rendering: geometricprecision')
     expect(css).toContain('display:block')
     expect(css).toContain('margin:0')
+  })
+
+  it('keeps Webpack module watches and lets generated CSS discover new sources', async () => {
+    const root = createFixture()
+    const first = join(root, 'app/page.tsx'), second = join(root, 'app/other.tsx')
+    writeFileSync(first, '<div className="p:11px"/>')
+    writeFileSync(second, '<div className="m:22px"/>')
+    const state = (await prepareNextStatic({}, { projectDir: root }))!
+    const dependencies: string[] = [], contexts: string[] = [], missing: string[] = []
+    await new Promise<void>((resolve, reject) => {
+      const jsContext = {
+        resourcePath: first,
+        getOptions: () => ({ statePath: state.statePath }),
+        addDependency: file => dependencies.push(file),
+        addContextDependency: directory => contexts.push(directory),
+        addMissingDependency: file => missing.push(file),
+        async: () => error => error ? reject(error) : resolve()
+      } satisfies ThisParameterType<typeof masterCSSNextStaticLoader> & {
+        addContextDependency: (directory: string) => void
+        addMissingDependency: (file: string) => void
+      }
+      masterCSSNextStaticLoader.call(jsContext, readFileSync(first, 'utf8'))
+    })
+    expect(dependencies).toEqual(expect.arrayContaining([state.statePath, first, second]))
+    expect(contexts).toContain(root)
+    expect(missing).toEqual(expect.arrayContaining([join(root, '.gitignore'), join(root, 'app/.gitignore')]))
+
+    const stylesheet = join(root, 'app/globals.css')
+    const entry = await runStaticCSSLoaderWithDependencies(state.statePath, stylesheet, readFileSync(stylesheet, 'utf8'))
+    expect(entry.dependencies).toEqual(expect.arrayContaining([state.statePath, first, second]))
+    expect(entry.contexts).toContain(root)
+    expect(entry.missing).toEqual(expect.arrayContaining([join(root, '.gitignore'), join(root, 'app/.gitignore')]))
+
+    writeFileSync(first, '<div className="p:44px"/>')
+    await runStaticLoader(state.statePath, first, readFileSync(first, 'utf8'))
+    expect(readStaticCSS(state.outputPath)).toContain('padding:44px')
+    const refreshed = await runStaticCSSLoaderWithDependencies(state.statePath, stylesheet, readFileSync(stylesheet, 'utf8'))
+    expect(refreshed.dependencies).toContain(first)
+    expect(readStaticCSS(state.outputPath)).toContain('padding:44px')
+
+    const added = join(root, 'app/added.tsx')
+    writeFileSync(added, '<div className="gap:33px"/>')
+    const generated = await runStaticCSSLoaderWithDependencies(state.statePath, state.outputPath, readFileSync(state.outputPath, 'utf8'))
+    expect(generated.content).toContain('gap:33px')
+    expect(generated.dependencies).toContain(added)
+    expect(generated.contexts).toContain(root)
+
+    const renamed = join(root, 'app/renamed.tsx')
+    renameSync(added, renamed)
+    const afterRename = await runStaticCSSLoaderWithDependencies(state.statePath, state.outputPath, generated.content)
+    expect(afterRename.content).toContain('gap:33px')
+    expect(afterRename.dependencies).toContain(renamed)
+    expect(afterRename.dependencies).not.toContain(added)
+
+    rmSync(renamed)
+    writeFileSync(join(root, '.gitignore'), 'ignored.tsx\n')
+    writeFileSync(join(root, 'ignored.tsx'), '<div className="m:55px"/>')
+    const afterRemoval = await runStaticCSSLoaderWithDependencies(state.statePath, state.outputPath, afterRename.content)
+    expect(afterRemoval.content).not.toContain('gap:33px')
+    expect(afterRemoval.content).not.toContain('margin:55px')
+    expect(afterRemoval.dependencies).toContain(join(root, '.gitignore'))
+
+    const foreign = await runStaticCSSLoaderWithDependencies(state.statePath, join(root, 'other/.master/next.css'), '.foreign{}')
+    expect(foreign.content).toBe('.foreign{}')
+    expect(foreign.dependencies).toEqual([])
+    expect(foreign.contexts).toEqual([])
   })
 
   it('publishes complete CSS in independent workers before source loaders run, including MDX', async () => {
@@ -260,7 +330,7 @@ describe('Next static mode', () => {
     expect(readStaticCSS(outputPath)).not.toContain('--color-primary')
   })
 
-  it('lets the scanner loader feed an imported module into the scanner incrementally', async () => {
+  it('lets the source loader publish an imported module while the CSS loader owns complete watches', async () => {
     const root = createFixture()
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -276,6 +346,7 @@ describe('Next static mode', () => {
     `
     writeFileSync(modulePath, source)
     await expect(runStaticLoader(statePath, modulePath, source)).resolves.toBe(source)
+    await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), readFileSync(join(root, 'app/globals.css'), 'utf8'))
 
     const css = readStaticCSS(outputPath)
     expect(css).toContain('display:block')
@@ -309,7 +380,7 @@ describe('Next static mode', () => {
     expect(css).not.toContain('123456px')
   })
 
-  it('updates static CSS when Turbopack reruns the source loader', async () => {
+  it('updates static CSS when Webpack reruns the source loader', async () => {
     const root = createFixture()
     const pagePath = join(root, 'app/page.tsx')
     writeFileSync(pagePath, `
@@ -334,7 +405,7 @@ describe('Next static mode', () => {
     `)
 
     await runStaticLoader(statePath, pagePath, readFileSync(pagePath, 'utf-8'))
-
+    await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), readFileSync(join(root, 'app/globals.css'), 'utf8'))
     expect(readStaticCSS(outputPath)).toContain('margin:0')
   })
 
