@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { existsSync, realpathSync, statSync } from 'node:fs'
 import { mkdir, readFile, realpath as realpathAsync, stat, writeFile } from 'node:fs/promises'
-import { dirname, isAbsolute, relative, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { withPreviewWriteLock } from './preview-write-lock'
 
 export interface MasterCSSMCPContextOptions {
@@ -164,7 +164,7 @@ export default class MasterCSSMCPContext {
     this.assertContained(resolved)
     const parent = await realpath(dirname(resolved))
     this.assertContained(parent)
-    return resolved
+    return join(parent, basename(resolved))
   }
 
   validateGlobPatterns(patterns: readonly string[]) {
