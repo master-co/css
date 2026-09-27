@@ -312,7 +312,12 @@ integration gates that the local scoped suite did not exercise:
   postbuild successfully, but only the locale-prefixed compose page returned
   HTTP 200; the root copy returned 404. Its Next packaging omits postbuild root
   copies. The branch now selects static hosting of the completed `out` directory
-  with clean URLs. Remote route verification remains pending.
+  with clean URLs. Local postbuild and all 95 asset checks pass; 2,468 root
+  locale files and the homepage match the locale exports byte for byte. Remote
+  route verification remains pending. Preview metadata also pointed canonical
+  URLs at localhost. Public environment resolution now reads Vercel deployment
+  and branch variables; 16 environment tests, focused lint and site type-check
+  pass. Full site lint again has zero errors and the same 266 warnings.
 - Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
   passed). The JavaScript adapter now restores template line endings and escapes
   cooked carriage returns. LF, CRLF and CR sorting regressions failed before
@@ -325,6 +330,7 @@ integration gates that the local scoped suite did not exercise:
   type-check and build passed. Next's loader assertion normalizes separators
   (15/15 focused tests); Astro and Svelte harnesses invoke Node entrypoints and
   consume prebuilt packages (16/16 and 17/17 tests). Each package lint passed.
+  Another 18 related graph/source-ownership tests passed after the map fix.
   Windows confirmation and detailed remaining Compiler/Vite failures are pending.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
