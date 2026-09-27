@@ -342,6 +342,41 @@
         "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
         "scopeDigest": "6aa033e3f208bda722c151d0d334688d2c29b446f2064b8be01bf2e95800422a"
       }
+    },
+    {
+      "sourceId": "rc87-d7b316a093146b78",
+      "sourceDigest": "b339ad763f79ddbbea1b0ab36e93cf19f90ac537ade13dc3b448601b0f150e7c",
+      "targetDigest": "eee2f7011e955f58257d789f9d1b8a01e8a1df8cc7a6fe3f44feff6bae63233c",
+      "proof": "verified-superset",
+      "reason": "The unsupported lint request still uses version 0 with the same class list and asserts INVALID_LINT_REQUEST, with disposal in finally unchanged. Only the otherwise empty session fixture selects the current languageVersion:3; no syntax, generated CSS or lint request expectation changes."
+    },
+    {
+      "sourceId": "rc87-4879634b7dc86bc0",
+      "sourceDigest": "afb6dc83b3513e1e43ccf0dfababd2f149ebf0b9e09af6c3a96b153c3cb4e12f",
+      "targetDigest": "8e6ffd20ff973b22350fda30df45d007934e6aab989eb9dca0b90f4736f3a39a",
+      "proof": "verified-superset",
+      "reason": "All original package/CSS workspace fixtures and the exact returned-directory assertion remain. Added a generated .master/stylesheets tree containing both an entry marker and a dependent package.json, proving that generated outputs do not appear as new workspaces."
+    },
+    {
+      "sourceId": "rc87-e4168bcf06ac6da0",
+      "sourceDigest": "b65f2704e23810480ecd6b959006f675cffcd610e1562147389f37cf24f0df12",
+      "targetDigest": "49dc5fcf8270a53a732154295972babf34bf78d184f27f15ce82e9728aa1cf09",
+      "proof": "verified-superset",
+      "reason": "All original progressive component CSSOM, rule order, text, selectors and media-rule assertions remain unchanged. The target additionally asserts that hydration actually selected progressive mode before examining those rules."
+    },
+    {
+      "sourceId": "rc87-d07375d346c8325d",
+      "sourceDigest": "e1f651997d508585f03f8bbdaefd72923e730db67dc098e49f4fcce0727efb13",
+      "targetDigest": "19b246f6e3c0ff6b57de0de44c41649d2c2e3f4eec7f5cf1b09fc61399c37dbf",
+      "proof": "verified-superset",
+      "reason": "All original comprehensive progressive layer names and native rule-count assertions remain unchanged. The target additionally asserts that hydration actually selected progressive mode before examining those layers."
+    },
+    {
+      "sourceId": "rc87-fcb1f769e9b365f4",
+      "sourceDigest": "cc1e1a92a609dce11a9319464ec8590edfde4a1cc450287e77ce29cef4a15446",
+      "targetDigest": "520d6b3901024cd825995e0229695d73cff870ae9c77b88736f8ac8c8a84f78f",
+      "proof": "verified-superset",
+      "reason": "The original progressive theme token-count assertion remains unchanged. The target additionally asserts that hydration actually selected progressive mode before examining those token counts."
     }
   ],
   "surfaces": [

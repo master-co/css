@@ -335,6 +335,26 @@ integration gates that the local scoped suite did not exercise:
   in the site manifest. The hosted script passed locally with 830 pages and
   95/95 referenced assets; site lint had zero errors and 266 existing warnings.
   Provider deployment verification remains pending.
+- CPU profiling traced repeated Webpack HMR work to `stylesheet-loader`
+  recompiling immutable `.master/next-style-*.css` outputs. These now pass through
+  unchanged, like the generated entry. The regression test fails before the fix
+  and passes afterward; authored entry errors still propagate. Next unit tests
+  passed 199/199 and e2e passed 10/10 (including 4 HMR cases) with unchanged
+  deadlines/assertions. On this
+  macOS host, three Webpack single/burst samples improved from 12–21 seconds to
+  3.0–3.5 seconds; profiling overhead and host load limit the comparison. This
+  affects build tooling, not runtime bundle size or authored CSS syntax.
+- Vercel advanced through the initial Wasm build but parallel Turbo artifact
+  tasks attempted another Rust installation and collided downloading Clippy.
+  Turbo now preserves `CARGO_HOME` and `RUSTUP_HOME`; a dry-run verified both.
+  The hosted script explicitly installs the pinned toolchain before parallel
+  tasks. The complete local hosted build passed again, including all 830 pages
+  and 95 referenced assets. Remote confirmation remains pending.
+- Five existing cases now have reviewed `verified-superset` evidence: lint
+  request rejection, workspace discovery excluding generated output, and three
+  additional progressive-hydration assertions. Original expectations remain;
+  no contract-change approval was added. The migration gate still rejects the
+  previously identified stale Next contract digest pending exact-scope QA.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
