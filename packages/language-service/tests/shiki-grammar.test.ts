@@ -98,7 +98,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   expect(propertyFragment.captures?.['2']?.name).toBe('keyword.operator.master-css')
 })
 
-test('supports Shiki dynamic language imports', async () => {
+test('loads the grammar through a dynamic Shiki language import', async () => {
   const masterCSSShikiLanguageImport = import('../src/shiki').then((module) => ({
     default: [module.masterCSSShikiLanguage]
   }))
@@ -156,7 +156,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   }
 })
 
-test('keeps guide theme snippets correct with TextMate only', async () => {
+test('preserves guide theme source through TextMate tokenization', async () => {
   const highlighter = await createHighlighter({
     themes: [shikiSmokeTheme],
     langs: ['css', masterCSSShikiLanguage]

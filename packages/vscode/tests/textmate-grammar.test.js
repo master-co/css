@@ -375,7 +375,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
   expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, 'background-color', 'support.type.property-name.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
   expectScope(tokens, '@md', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, '!', 'keyword.operator.important.css')
