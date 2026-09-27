@@ -10,6 +10,7 @@ if ! command -v rustup >/dev/null 2>&1; then
   curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --default-toolchain none
 fi
+rustup toolchain install --no-self-update
 rustup show active-toolchain
 
 pnpm build:site
