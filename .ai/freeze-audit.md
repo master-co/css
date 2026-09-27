@@ -178,6 +178,9 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | site `test:syntax-migration` | 3 passed after building the site; earlier missing-export blocker resolved |
 | `pnpm run check:ai-context` | Passed for 3,084 files |
 | `git diff --check` | Passed |
+| `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
+| Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
+| `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; approval review pending |
 
 The second pass rebuilt native/Wasm and package artifacts with the normal
 repository build; the first pass used existing artifacts. No semantic
@@ -212,7 +215,7 @@ enforce the three-file total. This audit does not silently broaden that gate or
 raise its budget. No production hot path changed, so CPU/memory/cold-start
 benchmarks were not run.
 
-## Freeze readiness: PASS for the audited 2.0 source contract
+## Freeze readiness: local source PASS; PR integration BLOCKED
 
 All required/recommended findings identified in this audit have implementation
 or documentation evidence and the local support matrix passed. The 2.x authoring
@@ -221,6 +224,29 @@ issues; no editable IR or public SPI is implied by this PASS. This is a source
 freeze assessment, not npm publication approval or cross-platform release
 certification. Native artifact validation here covers macOS arm64; other targets
 and an isolated clean-room release build were not run.
+
+PR [#461](https://github.com/master-co/css/pull/461) exposed additional
+integration gates that the local scoped suite did not exercise:
+
+- `pnpm run check:migration` fails because the reviewed Rust-refactor evidence
+  for `rc87-bc7adf7569796dc8` has an outdated Next Turbopack test target
+  digest after a pre-existing baseline commit. Its `approved-contract-change`
+  metadata is digest-bound. Updating that approval record requires a reviewed
+  decision about the new target; this audit does not forge one.
+- Windows jobs could not check out eight tracked generated `.master/stylesheets`
+  files due to their path length. These files are already covered by `.gitignore`
+  and are now untracked in a follow-up change, with local content preserved.
+  Windows CI must rerun to prove the repair.
+- Native target packaging jobs built successfully but their smoke script used a
+  manifest without `languageVersion: 3` and a removed native method. The smoke
+  fixture now uses the current contract and passed locally on macOS arm64 after
+  staging the native package. Other target jobs must rerun.
+- Cloudflare Pages and Vercel deployment checks failed on the initial PR run.
+  Their provider logs were unavailable from the repository check summary;
+  neither failure is claimed as diagnosed or passed.
+
+The source audit PASS does not override these integration failures. Do not close
+#454 or #445 until the review-bound ledger and applicable CI gates are resolved.
 
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
