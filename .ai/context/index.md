@@ -30,6 +30,7 @@ For package code, read the affected manifest and local `AI.md`. For high-risk be
 - Commands and CI equivalents: `.ai/commands.md`
 - Style and path conventions: `.ai/code-style.md`
 - PR review checklist: `.ai/review-checklist.md`
+- Dated 2.0 freeze evidence and unresolved gates: `.ai/freeze-audit.md`
 
 ## Accuracy Rule
 

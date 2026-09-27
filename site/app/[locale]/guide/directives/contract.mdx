@@ -599,7 +599,26 @@ The final color is blue. Both `display` declarations remain, so a browser that r
 
 Composed selectors, conditions and importance are preserved. The expansion belongs to the destination rule's layer; it does not import the utility's layer. A composed variant that explicitly changes layer is rejected: put the destination rule inside native `@layer` instead. Composition does not promise identical cascade behavior to markup in a different layer.
 
-Only resolvable Master utilities may be composed. Native selectors, native classes and native mixins are not targets. Unknown utilities, cycles and failed expansions reject the complete stylesheet; there is no partial successful output. `@compose` is supported in native rules and static `@utilities` definitions, including their supported nested contexts, but not inside enum, token or dynamic pattern bodies. It does not introduce parameters, slots or component inheritance.
+Only resolvable Master utilities may be composed. Native selectors, native classes and native mixins are not targets. Unknown utilities, cycles and failed expansions reject the complete stylesheet; there is no partial successful output. `@compose` is supported in native rules and `@utilities` definitions, including static, enum, token and dynamic patterns and their supported nested contexts. Inside a pattern, compose complete, fixed class names; use `--value()` in declarations, not in the composed class list. It does not introduce parameters, slots or component inheritance.
+
+Fixed composition targets can refer to definitions later in the stylesheet:
+
+```css
+@utilities {
+  frame:<*> {
+    @compose frame-base;
+    width: --value();
+  }
+
+  frame-base {
+    display: block;
+  }
+}
+```
+
+Here `frame:20px` emits `display: block` followed by `width: 20px`. A pattern
+containing `@compose width:--value();` is rejected; composition does not substitute
+the matched value into another class name.
 
 Compiler inspection reports show statement expansions, referenced utilities, source locations and token/animation dependencies. This provenance stays in compiler/tooling output, outside the runtime manifest.
 
@@ -667,7 +686,7 @@ Top-level `@compose` is invalid because there is no selector context to receive 
 
 Use `@compose` in these contexts:
 
-- Managed class definitions inside or `@utilities`.
+- Static and pattern definitions inside `@utilities`, using fixed composition targets.
 - Native style rules such as `.card { ... }`.
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.

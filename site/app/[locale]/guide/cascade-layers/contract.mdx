@@ -189,6 +189,39 @@ Native style rules can still compose Master CSS utilities when the rule should r
 }
 ```
 
+## Priority within and between layers \{#priority-matrix\}
+
+Class order in HTML does not choose the winner. Master CSS generates a stable
+rule order; the browser then applies its native cascade to matching declarations.
+The following cases assume the base layer statement is loaded and the root font
+size is 16px:
+
+| Competing classes or rules | Result | Reason |
+| --- | --- | --- |
+| `p-md p:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
+| `p-md! p:8px` | `padding: 1rem` | Importance takes precedence over value source. |
+| `p-md! p:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
+| `p:8px@base p:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `p:8px@base! p:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| Unlayered `.outside { padding: 32px; }` and `p:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
+| Component-layer `padding: 24px !important` and `p:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `p:8px pt:12px` | Top padding is `12px`; other sides are `8px` | The longhand supplies the more specific property override. |
+
+Selector and condition scope still matter. A hover or breakpoint rule only
+participates while its selector and conditions match. Direct values do not
+universally override tokens in other layers or scopes.
+
+Groups retain each member's property and value source. Inside one `@compose`
+statement, utility ordering uses these same semantics; separate compose statements
+retain their authored order. Native declarations retain duplicates and source
+order, including fallback values. A shorthand may reset properties omitted from
+its value, just as it does in CSS.
+
+Canonical spelling changes must preserve cascade behavior as well as declaration
+values. A tool cannot safely rewrite a class merely because its isolated CSS looks
+equivalent. Internal ordering keys and final deterministic tie-breakers are not
+extension APIs.
+
 ## Layer checklist \{#layer-checklist\}
 Use the five layers in their declared order:
 

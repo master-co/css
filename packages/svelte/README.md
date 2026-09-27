@@ -85,9 +85,21 @@ export default defineConfig({
 })
 ```
 
+### Client runtime
+
+For `runtime` or `progressive` mode, load the Vite-provided runtime bootstrap in `src/hooks.client.ts`. SvelteKit renders its own HTML, so selecting a mode does not insert Vite's HTML runtime script into the page.
+
+```ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+This module starts the runtime with the project manifest and emitted globals and handles Vite HMR. Static and pre-render modes do not use this client import.
+
 ### Server hook
 
-For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })` and export the server handle to inject streamed CSS before `</head>`. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
 
 ```ts
 export { handle } from '@master/css-svelte/hooks.server'
