@@ -1,4 +1,5 @@
 import { SourceMap } from 'node:module'
+import { isAbsolute } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import type { ValidationSource } from '../value-validation'
 import type { CSSDirectiveSourceReference, CSSOutputMapping } from '@master/css-schema/css-directives'
@@ -31,6 +32,7 @@ function positions(source: string) {
 }
 
 function sourceURL(source: string, owner: string) {
+  if (isAbsolute(source)) return pathToFileURL(source).href
   return new URL(source, pathToFileURL(owner)).href
 }
 
