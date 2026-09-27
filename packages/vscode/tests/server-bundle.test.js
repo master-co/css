@@ -221,7 +221,8 @@ test('extension bundle reuses one Master CSS output channel for the language cli
       channelCalls.push(node)
     }
     if (ts.isNewExpression(node) && ts.isPropertyAccessExpression(node.expression)
-      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS') {
+      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS'
+      && node.arguments[1]?.text === 'Master CSS') {
       clientOptions = node.arguments[3]
     }
     ts.forEachChild(node, visit)
