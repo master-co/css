@@ -260,8 +260,16 @@ integration gates that the local scoped suite did not exercise:
   (within the existing acquisition deadline), keeping the old register visible.
   Persistent errors still fail without entering publication. Five focused
   regressions cover retry, cleanup, exclusion and terminal errors. Local CLI
-  tests pass 89/89, with lint, type-check and build passing; remote confirmation
-  of this follow-up remains pending.
+  tests pass 89/89, with lint, type-check and build passing. CI at `147dbcd4d`
+  confirms all 89 CLI tests pass on Windows.
+- That Windows run next exposed nine Webpack failures: CRLF imports survived
+  the runtime test harness, native directory separators mismatched Webpack asset
+  keys, and the runtime browser test rebuilt shared `dist` while other tests
+  loaded it. The harness accepts CRLF, asset keys use forward slashes, and all
+  tests consume the existing pre-test build. Assertions and deadlines remain
+  unchanged. Local Webpack tests pass 93/93 with lint and type-check; explicit
+  LF/CRLF parsing reproduces the old failure and verifies the correction.
+  Windows confirmation remains pending.
 - Linux e2e at `7836f3b54` passed 9/10 Next cases; the full Webpack HMR case
   exhausted its unchanged 180-second deadline. Earlier isolated reruns passed
   10/10. Relative fixture imports removed an invalid file-URL cache dependency,
@@ -275,18 +283,26 @@ integration gates that the local scoped suite did not exercise:
   macOS host, three Webpack single/burst samples improved from 12–21 seconds to
   3.0–3.5 seconds; profiling overhead and host load limit the comparison. This
   affects build tooling, not runtime bundle size or authored CSS syntax. The
-  earlier remote run does not contain this fix; CI confirmation remains pending.
+  earlier remote run does not contain this fix. CI at `147dbcd4d` then passed
+  Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks.
 - Aron authorized shared build, CI and preview configuration repairs on
   2026-09-27. The hosted script now prepares the pinned Rust toolchain. Cloudflare
   advances past its former `cargo: not found` error, builds all 32 packages,
-  compiles Next and reaches 731/830 generated pages; deployment is still active.
+  compiles Next and reaches 731/830 generated pages. That preview stalled and
+  was canceled after 33 minutes so the queued current commit could start.
   Vercel branch configuration replaces the obsolete `pnpm submodules` command
   and selects Node 24. Its subsequent build reached parallel Turbo artifact
   tasks, then collided reinstalling Rust. Turbo now preserves `CARGO_HOME` and
   `RUSTUP_HOME`, verified by dry-run, and the hosted script installs the toolchain
   before parallel work. The full hosted build passed locally with 830 pages and
   95/95 referenced assets. Site lint had zero errors and 266 existing warnings.
-  Final provider verification remains pending.
+  Vercel then completed the website build but looked for `routes-manifest.json`
+  inside `out`. Its Next builder expects the Next `distDir`, so the override now
+  points to `.next`; the export manifest there identifies `out` as the static
+  output. Local three-worker builds passed with both the existing 16 GiB heap
+  setting and a temporary 2 GiB limit; neither reproduced the Cloudflare stall.
+  Those diagnostic settings were reverted. Final provider verification remains
+  pending.
 - Five existing cases now have reviewed `verified-superset` evidence: lint
   request rejection, workspace discovery excluding generated output, and three
   additional progressive-hydration assertions. Original expectations remain;
