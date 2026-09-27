@@ -81,7 +81,7 @@
           },
           {
             "file": "packages/webpack/tests/plugin.test.ts",
-            "digest": "06d8d32f6065e203c7f87975f46c66ca984565fd0bdd964849fc421d3a04ad2d"
+            "digest": "8fbfb3b737bb2e99924f82a73d88f673c6e1c604b51614c3bf2288c7e13979bb"
           }
         ],
         "tests": [
@@ -191,7 +191,7 @@
             "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
-        "digest": "d1a4a676b3e07a517b1d6469a74a6c8f69c0e8b359feb2bea24d24ca6dcc226b"
+        "digest": "777887b0cb2d774193e19184cf49e7e4c0c82a617b4d8dcfd2a032247a6ad1f3"
       },
       "invariants": [
         "modulepreload as=\"json\" HTML bytes remain unchanged.",
@@ -200,10 +200,10 @@
         "This decision covers only the reviewed eight files and 21 cases; it does not close other Rust-refactor migration differences or authorize package publication."
       ],
       "approval": {
-        "approvedBy": "Aron (explicit QA approval in this task)",
-        "approvedAt": "2026-09-27T16:12:20Z",
-        "reviewRef": "parity/freeze-migration-approval.md#manifest-loading-adaptation",
-        "scopeDigest": "235939a7c9ce9f5fb30e24d8e142a30085f97f371759884cdc6a5abe042bc2f6"
+        "approvedBy": "Aron (explicit supplemental QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/freeze-migration-approval.md#native-layer-fixture-hash-supplement",
+        "scopeDigest": "8185856215468efe7c19b54bc9f5becfff3effbb39ceb38fc6aa8f0d71bee14e"
       }
     }
   ]

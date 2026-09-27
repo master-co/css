@@ -1586,6 +1586,998 @@
       "targetDigest": "728c17b3b3bc10f75030905005603902ced7c56038bcb6d6cf3b046db1f295e2",
       "proof": "verified-superset",
       "reason": "Reviewed the complete Webpack production-browser case and asset producers. Production HTML minification removes optional attribute quotes, so the raw HTML substring checks are represented by browser DOM checks with the same rel/as/href, defer, empty crossorigin and last-body-element requirements. The missing exact Manifest href prefix and empty crossorigin checks were restored, and singleton counts strengthen duplicate-injection coverage. CSS display/layer placement assertions remain. The rebuilt published bundle passes the browser case, lint passes, and the unchanged shared manifest-preload unit test still pins exact serializer bytes. This verifies preserved injection semantics, not parity of the bundler's optional quote formatting."
+    },
+    {
+      "sourceId": "rc87-0384f3b3b701342c",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-7b41a862e4030c96",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "61616648c91ae6cbca847ece6f1cccf31327539c3230b7b75083ee896bf6ca77"
+      }
+    },
+    {
+      "sourceId": "rc87-73cad9690d62dfda",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-f94e4c6a9ddbfb45",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "4db01d92071b6c30131c576f40453dc8e30a35a2d3f0a02c160bf809b580dddc"
+      }
+    },
+    {
+      "sourceId": "rc87-121eca8ae4a12480",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-7c72c4500f513930",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "62450961eb0a30e28671087100d56d6ceb6d0767659aa03d65cca933c1231862"
+      }
+    },
+    {
+      "sourceId": "rc87-2739de51bb0b9064",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-f4999ec65aab202d",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "b96f776333809029c6814cd106c6ceeb95ec12b49979787b5e721303a7e9e953"
+      }
+    },
+    {
+      "sourceId": "rc87-69c7d819588308ea",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-0f7bacd8fe32d976",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "f39dbbe146dbf509630ad57fe33d7c1fe28dfabbadd60df69b468afbc83ab419"
+      }
+    },
+    {
+      "sourceId": "rc87-d80e44996d737a35",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-9fc97507f8b09f85",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "95f5fbc44df966bcd3f4186e50cf297908f2894e594c24e353a35b504e08d994"
+      }
+    },
+    {
+      "sourceId": "rc87-74150fed0ee9ede3",
+      "sourceDigest": "a6a9400ec7071b39603d608922523e761368efca53abf4aff7b9e1e4c32c73f0",
+      "targetId": "rc87-1335a251c9ba8d6b",
+      "targetDigest": "8960f762897829df6fb77ce169189fd40fd823f5b52e0e4d8bc7b0e99e599eba",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "51627670beb08f4a4609d1030fd258b968d3a7713fe01e59d6d635076d7a047f"
+      }
+    },
+    {
+      "sourceId": "rc87-71c26cbe571802ce",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-5efba643d454eb30",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "dc9e356560c25eb3428536ccb081a29315bdafdabdc1e2e9c5313756bdace038"
+      }
+    },
+    {
+      "sourceId": "rc87-04b5f1fa22234454",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-aff3fc9a69b5e01e",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "95e44874fc23af5e74fcc31c0859691cf688841a1696557564794ff55c35e8cf"
+      }
+    },
+    {
+      "sourceId": "rc87-ada382187e7b929d",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-8ab761db962a9935",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "a3f305cb4e30afd4bfc44185b806b8a3f30cae8c92f07ebeb8479765c95fcf2b"
+      }
+    },
+    {
+      "sourceId": "rc87-932b42c5a9d001d0",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-fb4a0bf3ce677611",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "8a9c7e095310f56bc0c1b56253ce14ea336f1b1fa84c63746fcde184c68962dc"
+      }
+    },
+    {
+      "sourceId": "rc87-c3ef6c69e66d8156",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-15ea415dd78cf756",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "9e64ea470f9cd6e4d170f1bdae694cd80bf3afbe6276544ea1d66122b8b09776"
+      }
+    },
+    {
+      "sourceId": "rc87-9bd2764ee78a0a8d",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-166b861322362d7c",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "03c95c8746b913591f52e1006ff22f15c0d4742fe7c786aac4cdaced6cd68add"
+      }
+    },
+    {
+      "sourceId": "rc87-07634e28f7afb0ef",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-5300e9ab6e70ceab",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "d927c4977ba0af218deedfaa312cbf65e522ea00b19328f7809b45bba587c463"
+      }
+    },
+    {
+      "sourceId": "rc87-3a4a38c90f7e0fd1",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-69930928c51df76c",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "727caa52b14e118c30a18592dc64e817b7595fc927054a5831a2c2bd58d16f46"
+      }
+    },
+    {
+      "sourceId": "rc87-55e07b6010f30b04",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-0a53cf8bf804ed4c",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "d6bd6ee25c45eb648e3ff3a28fcb0444dd22482431aa4961ead8ca1b76057051"
+      }
+    },
+    {
+      "sourceId": "rc87-9238938224cfbe8c",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-37b0618d5110cb62",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "37c3eb875dee0e414e4ecd16deec6f40f6e1abb85082709b89d6af042fe015ad"
+      }
+    },
+    {
+      "sourceId": "rc87-ae3e1cd935fb3624",
+      "sourceDigest": "f4bb1fdabe2dad13976a1a2690896a1e4baa5985cba79a6ca89945f6dc24d404",
+      "targetId": "rc87-c906589cd19e545c",
+      "targetDigest": "1cd91e38e9e521a32282cb53f57d053d6a210fc98714f37c48c69fa9310ef535",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6c20cea20c32343aabd3e3626b7dcafcceef0ebd90e81e6877ba52b83d838e0d"
+      }
+    },
+    {
+      "sourceId": "rc87-72347d9fca0cf282",
+      "sourceDigest": "98cad66954adc9b7d4caf27f5a22c09859e80bafb752c99d5ae50f78ea762c7c",
+      "targetId": "rc87-dd1ce40b312553c1",
+      "targetDigest": "2a4d108b6d1b7cdeffbe332d99edf5676e9590b1205d7220f05e973a7c2aa44f",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "e2b97d8eb34d511e47667afa916a4eba87670f64afa9351aa1c58293a94004c5"
+      }
+    },
+    {
+      "sourceId": "rc87-3731770b03cf8842",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-d1773083de9a4af0",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "7ec6bc943c0586646b7568415c639654f1b64ca519f1bd009953f17b5508082c"
+      }
+    },
+    {
+      "sourceId": "rc87-d81e62746a996449",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-cdce0c007b32e07a",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "48260a505aea77ca1d4992e4e915953200438d17f11ce072743b28e690913fef"
+      }
+    },
+    {
+      "sourceId": "rc87-b21e7002eaaae11e",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-6e65a5879d544d60",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "d8ac05ee039c38b8fe61e7d4735c0c0bdbcd11e4564115e7b98e7c222f76b6b1"
+      }
+    },
+    {
+      "sourceId": "rc87-790a18d44de49783",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-d59c1c2155c52b0b",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "18af55ef8bfe4334f64ff564ee19e6fe0f1b7e2601acb60cee8473deaed80063"
+      }
+    },
+    {
+      "sourceId": "rc87-78879dee5e5a5fd4",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-3704e501abdb4d91",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "7457b850460b0d1ebc79e48abcf5b236226c91ce1622f7e29af3005d309ef896"
+      }
+    },
+    {
+      "sourceId": "rc87-4f4284d37cfcf2d7",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-45f9ef373c06372b",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "3c488e5d0fef53373d928fdea1ea84cc386c7592dda8dcfef30ee981df5f4add"
+      }
+    },
+    {
+      "sourceId": "rc87-d564debe5f3e3c88",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-65664ec8f76a3f7c",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "53423271bcc627814fca17aa4d1ab5790ec74d0389f709a73b560443d5af830a"
+      }
+    },
+    {
+      "sourceId": "rc87-0fac4681b1286a01",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f8391c8017764f4f",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "3c78acded38a896bea2e03ff1fc68073abdd4a3d49d204daa0521329c6b7e2e6"
+      }
+    },
+    {
+      "sourceId": "rc87-b5bdd47f07eb28e9",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-dc14ba6611e91773",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "21bdb963a1ce53cfa9f534d9ec9d7f81149f2b76277ff16a705080376343b8e4"
+      }
+    },
+    {
+      "sourceId": "rc87-2552e1586dbd4b0f",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-27a27252cf30b61a",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "d02465ad054f2a5788db264d43a9355931c30a49b9f15eca6ac57757de3707fe"
+      }
+    },
+    {
+      "sourceId": "rc87-db89d2874d8adb56",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-727af0bc6be3c76f",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "74887de3789edd253bf994474b5ad86b41b8612315989e1aaef609d10e4313e5"
+      }
+    },
+    {
+      "sourceId": "rc87-0d9740de7a0666e6",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f99b48a9f28c56fc",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "07da014d254e0cba7ecab29f7931ace240ace3ea1b5e6794306b24237c400ee1"
+      }
+    },
+    {
+      "sourceId": "rc87-659aeeb89028f2e4",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-53a0bdbb67a2ec50",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "842a03a8740c2990d80a0233a8eceb0ea5769f6f4cd9410f730b5d781fec9e25"
+      }
+    },
+    {
+      "sourceId": "rc87-c27d05524b6a0623",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-08db82e6ef93a313",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "092fcdfea97c61697583c378b5b76ef973a58e62feb06835d38c4e0c57251123"
+      }
+    },
+    {
+      "sourceId": "rc87-250dbbcdb7658b07",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "5cef8c77f1c27a7ade387df5d5703ae6d1c3ff9dfdf785ca81f0a9bdac5a3561"
+      }
+    },
+    {
+      "sourceId": "rc87-6dfa4eb1e9b2b6ff",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-8f5d923bb01e21e7",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "09da2937a620bfcbc1e3768aec0a5d2aa5a327c1e701d5c7f253b2f4c97d3466"
+      }
+    },
+    {
+      "sourceId": "rc87-26de8cb0c49c380d",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-7afd9024c0cc27d4",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "833c567786650f69e7a1c90b3013a80a4d376a9e94145d5fec253579278113cb"
+      }
+    },
+    {
+      "sourceId": "rc87-a022507eafb16cc8",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-70c24af48c2966fb",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "2c1a3a184d9e7cea5dad7509e6300d4973f08a4975976b1cd229155b4856cd1f"
+      }
+    },
+    {
+      "sourceId": "rc87-dc2fd359c8fd686d",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-5a51d3aa7b9247c4",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "18ed5c8fc01973564aa18986805fd2683c55554c73996dd188ff989a71b2b2be"
+      }
+    },
+    {
+      "sourceId": "rc87-869f9913c6d75f24",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-585c3502503e1e8c",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "c2e173405afe8fb0c9bdedc0d5da9fb63fc016d30d6dea2810c1e0e789c2bf6e"
+      }
+    },
+    {
+      "sourceId": "rc87-3434d9506ad2d965",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-0f5fb5f3574992ea",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "cd5b279a07293b79a9beae60b1640ca6f338c176154be1abd35242af32fdc328"
+      }
+    },
+    {
+      "sourceId": "rc87-75f0511fd2777494",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-d8f1fc00ebe433de",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "ee21af19e4f67b54d4c8938b250d18a7987845c83871f3ca1ef192bd22b1bfab"
+      }
+    },
+    {
+      "sourceId": "rc87-06f2b00f300934e2",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-c384666d35b37f86",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6b3756b55e8cfe03e0f6cfd2aaddc03535db750444a6894286851eae055f43c7"
+      }
+    },
+    {
+      "sourceId": "rc87-4605c33f442beac7",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-a9bacade145befc0",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "e25c4376c4405be17799557c6ac074126a9d71f25698f1c1f57453ea4f9990ed"
+      }
+    },
+    {
+      "sourceId": "rc87-148c7e18a476afc3",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-409f3aad30fc1e1a",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "cd76c1e7d1c489be3f686339c57d67c469e1b040a4c6ce6f9cd9d2e6dee9dd52"
+      }
+    },
+    {
+      "sourceId": "rc87-735e4bc260161106",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-765605c07843abe5",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "cf9eaa919e4277b04a2409cf2974702e6082300284e3670e036b215dd7601433"
+      }
+    },
+    {
+      "sourceId": "rc87-c6ce617cbc168890",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f533fe78acf682cf",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "a05d5399445cf22bf04399f60e8abb4c86a9114f333d4473734808117efc7e62"
+      }
+    },
+    {
+      "sourceId": "rc87-21fa966e71ae460a",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-64635132e789b699",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "c052b7fd41b10f1aebcbcd67d4c881cfcc51634eb71dcf7b0471c84e1c457388"
+      }
+    },
+    {
+      "sourceId": "rc87-242a467e7ab109f4",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-54e265d55921f80e",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "7b0723c558cfb67eba4b4186ca48860934d8ea1fd5300114e7f9d8a3bb0adee3"
+      }
+    },
+    {
+      "sourceId": "rc87-375fa31d769740e8",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-b9a3e5d892b0df36",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6c4d585674bcc21e82e20949aff413c6cac4078169084cb0ef2ef3b89320d1e6"
+      }
+    },
+    {
+      "sourceId": "rc87-874d84a062e94ed6",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "1f70d61038d7ed83bbdb7e9aba6a141e056a75e4ac9dbb4d1321a8807271bd2d"
+      }
+    },
+    {
+      "sourceId": "rc87-3a57b3dfd2fd37aa",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-af5f947eacf06c29",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "032d29ec418e0615577d7acde15f6ba98695557bac6c862676320efa5f951780"
+      }
+    },
+    {
+      "sourceId": "rc87-463a53011dbf42f6",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-99b29058f308e11f",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "9c64df8cd089125d6000d2de8aac5ff103b2fa9efe01a9d697ff79572387c0da"
+      }
+    },
+    {
+      "sourceId": "rc87-55b09a827503f2d3",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-6fa94790fc2e4baa",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "8e2f94242732782e7fe9a110bb7a84dbec3ac597625c824eaeb1b0d2a5628139"
+      }
+    },
+    {
+      "sourceId": "rc87-8e07710996dc6e5f",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-318fa4a994829b9b",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "59293a967806d732dd42942ff068bceeafa6763d1c392e3b7d2c666a4d92dcdb"
+      }
+    },
+    {
+      "sourceId": "rc87-e29cabd5414dc31f",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-5319c47c7bc03af0",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6c3334238704e6ab06c0d6ced27a66b4883681e4957a62323519cac2f753b61c"
+      }
+    },
+    {
+      "sourceId": "rc87-67d3d5a79018c9bb",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f9421a12697e06c4",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "a798570572fd959f2ae848d8204d110ab860baffebba9bcf917af483887eef91"
+      }
+    },
+    {
+      "sourceId": "rc87-33d4b201b52f02df",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f9e3634c67f832b0",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "3ddf85a4cfe14e02e65519d6825391428cf7143cf29bfd40f2fe0c0341830fa0"
+      }
+    },
+    {
+      "sourceId": "rc87-e67ac62b73502ce3",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-f9b74c17a9e18a5b",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "bba3f7fd8fb3fedbf2cbd343b00cc25a51521c0d278098d4ac4c3647d785b5ff"
+      }
+    },
+    {
+      "sourceId": "rc87-c16f4f7672b8f35a",
+      "sourceDigest": "0cd7c9257ebacbce0f90802a322d96fe7293f897e75ad14a09daf1598c276894",
+      "targetId": "rc87-55ce86259e161e9c",
+      "targetDigest": "d3b9e552ecaf2dae910e9ad8abb21d9fe1cdd9c45ce11430322f4d3db3526320",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "8badd0676f42f8c0b97bd311f3396f72cea5a7c08cceb5bd0b0d8aed964b42d7"
+      }
+    },
+    {
+      "sourceId": "rc87-e4085fd7350e8b1d",
+      "sourceDigest": "5f97a5fd0b4214bd3096cc1e5c9ce7acd2f9d0ef359e4554da1e6512e17103c3",
+      "targetId": "rc87-0e05853b8eace42a",
+      "targetDigest": "1bb2627dd67cf9cbdd9faba0c809a3e217332ae883d55bb96734a5301036430e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "9959fd45ac630685ebdf633621319ff23f9245832b5d06b238681220c7a9a524"
+      }
+    },
+    {
+      "sourceId": "rc87-c23710bf7c0a928e",
+      "sourceDigest": "5f97a5fd0b4214bd3096cc1e5c9ce7acd2f9d0ef359e4554da1e6512e17103c3",
+      "targetId": "rc87-17def6a582f8d400",
+      "targetDigest": "1bb2627dd67cf9cbdd9faba0c809a3e217332ae883d55bb96734a5301036430e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "7305c6b27828ecf6c0c53634877d4243f704d6ca30f52f911879303728970f10"
+      }
+    },
+    {
+      "sourceId": "rc87-779d01df6dc7ccf4",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-15dc035f90801671",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "143f2254ab1c70ceb24e9bbcc322b59c77c81ac7fd93bd014d70e30faaeb0188"
+      }
+    },
+    {
+      "sourceId": "rc87-bab408a404989821",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-ad09939d0a2e97ca",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "ee2906957e19b5f66c9f876596b07f7cf0fdbb034233572436f170cb574b8315"
+      }
+    },
+    {
+      "sourceId": "rc87-b63f6a6103298c55",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-378e215d42f03e2c",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "28b80c75559b0867efb7b2c9b16330fd55fd25b08403281df6e235e3af0f9856"
+      }
+    },
+    {
+      "sourceId": "rc87-02a57e263bf20d18",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-f53abef897ff3ae3",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6de816bd6e809880a8128554ae256392820166d9355607810f6cfbb3c8378ba4"
+      }
+    },
+    {
+      "sourceId": "rc87-c0618ad6b8fe85c4",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-506e50a060048290",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "18f5ef6113f40d030d0d7deb4c2291cb1601234fe6d04ca534898affb7f506a4"
+      }
+    },
+    {
+      "sourceId": "rc87-574a8c3fadc1e7eb",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-3aa3863e09304ff6",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "a837c3504aa3f9156764fbc2fbb2ef2eee0074be6cb465c4c4c7c9bfc8074615"
+      }
+    },
+    {
+      "sourceId": "rc87-98a0718183701f81",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-9faa6671e9da1d5b",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "4ec472ffaee10e1d5d353cc4acf9799160f36f183ce5b4a8a0f11892b34e9c13"
+      }
+    },
+    {
+      "sourceId": "rc87-4aca934f26dc6c47",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-1b9dd5b2e97b57ae",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "6226464fdcb2229c31e2bb1af196871ec02a0084d4dcd446ea12b83151674b95"
+      }
+    },
+    {
+      "sourceId": "rc87-4ecbf4d220120558",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-af629033059af3d5",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "4e43339c3ed9e8502038b28b6ce227c2d29e3fc20821f5a4dc13610e47bc0589"
+      }
+    },
+    {
+      "sourceId": "rc87-73a56558ce38481b",
+      "sourceDigest": "b4e9d0fb7555de9eb8f852b71e7efba7b86350cc64830216e4b17e263b4322f7",
+      "targetId": "rc87-e97542b1e64f5287",
+      "targetDigest": "857072acf0c63a3ae449f1c9739efe37aad866557d46da1f7fa782aceedd2496",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approves this exact source-matching/sorting case pair: named-token spelling, explicit native units and longhands, native-property ordering and native-candidate classification, with the reviewed diagnostic end-column adjustment where present. Source/parser/range assertions remain as shown in the pinned review. Collision, canonical autofix, invalid/raw-value policy and MDX behavior are outside this approval.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T17:29:00.229Z",
+        "reviewRef": "parity/eslint-source-sort-freeze-approval.md#approved-scope",
+        "scopeDigest": "5f2b1c2dadfc365573d6116fe348bd2e307448698c255cedc3cc970da1b74073"
+      }
     }
   ],
   "surfaces": [

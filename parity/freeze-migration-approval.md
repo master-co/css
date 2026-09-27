@@ -68,3 +68,9 @@ The original implementation provenance remains `becef751987086ffe7a93cdbd6985f1a
 | `rc87-f67818a2528723e4` | `rc87-f67818a2528723e4` | unchanged |
 
 The decision source records the approved case digests and fresh scope digest. The upstream rc.87 baseline and post-rc.87 overlay stay fixed. No package publication, unrelated contract change, expected-output rewrite, CI waiver or issue closure is authorized by these approvals.
+
+## Native layer fixture hash supplement
+
+Aron approved the exact one-line native layer restoration in response to `call_8EoD6MG81nD7zVwBRXMWSiqS`, item 0, recorded at `2026-09-27T17:29:00.229Z`. The review `manifest-review-native-layer-restoration.md` compares `1c58d9e13f3f0b972edb2e32d3888de2cd2e9b7b` with `a3b78f7b4fa982e2972a628b45c52cc207efc544`; patch SHA-256 is `05cfb20fdd87dad1571bbaed4518abafc7d02fe3c0f87d2d85250c3922287113`.
+
+Only `packages/webpack/tests/plugin.test.ts` changes from `06d8d32f6065e203c7f87975f46c66ca984565fd0bdd964849fc421d3a04ad2d` to `8fbfb3b737bb2e99924f82a73d88f673c6e1c604b51614c3bf2288c7e13979bb`. The fixture restores valid native `@layer components` from `@layer utilities`. All 21 Manifest test digests and the other seven file hashes were reverified unchanged at `4c0690aed92c5cd5021bea9b7fa3f6dcbdd8482e`. Manifest behavior and the original implementation commit remain unchanged. The decision target digest and approval scope digest are refreshed solely for this approved file-hash supplement. This does not expand approval to other migration cases.

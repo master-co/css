@@ -237,13 +237,13 @@ integration gates that the local scoped suite did not exercise:
   eight-file/21-case Manifest adaptation after exact old/new reviews. Fresh
   approval metadata and scope digests are recorded in
   `parity/freeze-migration-approval.md`. Separate approvals cover 62 named-token
-  and 24 utility-registration cases. Four native component-layer fixtures were
+  24 utility-registration and 71 ESLint source/sort cases. Four native layer fixtures were
   restored, and ten further assertion-preserving supersets were verified. Two Shiki case
   names were disambiguated without changing assertions; the independent Rust
-  contract review now has 394 pending cases. The Manifest gate awaits narrow QA
-  for the restored Webpack fixture changing its whole-file hash;
-  its 21 Manifest cases and other seven files are unchanged. No blanket approval
-  or generated ledger rewrite was made.
+  contract review now has 323 pending cases. Supplemental QA approves the restored
+  Webpack fixture hash; all 21 Manifest cases and seven other files are unchanged.
+  The full migration check now passes that Manifest validation and fails on the
+  323 unapproved cases. No blanket approval or generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
   tsdown external rule now excludes resolved Windows drive paths from bare
