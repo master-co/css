@@ -1,5 +1,5 @@
 import { readStylesheetText } from './helpers/stylesheet-output'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -9,7 +9,7 @@ import loader from '../src/stylesheet-loader'
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = mkdtempSync(join(tmpdir(), 'next-raw-sass-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-raw-sass-')))
   try {
     mkdirSync(join(root, 'parts'));mkdirSync(join(root, 'node_modules'))
     symlinkSync(dirname(sassFile), join(root, 'node_modules/sass'), 'dir')

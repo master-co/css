@@ -1,5 +1,5 @@
 import { readStylesheetEntry } from './helpers/stylesheet-output'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire, SourceMap } from 'node:module'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -10,7 +10,7 @@ import loader from '../src/stylesheet-loader'
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = mkdtempSync(join(tmpdir(), 'next-output-map-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-output-map-')))
   try { writeFileSync(join(root, 'master.css'), '@master entry;@utilities{paint{padding:2rem}}'); await run(root) }
   finally { rmSync(root, { recursive: true, force: true }) }
 }

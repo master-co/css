@@ -76,7 +76,7 @@ test('installed Next PostCSS loader chain emits late resources once, keeps user 
       root.walkDecls(declaration => { if (declaration.prop === '--color-late') declaration.value = '#fedcba' })
     } }]
     const { dependencies, pitched, output } = await runHostChain(projectDir, entry, { source: lowered.css, sourceMap: lowered.sourceMap, generatedCSS, resources: policy }, plugins, true)
-    expect(dependencies).toEqual([expect.stringContaining('.master/postcss'), entry])
+    expect(dependencies).toEqual([expect.stringContaining(join('.master', 'postcss')), entry])
     expect(pitched[2]?.masterPostCSSResources).toBeTypeOf('function')
     expect(counts).toEqual([1, 2])
     expect(output).toBeDefined()
