@@ -72,7 +72,7 @@ test.each(['scss', 'sass'])('pure Vite direct preprocessing exposes original imp
     const origin = new SourceMap(raw as ConstructorParameters<typeof SourceMap>[0]).findEntry(line, column)
     expect('originalSource' in origin).toBe(true)
     if (!('originalSource' in origin)) throw new Error('Missing original map source')
-    expect(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource).toBe(original)
+    expect(normalizePath(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource)).toBe(normalizePath(original))
     expect(origin.originalLine).toBe(2)
     expect(origin.originalColumn).toBe(2)
     console.log(JSON.stringify({ control: 'pure-vite-preprocessCSS', syntax, origin, sources: raw?.sources, pass: true }))
@@ -104,7 +104,7 @@ for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unma
       expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 2 } })
       expect(diagnostic.notes).toContain('The source map identifies the originating segment; an exact original token range is unavailable.')
     } else {
-      expect(diagnostic.source).toBe(child + '.master-css-sass.css')
+      expect(diagnostic.source).toBe(normalizePath(child) + '.master-css-sass.css')
       expect(diagnostic.notes).toContain('Original Sass location is unavailable; this range refers to preprocessed CSS.')
     }
   } finally { rmSync(root, { recursive: true, force: true }) }

@@ -1,8 +1,9 @@
 import { statSync, type Stats } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { isAbsolute } from 'node:path'
-import { createFilter, normalizePath, type ViteDevServer, type ResolvedConfig } from 'vite'
+import { createFilter, type ViteDevServer, type ResolvedConfig } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
+import { normalizeFilePath } from './path'
 
 export type FailedDependencyRecovery = (environment: object, id: string, changed: string[], active: () => boolean) => Promise<void>
 interface Pending {
@@ -45,7 +46,7 @@ export function configureBuildDependencyReconciliation(context: MasterCSSVitePlu
 
 /** A real host event already schedules compilation; avoid a duplicate fallback. */
 export function acknowledgeFailedDependencyChange(context: MasterCSSVitePluginContext, file: string) {
-  file = normalizePath(file)
+  file = normalizeFilePath(file)
   const state = states.get(context)
   if (!state) return
   const value = failedDependencyVersion(context, file)

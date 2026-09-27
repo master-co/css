@@ -46,6 +46,7 @@ function createLanguageServer(options = {}) {
   let nextId = 1
   let stdout = Buffer.alloc(0)
   const stderr = []
+  const messages = []
   const pending = new Map()
   const closedPromise = new Promise((resolvePromise) => {
     child.on('close', (code) => {
@@ -66,6 +67,10 @@ function createLanguageServer(options = {}) {
   }
 
   function handleMessage(message) {
+    if (message.method) {
+      messages.push(JSON.stringify(message).slice(0, 1000))
+      if (messages.length > 20) messages.shift()
+    }
     if (Object.hasOwn(message, 'id') && pending.has(message.id)) {
       const request = pending.get(message.id)
       pending.delete(message.id)
@@ -120,7 +125,7 @@ function createLanguageServer(options = {}) {
       return new Promise((resolvePromise, rejectPromise) => {
         const timer = setTimeout(() => {
           pending.delete(id)
-          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}`))
+          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}\nRecent LSP messages:\n${messages.join('\n')}\nBuffered response bytes: ${stdout.length}`))
         }, 5000)
         pending.set(id, {
           resolve: resolvePromise,

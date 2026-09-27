@@ -1,3 +1,4 @@
+import { normalizePath } from 'vite'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { resolve } from 'node:path'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
@@ -155,7 +156,7 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )).rejects.toThrow('Invalid @compose utility')
 
-    expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
+    expect(addWatchFile).toHaveBeenCalledWith(normalizePath(resolve('/project/src/style.css')))
   })
 
   test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {

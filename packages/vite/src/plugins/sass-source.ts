@@ -3,6 +3,7 @@ import { installSassProxyAccessCheck } from '../utils/sass-proxy-access'
 import type { Plugin } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from '../utils/scanner-context'
+import { normalizeFilePath } from '../utils/path'
 import { clearBuildSassSources, invalidatePreparedSassSources, getSassSourceFile, prepareBuildSassSource, sassSourceID, sassModuleID, isSassModuleID, isRawStyleRequest } from '../utils/build-sass-source'
 
 /** Sass and CSS Modules enter the CSS pipeline after host preprocessing. */
@@ -37,8 +38,8 @@ export default function SassSourcePlugin(context: MasterCSSVitePluginContext): P
           const registration: Promise<void> = server.moduleGraph.getModuleByUrl(graphURL).then(module => {
             const owner = module?.id && getSassSourceFile(module.id)
             if (!owner) return
-            let urls = serverStylesheetURLs.get(owner)
-            if (!urls) { urls = new Set(); serverStylesheetURLs.set(owner, urls) }
+            let urls = serverStylesheetURLs.get(normalizeFilePath(owner))
+            if (!urls) { urls = new Set(); serverStylesheetURLs.set(normalizeFilePath(owner), urls) }
             urls.add(servedPath)
           }).catch(error => server.config.logger.warn(`[master-css] Could not track stylesheet URL ${servedPath}: ${String(error)}`))
             .finally(() => { serverPendingURLs.delete(registration) })
@@ -58,14 +59,14 @@ export default function SassSourcePlugin(context: MasterCSSVitePluginContext): P
       const pending = new Set(modules)
       for (const module of pending) {
         const owner = getSassSourceFile(module.id ?? '')
-        if (owner) owners.add(owner)
+        if (owner) owners.add(normalizeFilePath(owner))
         else for (const importer of module.importers) pending.add(importer)
       }
       if (!owners.size) return
       const affected = new Set(modules)
       for (const module of moduleGraph.idToModuleMap.values()) {
         const owner = getSassSourceFile(module.id ?? '')
-        if (!owner || !owners.has(owner)) continue
+        if (!owner || !owners.has(normalizeFilePath(owner))) continue
         moduleGraph.invalidateModule(module)
         affected.add(module)
       }

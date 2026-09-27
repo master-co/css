@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { dirname, isAbsolute } from 'node:path'
-import { normalizePath, type ViteDevServer } from 'vite'
+import type { ViteDevServer } from 'vite'
+import { normalizeFilePath } from './path'
 import type { MasterCSSVitePluginContext } from '../core'
 import { clearFailedDependencyReconciliation, failedDependencyVersion, forgetFailedDependencyReconciliation, trackFailedDependencyReconciliation } from './failed-dependency-reconciliation'
 import type { FailedDependencyRecovery } from './failed-dependency-reconciliation'
@@ -48,7 +49,7 @@ export async function withStylesheetDependencies<T>(context: MasterCSSVitePlugin
   try {
     const result = await operation(file => {
       if (file.includes('\0')) return
-      file = normalizePath(file)
+      file = normalizeFilePath(file)
       if ((modules || buildRecovery) && !dependencies.has(file)) {
         const version = failedDependencyVersion(context, file)
         if (version !== undefined) versions.set(file, version)
@@ -74,7 +75,7 @@ export async function withStylesheetDependencies<T>(context: MasterCSSVitePlugin
 }
 
 export function stylesheetDependencyOwners(context: MasterCSSVitePluginContext, environment: object, file: string) {
-  file = normalizePath(file)
+  file = normalizeFilePath(file)
   const owners = new Map<string, { id: string, failed: boolean }>()
   for (const entry of failures.get(context)?.get(environment)?.values() ?? []) {
     if (entry.dependencies.has(file)) owners.set(entry.id, { id: entry.id, failed: entry.failed || Boolean(owners.get(entry.id)?.failed) })

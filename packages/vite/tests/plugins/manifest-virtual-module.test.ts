@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { normalizePath } from 'vite'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import ManifestVirtualModulePlugin from '../../src/plugins/manifest-virtual-module'
 import {
@@ -42,14 +43,14 @@ describe('ManifestVirtualModulePlugin', () => {
     const manifestEntryPath = path.join(root, 'app.css')
     const buttonManifestPath = path.join(root, 'styles/button.css')
 
-    expect(viteConfig.server.fs.allow).toContain(manifestEntryPath)
-    expect(viteConfig.server.fs.allow).toContain(buttonManifestPath)
+    expect(viteConfig.server.fs.allow).toContain(normalizePath(manifestEntryPath))
+    expect(viteConfig.server.fs.allow).toContain(normalizePath(buttonManifestPath))
     expect(code).toContain('export default ')
     expect(code).toContain('"version":1')
   })
 
   it('keeps default manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-manifest-'))
+    const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), 'master-css-vite-manifest-')))
     const entryPath = path.join(root, 'app.css')
     try {
       mkdirSync(root, { recursive: true })
@@ -65,8 +66,8 @@ describe('ManifestVirtualModulePlugin', () => {
 
       await expect((plugin.load as any).call({ addWatchFile }, RESOLVED_VIRTUAL_MANIFEST_ID))
         .rejects.toThrow('Invalid @compose utility')
-      expect(addWatchFile).toHaveBeenCalledWith(entryPath)
-      expect(viteConfig.server.fs.allow).toContain(entryPath)
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(entryPath))
+      expect(viteConfig.server.fs.allow).toContain(normalizePath(entryPath))
 
       writeFileSync(entryPath, [
         '@master entry;',
@@ -149,7 +150,7 @@ describe('ManifestVirtualModulePlugin', () => {
 
     await (plugin.buildStart as any).call({})
     const result = await (plugin.handleHotUpdate as any)({
-      file: buttonManifestPath,
+      file: normalizePath(buttonManifestPath),
       server: {
         moduleGraph: {
           getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_MANIFEST_ID ? module : undefined),
@@ -176,7 +177,7 @@ describe('ManifestVirtualModulePlugin', () => {
 
     await (plugin.buildStart as any).call({})
     const result = await (plugin.handleHotUpdate as any)({
-      file: manifestEntryPath,
+      file: normalizePath(manifestEntryPath),
       server: {
         moduleGraph: {
           getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_MANIFEST_ID ? module : undefined),

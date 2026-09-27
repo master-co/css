@@ -1,10 +1,12 @@
 import type { Plugin } from 'vite'
+import { relative } from 'node:path'
 import { isFileLoadingAllowed, normalizePath } from 'vite'
 import MagicString from 'magic-string'
 import type { MasterCSSVitePluginContext } from '../core'
 import { clearDevStylesheets, devStylesheetState } from '../utils/dev-stylesheet-delivery'
 import { releaseScannerEnvironment } from '../utils/scanner-context'
 import { toAssetHref } from '../utils/html'
+import { normalizeFilePath } from '../utils/path'
 
 export default function DevStylesheetPlugin(context: MasterCSSVitePluginContext): Plugin {
   return {
@@ -25,7 +27,7 @@ export default function DevStylesheetPlugin(context: MasterCSSVitePluginContext)
         }
         const resource = state.resources.get(url.pathname)
         if (resource) {
-          const source = normalizePath(resource.source)
+          const source = normalizeFilePath(resource.source)
           if (!server.config.server.fs.allow.includes(source)) server.config.server.fs.allow.push(source)
           if (!isFileLoadingAllowed(server.config, source)) {
             response.statusCode = 403
@@ -34,8 +36,9 @@ export default function DevStylesheetPlugin(context: MasterCSSVitePluginContext)
           }
           const file = normalizePath(resource.file)
           if (!server.config.server.fs.allow.includes(file)) server.config.server.fs.allow.push(file)
-          const encodedPath = encodeURI(file).replace(/[?#]/g, encodeURIComponent).replace(/^\//, '')
-          request.url = toAssetHref('@fs/' + encodedPath, server.config.base) + url.search
+          const path = normalizePath(relative(normalizeFilePath(server.config.root), file))
+          const encodedPath = encodeURI(path).replace(/[?#]/g, encodeURIComponent)
+          request.url = toAssetHref(encodedPath, server.config.base) + url.search
           next()
           return
         }

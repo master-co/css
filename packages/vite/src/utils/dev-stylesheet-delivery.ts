@@ -1,7 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { tmpdir } from 'node:os'
 import { createCompilerSync } from '@master/css-compiler/node'
 import type { MasterCSSStylesheetComposition, MasterCSSStylesheetDeliveryOptions } from '@master/css-compiler/stylesheet'
 import type { MasterCSSVitePluginContext } from '../core'
@@ -51,7 +50,13 @@ export function getDevStylesheetDelivery(context: MasterCSSVitePluginContext): M
       const href = base + `resource/${digest(source + '\0' + digest(content))}/${encodeURIComponent(basename(source))}`
       const key = new URL(href).pathname
       if (!state.resources.has(key)) {
-        state.resourceDir ??= realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-vite-resources-')))
+        if (!state.resourceDir) {
+          // Root-relative static delivery preserves the drive when Vite's root
+          // and the process working directory are on different Windows volumes.
+          const cache = join(context.config!.root, 'node_modules', '.master-css')
+          mkdirSync(cache, { recursive: true })
+          state.resourceDir = realpathSync.native(mkdtempSync(join(cache, 'master-css-vite-resources-')))
+        }
         // Name and publish the same bytes, even if the source changes while the
         // graph is being compiled. Safe filenames retain Vite's static delivery.
         const file = join(state.resourceDir, digest(href) + '-' + basename(source).replace(/[^a-zA-Z0-9._-]/g, '_'))
