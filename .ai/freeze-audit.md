@@ -238,8 +238,8 @@ integration gates that the local scoped suite did not exercise:
   approval metadata and scope digests are recorded in
   `parity/freeze-migration-approval.md`; all approved bytes/cases match the target.
   The independent post-rc.87 decision validation passes. `check:migration` now
-  proceeds past those stale records and reports 498 unreviewed changed/unmatched
-  cases. These are not 498 proven product defects; no blanket approval or
+  proceeds past those stale records and reports 496 unreviewed changed/unmatched
+  cases. These are not 496 proven product defects; no blanket approval or
   generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
@@ -340,9 +340,9 @@ integration gates that the local scoped suite did not exercise:
   20 Reference tests pass; site lint has no errors and 266 existing warnings.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
-- Six cases now have reviewed `verified-superset` evidence: lint rejection,
-  workspace discovery, three progressive-hydration assertions, and the portable
-  stylesheet lifecycle path assertion. Original behavioral expectations remain;
+- Eight cases have reviewed `verified-superset` evidence: lint/workspace checks,
+  three hydration assertions, the portable stylesheet path and two Manifest
+  input-only updates. Facade tests (2/2) and runtime type-check pass; expectations remain;
   their evidence remains separate from the newly approved contract records.
 - Windows Next reports 21 failures: canonical fixture roots and native path
   assertions account for harness differences; equivalent `~`/`%7E` Sass URLs

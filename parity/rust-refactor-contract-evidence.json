@@ -384,6 +384,20 @@
       "targetDigest": "f496bc0e5e13f0f8508ffac2b948cd96e66b26c2a2c21f81b6b6d26f0b727412",
       "proof": "verified-superset",
       "reason": "Reviewed the complete before/after public stylesheet lifecycle case at 8f48b10a1. All immutable snapshot, composition, disposal and exact source-identity assertions remain. The only case-body change resolves /project/app.css with the native Node path helper, preserving the identical POSIX expectation and extending the same absolute-file identity assertion to Windows drive paths. The existing host source resolver already applies resolve(file); no CSS, source lifecycle or production API behavior changes. All 56 focused compiler cases, including this case, pass."
+    },
+    {
+      "sourceId": "rc87-8a97d21e81e27c3a",
+      "sourceDigest": "f08cfb70abc681348a867c666ff8919aec1d9b594eb69957b733737ef4b7440d",
+      "targetDigest": "81ada7e3042c201d1d9ac5f5535ce056b3e833bcc6d511a7132d30a818b3938b",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete facade case before and after the migration. Only the input manifest gains the required languageVersion: 3 field; the exact native binding and empty CSS snapshot assertions and disposal call remain. This retains the Rust-backed async facade contract under the current manifest input envelope. Both facade tests pass."
+    },
+    {
+      "sourceId": "rc87-7c76d636d09bcaf2",
+      "sourceDigest": "e6dfe03cc981f48de4fbdf58e6b64124fd17b366ce2615d3e161f97820c8e680",
+      "targetDigest": "9c58b6de1900c824833d8a9c8226786fb8322efd4e7538c6b5c65ab109fee179",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete runtime compile-only smoke source before and after the migration. Only the input manifest gains the required languageVersion: 3 field. Both decorator calls, custom-element refresh, ShadowRoot selection, emitted globals and type contracts remain unchanged. The runtime type-check includes this file and passes."
     }
   ],
   "surfaces": [
