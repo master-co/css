@@ -177,19 +177,23 @@ async function stopNextDev(child: ChildProcess) {
 
 async function waitForServer(url: string, child: ChildProcess, output: { text: string }) {
   const deadline = Date.now() + 60000
+  const recentProbes: string[] = []
   while (Date.now() < deadline) {
     if (child.exitCode !== null) {
       throw new Error(`Next dev exited early.\n${output.text}`)
     }
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(5000) })
+      recentProbes.push(`HTTP ${response.status}`)
       if (response.status < 500) return
-    } catch {
+    } catch (error) {
+      recentProbes.push(error instanceof Error ? `${error.name}: ${error.message}` : String(error))
       // Server is still starting.
     }
+    if (recentProbes.length > 8) recentProbes.shift()
     await delay(500)
   }
-  throw new Error(`Timed out waiting for Next dev server.\n${output.text}`)
+  throw new Error(`Timed out waiting for Next dev server. Recent probes: ${recentProbes.join('; ')}\n${output.text}`)
 }
 
 async function expectDisplay(browser: Browser, url: string, display: string) {
@@ -326,13 +330,26 @@ describe('Next dev HMR', () => {
         const singleStarted = Date.now()
         let started = performance.now()
         writePage(fixtureDir, padding)
-        await page.waitForFunction(value => getComputedStyle(document.getElementById('incremental')!).padding === `${value}px`, padding)
+        try {
+          await page.waitForFunction(value => getComputedStyle(document.getElementById('incremental')!).padding === `${value}px`, padding)
+        } catch (error) {
+          const actual = await page.locator('#incremental').evaluate(element => getComputedStyle(element).padding)
+          console.error(`Next ${bundler} page round ${round}: expected ${padding}px, got ${actual}`)
+          throw error
+        }
         const singleMs = performance.now() - started
         const burstStarted = Date.now()
         started = performance.now()
         writeModules(fixtureDir, padding + 1)
-        await page.waitForFunction(value => Array.from({ length: 10 }, (_, index) =>
-          getComputedStyle(document.getElementById(`module-${index}`)!).padding === `${value + index}px`).every(Boolean), padding + 1)
+        try {
+          await page.waitForFunction(value => Array.from({ length: 10 }, (_, index) =>
+            getComputedStyle(document.getElementById(`module-${index}`)!).padding === `${value + index}px`).every(Boolean), padding + 1)
+        } catch (error) {
+          const actual = await page.evaluate(() => Array.from({ length: 10 }, (_, index) =>
+            getComputedStyle(document.getElementById(`module-${index}`)!).padding))
+          console.error(`Next ${bundler} module round ${round}: expected ${padding + 1}..${padding + 10}px, got ${actual.join(', ')}`)
+          throw error
+        }
         if (round > 0) samples.push({ singleMs, burstMs: performance.now() - started, singleStarted, burstStarted, finished: Date.now() })
       }
       if (process.env.MASTER_NEXT_HMR_REPORT && pipelineReport) {
@@ -352,6 +369,12 @@ describe('Next dev HMR', () => {
       await expect(page.evaluate(() => {
         return (window as unknown as { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER
       })).resolves.toBe('preserve')
+    } catch (error) {
+      console.error(`Next ${bundler} output:\n${output.text}`)
+      if (pipelineReport && existsSync(pipelineReport)) {
+        console.error(`Next ${bundler} pipeline:\n${readFileSync(pipelineReport, 'utf8')}`)
+      }
+      throw error
     } finally {
       await cleanup()
     }

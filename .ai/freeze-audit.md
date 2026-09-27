@@ -181,7 +181,7 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
 | Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
 | Next full package e2e, local macOS | 10/10 passed; repeated with `CI=true`, also 10/10 passed |
-| Next HMR e2e after changing the fixture import to a relative path | 4/4 passed locally; package lint and type-check passed |
+| Next HMR e2e after changing the fixture import to a relative path | Initial local run passed 4/4; later focused local runs reproduced Webpack server and style-update timeouts. Package lint and type-check passed |
 | binding package local build, type-check, lint and tests | Passed on macOS; 33/33 tests passed. A temporary CRLF conversion of 34 binding source files also built, then was reverted without a source diff |
 | `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
 | Windows compatibility CI on PR #461 | Checkout, pnpm installation and Rust Wasm build passed after fixing generated-file tracking and patch checkout line endings; package tests failed while building binding declarations |
@@ -300,6 +300,17 @@ integration gates that the local scoped suite did not exercise:
   has not stabilized the Linux HMR suite. An isolated same-commit e2e job rerun
   passed all 10 Next cases and 34/34 Turbo tasks; the other CI jobs retained
   their original failures.
+- Later local diagnostic runs reproduced both failure modes with the original
+  assertions and deadlines. Server-start failures had repeated five-second
+  fetch timeouts while Next reported `Compiling /`; the existing pipeline probe
+  recorded several serialized publications, including no-output rounds.
+  Separate runs returned HTTP 200 but failed to update page or module computed
+  styles within the existing HMR wait. Raising test deadlines and disabling
+  Next's test-fixture `agentRules` output did not resolve the failures; both
+  temporary changes were reverted. The test now reports recent server probes,
+  actual computed styles and Next/pipeline output on failure. The causal link
+  between repeated publication work, Webpack cache warnings and missed HMR
+  updates remains unproven.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
