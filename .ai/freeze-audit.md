@@ -4,7 +4,7 @@ Tracker: https://github.com/master-co/css/issues/445
 
 Baseline: `70444b18c8102fa7a9d811ec51ef96902573792c`.
 This is a dated evidence record, not a replacement for source, package guidance,
-or publication authorization. Local results below are from 2026-09-26–27,
+or publication authorization. Local results below are from 2026-09-26–28,
 macOS arm64, Node 24.20.0, pnpm 12.3.4, Cargo 1.98.1.
 
 ## Decisions
@@ -233,19 +233,14 @@ and an isolated clean-room release build were not run.
 PR [#461](https://github.com/master-co/css/pull/461) exposed additional
 integration gates that the local scoped suite did not exercise:
 
-- `pnpm run check:migration` fails because the reviewed Rust-refactor evidence
-  for `rc87-bc7adf7569796dc8` has an outdated Next Turbopack test target
-  digest after a pre-existing baseline commit. Its `approved-contract-change`
-  metadata is digest-bound. Updating that approval record requires a reviewed
-  decision about the new target: the historical case gated ordinary stylesheet
-  routing on directive content, while the current case routes native styles
-  without that gate and excludes CSS Modules and generated stylesheet paths.
-  The existing approval reason covers ESM delivery but not this later routing
-  change. A temporary diagnostic update of three stale
-  evidence digests and one historical post-RC decision then exposed 503
-  changed/removed Rust-refactor cases without approved evidence. These statuses
-  are not proof of 503 product defects. The diagnostic edits were reverted;
-  neither blanket approval nor a generated ledger rewrite is included here.
+- The user explicitly approved three stale contract records and the separate
+  eight-file/21-case Manifest adaptation after exact old/new reviews. Fresh
+  approval metadata and scope digests are recorded in
+  `parity/freeze-migration-approval.md`; all approved bytes/cases match the target.
+  The independent post-rc.87 decision validation passes. `check:migration` now
+  proceeds past those stale records and reports 498 unreviewed changed/unmatched
+  cases. These are not 498 proven product defects; no blanket approval or
+  generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
   tsdown external rule now excludes resolved Windows drive paths from bare
@@ -313,8 +308,11 @@ integration gates that the local scoped suite did not exercise:
   HTTP 200; the root copy returned 404. Its Next packaging omits postbuild root
   copies. The branch now selects static hosting of the completed `out` directory
   with clean URLs. Local postbuild and all 95 asset checks pass; 2,468 root
-  locale files and the homepage match the locale exports byte for byte. Remote
-  route verification remains pending. Preview metadata also pointed canonical
+  locale files and the homepage match the locale exports byte for byte. Vercel
+  at `60830b88a` returns HTTP 200 for the root compose reference, its Traditional
+  Chinese variant and directive guide; Chrome rendering and client navigation
+  pass without new console errors. Cloudflare and Linux e2e also pass at that
+  revision. Preview metadata also pointed canonical
   URLs at localhost. Public environment resolution now reads Vercel deployment
   and branch variables; 16 environment tests, focused lint and site type-check
   pass. Full site lint again has zero errors and the same 266 warnings.
@@ -331,14 +329,33 @@ integration gates that the local scoped suite did not exercise:
   (15/15 focused tests); Astro and Svelte harnesses invoke Node entrypoints and
   consume prebuilt packages (16/16 and 17/17 tests). Each package lint passed.
   Another 18 related graph/source-ownership tests passed after the map fix.
-  Windows confirmation and detailed remaining Compiler/Vite failures are pending.
+  Windows at `60830b88a` passes Webpack 93/93 and CLI 89/89, while Compiler
+  reports 34 failures: 15 expose Windows verbatim prefixes entering source-glob
+  matching; 19 use nonportable fixture paths or URL callbacks. Rust now removes
+  filesystem prefixes before glob matching (red/green regression, 18 Rust tests
+  and Clippy pass). Compiler fixtures use canonical roots, native path helpers
+  and file URLs without changing CSS, source positions or dependency coverage;
+  56 focused tests, lint/type-check and 17 rebuilt-native project tests pass.
+  The directive contract documents Windows path handling; generation and all
+  20 Reference tests pass; site lint has no errors and 266 existing warnings.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
 - Five existing cases now have reviewed `verified-superset` evidence: lint
   request rejection, workspace discovery excluding generated output, and three
   additional progressive-hydration assertions. Original expectations remain;
-  no contract-change approval was added. The migration gate still rejects the
-  previously identified stale Next contract digest pending exact-scope QA.
+  their evidence remains separate from the newly approved contract records.
+- Windows Next reports 21 failures: canonical fixture roots and native path
+  assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
+  exposed incorrect additional-data offsets. File-URL identity now compares
+  decoded paths while retaining query/fragment distinctions. Real Sass red/green
+  regressions, 38 focused tests plus the final 8-case rerun, lint/type-check/build,
+  10 e2e cases and the playground build pass. The playground script could not
+  find its local `next` shim; invoking the installed parent Next entrypoint passes.
+- MCP's Windows new-file race check exposed inconsistent identity before/after
+  creation through a directory alias. Resolve missing files against the already
+  validated canonical parent. The new alias regression fails before the fix;
+  all 51 MCP tests and lint/type-check/build pass. Containment checks remain.
+  The full Windows run at `60830b88a` is still collecting independent results.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
