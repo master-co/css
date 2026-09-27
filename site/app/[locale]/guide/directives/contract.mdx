@@ -525,7 +525,7 @@ For example, these directives scan content files and a shared UI package, then r
 @source not "../packages/ui/**/*.stories.tsx";
 ```
 
-Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
+Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. These resolution rules apply on Windows and POSIX hosts; Windows filesystem path prefixes do not act as glob wildcards.
 
 An imported CSS file keeps its own directory as the base for relative source
 patterns. Files loaded only through `@reference` do not add scanning sources.

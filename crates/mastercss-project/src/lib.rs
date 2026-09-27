@@ -163,7 +163,14 @@ fn normalize_lexical_path(path: &Path) -> PathBuf {
 }
 
 fn normalize_path(path: &Path) -> String {
-    path.to_string_lossy().replace('\\', "/")
+    let path = path.to_string_lossy().replace('\\', "/");
+    // Windows canonicalization adds a verbatim prefix. Its question mark is
+    // filesystem syntax, not a wildcard in an extraction pattern.
+    if let Some(unc) = path.strip_prefix("//?/UNC/") {
+        format!("//{unc}")
+    } else {
+        path.strip_prefix("//?/").unwrap_or(&path).to_owned()
+    }
 }
 
 fn expand_braces(pattern: &str) -> Vec<String> {

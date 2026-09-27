@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdtempSync, realpathSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { SourceMap, createRequire } from 'node:module'
@@ -9,7 +9,7 @@ import { compileRenderedStylesheet as compileRenderedInternal } from '../src/sty
 
 for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) screen']) {
   test(`rendered delivery preserves external import boundaries ${qualifier}`, async () => {
-    const root = mkdtempSync(join(tmpdir(), 'master-rendered-delivery-'))
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-rendered-delivery-')))
     try {
       mkdirSync(join(root, 'nested'))
       const entry = join(root, 'entry.css'), child = join(root, 'nested/child.css'), resource = join(root, 'nested/dot.svg')
@@ -31,7 +31,7 @@ for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) scr
 }
 
 test('rendered delivery preserves host maps, supplied references, native pruning and dependency callbacks', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'master-rendered-host-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-rendered-host-')))
   try {
     const entry = join(root, 'entry.css'), original = join(root, 'original.scss'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
     writeFileSync(child, '.used{color:red}.unused{color:blue}')
@@ -57,7 +57,7 @@ test('rendered delivery preserves host maps, supplied references, native pruning
 })
 
 test('rendered delivery retains real Sass dependencies and original output maps', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'master-rendered-sass-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-rendered-sass-')))
   try {
     const entry = join(root, 'entry.scss'), partial = join(root, '_tokens.scss'), child = join(root, 'child.css')
     writeFileSync(partial, '$padding:2rem;');writeFileSync(child, '.used{color:red}')
@@ -75,7 +75,7 @@ test('rendered delivery retains real Sass dependencies and original output maps'
 })
 
 test('rendered delivery maps invalid composed tokens back to their Sass partial', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'master-rendered-error-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-rendered-error-')))
   try {
     const entry = join(root, 'entry.scss'), partial = join(root, '_rules.scss')
     writeFileSync(partial, '/* original */\n.bad{@compose "block";}')
@@ -89,7 +89,7 @@ test('rendered delivery maps invalid composed tokens back to their Sass partial'
 })
 
 test('rendered delivery emits generated classes once in the entry and leaves them unmapped', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'master-rendered-globals-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-rendered-globals-')))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
     writeFileSync(child, '.paint{color:red}')

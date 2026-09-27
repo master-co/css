@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -10,7 +10,7 @@ const sass = createRequire(require.resolve('vite'))('sass')
 const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = mkdtempSync(join(tmpdir(), 'prepared-source-context-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'prepared-source-context-')))
   try { mkdirSync(join(root, 'parts'));await run(root) }
   finally { rmSync(root, { recursive: true, force: true }) }
 }
