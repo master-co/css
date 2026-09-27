@@ -185,7 +185,7 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | binding package local build, type-check, lint and tests | Passed on macOS; 33/33 tests passed. A temporary CRLF conversion of 34 binding source files also built, then was reverted without a source diff |
 | `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
 | Windows compatibility CI on PR #461 | Checkout, pnpm installation and Rust Wasm build passed after fixing generated-file tracking and patch checkout line endings; package tests failed while building binding declarations |
-| Linux e2e CI on PR #461 | Initial run failed 2/10 Webpack dev-HMR cases on timeouts; isolated same-commit job rerun passed 10/10 Next cases, 34/34 Turbo tasks |
+| Linux e2e CI on PR #461 | Initial and two later full runs failed the same 2/10 Webpack dev-HMR cases on timeouts; isolated job reruns at both `a654e5376` and `e2b181da3` passed 10/10 Next cases and 34/34 Turbo tasks |
 
 The second pass rebuilt native/Wasm and package artifacts with the normal
 repository build; the first pass used existing artifacts. No semantic
@@ -258,8 +258,13 @@ integration gates that the local scoped suite did not exercise:
   `@master/css-binding` built declarations: tsdown/rolldown reported 175
   `MISSING_EXPORT` errors against virtual `.d.ts` imports of type-only exports.
   The binding sources already use `import type` and neither that package nor
-  the shared tsdown config changed from baseline `70444b18c`. This
-  declaration-build failure is not claimed as diagnosed or fixed.
+  the shared tsdown config changed from baseline `70444b18c`. Temporary local
+  build-config experiments found that the `tsc` declaration resolver fails
+  with TypeScript 7 because `parseJsonConfigFileContent` is unavailable, while
+  the OXC declaration generator emits the same type imports. Both experiments
+  were reverted and the default macOS build passed again; neither was tested
+  on Windows. This declaration-build failure is not claimed as diagnosed or
+  fixed.
 - Native package smoke now uses `languageVersion: 3` and the current method.
   The rerun passed for all eight macOS, Linux and Windows native targets. Rust
   quality, preflight, title and Azure checks also passed on this PR revision.
@@ -286,9 +291,15 @@ integration gates that the local scoped suite did not exercise:
   that warning. The test fixture now emits a relative module specifier for
   same-volume imports, keeping a file-URL fallback for cross-volume paths;
   this lets Webpack track the imported config dependency as a file. The focused
-  HMR suite passed 4/4 locally with unchanged assertions and timeouts. CI on
-  this fixture change has not yet run, so it is not a verified fix for the
-  intermittent Linux failures.
+  HMR suite passed 4/4 locally with unchanged assertions and timeouts. Full
+  [CI at `e2b181da3`](https://github.com/master-co/css/actions/runs/36292576994)
+  still failed the same two cases (8/10 Next cases). The `file://` warning was
+  absent; this run instead reported a dynamic-import cache dependency warning
+  and a truncated Webpack cache pack. Those warnings do not establish the
+  timeout cause. The relative import fixes the invalid cache dependency but
+  has not stabilized the Linux HMR suite. An isolated same-commit e2e job rerun
+  passed all 10 Next cases and 34/34 Turbo tasks; the other CI jobs retained
+  their original failures.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
