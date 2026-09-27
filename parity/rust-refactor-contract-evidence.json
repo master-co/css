@@ -377,6 +377,13 @@
       "targetDigest": "520d6b3901024cd825995e0229695d73cff870ae9c77b88736f8ac8c8a84f78f",
       "proof": "verified-superset",
       "reason": "The original progressive theme token-count assertion remains unchanged. The target additionally asserts that hydration actually selected progressive mode before examining those token counts."
+    },
+    {
+      "sourceId": "rc87-bbc24f6f24c20fec",
+      "sourceDigest": "4d0436e05fc9a6b7a23660484ddc5767ea0b9d9f8073ca0c6f05d580ab4872f3",
+      "targetDigest": "f496bc0e5e13f0f8508ffac2b948cd96e66b26c2a2c21f81b6b6d26f0b727412",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete before/after public stylesheet lifecycle case at 8f48b10a1. All immutable snapshot, composition, disposal and exact source-identity assertions remain. The only case-body change resolves /project/app.css with the native Node path helper, preserving the identical POSIX expectation and extending the same absolute-file identity assertion to Windows drive paths. The existing host source resolver already applies resolve(file); no CSS, source lifecycle or production API behavior changes. All 56 focused compiler cases, including this case, pass."
     }
   ],
   "surfaces": [

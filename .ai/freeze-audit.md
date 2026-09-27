@@ -340,9 +340,9 @@ integration gates that the local scoped suite did not exercise:
   20 Reference tests pass; site lint has no errors and 266 existing warnings.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
-- Five existing cases now have reviewed `verified-superset` evidence: lint
-  request rejection, workspace discovery excluding generated output, and three
-  additional progressive-hydration assertions. Original expectations remain;
+- Six cases now have reviewed `verified-superset` evidence: lint rejection,
+  workspace discovery, three progressive-hydration assertions, and the portable
+  stylesheet lifecycle path assertion. Original behavioral expectations remain;
   their evidence remains separate from the newly approved contract records.
 - Windows Next reports 21 failures: canonical fixture roots and native path
   assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
