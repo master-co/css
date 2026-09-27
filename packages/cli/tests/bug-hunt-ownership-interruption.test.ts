@@ -45,7 +45,13 @@ for (const mode of ['before-assets', 'before-entry', 'after-entry', 'symlink-bef
         await withStylesheetPublicationLock(() => publishOwnedStylesheet(entry, ${JSON.stringify(css)}, new Map([[${JSON.stringify(join(cwd, 'master-a-new.css'))}, Buffer.from('.new{color:blue}')]]), new Set()), { directory: ${JSON.stringify(locks)} });
       `
       const child = spawnSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, '--input-type=module', '-e', script], { encoding: 'utf8' })
-      expect(child.signal, child.stderr).toBe('SIGKILL')
+      expect(child.error).toBeUndefined()
+      expect(child.stderr).toBe('')
+      // A self-terminated Windows process reports libuv's exit code, because
+      // the parent did not send the emulated signal through its child handle.
+      expect({ status: child.status, signal: child.signal }).toEqual(process.platform === 'win32'
+        ? { status: 1, signal: null }
+        : { status: null, signal: 'SIGKILL' })
       expect(JSON.parse(fs.readFileSync(stylesheetStatePath(entry), 'utf8')).pending).toBeDefined()
       expect(fs.readFileSync(entry, 'utf8')).toContain(stage === 'after-entry' ? 'new' : 'old')
       await withStylesheetPublicationLock(() => publishOwnedStylesheet(entry, css, assets, new Set()), { directory: locks, timeout: 3000 })

@@ -246,110 +246,47 @@ integration gates that the local scoped suite did not exercise:
   changed/removed Rust-refactor cases without approved evidence. These statuses
   are not proof of 503 product defects. The diagnostic edits were reverted;
   neither blanket approval nor a generated ledger rewrite is included here.
-- Windows checkout now passes after untracking eight ignored generated
-  `.master/stylesheets` files. The next run's `pnpm install` rejected the
-  existing `patches/watchpack@2.5.2.patch` as `ERR_PNPM_INVALID_PATCH`. This
-  matches pnpm 12's [CRLF patch regression](https://github.com/pnpm/pnpm/issues/14557);
-  checkout conversion is the inferred cause, not a captured CI file dump. A
-  narrow `.gitattributes` entry now keeps `patches/*.patch` at LF without
-  changing the patch, lockfile, pnpm
-  configuration or CI workflow. The subsequent Windows job passed checkout,
-  pnpm setup and Rust Wasm build. It then failed in package tests while
-  `@master/css-binding` built declarations: tsdown/rolldown reported 175
-  `MISSING_EXPORT` errors against virtual `.d.ts` imports of type-only exports.
-  The binding sources already use `import type` and neither that package nor
-  the shared tsdown config changed from baseline `70444b18c`. Temporary local
-  build-config experiments found that the `tsc` declaration resolver fails
-  with TypeScript 7 because `parseJsonConfigFileContent` is unavailable, while
-  the OXC declaration generator emits the same type imports. Both experiments
-  were reverted and the default macOS build passed again; neither was tested
-  on Windows. This declaration-build failure is not claimed as diagnosed or
-  fixed.
-- Native package smoke now uses `languageVersion: 3` and the current method.
-  The rerun passed for all eight macOS, Linux and Windows native targets. Rust
-  quality, preflight, title and Azure checks also passed on this PR revision.
-- Vercel preview fails before installation because its configured command runs
-  `pnpm submodules`, which is not a repository command. This was confirmed in
-  the provider build log for commit `91e6d2b`. Cloudflare Pages also failed,
-  but its detailed log requires dashboard sign-in and was not inspected.
-- The initial Linux e2e run passed 8/10 Next cases, then failed two Webpack
-  dev-HMR cases: one Next server-start timeout and one computed-style update
-  timeout. The server log includes a Webpack cache warning about a `file:///`
-  import of `packages/next/dist/index.js`, but the cause of either timeout is
-  not established. The affected HMR source and tests are unchanged from
-  baseline; this PR only untracks ignored outputs under the separate
-  `static-export` fixture and updates the Next README. An isolated rerun of
-  the failed Linux e2e job at the same commit passed all 10 Next cases and
-  34/34 Turbo tasks without a timeout or assertion change. Both local macOS
-  runs, including `CI=true`, also passed 10/10. The other CI jobs retained
-  their original timestamps in GitHub's second attempt. Resource contention
-  during the first run is plausible, not proven.
-- A later CI run at the documentation-only commit `4e0c2fd3a` repeated the same
-  two Webpack HMR timeouts (8/10 Next cases), with the same Webpack cache warning
-  for a `file:///.../packages/next/dist/index.js` import in generated test
-  configuration. The preceding isolated rerun at `a654e5376` passed without
-  that warning. The test fixture now emits a relative module specifier for
-  same-volume imports, keeping a file-URL fallback for cross-volume paths;
-  this lets Webpack track the imported config dependency as a file. The focused
-  HMR suite passed 4/4 locally with unchanged assertions and timeouts. Full
-  [CI at `e2b181da3`](https://github.com/master-co/css/actions/runs/36292576994)
-  still failed the same two cases (8/10 Next cases). The `file://` warning was
-  absent; this run instead reported a dynamic-import cache dependency warning
-  and a truncated Webpack cache pack. Those warnings do not establish the
-  timeout cause. The relative import fixes the invalid cache dependency but
-  has not stabilized the Linux HMR suite. An isolated same-commit e2e job rerun
-  passed all 10 Next cases and 34/34 Turbo tasks; the other CI jobs retained
-  their original failures.
-- Later local diagnostic runs reproduced both failure modes with the original
-  assertions and deadlines. Server-start failures had repeated five-second
-  fetch timeouts while Next reported `Compiling /`; the existing pipeline probe
-  recorded several serialized publications, including no-output rounds.
-  Separate runs returned HTTP 200 but failed to update page or module computed
-  styles within the existing HMR wait. Raising test deadlines and disabling
-  Next's test-fixture `agentRules` output did not resolve the failures; both
-  temporary changes were reverted. The test now reports recent server probes,
-  actual computed styles and Next/pipeline output on failure. The causal link
-  between repeated publication work, Webpack cache warnings and missed HMR
-  updates remains unproven.
-
-- [CI at `cbc892967`](https://github.com/master-co/css/actions/runs/36323431952)
-  confirms the Windows declaration build now succeeds after excluding resolved
-  drive paths from tsdown's bare-import external rule. Binding tests passed
-  33/33; the job advanced to CLI tests (53 passed, 31 failed). CLI fixes now
-  use file URLs for Node imports and native absolute paths for migration entry,
-  dependency and watch comparisons. Permission tests use a read-only output
-  file on Windows because directory chmod does not deny writes there. Local CLI
-  tests passed 84/84, with lint, type-check and build passing. An earlier local
-  run hit an existing watch-test snapshot race with a transient publication
-  file; the full rerun passed. Windows confirmation remains pending.
-- The same CI run passed 9/10 Next e2e cases; the full Webpack HMR case reached
-  its 180-second overall deadline. A local instrumented run passed that case
-  in 154 seconds. Individual update deadlines and assertions are unchanged;
-  these results do not establish that the intermittent HMR failures are fixed.
-- Aron authorized shared build, CI and preview configuration repairs on
-  2026-09-27. Authenticated Cloudflare logs show installation succeeds but the
-  build exits at `cargo: not found`. The shared hosted script bootstraps rustup
-  when absent and uses the repository-pinned toolchain before building. Vercel
-  branch configuration replaces the obsolete `pnpm submodules` install command
-  and builds the workspace before exporting `site/out`, with Node 24 selected
-  in the site manifest. The hosted script passed locally with 830 pages and
-  95/95 referenced assets; site lint had zero errors and 266 existing warnings.
-  Provider deployment verification remains pending.
-- CPU profiling traced repeated Webpack HMR work to `stylesheet-loader`
+- Windows checkout and installation now pass after untracking eight ignored
+  generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
+  tsdown external rule now excludes resolved Windows drive paths from bare
+  imports, resolving the declaration-build failure. The native smoke payload
+  uses the current language version; all eight native-target jobs pass.
+- [CI at `7836f3b54`](https://github.com/master-co/css/actions/runs/36324861696)
+  confirms Windows migration, watch and publication-recovery fixes. CLI improved
+  from 53/84 to 79/84; remaining failures were four Unix-only process-signal
+  expectations and one transient lock-register rename denial. The tests now
+  verify Windows self-termination status while retaining all recovery assertions.
+  Publication locks retry Windows sharing violations for at most one second
+  (within the existing acquisition deadline), keeping the old register visible.
+  Persistent errors still fail without entering publication. Five focused
+  regressions cover retry, cleanup, exclusion and terminal errors. Local CLI
+  tests pass 89/89, with lint, type-check and build passing; remote confirmation
+  of this follow-up remains pending.
+- Linux e2e at `7836f3b54` passed 9/10 Next cases; the full Webpack HMR case
+  exhausted its unchanged 180-second deadline. Earlier isolated reruns passed
+  10/10. Relative fixture imports removed an invalid file-URL cache dependency,
+  but did not resolve the intermittent failure. Failure diagnostics remain in
+  place; temporary timeout and Next agent-rule experiments were reverted.
+- CPU profiling then traced repeated Webpack HMR work to `stylesheet-loader`
   recompiling immutable `.master/next-style-*.css` outputs. These now pass through
   unchanged, like the generated entry. The regression test fails before the fix
   and passes afterward; authored entry errors still propagate. Next unit tests
-  passed 199/199 and e2e passed 10/10 (including 4 HMR cases) with unchanged
-  deadlines/assertions. On this
+  pass 199/199 and e2e passes 10/10 with unchanged deadlines/assertions. On this
   macOS host, three Webpack single/burst samples improved from 12–21 seconds to
   3.0–3.5 seconds; profiling overhead and host load limit the comparison. This
-  affects build tooling, not runtime bundle size or authored CSS syntax.
-- Vercel advanced through the initial Wasm build but parallel Turbo artifact
-  tasks attempted another Rust installation and collided downloading Clippy.
-  Turbo now preserves `CARGO_HOME` and `RUSTUP_HOME`; a dry-run verified both.
-  The hosted script explicitly installs the pinned toolchain before parallel
-  tasks. The complete local hosted build passed again, including all 830 pages
-  and 95 referenced assets. Remote confirmation remains pending.
+  affects build tooling, not runtime bundle size or authored CSS syntax. The
+  earlier remote run does not contain this fix; CI confirmation remains pending.
+- Aron authorized shared build, CI and preview configuration repairs on
+  2026-09-27. The hosted script now prepares the pinned Rust toolchain. Cloudflare
+  advances past its former `cargo: not found` error, builds all 32 packages,
+  compiles Next and reaches 731/830 generated pages; deployment is still active.
+  Vercel branch configuration replaces the obsolete `pnpm submodules` command
+  and selects Node 24. Its subsequent build reached parallel Turbo artifact
+  tasks, then collided reinstalling Rust. Turbo now preserves `CARGO_HOME` and
+  `RUSTUP_HOME`, verified by dry-run, and the hosted script installs the toolchain
+  before parallel work. The full hosted build passed locally with 830 pages and
+  95/95 referenced assets. Site lint had zero errors and 266 existing warnings.
+  Final provider verification remains pending.
 - Five existing cases now have reviewed `verified-superset` evidence: lint
   request rejection, workspace discovery excluding generated output, and three
   additional progressive-hydration assertions. Original expectations remain;

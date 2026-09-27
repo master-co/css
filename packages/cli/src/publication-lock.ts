@@ -1,7 +1,7 @@
 // Adapted from the repository MCP bakery gate; CLI cannot depend on the MCP package.
 import { randomUUID } from 'node:crypto'
 import { mkdir, readFile, readdir, rename, unlink, writeFile } from 'node:fs/promises'
-import { userInfo } from 'node:os'
+import { platform, userInfo } from 'node:os'
 import { join } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 
@@ -21,7 +21,19 @@ function missing(error: unknown) {
 }
 
 async function remove(file: string) {
-  try { await unlink(file) } catch (error) { if (!missing(error)) throw error }
+  try { await withSharingRetry(() => unlink(file)) } catch (error) { if (!missing(error)) throw error }
+}
+
+async function withSharingRetry<T>(operation: () => Promise<T>, deadline = performance.now() + 1000) {
+  while (true) {
+    try { return await operation() } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (platform() !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(code ?? '') || performance.now() >= deadline) throw error
+      // A peer reading a register can temporarily prevent replacement/removal
+      // on Windows. Keep the old register visible throughout the retry.
+      await delay(10)
+    }
+  }
 }
 
 function alive(pid: number) {
@@ -72,7 +84,7 @@ export async function withStylesheetPublicationLock<T>(work: () => T | Promise<T
   await mkdir(directory, { recursive: true, mode: 0o700 })
   const publish = async (value: Ticket) => {
     await writeFile(file + '.next', JSON.stringify(value), { mode: 0o600 })
-    await rename(file + '.next', file)
+    await withSharingRetry(() => rename(file + '.next', file), Math.min(deadline, performance.now() + 1000))
   }
   try {
     // Lamport's bakery doorway: publish choosing BEFORE observing peers, then
