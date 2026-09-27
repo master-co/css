@@ -242,7 +242,7 @@ integration gates that the local scoped suite did not exercise:
   names were disambiguated without changing assertions; the independent Rust
   contract review now has 192 pending cases. Supplemental QA approves the restored
   Webpack fixture hash; all 21 Manifest cases and seven other files are unchanged.
-  Windows now passes Compiler 491, Next 206 and MCP 51 tests; Vite 6 and VSCode 1 fail.
+  Windows now passes Compiler 491, Next 206, MCP 51 and Vite 676 tests; only VSCode fails.
   Migration still fails on 192 unapproved cases; no generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
@@ -351,10 +351,10 @@ integration gates that the local scoped suite did not exercise:
   immutable resources use the project drive and root-relative serving. Local
   678/678 tests, 22 reconciliation checks, lint/type-check/build and example pass.
   Two case digests and the Manifest file hash have supplemental QA; 21 cases stay.
-  Windows `cdc0ccc0a` improves from 159 failures to 6/676: four Sass-map path
-  comparisons and two denied cross-drive fixtures reaching Vite's 404 fallback.
-  Normalize map paths and put denial fixtures on the process drive to verify 403;
-  all 41 affected tests and lint pass locally, with response URLs in failures.
+  Windows `cdc0ccc0a` had six failures: four Sass-map path comparisons and two
+  denied cross-drive fixtures reaching Vite's 404 fallback. Normalize paths and
+  put denial fixtures on the process drive to verify 403; 41 focused tests and lint
+  pass locally. Windows `f4f427f0d` confirms 676/676 and 58/59 tasks; only VSCode fails.
 - VSCode `f4f427f0d` hits five seconds during native cold indexing, after 1.57s setup.
   Completion requests now allow 30s; initialize/shutdown retain their 5s deadline.
   All assertions remain; 33/33 local tests and lint pass. Windows confirmation is pending.
