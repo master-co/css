@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
+import { createRequire } from 'node:module'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
@@ -9,9 +10,10 @@ import { createServer as createViteServer } from 'vite'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const fixtureDir = join(packageDir, 'tests/fixtures/theme-reference')
+const viteCLI = join(dirname(createRequire(import.meta.url).resolve('vite/package.json')), 'bin/vite.js')
 
 it('delivers project definitions through each Svelte route that loads their scoped style', async () => {
-  execFileSync(join(packageDir, 'node_modules/.bin/vite'), ['build'], {
+  execFileSync(process.execPath, [viteCLI, 'build'], {
     cwd: fixtureDir,
     stdio: 'pipe',
     timeout: 120_000

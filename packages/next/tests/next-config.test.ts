@@ -108,7 +108,7 @@ describe('withMasterCSS', () => {
   it('routes native CSS and CSS Modules through the project context without a directive gate', () => {
     const config = withMasterCSS({}, { mode: 'progressive' }) as any
     const rules = config.turbopack.rules['*'] as any[]
-    const styleRules = rules.filter(rule => rule.loaders?.some((loader: any) => typeof loader.loader === 'string' && loader.loader.endsWith('/stylesheet-loader.js')))
+    const styleRules = rules.filter(rule => rule.loaders?.some((loader: any) => typeof loader.loader === 'string' && toPosixPath(loader.loader).endsWith('/stylesheet-loader.js')))
     expect(styleRules.map(rule => rule.type)).toEqual(['css', undefined])
     for (const rule of styleRules) {
       expect(rule.condition.all.some((condition: any) => condition.content)).toBe(false)
