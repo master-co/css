@@ -4390,6 +4390,34 @@
         "reviewRef": "parity/language-token-freeze-approval.md#approved-scope",
         "scopeDigest": "052b98b2deff72c125106544afa627023c5739e3776d744a0082dcc8e21f4ad7"
       }
+    },
+    {
+      "sourceId": "rc87-4830c5bbe833a934",
+      "sourceDigest": "c4bda323b0ebcba47e52d8096bcb930484734de181cae614dff7ac6b41872bad",
+      "targetDigest": "a707c5a00f741455f5828147a6f7f5e17b5f868a0c1965a34c3ff8ab3bbaf820",
+      "proof": "verified-superset",
+      "reason": "Reviewed portable watcher/path adaptation; every rc.87 assertion and fixture remains after removing only Vite normalizePath wrappers. An independent AST comparison proves the remaining case body is identical. Windows inputs and expected paths now use Vite host conventions. See parity/vite-portable-freeze-approval.md#assertion-preserving-cases. Full Vite 678/678 and focused cases pass."
+    },
+    {
+      "sourceId": "rc87-426ea0afb5a08621",
+      "sourceDigest": "0ff5d9a5651036e3a10ccbff343a04266d4952e0a83e7842562751ca7ffa8025",
+      "targetDigest": "ba98d64264baa0de84f7fe1475d69482371488c670a5a779e71a59dd16985172",
+      "proof": "verified-superset",
+      "reason": "Reviewed portable watcher/path adaptation; every rc.87 assertion and fixture remains after removing only Vite normalizePath wrappers. An independent AST comparison proves the remaining case body is identical. Windows inputs and expected paths now use Vite host conventions. See parity/vite-portable-freeze-approval.md#assertion-preserving-cases. Full Vite 678/678 and focused cases pass."
+    },
+    {
+      "sourceId": "rc87-f31ee191a59a71b4",
+      "sourceDigest": "de314b914139026a38055903d8ab7f5abe48fef3db61dd1d20cf8641dfae5bb2",
+      "targetDigest": "e9d23b1895335f151e320c3af8a2de6b8623e7a7e9533c7ba7d821cfbb771c6f",
+      "proof": "verified-superset",
+      "reason": "Reviewed portable watcher/path adaptation; every rc.87 assertion and fixture remains after removing only Vite normalizePath wrappers. An independent AST comparison proves the remaining case body is identical. Windows inputs and expected paths now use Vite host conventions. See parity/vite-portable-freeze-approval.md#assertion-preserving-cases. Full Vite 678/678 and focused cases pass."
+    },
+    {
+      "sourceId": "rc87-f44b976958b10bfc",
+      "sourceDigest": "13c72238b508259b29dd166ce373bfecce396f0f5398e8c83dc7e5d14607d6c4",
+      "targetDigest": "5ff340a5182adcdfeb5776d2d53fff1aec6449e14dc57541233d799805e13e5e",
+      "proof": "verified-superset",
+      "reason": "Reviewed portable watcher/path adaptation; every rc.87 assertion and fixture remains after removing only Vite normalizePath wrappers. An independent AST comparison proves the remaining case body is identical. Windows inputs and expected paths now use Vite host conventions. See parity/vite-portable-freeze-approval.md#assertion-preserving-cases. Full Vite 678/678 and focused cases pass."
     }
   ],
   "surfaces": [

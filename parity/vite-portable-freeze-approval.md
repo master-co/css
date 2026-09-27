@@ -16,3 +16,14 @@ Two previously approved case bodies now compare watcher dependencies using Vite'
 The full `packages/vite/tests/plugins/manifest-virtual-module.test.ts` hash changes from `ed2e70cfd4b0095b6dd625c5d42d0a947dcac184e0141d19bf871f51e774e363` to `77148fe32f807138339ea30f94ba76b9f4815680475f88a768f54fc426e4e4a0`. Four cases use normalized Vite watcher/access paths and HMR event inputs; the temporary root expands Windows short names through native realpath. All assertions remain. The 21 Manifest case digests, original implementation provenance and other seven file hashes were reverified unchanged. Target and approval scope digests are refreshed only for this approved file.
 
 Validation: the focused 20 + 148 Vite cases pass, the full suite passes 678/678, and Vite lint/type-check/build pass. VSCode staged tests pass 16/16 locally. Windows validation remains required; this approval does not waive CI, approve other migration cases, or authorize publication.
+
+## Assertion-preserving cases
+
+Four further cases in the reviewed patch retain every original assertion. An independent TypeScript AST comparison removes only the added one-argument Vite `normalizePath` calls and proves equality to the previous rc.87 case body after whitespace normalization. This is a verified assertion-preserving adaptation, not a new CSS or Manifest behavior approval.
+
+| Case | Baseline source digest | Target digest | Path wrappers |
+| --- | --- | --- | ---: |
+| rc87-4830c5bbe833a934 | c4bda323b0ebcba47e52d8096bcb930484734de181cae614dff7ac6b41872bad | a707c5a00f741455f5828147a6f7f5e17b5f868a0c1965a34c3ff8ab3bbaf820 | 2 |
+| rc87-426ea0afb5a08621 | 0ff5d9a5651036e3a10ccbff343a04266d4952e0a83e7842562751ca7ffa8025 | ba98d64264baa0de84f7fe1475d69482371488c670a5a779e71a59dd16985172 | 2 |
+| rc87-f31ee191a59a71b4 | de314b914139026a38055903d8ab7f5abe48fef3db61dd1d20cf8641dfae5bb2 | e9d23b1895335f151e320c3af8a2de6b8623e7a7e9533c7ba7d821cfbb771c6f | 1 |
+| rc87-f44b976958b10bfc | 13c72238b508259b29dd166ce373bfecce396f0f5398e8c83dc7e5d14607d6c4 | 5ff340a5182adcdfeb5776d2d53fff1aec6449e14dc57541233d799805e13e5e | 1 |
