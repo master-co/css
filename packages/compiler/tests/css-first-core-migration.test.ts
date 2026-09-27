@@ -245,7 +245,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       type: UtilityType.Shorthand, variableAliasRefs: ['~container'],
       matchers: [{ type: 'token', prefix: 'size-' }]
     })
-    for (const key of ['grid-cols', 'grid-col-span', 'size']) {
+    for (const key of ['grid-cols', 'grid-col-span', 'size', 'gap', 'clamp-lines', 'text-decoration']) {
       expect(utility(`${key}:<*>`)).toMatchObject({
         matchers: [{ type: 'key', keys: [key] }]
       })
@@ -257,6 +257,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(utility('user-select:<*>')).toMatchObject({
       matchers: [{ type: 'key', keys: ['user-select'] }]
     })
+    expect(utility('bg-<~color>')).toMatchObject({
+      variableAliasRefs: ['~color'], matchers: [{ type: 'token', prefix: 'bg-' }]
+    })
+    expect(utility('fg-<~color-text|~color>')).toMatchObject({
+      variableAliasRefs: ['~color-text', '~color'], matchers: [{ type: 'token', prefix: 'fg-' }]
+    })
+    expect(utility('grid-cols:<*>')?.type).toBe(UtilityType.Normal)
+    expect(utility('size:<*>')?.type).toBe(UtilityType.Shorthand)
     expect(utility('text-<~font-size>')?.emit).toMatchObject({
       type: 'static', rules: [{ declarations: {
         'font-size': null,
@@ -286,9 +294,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       ['clamp-lines:none', '-webkit-line-clamp:none'],
       ['text-decoration:underline|var(--color-red)', '-webkit-text-decoration:underline var(--color-red);text-decoration:underline var(--color-red)']
     ]
-    for (const [className, declarations] of cases) expect(css.createRule(className)?.text).toContain(`{${declarations}}`)
-    expect(css.createRule('accent:red')?.text).toContain('{accent-color:red}')
-    expect(css.createRule('bg:cover')?.text).not.toContain('background-size')
+    const selectors = [
+      'font-sm', 'font-sans', 'font-bold', 'font-size\\:1rem', 'bg-red', 'fg-red',
+      'grid-cols\\:3', 'grid-cols\\:var\\(--cols\\)', 'grid-col-span\\:2', 'grid-col-span\\:var\\(--span\\)',
+      'size\\:1rem', 'size-card', 'size\\:1rem\\|2rem', 'gap\\:var\\(--gap\\)', 'accent\\:var\\(--accent\\)',
+      'user-select\\:none', 'clamp-lines\\:3', 'clamp-lines\\:none', 'text-decoration\\:underline\\|var\\(--color-red\\)'
+    ]
+    expect(selectors).toHaveLength(cases.length)
+    for (const [index, [className, declarations]] of cases.entries()) {
+      expect(css.createRule(className)?.text).toBe(`.${selectors[index]}{${declarations}}`)
+    }
+    expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background:#fff}')
+    expect(css.createRule('accent:red')?.text).toBe('.accent\\:red{accent-color:red}')
+    expect(css.createRule('bg:cover')?.text).toBe('.bg\\:cover{background:cover}')
   })
 
   test('rejects unsupported managed enum pattern syntax', () => {
@@ -603,10 +621,21 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(after.css.indexOf('@media')).toBeLessThan(after.css.indexOf('.card:where(.dark'))
     expect(before.css.indexOf('.card:where(.dark')).toBeLessThan(before.css.indexOf('@media'))
     for (const result of [before, after]) {
-      expect(result.css).toContain('text-align:center')
-      expect(result.css).toContain('contain:content')
-      expect(result.css).toContain('display:block')
-      expect(result.css).toContain('background-color:var(--color-blue-60)')
+      const managed = createTestCSS(result.manifest).ensureClassRules('btn').utilitiesLayer.text
+      expect(managed).toContain('.btn')
+      expect(managed).toContain('.btn:where(.dark')
+      expect(managed).toContain('@media')
+      if (result === before) {
+        expect(managed.indexOf('.btn:where(.dark')).toBeLessThan(managed.indexOf('@media'))
+      } else {
+        expect(managed.indexOf('@media')).toBeLessThan(managed.indexOf('.btn:where(.dark'))
+      }
+      for (const css of [result.css, managed]) {
+        expect(css).toContain('text-align:center')
+        expect(css).toContain('contain:content')
+        expect(css).toContain('display:block')
+        expect(css).toContain('background-color:var(--color-blue-60)')
+      }
     }
   })
 

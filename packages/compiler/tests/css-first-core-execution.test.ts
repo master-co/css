@@ -225,6 +225,20 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(result.nativeCSS).toContain('a|b')
     expect(result.nativeCSS).toContain('--alpha(red / foo)')
     expect(result.nativeCSS).toContain('--value()')
+    const historicalValues = [
+      '$color-blue-60',
+      '--alpha(var(--color-blue-60) / 50)',
+      '--alpha(var(--color-blue-60) / foo)',
+      '--alpha(var(--color-blue-60) / 50% / 20%)',
+      '--alpha(var(--color-blue-60))'
+    ]
+    for (const value of historicalValues) {
+      const compiled = compileCSSManifest(`@theme { --color-brand: ${value}; }`, { baseManifest: defaultManifest })
+      const css = createTestCSS(compiled.manifest).ensureClassRules('fg-brand')
+      expect(css.themeLayer.text).toContain(`--color-brand:${value}`)
+    }
+    const native = compileCSSManifest('.native { color: $color-blue-60; }', { baseManifest: defaultManifest })
+    expect(native.nativeCSS).toContain('color: $color-blue-60;')
   })
 
   test('ignores quoted variable references while collecting theme dependencies', () => {

@@ -68,6 +68,8 @@ describe('playground', () => {
     expect(clientSource).not.toContain(removedRuntimeRegistryName)
     expect(clientSource).not.toContain('mastercss_binding_wasm')
     expect(clientSource).not.toContain('"nativeTokenNamespaces"')
+    expect(clientSource).not.toContain('var(--font-sans')
+    expect(clientSource).not.toContain('#0070f3')
     expect(readOutputFileContents(join(nextDir, 'static'), path => path.endsWith('.wasm'))).toEqual([])
     expect(existsSync(join(nextDir, 'static/master-css/hydration'))).toBe(false)
   })
