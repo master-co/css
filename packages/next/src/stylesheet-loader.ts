@@ -34,7 +34,16 @@ function hasMasterStyleDirective(source: string) {
   return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
+function isGeneratedStylesheet(resourcePath: string, projectDir?: string) {
+  if (!projectDir) return false
+  const file = relative(projectDir, resourcePath).replace(/\\/g, '/')
+  return resourcePath === resolveStaticOutputPath(projectDir)
+    || /^\.master\/next-style-[^/]+\.css$/.test(file)
+    || file.startsWith('.master/stylesheets/')
+}
+
 function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
+  if (isGeneratedStylesheet(resourcePath, projectDir)) return false
   try {
     const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
     return Boolean(resolution && resolution.kind !== 'plain')
@@ -44,7 +53,7 @@ function shouldAddStyleDependencies(resourcePath: string, source: string, projec
 }
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir: string | undefined, options: NextStylesheetLoaderOptions, onDependency: (file: string) => void, inputMap?: object | string, loaderContext?: LoaderContext) {
-  if (projectDir && (resourcePath === resolveStaticOutputPath(projectDir) || relative(projectDir, resourcePath).replace(/\\/g, '/').startsWith('.master/stylesheets/'))) {
+  if (isGeneratedStylesheet(resourcePath, projectDir)) {
     return { code: source, dependencies: [], sourceMap: typeof inputMap === 'string' ? inputMap : inputMap ? JSON.stringify(inputMap) : undefined }
   }
   const rawSass = !options.preprocessed && ['.scss', '.sass'].includes(extname(resourcePath))

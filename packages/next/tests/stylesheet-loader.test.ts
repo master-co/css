@@ -35,6 +35,19 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
 }
 
 describe('Next style CSS loader', () => {
+  it('passes published static sidecars through without rebuilding the project manifest', async () => {
+    const root = createFixture()
+    // An immutable output must remain loadable even while the author is editing
+    // an invalid entry. The source entry loader owns that error and its watches.
+    writeFileSync(join(root, 'app/globals.css'), '@master entry; @utilities { broken:<number> { width:--value(); } }')
+    const file = join(root, '.master', `next-style-${'a'.repeat(64)}-${'b'.repeat(64)}.css`)
+    const source = '@layer utilities{.p\\:11px{padding:11px}}'
+    const result = await runStylesheetLoader(root, file, source)
+    expect(result.code).toBe(source)
+    expect(result.dependencies).toEqual([])
+    await expect(runStylesheetLoader(root, join(root, 'app/authored.css'), '.card{color:red}')).rejects.toThrow()
+  })
+
   it('relocates global token URLs through the resource delivery graph', async () => {
     const root = createFixture()
     const image = join(root, 'app/pattern.svg')
