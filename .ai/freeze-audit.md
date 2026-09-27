@@ -292,14 +292,14 @@ integration gates that the local scoped suite did not exercise:
   Local hosted builds pass with 830 pages and 95/95 referenced assets. All
   2,468 root-locale files and the homepage match their locale exports byte for
   byte. Temporary worker/heap diagnostics were reverted.
-  Both hosts deploy `60830b88a` successfully. Vercel's root compose reference,
-  Traditional Chinese reference and directive guide return HTTP 200; Chrome
-  confirms styling and client navigation. Cloudflare renders the reference in
-  Chrome. Its earlier `147dbcd4d` health check returned HTTP 200 with
-  `{"ok":true}`; storage writes were not exercised. Latest previews:
-  `master-ei9wt3jrq-aoyue.vercel.app` and `8611aee7.master-css-e8w.pages.dev`.
-  Canonical metadata now resolves Vercel deployment/branch variables; 16 tests,
-  type-check and site lint pass (zero errors, 266 existing warnings).
+  Both hosts deploy `cdc0ccc0a` successfully. On each host, the root compose
+  reference, Traditional Chinese reference and legacy directive guide return
+  HTTP 200 with the expected deployment-aware canonical URLs. The legacy guide
+  deliberately canonicalizes and redirects to Syntax Tutorial. Chrome confirms
+  reference styling, Vercel sidebar navigation and the Cloudflare guide redirect.
+  Cloudflare health returns HTTP 200 with `{"ok":true}`; storage writes are untested.
+  Previews: `master-5duvv9coj-aoyue.vercel.app`, `8cb47757.master-css-e8w.pages.dev`.
+  URL resolution: 16 tests, type-check and site lint pass (266 existing warnings).
 - Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
   passed). The JavaScript adapter now restores template line endings and escapes
   cooked carriage returns. LF, CRLF and CR sorting regressions failed before
@@ -356,8 +356,8 @@ integration gates that the local scoped suite did not exercise:
   The complete local suite passes 678/678, plus 22 final reconciliation checks;
   lint, type-check, build and the example build pass. Two case target digests and
   the Manifest file hash have explicit supplemental QA; all 21 Manifest cases stay.
-- VSCode's Windows completion timeout still needs diagnosis; 16/16 staged cases
-  pass locally. Timeout errors now include recent LSP messages; five seconds stays.
+- VSCode still times out at completion on Windows `cdc0ccc0a`; 16/16 staged cases
+  pass locally. No recent notifications or buffered bytes; five seconds stays.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
