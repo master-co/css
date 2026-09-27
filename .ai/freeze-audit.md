@@ -236,11 +236,13 @@ integration gates that the local scoped suite did not exercise:
 - The user explicitly approved three stale contract records and the separate
   eight-file/21-case Manifest adaptation after exact old/new reviews. Fresh
   approval metadata and scope digests are recorded in
-  `parity/freeze-migration-approval.md`; all approved bytes/cases match the target.
-  The independent post-rc.87 decision validation passes. `check:migration` now
-  accepts the 62 exact named-token differences separately approved in
-  `parity/named-token-freeze-approval.md` and reports 434 unreviewed cases.
-  These are not 434 proven defects; no blanket approval or ledger rewrite was made.
+  `parity/freeze-migration-approval.md`. Separate approvals cover 62 named-token
+  and 24 utility-registration cases. Four native component-layer fixtures were
+  restored, and five further assertion-preserving supersets were verified. The
+  independent Rust contract review now has 401 pending cases. The Manifest gate
+  awaits narrow QA for the restored Webpack fixture changing its whole-file hash;
+  its 21 Manifest cases and other seven files are unchanged. No blanket approval
+  or generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
   tsdown external rule now excludes resolved Windows drive paths from bare
@@ -321,10 +323,11 @@ integration gates that the local scoped suite did not exercise:
   20 Reference tests pass; site lint has no errors and 266 existing warnings.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
-- Eight cases have reviewed `verified-superset` evidence: lint/workspace checks,
-  three hydration assertions, the portable stylesheet path and two Manifest
-  input-only updates. Facade tests (2/2) and runtime type-check pass; expectations remain;
-  their evidence remains separate from the newly approved contract records.
+- Thirteen cases have new reviewed `verified-superset` evidence: lint/workspace,
+  hydration, portable paths, Manifest inputs, the VSCode client AST check with its
+  restored display-name assertion, and four Next current-CSS-graph inspections.
+  VSCode bundle/grammar tests pass 27/27 and Next static tests pass 11/11; existing
+  assertions remain. This evidence is separate from approved contract changes.
 - Windows Next reports 21 failures: canonical fixture roots and native path
   assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
   exposed incorrect additional-data offsets. File-URL identity now compares

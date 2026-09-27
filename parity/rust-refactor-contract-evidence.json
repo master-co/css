@@ -1204,6 +1204,353 @@
         "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
         "scopeDigest": "431b6a151aedc917a006cf4b44e02a600d8d7468a3724a416c694aa1fde1b727"
       }
+    },
+    {
+      "sourceId": "rc87-dc58165adfc83f37",
+      "sourceDigest": "9002eee0c1d49c66489b3a7b41a182a966965d658252dc06f6f223cddbd8651a",
+      "targetDigest": "dea2b8f3f53442915bc60760b589f3e499b2236db99483b835213e2f4380e8d4",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete bundled-output assertion against the baseline. The AST check retains one Master CSS output-channel construction and requires the LanguageClient identity masterCSS plus display name Master CSS, preserving both constructor arguments checked by the old regex. It additionally proves that the client options reference that same channel instance across bundled variable declarations or assignments, rather than merely containing an outputChannel key. All 27 staged-bundle and TextMate tests and VSCode lint pass."
+    },
+    {
+      "sourceId": "rc87-37e35a8768a9d50b",
+      "sourceDigest": "b856ce7fdd73b5f39ddb92f09169bc91e2ac375f51f699aff0c05a959b908cc3",
+      "targetDigest": "7c7a297ff8f4969bfa755fba39e9a46adf4ed75249aa62fa83725f6a6ba2dc99",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"universal compileManifest lowers directives with a base manifest\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "9777a2485e624c0749d2993607a6d90b39889a6c04e23d82e9fcc6429c2041af"
+      }
+    },
+    {
+      "sourceId": "rc87-5e7f87aa19abfb63",
+      "sourceDigest": "cfc51000cd41a77b504897cea1b4e583af3fedcde22d670440a1e3652e1c90ed",
+      "targetDigest": "84e991d660d9bb2741cb4ba25a9d45ad8a3662923934fbd58782869b377f2e50",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"rejects legacy at-prefixed and selector variant directive syntax\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "97715a594dfe2b839d1a5dc452437e3874425800e6011bed8fd760688cc80dc9"
+      }
+    },
+    {
+      "sourceId": "rc87-7393f7c77328795c",
+      "sourceDigest": "f98e7fc63c9517ee9fc45f8372916f10b6e3cc2b8b14ae503b9784ae3f24644d",
+      "targetDigest": "5e67a191b8dfe742049e79e98865435d3b297a75092670336421dd74a550a4a0",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"compiles explicit CSS project entries\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "eeac3e957f7e5c4433300529267b12698455764cccf968203b9449efd3b969b0"
+      }
+    },
+    {
+      "sourceId": "rc87-e7f1f864cac62727",
+      "sourceDigest": "60d85a0209d7a42fb50746a31733aca8750b1a11fc82e4ff255f65d7344d010c",
+      "targetDigest": "fc0350a3426a80b4b37e44302ecd44f0913efd70624b65a2d13ba519dc7b1ca2",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"loads package entry preset manifest from CSS imports\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "20abc07398fa8cb995292b915bd26d775e10c849421aa91712d4cb20da2c847e"
+      }
+    },
+    {
+      "sourceId": "rc87-df2379cc46e6cb8f",
+      "sourceDigest": "e61d16ee5554b9010aaa1b383be755ec781d84e00a9524ab39aaa24ea049992b",
+      "targetDigest": "12278a7cb31eeb13d7e56988040b91282acc8977b22444c477286dfa144b0798",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"lets current definitions override referenced definitions\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "982deb6b4220c18757231dc20cdf8a70c482f5bf8ac618d04fbcb7700621bf90"
+      }
+    },
+    {
+      "sourceId": "rc87-06eb46320f280e80",
+      "sourceDigest": "584ba19cec07112a7220a24f39664ee39c426ae8d3df81485da80dd22bdbdb9f",
+      "targetDigest": "a2c2a8cded517a1ecd88368b8e34a2659027bc402b3f835b8c1656a1d7880b7e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"reports references from project manifest entries and rejects circular references\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "9efa291d4dd048f9d83650a5c4ec3071f07aaef457d3cbbf274142cb0e1ee16b"
+      }
+    },
+    {
+      "sourceId": "rc87-6ef0dd365e7230a1",
+      "sourceDigest": "a68e534c3a51da9e6e60833aa1dccdea9884b940b6415808d079ffc63aac2c93",
+      "targetDigest": "4b91945b457d6cf08bd59f9aea7f22e2eab82459529de2e56ee02d9422bd3a1b",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"renders class names with the compiled manifest\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "ad5d7574882533d58930c26378b5618710c382af39d272fb560dc01c6e8c838c"
+      }
+    },
+    {
+      "sourceId": "rc87-32df64bdd39d50d5",
+      "sourceDigest": "96c84fb146aa8d3e1e7dce37dad9cc357820a1c4c33764ebe58c3549fc43ecfb",
+      "targetDigest": "5b803743d962edd51b280c9ab81fe140c4bd79980340c6f53f52905dc42ea94e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"renders native CSS and keyframes from expanded Master CSS entry graphs\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "5ab2baa4471d9c5ac4e536ce5cdb7f60666d7b672f19c835e1bb4cf160f96fe1"
+      }
+    },
+    {
+      "sourceId": "rc87-18d63467f01b574f",
+      "sourceDigest": "7f5bc7996e61b89d7cf70d03acf7ff5f752059513b1b0fc2abcbc5384f0f2a3e",
+      "targetDigest": "72fb1d3072d9523e12f70f49b095bdac664249c05883491c9cee3973dbabb312",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"collects best-effort style dependencies from local import graphs\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "74be23694639d5d201236c516e07f148c01616e5363479330bfd5dd37488b1d7"
+      }
+    },
+    {
+      "sourceId": "rc87-09a63ebd1fb0c985",
+      "sourceDigest": "46e7233b6fce53227abfda3a531079d17572bef5889c293d620a695b276267e4",
+      "targetDigest": "d5cbe6647a658b9d8601cd8170c55e459bb8df5625dd48ca8d5339c155fa9f9c",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"locally lowers explicit @reference styles without emitting referenced CSS\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "0db6af96409c41907f8b76e8e72375589e94cfbf0a5a0a157f1c7c0a7b296d97"
+      }
+    },
+    {
+      "sourceId": "rc87-3fbd82ad3f8411c4",
+      "sourceDigest": "70034ad7fef18ecef8f8205371580730e545a75991aae66de3c9045ff02a54a0",
+      "targetDigest": "4709c086e006dda0320ceb02eb0f55b7409fbdce88ece0fb775572dd1407e2aa",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"emits referenced theme variables and keyframes used by local styles\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "9251d5458bc532d91ae1c5ac4efaf676cd1c1cac5817c3d019a158569d773c75"
+      }
+    },
+    {
+      "sourceId": "rc87-d1fd372c5f354ee2",
+      "sourceDigest": "5029e7d6a75833c8f44009775f291c3629387e60ad597bc290320c247bc751cb",
+      "targetDigest": "969b449e52cecc8f020300bb1416c3dc29fd7fb890913dd0932dd5ef12108266",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"skips referenced theme variables and keyframes already emitted by global CSS\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "df816c7c70fc4b8e1ff2d87bb6cc3170f7c66e0e4c6b08c64f5fac946cf20f17"
+      }
+    },
+    {
+      "sourceId": "rc87-fdb9f87a3f066b49",
+      "sourceDigest": "4e677cbf667246f9b10909792b6fda605d66096b7b17b7ecc53bf59193973652",
+      "targetDigest": "c8a3d9287b9f52dd80cb615999121923fb540141a8fd9f58221c7ce51f2c89b4",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"strips reference-only local styles and still reports dependencies\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "9f31919a3c0f6581562cb3c3e87fe90297ed3f52610bc5c8c72acdfc7eaa5ce6"
+      }
+    },
+    {
+      "sourceId": "rc87-ac2cdaec143ddda4",
+      "sourceDigest": "29bbe49e452c6661dea769245cd5394b5e351b62eb6d6e790739a22948106d25",
+      "targetDigest": "ddb8588e741821e7ebde1eba836a2efe2f6a98e44c64a004887ca0a3d759f980",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"uses explicit Master CSS manifest objects from ESLint settings\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "b055d4e3fdfc2da1284d80c74494c785f9a93a5b3fb46d1422a63e9bba64a886"
+      }
+    },
+    {
+      "sourceId": "rc87-7c42e4a2078e5f09",
+      "sourceDigest": "3f57038d29e56e867ceb598478ce08cb638f9976c43fcc6f2b1883db6bff6812",
+      "targetDigest": "49766a97d2498108429f2ff8cf41068ff05c2ff82eb19ce3667a39df0ad471b2",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"uses project-level CSS manifest entries from the ESLint workspace\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "34ee3bce72cc8f865ff39f2404a545cc2bbb30fd417678c2acb1f02bc2ac7831"
+      }
+    },
+    {
+      "sourceId": "rc87-36ad6d860a2a4cc3",
+      "sourceDigest": "740d87cc2120be23a27a4f18ddaab0f0171ecbcbd1a4f6900b78f3adc3e35c93",
+      "targetDigest": "f77fe7edd22cf7ea4b7498e243a584ad0b66fe2a64cb25308905666021b9663e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"loads managed CSS entry manifest before language features run\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "148f17427992413cd13fa7a1a9b3a91b0a967a4878b50c8c0fa01b11181b7cd1"
+      }
+    },
+    {
+      "sourceId": "rc87-3dbeb88b8f407cb0",
+      "sourceDigest": "c4d59db907cccd641f421f2092264fa941eb9ba42fb397ba35fad4439f0b0f96",
+      "targetDigest": "ca81ede3c884219b41514efb0673a2824952ad5918662e066e92ba9d371e4754",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"returns CSS directive class-list semantic tokens when highlighting is off\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "ed2febccb981cde27abea1e4cc9961ac7505e5f1d23175537b4421fc35fd427b"
+      }
+    },
+    {
+      "sourceId": "rc87-e5d343ae48cff114",
+      "sourceDigest": "6d323e4fae2ea145f270a4c7ecbef9d695f237e4fe427e8ee391428b0b0d374c",
+      "targetDigest": "4812bbfa89cdae1e274fe4d3de6b750498a0c2a7e64037a652377474a2efb28e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"loads CSS when the loader resource includes ?master-css-manifest\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "cedb9f415168b9931909e261eb019ecdbc293f11c66c2f9dad7c28af7b1cde77"
+      }
+    },
+    {
+      "sourceId": "rc87-dcfcbfe417ea201d",
+      "sourceDigest": "0f0f0b15669e17910a91dcb35e67c6c81c8cb62420ca80f85ef28c7605741189",
+      "targetDigest": "d8497b6e1c7d66f240da75ee2257060e5b4f340aaf8a3b083cb5cc6ff819692e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"loads the default virtual manifest from CSS entry files only\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "111938efc0b24bf17c23f9479dbd70a309cd7078ace9c9d839f3636e81ba37bf"
+      }
+    },
+    {
+      "sourceId": "rc87-f9c0eb4b3b8f2fbb",
+      "sourceDigest": "1f8b4e975fc9fec86ec18df93a2b9c9b0f6ec4f85f5ffba45275f104cae85f05",
+      "targetDigest": "1721cb02a5023b7b4cabf34feef0b50d803fa4b58b68b2866cd60e320ca9a14a",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"preserves native CSS and keyframes from imported Master entry graphs\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "9d1e903a4119747ae0be84558d9a92d5142e529572a3b13b609ad17e6a70286d"
+      }
+    },
+    {
+      "sourceId": "rc87-55b73f1c832fdb61",
+      "sourceDigest": "3915fa8671163eb0cc144b406cdf4fd368996e749601cf822536cfe51ccf988a",
+      "targetDigest": "885c6208f34a6fe859ed2517d48c45ab52b07335cd39f30cded2e00294e42970",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"locally lowers @compose in CSS Modules without importing package CSS\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "05cfd8bb4ee71d3c4a484a0ca6afcbaf384d8056284658ab7acbeb2d77d56065"
+      }
+    },
+    {
+      "sourceId": "rc87-72b32e8d8e81f786",
+      "sourceDigest": "d5f6cabf8dc7d096ec2a65806ed8d3a2bbae3a70d6055307d22157d3925faa2f",
+      "targetDigest": "27113417e16999a27f662af7aabdb95f3fa71ba2358b407d63790e709c1c7959",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"locally lowers explicit @reference CSS Modules without importing package CSS\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "57bd144fd00e81b9107699efdf992fa436e53415ccdc99b37cf2e93ec0e0c0bd"
+      }
+    },
+    {
+      "sourceId": "rc87-054c879ed15dfa40",
+      "sourceDigest": "15d2a61f201c3b8f30ea44d3381803209e8ed5dd9f9953d45648c0c8fc2482c5",
+      "targetDigest": "0fbeb5a085d057f1af467a81a7099024ceaa68b02f4a2095927fdc14651d4556",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"lowers explicit @reference styles and watches the reference file\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "59033ed1b2c306aa22d6d58e23df91930b6fdaaa52aa62fbd208cbb42f793fd1"
+      }
+    },
+    {
+      "sourceId": "rc87-41097ea300e09962",
+      "sourceDigest": "226c5a78758a6a22ae86848604e962780871200bef0442494153d1688e4860c2",
+      "targetDigest": "6769de48065438edaa6849ecccf37a266366a5b000d191fd2ffb6b0e38486e6f",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"locally lowers @compose in CSS Modules without rewriting to the virtual CSS import\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:51:16.953Z",
+        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
+        "scopeDigest": "79991a514af325a55e51516fd644cfd6636395124707e4f034a97e1f198a213b"
+      }
+    },
+    {
+      "sourceId": "rc87-f7398622b00a5e61",
+      "sourceDigest": "a314a55031d9dc4e6119f15b2761a7126fe07856ee676c95a761db3bc5549d43",
+      "targetDigest": "45acd6b1343d3af2e8f57254ce4bf84dbd43f90c778477c9d43c7378da836875",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete case body for \"writes extracted CSS from source files including imported modules\". Only the output inspection changes from reading the entry alone to readStaticCSS, which reads that entry plus reachable relative imports in its current immutable stylesheet graph with cycle protection. It does not scan stale assets. Existing fixture, scan/loader actions, and all CSS inclusion/exclusion and pass-through assertions are retained; exclusions now cover the reachable graph. This preserves effective delivered-CSS coverage, without asserting historical single-file layout or byte identity. The complete Next static suite passes 11/11."
+    },
+    {
+      "sourceId": "rc87-881bb85795ca4198",
+      "sourceDigest": "e16e26ef166354bc3883c4952500bf0537e1bafe80c06ee1e71b927cb35bb6c0",
+      "targetDigest": "5fbf819ae98ced88633d04d0c9ae3815de861a50fb446e51a6d336e045cd0bb4",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete case body for \"ignores app stylesheets with @theme when they do not import @master/css\". Only the output inspection changes from reading the entry alone to readStaticCSS, which reads that entry plus reachable relative imports in its current immutable stylesheet graph with cycle protection. It does not scan stale assets. Existing fixture, scan/loader actions, and all CSS inclusion/exclusion and pass-through assertions are retained; exclusions now cover the reachable graph. This preserves effective delivered-CSS coverage, without asserting historical single-file layout or byte identity. The complete Next static suite passes 11/11."
+    },
+    {
+      "sourceId": "rc87-ae34a7e7d60def44",
+      "sourceDigest": "a2b314e4ee518e27843489347f3fb1be3adf44ed96b5aa0557be145e106e7acb",
+      "targetDigest": "60d61e68a5a25453c110baa2c758ab61329b9e515ae17367dfebdd1a532fec8b",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete case body for \"does not scan excluded node_modules modules from the static loader\". Only the output inspection changes from reading the entry alone to readStaticCSS, which reads that entry plus reachable relative imports in its current immutable stylesheet graph with cycle protection. It does not scan stale assets. Existing fixture, scan/loader actions, and all CSS inclusion/exclusion and pass-through assertions are retained; exclusions now cover the reachable graph. This preserves effective delivered-CSS coverage, without asserting historical single-file layout or byte identity. The complete Next static suite passes 11/11."
+    },
+    {
+      "sourceId": "rc87-8f00b4e0b7f55c97",
+      "sourceDigest": "11110a8e5cca741f0118c1d26c6388a996174d172d78030aa498e4b8af2c7e16",
+      "targetDigest": "27ecf33db5d374cba310f61dddc72b989ae2e7730c0b62ead641a59f7fb05496",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete case body for \"updates static CSS when Turbopack reruns the CSS loader\". Only the output inspection changes from reading the entry alone to readStaticCSS, which reads that entry plus reachable relative imports in its current immutable stylesheet graph with cycle protection. It does not scan stale assets. Existing fixture, scan/loader actions, and all CSS inclusion/exclusion and pass-through assertions are retained; exclusions now cover the reachable graph. This preserves effective delivered-CSS coverage, without asserting historical single-file layout or byte identity. The complete Next static suite passes 11/11."
     }
   ],
   "surfaces": [
