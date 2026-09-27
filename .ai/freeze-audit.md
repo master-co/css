@@ -181,6 +181,8 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
 | Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
 | `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
+| Windows compatibility CI on PR #461 | Checkout, pnpm installation and Rust Wasm build passed after fixing generated-file tracking and patch checkout line endings; package tests failed while building binding declarations |
+| Linux e2e CI on PR #461 | 8 of 10 Next cases passed; two Webpack dev-HMR cases failed on server-start and style-update timeouts |
 
 The second pass rebuilt native/Wasm and package artifacts with the normal
 repository build; the first pass used existing artifacts. No semantic
@@ -238,10 +240,19 @@ integration gates that the local scoped suite did not exercise:
   are not proof of 503 product defects. The diagnostic edits were reverted;
   neither blanket approval nor a generated ledger rewrite is included here.
 - Windows checkout now passes after untracking eight ignored generated
-  `.master/stylesheets` files. The compatibility job subsequently fails during
-  `pnpm install`: the existing `patches/watchpack@2.5.2.patch` is rejected as
-  `ERR_PNPM_INVALID_PATCH` (`invalid char in unquoted filename`). The patch and
-  package-manager configuration are outside the agreed change boundary.
+  `.master/stylesheets` files. The next run's `pnpm install` rejected the
+  existing `patches/watchpack@2.5.2.patch` as `ERR_PNPM_INVALID_PATCH`. This
+  matches pnpm 12's [CRLF patch regression](https://github.com/pnpm/pnpm/issues/14557);
+  checkout conversion is the inferred cause, not a captured CI file dump. A
+  narrow `.gitattributes` entry now keeps `patches/*.patch` at LF without
+  changing the patch, lockfile, pnpm
+  configuration or CI workflow. The subsequent Windows job passed checkout,
+  pnpm setup and Rust Wasm build. It then failed in package tests while
+  `@master/css-binding` built declarations: tsdown/rolldown reported 175
+  `MISSING_EXPORT` errors against virtual `.d.ts` imports of type-only exports.
+  The binding sources already use `import type` and neither that package nor
+  the shared tsdown config changed from baseline `70444b18c`. This
+  declaration-build failure is not claimed as diagnosed or fixed.
 - Native package smoke now uses `languageVersion: 3` and the current method.
   The rerun passed for all eight macOS, Linux and Windows native targets. Rust
   quality, preflight, title and Azure checks also passed on this PR revision.
@@ -249,8 +260,13 @@ integration gates that the local scoped suite did not exercise:
   `pnpm submodules`, which is not a repository command. This was confirmed in
   the provider build log for commit `91e6d2b`. Cloudflare Pages also failed,
   but its detailed log requires dashboard sign-in and was not inspected.
-- The Linux e2e job was still running at the last status check; it is not
-  recorded as passing here.
+- Linux e2e passed 8/10 Next cases, then failed two Webpack dev-HMR cases:
+  one Next server-start timeout and one computed-style update timeout. The
+  server log includes a Webpack cache warning about a `file:///` import of
+  `packages/next/dist/index.js`, but the cause of either timeout is not
+  established. The affected HMR source and tests are unchanged from baseline;
+  this PR only untracks ignored outputs under the separate `static-export`
+  fixture and updates the Next README.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
