@@ -312,6 +312,30 @@ integration gates that the local scoped suite did not exercise:
   between repeated publication work, Webpack cache warnings and missed HMR
   updates remains unproven.
 
+- [CI at `cbc892967`](https://github.com/master-co/css/actions/runs/36323431952)
+  confirms the Windows declaration build now succeeds after excluding resolved
+  drive paths from tsdown's bare-import external rule. Binding tests passed
+  33/33; the job advanced to CLI tests (53 passed, 31 failed). CLI fixes now
+  use file URLs for Node imports and native absolute paths for migration entry,
+  dependency and watch comparisons. Permission tests use a read-only output
+  file on Windows because directory chmod does not deny writes there. Local CLI
+  tests passed 84/84, with lint, type-check and build passing. An earlier local
+  run hit an existing watch-test snapshot race with a transient publication
+  file; the full rerun passed. Windows confirmation remains pending.
+- The same CI run passed 9/10 Next e2e cases; the full Webpack HMR case reached
+  its 180-second overall deadline. A local instrumented run passed that case
+  in 154 seconds. Individual update deadlines and assertions are unchanged;
+  these results do not establish that the intermittent HMR failures are fixed.
+- Aron authorized shared build, CI and preview configuration repairs on
+  2026-09-27. Authenticated Cloudflare logs show installation succeeds but the
+  build exits at `cargo: not found`. The shared hosted script bootstraps rustup
+  when absent and uses the repository-pinned toolchain before building. Vercel
+  branch configuration replaces the obsolete `pnpm submodules` install command
+  and builds the workspace before exporting `site/out`, with Node 24 selected
+  in the site manifest. The hosted script passed locally with 830 pages and
+  95/95 referenced assets; site lint had zero errors and 266 existing warnings.
+  Provider deployment verification remains pending.
+
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
 
