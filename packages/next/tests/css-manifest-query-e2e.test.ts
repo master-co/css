@@ -59,6 +59,7 @@ describe('css manifest query e2e', () => {
       .join('\n')
     expect(html).toContain('data-color="#4b6fff"')
     expect(html).toContain('data-breakpoint="1234"')
+    expect(html).toContain('data-font-weight="700"')
     expect(manifestJSONFiles).toEqual([])
     expect(html).toContain('/assets/_next/')
     expect(jsBundleContents).toContain('#4b6fff')
