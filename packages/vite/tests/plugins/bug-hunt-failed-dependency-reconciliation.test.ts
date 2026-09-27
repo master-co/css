@@ -109,8 +109,9 @@ test('BH-0004 a successful edit drops obsolete failed dependency reconciliation'
   const f = fixture();let result: Awaited<ReturnType<typeof start>> | undefined
   try {
     result = await start(f)
-    // Isolate reconciliation: a delayed native event for this source edit must not be attributed to restoring the obsolete external dependency.
-    await result.server.watcher.unwatch(f.root)
+    // Isolate reconciliation from native events, including file watches that
+    // were registered separately from the root directory on Windows.
+    await result.server.watcher.close()
     const events: string[] = []
     result.server.watcher.on('all', (event, file) => { if (file.startsWith(f.parent)) events.push(event) })
     writeFileSync(join(f.root, 'style.css'), '.target{padding:9rem}')

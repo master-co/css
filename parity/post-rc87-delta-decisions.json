@@ -77,7 +77,7 @@
           },
           {
             "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-            "digest": "ed2e70cfd4b0095b6dd625c5d42d0a947dcac184e0141d19bf871f51e774e363"
+            "digest": "77148fe32f807138339ea30f94ba76b9f4815680475f88a768f54fc426e4e4a0"
           },
           {
             "file": "packages/webpack/tests/plugin.test.ts",
@@ -191,7 +191,7 @@
             "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
-        "digest": "777887b0cb2d774193e19184cf49e7e4c0c82a617b4d8dcfd2a032247a6ad1f3"
+        "digest": "66e19cb1cbdcfaf4782b486fae0aaf02098d3dde0e7af501f4f5fca873bbc804"
       },
       "invariants": [
         "modulepreload as=\"json\" HTML bytes remain unchanged.",
@@ -201,9 +201,9 @@
       ],
       "approval": {
         "approvedBy": "Aron (explicit supplemental QA approval in this task)",
-        "approvedAt": "2026-09-27T17:29:00.229Z",
-        "reviewRef": "parity/freeze-migration-approval.md#native-layer-fixture-hash-supplement",
-        "scopeDigest": "8185856215468efe7c19b54bc9f5becfff3effbb39ceb38fc6aa8f0d71bee14e"
+        "approvedAt": "2026-09-27T17:49:25Z",
+        "reviewRef": "parity/vite-portable-freeze-approval.md#manifest-file-supplement",
+        "scopeDigest": "33bd27e82e26a609078a668b92316662b5a393bf9b294ab26454261676b32a7a"
       }
     }
   ]

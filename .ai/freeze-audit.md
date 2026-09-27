@@ -347,17 +347,17 @@ integration gates that the local scoped suite did not exercise:
   fix; all 491 Compiler tests and lint/type-check/build pass. Fixture roots use
   native realpath to expand Windows short names. Next's four affected files pass
   26 tests and lint after the same fixture correction.
-- Vite now uses consistent path identities for Modules projection, Sass caches,
-  dependency recovery and Manifest HMR. Imported host maps preserve filesystem
-  paths, and development resource URLs retain drive colons and normalized allow
-  entries. Scratch paths expand short names; Vite's file-policy denial remains.
-  Windows fixtures retain scope, source-position, resource-byte, query/fragment,
-  access-policy and cleanup assertions. Literal `?` filenames run only on hosts
-  that support them; every resource case still tests URL query/fragment handling.
-  Vite passes 677/677, followed by 69/69 final HMR/recovery checks; lint, type-check,
-  build and the Vite example build pass. No deadline or assertion was weakened.
-- VSCode's single Windows completion timeout is not reproduced locally (16/16
-  staged-bundle tests pass). Its unchanged deadline awaits the next Windows run.
+- Vite uses canonical path identity for Modules, Sass caches, deleted dependencies
+  and HMR owners. Windows `1c58d9e13` still failed 159/675 Vite cases: resource
+  copies were on another drive from Vite's `/@fs/` static root; some fixtures used
+  native backslashes in CSS URLs or Vite path assertions. The follow-up stores
+  immutable resources under the project and serves root-relative URLs through
+  Vite, retaining MIME, byte-range, deny-policy, query/fragment and cleanup checks.
+  The complete local suite passes 678/678, plus 22 final reconciliation checks;
+  lint, type-check, build and the example build pass. Two case target digests and
+  the Manifest file hash have explicit supplemental QA; all 21 Manifest cases stay.
+- VSCode's Windows completion timeout still needs diagnosis; 16/16 staged cases
+  pass locally. Timeout errors now include recent LSP messages; five seconds stays.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.

@@ -333,14 +333,14 @@
     {
       "sourceId": "rc87-48ff4814761d1c90",
       "sourceDigest": "c62fd9d5353d8b511ad24233e46b4cf160e758ea23c413735a73c3c1c911a7fe",
-      "targetDigest": "3a6d0130956c5c52141ffa81fd7b511cbbfc7beb1f085ede3d0ae87b2f3032ab",
+      "targetDigest": "508f6473ef88e3d56d375c771c446075ef4878df5d648a91ea80589cd41e681d",
       "proof": "approved-contract-change",
-      "reason": "Vite failed-style handling still rejects invalid composition and registers the original absolute source dependency. The fixture now uses @utilities and a definitely missing named token, and expects the new utility diagnostic wording; this avoids relying on removed colon-token inference to create an error.",
+      "reason": "Vite failed-style handling still rejects invalid composition and registers the original absolute source dependency. The fixture now uses @utilities and a definitely missing named token, and expects the new utility diagnostic wording; this avoids relying on removed colon-token inference to create an error. Supplemental exact QA preserves every assertion while using Vite-normalized watcher paths on Windows; see parity/vite-portable-freeze-approval.md.",
       "approval": {
-        "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T08:47:41.470Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "6aa033e3f208bda722c151d0d334688d2c29b446f2064b8be01bf2e95800422a"
+        "approvedBy": "Aron (explicit supplemental QA approval in this task)",
+        "approvedAt": "2026-09-27T17:49:25Z",
+        "reviewRef": "parity/vite-portable-freeze-approval.md#approved-scope",
+        "scopeDigest": "2c03a03e85cf7eb83506564c6bcde86ec2e25b171943b4bae476c6d2245bc637"
       }
     },
     {
@@ -1501,14 +1501,14 @@
     {
       "sourceId": "rc87-054c879ed15dfa40",
       "sourceDigest": "15d2a61f201c3b8f30ea44d3381803209e8ed5dd9f9953d45648c0c8fc2482c5",
-      "targetDigest": "0fbeb5a085d057f1af467a81a7099024ceaa68b02f4a2095927fdc14651d4556",
+      "targetDigest": "63103fb922d62f0e373dd714a61a4ed02cf74b65316cb69e838d35530b33de37",
       "proof": "approved-contract-change",
-      "reason": "Explicit QA approval of the exact utility registration migration for \"lowers explicit @reference styles and watches the reference file\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689.",
+      "reason": "Explicit QA approval of the exact utility registration migration for \"lowers explicit @reference styles and watches the reference file\". The old @components registration becomes @utilities, with the corresponding utilities layer metadata or layer assertion where present. All other assertions in this case remain. Native @layer components stays valid and the four unrelated native-layer fixture renames are excluded. Scope is the reviewed 24-case patch 92107d16a868acbe25f4b4a770c5136e89b9d229c03ac47521e91b32a421c689. Supplemental exact QA preserves every assertion while using Vite-normalized watcher paths on Windows; see parity/vite-portable-freeze-approval.md.",
       "approval": {
-        "approvedBy": "Aron (explicit QA approval in this task)",
-        "approvedAt": "2026-09-27T16:51:16.953Z",
-        "reviewRef": "parity/utility-registration-freeze-approval.md#approved-scope",
-        "scopeDigest": "59033ed1b2c306aa22d6d58e23df91930b6fdaaa52aa62fbd208cbb42f793fd1"
+        "approvedBy": "Aron (explicit supplemental QA approval in this task)",
+        "approvedAt": "2026-09-27T17:49:25Z",
+        "reviewRef": "parity/vite-portable-freeze-approval.md#approved-scope",
+        "scopeDigest": "c8ae1137e7cbda9e5e7f0bac8908aad11294e0b53fda42c28460b17986fdd500"
       }
     },
     {
