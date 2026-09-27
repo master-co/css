@@ -1551,6 +1551,13 @@
       "targetDigest": "27ecf33db5d374cba310f61dddc72b989ae2e7730c0b62ead641a59f7fb05496",
       "proof": "verified-superset",
       "reason": "Reviewed the complete case body for \"updates static CSS when Turbopack reruns the CSS loader\". Only the output inspection changes from reading the entry alone to readStaticCSS, which reads that entry plus reachable relative imports in its current immutable stylesheet graph with cycle protection. It does not scan stale assets. Existing fixture, scan/loader actions, and all CSS inclusion/exclusion and pass-through assertions are retained; exclusions now cover the reachable graph. This preserves effective delivered-CSS coverage, without asserting historical single-file layout or byte identity. The complete Next static suite passes 11/11."
+    },
+    {
+      "sourceId": "rc87-f718aaba7ab8bda6",
+      "sourceDigest": "8e871bf3492c47cf8d5fba102066995eff6a19feabeed5d3b811ba237c5202d2",
+      "targetDigest": "dde5e0fc486a55b73e4528956490b6ad0b216c54bda5168a9ca4cfaab4f14f92",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete workspace package-resolution case. Its only change renames an empty export in a synthetic index.js fixture from builtinNativeValueNamespaces to builtinTokenNamespaces to match the current package contract. The test still checks all three resolved package directories and an empty error list, and adds no compatibility path or production export. The owning Compiler suite passes 491/491; this is preserved resolution coverage, not approval of an additional public API change."
     }
   ],
   "surfaces": [
