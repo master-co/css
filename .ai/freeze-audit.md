@@ -269,7 +269,7 @@ integration gates that the local scoped suite did not exercise:
   tests consume the existing pre-test build. Assertions and deadlines remain
   unchanged. Local Webpack tests pass 93/93 with lint and type-check; explicit
   LF/CRLF parsing reproduces the old failure and verifies the correction.
-  Windows confirmation remains pending.
+  Windows CI at `4b8eb7f0b` confirms 93/93 passed; CLI remains 89/89.
 - Linux e2e at `7836f3b54` passed 9/10 Next cases; the full Webpack HMR case
   exhausted its unchanged 180-second deadline. Earlier isolated reruns passed
   10/10. Relative fixture imports removed an invalid file-URL cache dependency,
@@ -284,12 +284,18 @@ integration gates that the local scoped suite did not exercise:
   3.0–3.5 seconds; profiling overhead and host load limit the comparison. This
   affects build tooling, not runtime bundle size or authored CSS syntax. The
   earlier remote run does not contain this fix. CI at `147dbcd4d` then passed
-  Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks.
+  Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks. Linux e2e,
+  Rust quality and all eight native targets also passed at `4b8eb7f0b`.
 - Aron authorized shared build, CI and preview configuration repairs on
   2026-09-27. The hosted script now prepares the pinned Rust toolchain. Cloudflare
   advances past its former `cargo: not found` error, builds all 32 packages,
   compiles Next and reaches 731/830 generated pages. That preview stalled and
   was canceled after 33 minutes so the queued current commit could start.
+  Cloudflare then successfully deployed `147dbcd4d` in 18 minutes: all site
+  output, 95 referenced assets and the Worker compiled successfully. The
+  composition directive reference renders in Chrome without console errors;
+  `/api/play/health` returns HTTP 200 with `{"ok":true}`. Storage writes were
+  not exercised. Preview: `0176cc14.master-css-e8w.pages.dev`.
   Vercel branch configuration replaces the obsolete `pnpm submodules` command
   and selects Node 24. Its subsequent build reached parallel Turbo artifact
   tasks, then collided reinstalling Rust. Turbo now preserves `CARGO_HOME` and
@@ -301,8 +307,27 @@ integration gates that the local scoped suite did not exercise:
   points to `.next`; the export manifest there identifies `out` as the static
   output. Local three-worker builds passed with both the existing 16 GiB heap
   setting and a temporary 2 GiB limit; neither reproduced the Cloudflare stall.
-  Those diagnostic settings were reverted. Final provider verification remains
-  pending.
+  Those diagnostic settings were reverted. Site lint was rerun with zero errors
+  and the same 266 warnings. Vercel at `4b8eb7f0b` reached Ready and ran
+  postbuild successfully, but only the locale-prefixed compose page returned
+  HTTP 200; the root copy returned 404. Its Next packaging omits postbuild root
+  copies. The branch now selects static hosting of the completed `out` directory
+  with clean URLs. Remote route verification remains pending.
+- Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
+  passed). The JavaScript adapter now restores template line endings and escapes
+  cooked carriage returns. LF, CRLF and CR sorting regressions failed before
+  the fix and pass afterward; escaped CR keeps its cooked value. Local ESLint
+  tests passed 299/299, followed by 42/42 focused tests after the escaped-CR
+  addition; lint, type-check and build passed.
+- Compiler output maps now convert absolute paths with `pathToFileURL`, avoiding
+  Windows drive URL schemes and fragment/percent corruption. The new filename
+  regressions failed before the fix; all 24 focused map/preparation tests, lint,
+  type-check and build passed. Next's loader assertion normalizes separators
+  (15/15 focused tests); Astro and Svelte harnesses invoke Node entrypoints and
+  consume prebuilt packages (16/16 and 17/17 tests). Each package lint passed.
+  Windows confirmation and detailed remaining Compiler/Vite failures are pending.
+  Windows Turbo now continues tasks whose dependencies succeeded so one failure
+  does not discard unrelated failure details; task failures still fail the job.
 - Five existing cases now have reviewed `verified-superset` evidence: lint
   request rejection, workspace discovery excluding generated output, and three
   additional progressive-hydration assertions. Original expectations remain;
@@ -327,8 +352,8 @@ parallel example builds. The iframe suite passed three isolated repetitions
 timeout or assertion was weakened. Concurrent artifact changes are a possible
 cause, not a proven diagnosis. The earlier missing site-export blocker is resolved.
 
-No package was published and no version, release workflow, CI, or lockfile was
-changed. Domain issues should close only after their acceptance evidence is
+No package was published and no version, release workflow, or lockfile was
+changed. Shared build, validation CI and preview configuration repairs were authorized. Domain issues should close only after their acceptance evidence is
 integrated and linked; this report alone does not merge the code.
 
 ## Issue State And Remaining Work
