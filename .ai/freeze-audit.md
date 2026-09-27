@@ -227,8 +227,8 @@ or documentation evidence and the local support matrix passed. The 2.x authoring
 and extension capabilities remain separate roadmap proposals with follow-up
 issues; no editable IR or public SPI is implied by this PASS. This is a source
 freeze assessment, not npm publication approval or cross-platform release
-certification. Native artifact validation here covers macOS arm64; other targets
-and an isolated clean-room release build were not run.
+certification. The initial local artifact validation covered macOS arm64; later CI
+passes all eight native build/install/load/CLI targets, without publication.
 
 PR [#461](https://github.com/master-co/css/pull/461) exposed additional
 integration gates that the local scoped suite did not exercise:
@@ -242,7 +242,7 @@ integration gates that the local scoped suite did not exercise:
   names were disambiguated without changing assertions; the independent Rust
   contract review now has 192 pending cases. Supplemental QA approves the restored
   Webpack fixture hash; all 21 Manifest cases and seven other files are unchanged.
-  Windows now passes Compiler 491, Next 206 and MCP 51 tests; Vite 159 and VSCode 1 fail.
+  Windows now passes Compiler 491, Next 206 and MCP 51 tests; Vite 6 and VSCode 1 fail.
   Migration still fails on 192 unapproved cases; no generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
@@ -341,7 +341,7 @@ integration gates that the local scoped suite did not exercise:
   validated canonical parent. The new alias regression fails before the fix;
   all 51 MCP tests and lint/type-check/build pass. Containment checks remain.
   Windows `60830b88a` completed: Compiler 34, Next 21, MCP 1, Vite 329 and
-  VSCode 1 failed; all other package tasks passed. Follow-up Windows CI is needed.
+  VSCode 1 failed; the later `cdc0ccc0a` results below supersede this failure count.
 - Compiler host maps now recognize native absolute paths and source roots before
   URL resolution. Six filename/reference/diagnostic regressions fail before the
   fix; all 491 Compiler tests and lint/type-check/build pass. Fixture roots use
