@@ -3,13 +3,13 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 
 const require = createRequire(import.meta.url)
 const cli = fileURLToPath(new URL('../src/bin/index.ts', import.meta.url))
 const tsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
-const run = (cwd: string, output: string) => spawnSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--output', output, '--verbose', '0'], { cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
+const run = (cwd: string, output: string) => spawnSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', output, '--verbose', '0'], { cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
 
 test('BH-0004 CLI records only assets it created and separates output ownership', () => {
   const cwd = fs.mkdtempSync(join(tmpdir(), 'master-css-asset-ownership-'))

@@ -3,14 +3,14 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 import { publishOwnedStylesheet, stylesheetStatePath } from '../src/asset-ownership'
 import { withStylesheetPublicationLock } from '../src/publication-lock'
 
 const require = createRequire(import.meta.url)
-const publisher = fileURLToPath(new URL('../src/asset-ownership.ts', import.meta.url))
-const lock = fileURLToPath(new URL('../src/publication-lock.ts', import.meta.url))
+const publisher = new URL('../src/asset-ownership.ts', import.meta.url).href
+const lock = new URL('../src/publication-lock.ts', import.meta.url).href
 
 for (const mode of ['before-assets', 'before-entry', 'after-entry', 'symlink-before-entry'] as const) {
   test(`BH-0004 recovers actual process termination ${mode}`, async () => {
@@ -44,7 +44,7 @@ for (const mode of ['before-assets', 'before-entry', 'after-entry', 'symlink-bef
         };
         await withStylesheetPublicationLock(() => publishOwnedStylesheet(entry, ${JSON.stringify(css)}, new Map([[${JSON.stringify(join(cwd, 'master-a-new.css'))}, Buffer.from('.new{color:blue}')]]), new Set()), { directory: ${JSON.stringify(locks)} });
       `
-      const child = spawnSync(process.execPath, ['--import', require.resolve('tsx'), '--input-type=module', '-e', script], { encoding: 'utf8' })
+      const child = spawnSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, '--input-type=module', '-e', script], { encoding: 'utf8' })
       expect(child.signal, child.stderr).toBe('SIGKILL')
       expect(JSON.parse(fs.readFileSync(stylesheetStatePath(entry), 'utf8')).pending).toBeDefined()
       expect(fs.readFileSync(entry, 'utf8')).toContain(stage === 'after-entry' ? 'new' : 'old')

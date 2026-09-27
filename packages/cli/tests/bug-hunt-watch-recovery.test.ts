@@ -4,7 +4,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 
 const require = createRequire(import.meta.url)
@@ -23,7 +23,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
     writeFileSync(imported, initialCSS)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
     if (mode !== 'initial-resource') writeFileSync(resource, image('red'))
-    const child = spawn(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], { cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
+    const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], { cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
     let stderr = ''
     child.stderr.on('data', chunk => { stderr += chunk })
     child.stdout.resume()

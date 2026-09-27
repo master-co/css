@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 
 const require = createRequire(import.meta.url)
@@ -20,7 +20,7 @@ test('BH-0004 CLI emits a referenced resource and native compose without emittin
     const bytes = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
     writeFileSync(join(cwd, 'tokens/icon#one.svg'), bytes)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
-    execFileSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--output', 'dist/樣式 main.css', '--verbose', '0'], {
+    execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/樣式 main.css', '--verbose', '0'], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
     const files = readdirSync(join(cwd, 'dist'))
@@ -44,7 +44,7 @@ test('BH-0004 CLI preserves shared native imports by default', () => {
     writeFileSync(join(cwd, 'b.css'), "@import './shared.css' screen;@master entry;")
     writeFileSync(join(cwd, 'shared.css'), '.unscanned{color:red}')
     writeFileSync(join(cwd, 'index.html'), '<div class="block">test</div>')
-    execFileSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
+    execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
     const css = readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css')).map(file => readFileSync(join(cwd, 'dist', file), 'utf8'))
@@ -59,7 +59,7 @@ test('BH-0004 CLI watch republishes changed resources and ignores its output fil
   writeFileSync(join(cwd, 'entry.css'), "@master entry;.example{background-image:url('./image.svg')}")
   writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
   writeFileSync(join(cwd, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><path fill="red"/></svg>')
-  const child = spawn(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], {
+  const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], {
     cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
   })
   let stderr = ''
