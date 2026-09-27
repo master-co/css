@@ -238,9 +238,9 @@ integration gates that the local scoped suite did not exercise:
   approval metadata and scope digests are recorded in
   `parity/freeze-migration-approval.md`. Separate approvals cover 62 named-token
   and 24 utility-registration cases. Four native component-layer fixtures were
-  restored, and six further assertion-preserving supersets were verified. Two Shiki case
+  restored, and ten further assertion-preserving supersets were verified. Two Shiki case
   names were disambiguated without changing assertions; the independent Rust
-  contract review now has 398 pending cases. The Manifest gate awaits narrow QA
+  contract review now has 394 pending cases. The Manifest gate awaits narrow QA
   for the restored Webpack fixture changing its whole-file hash;
   its 21 Manifest cases and other seven files are unchanged. No blanket approval
   or generated ledger rewrite was made.
@@ -324,11 +324,11 @@ integration gates that the local scoped suite did not exercise:
   20 Reference tests pass; site lint has no errors and 266 existing warnings.
   Windows Turbo now continues tasks whose dependencies succeeded so one failure
   does not discard unrelated failure details; task failures still fail the job.
-- Fourteen cases have new reviewed `verified-superset` evidence: lint/workspace,
-  hydration, portable paths, Manifest inputs, workspace fixture resolution and the
-  VSCode client AST check with its display-name assertion, and four Next CSS-graph inspections.
-  VSCode bundle/grammar tests pass 27/27 and Next static tests pass 11/11; assertions
-  remain. Evidence is separate from approved contract changes.
+- Eighteen cases have new reviewed `verified-superset` evidence: lint/workspace,
+  hydration, portable paths, Manifest inputs, workspace resolution, VSCode client and
+  staged-server checks, five Next CSS-graph inspections, Nuxt delivered CSS and
+  Webpack preload DOM attributes. Focused suites and owning-package lint pass;
+  original assertions remain. Evidence is separate from approved contract changes.
 - Windows Next reports 21 failures: canonical fixture roots and native path
   assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
   exposed incorrect additional-data offsets. File-URL identity now compares

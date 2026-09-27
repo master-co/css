@@ -1558,6 +1558,34 @@
       "targetDigest": "dde5e0fc486a55b73e4528956490b6ad0b216c54bda5168a9ca4cfaab4f14f92",
       "proof": "verified-superset",
       "reason": "Reviewed the complete workspace package-resolution case. Its only change renames an empty export in a synthetic index.js fixture from builtinNativeValueNamespaces to builtinTokenNamespaces to match the current package contract. The test still checks all three resolved package directories and an empty error list, and adds no compatibility path or production export. The owning Compiler suite passes 491/491; this is preserved resolution coverage, not approval of an additional public API change."
+    },
+    {
+      "sourceId": "rc87-e28158711048da1b",
+      "sourceDigest": "740ea6453b399bdf9c9ed41442c7e5df5aa8edabccd6fdf743007004d19b7c92",
+      "targetDigest": "9953fdeb374ec1b6fc180e232b1dfee49ee1dbccd428a542de919aa8472a6bc0",
+      "proof": "verified-superset",
+      "reason": "Retained the historical test identity after reviewing the complete staged-server case. All initialization capabilities, isolated workspace without node_modules, shutdown and zero exit-status assertions remain verbatim. The only added block sends initialized/didOpen and checks a real LSP completion maps :first to :first-child. The focused staged test and VSCode lint pass locally with the unchanged request deadline; cross-platform completion timing remains subject to the active Windows run."
+    },
+    {
+      "sourceId": "rc87-eb4fb7083521fe9d",
+      "sourceDigest": "0b7678286c5670ed0ec412316e5e3555cc5be58c57d8efe75db113b68e89f12a",
+      "targetDigest": "c40d1ceb99c1be8784aa0db23217e003c7399397b8433df46989f4021826ed65",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete Next CSS-chunk replacement case. Only four file reads change to readStaticCSS, which inspects the entry and reachable relative imports in its current immutable graph. The exact replacement import, absence of .main from the replaced chunk, and .main/display/color/theme-variable assertions remain unchanged. The full static suite passes 11/11. This preserves delivered-CSS assertions without claiming historical single-file layout."
+    },
+    {
+      "sourceId": "rc87-0d2143fc5ddcd155",
+      "sourceDigest": "87d39c1954106158bc0eb7948c2c8d6a57ab14a98561140e8732203ae6caacfa",
+      "targetDigest": "71edf48132fff9cd1529255a58042718e495c90c05b443151455c706bb14830e",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete Nuxt stylesheet case and fetchDeliveredStylesheet helper. The linked entry and its reachable fixture imports are fetched from the running Nuxt server with cycle protection; no stale asset-directory scan is used. Every original link, type, .box, display:flex and font-size:1em assertion remains. Additional assertions cover scoped .probe selectors, both mode variables and removal of compiler-only reference/scratch markers. The static suite passes 2/2, including real-browser computed colors for both modes. This preserves delivered-CSS coverage without claiming a single-file layout."
+    },
+    {
+      "sourceId": "rc87-2944b251d4f939aa",
+      "sourceDigest": "06eaaf64975216762e7ea1e54a5779b3de4c49bbde3c40dc1c33f44413f39daa",
+      "targetDigest": "728c17b3b3bc10f75030905005603902ced7c56038bcb6d6cf3b046db1f295e2",
+      "proof": "verified-superset",
+      "reason": "Reviewed the complete Webpack production-browser case and asset producers. Production HTML minification removes optional attribute quotes, so the raw HTML substring checks are represented by browser DOM checks with the same rel/as/href, defer, empty crossorigin and last-body-element requirements. The missing exact Manifest href prefix and empty crossorigin checks were restored, and singleton counts strengthen duplicate-injection coverage. CSS display/layer placement assertions remain. The rebuilt published bundle passes the browser case, lint passes, and the unchanged shared manifest-preload unit test still pins exact serializer bytes. This verifies preserved injection semantics, not parity of the bundler's optional quote formatting."
     }
   ],
   "surfaces": [
