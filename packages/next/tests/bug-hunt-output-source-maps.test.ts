@@ -10,7 +10,7 @@ import loader from '../src/stylesheet-loader'
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-output-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-output-map-')))
   try { writeFileSync(join(root, 'master.css'), '@master entry;@utilities{paint{padding:2rem}}'); await run(root) }
   finally { rmSync(root, { recursive: true, force: true }) }
 }

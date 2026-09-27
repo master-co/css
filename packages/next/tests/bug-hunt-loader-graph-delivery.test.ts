@@ -22,7 +22,7 @@ function graph(file: string, code: string, output = new Map<string, string>()) {
   return output
 }
 for (const kind of ['nested-resource', 'external-import'] as const) test(`general Next loader publishes retained ${kind} graph`, async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-loader-graph-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-graph-')))
   try {
     const file = join(root, 'app/globals.css'), child = join(root, 'app/nested/child.css'), image = join(root, 'app/nested/pixel space.svg')
     mkdirSync(dirname(child), { recursive: true })
@@ -64,7 +64,7 @@ for (const kind of ['nested-resource', 'external-import'] as const) test(`genera
 })
 
 test('general Next delivered entry retains original native declaration source maps', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-loader-entry-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-entry-map-')))
   try {
     const file = join(root, 'entry.css'), source = '@master entry;@utilities{paint{padding:2rem}}\n.card{@compose paint;}'
     writeFileSync(file, source)
@@ -81,7 +81,7 @@ test('general Next delivered entry retains original native declaration source ma
 })
 
 for (const syntax of ['scss', 'sass']) test(`general Next ${syntax} delivered entry retains imported partial ownership and map`, async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-loader-sass-entry-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-sass-entry-map-')))
   try {
     const requireVite = createRequire(new URL('../../vite/package.json', import.meta.url))
     const sass = createRequire(requireVite.resolve('vite')).resolve('sass')

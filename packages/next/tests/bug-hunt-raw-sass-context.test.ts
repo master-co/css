@@ -8,7 +8,7 @@ import loader from '../src/stylesheet-loader'
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'next-raw-sass-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-raw-sass-')))
   try {
     mkdirSync(join(root, 'parts'));mkdirSync(join(root, 'node_modules'))
     symlinkSync(dirname(sassFile), join(root, 'node_modules/sass'), 'dir')
