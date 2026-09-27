@@ -347,17 +347,17 @@ integration gates that the local scoped suite did not exercise:
   fix; all 491 Compiler tests and lint/type-check/build pass. Fixture roots use
   native realpath to expand Windows short names. Next's four affected files pass
   26 tests and lint after the same fixture correction.
-- Vite uses canonical path identity for Modules, Sass caches, deleted dependencies
-  and HMR owners. Windows `1c58d9e13` still failed 159/675 Vite cases: resource
-  copies were on another drive from Vite's `/@fs/` static root; some fixtures used
-  native backslashes in CSS URLs or Vite path assertions. The follow-up stores
-  immutable resources under the project and serves root-relative URLs through
-  Vite, retaining MIME, byte-range, deny-policy, query/fragment and cleanup checks.
-  The complete local suite passes 678/678, plus 22 final reconciliation checks;
-  lint, type-check, build and the example build pass. Two case target digests and
-  the Manifest file hash have explicit supplemental QA; all 21 Manifest cases stay.
-- VSCode still times out at completion on Windows `cdc0ccc0a`; 16/16 staged cases
-  pass locally. No recent notifications or buffered bytes; five seconds stays.
+- Vite canonicalizes Modules, Sass caches, deleted dependencies and HMR owners;
+  immutable resources use the project drive and root-relative serving. Local
+  678/678 tests, 22 reconciliation checks, lint/type-check/build and example pass.
+  Two case digests and the Manifest file hash have supplemental QA; 21 cases stay.
+  Windows `cdc0ccc0a` improves from 159 failures to 6/676: four Sass-map path
+  comparisons and two denied cross-drive fixtures reaching Vite's 404 fallback.
+  Normalize map paths and put denial fixtures on the process drive to verify 403;
+  all 41 affected tests and lint pass locally, with response URLs in failures.
+- VSCode still times out at completion on Windows `cdc0ccc0a` (32/33 pass).
+  Test-only native call timing now diagnoses blocked work; staged tests pass
+  16/16 locally. The five-second deadline and completion assertions remain.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.

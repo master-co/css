@@ -33,7 +33,10 @@ function encode(message) {
 }
 
 function createLanguageServer(options = {}) {
-  const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
+  const child = spawn(process.execPath, [
+    '--import', new URL('./native-timing-preload.js', import.meta.url).href,
+    options.serverPath ?? serverPath, '--stdio'
+  ], {
     cwd: options.cwd ?? packageDir,
     env: {
       ...process.env,

@@ -66,7 +66,9 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
 }
 
 for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) test(`proxy requests retain host file access policy: ${access}`, async () => {
-  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
+  // Vite's raw /@fs/ fallback serves from the process drive on Windows. Keep
+  // denied files on that drive so the host sees the file and reports 403.
+  const parent = realpathSync.native(mkdtempSync(join(process.cwd(), 'node_modules', '.master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(root);mkdirSync(outside)
@@ -81,8 +83,8 @@ for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) t
     for (const path of paths) {
       const url = new URL(path, server.resolvedUrls!.local[0])
       const response = await fetch(url, { headers: { accept: 'text/css' } }), text = await response.text()
-      if (access === 'allowed') { expect(response.status, text).toBe(200);expect(text).toContain('padding:9rem') }
-      else { expect(response.status, text).toBe(403);expect(text).not.toContain('padding:9rem') }
+      if (access === 'allowed') { expect(response.status, `${url.href}\n${text}`).toBe(200);expect(text).toContain('padding:9rem') }
+      else { expect(response.status, `${url.href}\n${text}`).toBe(403);expect(text).not.toContain('padding:9rem') }
     }
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(parent, { recursive: true, force: true }) }
 })

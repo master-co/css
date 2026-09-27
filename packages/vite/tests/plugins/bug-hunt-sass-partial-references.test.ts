@@ -3,7 +3,7 @@ import { createRequire, SourceMap } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { build, preprocessCSS, resolveConfig } from 'vite'
+import { build, normalizePath, preprocessCSS, resolveConfig } from 'vite'
 import { expect, test } from 'vitest'
 import MagicString from 'magic-string'
 import masterCSS from '../../src/core'
@@ -37,7 +37,7 @@ test.each(['scss', 'sass'])('pure Vite maps a partial reference to its original 
     const origin = new SourceMap(raw as ConstructorParameters<typeof SourceMap>[0]).findEntry(line, lines[line].indexOf('@reference'))
     expect('originalSource' in origin).toBe(true)
     if (!('originalSource' in origin)) throw new Error('Missing original reference map')
-    expect(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource).toBe(f.partial)
+    expect(normalizePath(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource)).toBe(normalizePath(f.partial))
     console.log(JSON.stringify({ control: 'pure-vite-partial-reference', syntax, code: result.code, origin }))
   } finally { f.remove() }
 })
@@ -59,7 +59,7 @@ test.each(['scss', 'sass'])('pure Vite needs the root identity when chaining a p
       const original = 'originalSource' in origin ? origin.originalSource : undefined
       const mapped = original?.startsWith('file:') ? fileURLToPath(original) : original
       console.log(JSON.stringify({ control: 'pure-vite-additional-map-chain', syntax, marker, sources: raw?.sources, origin }))
-      expect(mapped === f.partial).toBe(marker)
+      expect(mapped !== undefined && normalizePath(mapped) === normalizePath(f.partial)).toBe(marker)
     }
   } finally { f.remove() }
 })
