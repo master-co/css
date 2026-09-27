@@ -180,7 +180,7 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | `git diff --check` | Passed |
 | `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
 | Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
-| `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; approval review pending |
+| `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
 
 The second pass rebuilt native/Wasm and package artifacts with the normal
 repository build; the first pass used existing artifacts. No semantic
@@ -232,18 +232,25 @@ integration gates that the local scoped suite did not exercise:
   for `rc87-bc7adf7569796dc8` has an outdated Next Turbopack test target
   digest after a pre-existing baseline commit. Its `approved-contract-change`
   metadata is digest-bound. Updating that approval record requires a reviewed
-  decision about the new target; this audit does not forge one.
-- Windows jobs could not check out eight tracked generated `.master/stylesheets`
-  files due to their path length. These files are already covered by `.gitignore`
-  and are now untracked in a follow-up change, with local content preserved.
-  Windows CI must rerun to prove the repair.
-- Native target packaging jobs built successfully but their smoke script used a
-  manifest without `languageVersion: 3` and a removed native method. The smoke
-  fixture now uses the current contract and passed locally on macOS arm64 after
-  staging the native package. Other target jobs must rerun.
-- Cloudflare Pages and Vercel deployment checks failed on the initial PR run.
-  Their provider logs were unavailable from the repository check summary;
-  neither failure is claimed as diagnosed or passed.
+  decision about the new target. A temporary diagnostic update of three stale
+  evidence digests and one historical post-RC decision then exposed 503
+  changed/removed Rust-refactor cases without approved evidence. These statuses
+  are not proof of 503 product defects. The diagnostic edits were reverted;
+  neither blanket approval nor a generated ledger rewrite is included here.
+- Windows checkout now passes after untracking eight ignored generated
+  `.master/stylesheets` files. The compatibility job subsequently fails during
+  `pnpm install`: the existing `patches/watchpack@2.5.2.patch` is rejected as
+  `ERR_PNPM_INVALID_PATCH` (`invalid char in unquoted filename`). The patch and
+  package-manager configuration are outside the agreed change boundary.
+- Native package smoke now uses `languageVersion: 3` and the current method.
+  The rerun passed for all eight macOS, Linux and Windows native targets. Rust
+  quality, preflight, title and Azure checks also passed on this PR revision.
+- Vercel preview fails before installation because its configured command runs
+  `pnpm submodules`, which is not a repository command. This was confirmed in
+  the provider build log for commit `91e6d2b`. Cloudflare Pages also failed,
+  but its detailed log requires dashboard sign-in and was not inspected.
+- The Linux e2e job was still running at the last status check; it is not
+  recorded as passing here.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
