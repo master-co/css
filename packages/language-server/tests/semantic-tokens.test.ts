@@ -119,7 +119,7 @@ withFixture('basic', async (context) => {
       '}',
       '@supports (container-type: inline-size) {',
       '    @container card (width > 30rem) {',
-      '        @layer utilities {',
+      '        @layer components {',
       '            .btn:is(.active, #featured) { animation: fade 1s ease-in-out; }',
       '        }',
       '    }',

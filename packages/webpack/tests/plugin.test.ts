@@ -260,7 +260,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, '@layer utilities { .card { display: grid; } }')
+      writeFileSync(themePath, '@layer components { .card { display: grid; } }')
       writeFileSync(entryPath, [
         '@master entry;',
         '@import "./theme.css";',

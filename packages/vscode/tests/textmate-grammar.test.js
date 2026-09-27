@@ -208,7 +208,7 @@ test('does not change native CSS TextMate scopes when injected', () => {
     '',
     '@supports (container-type: inline-size) {',
     '    @container card (width > 30rem) {',
-    '        @layer utilities {',
+    '        @layer components {',
     '            .card:is(.active, #featured) {',
     '                animation: fade 1s ease-in-out;',
     '            }',

@@ -303,7 +303,7 @@ test('loads project-level CSS manifest entries', async () => {
     const { entry } = writeCSSFixture(cwd)
     writeFileSync(join(cwd, 'ignored.css'), `
       @preserve native;
-      @layer utilities {
+      @layer components {
         .ignored {
           color: red;
         }
