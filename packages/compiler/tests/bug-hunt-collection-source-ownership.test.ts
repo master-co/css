@@ -6,7 +6,7 @@ import { createStylesheetCollection } from '../src/stylesheet/index-public'
 import { MasterCSSScanner } from './helpers/scanner'
 
 for (const deliver of [false, true]) test(`collection source selection isolates native CSS and resource ownership: delivery=${deliver}`, async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-collection-owners-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-collection-owners-')))
   const scanner = new MasterCSSScanner({}, root)
   using collection = createStylesheetCollection()
   try {
@@ -39,7 +39,7 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
 })
 
 test('strict registration failure retains both the successful stylesheet and native owners', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-strict-owner-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-strict-owner-')))
   const scanner = new MasterCSSScanner({}, root)
   using collection = createStylesheetCollection()
   try {

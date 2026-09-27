@@ -1,8 +1,8 @@
 import { SourceMap } from 'node:module'
-import { isAbsolute } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import type { ValidationSource } from '../value-validation'
 import type { CSSDirectiveSourceReference, CSSOutputMapping } from '@master/css-schema/css-directives'
+import { sourceMapBase, sourceMapURL } from './source-map-url'
 
 type MapPayload = ConstructorParameters<typeof SourceMap>[0]
 export interface StylesheetOutputContext {
@@ -31,11 +31,6 @@ function positions(source: string) {
   }
 }
 
-function sourceURL(source: string, owner: string) {
-  if (isAbsolute(source)) return pathToFileURL(source).href
-  return new URL(source, pathToFileURL(owner)).href
-}
-
 /** Chain only compiler-provided offsets and host maps. No CSS parsing or matching. */
 function origins(context: StylesheetOutputContext) {
   let payload: MapPayload | undefined, inputMap: SourceMap | undefined, invalidMap = false
@@ -49,7 +44,7 @@ function origins(context: StylesheetOutputContext) {
   }
   const preparedLines = context.source.split(/\r\n?|\n/)
   const authoredLines = payload?.sourcesContent?.map(content => content?.split(/\r\n?|\n/))
-  const sourceBase = new URL(payload?.sourceRoot ? payload.sourceRoot.replace(/\/?$/, '/') : './', pathToFileURL(context.file))
+  const sourceBase = sourceMapBase(context.file, payload?.sourceRoot)
   return (reference: CSSDirectiveSourceReference): Origin | undefined => {
     let file = reference.file ?? context.compilationFile, offset = reference.range.start
     if (file === context.compilationFile && context.graph?.sourceMappings) {
@@ -78,9 +73,9 @@ function origins(context: StylesheetOutputContext) {
       const authored = authoredLines?.[payload.sources.indexOf(entry.originalSource)]?.[entry.originalLine]
       if (length > 0 && prepared !== undefined && authored !== undefined
         && prepared.slice(entry.generatedColumn, point.column) === authored.slice(entry.originalColumn, entry.originalColumn + length)) column += length
-      return { source: new URL(entry.originalSource, sourceBase).href, line: entry.originalLine, column, content: originalContent }
+      return { source: sourceMapURL(entry.originalSource, sourceBase).href, line: entry.originalLine, column, content: originalContent }
     }
-    return { source: sourceURL(file, context.file) + (invalidMap && file === context.file ? '?master-css-preprocessed' : ''), ...point, content: content ?? null }
+    return { source: sourceMapURL(file, pathToFileURL(context.file)).href + (invalidMap && file === context.file ? '?master-css-preprocessed' : ''), ...point, content: content ?? null }
   }
 }
 
@@ -150,7 +145,7 @@ export function stylesheetValidationSource(css: string, source?: string, sourceM
     const start = locate(range.start), end = locate(range.end)
     const entry = map.findEntry(start.line, start.column)
     if (!('originalSource' in entry) || !entry.originalSource || entry.generatedLine !== start.line) return
-    const url = new URL(entry.originalSource, pathToFileURL(source ?? '/'))
+    const url = sourceMapURL(entry.originalSource, sourceMapBase(source ?? '/', payload.sourceRoot))
     const file = url.protocol === 'file:' ? fileURLToPath(url) : url.href
     const original = payload.sourcesContent?.[payload.sources.indexOf(entry.originalSource)]?.split(/\r\n?|\n/)[entry.originalLine]
     const generated = css.split(/\r\n?|\n/)[start.line]

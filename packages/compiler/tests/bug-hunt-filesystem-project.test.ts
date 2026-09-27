@@ -8,7 +8,7 @@ import { createEngine } from '@master/css'
 for (const explicit of [false, true]) {
   for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
     test(`BH-0004 filesystem project ${explicit ? 'explicit entries' : 'discovery'} ${qualifier || 'unqualified'}`, async () => {
-      const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-filesystem-binding-')))
+      const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-filesystem-binding-')))
       const binding = createCompilerBindingSessionSync()
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'tokens.css')
@@ -19,8 +19,8 @@ for (const explicit of [false, true]) {
         writeFileSync(tokens, '@utilities{paint{color:red}}')
         writeFileSync(view, '<div class="button card"></div>')
         const result = binding.loadProjectManifest(root, { version: 1, languageVersion: 3, utilities: [] }, explicit ? [entry] : undefined)
-        expect(result.sourcePlan.files.map(file => realpathSync(file))).toEqual([view])
-        expect(result.dependencies.map(file => realpathSync(file)).sort()).toEqual([entry, child, tokens].sort())
+        expect(result.sourcePlan.files.map(file => realpathSync.native(file))).toEqual([view])
+        expect(result.dependencies.map(file => realpathSync.native(file)).sort()).toEqual([entry, child, tokens].sort())
         expect(result.css).toContain('.card{color:red}')
         expect(result.generatedCSS).toContain('.card{color:red}')
         expect(result.css).not.toContain('.ordinary')

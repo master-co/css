@@ -1,6 +1,7 @@
 import { SourceMap } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { MasterCSSError } from '@master/css-schema'
+import { sourceMapBase, sourceMapURL } from './source-map-url'
 
 export interface StylesheetSourceContext {
   readonly baseFile?: string
@@ -16,7 +17,7 @@ export function mapStylesheetError(error: unknown, file: string, options: Styles
   try {
     const payload = JSON.parse(options.sourceMap) as ConstructorParameters<typeof SourceMap>[0]
     const map = new SourceMap(payload)
-    const base = new URL(payload.sourceRoot ? payload.sourceRoot.replace(/\/?$/, '/') : './', pathToFileURL(options.baseFile ?? file))
+    const base = sourceMapBase(options.baseFile ?? file, payload.sourceRoot)
     const mapped = new MasterCSSError({ ...error.payload, diagnostics: error.diagnostics.map(diagnostic => {
       if (diagnostic.source !== file || !diagnostic.range) return diagnostic
       const { start, end } = diagnostic.range
@@ -24,7 +25,7 @@ export function mapStylesheetError(error: unknown, file: string, options: Styles
       if (!('originalSource' in point) || !point.originalSource || point.generatedLine !== start.line) {
         return { ...diagnostic, source: pathToFileURL(file).href + '?master-css-preprocessed', notes: [...diagnostic.notes ?? [], 'Original source location is unavailable; this range refers to preprocessed CSS.'] }
       }
-      const url = new URL(point.originalSource, base)
+      const url = sourceMapURL(point.originalSource, base)
       const source = url.protocol === 'file:' && !url.search && !url.hash ? fileURLToPath(url) : url.href
       const position = { line: point.originalLine, character: point.originalColumn }
       const generatedLine = preparedSource?.split(/\r\n?|\n/)[start.line]

@@ -26,7 +26,7 @@ test('final CSS maps native selectors and lowered compose to authored UTF-16 loc
 })
 
 test('rendered graph maps imported compose and native selectors after reference removal', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-output-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-output-map-')))
   try {
     const file = join(root, 'entry.css'), child = join(root, 'child.css')
     const text = '/* child */\n@reference "./tokens.css";\n.card{@compose paint;}\n.plain{color:red}'
@@ -41,7 +41,7 @@ test('rendered graph maps imported compose and native selectors after reference 
 })
 
 test('raw Sass output map chains imported partial sources through native printing and compose lowering', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-output-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-output-map-')))
   try {
     const file = join(root, 'entry.scss'), partial = join(root, '_card.scss')
     const source = '@use "card";\n@utilities{paint{padding:2rem}}'
@@ -55,7 +55,7 @@ test('raw Sass output map chains imported partial sources through native printin
 })
 
 test('expanded lowering diagnostics point to the authored child rather than flattened CSS', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-expanded-error-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-expanded-error-')))
   try {
     const child = join(root, 'child.css')
     writeFileSync(child, '/* authored */\n.card{@compose does-not-exist;}')

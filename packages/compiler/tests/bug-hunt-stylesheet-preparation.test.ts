@@ -11,7 +11,7 @@ const sassRequire = createRequire(viteRequire.resolve('vite'))
 const sass = sassRequire('sass')
 
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'compiler-preparation-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'compiler-preparation-')))
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(dirname(sassRequire.resolve('sass')), join(root, 'node_modules/sass'), 'dir')

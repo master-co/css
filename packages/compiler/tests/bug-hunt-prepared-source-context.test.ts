@@ -10,7 +10,7 @@ const sass = createRequire(require.resolve('vite'))('sass')
 const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'prepared-source-context-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'prepared-source-context-')))
   try { mkdirSync(join(root, 'parts'));await run(root) }
   finally { rmSync(root, { recursive: true, force: true }) }
 }
