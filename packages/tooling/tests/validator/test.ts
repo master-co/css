@@ -51,7 +51,9 @@ it('preserves native declarations while reporting invalid CSS values', () => {
       'view-transition-name:hero',
       '--foo:123',
       'float:16px',
-      'display:16px'
+      'display:16px',
+      'float:banana',
+      'display:banana'
     ])
     expect(result.classes[0].rules[0]?.text).toBe('.float\\:left{float:left}')
     expect(result.classes[1].rules[0]?.text)
@@ -59,6 +61,12 @@ it('preserves native declarations while reporting invalid CSS values', () => {
     expect(result.classes[2].rules[0]?.text).toContain('{--foo:123}')
     expect(result.classes[3].cssValueStatus).toBe('invalid')
     expect(result.classes[4].cssValueStatus).toBe('invalid')
+    expect(result.classes[3].rules[0]?.text).toBe('.float\\:16px{float:16px}')
+    expect(result.classes[4].rules[0]?.text).toBe('.display\\:16px{display:16px}')
+    expect(result.classes[5].cssValueStatus).toBe('unknown')
+    expect(result.classes[6].cssValueStatus).toBe('unknown')
+    expect(result.classes[5].rules[0]?.text).toBe('.float\\:banana{float:banana}')
+    expect(result.classes[6].rules[0]?.text).toBe('.display\\:banana{display:banana}')
   } finally {
     validator.dispose()
   }
