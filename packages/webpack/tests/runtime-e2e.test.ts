@@ -148,7 +148,11 @@ describe('Webpack runtime mode', () => {
       await page.waitForSelector('#probe')
       await page.waitForFunction(() => getComputedStyle(document.getElementById('probe')!).display === 'block')
       expect(await page.locator('script[defer][src="./master-css-runtime.js"]').count()).toBe(1)
-      expect(await page.locator('link[rel="preload"][href="./master-css-runtime.js"]').count()).toBe(1)
+      expect(await page.locator('link[rel="preload"][as="script"][href="./master-css-runtime.js"]').count()).toBe(1)
+
+      const manifestPreload = page.locator('link[rel="modulepreload"][as="json"][href^="./master-css-manifest."]')
+      expect(await manifestPreload.count()).toBe(1)
+      expect(await manifestPreload.getAttribute('crossorigin')).toBe('')
 
       const state = await page.evaluate(() => {
         const globalCSS = document.head.querySelector('link[rel="stylesheet"]')
