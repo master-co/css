@@ -283,7 +283,7 @@ integration gates that the local scoped suite did not exercise:
   affects build tooling, not runtime bundle size or authored CSS syntax. The
   earlier remote run does not contain this fix. CI at `147dbcd4d` then passed
   Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks. Linux e2e,
-  Rust quality and all eight native targets also passed at `4b8eb7f0b`.
+  Rust quality and all eight native targets also passed at `f4f427f0d`.
 - Shared build, CI and preview repairs were authorized on 2026-09-27. The
   hosted script prepares the pinned Rust toolchain before parallel tasks; Turbo
   preserves `CARGO_HOME` and `RUSTUP_HOME`. Vercel uses Node 24 and serves the
@@ -292,13 +292,13 @@ integration gates that the local scoped suite did not exercise:
   Local hosted builds pass with 830 pages and 95/95 referenced assets. All
   2,468 root-locale files and the homepage match their locale exports byte for
   byte. Temporary worker/heap diagnostics were reverted.
-  Both hosts deploy `cdc0ccc0a` successfully. On each host, the root compose
+  Both hosts deploy `f4f427f0d` successfully. On each host, the root compose
   reference, Traditional Chinese reference and legacy directive guide return
   HTTP 200 with the expected deployment-aware canonical URLs. The legacy guide
   deliberately canonicalizes and redirects to Syntax Tutorial. Chrome confirms
   reference styling, Vercel sidebar navigation and the Cloudflare guide redirect.
   Cloudflare health returns HTTP 200 with `{"ok":true}`; storage writes are untested.
-  Previews: `master-5duvv9coj-aoyue.vercel.app`, `8cb47757.master-css-e8w.pages.dev`.
+  Previews: `master-li71876t9-aoyue.vercel.app`, `dbca2f89.master-css-e8w.pages.dev`.
   URL resolution: 16 tests, type-check and site lint pass (266 existing warnings).
 - Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
   passed). The JavaScript adapter now restores template line endings and escapes
@@ -355,9 +355,9 @@ integration gates that the local scoped suite did not exercise:
   comparisons and two denied cross-drive fixtures reaching Vite's 404 fallback.
   Normalize map paths and put denial fixtures on the process drive to verify 403;
   all 41 affected tests and lint pass locally, with response URLs in failures.
-- VSCode still times out at completion on Windows `cdc0ccc0a` (32/33 pass).
-  Test-only native call timing now diagnoses blocked work; staged tests pass
-  16/16 locally. The five-second deadline and completion assertions remain.
+- VSCode `f4f427f0d` hits five seconds during native cold indexing, after 1.57s setup.
+  Completion requests now allow 30s; initialize/shutdown retain their 5s deadline.
+  All assertions remain; 33/33 local tests and lint pass. Windows confirmation is pending.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.

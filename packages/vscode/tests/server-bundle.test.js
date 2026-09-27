@@ -126,10 +126,13 @@ function createLanguageServer(options = {}) {
         params
       })
       return new Promise((resolvePromise, rejectPromise) => {
+        // The staged debug addon builds its full native index on first completion.
+        // Keep lifecycle requests short without using their budget for cold indexing.
+        const timeout = method === 'textDocument/completion' ? 30_000 : 5000
         const timer = setTimeout(() => {
           pending.delete(id)
           rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}\nRecent LSP messages:\n${messages.join('\n')}\nBuffered response bytes: ${stdout.length}`))
-        }, 5000)
+        }, timeout)
         pending.set(id, {
           resolve: resolvePromise,
           reject: rejectPromise,
