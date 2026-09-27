@@ -237,13 +237,13 @@ integration gates that the local scoped suite did not exercise:
   eight-file/21-case Manifest adaptation after exact old/new reviews. Fresh
   approval metadata and scope digests are recorded in
   `parity/freeze-migration-approval.md`. Separate approvals cover 62 named-token
-  24 utility-registration and 71 ESLint source/sort cases. Four native layer fixtures were
+  24 utility-registration, 183 ESLint and 19 highlighting cases. Four native layer fixtures were
   restored, and ten further assertion-preserving supersets were verified. Two Shiki case
   names were disambiguated without changing assertions; the independent Rust
-  contract review now has 323 pending cases. Supplemental QA approves the restored
+  contract review now has 192 pending cases. Supplemental QA approves the restored
   Webpack fixture hash; all 21 Manifest cases and seven other files are unchanged.
-  The full migration check now passes that Manifest validation and fails on the
-  323 unapproved cases. No blanket approval or generated ledger rewrite was made.
+  Windows now passes Compiler 491, Next 206 and MCP 51 tests; Vite 159 and VSCode 1 fail.
+  Migration still fails on 192 unapproved cases; no generated ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
   tsdown external rule now excludes resolved Windows drive paths from bare
@@ -328,7 +328,7 @@ integration gates that the local scoped suite did not exercise:
   hydration, portable paths, Manifest inputs, workspace resolution, VSCode client and
   staged-server checks, five Next CSS-graph inspections, Nuxt delivered CSS and
   Webpack preload DOM attributes. Focused suites and owning-package lint pass;
-  original assertions remain. Evidence is separate from approved contract changes.
+  original assertions remain; evidence is separate from approved contract changes.
 - Windows Next reports 21 failures: canonical fixture roots and native path
   assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
   exposed incorrect additional-data offsets. File-URL identity now compares
