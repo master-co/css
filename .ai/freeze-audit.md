@@ -281,41 +281,22 @@ integration gates that the local scoped suite did not exercise:
   earlier remote run does not contain this fix. CI at `147dbcd4d` then passed
   Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks. Linux e2e,
   Rust quality and all eight native targets also passed at `4b8eb7f0b`.
-- Aron authorized shared build, CI and preview configuration repairs on
-  2026-09-27. The hosted script now prepares the pinned Rust toolchain. Cloudflare
-  advances past its former `cargo: not found` error, builds all 32 packages,
-  compiles Next and reaches 731/830 generated pages. That preview stalled and
-  was canceled after 33 minutes so the queued current commit could start.
-  Cloudflare then successfully deployed `147dbcd4d` in 18 minutes: all site
-  output, 95 referenced assets and the Worker compiled successfully. The
-  composition directive reference renders in Chrome without console errors;
-  `/api/play/health` returns HTTP 200 with `{"ok":true}`. Storage writes were
-  not exercised. Preview: `0176cc14.master-css-e8w.pages.dev`.
-  Vercel branch configuration replaces the obsolete `pnpm submodules` command
-  and selects Node 24. Its subsequent build reached parallel Turbo artifact
-  tasks, then collided reinstalling Rust. Turbo now preserves `CARGO_HOME` and
-  `RUSTUP_HOME`, verified by dry-run, and the hosted script installs the toolchain
-  before parallel work. The full hosted build passed locally with 830 pages and
-  95/95 referenced assets. Site lint had zero errors and 266 existing warnings.
-  Vercel then completed the website build but looked for `routes-manifest.json`
-  inside `out`. Its Next builder expects the Next `distDir`, so the override now
-  points to `.next`; the export manifest there identifies `out` as the static
-  output. Local three-worker builds passed with both the existing 16 GiB heap
-  setting and a temporary 2 GiB limit; neither reproduced the Cloudflare stall.
-  Those diagnostic settings were reverted. Site lint was rerun with zero errors
-  and the same 266 warnings. Vercel at `4b8eb7f0b` reached Ready and ran
-  postbuild successfully, but only the locale-prefixed compose page returned
-  HTTP 200; the root copy returned 404. Its Next packaging omits postbuild root
-  copies. The branch now selects static hosting of the completed `out` directory
-  with clean URLs. Local postbuild and all 95 asset checks pass; 2,468 root
-  locale files and the homepage match the locale exports byte for byte. Vercel
-  at `60830b88a` returns HTTP 200 for the root compose reference, its Traditional
-  Chinese variant and directive guide; Chrome rendering and client navigation
-  pass without new console errors. Cloudflare and Linux e2e also pass at that
-  revision. Preview metadata also pointed canonical
-  URLs at localhost. Public environment resolution now reads Vercel deployment
-  and branch variables; 16 environment tests, focused lint and site type-check
-  pass. Full site lint again has zero errors and the same 266 warnings.
+- Shared build, CI and preview repairs were authorized on 2026-09-27. The
+  hosted script prepares the pinned Rust toolchain before parallel tasks; Turbo
+  preserves `CARGO_HOME` and `RUSTUP_HOME`. Vercel uses Node 24 and serves the
+  completed static `out` directory with clean URLs. Its obsolete submodules
+  command and Next output-directory mismatch have been corrected.
+  Local hosted builds pass with 830 pages and 95/95 referenced assets. All
+  2,468 root-locale files and the homepage match their locale exports byte for
+  byte. Temporary worker/heap diagnostics were reverted.
+  Both hosts deploy `60830b88a` successfully. Vercel's root compose reference,
+  Traditional Chinese reference and directive guide return HTTP 200; Chrome
+  confirms styling and client navigation. Cloudflare renders the reference in
+  Chrome. Its earlier `147dbcd4d` health check returned HTTP 200 with
+  `{"ok":true}`; storage writes were not exercised. Latest previews:
+  `master-ei9wt3jrq-aoyue.vercel.app` and `8611aee7.master-css-e8w.pages.dev`.
+  Canonical metadata now resolves Vercel deployment/branch variables; 16 tests,
+  type-check and site lint pass (zero errors, 266 existing warnings).
 - Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
   passed). The JavaScript adapter now restores template line endings and escapes
   cooked carriage returns. LF, CRLF and CR sorting regressions failed before
@@ -356,7 +337,23 @@ integration gates that the local scoped suite did not exercise:
   validated canonical parent. The new alias regression fails before the fix;
   all 51 MCP tests and lint/type-check/build pass. Containment checks remain.
   Windows `60830b88a` completed: Compiler 34, Next 21, MCP 1, Vite 329 and
-  VSCode 1 failed; all other package tasks passed. Vite/VSCode repairs remain.
+  VSCode 1 failed; all other package tasks passed. Follow-up Windows CI is needed.
+- Compiler host maps now recognize native absolute paths and source roots before
+  URL resolution. Six filename/reference/diagnostic regressions fail before the
+  fix; all 491 Compiler tests and lint/type-check/build pass. Fixture roots use
+  native realpath to expand Windows short names. Next's four affected files pass
+  26 tests and lint after the same fixture correction.
+- Vite now uses consistent path identities for Modules projection, Sass caches,
+  dependency recovery and Manifest HMR. Imported host maps preserve filesystem
+  paths, and development resource URLs retain drive colons and normalized allow
+  entries. Scratch paths expand short names; Vite's file-policy denial remains.
+  Windows fixtures retain scope, source-position, resource-byte, query/fragment,
+  access-policy and cleanup assertions. Literal `?` filenames run only on hosts
+  that support them; every resource case still tests URL query/fragment handling.
+  Vite passes 677/677, followed by 69/69 final HMR/recovery checks; lint, type-check,
+  build and the Vite example build pass. No deadline or assertion was weakened.
+- VSCode's single Windows completion timeout is not reproduced locally (16/16
+  staged-bundle tests pass). Its unchanged deadline awaits the next Windows run.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
