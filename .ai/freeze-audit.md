@@ -180,9 +180,11 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | `git diff --check` | Passed |
 | `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
 | Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
+| Next full package e2e, local macOS | 10/10 passed; repeated with `CI=true`, also 10/10 passed |
+| binding package local build, type-check, lint and tests | Passed on macOS; 33/33 tests passed. A temporary CRLF conversion of 34 binding source files also built, then was reverted without a source diff |
 | `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
 | Windows compatibility CI on PR #461 | Checkout, pnpm installation and Rust Wasm build passed after fixing generated-file tracking and patch checkout line endings; package tests failed while building binding declarations |
-| Linux e2e CI on PR #461 | 8 of 10 Next cases passed; two Webpack dev-HMR cases failed on server-start and style-update timeouts |
+| Linux e2e CI on PR #461 | Initial run failed 2/10 Webpack dev-HMR cases on timeouts; isolated same-commit job rerun passed 10/10 Next cases, 34/34 Turbo tasks |
 
 The second pass rebuilt native/Wasm and package artifacts with the normal
 repository build; the first pass used existing artifacts. No semantic
@@ -234,7 +236,11 @@ integration gates that the local scoped suite did not exercise:
   for `rc87-bc7adf7569796dc8` has an outdated Next Turbopack test target
   digest after a pre-existing baseline commit. Its `approved-contract-change`
   metadata is digest-bound. Updating that approval record requires a reviewed
-  decision about the new target. A temporary diagnostic update of three stale
+  decision about the new target: the historical case gated ordinary stylesheet
+  routing on directive content, while the current case routes native styles
+  without that gate and excludes CSS Modules and generated stylesheet paths.
+  The existing approval reason covers ESM delivery but not this later routing
+  change. A temporary diagnostic update of three stale
   evidence digests and one historical post-RC decision then exposed 503
   changed/removed Rust-refactor cases without approved evidence. These statuses
   are not proof of 503 product defects. The diagnostic edits were reverted;
@@ -260,13 +266,18 @@ integration gates that the local scoped suite did not exercise:
   `pnpm submodules`, which is not a repository command. This was confirmed in
   the provider build log for commit `91e6d2b`. Cloudflare Pages also failed,
   but its detailed log requires dashboard sign-in and was not inspected.
-- Linux e2e passed 8/10 Next cases, then failed two Webpack dev-HMR cases:
-  one Next server-start timeout and one computed-style update timeout. The
-  server log includes a Webpack cache warning about a `file:///` import of
-  `packages/next/dist/index.js`, but the cause of either timeout is not
-  established. The affected HMR source and tests are unchanged from baseline;
-  this PR only untracks ignored outputs under the separate `static-export`
-  fixture and updates the Next README.
+- The initial Linux e2e run passed 8/10 Next cases, then failed two Webpack
+  dev-HMR cases: one Next server-start timeout and one computed-style update
+  timeout. The server log includes a Webpack cache warning about a `file:///`
+  import of `packages/next/dist/index.js`, but the cause of either timeout is
+  not established. The affected HMR source and tests are unchanged from
+  baseline; this PR only untracks ignored outputs under the separate
+  `static-export` fixture and updates the Next README. An isolated rerun of
+  the failed Linux e2e job at the same commit passed all 10 Next cases and
+  34/34 Turbo tasks without a timeout or assertion change. Both local macOS
+  runs, including `CI=true`, also passed 10/10. The other CI jobs retained
+  their original timestamps in GitHub's second attempt. Resource contention
+  during the first run is plausible, not proven.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.
