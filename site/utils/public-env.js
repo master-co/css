@@ -25,6 +25,7 @@ export function resolvePublicEnv(options = {}) {
   const { owner, slug } = parseRepository(repository)
   const resolvedCommitRef = env.NEXT_PUBLIC_COMMIT_REF
     || env.CF_PAGES_BRANCH
+    || env.VERCEL_GIT_COMMIT_REF
     || env.GITHUB_REF_NAME
     || getGitBranch(runGit)
   const commitRef = resolvedCommitRef || 'rc'
@@ -101,6 +102,7 @@ function resolveSiteUrl(env, commitRef) {
   if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
   if (isRcBranch(commitRef)) return defaultRcUrl
   if (env.CF_PAGES_URL) return env.CF_PAGES_URL
+  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`
 
   return localUrl
 }
