@@ -229,14 +229,14 @@
     {
       "sourceId": "rc87-bc7adf7569796dc8",
       "sourceDigest": "9fe3dfa54a4f08cfcd77745c1601c9077b3a554ed8b2be8460e83c62c356fcdd",
-      "targetDigest": "0e0cf5c13e9ac0afff4be07f5b12d1d2855e65f9b04f52d26900fbdf3ab6c89c",
+      "targetDigest": "6acfe4d189cfa974bcecaf2ad5713cb1d83eae6da099757699f4f6f2c8e9cf4d",
       "proof": "approved-contract-change",
-      "reason": "Next Turbopack manifest testing explicitly selects progressive mode and retains user JS rules and manifest conditions. The approved ESM delivery removes external:true and redundant as rewrites, adds emitted-globals loading, and excludes CSS Modules from the ordinary Master stylesheet route.",
+      "reason": "The reviewed Next progressive-mode case preserves user JS rules and ESM manifest delivery. Ordinary CSS/SCSS/Sass files enter the stylesheet loader without requiring Master directive content; the ordinary rule excludes CSS Modules, generated output paths, and manifest queries. CSS Modules enter project context through a separate module rule. Explicit QA approval covers the exact case digest in the freeze review.",
       "approval": {
-        "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T08:47:41.470Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "c963c95f820f728cd4d361dc34a9ac763c7c583bfa3e849108a56a4559967a27"
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:12:20Z",
+        "reviewRef": "parity/freeze-migration-approval.md#three-contract-records",
+        "scopeDigest": "57b497573ed8e2a850c8dd5a6f8c833946fbcbb334b5885082736981a98794a1"
       }
     },
     {
@@ -383,27 +383,27 @@
     {
       "surfaceId": "public-api-contract",
       "baselineDigest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
-      "targetDigest": "d27ade80cd1b9f0da22b891083ae8668b1a4ab338fbbfc21a7023d4725f4e058",
+      "targetDigest": "a4efe9c284c329734df1bd19428a70fe05ca5669eaa6ecfb37bca3c284312648",
       "proof": "approved-contract-change",
-      "reason": "Reviewed the public API and census changes through 704996ec: named token registry, separate match/syntax/value/browser diagnostics, source ownership and occurrence data, migration profiles, stylesheet graphs/composition traces, strict validation, explicit modes, and static/pruning options replace the previous RC contracts. Function completions and color-expression types remain. These changes implement the explicitly approved language, scanner, native CSS and rendering plans.",
+      "reason": "Retain the previously reviewed API and census changes through 704996ec. The separately reviewed freeze delta removes MasterCSSManifestUtilityKind and MasterCSSManifestUtilityMatcherValueSegments from @master/css-schema/manifest and records ABI 13 and languageVersion 3. It adds or removes no package entrypoint. Explicit QA approval covers this exact inventory digest.",
       "approval": {
-        "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T09:11:22.488Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "27e56be87f8536e6ad434b45056287cc5236ac95a5c1dc82a49a6a746cdb9390"
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:12:20Z",
+        "reviewRef": "parity/freeze-migration-approval.md#three-contract-records",
+        "scopeDigest": "27a5e3f5bc800095e17178cea3998450bde058ecb1b2d5c6b2ec4f5fec2d2d27"
       }
     },
     {
       "surfaceId": "binding-version-contract",
       "baselineDigest": "a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389",
-      "targetDigest": "04b30b6687b0dfba938b8b7ae0ea01a41c355b855c22b838b3ffbc13927c939f",
+      "targetDigest": "caf4b8e6f33f7b9e5c26a6cd4f9bb92d6a581e2a116e2bcb3091bfc18d0ab243",
       "proof": "approved-contract-change",
-      "reason": "The committed target coordinates ABI 11, languageVersion 2, validator/diagnostics 3, language batch 4 and source batch 2. Manifest/hydration envelopes, transition, lexer and lint remain version 1. This records the approved earlier RC changes; the current utility work separately advances ABI 12 and languageVersion 3 and must be audited after commit.",
+      "reason": "The separately reviewed freeze delta advances ABI 11 to 13 and languageVersion 2 to 3. Manifest, hydration, transition, lexer and lint remain version 1; validator and diagnostic report remain 3, language batch remains 4, and source batch remains 2. Explicit QA approval covers this exact version surface digest.",
       "approval": {
-        "approvedBy": "Aron (explicit implementation plan in this task)",
-        "approvedAt": "2026-09-25T09:11:22.490Z",
-        "reviewRef": "parity/utility-contract-validation.md#migration-evidence-audit",
-        "scopeDigest": "086e95bc7ec8285051cd243c492fc038982ade9ae2762e379e8dd6bf0e60a2fb"
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:12:20Z",
+        "reviewRef": "parity/freeze-migration-approval.md#three-contract-records",
+        "scopeDigest": "33fd67f042cf106516f8e22e1dbec175e436663be7cafb3b796b41050df8830d"
       }
     },
     {
