@@ -361,7 +361,7 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server completes native selectors without workspace node_modules and shuts down', async () => {
+test('staged language server starts without workspace node_modules and shuts down', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,
