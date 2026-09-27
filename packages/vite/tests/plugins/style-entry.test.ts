@@ -40,7 +40,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg-red{color:red}', inc
 }
 
 function getStylesheet(context: ReturnType<typeof makeContext>, id: string) {
-  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === id)
+  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === resolve(id))
 }
 
 function collectDeliveredCSS(context: ReturnType<typeof makeContext>, entry: string) {

@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer, type PluginOption, type WatchOptions } from 'vite'
+import { normalizePath, createServer, type PluginOption, type WatchOptions } from 'vite'
 import { setTimeout as delay } from 'node:timers/promises'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
@@ -9,7 +9,7 @@ import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(resource = false) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, resource ? 'one/two/pixel.svg' : 'one/two/tokens.css')
   const tokens = `@utilities{paint{padding:7rem;${resource ? 'background-image:url("./one/two/pixel.svg?v=1#icon")' : ''}}}`
@@ -160,7 +160,7 @@ test.each(['client', 'server'])('BH-0004 closing %s during a reconciliation supp
   const gate = new Promise<void>(resolve => { release = resolve })
   try {
     result = await start(f, [{ name: 'hold-reconciliation', enforce: 'pre', async transform(_code, id) {
-      if (enabled && id === join(f.root, 'style.css')) { entered = true;await gate }
+      if (enabled && id === normalizePath(join(f.root, 'style.css'))) { entered = true;await gate }
     } }, ...masterCSS({ mode: 'static', runtime: false })])
     enabled = true;f.restore()
     await vi.waitFor(() => expect(entered).toBe(true), { timeout: watchDeadline })

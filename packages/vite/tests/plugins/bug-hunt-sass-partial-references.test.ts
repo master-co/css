@@ -12,7 +12,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 function fixture(syntax: string) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-partial-reference-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-partial-reference-')))
   mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
   for (const directory of ['main', 'shared']) mkdirSync(join(root, directory))
   const partial = join(root, `shared/_rules.${syntax}`)

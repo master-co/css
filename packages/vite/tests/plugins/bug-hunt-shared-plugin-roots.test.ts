@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer } from 'vite'
+import { normalizePath, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 test.each([false, true])('BH-0004 concurrent roots isolate styles when sharing plugins=%s', async (shared) => {
-  const roots = ['red', 'green'].map(() => realpathSync(mkdtempSync(join(tmpdir(), 'master-shared-roots-'))))
+  const roots = ['red', 'green'].map(() => realpathSync.native(mkdtempSync(join(tmpdir(), 'master-shared-roots-'))))
   const servers: Awaited<ReturnType<typeof createServer>>[] = []
   const colors = ['red', 'green']
   const plugins = masterCSS({ mode: 'static', runtime: false })
@@ -27,7 +27,7 @@ test.each([false, true])('BH-0004 concurrent roots isolate styles when sharing p
       servers.push(server)
       await server.listen()
     }))
-    const byRoot = roots.map(root => servers.find(server => server.config.root === root)!)
+    const byRoot = roots.map(root => servers.find(server => server.config.root === normalizePath(root))!)
     for (const [index, server] of byRoot.entries()) {
       const response = await fetch(new URL('style.scss', server.resolvedUrls!.local[0]), { headers: { Accept: 'text/css' } })
       expect(response.status).toBe(200)

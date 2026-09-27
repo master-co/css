@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer } from 'vite'
+import { normalizePath, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { sassModuleID } from '../../src/utils/build-sass-source'
@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 
 for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) for (const syntax of ['scss', 'sass']) for (const base of ['/', '/base/']) {
   test(`internal ${syntax} CSS proxy serves direct requests in ${mode} at ${base}`, async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-proxy-direct-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-proxy-direct-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     try {
       mkdirSync(join(root, 'node_modules'));symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
@@ -66,7 +66,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
 }
 
 for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) test(`proxy requests retain host file access policy: ${access}`, async () => {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(root);mkdirSync(outside)
@@ -76,7 +76,7 @@ for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) t
       server: { host: '127.0.0.1', port: 0, fs: { strict: true, allow: access === 'allowed' ? [root, outside] : [root], ...(access === 'pattern-denied' ? { deny: ['**/secret file.css'] } : {}) } }
     })
     await server.listen()
-    const paths = ['', '.master-css-sass.css'].map(suffix => `/base/@fs${owner}${suffix}?direct`)
+    const paths = ['', '.master-css-sass.css'].map(suffix => `/base/@fs/${normalizePath(owner).replace(/^\//, '')}${suffix}?direct`)
     if (access !== 'allowed') paths.push('/base/@id/__x00__' + sassModuleID(owner).slice(1))
     for (const path of paths) {
       const url = new URL(path, server.resolvedUrls!.local[0])

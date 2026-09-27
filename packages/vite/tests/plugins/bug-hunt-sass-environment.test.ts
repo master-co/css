@@ -2,14 +2,14 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer } from 'vite'
+import { normalizePath, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 test('BH-0004 Sass updates invalidate SSR imports without sending browser CSS updates to the server channel', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-environments-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-environments-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'node_modules'))
@@ -34,7 +34,7 @@ test('BH-0004 Sass updates invalidate SSR imports without sending browser CSS up
 })
 
 test('BH-0004 server restart discards stylesheet URLs served by the previous server', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-restart-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-restart-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'node_modules'))
@@ -69,7 +69,7 @@ test('BH-0004 server restart discards stylesheet URLs served by the previous ser
 })
 
 test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-pending-url-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-pending-url-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   let release!: () => void
   const pending = new Promise<void>(resolve => { release = resolve })
@@ -86,7 +86,7 @@ test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP r
     const updating = new Promise<void>(resolve => { entered = resolve })
     sass.hotUpdate = function (options) {
       const result = hotUpdate.call(this, options)
-      if (options.file === file && this.environment.config.consumer === 'client') entered()
+      if (options.file === normalizePath(file) && this.environment.config.consumer === 'client') entered()
       return result
     }
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins, server: { host: '127.0.0.1', port: 0 } })

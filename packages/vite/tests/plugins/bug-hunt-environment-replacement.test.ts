@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 
 for (const managed of [false, true]) for (const perEnvironment of [false, true]) {
   test(`BH-0004 idle replacement survives old environments closing (managed=${managed}, perEnvironment=${perEnvironment})`, async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-environment-replacement-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-environment-replacement-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     const dispose = vi.spyOn(MasterCSSScanner.prototype, 'dispose')
     try {
@@ -48,7 +48,7 @@ for (const managed of [false, true]) for (const perEnvironment of [false, true])
 }
 
 test.each([false, true])('BH-0004 environment startup attaches HMR listeners once (perEnvironment=%s)', async (perEnvironment) => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-environment-listeners-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-environment-listeners-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   const on = vi.spyOn(MasterCSSScanner.prototype, 'on')
   try {
@@ -71,7 +71,7 @@ test.each([false, true])('BH-0004 environment startup attaches HMR listeners onc
 })
 
 test.each([false, true])('BH-0004 late server environment startup preserves client Sass dependencies (perEnvironment=%s)', async (perEnvironment) => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-environment-sass-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-environment-sass-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'node_modules'))

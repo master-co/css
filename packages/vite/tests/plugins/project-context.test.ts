@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, expect, test, vi } from 'vitest'
@@ -11,7 +11,7 @@ import { watchDeadline } from '../watch-deadline-helper'
 
 const roots: string[] = []
 function fixture(command = 'serve') {
-  const root = mkdtempSync(join(tmpdir(), 'vite-project-context-'))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'vite-project-context-')))
   roots.push(root)
   mkdirSync(join(root, 'src'))
   const context = { config: { root, command, server: { fs: { allow: [] } } } } as any

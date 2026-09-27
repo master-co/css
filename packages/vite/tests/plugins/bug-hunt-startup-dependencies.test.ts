@@ -10,7 +10,7 @@ const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['local', 'entry'].flatMap(kind => ['reference-directory', 'resource-file', 'resource-directory'].map(missing => ({ mode, kind, missing }))))
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" data-owner="restored"/>'
 function fixture(kind: string, missing: string) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-startup-dependencies-'))), root = join(parent, 'app'), external = join(parent, 'external')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-startup-dependencies-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root); mkdirSync(external)
   const reference = join(external, missing === 'reference-directory' ? 'deep/tokens.css' : 'tokens.css')
   const resource = join(external, missing === 'resource-file' ? 'pixel.svg' : 'deep/pixel.svg')

@@ -25,15 +25,16 @@ export default function DevStylesheetPlugin(context: MasterCSSVitePluginContext)
         }
         const resource = state.resources.get(url.pathname)
         if (resource) {
-          if (!server.config.server.fs.allow.includes(resource.source)) server.config.server.fs.allow.push(resource.source)
-          if (!isFileLoadingAllowed(server.config, normalizePath(resource.source))) {
+          const source = normalizePath(resource.source)
+          if (!server.config.server.fs.allow.includes(source)) server.config.server.fs.allow.push(source)
+          if (!isFileLoadingAllowed(server.config, source)) {
             response.statusCode = 403
             response.end('Development resource access denied')
             return
           }
-          const file = resource.file
+          const file = normalizePath(resource.file)
           if (!server.config.server.fs.allow.includes(file)) server.config.server.fs.allow.push(file)
-          const encodedPath = normalizePath(file).split('/').map(encodeURIComponent).join('/').replace(/^\//, '')
+          const encodedPath = encodeURI(file).replace(/[?#]/g, encodeURIComponent).replace(/^\//, '')
           request.url = toAssetHref('@fs/' + encodedPath, server.config.base) + url.search
           next()
           return

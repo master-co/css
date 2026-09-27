@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
-import { createServer } from 'vite'
+import { normalizePath, createServer } from 'vite'
 import { expect, test } from 'vitest'
 import MagicString from 'magic-string'
 import masterCSS from '../../src/core'
@@ -17,7 +17,7 @@ test.each(cases)('equal Sass outputs retain root scope and resource owners in $m
     mkdirSync(join(root, 'node_modules'));symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const calls: string[] = [], inputs = new Map<string, string>(), original = new Map<string, string>()
     const additionalData = async (source: string, file: string) => {
-      calls.push(file);inputs.set(file, source)
+      calls.push(file);inputs.set(normalizePath(file), source)
       if (style === 'expanded') return source
       const edited = new MagicString(source).prepend('// User prefix\n')
       return { content: edited.toString(), map: edited.generateMap({ hires: 'boundary', source: file, file, includeContent: true }) }
@@ -26,7 +26,7 @@ test.each(cases)('equal Sass outputs retain root scope and resource owners in $m
       mkdirSync(join(root, name))
       const file = join(root, name, `child.${syntax}`)
       const source = syntax === 'scss' ? `$${name}:2rem;.same{@compose p:#{$${name}};background:url("./pixel.svg")}` : `$${name}: 2rem\n.same\n  @compose p:#{$${name}}\n  background: url("./pixel.svg")\n`
-      original.set(file, source);writeFileSync(file, source)
+      original.set(normalizePath(file), source);writeFileSync(file, source)
       writeFileSync(join(root, name, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>${name}</title></svg>`)
     }
     writeFileSync(join(root, `style.module.${extension}`), `@import "./a/child.${syntax}" layer(guard);@import "./b/child.${syntax}" layer(guard);.local{display:block}:export{token:shared}`)
@@ -43,7 +43,7 @@ test.each(cases)('equal Sass outputs retain root scope and resource owners in $m
       expect(response.status).toBe(200); sources.push(await response.text())
     }
     const css = sources.join('\n')
-    for (const name of ['a', 'b']) expect.soft(calls.filter(file => file === join(root, name, `child.${syntax}`))).toHaveLength(1)
+    for (const name of ['a', 'b']) expect.soft(calls.filter(file => file === normalizePath(join(root, name, `child.${syntax}`)))).toHaveLength(1)
     expect.soft(css).not.toMatch(/\.same\s*\{/)
     expect.soft(css.match(/\.scope_same\s*\{/g)).toHaveLength(2)
     expect(css).not.toContain(':export')
