@@ -181,6 +181,7 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 | `cargo xtask stage-native-target binding-darwin-arm64 --release` then native package smoke | Passed after updating its Manifest/method fixture |
 | Next static-export focused e2e | 1 passed after untracking generated `.master` outputs |
 | Next full package e2e, local macOS | 10/10 passed; repeated with `CI=true`, also 10/10 passed |
+| Next HMR e2e after changing the fixture import to a relative path | 4/4 passed locally; package lint and type-check passed |
 | binding package local build, type-check, lint and tests | Passed on macOS; 33/33 tests passed. A temporary CRLF conversion of 34 binding source files also built, then was reverted without a source diff |
 | `pnpm run check:migration` | Failed on stale reviewed target digest `rc87-bc7adf7569796dc8` from the pre-existing baseline; a diagnostic regeneration also exposed 503 unapproved changed/removed Rust-refactor cases requiring individual review |
 | Windows compatibility CI on PR #461 | Checkout, pnpm installation and Rust Wasm build passed after fixing generated-file tracking and patch checkout line endings; package tests failed while building binding declarations |
@@ -278,6 +279,16 @@ integration gates that the local scoped suite did not exercise:
   runs, including `CI=true`, also passed 10/10. The other CI jobs retained
   their original timestamps in GitHub's second attempt. Resource contention
   during the first run is plausible, not proven.
+- A later CI run at the documentation-only commit `4e0c2fd3a` repeated the same
+  two Webpack HMR timeouts (8/10 Next cases), with the same Webpack cache warning
+  for a `file:///.../packages/next/dist/index.js` import in generated test
+  configuration. The preceding isolated rerun at `a654e5376` passed without
+  that warning. The test fixture now emits a relative module specifier for
+  same-volume imports, keeping a file-URL fallback for cross-volume paths;
+  this lets Webpack track the imported config dependency as a file. The focused
+  HMR suite passed 4/4 locally with unchanged assertions and timeouts. CI on
+  this fixture change has not yet run, so it is not a verified fix for the
+  intermittent Linux failures.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.

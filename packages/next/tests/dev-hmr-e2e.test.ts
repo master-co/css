@@ -3,7 +3,7 @@ import { once } from 'node:events'
 import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, isAbsolute, join, relative, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { chromium, type Browser } from '@playwright/test'
 import { describe, expect, it, onTestFinished } from 'vitest'
@@ -58,9 +58,14 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
     private: true,
     type: 'module'
   }, null, 2))
-  const nextIntegrationURL = pathToFileURL(process.env.MASTER_NEXT_HMR_INTEGRATION ?? join(packageDir, 'dist/index.js')).href
+  const nextIntegrationPath = process.env.MASTER_NEXT_HMR_INTEGRATION ?? join(packageDir, 'dist/index.js')
+  // Webpack tracks config imports as files and cannot cache a file:// specifier.
+  const relativeIntegrationPath = relative(fixtureDir, nextIntegrationPath).split(sep).join('/')
+  const nextIntegrationSpecifier = isAbsolute(relativeIntegrationPath)
+    ? pathToFileURL(nextIntegrationPath).href
+    : relativeIntegrationPath.startsWith('.') ? relativeIntegrationPath : `./${relativeIntegrationPath}`
   writeFileSync(join(fixtureDir, 'next.config.js'), [
-    `import { withMasterCSS } from ${JSON.stringify(nextIntegrationURL)}`,
+    `import { withMasterCSS } from ${JSON.stringify(nextIntegrationSpecifier)}`,
     '',
     `const configured = withMasterCSS(${JSON.stringify({ reactStrictMode: true, ...(process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT ? { turbopack: { root: process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT } } : {}) })})`,
     `let result = configured`,
