@@ -238,9 +238,9 @@ integration gates that the local scoped suite did not exercise:
   approval metadata and scope digests are recorded in
   `parity/freeze-migration-approval.md`; all approved bytes/cases match the target.
   The independent post-rc.87 decision validation passes. `check:migration` now
-  proceeds past those stale records and reports 496 unreviewed changed/unmatched
-  cases. These are not 496 proven product defects; no blanket approval or
-  generated ledger rewrite was made.
+  accepts the 62 exact named-token differences separately approved in
+  `parity/named-token-freeze-approval.md` and reports 434 unreviewed cases.
+  These are not 434 proven defects; no blanket approval or ledger rewrite was made.
 - Windows checkout and installation now pass after untracking eight ignored
   generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
   tsdown external rule now excludes resolved Windows drive paths from bare
@@ -355,7 +355,8 @@ integration gates that the local scoped suite did not exercise:
   creation through a directory alias. Resolve missing files against the already
   validated canonical parent. The new alias regression fails before the fix;
   all 51 MCP tests and lint/type-check/build pass. Containment checks remain.
-  The full Windows run at `60830b88a` is still collecting independent results.
+  Windows `60830b88a` completed: Compiler 34, Next 21, MCP 1, Vite 329 and
+  VSCode 1 failed; all other package tasks passed. Vite/VSCode repairs remain.
 
 The source audit PASS does not override these integration failures. Do not close
 #454 or #445 until the review-bound ledger and applicable CI gates are resolved.

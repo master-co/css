@@ -398,6 +398,812 @@
       "targetDigest": "9c58b6de1900c824833d8a9c8226786fb8322efd4e7538c6b5c65ab109fee179",
       "proof": "verified-superset",
       "reason": "Reviewed the complete runtime compile-only smoke source before and after the migration. Only the input manifest gains the required languageVersion: 3 field. Both decorator calls, custom-element refresh, ShadowRoot selection, emitted globals and type contracts remain unchanged. The runtime type-check includes this file and passes."
+    },
+    {
+      "sourceId": "rc87-0bcff8d19b2e7836",
+      "sourceDigest": "d038ebf7074c48d0c2d4b63e6d249c57b5cf365c329399cb6c5921f0fb5157b1",
+      "targetDigest": "35aab610c992d91b41d2754480d31e1fb7db1be3ff0fd526b29395f9a7ac9ac2",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"keeps middleware page output isolated across responses\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "8491767494da51d031dc79f056a918f760ba7309dbe97f176c5688dcd35dbb29"
+      }
+    },
+    {
+      "sourceId": "rc87-9e148d7296283e73",
+      "sourceDigest": "2531bd2b090295f603060aff288660434a85bb9669f83aa968dd6b7e77e66a58",
+      "targetDigest": "34536d2ffed03c8d5c5f89a6b4a36e680337edb93ebcadc7cd43be7f103ef274",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"generates CSS only through the explicit generate command\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "610240999cf7346be8509f619d289d5ff0e0c100f43de2ccc95b14e4d5469aa6"
+      }
+    },
+    {
+      "sourceId": "rc87-8e935adce73acbb6",
+      "sourceDigest": "8d1f3d6c33a0b033f482f264dd0ea503df3e083bb5e149ae90f61734b8602737",
+      "targetDigest": "313458146cedf4cf4d9246b22b56b18d5597effcd9721b4d4e828362643f6543",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"loads scanner directives from a managed CSS entry graph\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "6cafc53ce21988da3d78a02172250393fadddf2b0c4e88c15164a1244ef785b0"
+      }
+    },
+    {
+      "sourceId": "rc87-7312b1740c4885fb",
+      "sourceDigest": "3c91779d5e77f7143e552e55c99b99d7bc1e0c30e394d83c18f072692e851fd3",
+      "targetDigest": "03d8b8bb103c7d8a4924714a14dd21e20640501368fc293cb044f43dbe65be86",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"loads source directives from server template extensions\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "99d9fdda9781e61929072761f5336ef7e7c9d6f6b68ca19c965b98d347e839be"
+      }
+    },
+    {
+      "sourceId": "rc87-52c9eb78b1e18775",
+      "sourceDigest": "ecede6cd401bc24e2af70e0a0f06391f6a9b043f09cba09abaab5d890bd40a3e",
+      "targetDigest": "fdd94cb0c0e8061a1637895982520c6bc713fcb320bf2a08fc6bf983d0ec8eac",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"unions source directives and subtracts source not directives\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "540a8460996a2c76cb39afbd66aaf8a61b23c7c885d13c0f654cdf4be2390594"
+      }
+    },
+    {
+      "sourceId": "rc87-51abb4c0cc50234d",
+      "sourceDigest": "9caaede90b1fe4698a846bb3ce2d0628ec64355d9b05ce27745837b83be8dda9",
+      "targetDigest": "7ef7f9667440ea3937b721bf50f28072e9dc5ac9a1941a2841093e56e7317d96",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"emits default preset variables used by local styles referencing a globals entry\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "b2050e2a61f4366ec9f0ab8fa00009f3740c177e01f12ad83756fce412a00e8e"
+      }
+    },
+    {
+      "sourceId": "rc87-16dec65c866ce93c",
+      "sourceDigest": "a65877913d3abe5b5cb94a777f1614be38322f9cc4988900ef1d469682956b0e",
+      "targetDigest": "dc78f24666384871fb7395f8b3b6879fe99834fce0784140ed6122e54d89c962",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"dedupes default preset variables already emitted by a globals entry snapshot\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "2950d850901f853ec81bf68eb0a68f7be1574206d5bb652821b8b64f9803be72"
+      }
+    },
+    {
+      "sourceId": "rc87-d2ff63b2ee65d620",
+      "sourceDigest": "51649484e9f5872bdacbe26c29eea61c9068956acaae649aed7ee36f1f8715a9",
+      "targetDigest": "127226f9ffb455e596eb379368f7a044de253381f1dde2ef5a98d75ac159d866",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"renders representative default-manifest classes without a TypeScript oracle\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "61ef537f4657b4a019ddc649eb801858574a241bb6ce8dc999172f4efd3b538c"
+      }
+    },
+    {
+      "sourceId": "rc87-a0c4813d727c5342",
+      "sourceDigest": "c061a046509c196bcef2bc1b89396ea337628cbe911d98c66a108f45987d8d96",
+      "targetDigest": "9611c10cd0447afb56d481ddb8e2c810f06ba1c3d6c0d17a477bbdc073ecc18f",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"resolves inline dependencies in emitted mode variables in native and Wasm\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "c8901666970371fbd4ceb4bd0bfa573b1fb7644ea90d55bb61515147c894bc70"
+      }
+    },
+    {
+      "sourceId": "rc87-aff0c5687d375213",
+      "sourceDigest": "3243b7d4c0aaae184bc121b7a180deeecd50f72b6b74fcd71795554bddf57e29",
+      "targetDigest": "8c74d9460292ab77055e94d545b222fead38ba65fd82d86c0a18c90d5a994709",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"returns range formatting edits for CSS directives\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "017db7e3eb3dd79ec1ab2ebbc9747914b2fbbc33726932c6bd0811becb51f096"
+      }
+    },
+    {
+      "sourceId": "rc87-3fac9efeebd10f88",
+      "sourceDigest": "0aacab8e23c2fbc940b60350a10b800be95886226e8e671436ebf04c697f1164",
+      "targetDigest": "8822b648be61077962a077bc2bacb49462ef36ca216b031028aa680317c04608",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"uses Rust for document contexts and hover inspection\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "ff0d261336f1dc054a80069fb075e0b578a3827b233241fb08483711b151b0c1"
+      }
+    },
+    {
+      "sourceId": "rc87-87a49eee126da67d",
+      "sourceDigest": "6ca790e1075125d57887e4821355c9d727ee5d2267c40b093f0f6ac568f50b3e",
+      "targetDigest": "21baaaa52852fe0fe31cb42ff9aaaa33ce3150b8169f600919596fd04afa63e6",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"handles caller Shiki decorations around host class attribute value wrappers\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "ca3cf5af0833b3c184964ee098955a1eb046be36327e976e3aaa18bda67fb1c7"
+      }
+    },
+    {
+      "sourceId": "rc87-11e7d929b66310fd",
+      "sourceDigest": "941f3ace18a98df984b80d5aeb5c8f0d5a8e7b50edf0b93b7104dbfc7ae25d6a",
+      "targetDigest": "17ea44caae96a5b7da2593c21f2a27bec4833841a6527e8bb7d834f515dd12c3",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"does not create host wrappers for raw class-list highlighting\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "77f1a8e03d027dbe821ff699b1a05180926374e2bd598053614a153272e2df0a"
+      }
+    },
+    {
+      "sourceId": "rc87-340707601e1b0a28",
+      "sourceDigest": "55a84fdc0e5d2d489bf7eb26e3a1ed01ce33a431f80df9dcb5c5b3366b9b2536",
+      "targetDigest": "051fba9ce10a8375b9ec2bf0719d9e571d27b67558bda67c474e95c6b69b16af",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"disposes the build renderer after materializing its output\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "e20e43bc314d8a2ed25b8ce91f0bc7a251dcb1fb943feebb7c76c7a0ec4c365e"
+      }
+    },
+    {
+      "sourceId": "rc87-0ab81b21d1f50161",
+      "sourceDigest": "a66514e27f51015d3673a958491086b54c51838a5e072868941157c3b6633559",
+      "targetDigest": "185b3cbd370ebdde6741c69cd978c9232d48a528cd77869de50bfb3b83b38dd2",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"emits referenced default theme variables for page-level CSS\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "13a6bfacfb48fcf05dac9f23f744e6350125711a82179ec00a0b5ce0afcbf199"
+      }
+    },
+    {
+      "sourceId": "rc87-e26ee2198e53ea9b",
+      "sourceDigest": "630589ccff44fb22e5cfb26b2cdfed05135e31f9f5a1598320cf96709a4b72a6",
+      "targetDigest": "82a14152ac10253e7f08dafe737b26b0be760386084af95eb41076f6fa7c13f1",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"renders representative classes through the native Rust engine\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "d39c782b0531f38a2587dbd11028de1a69eaa0198ccddc2305c0ba0bef4af1be"
+      }
+    },
+    {
+      "sourceId": "rc87-f9c577219c15b646",
+      "sourceDigest": "117bfa4f0f85db1045132416dd9616d2418727855dc43244b7f4ae673861cd67",
+      "targetDigest": "c6474730cc899821b19fb943eb94fc584b0941b4909c7a2fcdbc3b5388acbd92",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"complex\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "39a5a4b0280789a24da090501fcd29d08992f3eb9bf607ba3b6b82b86aec0b49"
+      }
+    },
+    {
+      "sourceId": "rc87-d8846c51fa3e2af2",
+      "sourceDigest": "1436a4d3c57c13288b19581f1ac0185fdcf424eeaae1414e9d45226c16e0b6ef",
+      "targetDigest": "7e0c4f0263b69d766b925974acfaa57458d36db837e37285cf18f0b72a8cf985",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"mutation removals keep counts immediate and retain CSSOM rules after settle\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "78dd449e13e2fb2580561fb3fdc9c8b4af47d846f2431600034e5543bd158894"
+      }
+    },
+    {
+      "sourceId": "rc87-48a1ad4e356801ba",
+      "sourceDigest": "42b26757ad454928e6f02bf55a98a275bffaf8714621c37d5b6e3be682bd1f2a",
+      "targetDigest": "fcd7e548c794be0e8ef59302c03b7a318fc9a6fa15620f4c9b75c304df34df90",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"mutation removal flush keeps remaining native CSSOM references valid\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "762eb5f20d8f9a2658e30936008eb2e3844d8e7bedaaf4b3ab2f08202092ea11"
+      }
+    },
+    {
+      "sourceId": "rc87-234d591dd8aabd90",
+      "sourceDigest": "d914ef996bf6561932c02d8342328f1ca604fd4bef2046996b715509dc66523a",
+      "targetDigest": "9056290f7ae9da6f5199867aefa5b2ba9a43b51410b260ef82d696373e580312",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"re-adding a retained class cancels retained cleanup\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "0a9b539af4e710dea6c4e38e7bebdb3aadc46883ebe052ad4e825ad6560e1ff0"
+      }
+    },
+    {
+      "sourceId": "rc87-9533b10158c80bd7",
+      "sourceDigest": "712658b2709068f140555a4f3c333c7fef732bb6ae287068e0f89c76d309d9df",
+      "targetDigest": "ead180946126478e8b6b2235310892a3c8714add15d735ffc19e61a92912f979",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"direct remove deletes retained CSSOM rules synchronously\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "163485dada9571d6365dfcc7c200ae6e94427535d8d5e497663e4955dcb14d5e"
+      }
+    },
+    {
+      "sourceId": "rc87-5e8982a988021b9c",
+      "sourceDigest": "9e7cf59eec42b38d73be1e51e734d2968ff2775d395a21403d5be716eb709acd",
+      "targetDigest": "1e415886a2ff31004e0992793794b658d328c758bcb54182a07448f86ecadb88",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"retained hard-limit cleanup returns to soft target and preserves active classes\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "8d63d7e2270cdfe8f0d8c6a1d851ba2dcd1028288eb5babd4e8208ace43dbd1a"
+      }
+    },
+    {
+      "sourceId": "rc87-ce04b418651dfdbb",
+      "sourceDigest": "8b3c26c19442e2a4dd425b18f86ecd19cf93a330e25b66b7b86d70fe286d704c",
+      "targetDigest": "dba7ce6b3bff1470f445f6ab154bdda5218beda944f490afa35be0f71996b442",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"mutation removals are canceled when a class returns before flush\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "b4174b0c3f2d51357b021cefc61b655c78810cb7c4741f9fc235864a24c8c687"
+      }
+    },
+    {
+      "sourceId": "rc87-044d450087fe9f83",
+      "sourceDigest": "b6054757145e919e41442b1b9ef6725478201c7ecdc4f9031d00716fcb402e3f",
+      "targetDigest": "072e48139f49eaba5089660c3ba016c134c97aef053456a6b98f9b31391fd2ec",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"direct ensureClassRules and deleteClassRules stay synchronous\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "3c9826d6bdb104a25f17dc28e59a6ae52c9642e61dc9153a50ba5b6a38a309e7"
+      }
+    },
+    {
+      "sourceId": "rc87-20031249c83720ea",
+      "sourceDigest": "f21d4199cac9b506451cb5350b1cd0646caba86cac241b77ae54e51fb6e382e3",
+      "targetDigest": "82b7c86a60c4c324f060e611724c224e7db449432fdfa758ce8c9f7f9b6d7c0b",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"observer-added cold classes update counts immediately and flush rules before paint\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "be06e24ce7ebd5103ab271a223fe34e38f401088b200b76dc7adce80e5cd0e76"
+      }
+    },
+    {
+      "sourceId": "rc87-aa64f308290aae54",
+      "sourceDigest": "7131df434c8d476797f6c3a14f7a20d344b3cec79bb2f59aee9d5109bcbac12c",
+      "targetDigest": "335e02c9ae35b3af16ed2e5087de8ae9e43214f9958662c43113d9e2c1a1949b",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"observer-added retained classes are reused immediately\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "a68f253025d1cb73b3c47c73f100f4fb3d644db359537429f2e41d84e3188802"
+      }
+    },
+    {
+      "sourceId": "rc87-007b3ff1d80bab7f",
+      "sourceDigest": "62fbb0e23662318005f0cb45f1dbfd0f0cbf8331b14e34adff2865f3dcbed051",
+      "targetDigest": "bc36f4a9c40f5ab6669f951b62d54c924129c94c0c166a98f3fcfe1fad82d9e4",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"disconnect and dispose clear pending mutation additions and removals\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "f14db8894e5396ee17d15ad6f3187c4a8049441c324030957c1f8fe5ded52362"
+      }
+    },
+    {
+      "sourceId": "rc87-e6459f3d31cfae86",
+      "sourceDigest": "b1fdbf8531dc33d5b233b681dda94e11b22ff63a17e5254e02c7804a317e1f7b",
+      "targetDigest": "53db942036f8dfa6d8ce4e67a8f3eeea7614cbfff041241ef46b799e33b72bac",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"uses split bundled preset manifest\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "1943e57eb05ff2e4e0328544bdf029f216b4d5b87808be50fbdcf535a43a0eee"
+      }
+    },
+    {
+      "sourceId": "rc87-aa9f904b5b77da78",
+      "sourceDigest": "643039c2daca54077274de8373a51156df566bfd9a933a9ca0cfdd99feca098a",
+      "targetDigest": "5a3fee48182a3fde9d4b85a99be9b5849d2b33576be1d069d15703abb9040a1b",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"uses modulepreloaded default manifest\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "a684c950b4c203553ce02532414f66ea97aa5fe1ce403296886ec821c35f4569"
+      }
+    },
+    {
+      "sourceId": "rc87-4866e126c81aecc5",
+      "sourceDigest": "3de0a8111c78155734b3c2cdda940af53f5201e678f621a5dcaaa80a1720179a",
+      "targetDigest": "e794b3353b951a079b8b592e41d6144b7b7c56c4967caa9127f7c10e216ead79",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"ignores global manifest override\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "acfda0719d8ce500a3e5c81036f24d2536ee4818f22041449a51f885a44feadf"
+      }
+    },
+    {
+      "sourceId": "rc87-c90242da5283c6bd",
+      "sourceDigest": "839a03cf67e6fe8e335719f45e4344d52eab718b4945c944682bbf29cf6a5e2a",
+      "targetDigest": "4acb45eb87094c4d8cea24d6d6c012ee64409ec55be4d775467d20d68cb06db5",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"expects the animate token output\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "1c4646e79e3e79e725358d249da995658b905627ca2eba49f51efadf83dd9de3"
+      }
+    },
+    {
+      "sourceId": "rc87-15f40a5319465c15",
+      "sourceDigest": "54068fe8602f8692419359d643e396bda6f7f67d8b62a2f54c4bccae589aedce",
+      "targetDigest": "52e33d19d6c9b402a73d2bbf5597ad5f863e57f52f7e7cbc625dfa26c1f927b3",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"dispose on progressive\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "83e67a94f89b2e17083d4800ccae3ffe6e8169601a5a589ebd3130912c3c06fb"
+      }
+    },
+    {
+      "sourceId": "rc87-4e74f806433ac2c5",
+      "sourceDigest": "a20ea463ebdd351ee290277782ab3ebac605f0744b41fc21d0d1380f5e796e7f",
+      "targetDigest": "1b849475984dd5c1e22b9d432d3729c14458851a3e00a3ed1ae090dfa122ce74",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"383\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "5e6764e0ded8c042a9034b641a2e1f6f653a9bd1ec89daadf4fc07ae9cd6c977"
+      }
+    },
+    {
+      "sourceId": "rc87-8a9c1985a1f50938",
+      "sourceDigest": "1a7d21d519784d5725bdf63bac28c542d491e70c389365fe4d8256d0df15b4ae",
+      "targetDigest": "9715b69871d64d371c123619efea55b4f60467c0b98f78d12615dd937a12ee02",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"renders a complete immutable HTML result\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "c9550a40496da9e554284204de5f2ad37503a0c36f25289686436a9b7a79e534"
+      }
+    },
+    {
+      "sourceId": "rc87-b7af484045f903f6",
+      "sourceDigest": "6c9d9bed9bd7801bdca99060e30eb8c8e8611e372655ef693341208f7b316e3c",
+      "targetDigest": "9161f61c4a158d05fcdf375691f0d4eb428dd3afd17378e4ba582552bb1c48d2",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"render elements\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "535ca2d17485f72e1c5fc3f6c99c63d8a2cc58102126dcdad873ff771e22646d"
+      }
+    },
+    {
+      "sourceId": "rc87-8740682ae4139966",
+      "sourceDigest": "58ab6c01a9b52e73b405e3d8982ce03d059712e4f43542e866d48d14f80ef4da",
+      "targetDigest": "54c484fa6b6cc9db3f8210d2eb4f9ed25143f8e045e3c819b8caefff170de6a7",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"injects generated CSS into documents with or without a head\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "c5a6d388a20fded6a09e6ec2deceb1bd6b1f60760e388a7f78999bcfe98ec23c"
+      }
+    },
+    {
+      "sourceId": "rc87-4ea9659443aa1918",
+      "sourceDigest": "d4f14f2c615f3c87d7cc820cde449b74e3fda7dc412d70117737fc14f6e404c7",
+      "targetDigest": "ba770083266fe8e84b24040525514bce20954b4eb42f16f3fd6e975815d78c22",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"updates an existing master style without duplicating it\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "2c024bd9b74f91105e54d9109e07a04ab661b5a1525346aff7530f13de26e952"
+      }
+    },
+    {
+      "sourceId": "rc87-2a82e3387d1c954b",
+      "sourceDigest": "aba697fc601b0ed143d0ecc0051b7cc6dc170884981de5af49825d5be228d36b",
+      "targetDigest": "26b32fe9ca6a980ac874b86da1413a3d94ed51200ccb631eb92adeee75909468",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"matches the core render owner and native render protocol\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "ea8b627d7414fe022f43967b731493101846e364760384547adcb1c8dc1b9698"
+      }
+    },
+    {
+      "sourceId": "rc87-989b124c0f6e9a46",
+      "sourceDigest": "530c9fc4b578cc26ae901cd633dfb87929567d5966f4a75b9b6c19fcaca6fa99",
+      "targetDigest": "7bae902001ef5edcc8bb573a551cabfd3da8396070d358c807e589a62077d5cb",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"reuses a renderer without leaking rules between documents\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "83b3fea7cb2e67c4e092892224c0a9d8ef7dac576abc9a94cdba6657f0ff8cf9"
+      }
+    },
+    {
+      "sourceId": "rc87-b9dfe7e0dd133d3c",
+      "sourceDigest": "35231d5b7ebf857aad899c8539b3c0b35dead498a8121027616894b1751a569d",
+      "targetDigest": "626a56fb46147339a494a9d4988e17188fcab6d493cd79f1a94fb0d4f369d121",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"rebuilds bounded cache generations without changing output\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "3ff6422937469b31f45253ccffd5cc4abb91cc169542ee420d5a9c5131c6de0f"
+      }
+    },
+    {
+      "sourceId": "rc87-9e310fd655a40e23",
+      "sourceDigest": "4383190b9b9b08f6ffc7bb6b8438767cd3acc165c967c37eb81c4430886e61d3",
+      "targetDigest": "b882b7151d6a692c09a52dd068b0ba5141fe32b58266c5dc3a18a150cb4f101d",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"renders oversized pages outside the bounded cache\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "ea4af70a90a09d7a0fb9d57b6f9083dc6124aeaae28fef117f51370c2fe248a6"
+      }
+    },
+    {
+      "sourceId": "rc87-935e4fcec1473d25",
+      "sourceDigest": "536a2ff5149f253feefb7de1904b929f43ecaf52ce1d9644ef0e97acd3bfbced",
+      "targetDigest": "0df2587a37e8ee56b8b2d0cca79d5007433ecfb804e1b232c6bef3759b3e5f05",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"validates cache bounds and preserves immutable results after disposal\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "ce0e1b2bb6155ad4f18e05cb56977694ff5d01092697ab2992ebf8a8916f9ded"
+      }
+    },
+    {
+      "sourceId": "rc87-aba2deb3341faee6",
+      "sourceDigest": "5318cfa69fbf65cc01fc5b5f4657ace33dba6caf1a20c05c5309fcfc063e132e",
+      "targetDigest": "adb696c90a3a30bc289954c2c32be73433fbff60f0e2bfb4accb4ef7e53790b5",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"renders a complete response across arbitrary chunks\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "0ebac03636b1dc67d3d1812f2a3e9031b4b69374bc80b54af451f38c7c418e15"
+      }
+    },
+    {
+      "sourceId": "rc87-9890adf43c5e0dfb",
+      "sourceDigest": "61145016ea7eb05209c88595d455fc8dd6c3ec531b7615e4c93534172725d80a",
+      "targetDigest": "4f488e861ba1f8e8d556ce20da9b7bdeed0fd26dbf4666cde9cc17e6fa1797b9",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"isolates render state between responses\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "4e084a9f7c7ba0f5522d66f93dfac0c6c7742db2157cda10d5ac05740c5bfccc"
+      }
+    },
+    {
+      "sourceId": "rc87-9fb06cb439f3854e",
+      "sourceDigest": "697a1f416e2bd87d0abc3d32b4d6ce86351a25d9047fe7e2f42da492146dd896",
+      "targetDigest": "b97427677fe1abc9708d979e0be56a11ca29551dfd9ee779430a0872306898b9",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"honors emitted globals and disabled hydration\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "701f6ede2f5972f216e1e4234078930080e9123d39d66a1eaf76d9c4a08e44f3"
+      }
+    },
+    {
+      "sourceId": "rc87-2b946a760e1253bc",
+      "sourceDigest": "a6069e1837cfd4ffa47c22b0d9bbfbd6b19131b1584e6aa5ce99c4abab500db4",
+      "targetDigest": "10d3e35e6378cb42c37d508ff4746873c76b48212433f36ba1414450fef1c908",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"ignores directives inside comments and strings\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "62bc2d10f876aa589a481923a7539a41935f95aaf899ee86cc7e8d580c1e8c47"
+      }
+    },
+    {
+      "sourceId": "rc87-a0e40cebddb38394",
+      "sourceDigest": "09e0865ea6a199708131fcea551f5608e9229961b70bc03077fe14ca4607e85b",
+      "targetDigest": "c839318ad50dbd165a28d6ba094a60c7957b3cfa5ffb39624376b28c481872c5",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"can limit edits to a source range\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "4fc4dc03fb07cf4f5026dea1017be4a0c56d5dc723f5380f0c7d04c1c8d13a31"
+      }
+    },
+    {
+      "sourceId": "rc87-6f3145ee8c7d46b5",
+      "sourceDigest": "6862dc7bcab7ad519273b6b4f53996a521e49fbabec3bb81dc1dcfbdf2a7d475",
+      "targetDigest": "0dd4830d5658ac62618705a14ab132f37fdd1097d9554f8c5f8b5e81e3d6381c",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"discovers UTF-16 class contexts for markup, script, and CSS\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "5fada7839960c45271586740d3ed05e23361313c738f4a7ffc9de7e8ea362763"
+      }
+    },
+    {
+      "sourceId": "rc87-0c3b4f53433ec72f",
+      "sourceDigest": "c6d377146c1d516d9b06528b873b00c0abda2c3b06acb7d24603ef15da7ce438",
+      "targetDigest": "48b9eee5e9ad2639c2cfda03dd6614e614e170b37c809ace6662a0cb8527be00",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"owns sort, conflict, validation, and edit policy\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "f0f564ea0faed437d7be789d2f00f8e4581f4e3465672475f22ad640575a1f77"
+      }
+    },
+    {
+      "sourceId": "rc87-10c2c919df81e395",
+      "sourceDigest": "cb868fed3193fd9077457430a068596b60bbfcda9dfacd0dac8c634f8e17ac7a",
+      "targetDigest": "a8e4471ccf26f9f4b3ab0d1d7539fc8469e2dfe02a42dc2c22891cb164d93700",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"lints and fixes source files without a TypeScript engine\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "344f53a2d1b2e15346d33196f5da470b346ab5cbcbf23565ba6d3bbbed221bdb"
+      }
+    },
+    {
+      "sourceId": "rc87-3c28c41d2c671162",
+      "sourceDigest": "3a06b992e3ddeaa6c41c7aaa6b621c1b8e3d1f8e7860fce9fd587290fc70549c",
+      "targetDigest": "9fddebb136566cfe390b02e3e019971cf50843ca555a959359f5d7ac14d0e813",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"uses the built-in source extraction pipeline by default\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "9eafc64e61bbab7c4fc2ec7e8af46af1040be61fe41d6b0f9dbe3f4aad332be4"
+      }
+    },
+    {
+      "sourceId": "rc87-73c31dcdb81fde33",
+      "sourceDigest": "9a71f863048ceabd329af82bb91e50be33dc7c6efa053ee0b044caabf1d1e41e",
+      "targetDigest": "4759cd7bbee8374426f79478db2df88fd2cb5c30bfbd2e2f5fd5278a790605a3",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"inserts safelist during init and reset\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "93e68d4a2fa9dc19aacbc60269498c6e244278c509f1ca52adf959b30d92b3cd"
+      }
+    },
+    {
+      "sourceId": "rc87-3c486db7d89c53f8",
+      "sourceDigest": "0185e51f802418e6b5bc216ecc148f88dfe62c25c84603f129b23c2aafcb77ba",
+      "targetDigest": "c74c177a8447e0fbae5406002c7eb6782c2768a93831bdf846042f4c43446b6d",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"cache invalidates on content change\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "c27d734b02f7f115d9ccdce84a2439438e1ea700495e8e413d97783d2f33dc8b"
+      }
+    },
+    {
+      "sourceId": "rc87-4e98d09d5fbd24d7",
+      "sourceDigest": "5663d721a67a569b3fc52f62158e8bb9de781fe08493296a25cede481b572171",
+      "targetDigest": "2a91f55e2dc8eba856cf00e5bafc76d5d0d3f8c8c75bcb0c58170eb290b05c95",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"same class across many files remains a single generated rule\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "87e3344e3f77958c53f2d1392b177cbaa7c342b66027b5bd9ba483697f26f485"
+      }
+    },
+    {
+      "sourceId": "rc87-b68640e106b42fb8",
+      "sourceDigest": "4751462a1623456e3c7b70543c33a7c33d978f589e083d3ad97c36b2ca34a0aa",
+      "targetDigest": "965a971602a3401397f54a084b2671cd1996751eab80e2261138789f62842e2e",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"resets stateful regular expressions while filtering repeated classes\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "5ca583d526822ae5baec9bbbb3db0ecd41d19d71958f824f51d73db18a7521d2"
+      }
+    },
+    {
+      "sourceId": "rc87-4fef17fa41b4a953",
+      "sourceDigest": "96ec5045d3f3950f805c3063dc255d07bd5eb46800dd67dc48da87b265a4a2a6",
+      "targetDigest": "826c69c2c987959edbb3ef707ab67eeb8a91b5bbcf1d3ee46449d7764907b7d7",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"rebuilds when blocklist is reassigned\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "8b1762e83514f9eb781ae35d1105e6658c4bc2602639edccd9f7e2c997df0f40"
+      }
+    },
+    {
+      "sourceId": "rc87-adfe1f2fcb029ef8",
+      "sourceDigest": "7a1872f27e9b059827b1c8ba7fa40215df7b6e05b81aed462867c2222a7af2a6",
+      "targetDigest": "3ee81e9d74a25da9de1b3468acb7f38f81a9b5eaf5ca56bea12954d4865378e1",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"scanModule() scans source-like allowed modules only\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "c12ec19e5f659a5727e1e15b3947c24cbb8a85816bb33657ba11307d12b85bc5"
+      }
+    },
+    {
+      "sourceId": "rc87-ead0c852e550915b",
+      "sourceDigest": "dbeb5d859f4a1bc9a6cfc43586cbcec089e1411ba8ec7b1d4098981d788231db",
+      "targetDigest": "d27488a4e861468d3fed2a83c591851161b86a7007d264d66a4afa531ac7cfbf",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"issue #337: extracts --name:var(--custom-var) class from source\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "611e08ab7d2a4495130c4ead6b25cd97addb1c7fdd35bc2128fbbd4a77a6c56b"
+      }
+    },
+    {
+      "sourceId": "rc87-8c2559572a593020",
+      "sourceDigest": "cd9637cba9c86a545c6d8e1cfdd7aa060d219bc2aa9ab280a1cef3e06f581f2e",
+      "targetDigest": "d8e3f255854ed4e2dbf2589339ace0955aa6cd91736a728bf8f21d1994a4a760",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"Rust scanner cache/state matches the TypeScript scanner oracle slice\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "91700bf9508efa18a216ee443c1c6f5b0292428ed2b7732ca54cc5e6372e82c8"
+      }
+    },
+    {
+      "sourceId": "rc87-1036d5b7cf8ed78f",
+      "sourceDigest": "aad81071bc040643e4a2bdc6504bbfa641ceeac2c614e2ef37712ca0fce1f922",
+      "targetDigest": "c41a0a25b569c2fa03d0b15ab9cbb2921f93aaaec95e3468ff40a7f39ee8f6a1",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"extracts built-in source formats through the native Rust session\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "add7116d36126ad7f2202a32eb7e52f05c2a0657e23b91d8cab11455dd922448"
+      }
+    },
+    {
+      "sourceId": "rc87-e151716687bd682a",
+      "sourceDigest": "df0b0a4be712ae665a1034e8ddfc6c1425083eedf4ecfe7e7302408aad522967",
+      "targetDigest": "d7c00a711c889f6eff947ed2dc5932ff2a04e78260c06c798b644a44ad2090d9",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"serve load inlines current extracted CSS and tracks the virtual CSS module for HMR\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "838909712e20fb0931bd9f7526decfcc1beb2d81c927b3f61498dab46cc3027e"
+      }
+    },
+    {
+      "sourceId": "rc87-58ddaa9d830cec33",
+      "sourceDigest": "8acdce155d8e361c894dfaca9a4a474e63f6b9799f7d9c81e199a8ff559b4763",
+      "targetDigest": "fc3e0eb9024c8b8512215d34782f97d6eaa55ca292a8278f46ded5bfbefb33f0",
+      "proof": "approved-contract-change",
+      "reason": "Explicit QA approval of the exact named-token migration for \"serve transform emits current CSS and reloads the managed stylesheet for HMR\". The reviewed case changes named-token separators and corresponding escaped CSS selectors from colon to hyphen; the two matching blocklist cases update their regex prefix. All other case-body assertions, values and lifecycle behavior remain. Scope is the 62-case patch 7eb939d7e29fc7c45191d3a08fb284b5dcb47458fdb1fd5e72e4f81ae188ec2f.",
+      "approval": {
+        "approvedBy": "Aron (explicit QA approval in this task)",
+        "approvedAt": "2026-09-27T16:30:08.516Z",
+        "reviewRef": "parity/named-token-freeze-approval.md#approved-scope",
+        "scopeDigest": "431b6a151aedc917a006cf4b44e02a600d8d7468a3724a416c694aa1fde1b727"
+      }
     }
   ],
   "surfaces": [
