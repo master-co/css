@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 const cases = ['scss', 'sass'].flatMap(syntax => ['plain-root', 'module-root', 'retained-module'].flatMap(kind => [false, true].map(startupMissing => ({ syntax, kind, startupMissing }))))
 
 function fixture(syntax: string, kind: string, startupMissing: boolean) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-reference-recovery-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-reference-recovery-')))
   mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
   for (const directory of ['main', 'shared']) mkdirSync(join(root, directory))
   const reference = join(root, 'shared/tokens.css'), pixel = join(root, 'shared/pixel.svg')
@@ -124,7 +124,7 @@ test.each(cases)('BH-0004 build-watch reference recovery $syntax/$kind/startup=$
 
 // A closed SSR environment must not remove the client's failed dependency edges.
 test.each([false, true])('BH-0004 external missing reference survives SSR close; check obsolete edges=%s', async (checkObsolete) => {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-external-reference-')))
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-external-reference-')))
   const root = join(parent, 'app'), external = join(parent, 'external'), source = join(root, 'style.css'), reference = join(external, 'tokens.css')
   mkdirSync(root); mkdirSync(external)
   writeFileSync(source, "@reference \"../external/tokens.css\";.target{@media all {background:var(--paint-background);padding:var(--paint-padding);}}")

@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import { once } from 'node:events'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { expect, test } from 'vitest'
@@ -14,7 +15,7 @@ for (const scenario of [
   test(`BH-0019 watches ${scenario.name} without output feedback`, async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-watch-new-'))
     const output = join(cwd, 'master.css')
-    const child = spawn(process.execPath, ['--import', createRequire(import.meta.url).resolve('tsx'),
+    const child = spawn(process.execPath, ['--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
       resolve(__dirname, '../src/bin/index.ts'), 'generate', '--watch', ...scenario.patterns], {
       cwd, env: { ...process.env, TSX_TSCONFIG_PATH: resolve(__dirname, '../../../tsconfig.json') }
     })

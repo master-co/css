@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 test.each([false, true])('BH-0004 middleware restart serves HTML and styles (managed=%s)', async (managed) => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-middleware-restart-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-middleware-restart-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   const http = createHttpServer((request, response) => server!.middlewares(request, response, (error?: unknown) => { response.statusCode = error ? 500 : 404;response.end(error ? String(error) : undefined) }))
   try {

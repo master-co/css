@@ -10,9 +10,10 @@ function getVariable(namespace, key) {
 export default function Page() {
   const color = getVariable('color', 'e2e')
   const breakpoint = getVariable('breakpoint', 'fixture')
+  const fontWeight = getVariable('font-weight', 'bold')
 
   return (
-    <main data-color={color} data-breakpoint={breakpoint}>
+    <main data-color={color} data-breakpoint={breakpoint} data-font-weight={fontWeight}>
       {color}:{breakpoint}
     </main>
   )

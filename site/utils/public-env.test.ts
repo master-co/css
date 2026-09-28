@@ -186,6 +186,29 @@ test('uses localhost for local development even on rc', () => {
   assert.equal(publicEnv.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE, 'always')
 })
 
+for (const [name, overrides, expectedUrl] of [
+  ['preview', {}, 'https://master-preview.vercel.app'],
+  ['explicit URL', { NEXT_PUBLIC_URL: 'https://docs.example.com' }, 'https://docs.example.com'],
+  ['local development', { NODE_ENV: 'development', PORT: '3001' }, 'http://localhost:3001']
+] as const) {
+  test(`resolves Vercel public metadata for ${name}`, () => {
+    const publicEnv = resolvePublicEnv({
+      env: {
+        VERCEL_GIT_COMMIT_REF: 'feature/site-preview',
+        VERCEL_URL: 'master-preview.vercel.app',
+        NEXT_PUBLIC_VERSION: '2.0.0-rc.99',
+        ...overrides
+      },
+      cwd: '/repo',
+      runGit: unexpectedGit,
+      repositoryUrl: JSON.parse(repository).repository.url
+    })
+    assert.equal(publicEnv.NEXT_PUBLIC_COMMIT_REF, 'feature/site-preview')
+    assert.equal(publicEnv.NEXT_PUBLIC_URL, expectedUrl)
+    assert.equal(publicEnv.NEXT_PUBLIC_HOST, new URL(expectedUrl).host)
+  })
+}
+
 test('allows overriding the site locale prefix mode', () => {
   const publicEnv = resolvePublicEnv({
     env: {

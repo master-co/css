@@ -3,6 +3,7 @@ import { isAbsolute } from 'node:path'
 import { getSassSourceFile, getPreparedSassSource, getPreparedSassSourceMap, prepareBuildSassSource, sassSourceID } from './build-sass-source'
 import type { MasterCSSStylesheetImportResolver } from '@master/css-compiler/stylesheet'
 import type { MasterCSSVitePluginContext } from '../core'
+import { normalizeFilePath } from './path'
 
 interface ImportResolverContext {
   resolve?: (id: string, importer: string, options: { skipSelf: true }) => Promise<{ id: string, external?: boolean | string } | null>
@@ -52,7 +53,8 @@ export function getBuildImportResolver(context: MasterCSSVitePluginContext, plug
     if (!result) return
     if (result.external) return null
     const sassFile = getSassSourceFile(result.id)
-    const originalFile = sassFile ?? result.id.replace(/[?#].*$/, '')
+    const original = sassFile ?? result.id.replace(/[?#].*$/, '')
+    const originalFile = isAbsolute(original) ? normalizeFilePath(original) : original
     const preparedOwner = owner && getPreparedSassSource(context, owner)
     const scopedSource = preparedOwner && (await preparedOwner.prepared).moduleSources?.get(originalFile)
     if (typeof scopedSource === 'string') {

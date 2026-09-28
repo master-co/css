@@ -1,15 +1,16 @@
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, it } from 'vitest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const fixtureDir = join(packageDir, 'tests/fixtures/theme-reference')
+const astroCLI = join(dirname(createRequire(import.meta.url).resolve('astro/package.json')), 'bin/astro.mjs')
 
 it('delivers referenced native variables through an Astro scoped style', () => {
-  execFileSync('pnpm', ['--dir', packageDir, 'build'], { cwd: packageDir, stdio: 'pipe', timeout: 120_000 })
-  execFileSync(join(packageDir, 'node_modules/.bin/astro'), ['build'], {
+  execFileSync(process.execPath, [astroCLI, 'build'], {
     cwd: fixtureDir,
     env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
     stdio: 'pipe',

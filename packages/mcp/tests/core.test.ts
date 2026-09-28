@@ -205,13 +205,16 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_render_css',
         arguments: {
           context: 'preset',
-          classList: 'block field-sizing:content display:16px'
+          classList: 'block field-sizing:content display:16px display:banana'
         }
       }))
       expect(renderedNative.invalid).toEqual([])
       expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:banana')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'unknown' })
       expect(renderedNative.css.text).toContain('.block{display:block}')
       expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
+      expect(renderedNative.css.text).toContain('.display\\:16px{display:16px}')
+      expect(renderedNative.css.text).toContain('.display\\:banana{display:banana}')
       expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
 
       const suggestions = parseToolJSON(await connection.client.callTool({
@@ -388,7 +391,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_css_compare',
         arguments: {
           context: 'preset',
-          beforeClassList: 'block display:16px',
+          beforeClassList: 'block display:16px display:banana',
           afterClassList: 'block field-sizing:content'
         }
       }))
@@ -399,6 +402,8 @@ describe('@master/css-mcp', () => {
         removed: []
       })
       expect(nativeCompare.css.after.text).toContain('field-sizing:content')
+      expect(nativeCompare.css.before.text).toContain('.display\\:16px{display:16px}')
+      expect(nativeCompare.css.before.text).toContain('.display\\:banana{display:banana}')
     } finally {
       await connection.close()
     }

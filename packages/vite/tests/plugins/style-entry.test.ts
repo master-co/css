@@ -1,3 +1,4 @@
+import { normalizePath } from 'vite'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { resolve } from 'node:path'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
@@ -40,7 +41,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg-red{color:red}', inc
 }
 
 function getStylesheet(context: ReturnType<typeof makeContext>, id: string) {
-  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === id)
+  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === resolve(id))
 }
 
 function collectDeliveredCSS(context: ReturnType<typeof makeContext>, entry: string) {
@@ -150,7 +151,7 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )).rejects.toThrow('@compose has been removed')
 
-    expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
+    expect(addWatchFile).toHaveBeenCalledWith(normalizePath(resolve('/project/src/style.css')))
   })
 
   test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {
@@ -236,19 +237,22 @@ describe('StyleEntryPlugin', () => {
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
-  test('ignores standalone @master stylesheets without @master/css imports', async () => {
+  test('ignores non-entry definitions but diagnoses removed directives', async () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
     const result = await (plugin as any).transform.call(
       {},
-      '@settings { important: off; }\n.card { color: red }',
+      '@theme { :root { --color-card: red; } }\n.card { color: red }',
       '/project/src/style.css'
     )
 
     expect(result).toBeUndefined()
     expect(context.virtualCSSImporters).toBeUndefined()
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
+    await expect((plugin as any).transform.call(
+      {}, '@settings { important: off; }', '/project/src/style.css'
+    )).rejects.toThrow('@settings has been removed')
   })
 
   test('ignores non-CSS modules and unrelated CSS imports', async () => {

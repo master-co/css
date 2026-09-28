@@ -425,6 +425,22 @@ impl Migration {
         if request.from == RcMigrationProfile::RcNative {
             native::restore_query_variants(&request.stylesheets, &mut target_manifest)?;
         }
+        // Saved RC conditions override preset custom media during equivalence
+        // checks; class migration lowers their queries to explicit native forms.
+        if request.target_is_preset {
+            for name in helper_manifest["conditions"]
+                .as_object()
+                .into_iter()
+                .flat_map(|conditions| conditions.keys())
+            {
+                if let Some(media) = target_manifest
+                    .get_mut("customMedia")
+                    .and_then(Value::as_object_mut)
+                {
+                    media.remove(&format!("--{name}"));
+                }
+            }
+        }
         // Remove stale preset indexes when a saved variant changes its category.
         for variant in target_manifest["variants"]
             .as_array()

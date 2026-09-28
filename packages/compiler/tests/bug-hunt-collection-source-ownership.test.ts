@@ -1,12 +1,12 @@
 import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { expect, test } from 'vitest'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
 import { MasterCSSScanner } from './helpers/scanner'
 
 for (const deliver of [false, true]) test(`collection source selection isolates native CSS and resource ownership: delivery=${deliver}`, async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-collection-owners-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-collection-owners-')))
   const scanner = new MasterCSSScanner({}, root)
   using collection = createStylesheetCollection()
   try {
@@ -19,7 +19,7 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
       await collection.register(scanner, id, readFileSync(id, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: root })
     }
     const options = { scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['block'],
-      ...(deliver ? { delivery: { relativeResourceURLs: true, entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: (file: string) => `./${file.split('/').at(-1)}` } } : {}) }
+      ...(deliver ? { delivery: { relativeResourceURLs: true, entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: (file: string) => `./${basename(file)}` } } : {}) }
     const text = (result: Awaited<ReturnType<typeof collection.compose>>) => [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     const selected = await collection.compose({ ...options, sourceIds: [ids[0] + '?owner'] })
     expect(text(selected)).toContain('.owner-a')
@@ -39,7 +39,7 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
 })
 
 test('strict registration failure retains both the successful stylesheet and native owners', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-strict-owner-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-strict-owner-')))
   const scanner = new MasterCSSScanner({}, root)
   using collection = createStylesheetCollection()
   try {

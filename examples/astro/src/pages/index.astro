@@ -10,7 +10,7 @@ import Card from '../components/Card.astro';
         Astro integration
       </p>
       <h1 class="m:0 mt:1rem font-size:48px font-weight:800 tracking:-.015em">
-        Progressive rendering by default
+        Explicit progressive rendering
       </h1>
       <p class="max-width:640px fg:#475569 font-size:18px line-height:1.7">
         The Astro integration pre-renders the CSS needed for the initial HTML and hydrates the Master CSS runtime for classes that appear later in the browser.
@@ -44,8 +44,8 @@ import Card from '../components/Card.astro';
       />
       <Card
         href="https://css.master.co/guide/installation/astro"
-        title="Default setup"
-        body="Use masterCSS() in astro.config.js. Progressive mode is enabled unless you choose another mode."
+        title="Choose progressive mode"
+        body="Use masterCSS({ mode: 'progressive' }) in astro.config.js. The default mode is static."
       />
       </ul>
     </section>

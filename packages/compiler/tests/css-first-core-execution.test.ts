@@ -110,3 +110,19 @@ describe('CSS-first scoped execution', () => {
     css.dispose()
   })
 })
+
+test('preserves arbitrary native function arguments and custom-property data', () => {
+  const result = compile('.native { --money: $100; --pipe: a|b; --data:{"color":"red"}; color:--alpha(red / foo); --ordinary:--value(); }')
+  for (const value of ['$100', 'a|b', '--alpha(red / foo)', '--value()']) expect(result.nativeCSS).toContain(value)
+  for (const value of [
+    '$color-blue-60', '--alpha(var(--color-blue-60) / 50)',
+    '--alpha(var(--color-blue-60) / foo)', '--alpha(var(--color-blue-60) / 50% / 20%)',
+    '--alpha(var(--color-blue-60))'
+  ]) {
+    const compiled = compile(`@theme { :root { --color-brand: ${value}; } } @utility paint { color: var(--color-brand); }`)
+    const css = createTestCSS(compiled.manifest).ensureClassRules('paint')
+    expect(css.themeLayer.text).toContain(`--color-brand:${value}`)
+    css.dispose()
+  }
+  expect(compile('.native { color: $color-blue-60; }').nativeCSS).toContain('color: $color-blue-60;')
+})

@@ -12,7 +12,12 @@ import type { NextStylesheetLoaderOptions } from './prepare-stylesheet'
 
 export async function prepareNextEntryGraph(context: ModuleContext, projectDir: string, options: NextStylesheetLoaderOptions,
   onDependency: (file: string) => void, source: string, sourceMap?: string,
-  definitions: Pick<MasterCSSStylesheetCompileOptions, 'baseManifest' | 'referenceFiles'> = { baseManifest: defaultBuildManifest }) {
+  definitions: Pick<MasterCSSStylesheetCompileOptions, 'baseManifest' | 'referenceFiles'> = { baseManifest: defaultBuildManifest }): Promise<{
+    graph: ReturnType<typeof createNextModuleGraph>
+    entry: Awaited<ReturnType<ReturnType<typeof createNextModuleGraph>['prepareEntry']>>
+    manifest: MasterCSSStylesheetCompileOptions['baseManifest']
+    postcss: boolean
+  }> {
   const postcss = options.preprocessed ? createNextPostCSS(context, projectDir, onDependency) : undefined
   const raw = createNextModuleGraph(context, projectDir, options, onDependency, { raw: true })
   const rawEntry = await raw.prepareEntry(source, sourceMap)

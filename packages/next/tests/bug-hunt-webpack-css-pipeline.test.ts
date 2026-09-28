@@ -27,7 +27,7 @@ for (const sass of [false, true]) for (const lightning of [false, true]) test(`B
   const dispatcher = chain[1]
   expect(dispatcher.loader).toMatch(/[/\\]webpack-css-loader\.js$/)
   expect(dispatcher.options.loader).toBe(cssLoader.loader)
-  const postcss = chain.find((item: { loader: string }) => item.loader.endsWith('/webpack-postcss-loader.js'))
+  const postcss = chain.find((item: { loader: string }) => /[/\\]webpack-postcss-loader\.js$/.test(item.loader))
   if (!lightning) {
     expect(postcss.options.loader).toBe(nextLoader('postcss-loader'))
     expect(postcss.options.options).toBe(postcssOptions)

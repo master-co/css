@@ -47,7 +47,8 @@ for (const managed of [false, true]) for (const mode of ['static', 'runtime', 'p
       const invalid = await state.next();expect(invalid.code).toBe('ERROR');expect(String(invalid.error)).toContain('@compose has been removed')
       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(state.events).toEqual([])
       state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
-      expect((await state.next()).code).toBe('BUNDLE_END');expect(state.output()).toContain('padding:3rem')
+      const recovered = await state.next()
+      expect(recovered.code, String(recovered.error)).toBe('BUNDLE_END');expect(state.output()).toContain('padding:3rem')
       writeFileSync(state.style, '.target{padding:4rem}')
       expect((await state.next()).code).toBe('BUNDLE_END')
       // Recovery can already have queued a rebuild when this edit arrives.

@@ -1,11 +1,12 @@
 import { describe, expect, test, vi } from 'vitest'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { normalizePath } from 'vite'
 import LocalStylesPlugin from '../../src/plugins/local-styles'
 
 function createFixture() {
-  const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-'))
+  const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-')))
   mkdirSync(path.join(root, 'src'), { recursive: true })
   writeFileSync(path.join(root, 'app.css'), "\n    @import url(\"@master/css\");\n\n    @theme {:root, :host { --color-brand: #123456; }}\n\n  ")
   return root
@@ -47,8 +48,8 @@ describe('LocalStylesPlugin', () => {
       expect(result.code).toMatch(/color:\s*(?:#fff|white)/)
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'src/Button.module.css'))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'app.css')))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'src/Button.module.css')))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -74,7 +75,7 @@ describe('LocalStylesPlugin', () => {
       expect(result.code).toMatch(/\.home\s*\{[\s\S]*padding-block:\s*var\(--spacing-5xl\)/)
       expect(result.code).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'app.css')))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -140,7 +141,7 @@ describe('LocalStylesPlugin', () => {
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(themePath)
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(themePath))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -180,7 +181,7 @@ describe('LocalStylesPlugin', () => {
         '.button { @compose bg-missing-token; }',
         modulePath
       )).rejects.toThrow('@compose has been removed')
-      expect(addWatchFile).toHaveBeenCalledWith(modulePath)
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(modulePath))
 
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },

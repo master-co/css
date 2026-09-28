@@ -1,7 +1,9 @@
 import { inspectCSSSync } from '@master/css-compiler/node'
 import type { CSSOptions } from 'vite'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { isAbsolute } from 'node:path'
 import { createSassSourceMarkers } from './sass-source-markers'
+import { normalizeFilePath } from './path'
 
 type InlinePostCSS = Exclude<CSSOptions['postcss'], string | undefined>
 type HostPlugin = Exclude<Extract<NonNullable<InlinePostCSS['plugins']>[number], { postcssPlugin: string }>, (...args: never[]) => unknown>
@@ -28,16 +30,17 @@ export function moduleSourceOwner(id: string) {
 
 /** Project Vite's Modules AST changes onto its original per-file syntax trees. */
 export function createModuleSourceProjection(file: string): { plugin: HostPlugin, sources: Map<string, string>, diagnostics: Map<string, ModuleSourceDiagnostic>, sourceFiles: Map<string, string>, copyDuplicate(id: string, source: string): void, additionalData(value: AdditionalData): AdditionalData } {
+  file = normalizeFilePath(file)
   const originals = new Map<string, HostRoot>()
   const sources = new Map<string, string>()
   const projectedInputs = new Map<string, string>()
   const inputDiagnostics = new Map<string, ModuleSourceDiagnostic>()
   const diagnostics = new Map<string, ModuleSourceDiagnostic>()
   const authoredInputs = new Map<string, string>()
-  const preparation = createSassSourceMarkers((id, source) => authoredInputs.set(id, source))
+  const preparation = createSassSourceMarkers((id, source) => authoredInputs.set(normalizeFilePath(id), source))
   const { markers } = preparation
   const sourceFiles = new Map<string, string>()
-  const sourceFile = (id: string) => sourceFiles.get(id) ?? id
+  const sourceFile = (id: string) => sourceFiles.get(normalizeFilePath(id)) ?? normalizeFilePath(id)
   const key = (node: HostNode) => `${node.type}:${node.source?.start?.offset}:${node.source?.end?.offset}`
   const plugin: HostPlugin = {
     postcssPlugin: 'master-css:module-source-projection',
@@ -57,7 +60,7 @@ export function createModuleSourceProjection(file: string): { plugin: HostPlugin
         if (input?.file && !originals.has(sourceFile(input.file))) originals.set(sourceFile(input.file), postcss.parse(input.css, { from: sourceFile(input.file) }))
       })
       root.walkComments(node => {
-        const temporaryMap = node.source?.input.file && sourceFiles.has(node.source.input.file) && node.text.trim().startsWith('# sourceMappingURL=')
+        const temporaryMap = node.source?.input.file && sourceFiles.has(normalizeFilePath(node.source.input.file)) && node.text.trim().startsWith('# sourceMappingURL=')
         if (temporaryMap || markers.has(node.text.trim())) node.remove()
       })
     },
@@ -93,8 +96,8 @@ export function createModuleSourceProjection(file: string): { plugin: HostPlugin
           const printed = original.toResult({ from: id, to: id, map: { inline: false, annotation: false, sourcesContent: true } })
           const map = printed.map?.toJSON()
           if (map) map.sources = map.sources.map((source, index) => {
-            const url = new URL(source, pathToFileURL(id))
-            const temporary = url.protocol === 'file:' ? sourceFiles.get(fileURLToPath(url)) : undefined
+            const url = isAbsolute(source) ? pathToFileURL(source) : new URL(source, pathToFileURL(id))
+            const temporary = url.protocol === 'file:' ? sourceFiles.get(normalizeFilePath(fileURLToPath(url))) : undefined
             if (!temporary) return source
             // Unmapped generated segments must not point at deleted scratch
             // files or claim to be authored Sass. The diagnostic adapter treats
@@ -113,6 +116,7 @@ export function createModuleSourceProjection(file: string): { plugin: HostPlugin
     }
   }
   return { plugin, sources, diagnostics, sourceFiles, additionalData: preparation.additionalData, copyDuplicate(id, source) {
+    id = normalizeFilePath(id)
     // postcss-import can omit another file with byte-identical input. Reuse
     // that input's host transformation, retaining the duplicate's own base.
     const projected = projectedInputs.get(source)

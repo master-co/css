@@ -19,6 +19,14 @@ function extractClassNamesFromHTML(html: string) {
     .flatMap((match) => match[2].split(/\s+/).filter(Boolean)))]
 }
 
+function assertUnverifiedCustomProperties(result: Awaited<ReturnType<typeof compileFixture>>) {
+  assert.ok(result.warnings.includes('Unverified CSS value: color:var(--color-master-ink)'))
+  assert.ok(result.warnings.every(message => message.startsWith('Unverified CSS value: ')))
+  assert.ok(result.result.diagnostics.length > 0)
+  assert.ok(result.result.diagnostics.every(diagnostic =>
+    diagnostic.code === 'CSS_VALUE_UNKNOWN' && diagnostic.severity === 'information'))
+}
+
 test('compiles the starter Play template into generated CSS', async () => {
   const html = readFixture('../../../[locale]/play/templates/latest/example.html')
   const sourceCSS = readFixture('../../../[locale]/play/templates/latest/example.css')
@@ -27,7 +35,7 @@ test('compiles the starter Play template into generated CSS', async () => {
   assert.match(result.css, /@layer theme/)
   assert.match(result.css, /@layer utilities/)
   assert.match(result.css, /@layer components/)
-  assert.match(result.css, /\.btn\{/)
+  assert.match(result.css, /\.btn\s*\{/)
   assert.match(result.css, /--color-master:/)
   assert.match(result.css, /--color-master-hover:/)
   assert.match(result.css, /--color-master-ink:/)
@@ -36,10 +44,9 @@ test('compiles the starter Play template into generated CSS', async () => {
   assert.match(result.css, /--color-text-body/)
   assert.match(result.css, /\.surface-raised\{/)
   assert.match(result.css, /\.text-body\{/)
-  assert.ok(result.css.includes('.btn:hover .btn-arrow-line{opacity:1;transform:scale(1)}'))
-  assert.deepEqual(result.warnings, [])
+  assert.match(result.css, /\.btn\s*\{[\s\S]*?&:hover \.btn-arrow-line\s*\{\s*opacity:\s*1;\s*transform:\s*scale\(1\);\s*\}/)
+  assertUnverifiedCustomProperties(result)
   assert.equal(result.result.manifest, result.manifest)
-  assert.deepEqual(result.result.diagnostics, [])
   assert.ok(result.css.length > 1000)
 })
 
@@ -50,10 +57,10 @@ test('keeps native CSS while generating Play classes', async () => {
 
   assert.match(result.css, /\.native\s*\{\s*color:\s*var\(--color-text-body\);\s*\}/)
   assert.match(result.css, /\.surface-raised\{/)
-  assert.match(result.css, /\.btn\{/)
+  assert.match(result.css, /\.btn\s*\{/)
   assert.match(result.css, /--color-text-body/)
   assert.match(result.css, /--color-master:/)
-  assert.deepEqual(result.warnings, [])
+  assertUnverifiedCustomProperties(result)
 })
 
 test('includes generated keyframes referenced by native CSS', async () => {

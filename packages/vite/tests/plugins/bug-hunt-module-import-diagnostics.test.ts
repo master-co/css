@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 type BuildDiagnostic = MasterCSSError & { loc?: { file: string, line: number, column: number }, plugin?: string }
 
 async function failure(files: Record<string, string>, request: string, css?: InlineConfig['css']) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-sass-location-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-sass-location-')))
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')

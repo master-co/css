@@ -1,0 +1,18 @@
+export declare const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = "\0master-css-manifest:";
+export declare const VIRTUAL_MODULE_DIR = "node_modules/.master-css";
+export declare function toHashedManifestAssetFileName(json: string, basename?: string): string;
+export declare function toHashedHydrationManifestAssetFileName(json: string): string;
+export declare function toResolvedMasterCSSManifestId(file: string): string;
+export declare function fromResolvedMasterCSSManifestId(id: string): string | undefined;
+export declare function toVirtualDefaultManifestModulePath(context: string): string;
+export declare function toVirtualModulePackageJSONPath(context: string): string;
+export declare function toVirtualCSSManifestModulePath(context: string, file: string): string;
+export declare function toVirtualCSSManifestAssetPath(context: string, file: string): string;
+export declare function toVirtualCSSModulePath(context: string): string;
+export declare function toVirtualEmittedGlobalsModulePath(context: string): string;
+export declare function createVirtualDefaultManifestModulePathPattern(): RegExp;
+export declare function createVirtualEmittedGlobalsModulePathPattern(): RegExp;
+export declare function ensureVirtualModulePackageJSONPath(projectDir?: string): string;
+export declare function ensureVirtualModuleFile(file: string, source: string): string;
+export declare function ensureVirtualManifestModulePath(projectDir?: string): string;
+export declare function ensureVirtualEmittedGlobalsModulePath(projectDir?: string): string;

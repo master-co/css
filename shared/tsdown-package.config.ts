@@ -39,6 +39,8 @@ const rootByPackageName: Record<string, string> = {
 }
 
 const privateInternalPackagePattern = /^@master\/css-internal(?:\/|$)/
+// Rolldown also checks resolved IDs: a Windows drive path is not a package import.
+const bareImportPattern = /^(?![a-zA-Z]:[/\\])[^./\\\0]/
 
 const externalLanguageSyntaxJSON: TsdownPlugin = {
   name: 'external-language-syntax-json',
@@ -107,8 +109,8 @@ export default defineConfig({
     dts: {
       alwaysBundle: [privateInternalPackagePattern],
       neverBundle: ['@master/css-binding', '@master/css-tooling', '@master/css-language-server', '@master/css-mcp'].includes(packageJSON.name || '')
-        ? [/^[^./]/]
-        : [/^[^./]/, /^\.{1,2}\//]
+        ? [bareImportPattern]
+        : [bareImportPattern, /^\.{1,2}\//]
     }
   },
   plugins: [

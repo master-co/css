@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -47,7 +48,7 @@ describe('@master/css-compiler/stylesheet public contract', () => {
         baseManifest: defaultManifest
       })
 
-      expect(snapshot.sourceIds).toEqual(['/project/app.css'])
+      expect(snapshot.sourceIds).toEqual([resolve('/project/app.css')])
       expect(Object.isFrozen(snapshot)).toBe(true)
       expect(Object.isFrozen(snapshot.sources)).toBe(true)
       expect(Object.isFrozen(snapshot.sources[0].dependencies)).toBe(true)

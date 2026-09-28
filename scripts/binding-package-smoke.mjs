@@ -26,20 +26,26 @@ function runNPM(args, options = {}) {
 
 function exerciseEngineSession(binding) {
   const session = new binding.EngineSession(JSON.stringify({
-    version: 1,
+    version: 2,
+    languageVersion: 4,
+    theme: [{
+      type: 'rule', prelude: ':root,:host',
+      children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }]
+    }],
     variables: {
       '': [{
         name: 'stripe',
         key: 'stripe',
         type: 'string',
-        value: 'linear-gradient(red,blue)'
+        values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }],
+        dependencies: []
       }]
     },
     utilities: []
   }))
 
   try {
-    const ensured = JSON.parse(session.ensureClassRulesWithNativeSupport(['bg:stripe'], [true]))
+    const ensured = JSON.parse(session.ensureClassRules(['bg:var(--stripe)']))
     if (!ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'theme')
       || !ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'utilities')) {
       throw new Error('Native engine smoke did not emit the expected theme and utility rules.')
@@ -54,7 +60,7 @@ function exerciseEngineSession(binding) {
 
     const snapshot = JSON.parse(session.snapshot())
     if (snapshot.text.includes('--stripe:')
-      || !snapshot.text.includes('.bg\\:stripe{background:var(--stripe)}')) {
+      || !snapshot.text.includes('.bg\\:var\\(--stripe\\){background:var(--stripe)}')) {
       throw new Error('Native engine smoke did not preserve the utility without local theme output.')
     }
   } finally {

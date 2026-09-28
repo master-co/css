@@ -8,6 +8,9 @@ declare module '*?master-css-manifest' {
 declare module 'virtual:master-utilities.css' {
 }
 
+declare module 'virtual:master-css-runtime' {
+}
+
 declare module 'virtual:master-css-manifest' {
   import type { MasterCSSManifest } from '@master/css-schema/manifest'
 

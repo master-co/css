@@ -1,8 +1,10 @@
 import { SourceMap } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { isAbsolute } from 'node:path'
 import { MasterCSSError, type MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSVitePluginContext } from '../core'
 import { getPreparedSassDiagnosticSource } from './build-sass-source'
+import { normalizeFilePath } from './path'
 
 const mappedErrors = new WeakSet<MasterCSSError>()
 
@@ -21,15 +23,16 @@ async function mapDiagnostic(context: MasterCSSVitePluginContext, diagnostic: Ma
   const { start, end } = diagnostic.range
   const origin = map.findEntry(start.line, start.character)
   if (!('originalSource' in origin) || !origin.originalSource || origin.originalSource.includes('\0') || origin.generatedLine !== start.line) return unavailable
-  const root = new URL(sourceRoot ? sourceRoot.replace(/\/?$/, '/') : './', pathToFileURL(cached.file))
-  const url = new URL(origin.originalSource, root)
+  const rootSource = sourceRoot ? sourceRoot.replace(/\/?$/, '/') : './'
+  const root = isAbsolute(rootSource) ? pathToFileURL(rootSource) : new URL(rootSource, pathToFileURL(cached.file))
+  const url = isAbsolute(origin.originalSource) ? pathToFileURL(origin.originalSource) : new URL(origin.originalSource, root)
   const source = url.protocol === 'file:' ? fileURLToPath(url) : url.href
   if (source.includes('\0')) return unavailable
   const position = { line: origin.originalLine, character: origin.originalColumn }
   let original = sourcesContent[raw.sources.indexOf(origin.originalSource)]
   // Vite's string additionalData map omits its original source content. A
   // callback without a map instead labels its modified text as the root file.
-  if (source === cached.file) {
+  if (url.protocol === 'file:' && normalizeFilePath(source) === cached.file) {
     if (original != null && original !== cached.source) return unavailable
     original = cached.source
   }

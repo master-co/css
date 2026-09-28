@@ -39,8 +39,8 @@ function makeRoot() {
   const root = mkdtempSync(join(parent, 'dev-graph-environments-'))
   for (const [name, color] of [['initial', 'red'], ['later', 'green']]) {
     writeFileSync(join(root, `${name}.css`), `@import "./${name}-child.css" layer(guard);@import url("@master/css");@preserve native;`)
-    writeFileSync(join(root, `${name}-child.css`), `@import "/base/external.css";.${name}{color:${color};background-image:url("./${name}%23%3F.svg?q=1#part")}`)
-    writeFileSync(join(root, `${name}#?.svg`), `<svg xmlns="http://www.w3.org/2000/svg"><title>${color}</title></svg>`)
+    writeFileSync(join(root, `${name}-child.css`), `@import "/base/external.css";.${name}{color:${color};background-image:url("./${name}%23%25.svg?q=1#part")}`)
+    writeFileSync(join(root, `${name}#%.svg`), `<svg xmlns="http://www.w3.org/2000/svg"><title>${color}</title></svg>`)
     writeFileSync(join(root, `${name}.js`), `export { default as css } from './${name}.css?inline'`)
   }
   writeFileSync(join(root, 'index.html'), '<!doctype html><div class="initial later"></div>')
@@ -70,7 +70,7 @@ test.each(cases)('retained graphs survive idle environment replacement mode=$mod
     await expectAssets(initial.assets)
     const later = await readGraph((await replacement.runner.import('/later.js')).css, origin)
     expect(later.css).toMatch(/\.later\s*\{[^}]*color:\s*green/)
-    writeFileSync(join(root, 'later-child.css'), '@import "/base/external.css";.later{color:purple;background-image:url("./later%23%3F.svg?q=1#part")}')
+    writeFileSync(join(root, 'later-child.css'), '@import "/base/external.css";.later{color:purple;background-image:url("./later%23%25.svg?q=1#part")}')
     await vi.waitFor(async () => expect((await readGraph((await replacement.runner.import('/later.js')).css, origin)).css).toMatch(/\.later\s*\{[^}]*color:\s*purple/), { timeout: watchDeadline })
     await expectAssets(initial.assets)
     await expectAssets(later.assets)
@@ -102,7 +102,7 @@ test.each(restartCases)('retained graph restart mode=$mode middleware=$middlewar
     const currentOrigin = middleware ? origin : server.resolvedUrls!.local[0]
     const current = await readGraph((await server.ssrLoadModule('/initial.js')).css, currentOrigin)
     expect([...current.assets.keys()].sort()).not.toEqual([...old.assets.keys()].sort())
-    writeFileSync(join(root, 'initial-child.css'), '@import "/base/external.css";.initial{color:purple;background-image:url("./initial%23%3F.svg?q=1#part")}')
+    writeFileSync(join(root, 'initial-child.css'), '@import "/base/external.css";.initial{color:purple;background-image:url("./initial%23%25.svg?q=1#part")}')
     await vi.waitFor(async () => expect((await readGraph((await server!.ssrLoadModule('/initial.js')).css, currentOrigin)).css).toMatch(/\.initial\s*\{[^}]*color:\s*purple/), { timeout: watchDeadline })
     await expectAssets(current.assets)
     for (const file of server.config.server.fs.allow) if (file.includes('/master-css-vite-resources-')) copies.add(file)

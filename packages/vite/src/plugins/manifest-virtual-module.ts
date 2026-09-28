@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import { normalizePath, type Plugin } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
 import { createMasterCSSManifestVirtualModulePlugin } from '@master/css-internal/manifest-virtual-module'
 import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
@@ -25,10 +25,14 @@ export default function ManifestVirtualModulePlugin(
   context: MasterCSSVitePluginContext
 ): Plugin {
   const plugin = createMasterCSSManifestVirtualModulePlugin(
-    (options) => loadMasterCSSVirtualManifest({
-      ...options,
-      host: manifestHost
-    }),
+    async (options) => {
+      const result = await loadMasterCSSVirtualManifest({
+        ...options,
+        onDependency: file => options.onDependency(normalizePath(file)),
+        host: manifestHost
+      })
+      return { ...result, dependencies: result.dependencies.map(normalizePath) }
+    },
     context
   )
   type Host = DependencyHost & ThisParameterType<typeof plugin.load>

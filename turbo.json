@@ -1,5 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalPassThroughEnv": [
+    "CARGO_HOME",
+    "RUSTUP_HOME"
+  ],
   "globalDependencies": [
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",

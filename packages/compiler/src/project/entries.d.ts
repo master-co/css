@@ -1,0 +1,14 @@
+import { resolveMasterCSSPackageEntryFile } from '../node-compiler';
+export declare function normalizeMasterCSSModuleIds(): Set<"@master/css">;
+export declare function isMasterCSSModuleId(id: string): boolean;
+export declare function createMasterCSSManifestEntryPattern(): RegExp;
+export declare function cleanCSSManifestRequest(id: string): string;
+export declare function isCSSManifestRequest(id: string): boolean;
+export { resolveMasterCSSPackageEntryFile };
+export declare function hasMasterCSSManifestEntrypoint(source: string): boolean;
+export declare function findCSSManifestEntryFiles(projectDir?: string): Promise<string[]>;
+export declare function findCSSManifestEntryFilesSync(projectDir?: string): string[];
+export declare function findCSSManifestEntryFile(projectDir?: string): Promise<string>;
+export declare function findCSSManifestEntryFileSync(projectDir?: string): string;
+export declare function findMasterCSSWorkspaceDirectories(rootDir?: string): Promise<string[]>;
+export declare function findMasterCSSWorkspaceDirectoriesSync(rootDir?: string): string[];

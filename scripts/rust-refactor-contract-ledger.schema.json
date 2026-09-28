@@ -2,49 +2,111 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "./rust-refactor-contract-ledger.schema.json",
   "type": "object",
-  "required": ["version", "policy", "baseline", "target", "evidence", "summary", "surfaces", "entries", "added"],
+  "required": [
+    "version",
+    "policy",
+    "baseline",
+    "target",
+    "evidence",
+    "summary",
+    "surfaces",
+    "entries",
+    "added"
+  ],
   "properties": {
-    "version": { "const": 1 },
-    "policy": { "type": "object" },
-    "baseline": { "type": "object" },
-    "target": { "type": "object" },
-    "evidence": { "type": "object" },
-    "summary": { "type": "object" },
+    "version": {
+      "const": 1
+    },
+    "policy": {
+      "type": "object"
+    },
+    "baseline": {
+      "type": "object"
+    },
+    "target": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object"
+    },
     "surfaces": {
       "type": "array",
-      "items": { "$ref": "#/$defs/auditedChange" }
+      "items": {
+        "$ref": "#/$defs/auditedChange"
+      }
     },
     "entries": {
       "type": "array",
-      "items": { "$ref": "#/$defs/auditedChange" }
+      "items": {
+        "$ref": "#/$defs/auditedChange"
+      }
     },
-    "added": { "type": "array" }
+    "added": {
+      "type": "array"
+    }
   },
   "$defs": {
     "approval": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest"],
+      "required": [
+        "approvedBy",
+        "approvedAt",
+        "reviewRef",
+        "scopeDigest"
+      ],
       "properties": {
-        "approvedBy": { "type": "string", "minLength": 1 },
-        "approvedAt": { "type": "string", "format": "date-time" },
-        "reviewRef": { "type": "string", "minLength": 1 },
-        "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        "approvedBy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scopeDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
     "auditedChange": {
       "type": "object",
       "properties": {
-        "status": { "type": "string" },
-        "approval": { "$ref": "#/$defs/approval" }
+        "status": {
+          "type": "string"
+        },
+        "approval": {
+          "$ref": "#/$defs/approval"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "status": { "const": "approved-contract-change" } },
-            "required": ["status"]
+            "properties": {
+              "status": {
+                "enum": [
+                  "approved-contract-change",
+                  "approved-contract-removal"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
           },
-          "then": { "required": ["approval"] }
+          "then": {
+            "required": [
+              "approval"
+            ]
+          }
         }
       ]
     }

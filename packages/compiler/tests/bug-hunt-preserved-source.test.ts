@@ -1,4 +1,6 @@
 import { expect, test } from 'vitest'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { SourceMap } from 'node:module'
 import { createCompiler } from '../src/index'
 import { compileStylesheet } from '../src/stylesheet/index-public'
@@ -35,13 +37,14 @@ for (const binding of ['native', 'wasm'] as const) {
 }
 
 test('Node stylesheet preparation preserves raw text and exact UTF-16 selector origins', async () => {
-  const result = await compileStylesheet('/project/entry.css', source, { baseManifest, preserveNativeSource: true })
+  const file = resolve('/project/entry.css')
+  const result = await compileStylesheet(file, source, { baseManifest, preserveNativeSource: true })
   expect(result.css).toBe('\n\n' + native)
   const payload = JSON.parse(result.sourceMap!)
   const map = new SourceMap(payload)
   for (const selector of ['.empty', '.shared', '.sibling']) {
     expect(map.findEntry(2, native.indexOf(selector))).toMatchObject({
-      originalSource: 'file:///project/entry.css', originalLine: 2, originalColumn: native.indexOf(selector)
+      originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: native.indexOf(selector)
     })
   }
   expect(payload.sourcesContent).toContain(source)

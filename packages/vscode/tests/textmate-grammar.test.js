@@ -196,7 +196,7 @@ test('does not change native CSS TextMate scopes when injected', () => {
     '',
     '@supports (container-type: inline-size) {',
     '    @container card (width > 30rem) {',
-    '        @layer utilities {',
+    '        @layer components {',
     '            .card:is(.active, #featured) {',
     '                animation: fade 1s ease-in-out;',
     '            }',
@@ -321,6 +321,11 @@ test('colors named conditions and delegates native at-rules', () => {
 test('removed directives do not receive active directive scopes', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, '@master entry; @settings {} @mode dark {} @utilities {} .x { @compose block; @dark {} @light {} }')
   expect(tokens.filter(token => token.scopes.includes('keyword.control.at-rule.master-css'))).toEqual([])
+})
+
+test('leaves removed compose directives to native CSS highlighting', () => {
+  const source = '.card { @compose fg-red block:hover@sm; }'
+  expect(tokenizeWith(injectedCSSGrammar, source)).toEqual(tokenizeWith(nativeCSSGrammar, source))
 })
 
 test('does not highlight directives inside comments or quoted strings', () => {

@@ -10,7 +10,7 @@ import { watchDeadline } from '../watch-deadline-helper'
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const manifestURL = '/@id/__x00__virtual:master-css-manifest'
 function fixture() {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, 'nested/tokens.css')
   writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/nested/tokens.css\";@utility card {@variant paint{padding:1rem;}}")

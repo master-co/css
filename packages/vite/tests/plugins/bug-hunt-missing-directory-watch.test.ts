@@ -12,7 +12,7 @@ function notified(calls: readonly (readonly unknown[])[]) {
   return calls.some(([value]) => value && typeof value === 'object' && 'type' in value && ['update', 'full-reload'].includes(String(value.type)))
 }
 test.each(cases)('BH-0004 missing directory recovers $kind in $mode via $backend', async ({ mode, kind, backend }) => {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-missing-directory-')))
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-missing-directory-')))
   const root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const resource = kind.startsWith('entry'), nested = kind.endsWith('one') ? 'one' : 'one/two/three'

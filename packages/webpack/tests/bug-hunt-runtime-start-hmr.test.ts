@@ -5,7 +5,7 @@ import { expect, test, vi } from 'vitest'
 type Manifest = { version: number }
 type Runtime = { manifest: Manifest; disposed: boolean; dispose: () => void; observe: () => Runtime }
 const source = stripTypeScriptTypes(readFileSync(new URL('../src/runtime.ts', import.meta.url), 'utf8'))
-  .replace(/^import .*\n/gm, '')
+  .replace(/^import .*\r?\n/gm, '')
   .replaceAll('masterCSSManifest', 'modules.manifest')
   .replaceAll('masterCSSEmittedGlobals', 'modules.emittedGlobals')
   .replaceAll('import.meta.webpackHot', 'importMeta.webpackHot')

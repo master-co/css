@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { MasterCSSError } from '@master/css-schema'
-import { build, createServer, preprocessCSS, resolveConfig } from 'vite'
+import { normalizePath, build, createServer, preprocessCSS, resolveConfig } from 'vite'
 import { expect, test } from 'vitest'
 import MagicString from 'magic-string'
 import masterCSS from '../../src/core'
@@ -14,7 +14,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 const cases = ['css', 'scss'].flatMap(rootExtension => ['scss', 'sass'].flatMap(syntax => [false, true].flatMap(partial => ['identity', 'string', 'mapped'].flatMap(addition => ['build', 'serve'].map(command => ({ rootExtension, syntax, partial, addition, command }))))))
 
 test.each(cases)('imported Sass maps original file and token: $rootExtension / $syntax / partial=$partial / $addition / $command', async ({ rootExtension, syntax, partial, addition, command }) => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-original-import-map-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-original-import-map-')))
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     mkdirSync(join(root, 'nested'))
@@ -47,7 +47,7 @@ test.each(cases)('imported Sass maps original file and token: $rootExtension / $
     } catch (error) { failure = (error as MasterCSSError).diagnostics ? error as MasterCSSError : (error as { errors?: MasterCSSError[] }).errors?.[0] }
     finally { await server?.environments.client.waitForRequestsIdle(); await server?.close() }
     expect(failure?.diagnostics[0]?.code).toBe('removed-compose-directive')
-    expect(calls.filter(file => file === child)).toHaveLength(addition === 'string' ? 0 : 1)
+    expect(calls.filter(file => file === normalizePath(child))).toHaveLength(addition === 'string' ? 0 : 1)
     const diagnostic = failure!.diagnostics[0]
     console.log(JSON.stringify({ rootExtension, syntax, partial, addition, command, diagnostic, additionalDataCalls: calls }))
     expect(diagnostic.source).toBe(original)
@@ -57,7 +57,7 @@ test.each(cases)('imported Sass maps original file and token: $rootExtension / $
 })
 
 test.each(['scss', 'sass'])('pure Vite direct preprocessing exposes original imported-partial maps: %s', async syntax => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-vite-map-control-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-vite-map-control-')))
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const original = join(root, `_bad.${syntax}`), child = join(root, `child.${syntax}`)
@@ -72,7 +72,7 @@ test.each(['scss', 'sass'])('pure Vite direct preprocessing exposes original imp
     const origin = new SourceMap(raw as ConstructorParameters<typeof SourceMap>[0]).findEntry(line, column)
     expect('originalSource' in origin).toBe(true)
     if (!('originalSource' in origin)) throw new Error('Missing original map source')
-    expect(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource).toBe(original)
+    expect(normalizePath(origin.originalSource.startsWith('file:') ? fileURLToPath(origin.originalSource) : origin.originalSource)).toBe(normalizePath(original))
     expect(origin.originalLine).toBe(2)
     expect(origin.originalColumn).toBe(2)
     console.log(JSON.stringify({ control: 'pure-vite-preprocessCSS', syntax, origin, sources: raw?.sources, pass: true }))
@@ -80,7 +80,7 @@ test.each(['scss', 'sass'])('pure Vite direct preprocessing exposes original imp
 })
 
 for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unmapped']) test(`imported ${syntax} keeps honest ${kind} diagnostic precision`, async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-import-map-precision-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-import-map-precision-')))
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const child = join(root, `child.${syntax}`)
@@ -104,7 +104,7 @@ for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unma
       expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 10 } })
       expect(diagnostic.notes).toBeUndefined()
     } else {
-      expect(diagnostic.source).toBe(child + '.master-css-sass.css')
+      expect(diagnostic.source).toBe(normalizePath(child) + '.master-css-sass.css')
       expect(diagnostic.notes).toContain('Original Sass location is unavailable; this range refers to preprocessed CSS.')
     }
   } finally { rmSync(root, { recursive: true, force: true }) }

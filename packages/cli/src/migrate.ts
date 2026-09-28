@@ -47,15 +47,15 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
   const paths = fg.sync(patterns, {
     cwd, absolute: true, onlyFiles: true, unique: true,
     ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**']
-  }).sort()
+  }).map(file => path.resolve(file)).sort()
   // Only the explicit migrator recognizes retired entry syntax. Rust classifies
   // candidate stylesheets; normal project discovery stays on the current contract.
-  const candidates = options.entry ? [] : fg.sync('**/*.css', { cwd, absolute: true, onlyFiles: true, ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**'] }).sort()
+  const candidates = options.entry ? [] : fg.sync('**/*.css', { cwd, absolute: true, onlyFiles: true, ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**'] }).map(file => path.resolve(file)).sort()
   const classified = candidates.length ? migrateRCSync({ from: options.from, sourceVersion, manifest, targetManifest, targetIsPreset: !options.targetManifest,
     classLists: [], stylesheets: candidates.map(file => fs.readFileSync(file, 'utf8')), documents: []
   }).stylesheets : []
   const migratedEntries = candidates.filter((_, index) => classified[index].isEntry)
-  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...new Set([...discoverManifestEntriesSync({ root: cwd }), ...migratedEntries])]
+  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...new Set([...discoverManifestEntriesSync({ root: cwd }), ...migratedEntries].map(file => path.resolve(cwd, file)))]
   if (entries.length === 1 && !paths.includes(entries[0])) paths.push(entries[0])
   const files = paths.map(filePath => ({
     filePath,
@@ -87,7 +87,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
   for (const entry of new Set([...entries, ...stylesheets.map(file => file.filePath)])) {
     const source = files.find(file => file.filePath === entry)?.source ?? fs.readFileSync(entry, 'utf8')
     const resolved = resolveStylesheetDependenciesSync(entry, source, { projectDir: cwd })
-    for (const dependency of resolved.dependencies) {
+    for (const dependency of resolved.dependencies.map(file => path.resolve(file))) {
       if (!files.some(file => file.filePath === dependency)) dependencySources.set(dependency, fs.readFileSync(dependency, 'utf8'))
     }
   }

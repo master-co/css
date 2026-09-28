@@ -5,7 +5,7 @@ import { expect, test } from 'vitest'
 import { resolveStylesheetDependenciesSync } from '@master/css-compiler/node'
 
 test('resolves immutable complete import edges without flattening qualified native CSS', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'master-import-dependencies-'))
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'master-import-dependencies-')))
   try {
     const entry = join(root, 'app.css'), child = join(root, 'child.css')
     const packageRoot = join(root, 'node_modules/@master/css'), packageJSON = join(packageRoot, 'package.json')

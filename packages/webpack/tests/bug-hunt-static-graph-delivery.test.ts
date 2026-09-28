@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, posix, sep } from 'node:path'
 import webpack from 'webpack'
 import Plugin from '../dist/index.js'
 
@@ -18,7 +18,9 @@ async function build(root: string) {
       else resolve(stats)
     }))
     const css = stats.compilation.entrypoints.get('main')!.getFiles().find(file => file.endsWith('.css'))!
-    const files = readdirSync(join(root, 'out'), { recursive: true }).filter((file): file is string => typeof file === 'string' && /\.(css|svg)$/.test(file))
+    const files = readdirSync(join(root, 'out'), { recursive: true })
+      .filter((file): file is string => typeof file === 'string' && /\.(css|svg)$/.test(file))
+      .map(file => file.split(sep).join('/'))
     return { css, files, contents: Object.fromEntries(files.map(file => [file, readFileSync(join(root, 'out', file), 'utf8')])), dependencies: [...stats.compilation.fileDependencies] }
   } finally {
     await new Promise<void>((resolve, reject) => compiler.close(error => error ? reject(error) : resolve()))
@@ -44,7 +46,7 @@ test.each(['', ' layer(cards)', ' supports(display:grid) print'])('publishes ext
     expect(result.dependencies).toContain(join(root, 'child.css'))
     for (const [file, source] of Object.entries(result.contents)) {
       for (const [, href] of source.matchAll(/@import\s+["'](\.\/master-css-[^"']+)["']/g)) {
-        expect(result.files).toContain(join('css', href))
+        expect(result.files).toContain(posix.join('css', href))
       }
       expect(file).toMatch(/^css\//)
     }

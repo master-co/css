@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) for (const syntax of ['scss', 'sass']) test.each(['build', 'serve'])('BH-0004 retained ' + syntax + ' references keep child owners in ' + mode + '/%s', async command => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-retained-reference-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-retained-reference-')))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')

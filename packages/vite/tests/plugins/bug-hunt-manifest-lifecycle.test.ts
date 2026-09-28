@@ -23,7 +23,7 @@ afterEach(() => { interception.afterGlobals = undefined;vi.restoreAllMocks() })
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(initiallyMissing = false) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
   mkdirSync(root);mkdirSync(join(parent, 'external'))
   writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/deep/tokens.css\";@utility card {@variant paint{padding:1rem;}}")
   writeFileSync(join(root, 'entry.js'), 'export const ready=true;')
