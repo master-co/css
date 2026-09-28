@@ -150,18 +150,19 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Measure | Count |
 |---|---:|
 | Baseline contract cases | 1033 |
-| Preserved exact cases | 503 |
-| Verified supersets | 27 |
-| Approved contract changes | 503 |
-| Regressed or removed cases | 0 |
-| Target-added supplemental cases | 1860 |
+| Preserved exact cases | 488 |
+| Verified supersets | 25 |
+| Approved contract changes | 494 |
+| Approved contract removals (historical cases retained) | 26 |
+| Unapproved regressions or removals | 0 |
+| Target-added supplemental cases | 1857 |
 
 | Contract surface | Baseline → target digest | Status | Proof | Human approval |
 |---|---|---|---|---|
 | `published-package-exports` | `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980`<br>→ `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980` | preserved-exact | exact-source | — |
-| `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `a4efe9c284c329734df1bd19428a70fe05ca5669eaa6ecfb37bca3c284312648` | approved-contract-change | approved-contract-change | `Aron (explicit QA approval in this task)`<br>`2026-09-27T16:12:20Z`<br>`parity/freeze-migration-approval.md#three-contract-records`<br>`27a5e3f5bc800095e17178cea3998450bde058ecb1b2d5c6b2ec4f5fec2d2d27` |
+| `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `dc932f985895b73e74651d6c657a2855c78c3ffcfd22ee9e8cbe8b26ac7f3564` | approved-contract-change | approved-contract-change | `Aron (authorized complete compose removal and integration in this task)`<br>`2026-09-28T02:45:50.429Z`<br>`parity/compose-removal-integration-review.md`<br>`2bea184ca44377ee9156fc7bdbe3823c0194b924def36aa0dec91fb9bca29c2d` |
 | `native-target-package-contract` | `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8`<br>→ `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8` | preserved-exact | exact-source | — |
-| `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `caf4b8e6f33f7b9e5c26a6cd4f9bb92d6a581e2a116e2bcb3091bfc18d0ab243` | approved-contract-change | approved-contract-change | `Aron (explicit QA approval in this task)`<br>`2026-09-27T16:12:20Z`<br>`parity/freeze-migration-approval.md#three-contract-records`<br>`33fd67f042cf106516f8e22e1dbec175e436663be7cafb3b796b41050df8830d` |
+| `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `34c602f88db14176975785917fb088331f4092ce7d2ca7c78c079ca14fc2fe40` | approved-contract-change | approved-contract-change | `Aron (authorized complete compose removal and integration in this task)`<br>`2026-09-28T02:45:50.429Z`<br>`parity/compose-removal-integration-review.md`<br>`cb223eaf9ef3009bb9bd47f8caf88f585e279259916d80dca4d3b33173edcb87` |
 | `native-compiler-raw-surface` | `c6b7384f29a6bdae96a002b7827b9e2c7b3d7bb994e32adaee4a70abba4324d5`<br>→ `c1cd47bbac3e82935d87c0b0561e71c5cb074a5ade5bbca5b9ef1d6bec7692a4` | approved-contract-change | approved-contract-change | `Aron (explicit implementation plan in this task)`<br>`2026-09-25T09:11:22.490Z`<br>`parity/utility-contract-validation.md#migration-evidence-audit`<br>`415fc1a363ad91bf38693c8fbc2aa4979df28dabc80b78354a3fb9d31695869d` |
 | `wasm-compiler-raw-surface` | `7bb965109d8a7b8ebbb475dd67224b0b96493eb21700d553b49891ae4ee648bf`<br>→ `507d877ae52f114dc9414b79f3559c13ad4f74886e6fddb1311cefa48f6a47f1` | approved-contract-change | approved-contract-change | `Aron (explicit implementation plan in this task)`<br>`2026-09-25T09:11:22.490Z`<br>`parity/utility-contract-validation.md#migration-evidence-audit`<br>`b65eaebed42a9b6050c9557ce935ffbc7971ec23cc860a5730687ee19e5e3472` |
 | `native-engine-raw-surface` | `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a`<br>→ `5057b2da9d1de9e4cea516ddd361b7e05a4ea7ad996ff812f7300f4237263a31` | approved-contract-change | approved-contract-change | `Aron (explicit implementation plan in this task)`<br>`2026-09-25T09:11:22.490Z`<br>`parity/utility-contract-validation.md#migration-evidence-audit`<br>`1525142eb2028b73c58dacf875415c3d02c5b6ddfaf433a1b2ec9b7696491528` |
@@ -180,11 +181,11 @@ These entries do not affect rc.87 parity completion or belong in `parity-excepti
 The browser manifest adaptation has its own approved decision source, implementation
 commit, upstream and target scope digests, target test bindings, and human approval.
 The target audit follows the latest package commit at
-`latest-target-change@1f96130564027798866b3fa0f6cd4224277c2a29`.
+`latest-target-change@e231a700ef1fe03bd323001e42fb9af03d47ea32`.
 
 | Decision | Status | Owner | Implementation commit | Upstream → target digest | Tests | Human approval |
 |---|---|---|---|---|---:|---|
-| `post-rc87-browser-manifest-import-fallback` | approved-adaptation | `@master/css-runtime, @master/css-internal, and build integrations` | `becef751987086ffe7a93cdbd6985f1ac0158c08` | `ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d`<br>→ `66e19cb1cbdcfaf4782b486fae0aaf02098d3dde0e7af501f4f5fca873bbc804` | 21 | `Aron (explicit supplemental QA approval in this task)`<br>`2026-09-27T17:49:25Z`<br>`parity/vite-portable-freeze-approval.md#manifest-file-supplement`<br>`33bd27e82e26a609078a668b92316662b5a393bf9b294ab26454261676b32a7a` |
+| `post-rc87-browser-manifest-import-fallback` | approved-adaptation | `@master/css-runtime, @master/css-internal, and build integrations` | `becef751987086ffe7a93cdbd6985f1ac0158c08` | `ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d`<br>→ `7e78c57bad6eb9692720f5580d92b62703f7a88445614b90781d1ab9774cdfa6` | 21 | `Aron (authorized complete compose removal and integration in this task)`<br>`2026-09-28T02:45:50.429Z`<br>`parity/compose-removal-integration-review.md#manifest-file-supplement`<br>`c7765daa6db59019ae6949287a5c64b36975a3a15d5ff310b2e6e0bbfe2be4f5` |
 
 | Priority | File | Decision | Behavior |
 |---|---|---|---|

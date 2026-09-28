@@ -20,7 +20,7 @@
   },
   "targetAudit": {
     "ref": "latest-target-change",
-    "commit": "1f96130564027798866b3fa0f6cd4224277c2a29"
+    "commit": "e231a700ef1fe03bd323001e42fb9af03d47ea32"
   },
   "summary": {
     "files": 7,
@@ -168,7 +168,7 @@
           },
           {
             "file": "packages/next/tests/css-manifest-loader.test.ts",
-            "digest": "599b3566096d66fac471824dcc97f639c33cb7621d8602afc38f976a9e6b762d"
+            "digest": "bff410e72ce62b0c64d1c24ea567cea92f9eb35af95c959d0bee2832e5f612c1"
           },
           {
             "file": "packages/runtime/src/hydration.ts",
@@ -182,15 +182,15 @@
           },
           {
             "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
-            "digest": "c7b9ed2b0cff059c0ea0c637e7356b277e56ac58cb8bf52607de4ff8221fcb32"
+            "digest": "d1bc876582ad6e0f9b1a88ba00a75c1b3616b072df9f67cc7dd960f02602d9cd"
           },
           {
             "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-            "digest": "77148fe32f807138339ea30f94ba76b9f4815680475f88a768f54fc426e4e4a0"
+            "digest": "bf099daae9d9bf4f3dca24ff01df97fe931039ea2024835b9352cd0790531eb0"
           },
           {
             "file": "packages/webpack/tests/plugin.test.ts",
-            "digest": "8fbfb3b737bb2e99924f82a73d88f673c6e1c604b51614c3bf2288c7e13979bb"
+            "digest": "40fd5d98515cee83f121f08a09bed0fd5f905aa786d2f30f2161ab1af079c002"
           }
         ],
         "tests": [
@@ -300,7 +300,7 @@
             "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
-        "digest": "66e19cb1cbdcfaf4782b486fae0aaf02098d3dde0e7af501f4f5fca873bbc804"
+        "digest": "7e78c57bad6eb9692720f5580d92b62703f7a88445614b90781d1ab9774cdfa6"
       },
       "invariants": [
         "modulepreload as=\"json\" HTML bytes remain unchanged.",
@@ -309,10 +309,10 @@
         "This decision covers only the reviewed eight files and 21 cases; it does not close other Rust-refactor migration differences or authorize package publication."
       ],
       "approval": {
-        "approvedBy": "Aron (explicit supplemental QA approval in this task)",
-        "approvedAt": "2026-09-27T17:49:25Z",
-        "reviewRef": "parity/vite-portable-freeze-approval.md#manifest-file-supplement",
-        "scopeDigest": "33bd27e82e26a609078a668b92316662b5a393bf9b294ab26454261676b32a7a"
+        "approvedBy": "Aron (authorized complete compose removal and integration in this task)",
+        "approvedAt": "2026-09-28T02:45:50.429Z",
+        "reviewRef": "parity/compose-removal-integration-review.md#manifest-file-supplement",
+        "scopeDigest": "c7765daa6db59019ae6949287a5c64b36975a3a15d5ff310b2e6e0bbfe2be4f5"
       }
     }
   ]

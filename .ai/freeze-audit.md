@@ -289,8 +289,9 @@ old/new digests, removed API rationale and the authorized integration provenance
 Six migration-gate tests verify rename/removal identity, approval and absence.
 No earlier approval digest is silently repurposed for new bytes.
 
-Final generated-ledger validation, combined-branch CI and refreshed previews are
-still required. Do not close #454 or #445 before those gates pass.
+Generated-ledger validation passes at merged source `e231a700e`: 1,546 rc.87
+cases, 1,033 Rust-refactor cases and seven post-rc.87 files. Combined-branch CI
+and refreshed previews are still required. Do not close #454 or #445 before those gates pass.
 
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
