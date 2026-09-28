@@ -3,6 +3,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSValidatorBatch
 } from '@master/css-binding/tooling'
+import { removedUtilityDiagnostics } from '../removed-utilities'
 import { withCSSValueValidation } from '../value-validation'
 import type { MasterCSSClassValidationResult } from './contracts'
 
@@ -24,14 +25,17 @@ function parse<T>(value: unknown): T {
 
 export function bindValidatorSession(
   binding: ValidatorSession['binding'],
-  session: BindingValidatorSession
+  session: BindingValidatorSession,
+  nativeClassNames: readonly string[] = []
 ): ValidatorSession {
+  const nativeClasses = new Set(nativeClassNames)
   return {
     binding,
     generate(classNames) {
       const values = [...classNames]
+      const candidates = session.nativeDeclarationCandidates(values) as import('@master/css-binding/tooling').MasterCSSNativeDeclarationCandidate[]
       const result = parse<MasterCSSValidatorBatch>(session.generateClassRules(values))
-      return { ...result, classes: result.classes.map(withCSSValueValidation) }
+      return { ...result, classes: result.classes.map(result => withCSSValueValidation({ ...result, diagnostics: [...(result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(result.className, candidates, nativeClasses) : [])] })) }
     },
     dispose: () => session.dispose()
   }

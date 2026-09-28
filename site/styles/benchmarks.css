@@ -1,5 +1,3 @@
-@reference "../app/globals.css";
-
 @layer components {
   .benchmark-samples { container-type: inline-size; }
   .benchmark-samples > dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-xs); margin: 0; }

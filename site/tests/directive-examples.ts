@@ -1,7 +1,7 @@
 import { stylesheetExamples } from './stylesheet-examples'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { inspectCSSSync } from '@master/css-compiler/node'
+import { inspectCSSSync, compileManifestSync } from '@master/css-compiler/node'
 import { compileRenderedStylesheet, createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'
@@ -20,11 +20,11 @@ export function directiveSection(id: string) {
 export const directiveExamples = stylesheetExamples(directiveSource)
 
 export async function verifyDirectiveExamples() {
-  assert.equal(directiveExamples.length, 9)
+  assert.equal(directiveExamples.length, 8)
   const output = new Map<string, string>()
   for (const example of directiveExamples) {
     const actual = (await stylesheetExampleCSS(example.source)).replace(/\s+/g, '')
-    const rendered = await compileRenderedStylesheet('/tmp/master-directive-example.css', example.source, { baseManifest: preset, preserveNativeCSS: true })
+    const rendered = await compileRenderedStylesheet('/tmp/master-directive-example.css', example.source, { baseManifest: preset, preserveNativeCSS: true, classes: [...compileManifestSync(example.source, { baseManifest: preset }).directiveSummary.extractionPolicy.safelist] })
     assert.equal(actual, rendered.css.replace(/\s+/g, ''), example.title)
     output.set(example.title, actual)
   }
@@ -39,8 +39,6 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('A reusable condition')!, /@media\(prefers-reduced-motion:no-preference\)\{\.notice/)
   assert.match(output.get('Map a class suffix to a CSS value')!, /background-origin:padding-box/)
   assert.match(output.get('Reuse one value for both dimensions')!, /width:1rem;height:1rem/)
-  assert.match(output.get('Native declarations keep their position')!, /padding:var\(--spacing-md\);padding-inline:3rem/)
-  assert.match(output.get('Native declarations keep their position')!, /padding:2rem/)
   assert.match(output.get('A condition around the current selector')!, /@media\(width<52\.125rem\)\{\.notice/)
   await assert.rejects(stylesheetExampleCSS('@theme inline static { --color-brand: red; }'), /inline and static cannot be combined/)
 

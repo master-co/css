@@ -60,7 +60,8 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
   let classes: string[]
   if (options.html) {
     const tooling = createToolingSessionSync({
-      manifest: requireWorkspaceManifest(manifest)
+      manifest: requireWorkspaceManifest(manifest),
+      nativeClassNames: manifest.nativeClassNames
     })
     try {
       classes = [...tooling.extractSource({
@@ -82,7 +83,7 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
   const rendered = renderClassNamesSync(classes, {
     manifest: requireWorkspaceManifest(manifest)
   })
-  const tooling = createMCPToolingSession(requireWorkspaceManifest(manifest))
+  const tooling = createMCPToolingSession(requireWorkspaceManifest(manifest), manifest.nativeClassNames)
   let inspections: ReturnType<typeof compactClassInspection>[]
   try { inspections = classes.map(className => compactClassInspection(tooling, className, undefined, true)) }
   finally { tooling.dispose() }
@@ -102,7 +103,7 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
 export async function inspectClass(context: MasterCSSMCPContext, options: InspectClassOptions) {
   const manifest = await loadWorkspaceManifest(context, options.context)
   const session = createMCPToolingSession(
-    requireWorkspaceManifest(manifest)
+    requireWorkspaceManifest(manifest), manifest.nativeClassNames
   )
   try {
     const inspection = session.inspectClassName(options.className, options.mode)

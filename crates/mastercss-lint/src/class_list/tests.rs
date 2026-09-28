@@ -1,9 +1,5 @@
-use super::{
-    CanonicalComposeDirectiveIr, CanonicalComposeSuggestionKind, ClassListPolicy,
-    LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, SourceRange,
-    add_canonical_compose_diagnostics, create_class_list_ir,
-};
-use crate::{CanonicalComposeSuggestionIr, ClassConflictIr, PartialClassConflictIr};
+use super::{ClassListPolicy, LintBatchIr, SourceRange, create_class_list_ir};
+use crate::{ClassConflictIr, PartialClassConflictIr};
 
 fn analysis() -> LintBatchIr {
     LintBatchIr {
@@ -121,52 +117,4 @@ fn creates_invalid_and_unknown_class_diagnostics() {
     assert_eq!(unknown.len(), 2);
     assert_eq!(unknown[0].range, SourceRange { start: 22, end: 24 });
     assert_eq!(unknown[1].range, SourceRange { start: 25, end: 32 });
-}
-
-#[test]
-fn formats_canonical_compose_class_names_as_code_spans() {
-    let mut result = LintClassListIr {
-        version: LINT_BATCH_VERSION,
-        analysis: analysis(),
-        diagnostics: Vec::new(),
-        sort_edit: None,
-        conflict_range: None,
-        conflict_edit: None,
-    };
-    add_canonical_compose_diagnostics(
-        &mut result,
-        "contain:content bg:blue-60:hover@sm",
-        &["contain:content".into(), "bg:blue-60:hover@sm".into()],
-        &CanonicalComposeDirectiveIr {
-            version: LINT_BATCH_VERSION,
-            suggestions: vec![
-                CanonicalComposeSuggestionIr {
-                    actual: "contain:content".into(),
-                    recommended: "contain: content".into(),
-                    class_names: vec!["contain:content".into()],
-                    kind: CanonicalComposeSuggestionKind::NativeDeclaration,
-                },
-                CanonicalComposeSuggestionIr {
-                    actual: "bg:blue-60:hover@sm".into(),
-                    recommended: "&:hover { @variant sm { @compose bg:blue-60; } }".into(),
-                    class_names: vec!["bg:blue-60:hover@sm".into()],
-                    kind: CanonicalComposeSuggestionKind::VariantBlock,
-                },
-            ],
-            structural_change: Some(true),
-            replacement: None,
-        },
-    );
-
-    assert_eq!(
-        result
-            .diagnostics
-            .iter()
-            .map(|diagnostic| diagnostic.message.as_str())
-            .collect::<Vec<_>>(),
-        [
-            "Use CSS declaration `contain: content` instead of class `contain:content`.",
-            "Move class `bg:blue-60:hover@sm` into the canonical @compose block.",
-        ]
-    );
 }

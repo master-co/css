@@ -91,7 +91,7 @@ Use `renderSemanticTokensAtPosition()` when a client wants active-only highlight
 const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocument, position)
 ```
 
-CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as bare `@compose` preludes and quoted `@safelist` strings.
+CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as quoted `@safelist` strings.
 
 ### Directive formatting
 

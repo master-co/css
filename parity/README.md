@@ -44,6 +44,11 @@ over from TypeScript.
   output without an old/new byte diff and user QA approval.
 - `rust-refactor-contract-evidence.json` applies the same human-approval metadata and
   scope-digest rule to every explicit `approved-contract-change` record or surface.
+  An `approved-contract-removal` explicitly retains a retired case in the historical
+  denominator with `targetDigest: null` and the retired `targetId`. It requires a
+  reviewed old/new removal diff, user approval and a reason. The generator rejects
+  it if the original, relocated or named retired target still exists. Removal is
+  recorded separately from preserved or executable changed behavior.
 
 Run the gate with:
 

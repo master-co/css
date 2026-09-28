@@ -224,7 +224,7 @@ describe('@master/css-preset defaultManifest', () => {
     const manifest = getCompiledDefaultManifest()
     const utilities = manifest.utilities || []
 
-    expect(utilities).toHaveLength(170)
+    expect(utilities).toHaveLength(164)
     expect(utilities.some((utility) => 'order' in utility)).toBe(false)
     expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
     expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
@@ -536,21 +536,13 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('font-family-sans')?.text).toBe('.font-family-sans{font-family:var(--font-family-sans)}')
     expect(css.createRule('font-weight-bold')?.text).toBe('.font-weight-bold{font-weight:var(--font-weight-bold)}')
     expect(declarationsCSS.createRule('font:var(--font-size-x)')?.text).toContain('font:var(--font-size-x)')
-    expect(css.createRule('size:1.25rem')?.text).toBe('.size\\:1\\.25rem{width:1.25rem;height:1.25rem}')
-    expect(css.createRule('size-md')?.text).toBe('.size-md{width:var(--container-md);height:var(--container-md)}')
-    expect(css.createRule('size:var(--radius-4xl)')?.text).toBe('.size\\:var\\(--radius-4xl\\){width:var(--radius-4xl);height:var(--radius-4xl)}')
-    expect(css.createRule('min-size:1.25rem')?.text).toBe('.min-size\\:1\\.25rem{min-width:1.25rem;min-height:1.25rem}')
-    expect(css.createRule('min-size:var(--radius-4xl)')?.text).toBe('.min-size\\:var\\(--radius-4xl\\){min-width:var(--radius-4xl);min-height:var(--radius-4xl)}')
-    expect(css.createRule('max-size:1.25rem')?.text).toBe('.max-size\\:1\\.25rem{max-width:1.25rem;max-height:1.25rem}')
-    expect(css.createRule('max-size:var(--radius-4xl)')?.text).toBe('.max-size\\:var\\(--radius-4xl\\){max-width:var(--radius-4xl);max-height:var(--radius-4xl)}')
-    expect(css.createRule('min:1.25rem')?.text).toBe('.min\\:1\\.25rem{min-width:1.25rem;min-height:1.25rem}')
-    expect(css.createRule('max:1.25rem')?.text).toBe('.max\\:1\\.25rem{max-width:1.25rem;max-height:1.25rem}')
-    expect(css.createRule('size:1.25rem|1.5rem')?.text).toBe('.size\\:1\\.25rem\\|1\\.5rem{width:1.25rem 1.5rem;height:1.25rem 1.5rem}')
-    expect(css.createRule('min:1.25rem|1.5rem')?.text).toBe('.min\\:1\\.25rem\\|1\\.5rem{min-width:1.25rem 1.5rem;min-height:1.25rem 1.5rem}')
-    expect(css.createRule('max:1.25rem|1.5rem')?.text).toBe('.max\\:1\\.25rem\\|1\\.5rem{max-width:1.25rem 1.5rem;max-height:1.25rem 1.5rem}')
-    expect(css.createRule('size:auto')?.text).toBe('.size\\:auto{width:auto;height:auto}')
-    expect(css.createRule('size:min-content')?.text).toBe('.size\\:min-content{width:min-content;height:min-content}')
-    expect(css.createRule('size:max-content')?.text).toBe('.size\\:max-content{width:max-content;height:max-content}')
+    // Removed preset sizes use only the generic native fallback, never paired dimensions.
+    for (const key of ['size', 'min-size', 'max-size', 'min', 'max']) {
+      expect(css.createRule(`${key}:1.25rem`)?.text).toContain(`{${key}:1.25rem}`)
+      expect(css.createRule(`${key}-md`)).toBeUndefined()
+    }
+    expect(css.createRule('width-md')?.text).toContain('width:var(--container-md)')
+    expect(css.createRule('height-md')?.text).toContain('height:var(--container-md)')
     expect(css.createRule('flex-basis-sm')?.text).toBe('.flex-basis-sm{flex-basis:var(--container-sm)}')
     expect(css.createRule('flex-basis:0.5rem')?.text).toBe('.flex-basis\\:0\\.5rem{flex-basis:0.5rem}')
     expect(declarationsCSS.createRule('outline-width:1px')?.text).toContain('outline-width:1px')
@@ -702,6 +694,6 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect(utilities).toHaveLength(170)
+    expect(utilities).toHaveLength(164)
   })
 })

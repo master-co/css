@@ -38,7 +38,7 @@ Marks the stylesheet as a full Master CSS entry, loads the package stylesheet gr
 @import "@master/css";
 ```
 
-Other directive families such as `@settings`, `@theme`, `@mode`, `@custom-variant`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, `@prune native`, and `@preserve native` are not entry markers by themselves.
+Other directive families such as `@settings`, `@theme`, `@mode`, `@custom-variant`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@variant`, `@prune native`, and `@preserve native` are not entry markers by themselves.
 
 ### Local file URLs
 
@@ -52,18 +52,18 @@ package imports without a matching local file remain available to the host
 resolver. Reference files remain compile-time context and do not emit their native CSS.
 For a prepared virtual stylesheet, the host's explicit filesystem source owner
 also supplies the base for relative CSS references. Resources in a referenced
-definition remain relative to the reference file when composed elsewhere.
+theme token remain relative to the reference file when used elsewhere.
 
 ### Stylesheet boundaries and resource URLs
 
 CSS import conditions and layers apply to the imported stylesheet. Moving or
 combining files must preserve those boundaries and the URLs of their images and
 fonts. A resource used by an imported managed definition retains that definition's
-source location when another file uses it through `@compose`.
+source location when the compiled stylesheet uses it.
 
-Native CLI project scanning reads global definitions from unqualified imports before resolving `@compose`. A qualified import may contain native CSS, including native rules with `@compose`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
+Native CLI project scanning reads global definitions from unqualified imports before lowering native variants. A qualified import may contain native CSS, including native rules with `@variant`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
 Relative `@source` patterns are resolved from the file that declares them, and
-`@reference` supplies composition context without adding its scanning sources or
+`@reference` supplies definition context without adding its scanning sources or
 exporting its managed classes. Reading this metadata does not publish stylesheet
 or resource files. CLI file export is a separate delivery step and does publish the required assets.
 
@@ -87,7 +87,7 @@ original URL bases. See [CSS imports](/guide/css-imports) for the delivery bound
 
 Compiler hosts can opt into `preserveNativeSource: true` when another transformer
 needs the untouched native portions of a stylesheet. Master definitions are still
-consumed and native `@compose` rules are still lowered, while unrelated comments,
+consumed and native `@variant` rules are still lowered, while unrelated comments,
 empty rules, value spelling, and rule boundaries are retained. The option defaults
 to `false`, preserving the compiler's normal native CSS normalization.
 
@@ -116,16 +116,22 @@ resources while preserving plugin ordering and source ownership.
 
 ## Reference context \{#reference-context\}
 ### `@reference` \{#reference\}
-Use `@reference` to load another Master CSS stylesheet as compile-time context without including that stylesheet's CSS in the current output. This is useful in CSS Modules and SFC `<style>` blocks that need project tokens, utility definitions, or custom variants for `@compose` and `@variant`.
+The Vite, Next.js, and Webpack integrations supply project definitions automatically to local stylesheets, CSS Modules, and SFC style blocks loaded by the host. Native `var(--*)` declarations, managed animation names, and `@variant` use the same context. Local stylesheets do not become entries, scanning roots, or native pruning roots. CSS without Master directives or references to known theme resources passes through unchanged.
+
+Use `@reference` to add definitions outside that project context, or to make a standalone stylesheet's compilation dependencies explicit. It does not include the referenced stylesheet's native CSS or generated utility classes. Referencing the app entry remains valid, but is redundant in these integrations.
 
 ```css name=Button.module.css
 @reference "../app.css";
 
 .button {
-  @compose button-layout;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--spacing-md);
+  height: 2.5rem;
+  border-radius: var(--radius-lg);
 
   @dark {
-    @compose bg-blue-60;
+    background-color: var(--color-blue-60);
   }
 }
 ```
@@ -137,8 +143,11 @@ Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-varia
 
 @utilities {
   button-layout {
-    @compose inline-flex align-items:center;
-    @compose px-md h:2.5rem r-lg;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-lg);
+    padding-inline: var(--spacing-md);
+    height: 2.5rem;
   }
 }
 ```
@@ -153,7 +162,11 @@ Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-varia
 
 Relative references resolve from the stylesheet that declares them. Package references resolve Master CSS package stylesheet entries or a CSS file exposed by a package export. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
 
-(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes that the loaded global entry has not already emitted.
+(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes those rules need. Merely discovering another entry never suppresses these resources: it does not prove that entry is loaded alongside the local stylesheet. CSS Modules and scoped style hosts must emit generated theme selectors and keyframes globally.
+
+The standalone stylesheet API remains opt-in: pass `referenceFiles` as absolute filesystem paths and set `transformNativeStylesheets: true` to resolve native resource usage without an authored directive. Definition files precede authored references; local definitions override both. Entries discovered by the project API retain its deterministic order. A supplied list preserves the caller's order. Referenced native rules, scanning sources, and class output are not imported. Source-relative resources retain their defining file as owner; without asset delivery, reference-file resources use absolute file URLs for the host bundler to resolve.
+
+`emittedGlobals` is an explicit host assertion that the corresponding resources are already delivered alongside this output. Standalone callers may use it for that purpose. It is not inferred from discovered project entries. Host-supplied reference files and their imports, references, and resource owners contribute dependencies; changed or missing inputs are resolved again before cached compilation results can be reused.
 
 ---
 
@@ -253,7 +266,7 @@ Defines utility shorthands that are written directly into generated declarations
 
 <StylesheetExample
   title="An inline token"
-  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
+  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n@safelist \"bg-brand\";"}
 />
 
 ### `@theme static` \{#theme-static\}
@@ -304,7 +317,7 @@ Write product styles in `@layer components`. The removed `@components` directive
 }
 ```
 
-Native rules are emitted even when unused unless native pruning is explicitly enabled. Rules in the same layer follow CSS source order. A native `.button` is not registered as a Master utility: it cannot be referenced by `@compose button` or derive `button:hover@sm`. Write the selector or condition in CSS. The scanner recognizes native class names without reporting them as invalid.
+Native rules are emitted even when unused unless native pruning is explicitly enabled. Rules in the same layer follow CSS source order. A native `.button` is not registered as a Master utility and cannot derive `button:hover@sm`. Write the selector or condition in CSS. The scanner recognizes native class names without reporting them as invalid.
 
 The layer order remains `theme, base, defaults, components, utilities`. Removing authoring directives does not remove layer suffixes from markup or layer execution from the engine.
 
@@ -319,7 +332,7 @@ Registers on-demand Master utilities in the `utilities` layer. The first level c
 }
 ```
 
-All four forms—static names, hyphen enums, named tokens and raw parameters—accept native declarations, nesting, conditions, `@variant` and fixed-class `@compose`. Names determine the style intent before values are parsed. CSS support data never selects an overload.
+All four forms—static names, hyphen enums, named tokens and raw parameters—accept native declarations, nesting, conditions, and `@variant` blocks. Names determine the style intent before values are parsed. CSS support data never selects an overload.
 
 Names follow CSS identifier and escape rules, preserving case and Unicode. Decoded names cannot contain HTML whitespace or Master class delimiters. These are Master definition names, not element selectors. `@utilities` and its patterns are custom at-rule grammar, as permitted by [CSS Syntax](https://www.w3.org/TR/css-syntax-3/).
 
@@ -331,7 +344,7 @@ Enum patterns require exactly one `<...>` segment with at least two distinct pip
 
 <StylesheetExample
   title="Map a class suffix to a CSS value"
-  source={"@utilities {\n  origin-<border=border-box|padding=padding-box> {\n    background-origin: --value();\n  }\n}\n\n.card {\n  @compose origin-padding;\n}"}
+  source={"@utilities {\n  origin-<border=border-box|padding=padding-box> {\n    background-origin: --value();\n  }\n}\n\n@safelist \"origin-padding\";"}
 />
 
 Unmapped entries emit the class token itself, so `text-<left|right>` behaves like `text-<left=left|right=right>`.
@@ -362,14 +375,14 @@ Use `prefix-<~namespace>` for named tokens. The former `=namespace` spelling is 
     outline-color: --value();
   }
 
-  size-<~container> {
+  box-<~container> {
     width: --value();
     height: --value();
   }
 }
 ```
 
-These patterns match names such as `font-mono`, `outline-base`, and `size-sm`. A single utility retains its declared namespace fallback order. Different utilities matching the same name with different intent produce an ambiguity diagnostic; use an explicit name such as `font-family-brand` or `font-size-brand`.
+These patterns match names such as `font-mono`, `outline-base`, and `box-sm`. A single utility retains its declared namespace fallback order. Different utilities matching the same name with different intent produce an ambiguity diagnostic; use an explicit name such as `font-family-brand` or `font-size-brand`.
 
 Exact static and enum names are reserved: `bg-cover` remains background size. Resolution selects the longest registered prefix before looking up the token, preserving internal hyphens and never retrying shorter prefixes for a missing token. Use `background-color-cover` to reference a color token named `cover`.
 
@@ -381,7 +394,7 @@ Raw patterns use only `key:<*>` and accept a complete CSS value. Typed matchers 
 
 ```css
 @utilities {
-  size:<*> {
+  box:<*> {
     width: --value();
     height: --value();
   }
@@ -392,7 +405,7 @@ Raw patterns use only `key:<*>` and accept a complete CSS value. Typed matchers 
 }
 ```
 
-`size:20px` emits `width:20px;height:20px`; `size:var(--size)` emits the same properties with `var(--size)`. `size:red` still emits both declarations and tooling reports invalid CSS values. Unknown functions and environment-dependent values are preserved and reported as unknown when they cannot be verified. Values never change the selected utility.
+`box:20px` emits `width:20px;height:20px`; `box:var(--size)` emits the same properties with `var(--size)`. `box:red` still emits both declarations and tooling reports invalid CSS values. Unknown functions and environment-dependent values are preserved and reported as unknown when they cannot be verified. Values never change the selected utility.
 
 Raw patterns do not look up tokens. Use `var(--name)` explicitly, including in functions and multi-value declarations; `$name` is removed. Named colors require a separate token pattern such as `accent-<~color>`.
 
@@ -412,7 +425,7 @@ Only an unclaimed, structurally valid `property:value` enters native fallback. U
 
 `--value()` accepts no arguments. In a parameterized utility's declaration value, it substitutes the complete matched value while preserving CSS token boundaries. It works inside functions such as `repeat(--value(), minmax(0, 1fr))`. Strings, comments and identifier fragments are not placeholders, and inserted arguments are not expanded again. Ordinary stylesheet calls remain native CSS.
 
-Parameters cannot be inserted into property names, selectors, queries, definition names or `@compose` targets. For example, write `width: --value()` rather than `@compose width:--value()`. Use enum mapping for named alternatives. This is compile-time substitution, not `var(--value)` or the parameter scope and evaluation model in the [CSS Functions and Mixins draft](https://drafts.csswg.org/css-mixins/).
+Parameters cannot be inserted into property names, selectors, queries or definition names. Use enum mapping for named alternatives. This is compile-time substitution, not `var(--value)` or the parameter scope and evaluation model in the [CSS Functions and Mixins draft](https://drafts.csswg.org/css-mixins/).
 
 ```css
 @utilities {
@@ -430,7 +443,7 @@ Parameters cannot be inserted into property names, selectors, queries, definitio
 
 <StylesheetExample
   title="Reuse one value for both dimensions"
-  source={"@utilities {\n  tile-size:<*> {\n    width: --value();\n    height: --value();\n  }\n}\n\n.avatar {\n  @compose tile-size:1rem;\n}"}
+  source={"@utilities {\n  tile-size:<*> {\n    width: --value();\n    height: --value();\n  }\n}\n\n@safelist \"tile-size:1rem\";"}
 />
 
 ### Whole-definition replacement \{#whole-definition-replacement\}
@@ -444,18 +457,18 @@ Within one layer, a later definition replaces the entire earlier definition with
 | Token | Prefix and ordered namespace list |
 | Enum | Prefix and key set, independent of key order and mapped values |
 
-The winning definition occupies its last source position. Old nested rules, composition edges and resource references disappear. Empty definitions remain registered and match without generating rules; they can also be composed. Imports, references, preset overrides and manifest merges follow the same replacement rule.
+The winning definition occupies its last source position. Old nested rules and resource references disappear. Empty definitions remain registered and match without generating rules. Imports, references, preset overrides and manifest merges follow the same replacement rule.
 
 ```css
 @utilities {
   card { color: red; &:hover { color: blue; } }
   card { padding: 1rem; }
   disabled-card { }
-  size:<*> { @compose display:block; width: --value(); height: --value(); }
+  box:<*> { display:block; width: --value(); height: --value(); }
 }
 ```
 
-Here `card` emits only padding. Inside one definition, declaration order, repeated declarations, vendor fallbacks and separate compose statements remain ordered. Each compose statement sorts its fixed class list using Master precedence; it does not reorder neighboring declarations. Cycles, unknown names, ambiguity and layer changes remain errors. A quoted whole list is forbidden, but CSS strings within a class value, such as `content:'hello'`, remain valid.
+Here `card` emits only padding. Inside one definition, declaration order, repeated declarations, vendor fallbacks remain ordered.
 
 Compiler inspection retains original definition sources and the source that replaces each overridden definition. Runtime manifests contain only effective definitions.
 
@@ -519,7 +532,7 @@ For example, these directives scan content files and a shared UI package, then r
 @source not "../packages/ui/**/*.stories.tsx";
 ```
 
-Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
+Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. These resolution rules apply on Windows and POSIX hosts; Windows filesystem path prefixes do not act as glob wildcards.
 
 An imported CSS file keeps its own directory as the base for relative source
 patterns. Files loaded only through `@reference` do not add scanning sources.
@@ -556,119 +569,33 @@ A safelist contains complete class names. Wildcard policy belongs in the blockli
 
 ---
 
-## Rule-local composition \{#rule-local-composition\}
-### `@compose` \{#compose\}
-Use native declarations by default. Use `@compose` when an existing Master utility encapsulates behavior worth maintaining in one place. It expands an unquoted utility list at the statement's position.
+## Removed utility composition \{#rule-local-composition\}
+### `@compose` (removed) \{#compose\}
+
+`@compose` is no longer supported. Compilation reports `removed-compose-directive` wherever the at-rule appears, including native rules and utility definitions.
+
+Write native declarations, selectors and conditions in stylesheets. Share design values through CSS custom properties. Use Master utilities directly in markup, or share native classes and component interfaces when several elements need the same behavior.
 
 ```css
-@utilities {
-  focus-ring {
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+
     &:focus-visible {
       outline: 2px solid var(--color-accent);
       outline-offset: 2px;
     }
   }
 }
-
-@layer components {
-  .button {
-    display: inline-flex;
-    @compose focus-ring;
-  }
-}
 ```
 
-One statement uses Master rule priority; reversing its class list does not change conflict resolution. Separate statements retain stylesheet order:
+When migrating an existing statement, preserve its expanded declarations, nested selectors, conditions, importance and destination layer. Replacing it with declarations preserves the current style but removes the dependency on the original utility: future utility changes no longer update that rule. Do not rename it to `@apply`; Master CSS does not provide a replacement composition directive or a native mixin polyfill.
 
-```css
-.example {
-  @compose color:red;
-  display: block;
-  display: made-up-value;
-  @compose color:blue;
-}
-```
+The compiler no longer exposes compose IR or composition traces. Tooling removes compose canonicalization and structural directive fixes, including `composeDirective`, `includeDirectiveFixes`, `preferNativeDeclarationsInCompose`, `preferVariantBlocksInCompose`, and CLI `--fix-directives`. ESLint removes `configs.stylesheet`; its recommended config still handles classes in markup and class builders. `preferCompositionUtilities` continues to apply to markup class lists.
 
-The final color is blue. Both `display` declarations remain, so a browser that rejects `made-up-value` keeps `block`. Repeated properties, shorthand/longhand interleaving, nested selectors and conditions retain their authored positions. The browser decides the cascade, including `!important`.
-
-Composed selectors, conditions and importance are preserved. The expansion belongs to the destination rule's layer; it does not import the utility's layer. A composed variant that explicitly changes layer is rejected: put the destination rule inside native `@layer` instead. Composition does not promise identical cascade behavior to markup in a different layer.
-
-Only resolvable Master utilities may be composed. Native selectors, native classes and native mixins are not targets. Unknown utilities, cycles and failed expansions reject the complete stylesheet; there is no partial successful output. `@compose` is supported in native rules and static `@utilities` definitions, including their supported nested contexts, but not inside enum, token or dynamic pattern bodies. It does not introduce parameters, slots or component inheritance.
-
-Compiler inspection reports show statement expansions, referenced utilities, source locations and token/animation dependencies. This provenance stays in compiler/tooling output, outside the runtime manifest.
-
-### Selectors and class lists \{#selectors-and-class-lists\}
-
-Selector aliases preserve attribute values and escaped identifiers in the surrounding rule. For example, `[data-state=":first"]:first { @compose block; }` becomes `[data-state=\:first]:first-child { display: block; }`. Existing `::before` stays unchanged, while `:before` expands to `::before`; aliases inside `:is()` expand normally.
-
-`@compose` accepts only unquoted class lists:
-
-```css
-.card {
-  @compose p-md r-lg;
-}
-
-.overlay {
-  @compose bg:transparent! bg-blue-60!@dark;
-}
-```
-
-The language-service formatter keeps `!` important markers attached to their class token, so `bg:transparent !` is formatted as `bg:transparent!`.
-
-Do not put quotes, grouped class syntax, or class tokens that need CSS quoted strings inside `@compose`. Use ordinary CSS declarations for declaration-like values, and use nested selectors or `@variant` blocks for grouped selector behavior:
-
-```css
-.empty-state::before {
-  @compose block size:3rem round;
-  content: '';
-}
-
-.btn {
-  @compose text-center;
-  contain: content;
-
-  &:hover {
-    @variant sm {
-      @compose bg-blue-60;
-    }
-  }
-}
-```
-
-### Order and stylesheet delivery \{#order-and-delivery\}
-
-<StylesheetExample
-  title="Native declarations keep their position"
-  source={".card {\n  padding: 2rem;\n  @compose p-md;\n  padding-inline: 3rem;\n}"}
-/>
-
-Native style rules inside `@media`, `@supports`, `@container`, `@layer`, and
-`@starting-style` can also use `@compose`. Direct compilation and the prepared-files
-`compileStylesheets()` API keep composed and native rules in their authored order,
-including within anonymous layers. Use the final `css` result: `nativeCSS` and
-`generatedCSS` describe separate parts and cannot be concatenated to recover that order.
-Quoted content remains literal even when it resembles an internal compose marker.
-Qualified imports can contain native rules with `@compose`, but must not contain global Master definitions. Imports that require separate CSS assets
-still need the stylesheet delivery options.
-When using those options with `compileRenderedStylesheet()`, publish every returned
-stylesheet and resource at its assigned URL, including the entry stylesheet.
-Calls without delivery options retain the single-output limitations described in
-[CSS imports](/guide/css-imports); they do not publish those separate assets.
-
-### Supported contexts \{#supported-contexts\}
-
-Top-level `@compose` is invalid because there is no selector context to receive the lowered declarations.
-
-Use `@compose` in these contexts:
-
-- Managed class definitions inside or `@utilities`.
-- Native style rules such as `.card { ... }`.
-- Nested selectors and nested native at-rules inside those style rules.
-- CSS Modules and SFC `<style>` blocks handled by build integrations.
-
-The Vite integration preserves CSS Modules scoped names and exports when lowering `@compose`. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not add globally generated utility CSS, and does not become a native CSS pruning root.
-
-Utilities within one `@compose` statement follow Master CSS rule priority. Separate statements and native declarations retain source order. The final result follows the CSS cascade, including layers, selector specificity, conditions, and `!important`.
+The RC migration command reports an occurrence for manual migration and leaves the statement unchanged. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) for the remaining migration steps.
 
 ---
 
@@ -678,7 +605,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 
 <StylesheetExample
   title="A condition around the current selector"
-  source={".notice {\n  @compose p-md r-lg;\n\n  @dark {\n    @compose bg-gray-90 fg-white;\n  }\n\n  @variant media((width<52.125rem)) {\n    @compose p-sm;\n  }\n}"}
+  source={".notice {\n  border-radius: var(--radius-lg);\n  padding: var(--spacing-md);\n\n  @dark {\n    background-color: var(--color-gray-90);\n    color: white;\n  }\n\n  @variant media((width<52.125rem)) {\n    padding: var(--spacing-sm);\n  }\n}"}
 />
 
 Use `@dark` and `@light` as rule-local shorthands for those explicitly defined modes. Use `@variant` for other modes, custom variants, breakpoint names, and complete native queries such as `media((width<52.125rem))`. Unknown names are errors; numeric and feature shorthand inference is removed. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
@@ -707,7 +634,7 @@ authored definitions available to used utilities. Local imports still connect
 selected output; imports to empty excluded branches are omitted so they do not
 establish cascade layers. External imports from excluded stylesheets are omitted.
 The compiler option `preserveNativeCSS: false` removes raw native CSS and external
-imports while keeping compiled native `@compose` in included stylesheets.
+imports while keeping compiled native `@variant` in included stylesheets.
 
 When resource URLs are rewritten for delivery, ranged compiler diagnostics still
 refer to the original stylesheet and source position, including imported files.
@@ -718,7 +645,7 @@ paths still have separate import-graph limitations.
 Node project manifest loading (`compileProjectManifest`, `loadProjectManifest`,
 and their synchronous variants) preserves each imported stylesheet while
 compiling shared definitions. Pure native qualified imports may retain external imports without fetching them. Global definitions must be loaded through unqualified imports or references.
-`@reference` supplies definitions for composition and contributes dependencies;
+`@reference` supplies definitions for resource resolution and contributes dependencies;
 its native rules, standalone utility classes, and source policies are not imported.
 Relative `@source` and `@source not` patterns beginning with `./` or `../` resolve
 from the file that declares them, including imported files. Bare patterns resolve
@@ -731,7 +658,7 @@ These APIs return a manifest and metadata; they do not publish native CSS assets
 can prepare a file and its imports for publication as separate stylesheets. The
 Node host resolves local imports, package entries and references; the existing
 Rust graph compiler retains external import order, conditions and native
-`@compose` positions. `delivery` uses the same URL callbacks as standalone
+native variant positions. `delivery` uses the same URL callbacks as standalone
 stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
 Each stylesheet must have a distinct final URL.
 
@@ -817,13 +744,13 @@ CSS is preserved by default; when pruning is enabled, that usage keeps their rul
 
 Production build-watch tracks resolved CSS Modules `composes` dependencies,
 including nested compositions. Editing a composed file rebuilds its consumers;
-correcting an invalid Master CSS composition in that file recovers the build.
+correcting an invalid Master CSS directive in that file recovers the build.
 When Vite provides no original location for composed CSS, diagnostics explicitly
 identify the preprocessed location.
 
 Development CSS and Sass modules retain their scoped exports and native rules.
 Editing the module or a resolved `composes` dependency updates both its CSS and
-exports through HMR, including modules that use local `@compose`.
+exports through HMR, including modules that use local `@variant`.
 
 During development, editing a CSS project entry updates ordinary stylesheet
 imports and its `?inline` and `?raw` consumers. Inline requests export processed
@@ -884,7 +811,7 @@ context's resource copies. Connected pages reload and reconnect to new asset URL
 subsequent child CSS and image edits update without another page reload.
 Local stylesheets compile imported local rules and retain qualified child imports
 and resources in development and production builds. This also applies when the
-root and intermediate stylesheets contain only native CSS, and `@compose` appears
+root and intermediate stylesheets contain only native CSS, and `@variant` appears
 only in an imported descendant. These graphs remain local stylesheets rather than
 becoming project entries or native CSS pruning roots.
 CSS Modules keep the root module's scoped exports; SSR inline requests return
@@ -897,7 +824,7 @@ asynchronous entry registration order.
 Local CSS and Sass imported through `?url` deliver their compiled stylesheet
 and retained child assets. When that URL is attached as a stylesheet link,
 editing a retained CSS child or its image updates the styles without reloading
-the page, including when only an imported descendant contains `@compose`.
+the page, including when only an imported descendant contains `@variant`.
 CSS Modules that import local CSS files expose the imported classes through the
 root module's exports, with the same scope as its own classes. Imports retain their
 conditions and layers, and relative resources keep their original file's directory.
@@ -971,7 +898,7 @@ For the full native CSS pruning model, see [Native CSS pruning](/guide/native-cs
 
 ### Group rule identity
 
-Each item in a declaration group retains its declaration identity, value source, conditions, importance, and shorthand or longhand priority. Groups can emit multiple rules for the same escaped group selector. This lets direct values override tokens within the same scope in generated CSS, `@compose`, SSR, and hydration, independently of item order.
+Each item in a declaration group retains its declaration identity, value source, conditions, importance, and shorthand or longhand priority. Groups can emit multiple rules for the same escaped group selector. This lets direct values override tokens within the same scope in generated CSS, SSR, and hydration, independently of item order.
 
 ## Native queries and validation \{#native-queries-and-validation\}
 
@@ -1040,3 +967,14 @@ Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report`
 Markdown and MDX prose, inline code, fences and frontmatter are excluded from automatic generation. Actual HTML/JSX, ESM and expressions are parsed; their ordinary static strings may still be candidates. Register executable examples as virtual sources with their parent source ID, or use `@safelist`. Use explicit `kind: 'raw'` only for deliberate text sources. Parse failures report `SOURCE_PARSE_ERROR`.
 
 Automatic discovery respects project/workspace `.gitignore` files and excludes generated/dependency/output directories. Explicit `@source` may include normally ignored source files; explicit exclusions and Master/bundler outputs remain excluded.
+
+
+## Entry ownership and removed preset sizes
+
+Static matcher names and raw matcher keys each register an independent entry. A later definition in the same layer replaces the entire body for that entry, including nested rules and dependencies; other aliases from the earlier definition remain available. Empty definitions remain registered. Token identity consists of prefix and ordered namespaces; enum identity consists of prefix and the normalized key set.
+
+Different token definitions that resolve the same class are ambiguous even when their current inline values or generated CSS happen to be equal. The same token identity may emit in different layers. Diagnostics suggest only names actually registered in the manifest; otherwise define distinct prefixes.
+
+The complete entry determines intent: `flex` emits `display:flex`, while `flex:1` and `flex:hover` are native `flex` values. For a display state use `display:flex:hover`. Unknown CSS values remain generated with diagnostics; they never switch the selected entry.
+
+The preset no longer defines `size`, `min-size` or `max-size`, including their named token forms. Use explicit width and height properties. The `box` definitions above are author-defined examples, not preset utilities. Projects may define their own `size` utilities through the same public authoring contract. Native `@page { size: A4; }`, logical dimensions and other CSS properties are unchanged. See the [RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution).

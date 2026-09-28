@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
-import { createServer } from 'vite'
+import { createServer, normalizePath } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
@@ -10,13 +10,13 @@ const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['local', 'entry'].flatMap(kind => ['reference-directory', 'resource-file', 'resource-directory'].map(missing => ({ mode, kind, missing }))))
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" data-owner="restored"/>'
 function fixture(kind: string, missing: string) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-startup-dependencies-'))), root = join(parent, 'app'), external = join(parent, 'external')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-startup-dependencies-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root); mkdirSync(external)
   const reference = join(external, missing === 'reference-directory' ? 'deep/tokens.css' : 'tokens.css')
   const resource = join(external, missing === 'resource-file' ? 'pixel.svg' : 'deep/pixel.svg')
-  const tokens = `@utilities{paint{padding:7rem;background-image:url("./${relative(dirname(reference), resource)}?v=1#icon")}}.never{color:red}`
+  const tokens = `@theme{--paint-padding:7rem;--paint-background-image:url("./${normalizePath(relative(dirname(reference), resource))}?v=1#icon")}.never{color:red}`
   if (missing !== 'reference-directory') writeFileSync(reference, tokens)
-  writeFileSync(join(root, 'style.css'), `${kind === 'entry' ? '@master entry;@preserve native;' : ''}@reference "../${relative(parent, reference)}";.target{@compose paint;}`)
+  writeFileSync(join(root, 'style.css'), `${kind === 'entry' ? '@master entry;@preserve native;' : ''}@reference "../${normalizePath(relative(parent, reference))}";.target{@variant media(all){background-image:var(--paint-background-image);padding:var(--paint-padding);}}`)
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
   return { parent, root, reference, resource, restore() { mkdirSync(dirname(reference), { recursive: true });mkdirSync(dirname(resource), { recursive: true });writeFileSync(reference, tokens);writeFileSync(resource, svg) } }

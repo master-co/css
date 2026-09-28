@@ -10,7 +10,7 @@ import { compileCSS } from '../src/node-compiler'
 import { resolveReferenceOrigins } from '../src/stylesheet/reference-origins'
 
 const baseManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const source = '/*😀*/\r\n@reference "./tokens.css";\r\n@reference "./tokens.css";\r\n.root{@compose paint-a paint-b;}'
+const source = '/*😀*/\r\n@reference "./tokens.css";\r\n@reference "./tokens.css";\r\n.root{padding:var(--spacing-a);margin:var(--spacing-b);}'
 
 for (const mapKind of ['relative', 'source-root', 'file-url']) for (const child of [false, true]) test.each(['transform', 'collection'])(`BH-0004 ${mapKind} maps preserve distinct partial references, child=${child}, %s`, async operation => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-reference-map-')))
@@ -19,9 +19,9 @@ for (const mapKind of ['relative', 'source-root', 'file-url']) for (const child 
     for (const side of ['a', 'b']) mkdirSync(join(root, 'origins', side), { recursive: true })
     const owner = join(root, 'style.scss'), originals = ['a', 'b'].map(side => join(root, 'origins', side, '_rules.scss'))
     const tokens = ['a', 'b'].map(side => join(root, 'origins', side, 'tokens.css'))
-    writeFileSync(tokens[0], '@utilities{paint-a{padding:2rem}}.never-a{color:red}')
-    writeFileSync(tokens[1], '@utilities{paint-b{margin:3rem}}.never-b{color:red}')
-    writeFileSync(join(root, 'tokens.css'), '@utilities{paint-a{padding:99rem}paint-b{margin:99rem}}')
+    writeFileSync(tokens[0], '@theme{--spacing-a:2rem}.never-a{color:red}')
+    writeFileSync(tokens[1], '@theme{--spacing-b:3rem}.never-b{color:red}')
+    writeFileSync(join(root, 'tokens.css'), '@theme{--spacing-a:99rem;--spacing-b:99rem}')
     const sourceMap = JSON.stringify({ version: 3, file: owner, names: [],
       sourceRoot: mapKind === 'source-root' ? 'origins/' : '',
       sources: mapKind === 'file-url' ? originals.map(file => pathToFileURL(file).href) : ['a', 'b'].map(side => (mapKind === 'source-root' ? '' : 'origins/') + side + '/_rules.scss'),
@@ -45,8 +45,8 @@ for (const mapKind of ['relative', 'source-root', 'file-url']) for (const child 
       css = [result.css, ...result.stylesheets?.map(asset => asset.css) ?? []].join('\n')
       dependencies = collection.snapshot().dependencies
     }
-    expect(css).toContain('padding:2rem')
-    expect(css).toContain('margin:3rem')
+    expect(css).toContain('--spacing-a:2rem')
+    expect(css).toContain('--spacing-b:3rem')
     expect(css).not.toMatch(/99rem|never-|@reference/)
     expect(dependencies).toEqual(expect.arrayContaining(tokens))
   } finally { rmSync(root, { recursive: true, force: true }) }

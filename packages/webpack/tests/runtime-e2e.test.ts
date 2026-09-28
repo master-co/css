@@ -1,33 +1,15 @@
-import { execFileSync } from 'node:child_process'
 import { createServer, type Server } from 'node:http'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
-import { dirname, extname, join, normalize, relative } from 'node:path'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { extname, join, normalize, relative } from 'node:path'
 import { chromium, type Browser } from '@playwright/test'
 import { describe, expect, it } from 'vitest'
 import webpack from 'webpack'
+import MasterCSSWebpackPlugin from '../dist/index.js'
 
-const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const require = createRequire(import.meta.url)
-let built = false
-
-function buildPackage() {
-  if (built) return
-  execFileSync('pnpm', ['--dir', packageDir, 'build'], {
-    cwd: packageDir,
-    env: {
-      ...process.env,
-      CI: 'true'
-    },
-    shell: process.platform === 'win32',
-    stdio: 'pipe',
-    timeout: 120000
-  })
-  built = true
-}
 
 function createFixture(root: string) {
   const baseCSS = readFileSync(require.resolve('@master/css/base.css'), 'utf-8')
@@ -135,11 +117,9 @@ function serveDirectory(root: string) {
 
 describe('Webpack runtime mode', () => {
   it('injects runtime assets and preserves utility layer precedence over global CSS', async () => {
-    buildPackage()
     const root = mkdtempSync(join(tmpdir(), 'master-css-webpack-runtime-'))
     const dist = join(root, 'dist')
     const fixture = createFixture(root)
-    const MasterCSSWebpackPlugin = (await import(`${pathToFileURL(join(packageDir, 'dist/index.js')).href}?${Date.now()}`)).default
     let browser: Browser | undefined
     let server: Server | undefined
 
@@ -168,7 +148,11 @@ describe('Webpack runtime mode', () => {
       await page.waitForSelector('#probe')
       await page.waitForFunction(() => getComputedStyle(document.getElementById('probe')!).display === 'block')
       expect(await page.locator('script[defer][src="./master-css-runtime.js"]').count()).toBe(1)
-      expect(await page.locator('link[rel="preload"][href="./master-css-runtime.js"]').count()).toBe(1)
+      expect(await page.locator('link[rel="preload"][as="script"][href="./master-css-runtime.js"]').count()).toBe(1)
+
+      const manifestPreload = page.locator('link[rel="modulepreload"][as="json"][href^="./master-css-manifest."]')
+      expect(await manifestPreload.count()).toBe(1)
+      expect(await manifestPreload.getAttribute('crossorigin')).toBe('')
 
       const state = await page.evaluate(() => {
         const globalCSS = document.head.querySelector('link[rel="stylesheet"]')

@@ -96,6 +96,20 @@ describe('source adapters', () => {
     ])
   })
 
+  test('parses TypeScript in Svelte scripts and class expressions without treating it as JavaScript', async () => {
+    await expect(extractSvelteClasses('Typed.svelte', `
+      <script context="module" lang="ts">
+        import type { Component } from 'svelte'
+        const moduleClasses: string = 'fg-red'
+      </script>
+      <script lang='ts'>
+        const enabled: boolean = true
+        const instanceClasses: string = 'p:1rem'
+      </script>
+      <button class={enabled ? 'block' : ('hidden' satisfies string)} class:active={enabled}>Save</button>
+    `)).resolves.toEqual(['fg-red', 'p:1rem', 'block', 'hidden', 'active'])
+  })
+
   test('extracts frontmatter, script, and markup classes from Astro files while ignoring styles', () => {
     expect(extractAstroClasses('Page.astro', `---
 const frontmatterClasses = 'fg-red'

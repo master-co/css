@@ -1,3 +1,8 @@
 @import '@master/css';
 @theme light { --color-probe: #123456; }
 @theme dark { --color-probe: #abcdef; }
+
+@mode ocean { [data-theme="ocean"] { @slot; } }
+@theme ocean { --color-probe: #082f49; }
+
+@theme { @keyframes project-pulse { from { opacity: .5; } to { opacity: .5; } } }

@@ -23,7 +23,7 @@ export default nextConfig
 
 ## Modes
 
-`@master/css-next` defaults to progressive rendering and supports these mode values:
+`@master/css-next` defaults to static rendering and supports these mode values:
 
 | Mode | Description |
 | --- | --- |
@@ -49,7 +49,7 @@ In static mode, import the generated stylesheet from your app stylesheet:
 }
 ```
 
-Then enable static mode:
+Static mode is the default. To select it explicitly:
 
 ```js
 import withMasterCSS from '@master/css-next'
@@ -64,7 +64,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with generated CSS. CSS files that import `@master/css` are treated as native CSS pruning roots by default; add `@preserve native;` when native CSS must be preserved.
+Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with generated CSS. Native CSS is preserved by default. Enable `pruneNativeCSS: true` for intentional project pruning, or use `@prune native;` for one source file. With integration-level pruning enabled, `@preserve native;` excludes one source file.
 
 The generated entry can import companion stylesheets. Static mode publishes these stylesheets and referenced resources together for Turbopack, preserving source-relative resource URLs. Resource updates receive new filenames; earlier immutable assets remain available to builds already reading them. Static preparation rejects output failures so callers can retry after the cause is removed.
 
@@ -94,8 +94,9 @@ The `options` object is passed to `withMasterCSS(nextConfig, options)`.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` | Enables the integration. Use `false` to disable it. |
-| `mode` | `'runtime' \| 'pre-render' \| 'static' \| 'progressive'` | `'progressive'` | Next.js integration mode. |
-| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | `{ enabled: true }` | Runtime behavior in `runtime` and `progressive` modes. |
+| `mode` | `'runtime' \| 'pre-render' \| 'static' \| 'progressive'` | `'static'` | Next.js integration mode. |
+| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | `{ enabled: false }` | Enabled by runtime/progressive modes. Explicit enabled values must agree with the mode. |
+| `pruneNativeCSS` | `boolean` | `false` | Opts project-owned native CSS into pruning. |
 | `scanner` | `MasterCSSScannerConfiguration` | `{}` | Scanner configuration for static mode. |
 | `buildReport` | `boolean \| string` | `false` | Write a build report with rendered files. `true` writes `.next/master-css-build-report.json`; a string is resolved from `distDir`. |
 | `debug` | `boolean` | `false` | Log rendered output details during `next build`. |

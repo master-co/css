@@ -23,12 +23,12 @@ afterEach(() => { interception.afterGlobals = undefined;vi.restoreAllMocks() })
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(initiallyMissing = false) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
   mkdirSync(root);mkdirSync(join(parent, 'external'))
-  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/deep/tokens.css";@utilities{card{@compose paint;}}')
+  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/deep/tokens.css";@utilities{card{@variant paint{padding:1rem;}}}')
   writeFileSync(join(root, 'entry.js'), 'export const ready=true;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div></body></html>')
-  const write = (padding = '7rem') => { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, `@utilities{paint{padding:${padding}}}`) }
+  const write = (padding = '7rem') => { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, `@custom-variant paint{@media (width>=${padding}){@slot;}}`) }
   if (!initiallyMissing) write()
   return { parent, root, dependency, write }
 }
@@ -50,7 +50,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
   const render = vi.spyOn(MasterCSSServerRenderer.prototype, 'renderHTML')
   try {
     server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] }, perEnvironmentStartEndDuringDev: true } })
-    await server.listen();expect((await html(server)).text).toContain('.card{padding:7rem}')
+    await server.listen();expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
     const liveRenderer = render.mock.contexts.at(-1)
     await server.environments.client.waitForRequestsIdle()
     gate = hold(fail)
@@ -59,7 +59,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
     const send = vi.spyOn(server.ws, 'send'), closing = server.environments.ssr.close()
     gate.release();await closing;await pending
     const result = await html(server)
-    expect(result.status).toBe(200);expect(result.text).toContain('.card{padding:7rem}')
+    expect(result.status).toBe(200);expect(result.text).toContain('@media (width>=7rem){.card{padding:1rem}}')
     expect(render.mock.contexts.at(-1)).toBe(liveRenderer)
     expect(send).not.toHaveBeenCalled()
   } finally { gate?.release();await pending;await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
@@ -76,7 +76,7 @@ test.each(modes)('BH-0004 restarting a failed manifest server transfers recovery
     oldTransform.mockClear();const send = vi.spyOn(server.ws, 'send');f.write()
     await vi.waitFor(() => expect(reloaded(send.mock.calls)).toBe(true), { timeout: watchDeadline })
     await expect.poll(async () => (await html(server!)).status, { timeout: watchDeadline }).toBe(200)
-    if (mode === 'pre-render' || mode === 'progressive') expect((await html(server)).text).toContain('.card{padding:7rem}')
+    if (mode === 'pre-render' || mode === 'progressive') expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
     expect(oldTransform).not.toHaveBeenCalled()
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
 })
@@ -85,7 +85,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
   const f = fixture();let server: ViteDevServer | undefined, gate: ReturnType<typeof hold> | undefined, pending: Promise<unknown> | undefined
   try {
     server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] } } })
-    await server.listen();expect((await html(server)).text).toContain('.card{padding:7rem}');await server.environments.client.waitForRequestsIdle()
+    await server.listen();expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}');await server.environments.client.waitForRequestsIdle()
     const hook = server.config.plugins.find(p => p.name === 'master-css:pre-render')!.handleHotUpdate
     if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
     gate = hold(fail);f.write('9rem')
@@ -109,7 +109,7 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
     expect(module.isSelfAccepting).toBe(false)
     writeFileSync(f.dependency, '@utilities{paint{@compose lifecycle-invalid-class;}}')
     environment.moduleGraph.invalidateModule(module)
-    await expect(environment.transformRequest(module.url)).rejects.toThrow('lifecycle-invalid-class')
+    await expect(environment.transformRequest(module.url)).rejects.toThrow('@compose has been removed')
     const send = vi.spyOn(server.ws, 'send');f.write('9rem')
     await vi.waitFor(() => expect(send).toHaveBeenCalled(), { timeout: watchDeadline })
     expect(reloaded(send.mock.calls)).toBe(false)

@@ -94,12 +94,28 @@ If the v1 project had reusable component abstractions, migrate them to `@layer c
 ```css name=app.css
 @layer components {
   .card {
-    @compose grid gap-md b:1px|solid|var(--color-line-base) r-card bg-white shadow-sm p-card;
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-base);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
   }
 
   .btn-primary {
-    @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-primary fg-white;
-    &:hover { @compose bg-blue-70; }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
     &:disabled { opacity: 0.5; }
   }
 }
@@ -178,5 +194,5 @@ After replacing setup code, remove old imports, virtual module names, config loa
 - [Rendering modes](/guide/rendering-modes) for runtime, static, server, and progressive delivery.
 - [Style declarations](/reference/rules/declarations) for current class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for `@settings` and modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@layer components`, `@utilities`, `@compose`, `@reference`, and source exceptions.
+- [CSS directives](/reference#directives) for `@layer components`, `@utilities`, `@reference`, and source exceptions.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static-safe complete class strings.

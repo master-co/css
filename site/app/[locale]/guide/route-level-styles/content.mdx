@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Route-level styles are ordinary CSS files loaded by one route, page, view, or component. They can use Master CSS as compile-time context without becoming a global entry.
 
-Reference the app stylesheet at the top of the local file:
+The Vite, Next.js, and Webpack integrations automatically supply definitions from discovered project entries to stylesheets loaded by the framework:
 
 ```txt
 app/
@@ -11,17 +11,11 @@ app/
     home.css
 ```
 
-```css name=app/home/home.css
-@reference "../globals.css";
-```
-
-Then write native CSS selectors. Use `@compose` when Master CSS classes are clearer than hand-written declarations.
+Then write native CSS selectors and declarations. Share design values with CSS custom properties and shared behavior with native classes or component interfaces.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 .home-section {
-  @compose py-5xl;
+  padding-block: var(--spacing-5xl);
 }
 ```
 
@@ -31,28 +25,41 @@ Load the route stylesheet from the route, page module, or component entry that o
 import "./home.css"
 ```
 
-The global stylesheet still has to be loaded by the app. `@reference` gives the route stylesheet compile-time access to project tokens, variants, and shared class vocabulary; it does not import the app CSS output again.
+Load the global stylesheet for its reset, layer order, native rules, and generated utilities. Project definitions are shared at compile time; they do not cause the global stylesheet to be loaded by a route.
 
 ---
 
-## Reference the app entry
-Use `@reference` when a route stylesheet needs project context but should ship as its own CSS output.
+## Use project definitions
+A route stylesheet can use project tokens, variants, and shared utilities directly. It remains a separate CSS output owned by its route.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 .pricing-hero {
-  @compose grid gap-lg py-5xl;
+  display: grid;
+  gap: var(--spacing-lg);
+  padding-block: var(--spacing-5xl);
 }
 
 .pricing-card {
-  @compose p-lg b:1px|solid|var(--color-line-base) r-xl surface-raised;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-line-base);
+  background-color:var(--color-surface-raised);
 }
 ```
 
-The referenced file is context-only. Native CSS from the referenced stylesheet is not copied into the route stylesheet. The route output contains only the lowered route rules plus any theme variables or managed keyframes the route actually needs and the global entry has not already emitted.
+Here `surface-raised` is a shared utility; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
 
-This keeps route CSS chunks self-contained without duplicating the global stylesheet.
+This keeps route CSS chunks self-contained without copying global native rules or generated utility classes. Unrelated CSS passes through unchanged.
+
+Use `@reference` for definitions outside the project context, such as a package used only by this route:
+
+```css
+@reference "@acme/theme/tokens.css";
+
+.route-card { background-color:var(--color-surface-raised); }
+```
+
+An independent compiler call has no automatic project context. Supply `referenceFiles` with absolute definition filenames and enable `transformNativeStylesheets`, or write an explicit `@reference`.
 
 ---
 
@@ -60,16 +67,18 @@ This keeps route CSS chunks self-contained without duplicating the global styles
 Route styles do not need on-demand generation. Treat route classes like traditional CSS that belongs to that route.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 @layer components {
   .home-bento {
-    @compose grid gap-md;
+    display: grid;
+    gap: var(--spacing-md);
     grid-template-columns: minmax(0, 1fr);
   }
 
   .home-bento-card {
-    @compose p-lg b:1px|solid|var(--color-line-base) r-xl surface-raised;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-base);
+    background-color: var(--color-surface-raised);
   }
 }
 ```
@@ -78,12 +87,16 @@ Use classes when the selector is part of the page structure. Use native selector
 
 ```css name=app/home/home.css
 .home-bento-card > h2 {
-  @compose text-lg font-medium;
+  font-size: var(--font-size-lg);
+  line-height: max(1.8em - max(0rem, var(--font-size-lg) - 1rem) * 1.12, var(--font-size-lg));
+  letter-spacing: clamp(-.072em, calc((var(--font-size-lg) - 1rem) * -.048), 0em);
+  font-weight: var(--font-weight-medium);
   margin-block: 0 0.5rem;
 }
 
 .home-bento-card > p {
-  @compose leading-lg text-muted;
+  color: var(--color-text-muted);
+  line-height: var(--leading-lg);
   margin: 0;
 }
 ```
@@ -93,29 +106,35 @@ Because these are native rules, they are emitted with the stylesheet that import
 ---
 
 ## Use variants locally
-Use rule-local variants for route states, breakpoints, and modes without moving the selector into global vocabulary.
+Use a rule-local variant for a named mode, and a native media query for a route breakpoint without moving the selector into global vocabulary.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 .home-cta {
-  @compose inline-flex items-center justify-center gap-xs h:3rem px-lg r-xl bg-blue fg-white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-lg);
+  background-color: var(--color-blue);
+  color: oklch(100% 0 none);
+  height: 3rem;
 
   @variant dark {
-    @compose bg-blue-60;
+    background-color: var(--color-blue-60);
   }
 
-  @variant <sm {
-    @compose w:100%;
+  @media (width < 52.125rem) {
+    width: 100%;
   }
 }
 ```
 
-Native declarations and composed declarations share one rule. Put ordinary CSS where it is clearer than a class:
+Use native declarations for route-only motion and interaction:
 
 ```css name=app/home/home.css
 .home-cta {
-  @compose transition:transform|var(--duration-normal)|var(--easing-standard);
+  transition: transform var(--duration-normal) var(--easing-standard);
   transform: translateY(0);
 }
 
@@ -130,8 +149,6 @@ Native declarations and composed declarations share one rule. Put ordinary CSS w
 Use native top-level `@keyframes` for route-only motion. Keep the animation in the route stylesheet unless it becomes a shared motion token.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 @keyframes home-reveal {
   from {
     opacity: 0;
@@ -165,15 +182,15 @@ Use native media queries for accessibility and route-specific fallbacks:
 Container queries are often route-specific because they describe how one section responds to the space it receives.
 
 ```css name=app/home/home.css
-@reference "../globals.css";
-
 .home-feature-grid {
-  @compose grid gap-md;
+  display: grid;
+  gap: var(--spacing-md);
   container: home-feature-grid / inline-size;
 }
 
 .home-feature-list {
-  @compose grid gap-md;
+  display: grid;
+  gap: var(--spacing-md);
 }
 
 @container home-feature-grid (width >= 42rem) {

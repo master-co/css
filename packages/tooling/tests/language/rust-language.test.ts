@@ -27,7 +27,7 @@ describe('Rust language session', () => {
       expect(script.classPositions.map(({ token }) => token)).toEqual(['block', 'fg-red'])
 
       const css = session.analyzeDocument({
-        source: '.x { @compose block fg-red; }',
+        source: '@safelist "block fg-red";',
         languageId: 'css'
       })
       expect(css.classPositions.map(({ token }) => token)).toEqual(['block', 'fg-red'])

@@ -9,7 +9,7 @@
 
 ```html
 <div id="layout" class="flex gap-md">
-  <div id="peer" class="flex:none size:6rem p-sm">Sidebar</div>
+  <div id="peer" class="flex:none width:6rem height:6rem p-sm">Sidebar</div>
   <div id="target" class="flex:1 h:6rem min-w:0 p-sm">Flexible content</div>
 </div>
 ```
@@ -28,7 +28,7 @@ Use `flex:none` to prevent both growth and shrinkage while keeping the item’s 
 
 ```html
 <div id="layout" class="flex items-center gap-md">
-  <span id="target" class="grid flex:none place-items:center size:3rem" aria-hidden="true">AL</span>
+  <span id="target" class="grid flex:none place-items:center width:3rem height:3rem" aria-hidden="true">AL</span>
   <div id="peer" class="flex:1 min-w:0 p-sm">Alex Lee<br>Product designer</div>
 </div>
 ```
@@ -56,15 +56,15 @@ The shorthand affects a child only when it is a flex item. Compare these identic
 
 ```html
 <div id="layout" class="block">
-  <div id="target" class="flex:1 size:6rem min-w:0 p-sm">Target</div>
-  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
+  <div id="target" class="flex:1 width:6rem height:6rem min-w:0 p-sm">Target</div>
+  <div id="peer" class="flex:none width:6rem height:6rem p-sm">Main content</div>
 </div>
 ```
 
 ```html
 <div id="layout" class="flex gap-md">
-  <div id="target" class="flex:1 size:6rem min-w:0 p-sm">Target</div>
-  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
+  <div id="target" class="flex:1 width:6rem height:6rem min-w:0 p-sm">Target</div>
+  <div id="peer" class="flex:none width:6rem height:6rem p-sm">Main content</div>
 </div>
 ```
 
@@ -75,8 +75,8 @@ Use [conditional queries](/reference/rules/conditions) to change flex behavior a
 
 ```html
 <div id="layout" class="flex gap-md">
-  <div id="target" class="flex:none size:6rem min-w:0 p-sm flex:1@sm">Target</div>
-  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
+  <div id="target" class="flex:none width:6rem height:6rem min-w:0 p-sm flex:1@sm">Target</div>
+  <div id="peer" class="flex:none width:6rem height:6rem p-sm">Main content</div>
 </div>
 ```
 

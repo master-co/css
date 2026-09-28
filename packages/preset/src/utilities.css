@@ -450,7 +450,7 @@
   }
 }
 
-/* Token and size shorthands. */
+/* Named token utilities. */
 @utilities {
   animate-<~animate> {
     animation: --value();
@@ -476,35 +476,7 @@
     background-color: --value();
   }
 
-  size-<~container> {
-    width: --value();
-    height: --value();
-  }
 
-  size:<*> {
-    width: --value();
-    height: --value();
-  }
-
-  min-size-<~container> {
-    min-width: --value();
-    min-height: --value();
-  }
-
-  min-size:<*> {
-    min-width: --value();
-    min-height: --value();
-  }
-
-  max-size-<~container> {
-    max-width: --value();
-    max-height: --value();
-  }
-
-  max-size:<*> {
-    max-width: --value();
-    max-height: --value();
-  }
 }
 
 /* Border and outline shorthands. */

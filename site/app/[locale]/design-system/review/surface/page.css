@@ -1,4 +1,3 @@
-@reference "../../../../globals.css";
 .review-surface-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
 .review-surface-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
 .review-surface-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }

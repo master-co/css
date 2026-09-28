@@ -13,6 +13,16 @@ function createTempDir(prefix: string) {
 }
 
 describe('@master/css-compiler/diagnostics', () => {
+  it('does not diagnose a registered native sizing class as a removed utility', async () => {
+    const cwd = createTempDir('master-css-diagnostics-native-sizing-')
+    try {
+      writeFileSync(join(cwd, 'index.css'), '@master entry; .size\\:20px { color: red; }')
+      writeFileSync(join(cwd, 'index.html'), '<div class="size:20px"></div>')
+      const report = await createMasterCSSInspectionReport({ manifest: defaultManifest, cwd, patterns: ['index.html'] })
+      expect(report.diagnostics.some(item => item.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+      expect(report.scanner.classes.usedNative).toContain('size:20px')
+    } finally { rmSync(cwd, { recursive: true, force: true }) }
+  })
   it('reports scanner state, per-file discoveries, and missing CSS diagnostics', async () => {
     const cwd = createTempDir('master-css-diagnostics-inspect-')
     try {
@@ -24,7 +34,7 @@ describe('@master/css-compiler/diagnostics', () => {
         classes: ['block', 'never-generated-class']
       })
 
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -66,7 +76,7 @@ describe('@master/css-compiler/diagnostics', () => {
       expect(byName.get('grid-cols:2.5')?.cssValueStatus).toBe('invalid')
       expect(byName.get('width:future(2qu)')?.cssValueStatus).toBe('unknown')
       expect(byName.get('padding:var(--space)')?.cssValueStatus).toBe('unknown')
-      expect(byName.get('font:16px')?.checks).toEqual([expect.objectContaining({ name: 'css-tree', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: 'css-tree', phase: 'css-value', scope: 'expanded-declarations-and-known-math-grammar', version: expect.any(String) })])
+      expect(byName.get('font:16px')?.checks).toEqual([expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-value', scope: 'expanded-declarations-and-known-math-grammar-and-static-types-v1', version: expect.any(String) })])
       expect(report.diagnostics.filter(item => item.code === 'CSS_VALUE_INVALID')).toHaveLength(2)
       expect(report.diagnostics.some(item => item.message.includes('ordinary'))).toBe(false)
       expect(report.summary.errors).toBe(2)

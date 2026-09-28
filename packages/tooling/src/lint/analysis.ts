@@ -1,5 +1,4 @@
 import type {
-  CanonicalComposeDirectiveResult,
   RawValuePolicyOptions,
   CanonicalClassNameOptions
 } from './contracts'
@@ -20,7 +19,7 @@ export interface MasterCSSLintPartialClassConflict {
 }
 
 export interface MasterCSSLintAnalysis {
-  readonly version: 1
+  readonly version: 2
   readonly sortedClassNames: readonly string[]
   readonly conflicts: readonly MasterCSSLintClassConflict[]
   readonly partialConflicts: readonly MasterCSSLintPartialClassConflict[]
@@ -30,13 +29,12 @@ export interface MasterCSSLintClassListOptions {
   readonly disallowUnknownClass?: boolean
   readonly rawValuePolicy?: RawValuePolicyOptions
   readonly canonicalOptions?: CanonicalClassNameOptions
-  readonly composeDirective?: boolean
 }
 
 export interface MasterCSSLintEdit {
   readonly range: Readonly<{ start: number, end: number }>
   readonly text: string
-  readonly scope: 'class-list' | 'directive'
+  readonly scope: 'class-list'
 }
 
 export interface MasterCSSLintDiagnosticInput {
@@ -49,7 +47,7 @@ export interface MasterCSSLintDiagnosticInput {
 }
 
 export interface MasterCSSLintClassListAnalysis {
-  readonly version: 1
+  readonly version: 2
   readonly analysis: MasterCSSLintAnalysis
   readonly diagnostics: readonly MasterCSSLintDiagnosticInput[]
   readonly sortEdit?: MasterCSSLintEdit

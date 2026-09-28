@@ -37,7 +37,7 @@ export default function DocHeader(props: any) {
             ? <>
               v{process.env.NEXT_PUBLIC_VERSION}
               <DocVersionSelect />
-              <IconChevronDown className="size:1em mr:-0.188rem stroke-width:1.5" />
+              <IconChevronDown className="width:1em height:1em mr:-0.188rem stroke-width:1.5" />
             </>
             : <>v{process.env.NEXT_PUBLIC_VERSION}</>}
         </label>

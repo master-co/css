@@ -25,11 +25,11 @@ function loadRustRefactorContractEvidence() {
   for (const record of evidence.records) {
     const label = `Rust contract evidence ${record.sourceId ?? '<unknown>'}`
     assertObjectKeys(record, ['sourceId', 'sourceDigest', 'targetId', 'targetDigest', 'proof', 'reason', 'approval'], label)
-    if (record.targetId !== undefined) {
+    if (record.targetId !== undefined && record.proof !== 'approved-contract-removal') {
       assert.equal(record.proof, 'approved-contract-change', `${label} renamed targets require approved contract evidence.`)
       assert.match(record.targetId, /^rc87-[a-f0-9]{16}$/u, `${label} targetId is invalid.`)
     }
-    if (record.proof === 'approved-contract-change') {
+    if (['approved-contract-change', 'approved-contract-removal'].includes(record.proof)) {
       assertObjectKeys(record.approval, ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest'], `${label} approval`)
       validateApprovalMetadata(record.approval, `${label} approval`)
       assert.equal(record.approval.scopeDigest, rustContractRecordScopeDigest(record), `${label} approval scope digest is stale.`)
@@ -291,6 +291,22 @@ export function resolveReviewedRename(record, targetById, matchedTargetIds) {
   return targets
 }
 
+// Retired APIs retain their baseline denominator and explicit approval; absence is not parity.
+export function resolveReviewedRemoval(record, source, targets, targetById) {
+  const label = `Rust contract removal ${source.id}`
+  assert.equal(record.proof, 'approved-contract-removal', `${label} requires removal evidence.`)
+  validateApprovalMetadata(record.approval, label)
+  assert.equal(record.approval.scopeDigest, rustContractRecordScopeDigest(record), `${label} approval is stale.`)
+  assert.equal(record.sourceId, source.id, `${label} source identity drifted.`)
+  assert.equal(record.sourceDigest, source.sourceDigest, `${label} source digest drifted.`)
+  assert.match(record.targetId, /^rc87-[a-f0-9]{16}$/u, `${label} must identify the retired target.`)
+  assert.equal(record.targetDigest, null, `${label} must explicitly record no executable target.`)
+  assert.equal(targets.length, 0, `${label} must not override a present or relocated case.`)
+  assert.equal(targetById.has(record.targetId), false, `${label} retired target still exists.`)
+  assert.ok(typeof record.reason === 'string' && record.reason.trim(), `${label} requires a reason.`)
+  return { source, status: record.proof, target: null, proof: record.proof, reason: record.reason, approval: record.approval }
+}
+
 export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
   const baselineInventory = collectCasesFromRef(
     'rust-refactor-contract',
@@ -301,7 +317,7 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
   for (const record of evidence.records) {
     assert.ok(!evidenceBySourceId.has(record.sourceId), `Duplicate Rust contract evidence for ${record.sourceId}.`)
     assert.ok(
-      ['verified-superset', 'approved-contract-change'].includes(record.proof),
+      ['verified-superset', 'approved-contract-change', 'approved-contract-removal'].includes(record.proof),
       `Invalid Rust contract proof for ${record.sourceId}.`
     )
     evidenceBySourceId.set(record.sourceId, record)
@@ -328,6 +344,11 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
       relocated = targets.length > 0
     }
     const record = evidenceBySourceId.get(source.id)
+    if (record?.proof === 'approved-contract-removal') {
+      const entry = resolveReviewedRemoval(record, source, targets, targetById)
+      usedEvidence.add(source.id)
+      return entry
+    }
     if (record?.targetId) {
       assert.equal(targets.length, 0, `Renamed target evidence for ${source.id} must not override an existing match.`)
       targets = resolveReviewedRename(record, targetById, matchedTargetIds)
@@ -479,10 +500,10 @@ export function validateRustRefactorContractLedger(ledger) {
   )
   for (const entry of ledger.entries) {
     assert.ok(
-      ['preserved-exact', 'verified-superset', 'approved-contract-change', 'regressed', 'removed-unapproved'].includes(entry.status),
+      ['preserved-exact', 'verified-superset', 'approved-contract-change', 'approved-contract-removal', 'regressed', 'removed-unapproved'].includes(entry.status),
       `Invalid Rust contract status for ${entry.source.id}.`
     )
-    if (entry.status === 'approved-contract-change') {
+    if (['approved-contract-change', 'approved-contract-removal'].includes(entry.status)) {
       assert.ok(entry.approval, `Approved Rust contract change ${entry.source.id} is missing human approval.`)
     }
   }

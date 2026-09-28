@@ -23,87 +23,6 @@ fn lower_for_test(
 }
 
 #[test]
-fn preserves_native_values_in_compose_for_tooling_validation() {
-    let definition: CssDirectiveStyleDefinition = serde_json::from_value(json!({
-        "type": "compose",
-        "order": 1,
-        "className": "background:neutral-120",
-        "selector": ".card"
-    }))
-    .unwrap();
-    let result = lower_css_directives(
-        &CssDirectiveManifestInput::default(),
-        &[definition],
-        &[],
-        &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1,"languageVersion":3, "utilities": [] })),
-            resolution_manifest: None,
-        },
-    )
-    .unwrap();
-    assert_eq!(result.generated_css, ".card{background:neutral-120}");
-}
-
-#[test]
-fn accepts_valid_unparsed_native_declarations_in_compose() {
-    let definitions: Vec<CssDirectiveStyleDefinition> = serde_json::from_value(json!([
-        {
-            "type": "compose",
-            "order": 1,
-            "className": "contain:content",
-            "selector": ".card"
-        },
-        {
-            "type": "compose",
-            "order": 2,
-            "className": "content:'stripe'",
-            "selector": ".card"
-        },
-        {
-            "type": "compose",
-            "order": 3,
-            "className": "fg:inherit!",
-            "selector": ".card"
-        },
-        {
-            "type": "compose",
-            "order": 4,
-            "className": "content:none",
-            "selector": ".card::before"
-        },
-        {
-            "type": "compose",
-            "order": 5,
-            "className": "text-underline-offset:2px",
-            "selector": ".card"
-        },
-        {
-            "type": "compose",
-            "order": 6,
-            "className": "outline-offset:0",
-            "selector": ".card"
-        }
-    ]))
-    .unwrap();
-    let result = lower_css_directives(
-        &CssDirectiveManifestInput::default(),
-        &definitions,
-        &[],
-        &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1,"languageVersion":3, "utilities": [] })),
-            resolution_manifest: None,
-        },
-    )
-    .unwrap();
-    assert!(result.generated_css.contains("contain:content"));
-    assert!(result.generated_css.contains("content:'stripe'"));
-    assert!(result.generated_css.contains("color:inherit!important"));
-    assert!(result.generated_css.contains("content:none"));
-    assert!(result.generated_css.contains("text-underline-offset:2px"));
-    assert!(result.generated_css.contains("outline-offset:0"));
-}
-
-#[test]
 fn preserves_authored_order_for_native_conditions() {
     let result = lower_for_test(
         CssDirectiveManifestInput::default(),
@@ -126,32 +45,6 @@ fn preserves_authored_order_for_native_conditions() {
     assert_eq!(
         result.generated_css,
         "@media (width>=52.125rem){.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-2xl);scroll-margin-top:100px}}.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-lg);scroll-margin-top:60px}"
-    );
-}
-
-#[test]
-fn preserves_statement_order_for_compose_conditions() {
-    let result = lower_for_test(
-        CssDirectiveManifestInput::default(),
-        json!([
-            {
-                "type": "compose",
-                "order": 1,
-                "className": "display:grid",
-                "selector": ".card",
-                "conditions": ["@media (width>=48rem)"]
-            },
-            {
-                "type": "compose",
-                "order": 2,
-                "className": "display:block",
-                "selector": ".card"
-            }
-        ]),
-    );
-    assert_eq!(
-        result.generated_css,
-        "@media (width>=48rem){.card{display:grid}}.card{display:block}"
     );
 }
 

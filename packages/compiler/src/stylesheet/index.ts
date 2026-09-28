@@ -18,7 +18,7 @@ import {
 } from '../node-compiler'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
+import { hasStylesheetResourceReferences, renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import { extname, resolve } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
@@ -389,8 +389,8 @@ export async function compileRenderedStylesheet(
   }
   const { compileOptions, finalizedResult, result, outputMap } = await compileStylesheetResult(id, source, options, true)
   const renderedCSS = renderCompiledManifestCSS({
-    manifest: finalizedResult.manifest,
-    // Lowering emits composed native rules separately from parsed native CSS.
+    manifest: finalizedResult.resolutionManifest,
+    // Include lowered native variants as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
     emittedGlobals: options.emittedGlobals
@@ -460,7 +460,13 @@ export async function transformLocalStylesheet(
   options: TransformLocalStylesheetOptions
 ): Promise<TransformLocalStylesheetResult> {
   let local = false
-  try { local = isStylesheetRequest(id) && (Boolean(options.delivery) || hasLocalStyleDirectives(source, cleanStyleRequest(id))) }
+  let native = false
+  try {
+    if (isStylesheetRequest(id)) {
+      native = !hasLocalStyleDirectives(source, cleanStyleRequest(id))
+      local = Boolean(options.delivery || options.transformNativeStylesheets || !native)
+    }
+  }
   catch (error) { throw mapStylesheetError(error, cleanStyleRequest(id), options, source) }
   if (!isStylesheetRequest(id) || !local) {
     return {
@@ -471,8 +477,10 @@ export async function transformLocalStylesheet(
   }
   const {
     emittedGlobals,
+    generatedGlobals = 'inline',
     ...compileOptions
   } = options
+  if (generatedGlobals !== 'inline' && generatedGlobals !== 'separate') throw new TypeError('generatedGlobals must be inline or separate.')
   if (options.delivery) {
     const compiled = await compileDeliveredSource(cleanStyleRequest(id), await preprocessStylesheet(source, id, options), {
       ...compileOptions,
@@ -485,9 +493,10 @@ export async function transformLocalStylesheet(
       includeGeneratedCSS: false,
       emittedGlobals
     })
-    const code = [compiled.directives.css, rendered.generatedCSS].filter(Boolean).join('\n\n')
+    const code = [compiled.directives.css, generatedGlobals === 'inline' && rendered.generatedCSS].filter(Boolean).join('\n\n')
     return {
       code, transformed: true, dependencies: compiled.directives.dependencies,
+      ...(generatedGlobals === 'separate' && rendered.generatedCSS ? { globalStylesheet: { css: rendered.generatedCSS } } : {}),
       stylesheets: compiled.stylesheets.filter(asset => asset.id !== compiled.entry).map(({ id, href, css }) => ({ id, href, css })),
       resources: compiled.resources,
       result: { ...compiled.directives, css: code, generatedCSS: rendered.generatedCSS }
@@ -495,8 +504,12 @@ export async function transformLocalStylesheet(
   }
   const { result, finalizedResult, outputMap } = await compileStylesheetResult(id, source, {
     ...compileOptions,
+    preserveNativeSource: compileOptions.preserveNativeSource ?? native,
     preserveNativeCSS: true
   })
+  if (native && !hasStylesheetResourceReferences(finalizedResult.resolutionManifest, finalizedResult.css || result.nativeCSS || '')) {
+    return { code: source, dependencies: finalizedResult.dependencies, transformed: false }
+  }
   const renderedCSS = renderCompiledManifestCSS({
     manifest: finalizedResult.resolutionManifest,
     nativeCSS: finalizedResult.css || result.nativeCSS,
@@ -507,12 +520,13 @@ export async function transformLocalStylesheet(
     ...result,
     dependencies: finalizedResult.dependencies,
     warnings: finalizedResult.warnings,
-    css: renderedCSS.css,
-    sourceMap: outputMap(renderedCSS.css),
+    css: generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css,
+    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css),
     generatedCSS: renderedCSS.generatedCSS
   }
   return {
     code: transformedResult.css || transformedResult.nativeCSS || '',
+    ...(generatedGlobals === 'separate' && renderedCSS.generatedCSS ? { globalStylesheet: { css: renderedCSS.generatedCSS } } : {}),
     dependencies: [...new Set([cleanStyleRequest(id), ...(transformedResult.dependencies || [])])],
     transformed: true,
     result: transformedResult

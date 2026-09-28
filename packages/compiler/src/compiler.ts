@@ -92,7 +92,6 @@ export function toMasterCSSCompileResultInternal(
 ): MasterCSSCompileResult {
   return Object.freeze({
     css: result.css,
-    compositions: Object.freeze([...(result.compositions ?? [])]),
     ...(result.sourceMap ? { sourceMap: result.sourceMap } : {}),
     nativeCSS: result.nativeCSS,
     generatedCSS: result.generatedCSS,
@@ -105,7 +104,6 @@ export function toMasterCSSCompileResultInternal(
 }
 
 interface InternalManifestCompileResult {
-  readonly compositions?: CompileCSSResult['compositions']
   readonly css: string
   readonly nativeCSS: string
   readonly generatedCSS: string
@@ -127,7 +125,6 @@ export function toMasterCSSCompileManifestResultInternal(
 ): MasterCSSCompileManifestResult {
   return Object.freeze({
     css: result.css,
-    compositions: Object.freeze([...(result.compositions ?? [])]),
     nativeCSS: result.nativeCSS,
     generatedCSS: result.generatedCSS,
     dependencies: Object.freeze([...result.dependencies]),
@@ -203,7 +200,6 @@ export class MasterCSSCompiler implements Disposable {
       baseManifest: options.baseManifest
     }, source) as {
       manifest: MasterCSSManifest
-      compositions: NonNullable<CompileCSSResult['compositions']>
       warnings: string[]
       generatedCSS: string
       outputMappings?: CompileCSSResult['outputMappings']
@@ -215,7 +211,6 @@ export class MasterCSSCompiler implements Disposable {
     return Object.freeze({
       css,
       nativeCSS: rawDirectives.nativeCSS,
-      compositions: Object.freeze([...(lowered.compositions ?? [])]),
       generatedCSS,
       classNames: Object.freeze([...rawDirectives.classNames]),
       nativeClassNames: Object.freeze([...rawDirectives.nativeClassNames]),

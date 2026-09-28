@@ -14,6 +14,46 @@ Runtime and progressive rendering optimize what CSS is delivered up front. They 
 
 For page-level CSS size and delivery measurements, see the [benchmarks](/guide/benchmarks).
 
+## Shared execution contract
+
+Build-time generation, server rendering and browser generation use the same Rust
+semantics. Given the same manifest and classes, they must agree on declarations,
+conditions, resource dependencies and cascade behavior. Their HTML, transport and
+hydration metadata can differ.
+
+Static rendering is the normal choice when complete class strings are available
+in application sources, including conditional alternatives. Runtime generation
+serves classes introduced after the build, such as CMS content or a visual editor.
+Progressive rendering adds that capability to server-rendered CSS without changing
+the styling language.
+
+### Manifest compatibility
+
+The execution format is Manifest `version: 1` with `languageVersion: 3`. These are
+separate from package versions and the internal native/Wasm binding ABI. Missing
+or unsupported execution versions are rejected; recompile project CSS with matching
+packages rather than changing the version fields by hand.
+
+Use `MasterCSSManifest` and `serializeMasterCSSManifest` from
+`@master/css-schema/manifest` when storing a manifest. The codec normalizes derived
+fields such as default utility layers and order metadata. It is a serializer, not
+a replacement for engine validation. Reloading a supported manifest must preserve
+execution behavior, but its serialized bytes need not reproduce the compiler input.
+
+The public contract covers executable definitions, variables, modes, variants and
+their meaningful order. It does not expose matcher indexes, caches or binding
+session state. A manifest is not a lossless CSS source document: comments,
+formatting and editable source structure require a separate authoring model.
+
+Unknown fields are not a universal extension mechanism. The Rust manifest envelope
+retains unknown JSON fields, while typed nested contracts can reject them. Field
+retention does not mean an engine understands or executes a new capability.
+
+Hydration data also carries versioned execution information. Use the server's
+hydration output with the matching runtime and project manifest; do not treat a
+manifest generated for another language version as compatible because its outer
+`version` is still `1`.
+
 ---
 
 ## Runtime Rendering
@@ -338,7 +378,8 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     ```css name=index.css
     @layer components {
       .btn {
-        @compose inline-flex px-md;
+        display: inline-flex;
+        padding-inline: var(--spacing-md);
       }
     }
     ```
@@ -445,13 +486,17 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @layer components {
   .btn {
-    @compose inline-flex items-center px-md py-xs r-md;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
     background: var(--color-primary);
   }
 }
 ```
 
-These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, components, utilities, and native composed rules into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, utilities and native variant blocks into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
@@ -502,6 +547,14 @@ interface MasterCSSEngineExecutionState {
 
 Classes follow the requested order, including repeated names. Unknown classes and valid classes that have never been ensured have empty references. The query reads stored references without generating rules or returning utility rule text. `inspect()` remains an independent rule inspection; it does not ensure a class. Use `snapshot()` when you need complete rules and CSS, including hydration data.
 
+`inspect(className)` reports `matchStatus`, `cssSyntaxStatus`, `cssValueStatus`
+and `browserSupport` separately. Its optional `diagnostics` array includes codes,
+messages and, when available, notes about ambiguous tokens or invalid conditions.
+An inspection can recognize `padding:red` as declaration syntax while leaving its
+CSS value and browser support `not-checked`. Use the validator from
+`@master/css-tooling` for value validation; a matched rule alone is not a validation
+result. Inspection results are immutable and do not register classes with the engine.
+
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v1, hydration v1 and transition v1 keep their existing shapes.
 
-Custom engine or binding implementations must add this query when upgrading to [binding ABI 8](/guide/migration#custom-engine-and-binding-migration).
+Custom engine or binding implementations must add this query when upgrading to the [current binding ABI 13](/guide/migration#custom-engine-and-binding-migration).

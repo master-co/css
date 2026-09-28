@@ -36,13 +36,17 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 3, bindingAbiVersion: 12 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 3, bindingAbiVersion: 14 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
     expect(rendered.css.text).toContain('font:16px')
     expect(rendered.inspections.map(inspection => inspection.cssValueStatus)).toEqual(['invalid', 'unknown'])
     expect(rendered.diagnostics.map(diagnostic => diagnostic.code)).toEqual(['CSS_VALUE_INVALID', 'CSS_VALUE_UNKNOWN'])
+    const math = await inspectClass(context, { className: 'width:calc(1px|+|1s)', context: 'preset' })
+    expect(math.cssValueStatus).toBe('invalid')
+    const removed = await inspectClass(context, { className: 'size:20px', context: 'preset' })
+    expect(removed.diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
   } finally { context.dispose() }
 })
 
@@ -58,20 +62,16 @@ it('keeps complete ambiguity alternatives in both structured and JSON output', a
   } finally { context.dispose() }
 })
 
-it('reports compose statements, definition locations and resource dependencies', async () => {
-  const context = project()
-  const content = '@theme{--color-accent:red;@keyframes spin{to{opacity:1}}}@utilities{paint{color:var(--color-accent);animation:spin 1s}}@layer components{.native{@compose paint;@compose color:blue;}}'
+it('does not warn about retired builtins for registered project CSS classes', async () => {
+  const context = project(String.raw`@master entry; .size\:20px { color:red; }`)
   try {
-    const result = await inspectDirectives(context, { context: 'preset', content, filePath: 'button.css' })
-    expect(result.directives.nativeClassNames).toContain('native')
-    expect(result.directives.classNames).not.toContain('native')
-    expect(result.compositions).toHaveLength(2)
-    expect(result.compositions[0]).toMatchObject({ classes: ['paint'], variableNames: ['color-accent'], animationNames: ['spin'] })
-    expect(result.compositions[0].css).toContain('color:var(--color-accent)')
-    const definition = result.compositions[0].definitionSources[0]
-    expect(content.slice(definition.range.start, definition.range.end)).toBe('paint')
-    const call = result.compositions[0].source!
-    expect(content.slice(call.range.start, call.range.end)).toBe('@compose paint;')
-    expect(result.compositions[1].classes).toEqual(['color:blue'])
+    const inspected = await inspectClass(context, { className: 'size:20px' })
+    const rendered = await renderCSS(context, { classList: 'size:20px' })
+    for (const diagnostics of [inspected.diagnostics, rendered.diagnostics]) {
+      expect(diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+    }
+    expect(inspected.manifest).not.toHaveProperty('nativeClassNames')
+    const other = await inspectClass(context, { className: 'size:30px' })
+    expect(other.diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
   } finally { context.dispose() }
 })

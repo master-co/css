@@ -117,17 +117,17 @@ describe('native target resolution', () => {
     } as never)
     try {
       expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
-        version: 1,
+        version: 2,
         suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
       })
       expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-        version: 1,
+        version: 2,
         candidates: [
           { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
         ]
       })
       const result = lint.analyzeClassListPolicy({
-        version: 1,
+        version: 2,
         classList: 'm:var(--spacing-md)|17px',
         classNames: ['m:var(--spacing-md)|17px'],
         rawValuePolicy: { allowedPatterns: [] }

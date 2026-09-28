@@ -81,8 +81,18 @@ If the project needs a named component class, define it once in CSS.
 
 @layer components {
   .btn {
-    @compose inline-flex items-center justify-center gap-xs min-h:2.5rem px-md r-md bg-primary fg-white;
-    &:hover { @compose bg-blue-70; }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
     &:disabled { opacity: 0.5; }
   }
 }

@@ -45,7 +45,13 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
 
       @layer components {
         .btn {
-          @compose inline-flex items-center gap-xs px-md py-xs r-md fg-primary;
+          display: inline-flex;
+          align-items: center;
+          border-radius: var(--radius-md);
+          gap: var(--spacing-xs);
+          padding-block: var(--spacing-xs);
+          padding-inline: var(--spacing-md);
+          color: var(--color-primary);
         }
       }
       ```

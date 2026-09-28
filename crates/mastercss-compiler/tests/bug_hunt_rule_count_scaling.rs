@@ -11,8 +11,8 @@ use std::time::{Duration, Instant};
 enum Shape {
     /// Plain rules inside `@media`; every rule keeps an anchored output mapping.
     Media,
-    /// Native rules lowering `@compose`; every rule keeps selector and directive references.
-    Compose,
+    /// Native rules lowering `@variant`; every rule keeps selector and directive references.
+    Variant,
     /// Native rules with `url()` resources; every reference keeps a UTF-16 range.
     Resources,
     /// `@theme` variables merged into the manifest, with a base manifest holding as many.
@@ -23,7 +23,7 @@ enum Shape {
 
 fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
     let prefix = match shape {
-        Shape::Compose => "@master entry;",
+        Shape::Variant => "@master entry;",
         Shape::Theme => "@master entry;@theme{",
         Shape::Components => "@master entry;@utilities{",
         Shape::Media | Shape::Resources => "",
@@ -39,8 +39,11 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                     "@media (min-width:{index}px){{.r{index}{{content:\"ü😀\";padding:{}px}}}}",
                     index % 9
                 ),
-                Shape::Compose => {
-                    format!(".r{index}{{@compose p:{}px;content:\"ü😀\"}}", index % 9)
+                Shape::Variant => {
+                    format!(
+                        ".r{index}{{@variant media(all){{padding:{}px;}}content:\"ü😀\"}}",
+                        index % 9
+                    )
                 }
                 Shape::Resources => {
                     format!(".r{index}{{background:url(\"./ü😀{index}.svg\");color:red}}")
@@ -65,12 +68,12 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
     let elapsed = started.elapsed();
     match shape {
         Shape::Media => assert_eq!(result.native_mappings.len(), rules * 2, "{rules} rules"),
-        Shape::Compose => assert_eq!(
+        Shape::Variant => assert_eq!(
             result
                 .style_definitions
                 .map_or(0, |definitions| definitions.len()),
             rules * 2,
-            "{rules} compose rules"
+            "{rules} variant rules"
         ),
         Shape::Resources => assert_eq!(result.native_mappings.len(), rules, "{rules} rules"),
         Shape::Theme | Shape::Components => {
@@ -139,8 +142,8 @@ fn native_mapping_anchors_scale_linearly_with_rule_count() {
 }
 
 #[test]
-fn native_compose_lowering_scales_linearly_with_rule_count() {
-    assert_linear(Shape::Compose, "compose");
+fn native_variant_lowering_scales_linearly_with_rule_count() {
+    assert_linear(Shape::Variant, "variant");
 }
 
 #[test]

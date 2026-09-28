@@ -46,15 +46,17 @@ pub(crate) fn matching_utilities(
     }
 
     if let Some(prefix) = token_prefix(source, manifest) {
-        let mut matches = token_candidates(source, prefix, manifest);
-        if matches.len() > 1 {
-            let first = emitted_signature(&manifest.utilities[matches[0].0], &matches[0].1);
-            if matches.iter().skip(1).any(|(index, matched)| {
-                emitted_signature(&manifest.utilities[*index], matched) != first
+        let matches = token_candidates(source, prefix, manifest);
+        if let Some((first, _)) = matches.first() {
+            // The selected prefix is shared by all candidates. Namespace order
+            // completes its identity; current values and layers do not. The
+            // same family can intentionally emit in several cascade layers.
+            if matches.iter().skip(1).any(|(index, _)| {
+                manifest.utilities[*index].variable_alias_refs
+                    != manifest.utilities[*first].variable_alias_refs
             }) {
                 return Vec::new();
             }
-            matches.truncate(1);
         }
         return matches;
     }
@@ -224,7 +226,20 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         },
         message: if candidates.len() > 1 {
             format!(
-                "Ambiguous named token {source}; use an explicit utility name{}",
+                "Ambiguous named token {source}; conflicting definitions: {}. {}{}",
+                candidates
+                    .iter()
+                    .map(|(index, _)| {
+                        let utility = &manifest.utilities[*index];
+                        format!("{} [{}]", utility.id, utility.variable_alias_refs.join("|"))
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", "),
+                if alternatives.is_empty() {
+                    "Define distinct utility prefixes"
+                } else {
+                    "Use an explicit utility name"
+                },
                 if alternatives.is_empty() {
                     String::new()
                 } else {
@@ -277,14 +292,6 @@ fn is_native_declaration(source: &str, manifest: &ManifestProjection) -> bool {
                     .strip_prefix("native:")
                     .is_some_and(|id| id.split('\0').next() == Some(key))
         })
-}
-
-fn emitted_signature(utility: &UtilityDefinition, matched: &UtilityMatch) -> String {
-    format!(
-        "{:?}:{:?}",
-        utility.layer,
-        emit_declarations(utility, matched.value.as_deref(), false)
-    )
 }
 
 pub(crate) fn sort_key(utility: &UtilityDefinition, matched: &UtilityMatch) -> String {

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSyn
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer } from 'vite'
+import { normalizePath, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { sassModuleID } from '../../src/utils/build-sass-source'
@@ -12,14 +12,14 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 
 for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) for (const syntax of ['scss', 'sass']) for (const base of ['/', '/base/']) {
   test(`internal ${syntax} CSS proxy serves direct requests in ${mode} at ${base}`, async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-proxy-direct-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-proxy-direct-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     try {
       mkdirSync(join(root, 'node_modules'));symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
       mkdirSync(join(root, 'nested'))
-      writeFileSync(join(root, 'nested/tokens.css'), '@utilities{paint{padding:2rem;background:url("./pixel.svg?v=1#icon")}}')
+      writeFileSync(join(root, 'nested/tokens.css'), '@theme{--paint-padding:2rem;--paint-background:url("./pixel.svg?v=1#icon")}')
       writeFileSync(join(root, 'nested/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg" data-owner="nested"/>')
-      writeFileSync(join(root, `nested/child.${syntax}`), syntax === 'scss' ? '@reference "./tokens.css";.target{@compose paint;}' : '@reference "./tokens.css"\n.target\n  @compose paint\n')
+      writeFileSync(join(root, `nested/child.${syntax}`), syntax === 'scss' ? "@reference \"./tokens.css\";.target{@variant media(all){background:var(--paint-background);padding:var(--paint-padding);}}" : '@reference "./tokens.css"\n.target\n  @variant media(all)\n    background: var(--paint-background)\n    padding: var(--paint-padding)\n')
       writeFileSync(join(root, 'style.module.css'), `@import "./nested/child.${syntax}" layer(owner);`)
       writeFileSync(join(root, 'entry.js'), 'import names from "./style.module.css";export default names;if(import.meta.hot)import.meta.hot.accept("./style.module.css",()=>{});')
       server = await createServer({ root, base, cacheDir: join(root, '.vite'), configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0 } })
@@ -59,14 +59,16 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
       }
       const loaded = await server.ssrLoadModule('/entry.js')
       expect(Object.keys(loaded.default)).toEqual(['target'])
-      writeFileSync(join(root, 'nested/tokens.css'), '@utilities{paint{padding:7rem;background:url("./pixel.svg?v=1#icon")}}')
+      writeFileSync(join(root, 'nested/tokens.css'), '@theme{--paint-padding:7rem;--paint-background:url("./pixel.svg?v=1#icon")}')
       await vi.waitFor(async () => expect(await collect(true)).toMatch(/padding:\s*7rem/), { timeout: watchDeadline })
     } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(root, { recursive: true, force: true }) }
   })
 }
 
 for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) test(`proxy requests retain host file access policy: ${access}`, async () => {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
+  // Vite's raw /@fs/ fallback serves from the process drive on Windows. Keep
+  // denied files on that drive so the host sees the file and reports 403.
+  const parent = realpathSync.native(mkdtempSync(join(process.cwd(), 'node_modules', '.master-proxy-access-'))), root = join(parent, 'app'), outside = join(parent, 'outside')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(root);mkdirSync(outside)
@@ -76,13 +78,13 @@ for (const access of ['allowed', 'outside-denied', 'pattern-denied'] as const) t
       server: { host: '127.0.0.1', port: 0, fs: { strict: true, allow: access === 'allowed' ? [root, outside] : [root], ...(access === 'pattern-denied' ? { deny: ['**/secret file.css'] } : {}) } }
     })
     await server.listen()
-    const paths = ['', '.master-css-sass.css'].map(suffix => `/base/@fs${owner}${suffix}?direct`)
+    const paths = ['', '.master-css-sass.css'].map(suffix => `/base/@fs/${normalizePath(owner).replace(/^\//, '')}${suffix}?direct`)
     if (access !== 'allowed') paths.push('/base/@id/__x00__' + sassModuleID(owner).slice(1))
     for (const path of paths) {
       const url = new URL(path, server.resolvedUrls!.local[0])
       const response = await fetch(url, { headers: { accept: 'text/css' } }), text = await response.text()
-      if (access === 'allowed') { expect(response.status, text).toBe(200);expect(text).toContain('padding:9rem') }
-      else { expect(response.status, text).toBe(403);expect(text).not.toContain('padding:9rem') }
+      if (access === 'allowed') { expect(response.status, `${url.href}\n${text}`).toBe(200);expect(text).toContain('padding:9rem') }
+      else { expect(response.status, `${url.href}\n${text}`).toBe(403);expect(text).not.toContain('padding:9rem') }
     }
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(parent, { recursive: true, force: true }) }
 })

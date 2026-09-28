@@ -15,7 +15,7 @@ for (const syntax of ['scss', 'indented']) for (const explicitCompressed of [fal
   const root = mkdtempSync(join(tmpdir(), 'next-sass-terminators-'))
   try {
     const file = join(root, syntax === 'scss' ? 'card.module.scss' : 'card.module.sass')
-    const source = syntax === 'scss' ? '@reference "./master.css";.card{@compose p:2rem;}' : '@reference "./master.css"\n.card\n  @compose p:2rem\n'
+    const source = syntax === 'scss' ? "@reference \"./master.css\";.card{@variant media(all){padding:2rem;}}" : '@reference "./master.css"\n.card\n  @variant media(all)\n    padding: 2rem\n'
     writeFileSync(file, source);writeFileSync(join(root, 'master.css'), '@master entry;')
     const sassOptions = { loadPaths: [root], quietDeps: true, ...(explicitCompressed ? { style: 'compressed' } : {}) }
     const original = { loader: '/node_modules/next/dist/compiled/sass-loader/cjs.js', options: { sourceMap: true, implementation: sassRequire.resolve('sass'), sassOptions } }

@@ -21,6 +21,33 @@ fn temp_project() -> PathBuf {
 }
 
 #[test]
+fn source_paths_remove_windows_verbatim_prefixes_before_glob_matching() {
+    for (input, expected) in [
+        (r"C:\project\views\*.html", "C:/project/views/*.html"),
+        (r"\\?\C:\project\views\*.html", "C:/project/views/*.html"),
+        (
+            r"\\?\UNC\server\share\views\*.html",
+            "//server/share/views/*.html",
+        ),
+        (
+            r"\\server\share\views\*.html",
+            "//server/share/views/*.html",
+        ),
+    ] {
+        let pattern = normalize_path(Path::new(input));
+        assert_eq!(pattern, expected);
+        assert_eq!(
+            source_pattern_root(&pattern),
+            PathBuf::from(expected.strip_suffix("*.html").unwrap())
+        );
+        assert!(glob_matches(
+            &pattern,
+            &expected.replace("*.html", "index.html")
+        ));
+    }
+}
+
+#[test]
 fn discovers_entries_and_compiles_local_imports() {
     let project = temp_project();
     fs::write(
@@ -93,10 +120,14 @@ fn excludes_generated_stylesheets_from_implicit_entries_only() {
 }
 
 #[test]
-fn lowers_compose_definitions_against_the_base_manifest() {
+fn lowers_native_variants_against_the_base_manifest() {
     let project = temp_project();
     let entry = project.join("entry.css");
-    fs::write(&entry, "@master entry; .hidden-card { @compose hidden; }").unwrap();
+    fs::write(
+        &entry,
+        r###"@master entry; .hidden-card { @variant media(all) { display:none; } }"###,
+    )
+    .unwrap();
     let base_manifest = serde_json::from_str(include_str!(
         "../../../packages/preset/src/default-manifest.json"
     ))

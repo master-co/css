@@ -1,5 +1,3 @@
-@reference "../app/globals.css";
-
 @layer components {
   .demo-asset-preview { display: grid; place-items: center; min-height: var(--demo-asset-preview-size); padding: var(--spacing-lg); }
   .demo-asset-preview[data-surface="light"] { background: var(--color-demo-asset-light); }

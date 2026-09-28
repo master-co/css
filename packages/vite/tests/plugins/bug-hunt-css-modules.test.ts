@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 async function compile(extension: string, source: string, script: string, modules: NonNullable<InlineConfig['css']>['modules'] = { generateScopedName: 'scoped_[local]' }, shared = '.shared { color: blue; }') {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-modules-test-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-modules-test-')))
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
@@ -69,12 +69,12 @@ test('BH-0004 managed CSS Modules inline requests keep the scoped stylesheet str
 
 test('BH-0004 CSS Modules compiler errors retain authored directive locations', async () => {
   await expect(compile('css', '@master entry;\n.example {\n  @compose unknown-utility;\n}', 'import names from "./style.module.css";console.log(names)')).rejects.toMatchObject({
-    errors: [{ diagnostics: [{ code: 'invalid-compose-class', source: expect.stringMatching(/\/style\.module\.css$/), range: { start: { line: 2, character: 11 }, end: { line: 2, character: 26 } } }] }]
+    errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/[\\/]style\.module\.css$/), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }] }]
   })
 })
 
 test('BH-0004 unattributed composed Module content does not invent an original filename', async () => {
   await expect(compile('css', '@master entry;.example{composes:shared from "./shared.module.css"}', 'import names from "./style.module.css";console.log(names)', undefined, '.shared{@compose unknown-utility;}')).rejects.toMatchObject({
-    errors: [{ diagnostics: [{ code: 'invalid-compose-class', source: expect.stringMatching(/\/style\.module\.css\.master-css-sass\.css$/), notes: ['Original CSS Modules location is unavailable; this range refers to preprocessed CSS.'] }] }]
+    errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/[\\/]style\.module\.css\.master-css-sass\.css$/), notes: ['Original CSS Modules location is unavailable; this range refers to preprocessed CSS.'] }] }]
   })
 })

@@ -10,12 +10,12 @@
 
 ```html
 <!-- vertical-align:baseline -->
-<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block size:32px vertical-align:baseline"></span> baseline</p>
+<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block width:32px height:32px vertical-align:baseline"></span> baseline</p>
 ```
 
 ```html
 <!-- vertical-align:middle -->
-<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block size:32px vertical-align:middle"></span> baseline</p>
+<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block width:32px height:32px vertical-align:middle"></span> baseline</p>
 ```
 
 ### Align icons with text \{#align-icons-with-text\}
@@ -25,12 +25,12 @@ Apply the utility to the inline SVG itself. The surrounding text supplies the al
 
 ```html
 <!-- vertical-align:baseline -->
-<button type="button" id="context" class="font-md leading-lg"><svg id="target" class="inline-block size:32px vertical-align:baseline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5" /></svg> Layers</button>
+<button type="button" id="context" class="font-md leading-lg"><svg id="target" class="inline-block width:32px height:32px vertical-align:baseline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5" /></svg> Layers</button>
 ```
 
 ```html
 <!-- vertical-align:middle -->
-<button type="button" id="context" class="font-md leading-lg"><svg id="target" class="inline-block size:32px vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5" /></svg> Layers</button>
+<button type="button" id="context" class="font-md leading-lg"><svg id="target" class="inline-block width:32px height:32px vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5" /></svg> Layers</button>
 ```
 
 ### Align table cells \{#align-table-cells\}
@@ -58,5 +58,5 @@ Resize the viewport across `sm`. The inline square changes from baseline alignme
 
 ```html
 <!-- An inline object at a real breakpoint -->
-<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block size:32px vertical-align:baseline vertical-align:middle@sm"></span> baseline</p>
+<p id="context" class="m:0 font-md leading-lg">Text <span id="target" class="inline-block width:32px height:32px vertical-align:baseline vertical-align:middle@sm"></span> baseline</p>
 ```

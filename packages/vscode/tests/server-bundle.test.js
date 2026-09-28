@@ -33,7 +33,10 @@ function encode(message) {
 }
 
 function createLanguageServer(options = {}) {
-  const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
+  const child = spawn(process.execPath, [
+    '--import', new URL('./native-timing-preload.js', import.meta.url).href,
+    options.serverPath ?? serverPath, '--stdio'
+  ], {
     cwd: options.cwd ?? packageDir,
     env: {
       ...process.env,
@@ -46,6 +49,7 @@ function createLanguageServer(options = {}) {
   let nextId = 1
   let stdout = Buffer.alloc(0)
   const stderr = []
+  const messages = []
   const pending = new Map()
   const closedPromise = new Promise((resolvePromise) => {
     child.on('close', (code) => {
@@ -66,6 +70,10 @@ function createLanguageServer(options = {}) {
   }
 
   function handleMessage(message) {
+    if (message.method) {
+      messages.push(JSON.stringify(message).slice(0, 1000))
+      if (messages.length > 20) messages.shift()
+    }
     if (Object.hasOwn(message, 'id') && pending.has(message.id)) {
       const request = pending.get(message.id)
       pending.delete(message.id)
@@ -118,10 +126,13 @@ function createLanguageServer(options = {}) {
         params
       })
       return new Promise((resolvePromise, rejectPromise) => {
+        // The staged debug addon builds its full native index on first completion.
+        // Keep lifecycle requests short without using their budget for cold indexing.
+        const timeout = method === 'textDocument/completion' ? 30_000 : 5000
         const timer = setTimeout(() => {
           pending.delete(id)
-          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}`))
-        }, 5000)
+          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}\nRecent LSP messages:\n${messages.join('\n')}\nBuffered response bytes: ${stdout.length}`))
+        }, timeout)
         pending.set(id, {
           resolve: resolvePromise,
           reject: rejectPromise,
@@ -221,7 +232,8 @@ test('extension bundle reuses one Master CSS output channel for the language cli
       channelCalls.push(node)
     }
     if (ts.isNewExpression(node) && ts.isPropertyAccessExpression(node.expression)
-      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS') {
+      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS'
+      && node.arguments[1]?.text === 'Master CSS') {
       clientOptions = node.arguments[3]
     }
     ts.forEachChild(node, visit)
@@ -360,7 +372,7 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server completes native selectors without workspace node_modules and shuts down', async () => {
+test('staged language server starts without workspace node_modules and shuts down', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,

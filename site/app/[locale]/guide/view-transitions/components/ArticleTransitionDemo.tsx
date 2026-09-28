@@ -154,7 +154,7 @@ export default function ArticleTransitionDemo() {
               onClick={() => transition(() => setSelectedId(undefined))}
               type="button"
             >
-              <IconChevronLeft className="size:1em mr-2xs stroke-width:2" />
+              <IconChevronLeft className="width:1em height:1em mr-2xs stroke-width:2" />
               Back to list
             </button>
           </div>

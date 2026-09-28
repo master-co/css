@@ -1,84 +1,15 @@
-## Overview [sr-only] \{#overview\}
-<Overview/>
+<a id="overview" />
+<a id="examples" />
+<a id="set-minimum-width-and-height-together" />
+<a id="preserve-touch-targets" />
+<a id="set-one-logical-axis" />
+<a id="use-percentages-with-care" />
+<a id="apply-conditionally" />
 
-## Examples \{#examples\}
-### Set minimum width and height together \{#set-minimum-width-and-height-together\}
-`min:*` sets matching physical minimum width and height. This button prefers 24 × 24px, but `min:2.5rem` raises both dimensions to 40px.
+The built-in `min-size` utility and its named token form have been removed before Master CSS 2.0. This URL remains for existing links.
 
-<DemoExample page="min-size" section="set-minimum-width-and-height-together" />
+Use `min-width:20px min-height:20px` for direct values, or `min-width-sm min-height-sm` when both entries resolve to the intended container token. These are independent declarations; review competing dimensions when upgrading.
 
-```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <button id="target" class="grid place-items:center size:1.5rem min:2.5rem p:0 border-width:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
-</div>
-```
+See the [Master CSS v2 RC migration guide](/guide/migration/v2-rc#sizing-and-resolution) for safe migration and sorting checks, and [sizing](/guide/sizing) for current usage. Projects may still define a custom `min-size` utility with `@utilities`.
 
-### Preserve touch targets \{#preserve-touch-targets\}
-Use a shared minimum with flexible content and padding. Both native buttons have a 44px minimum on each axis. The longer label grows in width rather than being squeezed into a fixed square.
-
-<DemoExample page="min-size" section="preserve-touch-targets" />
-
-```html
-<!-- Short label -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <button id="target" class="min:2.75rem px-md py-sm border-width:0" type="button">Save</button>
-</div>
-```
-
-```html
-<!-- Longer label -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <button id="target" class="min:2.75rem px-md py-sm border-width:0" type="button">Save all changes</button>
-</div>
-```
-
-Choose target dimensions and surrounding space for the interaction and accessibility requirements of your interface. A minimum-size utility alone does not establish overall accessibility conformance.
-
-### Set one logical axis \{#set-one-logical-axis\}
-`min-size-x:*` sets min-inline-size; `min-size-y:*` sets min-block-size. With a small preferred size, the 120px inline and 64px block floors produce a 120 × 64px horizontal box and a 64 × 120px vertical box.
-
-<DemoExample page="min-size" section="set-one-logical-axis" />
-
-```html
-<!-- Horizontal writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="size:2rem min-size-x:7.5rem min-size-y:4rem p-sm writing-mode:horizontal-tb">Floor</div>
-</div>
-```
-
-```html
-<!-- Vertical writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="size:2rem min-size-x:7.5rem min-size-y:4rem p-sm writing-mode:vertical-rl">Floor</div>
-</div>
-```
-
-### Use percentages with care \{#use-percentages-with-care\}
-Percentages need a reference on each axis. In a definite 240 × 160px parent, `min:50%` raises this 32px box to 120 × 80px. In an automatic-height normal-flow parent, the width floor still resolves to 120px, but the percentage height floor does not create an 80px height.
-
-<DemoExample page="min-size" section="use-percentages-with-care" />
-
-```html
-<!-- Definite width and height -->
-<div id="layout" class="h:10rem w:15rem" role="group" aria-label="Available space">
-  <div id="target" class="size:2rem min:50% p-xs leading:16px">50%</div>
-</div>
-```
-
-```html
-<!-- Automatic parent height -->
-<div id="layout" class="w:15rem" role="group" aria-label="Available space">
-  <div id="target" class="size:2rem min:50% p-xs leading:16px">50%</div>
-</div>
-```
-
-### Apply conditionally \{#apply-conditionally\}
-Resize past `sm` to raise both physical floors from 48px to 80px. The preferred size remains 32px on each axis.
-
-<DemoExample page="min-size" section="apply-conditionally" />
-
-```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="size:2rem min:3rem p-sm min:5rem@sm">Min</div>
-</div>
-```
+Native page-size descriptors and logical properties such as `inline-size` and `block-size` remain available.

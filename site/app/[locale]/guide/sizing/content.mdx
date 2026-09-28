@@ -3,7 +3,7 @@ import { ContainerTokenTable, SizingRoleTable } from './components/XScale'
 ## Overview [sr-only]
 Sizing describes the space an element should claim, the limits it should respect, and the boundary where that decision changes. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
 
-Master CSS keeps sizing decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, `size:*` when both axes intentionally match, `min-*` and `max-*` for constraints, container tokens for shared layout surfaces, and responsive variants when the size changes by viewport or container.
+Master CSS keeps sizing decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, explicit width and height declarations when both axes intentionally match, `min-*` and `max-*` for constraints, container tokens for shared layout surfaces, and responsive variants when the size changes by viewport or container.
 
 <Demo>
   <div className="container w:100%">
@@ -18,7 +18,7 @@ Master CSS keeps sizing decisions close to the element that owns them. Use `w:*`
       <section className="min-w:0 p-lg r-lg surface-raised shadow-xs">
         <DemoLabel>Measured object</DemoLabel>
         <div className="flex items-center gap-md">
-          <div className="size:3rem round bg-blue-60/.15"></div>
+          <div className="width:3rem height:3rem round bg-blue-60/.15"></div>
           <div className="flex:1 min-w:0">
             <div className="h:1rem w:100% max-w:7rem r-sm bg-blue-60/.16"></div>
             <div className="h:0.75rem w:calc(100%/3*2) mt-xs r-sm bg-blue-60/.1"></div>
@@ -36,7 +36,7 @@ A sizing class should have one clear job. It can set the preferred size, keep an
 
 <SizingRoleTable />
 
-Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*`, or `max:*` only when both axes genuinely share the same decision.
+Use one-axis rules when the element is rectangular by role. Set both dimensions explicitly when they share the same decision.
 
 ```html
 <!-- @MARK w:100% --><!-- @MARK max-w-7xl --><!-- @MARK min-h:100dvh -->
@@ -91,7 +91,7 @@ Percentage widths and heights follow native CSS behavior. The parent needs a def
 ---
 
 ## Use container tokens
-Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl`, `size-sm`, `min-w-xs`, and `flex-basis-lg` use `--container-*` tokens without repeating the namespace in markup.
+Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl`, `height-sm`, `min-w-xs`, and `flex-basis-lg` use `--container-*` tokens without repeating the namespace in markup.
 
 <ContainerTokenTable />
 
@@ -122,8 +122,8 @@ For the full container namespace and query model, see [containers](/guide/contai
 Use explicit native lengths for component geometry such as icons, avatars, handles, skeleton blocks, and fixed media slots. For page structure, reach for `w:100%`, percentages, container tokens, viewport units, text units, or `clamp()` first. Master CSS preserves the unit you write.
 
 ```html
-<!-- @MARK size:2.5rem -->
-<img class="size:2.5rem round object-cover" src="..." alt="" />
+<!-- @MARK width:2.5rem height:2.5rem -->
+<img class="width:2.5rem height:2.5rem round object-cover" src="..." alt="" />
 
 <!-- @MARK w:9rem --><!-- @MARK h:5rem -->
 <figure class="h:5rem w:9rem">...</figure>
@@ -132,20 +132,20 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['size:2.5rem', 'w:9rem', 'h:5rem']}
+    {['width:2.5rem height:2.5rem', 'w:9rem', 'h:5rem']}
   </Class2CSS>
 </details>
 
 ---
 
 ## Pair axes deliberately
-`size:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
+`width:* height:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
 
 <Demo>
   <div className="flex items-center gap-lg w:100%">
     <div className="flex:0">
-      <DemoLabel>size:3.5rem</DemoLabel>
-      <div className="grid place-content:center size:3.5rem r-lg font-medium bg-blue-60/.15">A</div>
+      <DemoLabel>width:3.5rem height:3.5rem</DemoLabel>
+      <div className="grid place-content:center width:3.5rem height:3.5rem r-lg font-medium bg-blue-60/.15">A</div>
     </div>
     <div className="flex:1 min-w:0">
       <DemoLabel>w:100% h:3.5rem</DemoLabel>
@@ -155,8 +155,8 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 </Demo>
 
 ```html
-<!-- @MARK size:3.5rem -->
-<button class="grid place-content:center size:3.5rem">...</button>
+<!-- @MARK width:3.5rem height:3.5rem -->
+<button class="grid place-content:center width:3.5rem height:3.5rem">...</button>
 
 <!-- @MARK w:100% --><!-- @MARK h:3.5rem -->
 <div class="h:3.5rem w:100%">...</div>
@@ -165,7 +165,7 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['size:3.5rem', 'w:100%', 'h:3.5rem']}
+    {['width:3.5rem height:3.5rem', 'w:100%', 'h:3.5rem']}
   </Class2CSS>
 </details>
 
@@ -185,7 +185,7 @@ Min and max rules are often more stable than fixed widths. They let content, con
   <div className="w:100% max-w-sm mx:auto p-lg r-lg surface-raised shadow-xs">
     <DemoLabel>min-w:0 max-w:24rem</DemoLabel>
     <div className="flex gap-md">
-      <div className="flex:0 size:2.5rem r-lg bg-blue-60/.15"></div>
+      <div className="flex:0 width:2.5rem height:2.5rem r-lg bg-blue-60/.15"></div>
       <div className="flex:1 min-w:0">
         <div className="font-medium text-strong">Shrinkable content</div>
         <div className="overflow:hidden text-sm text-ellipsis white-space:nowrap text-muted">Long text can shrink inside the row without forcing the wrapper wider.</div>
@@ -197,7 +197,7 @@ Min and max rules are often more stable than fixed widths. They let content, con
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK max-w:24rem -->
 <article class="flex gap-md max-w-sm">
-  <img class="flex:0 size:2.5rem" alt="" />
+  <img class="flex:0 width:2.5rem height:2.5rem" alt="" />
   <div class="min-w:0">Long content...</div>
 </article>
 ```
@@ -205,7 +205,7 @@ Min and max rules are often more stable than fixed widths. They let content, con
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'gap-md', 'max-w:24rem', 'size:2.5rem', 'flex:0', 'min-w:0']}
+    {['flex', 'gap-md', 'max-w:24rem', 'width:2.5rem height:2.5rem', 'flex:0', 'min-w:0']}
   </Class2CSS>
 </details>
 
@@ -222,16 +222,16 @@ Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](
 <!-- @MARK w:100% --><!-- @MARK w:50%@sm --><!-- @MARK max-w-7xl@lg -->
 <section class="w:100% w:50%@sm max-w-7xl@lg">...</section>
 
-<!-- @MARK container --><!-- @MARK size:2.5rem@container((width>=28rem)) -->
+<!-- @MARK container --><!-- @MARK width:2.5rem@container((width>=28rem)) height:2.5rem@container((width>=28rem)) -->
 <article class="container">
-  <button class="size:2rem size:2.5rem@container((width>=28rem))">...</button>
+  <button class="width:2rem height:2rem width:2.5rem@container((width>=28rem)) height:2.5rem@container((width>=28rem))">...</button>
 </article>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['w:100%', 'w:50%@sm', 'max-w-7xl@lg', 'container', 'size:2rem', 'size:2.5rem@container((width>=28rem))']}
+    {['w:100%', 'w:50%@sm', 'max-w-7xl@lg', 'container', 'width:2rem height:2rem', 'width:2.5rem@container((width>=28rem)) height:2.5rem@container((width>=28rem))']}
   </Class2CSS>
 </details>
 
@@ -283,7 +283,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 (o) The component uses one sizing decision.
 
 ```html
-<button class="size:2.5rem">...</button>
+<button class="width:2.5rem height:2.5rem">...</button>
 ```
 
 (x) A flex child has a max width, but its content can still force overflow.

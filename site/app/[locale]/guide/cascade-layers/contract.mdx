@@ -17,7 +17,7 @@ utilities > components > defaults > base > theme
 
 Normal unlayered author rules take precedence over normal layered author rules. `!important` reverses the order between layers; it also gives important layered declarations precedence over important unlayered declarations. The order above describes normal declarations, not every case in the native cascade.
 
-Generated CSS emits rules into those layer blocks. Native style rules that use `@compose` or `@variant` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
+Generated CSS emits rules into those layer blocks. Native style rules that use `@variant` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
 
 ## The five layers \{#the-five-layers\}
 ### Theme \{#theme\}
@@ -40,17 +40,18 @@ For example, put `button { font: inherit; }` in `base`, `body { color: var(--col
 ### Components \{#components\}
 Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write native class selectors inside `@layer components`.
 
-<ConfiguredExample source={'@layer components { .btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn']} element="button" label="Preview button" />
 
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@variant` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
 
 ```css name=index.css
 @utilities {
   flow {
-    @compose grid gap-md;
+    display: grid;
+    gap: var(--spacing-md);
   }
 
   content-auto {
@@ -78,7 +79,7 @@ Add this configuration to the project CSS entry that imports `@master/css`. It d
 
 @layer components {
   .btn {
-    @compose inline-flex;
+    display: inline-flex;
     background-color: var(--color-primary);
   }
 }`} html={require('./tests/overview/template.html?raw')} />
@@ -129,7 +130,7 @@ With the base order loaded, normal utility declarations take precedence over nor
 
 Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
 
-<ConfiguredExample source={'@layer components { .btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
@@ -170,23 +171,57 @@ Native `@layer` blocks remain ordinary stylesheet output; they do not define on-
 
 @layer components {
   .card {
-    @compose block;
+    display: block;
     border-radius: .75rem;
   }
 }
 ```
 
-Native style rules can still compose Master CSS utilities when the rule should remain ordinary stylesheet output:
+Write native declarations in the layer that owns the rule:
 
 ```css name=app.css
 .card {
-  @compose block p-md;
+  display: block;
+  padding: var(--spacing-md);
 
   @dark {
-    @compose bg-neutral-90;
+    background-color: var(--color-neutral-90);
   }
 }
 ```
+
+## Priority within and between layers \{#priority-matrix\}
+
+Class order in HTML does not choose the winner. Master CSS generates a stable
+rule order; the browser then applies its native cascade to matching declarations.
+The following cases assume the base layer statement is loaded and the root font
+size is 16px:
+
+| Competing classes or rules | Result | Reason |
+| --- | --- | --- |
+| `p-md p:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
+| `p-md! p:8px` | `padding: 1rem` | Importance takes precedence over value source. |
+| `p-md! p:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
+| `p:8px@base p:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `p:8px@base! p:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| Unlayered `.outside { padding: 32px; }` and `p:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
+| Component-layer `padding: 24px !important` and `p:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `p:8px pt:12px` | Top padding is `12px`; other sides are `8px` | The longhand supplies the more specific property override. |
+
+Selector and condition scope still matter. A hover or breakpoint rule only
+participates while its selector and conditions match. Direct values do not
+universally override tokens in other layers or scopes.
+
+Groups retain each member's property and value source. Native declarations retain
+duplicates and source order, including fallback values. A shorthand may reset
+properties omitted from its value, just as it does in CSS. `@compose` is removed;
+use native declarations and selectors in stylesheets and utilities directly in
+markup. See the [directive migration notice](/reference/directives/compose).
+
+Canonical spelling changes must preserve cascade behavior as well as declaration
+values. A tool cannot safely rewrite a class merely because its isolated CSS looks
+equivalent. Internal ordering keys and final deterministic tie-breakers are not
+extension APIs.
 
 ## Layer checklist \{#layer-checklist\}
 Use the five layers in their declared order:

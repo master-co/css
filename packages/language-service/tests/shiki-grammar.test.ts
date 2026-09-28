@@ -54,15 +54,15 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   const directive = grammarEntry('master-directive')
   const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
   const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(utilities)\\b')
-  const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
+  const safelistDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(safelist)\\b')
 
   expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(composeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(safelistDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   expect(directive.patterns.every((pattern) => pattern.beginCaptures?.['0']?.name === 'keyword.control.at-rule.master-css')).toBe(true)
   expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
   expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
-  expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])
+  expectGrammarIncludes({ patterns: safelistDirective.patterns ?? [] }, ['#master-string'])
 
   const themeBlock = grammarEntry('master-theme-block')
   expectGrammarIncludes({ patterns: themeBlock.patterns[0]?.patterns ?? [] }, [
@@ -78,8 +78,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   }))
   expect(JSON.stringify(themeValue)).not.toContain('--alpha')
 
-  const composePrelude = grammarEntry('master-compose-prelude')
-  expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
+  expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
 
   const variantPrelude = grammarEntry('master-variant-prelude')
   findGrammarPattern(variantPrelude, (pattern) => pattern.name === 'support.constant.property-value.master-css.query')
@@ -98,7 +97,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   expect(propertyFragment.captures?.['2']?.name).toBe('keyword.operator.master-css')
 })
 
-test('supports Shiki dynamic language imports', async () => {
+test('loads the grammar through a dynamic Shiki language import', async () => {
   const masterCSSShikiLanguageImport = import('../src/shiki').then((module) => ({
     default: [module.masterCSSShikiLanguage]
   }))
@@ -137,7 +136,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
       '}',
       '@utilities {',
       '    btn {',
-      '        @compose inline-flex fg-primary:hover@md;',
+      "        @safelist \"inline-flex fg-primary:hover@md\";",
       '    }',
       '}',
       '@keyframes fade {',
@@ -156,7 +155,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   }
 })
 
-test('keeps guide theme snippets correct with TextMate only', async () => {
+test('preserves guide theme source through TextMate tokenization', async () => {
   const highlighter = await createHighlighter({
     themes: [shikiSmokeTheme],
     langs: ['css', masterCSSShikiLanguage]

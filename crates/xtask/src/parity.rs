@@ -65,16 +65,36 @@ pub(crate) fn validate_semantic_parity_corpus(
         || historical
             .parser_cases
             .iter()
-            .map(|case| (&case.id, &case.input, &case.expected_canonical))
+            .map(|case| {
+                // The frozen oracle retains compose; the current lexer no longer
+                // recognizes that removed directive as a Master CSS node.
+                let canonical = if case.kind == "lexer" {
+                    case.expected_canonical
+                        .split('|')
+                        .filter(|name| *name != "compose")
+                        .collect::<Vec<_>>()
+                        .join("|")
+                } else {
+                    case.expected_canonical.clone()
+                };
+                (&case.id, &case.kind, &case.input, canonical)
+            })
             .collect::<Vec<_>>()
             != corpus
                 .parser_cases
                 .iter()
-                .map(|case| (&case.id, &case.input, &case.expected_canonical))
+                .map(|case| {
+                    (
+                        &case.id,
+                        &case.kind,
+                        &case.input,
+                        case.expected_canonical.clone(),
+                    )
+                })
                 .collect::<Vec<_>>()
     {
         return Err(
-            "V2 language corpus must retain every historical case and unchanged parser evidence."
+            "V2 language corpus must retain every historical case and parser evidence, except removed compose lexer nodes."
                 .into(),
         );
     }

@@ -1,5 +1,3 @@
-@reference "../../app/globals.css";
-
 @layer components {
   .doc-card {
     padding: var(--spacing-xl);

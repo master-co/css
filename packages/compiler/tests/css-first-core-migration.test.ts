@@ -245,7 +245,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       type: UtilityType.Shorthand, variableAliasRefs: ['~container'],
       matchers: [{ type: 'token', prefix: 'size-' }]
     })
-    for (const key of ['grid-cols', 'grid-col-span', 'size']) {
+    for (const key of ['grid-cols', 'grid-col-span', 'size', 'gap', 'clamp-lines', 'text-decoration']) {
       expect(utility(`${key}:<*>`)).toMatchObject({
         matchers: [{ type: 'key', keys: [key] }]
       })
@@ -257,6 +257,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(utility('user-select:<*>')).toMatchObject({
       matchers: [{ type: 'key', keys: ['user-select'] }]
     })
+    expect(utility('bg-<~color>')).toMatchObject({
+      variableAliasRefs: ['~color'], matchers: [{ type: 'token', prefix: 'bg-' }]
+    })
+    expect(utility('fg-<~color-text|~color>')).toMatchObject({
+      variableAliasRefs: ['~color-text', '~color'], matchers: [{ type: 'token', prefix: 'fg-' }]
+    })
+    expect(utility('grid-cols:<*>')?.type).toBe(UtilityType.Normal)
+    expect(utility('size:<*>')?.type).toBe(UtilityType.Shorthand)
     expect(utility('text-<~font-size>')?.emit).toMatchObject({
       type: 'static', rules: [{ declarations: {
         'font-size': null,
@@ -286,9 +294,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       ['clamp-lines:none', '-webkit-line-clamp:none'],
       ['text-decoration:underline|var(--color-red)', '-webkit-text-decoration:underline var(--color-red);text-decoration:underline var(--color-red)']
     ]
-    for (const [className, declarations] of cases) expect(css.createRule(className)?.text).toContain(`{${declarations}}`)
-    expect(css.createRule('accent:red')?.text).toContain('{accent-color:red}')
-    expect(css.createRule('bg:cover')?.text).not.toContain('background-size')
+    const selectors = [
+      'font-sm', 'font-sans', 'font-bold', 'font-size\\:1rem', 'bg-red', 'fg-red',
+      'grid-cols\\:3', 'grid-cols\\:var\\(--cols\\)', 'grid-col-span\\:2', 'grid-col-span\\:var\\(--span\\)',
+      'size\\:1rem', 'size-card', 'size\\:1rem\\|2rem', 'gap\\:var\\(--gap\\)', 'accent\\:var\\(--accent\\)',
+      'user-select\\:none', 'clamp-lines\\:3', 'clamp-lines\\:none', 'text-decoration\\:underline\\|var\\(--color-red\\)'
+    ]
+    expect(selectors).toHaveLength(cases.length)
+    for (const [index, [className, declarations]] of cases.entries()) {
+      expect(css.createRule(className)?.text).toBe(`.${selectors[index]}{${declarations}}`)
+    }
+    expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background:#fff}')
+    expect(css.createRule('accent:red')?.text).toBe('.accent\\:red{accent-color:red}')
+    expect(css.createRule('bg:cover')?.text).toBe('.bg\\:cover{background:cover}')
   })
 
   test('rejects unsupported managed enum pattern syntax', () => {
@@ -497,14 +515,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       .card {
         @variant dark {
-          @compose block;
+          display:block;
           color: white;
         }
       }
 
       @variant light {
         .banner {
-          @compose hidden;
+          display:none;
         }
       }
     `, { baseManifest: defaultManifest })
@@ -525,14 +543,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       .card {
         @dark {
-          @compose block;
+          display:block;
           color: white;
         }
       }
 
       @light {
         .banner {
-          @compose hidden;
+          display:none;
         }
       }
     `, { baseManifest: defaultManifest })
@@ -548,84 +566,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(shorthandCSS.utilitiesLayer.text).toContain('.panel:where(.light,.light *){color:#000}')
   })
 
-  test('keeps rewritten compose blocks in their authored condition order', () => {
-    const before = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @utilities {
-        btn {
-          @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
-        }
-      }
-
-      .card {
-        @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
-      }
-    `, { baseManifest: defaultManifest })
-    const after = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @utilities {
-        btn {
-          @compose text-center;
-          contain: content;
-
-          &:hover {
-            @variant sm {
-              @compose bg-blue-60;
-            }
-          }
-
-          @dark {
-            @compose block;
-          }
-        }
-      }
-
-      .card {
-        @compose text-center;
-        contain: content;
-
-        &:hover {
-          @variant sm {
-            @compose bg-blue-60;
-          }
-        }
-
-        @dark {
-          @compose block;
-        }
-      }
-    `, { baseManifest: defaultManifest })
-
-    expect(after.css.indexOf('@media')).toBeLessThan(after.css.indexOf('.card:where(.dark'))
-    expect(before.css.indexOf('.card:where(.dark')).toBeLessThan(before.css.indexOf('@media'))
-    for (const result of [before, after]) {
-      expect(result.css).toContain('text-align:center')
-      expect(result.css).toContain('contain:content')
-      expect(result.css).toContain('display:block')
-      expect(result.css).toContain('background-color:var(--color-blue-60)')
-    }
-  })
-
   test('keeps authored responsive declarations before later base declarations', () => {
-    const { manifest } = compileCSSManifest(`
-      @utilities {
-        prose {
-          @variant sm {
-            :is(h1, h2, h3, h4, h5, h6) {
-              @compose mt-2xl scroll-mt:100px;
-            }
-          }
-
-          :is(h1, h2, h3, h4, h5, h6) {
-            @compose mt-lg scroll-mt:60px;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })
+    const { manifest } = compileCSSManifest("\n      @utilities {\n        prose {\n          @variant sm {\n            :is(h1, h2, h3, h4, h5, h6) {\n              margin-top:var(--spacing-2xl);scroll-margin-top:100px;\n            }\n          }\n\n          :is(h1, h2, h3, h4, h5, h6) {\n            margin-top:var(--spacing-lg);scroll-margin-top:60px;\n          }\n        }\n      }\n    ", { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('prose')
 
     expect(css.utilitiesLayer.text).toContain(

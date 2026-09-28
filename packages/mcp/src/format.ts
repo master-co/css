@@ -36,7 +36,7 @@ function formatContent(service: MasterCSSLanguageService, filePath: string, cont
 export async function previewDirectiveFormat(context: MasterCSSMCPContext, options: PreviewDirectiveFormatOptions = {}) {
   const manifest = await loadWorkspaceManifest(context, options.context)
   const service = new MasterCSSLanguageService(undefined, {
-    session: createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
+    session: createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   })
   try {
     if (options.content !== undefined) {

@@ -17,7 +17,7 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const REPORT_VERSION = 3
+const REPORT_VERSION = 4
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
@@ -25,7 +25,6 @@ const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 export interface LintOptions {
   fix?: boolean
   fixDryRun?: boolean
-  fixDirectives?: boolean
   format?: 'stylish' | 'json'
   maxWarnings?: string | number
   cwd?: string
@@ -170,7 +169,6 @@ function lintInputs(
 function applyFileFixes(
   inputs: SourceInput[],
   rules: Record<MasterCSSLintRuleId, boolean>,
-  includeDirectiveFixes: boolean,
   lintSession: MasterCSSToolingSession
 ) {
   for (const input of inputs) {
@@ -179,7 +177,6 @@ function applyFileFixes(
       content: input.content,
       filePath: input.filePath,
       rules,
-      includeDirectiveFixes,
       lintSession
     })
     if (fixed !== input.content) {
@@ -222,7 +219,7 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
   try {
     files = lintInputs(inputs, rules, lintSession)
     if (options.fix && !options.fixDryRun) {
-      applyFileFixes(inputs, rules, Boolean(options.fixDirectives), lintSession)
+      applyFileFixes(inputs, rules, lintSession)
       files = lintInputs(inputs, rules, lintSession)
     }
   } finally {

@@ -51,7 +51,6 @@ test('colors every complete Master directive like a native CSS at-rule', async (
     ['theme', '@theme {}'],
     ['utilities', '@utilities {}'],
     ['custom-variant', '@custom-variant motion-safe {}'],
-    ['compose', '@compose btn;'],
     ['variant', '@variant sm {}'],
     ['slot', '@slot;'],
     ['dark', '@dark {}'],
@@ -81,7 +80,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
     expect(nativeKeyword).toBeDefined()
     expect(themeMode).toBeDefined()
 
-    const compose = highlighter.codeToTokens('@utilities { btn { @compose fg-red:hover@md; } }', options).tokens[0]
+    const compose = highlighter.codeToTokens("@utilities { btn { @safelist \"fg-red:hover@md\"; } }", options).tokens[0]
     const query = compose.find((token) => token.content === '@md')
     expect(query).toBeDefined()
     expect(hasScope(query, 'keyword.control.at-rule.master-css.query')).toBe(true)
@@ -115,9 +114,9 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 
-    const managed = highlighter.codeToTokens('@utilities { btn { @media (width > 30rem) { @compose block; } } }', options).tokens[0]
+    const managed = highlighter.codeToTokens("@utilities { btn { @media (width > 30rem) { @safelist \"block\"; } } }", options).tokens[0]
     expect(colors(managed.find((token) => token.content === '@media'))).toEqual(colors(nativeKeyword))
-    expect(managed.some((token) => token.content === '@compose' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
+    expect(managed.some((token) => token.content === '@safelist' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
   } finally {
     await highlighter.dispose?.()
   }
@@ -130,7 +129,7 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 
   try {
     for (const [lang, source] of [
-      ['css', '@utilities { btn { @compose fg-red@md; } }'],
+      ['css', "@utilities { btn { @safelist \"fg-red@md\"; } }"],
       ['html', '<div class="fg-red@md"></div>'],
       ['tsx', '<div className="fg-red@md" />']
     ] as const) {

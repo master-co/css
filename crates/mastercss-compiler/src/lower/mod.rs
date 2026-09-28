@@ -1,11 +1,9 @@
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
-use mastercss_engine::{EngineCompositionRuleIr, EngineSession, natural_compare};
+use mastercss_engine::{EngineCompositionRuleIr, EngineSession};
 use mastercss_schema::{
     CssDeclaration, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
-    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, ErrorCode,
-    RulePriorityIr, UtilityLayerName,
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
@@ -42,7 +40,6 @@ pub struct LowerCssDirectivesResult {
     pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,
-    pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub output_mappings: Vec<CssOutputMapping>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -73,7 +70,6 @@ struct MergedStyleDefinition {
 
 mod api;
 mod definitions;
-pub(crate) mod inspection;
 mod merge;
 mod output;
 mod render;

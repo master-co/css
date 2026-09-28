@@ -119,8 +119,6 @@ struct LintClassListRequest {
     disallow_unknown_class: bool,
     raw_value_policy: Option<LintRawValuePolicyRequest>,
     canonical_options: Option<CanonicalClassNameOptions>,
-    #[serde(default)]
-    compose_directive: bool,
 }
 
 #[derive(Deserialize)]

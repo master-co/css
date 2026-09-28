@@ -70,6 +70,8 @@ let bindToolingSession: (parts: ToolingSessionParts) => MasterCSSToolingSession
 
 export interface MasterCSSToolingSessionOptions {
   readonly manifest: MasterCSSManifest
+  /** Explicit native class registrations; suppresses retired-utility advice only. */
+  readonly nativeClassNames?: readonly string[]
   readonly binding?: MasterCSSBinding
 }
 
@@ -169,16 +171,6 @@ export class MasterCSSToolingSession implements Disposable {
     )
   }
 
-  canonicalComposeDirective(
-    classNames: readonly string[],
-    options?: CanonicalClassNameOptions
-  ) {
-    this.assertActive()
-    return freezeToolingResult(
-      this.parts.lint.canonicalComposeDirective([...classNames], options)
-    )
-  }
-
   rawValueCandidates(classNames: readonly string[]): readonly MasterCSSLintRawValueCandidate[] {
     this.assertActive()
     return freezeToolingResult(this.parts.lint.rawValueCandidates([...classNames]))
@@ -270,9 +262,9 @@ export async function createToolingSession(
     const session = bindToolingSession({
       lexer: bindLexerSession(binding.binding, lexerBinding),
       source: bindSourceExtractor(binding.binding, sourceBinding),
-      validator: bindValidatorSession(binding.binding, validatorBinding),
+      validator: bindValidatorSession(binding.binding, validatorBinding, options.nativeClassNames),
       lint: bindLintSession(lintBinding, lintValidatorBinding, lintLanguageBinding),
-      language: bindLanguageSession(binding.binding, languageBinding)
+      language: bindLanguageSession(binding.binding, languageBinding, options.nativeClassNames)
     })
     created.length = 0
     return session

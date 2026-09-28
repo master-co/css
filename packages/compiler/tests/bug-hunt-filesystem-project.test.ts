@@ -8,19 +8,19 @@ import { createEngine } from '@master/css'
 for (const explicit of [false, true]) {
   for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
     test(`BH-0004 filesystem project ${explicit ? 'explicit entries' : 'discovery'} ${qualifier || 'unqualified'}`, async () => {
-      const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-filesystem-binding-')))
+      const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-filesystem-binding-')))
       const binding = createCompilerBindingSessionSync()
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'tokens.css')
         const view = join(root, 'styles/views/view.html')
         mkdirSync(join(root, 'styles/views'), { recursive: true })
-        writeFileSync(entry, `@import './styles/child.css'${qualifier};@master entry;@reference './tokens.css';@utilities{button{@compose paint;}}`)
-        writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@compose paint;}.ordinary{color:blue}")
-        writeFileSync(tokens, '@utilities{paint{color:red}}')
+        writeFileSync(entry, `@import './styles/child.css'${qualifier};@master entry;@reference './tokens.css';@utilities{button{color:var(--color-paint);}}`)
+        writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@variant media(all){color:red;}}.ordinary{color:blue}")
+        writeFileSync(tokens, '@theme{--color-paint:red}')
         writeFileSync(view, '<div class="button card"></div>')
         const result = binding.loadProjectManifest(root, { version: 1, languageVersion: 3, utilities: [] }, explicit ? [entry] : undefined)
-        expect(result.sourcePlan.files).toEqual([view])
-        expect([...result.dependencies].sort()).toEqual([entry, child, tokens].sort())
+        expect(result.sourcePlan.files.map(file => realpathSync.native(file))).toEqual([view])
+        expect(result.dependencies.map(file => realpathSync.native(file)).sort()).toEqual([entry, child, tokens].sort())
         expect(result.css).toContain('.card{color:red}')
         expect(result.generatedCSS).toContain('.card{color:red}')
         expect(result.css).not.toContain('.ordinary')
@@ -31,7 +31,7 @@ for (const explicit of [false, true]) {
         const engine = await createEngine({ binding: 'native', manifest: result.manifest })
         try {
           engine.ensureClassRules(['button', 'paint'])
-          expect(engine.snapshot().text).toContain('.button{color:red}')
+          expect(engine.snapshot().text).toContain('.button{color:var(--color-paint)}')
           expect(engine.snapshot().text).not.toContain('.paint{')
         } finally { engine.dispose() }
       } finally { binding.dispose(); rmSync(root, { recursive: true, force: true }) }

@@ -2,9 +2,12 @@ import {
   MasterCSSError
 } from '@master/css-schema'
 import type { MasterCSSBinding, MasterCSSResolvedBinding } from '@master/css-binding'
+import type { MasterCSSEngineBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
+
+type BindingEngineInspection = ReturnType<MasterCSSEngineBindingSession['inspect']>
 
 export type MasterCSSRuleTarget =
   | 'theme'
@@ -81,9 +84,11 @@ export interface MasterCSSEngineInspection {
   readonly version: 1
   readonly className: string
   readonly matchStatus: 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
+  readonly cssSyntaxStatus: BindingEngineInspection['cssSyntaxStatus']
   readonly cssValueStatus: 'valid' | 'invalid' | 'unknown' | 'not-checked'
   readonly browserSupport: 'supported' | 'unsupported' | 'unknown' | 'not-checked'
   readonly rules: readonly MasterCSSHydrationRule[]
+  readonly diagnostics?: Readonly<BindingEngineInspection['diagnostics']>
 }
 
 export interface MasterCSSEngineBindingOptions {

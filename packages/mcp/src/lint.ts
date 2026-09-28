@@ -14,7 +14,7 @@ import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type
 
 const DEFAULT_LINT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
-const LINT_REPORT_VERSION = 3
+const LINT_REPORT_VERSION = 4
 
 export interface LintProjectOptions {
   context?: SemanticContext
@@ -30,14 +30,13 @@ export interface LintContentOptions {
 }
 
 export interface PreviewFixesOptions extends LintProjectOptions {
-  includeDirectiveFixes?: boolean
   ttlMs?: number
 }
 
 async function loadLintState(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const rules = resolveMasterCSSLintRules(options.rules)
   const manifest = await loadWorkspaceManifest(context, options.context)
-  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   const files = await resolveSourceFiles(
     context,
     options.patterns ?? DEFAULT_LINT_SOURCE_PATTERNS,
@@ -85,7 +84,7 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
   const rules = resolveMasterCSSLintRules(options.rules)
   const filePath = context.resolveVirtualPath(options.filePath)
   const manifest = await loadWorkspaceManifest(context, options.context)
-  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   try {
     const files = [lintMasterCSSContent({ content: options.content, filePath, rules, lintSession })]
 
@@ -112,7 +111,6 @@ export async function previewLintFixes(context: MasterCSSMCPContext, options: Pr
         filePath: input.filePath,
         rules: state.rules,
         lintSession: state.lintSession,
-        includeDirectiveFixes: Boolean(options.includeDirectiveFixes)
       })
       if (fixed !== input.content) {
         changes.push({

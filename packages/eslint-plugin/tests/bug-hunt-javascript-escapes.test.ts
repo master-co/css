@@ -64,6 +64,7 @@ it.each([
   String.raw`clsx('fg-white content:\'a\\b\' bg-black')`,
   'clsx(`fg-white content:\'\\${value}\' bg-black`)',
   'clsx(`\n fg:white\n bg:black\n`)',
+  'clsx(`\r\n fg:white\\r\\n bg:black\r\n`)',
   'clsx("fg:white\\\n bg-black")'
 ])('sorts escaped strings with valid syntax, equivalent classes and stable fixes: %s', async source => {
   const eslint = linter({ 'sort-classes': 'error' }, true)
@@ -111,4 +112,16 @@ it.each([
   const [result] = await linter(invalid, false, frameworkParser ? { parser: frameworkParser } : {}).lintText(source as string, { filePath: `escape.${extension}` })
   expect(result.messages).toHaveLength(1)
   expect(result.messages[0].ruleId).toBe('@master/css/no-invalid-classes')
+})
+
+it.each(['\n', '\r\n', '\r'])('preserves template literal line endings when sorting: %j', async newline => {
+  const source = ['clsx(`', '  fg:white', '  bg:black', '`)'].join(newline)
+  const expected = ['clsx(`', '  bg:black', '  fg:white', '`)'].join(newline)
+  const eslint = linter({ 'sort-classes': 'error' }, true)
+  const [result] = await eslint.lintText(source, { filePath: 'line-endings.js' })
+  expect(result.messages).toEqual([])
+  expect(result.output).toBe(expected)
+  expect(cooked(result.output!)).toBe('\n  bg:black\n  fg:white\n')
+  const [again] = await eslint.lintText(result.output!, { filePath: 'line-endings.js' })
+  expect(again.output).toBeUndefined()
 })

@@ -105,17 +105,15 @@ function createMasterCSSRuntimeTestModule() {
 }
 
 describe('withMasterCSS', () => {
-  it('routes local CSS directives through the Turbopack stylesheet loader', () => {
+  it('routes native CSS and CSS Modules through the project context without a directive gate', () => {
     const config = withMasterCSS({}, { mode: 'progressive' }) as any
-    const rules = config.turbopack.rules['*'] as { condition?: { all?: { content?: RegExp }[] }; loaders?: { loader: string }[] }[]
-    const styleRule = rules.find(rule => rule.loaders?.some(loader => typeof loader.loader === 'string' && loader.loader.endsWith('/stylesheet-loader.js')))
-    const pattern = styleRule?.condition?.all?.find(condition => condition.content)?.content
-
-    expect(pattern).toBeInstanceOf(RegExp)
-    for (const directive of ['@reference "./globals.css";', '@variant sm {}', '@light {}', '@dark {}']) {
-      expect(pattern!.test(directive)).toBe(true)
+    const rules = config.turbopack.rules['*'] as any[]
+    const styleRules = rules.filter(rule => rule.loaders?.some((loader: any) => typeof loader.loader === 'string' && toPosixPath(loader.loader).endsWith('/stylesheet-loader.js')))
+    expect(styleRules.map(rule => rule.type)).toEqual(['css', undefined])
+    for (const rule of styleRules) {
+      expect(rule.condition.all.some((condition: any) => condition.content)).toBe(false)
+      expect(rule.condition.all.some((condition: any) => condition.not?.path?.test('/project/.master/stylesheets/' + 'a'.repeat(64) + '/' + 'b'.repeat(64) + '-entry.css'))).toBe(true)
     }
-    expect(pattern!.test('.card { color: red; }')).toBe(false)
   })
 
   it('sets the Next adapter path and registers options', () => {
@@ -234,7 +232,7 @@ describe('withMasterCSS', () => {
             all: [
               { path: /\.(css|scss|sass)$/ },
               { not: { path: /\.module\.(css|scss|sass)$/ } },
-              { content: expect.any(RegExp) },
+              { not: { path: expect.any(RegExp) } },
               { not: { query: /master-css-manifest/ } }
             ]
           },
@@ -490,6 +488,10 @@ describe('withMasterCSS', () => {
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
+      const staticRules = nextConfig.turbopack.rules['*'] as { condition?: { all?: { path?: RegExp, not?: string }[] }, loaders?: { loader: string }[] }[]
+      expect(staticRules.flatMap(rule => rule.loaders ?? []).some(loader => /static-loader\.js$/.test(loader.loader))).toBe(false)
+      expect(staticRules.some(rule => rule.condition?.all?.some(condition => condition.path?.test(join(root, '.master/next.css')))
+        && rule.loaders?.some(loader => /static-css-loader\.js$/.test(loader.loader)))).toBe(true)
       expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
         expect.objectContaining({
           condition: {
@@ -518,7 +520,7 @@ describe('withMasterCSS', () => {
           condition: expect.objectContaining({
             all: expect.arrayContaining([
               { path: expect.any(RegExp) },
-              { content: expect.any(RegExp) },
+              { not: { path: expect.any(RegExp) } },
               { not: { query: /master-css-manifest/ } }
             ])
           }),

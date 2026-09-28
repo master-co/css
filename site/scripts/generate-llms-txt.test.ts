@@ -157,9 +157,15 @@ test('configured recipes validate their full markup and retain actual token and 
   assert.match(configuredExampleCSS(spacing.source, configuredMarkupClasses(spacing.html)), /padding:var\(--spacing-card\)/)
   const layers = projectStyleExamples.layers
   const css = configuredExampleCSS(layers.source, configuredMarkupClasses(layers.html))
-  assert.match(css, /@layer components\s*\{\s*\.card\{/)
+  assert.match(css, /@layer components\s*\{\s*\.card\s*\{/)
+  assert.match(css, /--color-surface-raised:/)
+  assert.match(css, /--radius-lg:/)
   assert.match(css, /@layer utilities\{/)
   assert.match(css, /\.p-sm\{padding:var\(--spacing-sm\)\}/)
+  const components = projectStyleExamples.components
+  const componentCSS = configuredExampleCSS(components.source, configuredMarkupClasses(components.html))
+  assert.match(componentCSS, /--color-blue-60:/)
+  assert.match(componentCSS, /--color-blue-70:/)
   const modes = projectStyleExamples.modes
   assert.match(configuredExampleCSS(modes.source, configuredMarkupClasses(modes.html)), /\.dark\{/)
   assert.throws(() => projectStyleExample('toString'), /Unknown project style/)

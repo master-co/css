@@ -1,5 +1,5 @@
 import { readStylesheetText } from './helpers/stylesheet-output'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -9,7 +9,7 @@ import loader from '../src/stylesheet-loader'
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
-  const root = mkdtempSync(join(tmpdir(), 'next-raw-sass-'))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-raw-sass-')))
   try {
     mkdirSync(join(root, 'parts'));mkdirSync(join(root, 'node_modules'))
     symlinkSync(dirname(sassFile), join(root, 'node_modules/sass'), 'dir')
@@ -45,7 +45,7 @@ test('Next additionalData does not shift imported partial diagnostics', async ()
 for (const syntax of ['scss', 'sass']) test(`Next ${syntax} reports Sass errors against authored root after injection`, async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax)
-    const source = syntax === 'sass' ? '/* authored */\n.card\n  padding: $missing\n' : '/* authored */\n.card { padding: $missing; }'
+    const source = syntax === 'sass' ? '/* authored */\n.card\n  padding: $missing\n' : "/* authored */\n.card { @variant media(all){padding: $missing;} }"
     const additionalData = syntax === 'sass' ? '$a: 1\r\n$b: 2' : '$a:1;\r\n$b:2;'
     await expect(compile(root, file, source, [], { implementation: sassFile, additionalData })).rejects.toMatchObject({
       span: { start: { line: syntax === 'sass' ? 2 : 1 }, text: '$missing' }, message: expect.stringContaining(`${file}:${syntax === 'sass' ? 3 : 2}:`)
@@ -62,7 +62,7 @@ test('Next labels compiler errors in injected Sass as injected content', async (
 })
 test('Next labels Sass errors in injected content without negative locations', async () => {
   await fixture(async root => {
-    await expect(compile(root, join(root, 'card.module.scss'), '.card{padding:1rem}', [], { implementation: sassFile, additionalData: '.injected{padding:$missing}' })).rejects.toMatchObject({
+    await expect(compile(root, join(root, 'card.module.scss'), '.card{padding:1rem}', [], { implementation: sassFile, additionalData: ".injected{@variant media(all){padding:$missing}}" })).rejects.toMatchObject({
       span: { start: { line: 0 }, text: '$missing' }, message: expect.stringContaining('?master-css-additional-data:1:')
     })
   })
@@ -70,9 +70,9 @@ test('Next labels Sass errors in injected content without negative locations', a
 for (const syntax of ['scss', 'sass']) test(`Next ${syntax} entry preserves imported partial reference ownership`, async () => {
   await fixture(async root => {
     const file = join(root, 'entry.' + syntax), partial = join(root, 'parts/_entry.scss')
-    writeFileSync(partial, '@reference "./tokens.css";.card{@compose paint;}')
-    writeFileSync(join(root, 'parts/tokens.css'), '@utilities{paint{padding:2rem}}')
-    writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:99rem}}')
+    writeFileSync(partial, "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
+    writeFileSync(join(root, 'parts/tokens.css'), '@theme{--paint-padding:2rem}')
+    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
     const source = syntax === 'sass' ? '@use "parts/entry"\n@master entry\n' : '@use "parts/entry";@master entry;'
     const result = await compile(root, file, source, [], { implementation: sassFile })
     expect(result).toContain('padding:2rem')

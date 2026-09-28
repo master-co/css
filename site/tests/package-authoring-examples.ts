@@ -54,7 +54,7 @@ export async function verifyPackageAuthoringExamples() {
     const local = fences.find(f => f.name === 'components/Button.module.css')!
     const compiled = await compileRenderedStylesheet(files.write(local.name, local.text), local.text, options)
     assert.deepEqual(compiled.diagnostics.filter(d => d.severity === 'error'), [])
-    assert.match(compiled.css, /\.button\{content-visibility:auto;contain-intrinsic-size:auto 32rem\}/)
+    assert.match(compiled.css.replace(/\s+/g, ''), /\.button\{content-visibility:auto;contain-intrinsic-size:auto32rem;?\}/)
     assert.doesNotMatch(compiled.css, /\.btn\s*\{/)
     assert.doesNotMatch(compiled.css, /@reference|@compose/)
 
@@ -81,7 +81,7 @@ export async function verifyMonorepoExamples() {
     assert.ok(project.entries[0].endsWith('/projects/admin/index.css'))
     const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: root, classes: ['bg-primary'] })
     assert.match(rendered.css, /--color-primary:#4f46e5/)
-    assert.match(rendered.css, /\.app-shell\{/)
+    assert.match(rendered.css, /\.app-shell\s*\{[^}]*background-color:\s*var\(--color-surface-base\)/)
     assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
   } finally { files.dispose() }
 }

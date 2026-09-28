@@ -124,7 +124,7 @@ When editing Master CSS:
 - Put resets and normalization in @layer base, broad project visual defaults in @layer defaults, and named UI classes in @layer components.
 - For example, put button font inheritance in base, the page text color in defaults, and a .btn design in components; defaults does not mean browser defaults.
 - Prefer existing @theme tokens. Use @utilities for on-demand primitives.
-- Use @compose only when a utility encapsulates shared behavior; native component classes cannot be composition targets or derive Master suffixes.
+- Write native declarations and selectors in CSS; use utilities directly in markup. Native component classes do not derive Master suffixes.
 - Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
 - Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.
 - Do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax.
@@ -271,5 +271,7 @@ Use hyphens for named tokens, such as `font-mono`, `fg-red`, and `p-md`. Use col
 Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Do not generate `$name`, Master length `x`, or `base-unit`. Native resolution `x` in `image-set()` remains valid. Do not invent numeric names such as `p-4` unless the project defines that token.
 
 Resolve ambiguous short names with an explicit prefix, for example `font-family-brand` or `font-size-brand`. Check compiler diagnostics and generated declarations; the revised spelling alone does not establish CSS validity or improved AI accuracy.
+
+Use explicit dimensions: `width:20px height:20px` or `width-sm height-sm`. The preset no longer supplies `size`, `min-size`, or `max-size`; a project may explicitly define those names. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
 
 When upgrading an existing v2 RC project, use [Migrating from Master CSS v2 RC](/guide/migration/v2-rc), preserve the original manifest and settings, and review migration proposals before applying them.

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, posix, sep } from 'node:path'
 import webpack from 'webpack'
 import Plugin from '../dist/index.js'
 
@@ -18,7 +18,9 @@ async function build(root: string) {
       else resolve(stats)
     }))
     const css = stats.compilation.entrypoints.get('main')!.getFiles().find(file => file.endsWith('.css'))!
-    const files = readdirSync(join(root, 'out'), { recursive: true }).filter((file): file is string => typeof file === 'string' && /\.(css|svg)$/.test(file))
+    const files = readdirSync(join(root, 'out'), { recursive: true })
+      .filter((file): file is string => typeof file === 'string' && /\.(css|svg)$/.test(file))
+      .map(file => file.split(sep).join('/'))
     return { css, files, contents: Object.fromEntries(files.map(file => [file, readFileSync(join(root, 'out', file), 'utf8')])), dependencies: [...stats.compilation.fileDependencies] }
   } finally {
     await new Promise<void>((resolve, reject) => compiler.close(error => error ? reject(error) : resolve()))
@@ -44,7 +46,7 @@ test.each(['', ' layer(cards)', ' supports(display:grid) print'])('publishes ext
     expect(result.dependencies).toContain(join(root, 'child.css'))
     for (const [file, source] of Object.entries(result.contents)) {
       for (const [, href] of source.matchAll(/@import\s+["'](\.\/master-css-[^"']+)["']/g)) {
-        expect(result.files).toContain(join('css', href))
+        expect(result.files).toContain(posix.join('css', href))
       }
       expect(file).toMatch(/^css\//)
     }
@@ -80,12 +82,12 @@ test('nested CSS and resource edits change the real entry content hash and prese
   } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120000)
 
-test.each(['local.css', 'local.module.css'])('delivers referenced native theme variables from %s', async localName => {
+test.each(['local.css', 'local.module.css'])('delivers project theme variables without references from %s', async localName => {
   const root = fixture()
   try {
     writeFileSync(join(root, 'entry.js'), `import "./entry.css"; import "./${localName}"`)
-    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}')
-    writeFileSync(join(root, localName), '@reference "./entry.css";.button{color:var(--color-brand)}')
+    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}@theme{@keyframes pop{to{opacity:.5}}}')
+    writeFileSync(join(root, localName), '.button{color:var(--color-brand);--own:2rem;padding:var(--own);animation:pop 1s}.other{animation:own 1s}@keyframes own{to{opacity:1}}')
     const result = await build(root)
     const css = Object.values(result.contents).join('\n')
     const variable = localName.endsWith('.module.css') ? css.match(/color:var\((--[\w-]+)\)/)?.[1] : '--color-brand'
@@ -93,6 +95,12 @@ test.each(['local.css', 'local.module.css'])('delivers referenced native theme v
     expect(css).toContain(`color:var(${variable})`)
     expect(css).toContain(`${variable}:#123456`)
     expect(css).toContain(`${variable}:#abcdef`)
+    expect(css).toContain('@keyframes pop')
+    expect(css).toMatch(/animation:(?:1s pop|pop 1s)/)
+    if (localName.endsWith('.module.css')) {
+      expect(css).not.toContain('--own:')
+      expect(css).not.toContain('@keyframes own')
+    }
     expect(css).not.toContain('@reference')
     expect(css).toMatch(localName.endsWith('.module.css') ? /\.[\w-]+\{color:var\(/ : /\.button\{color:var\(/)
   } finally { rmSync(root, { recursive: true, force: true }) }

@@ -56,7 +56,7 @@ test('keeps shared grammar asset in sync with the language Shiki registration', 
 
 test('scopes v2 named classes, opacity, and pattern forms in CSS directives', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, [
-    '@utilities { card { @compose fg-red/0.5 fg-blue/.5 block:hover@sm color:red; } }',
+    '@safelist "fg-red/0.5 fg-blue/.5 block:hover@sm color:red";',
     '@utilities { font-<~font-family> { font-family: --value(); } }',
     '@utilities { size:<*> { width: --value(); } }',
     '@utilities { font:<~font-size> { font-size: --value(); } }'
@@ -208,7 +208,7 @@ test('does not change native CSS TextMate scopes when injected', () => {
     '',
     '@supports (container-type: inline-size) {',
     '    @container card (width > 30rem) {',
-    '        @layer utilities {',
+    '        @layer components {',
     '            .card:is(.active, #featured) {',
     '                animation: fade 1s ease-in-out;',
     '            }',
@@ -331,7 +331,6 @@ test('highlights every Master CSS directive keyword', () => {
     'theme',
     'utilities',
     'custom-variant',
-    'compose',
     'variant',
     'slot',
     'dark',
@@ -340,6 +339,7 @@ test('highlights every Master CSS directive keyword', () => {
     expectScope(tokens, `@${directive}`, 'keyword.control.at-rule.master-css')
   }
   expectNoScope(tokens, '@', 'punctuation.definition.keyword.master-css')
+  expectNoScope(tokens, '@compose', 'keyword.control.at-rule.master-css')
   expectScope(tokens, 'entry', 'support.constant.property-value.master-css')
 })
 
@@ -351,7 +351,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
     @theme inline dark {}
     @preserve native;
     @safelist "block fg-red:hover@md";
-    @compose inline-flex fg-primary:hover@md background-color:transparent! bg:transparent!@sm;
+    @safelist "inline-flex fg-primary:hover@md background-color:transparent! bg:transparent!@sm";
     @utilities {
       font-<~font-size> {
         font-size: --value();
@@ -375,7 +375,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
   expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, 'background-color', 'support.type.property-name.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
   expectScope(tokens, '@md', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, '!', 'keyword.operator.important.css')
@@ -394,7 +394,7 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
     @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
     @utilities {
       scroll-area {
-        ::scrollbar:is(.active, #thumb) { @compose block; }
+        ::scrollbar:is(.active, #thumb) { display: block; }
       }
     }
     @dark {
@@ -460,18 +460,18 @@ test('highlights detailed Master directive syntax without misclassifying native 
     @reference "./tokens.css";
     @blocklist "debug-*";
     @safelist "dialog-open bg-primary@dark {fg-red;bg-blue}";
+    @safelist "static native inline-flex align-items:center fg-primary:hover@md w:var(--size)";
 
     @custom-variant headings { @media all { @slot; } }
 
     @utilities {
       btn:hover {
-        @compose static native inline-flex align-items:center fg-primary:hover@md w:var(--size);
         @variant h>=sm&h<lg {
-          @compose block;
+          display: block;
         }
         ::scrollbar-thumb:hover {
           @dark {
-            @compose fg-primary;
+            color: var(--color-primary);
           }
         }
       }
@@ -519,6 +519,11 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
   expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')
   expectNoSomeScope(tokens, 'debug-', 'entity.other.attribute-name.class.master-css')
+})
+
+test('leaves removed compose directives to native CSS highlighting', () => {
+  const source = '.card { @compose fg-red block:hover@sm; }'
+  expect(tokenizeWith(injectedCSSGrammar, source)).toEqual(tokenizeWith(nativeCSSGrammar, source))
 })
 
 test('does not highlight directives inside comments or quoted strings', () => {

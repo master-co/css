@@ -4,8 +4,8 @@ import { createCompilerBindingSession } from '../src/session'
 
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: 'entry', files: {
-    entry: "@import './child.css';.example{@compose paint;}",
-    child: '@utilities{paint{background:url(hero.svg?q=1#part)}}.native{background:image-set("small.png" 1x,url(big.png) 2x)}'
+    entry: "@import './child.css';.example{@variant media(all){background:var(--hero);}}",
+    child: '@theme{--hero:url(hero.svg?q=1#part)}.native{background:image-set("small.png" 1x,url(big.png) 2x)}'
   }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
   urls: { entry: '/output/main.css', child: '/output/child.css' },
   resourceURLs: { child: { 'hero.svg?q=1#part': '/source/child/hero.svg?q=1#part', 'small.png': '/source/child/small.png', 'big.png': '/source/child/big.png' } },
@@ -26,7 +26,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding}: relocation retains definition origin across files`, async () => {
     using compiler = await createCompiler({ binding })
     const result = compiler.compileStylesheets(request)
-    expect(result.stylesheets[0].generatedCSS).toContain('/source/child/hero.svg?q=1#part')
+    expect(result.stylesheets[0].generatedCSS).toContain('background:var(--hero)')
     expect(result.stylesheets[1].css).toContain('/source/child/small.png')
     expect(result.stylesheets[1].css).toContain('/source/child/big.png')
     expect(JSON.stringify(result.manifest)).toContain('/source/child/hero.svg?q=1#part')

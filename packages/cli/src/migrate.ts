@@ -9,7 +9,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 export interface MigrateOptions {
-  from?: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities'
+  from?: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing'
   sourceVersion?: string
   cwd?: string
   manifest?: string
@@ -28,7 +28,7 @@ const languageByExtension: Record<string, string> = {
 
 /** Filesystem orchestration only. All syntax and equivalence decisions are Rust-owned. */
 export default function runMigrate(sourcePaths: string[], options: MigrateOptions = {}) {
-  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named, rc-native, rc-managed or rc-utilities.')
+  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named, rc-native, rc-managed, rc-utilities or rc-sizing.')
   const cwd = path.resolve(options.cwd || process.cwd())
   const manifestPath = path.resolve(cwd, options.manifest || 'master.rc.manifest.json')
   // An unreadable original manifest is fatal. Never substitute the new preset
@@ -47,8 +47,11 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
   const paths = fg.sync(patterns, {
     cwd, absolute: true, onlyFiles: true, unique: true,
     ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**']
-  }).sort()
-  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...discoverManifestEntriesSync({ root: cwd })]
+  }).map(file => path.resolve(file)).sort()
+  // Glob and compiler paths use forward slashes; compare native absolute paths
+  // so the selected entry is not added twice on Windows.
+  const entries = (options.entry ? [options.entry] : [...discoverManifestEntriesSync({ root: cwd })])
+    .map(file => path.resolve(cwd, file))
   if (entries.length === 1 && !paths.includes(entries[0])) paths.push(entries[0])
   const files = paths.map(filePath => ({
     filePath,
@@ -80,7 +83,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
   for (const entry of new Set([...entries, ...stylesheets.map(file => file.filePath)])) {
     const source = files.find(file => file.filePath === entry)?.source ?? fs.readFileSync(entry, 'utf8')
     const resolved = resolveStylesheetDependenciesSync(entry, source, { projectDir: cwd })
-    for (const dependency of resolved.dependencies) {
+    for (const dependency of resolved.dependencies.map(file => path.resolve(file))) {
       if (!files.some(file => file.filePath === dependency)) dependencySources.set(dependency, fs.readFileSync(dependency, 'utf8'))
     }
   }

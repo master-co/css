@@ -26,14 +26,19 @@
 
 - `.`
 - `./manifest`
-- `./manifest-json`
 - `./hydration-manifest`
 - `./css-directives`
 - `./css-syntax`
 - `./utility-type`
 - `./runtime-style`
+- `./emitted-globals`
 - `./native-css-shorthand`
 - `./css-common`
+- `./diagnostics`
+- `./integration`
+
+Manifest JSON codec helpers are exported from `.` and `./manifest`;
+`src/manifest-json.ts` is an implementation module, not a public subpath.
 
 ## Key Files
 

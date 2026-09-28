@@ -19,12 +19,7 @@ pub(super) fn append_default_preset_styles(
             layer,
             name,
             ..
-        } = definition
-        else {
-            return Err(manifest_error(
-                "Default preset generation cannot contain @compose definitions",
-            ));
-        };
+        } = definition;
         let name = name.as_deref().ok_or_else(|| {
             manifest_error("Default preset managed style definition requires a name")
         })?;

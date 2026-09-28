@@ -16,9 +16,9 @@ withFixture('basic', async (context) => {
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     const diagnostic = diagnostics[0]
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostic.code).toBe('invalid-compose-class')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('not-a-real-class'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('not-a-real-class') + 'not-a-real-class'.length)
+    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -34,9 +34,9 @@ withFixture('basic', async (context) => {
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     const diagnostic = diagnostics[0]
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostic.code).toBe('invalid-compose-class')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('not-a-real-class'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('not-a-real-class') + 'not-a-real-class'.length)
+    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -53,8 +53,8 @@ withFixture('basic', async (context) => {
     const diagnostic = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics[0]
     expect(diagnostic).toBeDefined()
     if (!diagnostic) throw new Error('Expected an SFC diagnostic.')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.lastIndexOf('not-a-real-class'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.lastIndexOf('not-a-real-class') + 'not-a-real-class'.length)
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.lastIndexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.lastIndexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -70,9 +70,9 @@ withFixture('basic', async (context) => {
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     const diagnostic = diagnostics[0]
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostic.code).toBe('invalid-compose-class')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('not-a-real-class'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('not-a-real-class') + 'not-a-real-class'.length)
+    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -88,9 +88,9 @@ withFixture('basic', async (context) => {
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     const diagnostic = diagnostics[0]
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostic.code).toBe('compose-quoted-syntax')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('"block"'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('"block"') + '"block"'.length)
+    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -106,9 +106,9 @@ withFixture('basic', async (context) => {
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     const diagnostic = diagnostics[0]
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostic.code).toBe('compose-group-syntax')
-    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('{block}'))
-    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('{block}') + '{block}'.length)
+    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.indexOf('@compose'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.indexOf('@compose') + '@compose'.length)
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -127,7 +127,7 @@ withFixture('missing-workspace', async (context) => {
     expect(context.rootWorkspace?.planEntries).toEqual([])
     expect(context.rootWorkspace?.manifestErrors).toEqual([])
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].code).toBe('invalid-compose-class')
+    expect(diagnostics[0].code).toBe('removed-compose-directive')
 
     await context.server.onDidClose({ document })
     sendDiagnostics.mockRestore()
@@ -143,7 +143,7 @@ withFixture('invalid-manifest', async (context) => {
 
     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0].code).toBe('compose-quoted-syntax')
+    expect(diagnostics[0].code).toBe('removed-compose-directive')
     expect(diagnostics[0].message).toContain('Failed to load Master CSS manifest')
 
     await context.server.onDidClose({ document })

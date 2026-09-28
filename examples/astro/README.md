@@ -1,6 +1,6 @@
 # Master CSS Astro example
 
-This example uses `@master/css-astro` with its default `progressive` mode.
+This example explicitly selects `progressive` mode in `@master/css-astro`. The integration's default is `static`.
 
 The integration:
 
@@ -25,7 +25,7 @@ The integration:
 └── package.json
 ```
 
-`astro.config.js` registers `masterCSS()` with no options because progressive rendering is the default.
+`astro.config.js` registers `masterCSS({ mode: 'progressive' })` to enable server rendering and browser hydration for this example.
 
 `src/layouts/Layout.astro` imports the Master CSS default stylesheet globally:
 

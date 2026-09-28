@@ -1,0 +1,653 @@
+{
+  "method": "Saved source/native/preset baseline vs current; same fixture with explicit Turbopack root / to include shared dependency installation; one warmup and three measured edits per run; repeated with other builds idle.",
+  "runs": [
+    {
+      "bundler": "turbo",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1316.490167,
+          "burstMs": 1832.2354999999989,
+          "singleStarted": 1790350196834,
+          "burstStarted": 1790350198150,
+          "finished": 1790350199983
+        },
+        {
+          "singleMs": 1465.5810409999995,
+          "burstMs": 1385.3665,
+          "singleStarted": 1790350199983,
+          "burstStarted": 1790350201448,
+          "finished": 1790350202834
+        },
+        {
+          "singleMs": 1233.1301669999993,
+          "burstMs": 1400.061834,
+          "singleStarted": 1790350202834,
+          "burstStarted": 1790350204067,
+          "finished": 1790350205467
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "before",
+      "run": "quiet",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1316.490167,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 347.423084,
+          "lockHoldMs": 1062.0818770000005
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1832.2354999999989,
+          "publications": 39,
+          "compositions": 2,
+          "composeMs": 355.3951670000006,
+          "lockHoldMs": 1531.6133779999964
+        },
+        {
+          "stage": "single",
+          "totalMs": 1465.5810409999995,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 358.63466700000026,
+          "lockHoldMs": 1270.5724570000057
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1385.3665,
+          "publications": 31,
+          "compositions": 2,
+          "composeMs": 355.4174989999992,
+          "lockHoldMs": 1148.1399600000004
+        },
+        {
+          "stage": "single",
+          "totalMs": 1233.1301669999993,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 350.6969590000008,
+          "lockHoldMs": 1058.3464219999987
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1400.061834,
+          "publications": 35,
+          "compositions": 2,
+          "composeMs": 340.4392910000006,
+          "lockHoldMs": 1189.2995390000087
+        }
+      ]
+    },
+    {
+      "bundler": "webpack",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1050.1087499999958,
+          "burstMs": 1067.161208000005,
+          "singleStarted": 1790350218170,
+          "burstStarted": 1790350219220,
+          "finished": 1790350220287
+        },
+        {
+          "singleMs": 1215.5696670000034,
+          "burstMs": 1234.1760830000057,
+          "singleStarted": 1790350220287,
+          "burstStarted": 1790350221503,
+          "finished": 1790350222737
+        },
+        {
+          "singleMs": 1083.037083000003,
+          "burstMs": 1267.0614579999965,
+          "singleStarted": 1790350222737,
+          "burstStarted": 1790350223820,
+          "finished": 1790350225087
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "before",
+      "run": "quiet",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1050.1087499999958,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 329.7051249999986,
+          "lockHoldMs": 732.1624150000025
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1067.161208000005,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 330.0119570000006,
+          "lockHoldMs": 737.619708000002
+        },
+        {
+          "stage": "single",
+          "totalMs": 1215.5696670000034,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 330.33037499999955,
+          "lockHoldMs": 776.2197930000038
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1234.1760830000057,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 347.0129160000015,
+          "lockHoldMs": 824.6330809999981
+        },
+        {
+          "stage": "single",
+          "totalMs": 1083.037083000003,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 345.42683299999953,
+          "lockHoldMs": 775.6500840000044
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1267.0614579999965,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 357.8350410000003,
+          "lockHoldMs": 816.2747070000023
+        }
+      ]
+    },
+    {
+      "bundler": "turbo",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1416.208208,
+          "burstMs": 1217.0659159999996,
+          "singleStarted": 1790350477223,
+          "burstStarted": 1790350478639,
+          "finished": 1790350479857
+        },
+        {
+          "singleMs": 1450.0319580000014,
+          "burstMs": 1284.275458,
+          "singleStarted": 1790350479857,
+          "burstStarted": 1790350481307,
+          "finished": 1790350482591
+        },
+        {
+          "singleMs": 1232.3891250000015,
+          "burstMs": 1615.2530000000006,
+          "singleStarted": 1790350482591,
+          "burstStarted": 1790350483823,
+          "finished": 1790350485438
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "before",
+      "run": "repeat",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1416.208208,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 361.65362600000026,
+          "lockHoldMs": 1265.5042899999999
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1217.0659159999996,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 340.07587499999954,
+          "lockHoldMs": 1038.9857489999995
+        },
+        {
+          "stage": "single",
+          "totalMs": 1450.0319580000014,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 336.41429100000096,
+          "lockHoldMs": 1204.466498999991
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1284.275458,
+          "publications": 32,
+          "compositions": 2,
+          "composeMs": 340.25795899999866,
+          "lockHoldMs": 1128.5238329999993
+        },
+        {
+          "stage": "single",
+          "totalMs": 1232.3891250000015,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 329.4287090000016,
+          "lockHoldMs": 1029.0508360000003
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1615.2530000000006,
+          "publications": 37,
+          "compositions": 2,
+          "composeMs": 345.63891800000056,
+          "lockHoldMs": 1404.2857110000004
+        }
+      ]
+    },
+    {
+      "bundler": "webpack",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1183.1366669999989,
+          "burstMs": 1166.6886659999982,
+          "singleStarted": 1790350498081,
+          "burstStarted": 1790350499265,
+          "finished": 1790350500431
+        },
+        {
+          "singleMs": 1199.9971670000014,
+          "burstMs": 1166.5152090000047,
+          "singleStarted": 1790350500431,
+          "burstStarted": 1790350501631,
+          "finished": 1790350502798
+        },
+        {
+          "singleMs": 1032.6477499999964,
+          "burstMs": 1216.234166000002,
+          "singleStarted": 1790350502798,
+          "burstStarted": 1790350503830,
+          "finished": 1790350505047
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "before",
+      "run": "repeat",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1183.1366669999989,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 346.2008340000011,
+          "lockHoldMs": 774.1052929999987
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1166.6886659999982,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 326.96362599999884,
+          "lockHoldMs": 756.9410839999982
+        },
+        {
+          "stage": "single",
+          "totalMs": 1199.9971670000014,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 324.9031250000007,
+          "lockHoldMs": 761.260459000001
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1166.5152090000047,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 324.48333300000013,
+          "lockHoldMs": 754.5057059999999
+        },
+        {
+          "stage": "single",
+          "totalMs": 1032.6477499999964,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 322.73925000000054,
+          "lockHoldMs": 736.4513340000012
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1216.234166000002,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 325.83195799999885,
+          "lockHoldMs": 780.737419000001
+        }
+      ]
+    },
+    {
+      "bundler": "turbo",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1349.8132080000014,
+          "burstMs": 1698.8520829999998,
+          "singleStarted": 1790350250118,
+          "burstStarted": 1790350251468,
+          "finished": 1790350253167
+        },
+        {
+          "singleMs": 1266.7526670000007,
+          "burstMs": 1501.0049169999984,
+          "singleStarted": 1790350253167,
+          "burstStarted": 1790350254433,
+          "finished": 1790350255934
+        },
+        {
+          "singleMs": 1315.4651659999981,
+          "burstMs": 1917.7588329999999,
+          "singleStarted": 1790350255934,
+          "burstStarted": 1790350257250,
+          "finished": 1790350259168
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "after",
+      "run": "quiet",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1349.8132080000014,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 359.076916,
+          "lockHoldMs": 1117.9196239999992
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1698.8520829999998,
+          "publications": 38,
+          "compositions": 2,
+          "composeMs": 366.21379199999956,
+          "lockHoldMs": 1536.4939599999989
+        },
+        {
+          "stage": "single",
+          "totalMs": 1266.7526670000007,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 341.9926260000011,
+          "lockHoldMs": 1067.998622000001
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1501.0049169999984,
+          "publications": 35,
+          "compositions": 2,
+          "composeMs": 344.8943330000002,
+          "lockHoldMs": 1257.1913749999912
+        },
+        {
+          "stage": "single",
+          "totalMs": 1315.4651659999981,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 359.50645899999836,
+          "lockHoldMs": 1084.5735440000026
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1917.7588329999999,
+          "publications": 43,
+          "compositions": 2,
+          "composeMs": 356.6266239999986,
+          "lockHoldMs": 1618.1770840000027
+        }
+      ]
+    },
+    {
+      "bundler": "webpack",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1082.9470409999994,
+          "burstMs": 1251.4714170000007,
+          "singleStarted": 1790350272307,
+          "burstStarted": 1790350273390,
+          "finished": 1790350274641
+        },
+        {
+          "singleMs": 1298.5058749999953,
+          "burstMs": 1317.848417000001,
+          "singleStarted": 1790350274641,
+          "burstStarted": 1790350275940,
+          "finished": 1790350277258
+        },
+        {
+          "singleMs": 1133.3005420000045,
+          "burstMs": 1233.2069170000032,
+          "singleStarted": 1790350277258,
+          "burstStarted": 1790350278391,
+          "finished": 1790350279624
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "after",
+      "run": "quiet",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1082.9470409999994,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 337.8678749999999,
+          "lockHoldMs": 772.6142510000009
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1251.4714170000007,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 337.94437500000095,
+          "lockHoldMs": 810.5649170000015
+        },
+        {
+          "stage": "single",
+          "totalMs": 1298.5058749999953,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 358.64758299999994,
+          "lockHoldMs": 850.1945020000003
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1317.848417000001,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 357.5671660000007,
+          "lockHoldMs": 846.0216669999991
+        },
+        {
+          "stage": "single",
+          "totalMs": 1133.3005420000045,
+          "publications": 9,
+          "compositions": 2,
+          "composeMs": 355.6899999999987,
+          "lockHoldMs": 798.7313329999979
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1233.2069170000032,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 340.15212599999904,
+          "lockHoldMs": 836.9129990000038
+        }
+      ]
+    },
+    {
+      "bundler": "turbo",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1334.405291000001,
+          "burstMs": 1749.9750410000015,
+          "singleStarted": 1790350406912,
+          "burstStarted": 1790350408247,
+          "finished": 1790350409997
+        },
+        {
+          "singleMs": 1316.6220000000012,
+          "burstMs": 1431.868958000001,
+          "singleStarted": 1790350409997,
+          "burstStarted": 1790350411313,
+          "finished": 1790350412745
+        },
+        {
+          "singleMs": 1299.74525,
+          "burstMs": 1766.9970839999987,
+          "singleStarted": 1790350412745,
+          "burstStarted": 1790350414045,
+          "finished": 1790350415812
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "after",
+      "run": "repeat",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1334.405291000001,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 356.2354170000017,
+          "lockHoldMs": 1095.1942089999982
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1749.9750410000015,
+          "publications": 33,
+          "compositions": 2,
+          "composeMs": 345.6651660000007,
+          "lockHoldMs": 1434.0292080000013
+        },
+        {
+          "stage": "single",
+          "totalMs": 1316.6220000000012,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 345.70824899999934,
+          "lockHoldMs": 1086.4507490000044
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1431.868958000001,
+          "publications": 32,
+          "compositions": 2,
+          "composeMs": 354.57029299999886,
+          "lockHoldMs": 1188.3538319999998
+        },
+        {
+          "stage": "single",
+          "totalMs": 1299.74525,
+          "publications": 28,
+          "compositions": 2,
+          "composeMs": 353.43245899999965,
+          "lockHoldMs": 1086.2001650000002
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1766.9970839999987,
+          "publications": 39,
+          "compositions": 2,
+          "composeMs": 352.17175000000134,
+          "lockHoldMs": 1550.3697909999987
+        }
+      ]
+    },
+    {
+      "bundler": "webpack",
+      "node": "v24.20.0",
+      "samples": [
+        {
+          "singleMs": 1232.9365419999995,
+          "burstMs": 1248.7588749999995,
+          "singleStarted": 1790350428816,
+          "burstStarted": 1790350430049,
+          "finished": 1790350431298
+        },
+        {
+          "singleMs": 1284.4326250000013,
+          "burstMs": 1233.3369999999995,
+          "singleStarted": 1790350431298,
+          "burstStarted": 1790350432582,
+          "finished": 1790350433816
+        },
+        {
+          "singleMs": 1216.5531249999985,
+          "burstMs": 1216.6486670000013,
+          "singleStarted": 1790350433816,
+          "burstStarted": 1790350435032,
+          "finished": 1790350436249
+        }
+      ],
+      "idle": [],
+      "note": "File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.",
+      "revision": "after",
+      "run": "repeat",
+      "stages": [
+        {
+          "stage": "single",
+          "totalMs": 1232.9365419999995,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 334.63275000000067,
+          "lockHoldMs": 808.8023750000029
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1248.7588749999995,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 353.6725409999999,
+          "lockHoldMs": 840.5869579999999
+        },
+        {
+          "stage": "single",
+          "totalMs": 1284.4326250000013,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 358.6033750000006,
+          "lockHoldMs": 850.7900830000053
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1233.3369999999995,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 353.137874,
+          "lockHoldMs": 850.0976269999992
+        },
+        {
+          "stage": "single",
+          "totalMs": 1216.5531249999985,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 336.03691600000093,
+          "lockHoldMs": 800.9423760000009
+        },
+        {
+          "stage": "burst",
+          "totalMs": 1216.6486670000013,
+          "publications": 11,
+          "compositions": 2,
+          "composeMs": 335.2776250000006,
+          "lockHoldMs": 807.9503749999967
+        }
+      ]
+    }
+  ]
+}

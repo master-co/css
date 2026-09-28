@@ -1,70 +1,15 @@
-## Overview [sr-only] \{#overview\}
-<Overview/>
+<a id="overview" />
+<a id="examples" />
+<a id="cap-width-and-height-together" />
+<a id="keep-square-media-bounded" />
+<a id="cap-one-logical-axis" />
+<a id="use-one-axis-caps-for-layout" />
+<a id="apply-conditionally" />
 
-## Examples \{#examples\}
-### Cap width and height together \{#cap-width-and-height-together\}
-`max:*` sets matching maximum width and height. The 320 × 200px source scales to 96 × 60px under `max:6rem`, preserving its intrinsic ratio. Equal limits do not force a square.
+The built-in `max-size` utility and its named token form have been removed before Master CSS 2.0. This URL remains for existing links.
 
-<DemoExample page="max-size" section="cap-width-and-height-together" />
+Use `max-width:20px max-height:20px` for direct values, or `max-width-sm max-height-sm` when both entries resolve to the intended container token. These are independent declarations; review competing dimensions when upgrading.
 
-```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <img id="target" class="block size:auto max:6rem" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
-</div>
-```
+See the [Master CSS v2 RC migration guide](/guide/migration/v2-rc#sizing-and-resolution) for safe migration and sorting checks, and [sizing](/guide/sizing) for current usage. Projects may still define a custom `max-size` utility with `@utilities`.
 
-### Keep square media bounded \{#keep-square-media-bounded\}
-`full` prefers 100% width and height of this definite 240 × 200px parent. `max:10rem` caps both axes at 160px, making a square box. `object-cover` crops the rectangular source inside it.
-
-<DemoExample page="max-size" section="keep-square-media-bounded" />
-
-```html
-<div id="layout" class="h:12.5rem w:15rem" role="group" aria-label="Available space">
-  <img id="target" class="block full max:10rem object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
-</div>
-```
-
-Both parent dimensions are definite here. Without a height reference, a percentage height does not guarantee the same square result.
-
-### Cap one logical axis \{#cap-one-logical-axis\}
-`max-size-x:*` limits inline-size and `max-size-y:*` limits block-size. A preferred 200px square becomes 120 × 64px with horizontal writing, then 64 × 120px with vertical writing.
-
-<DemoExample page="max-size" section="cap-one-logical-axis" />
-
-```html
-<!-- Horizontal writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="size:12.5rem max-size-x:7.5rem max-size-y:4rem p-sm writing-mode:horizontal-tb">Bounded</div>
-</div>
-```
-
-```html
-<!-- Vertical writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="size:12.5rem max-size-x:7.5rem max-size-y:4rem p-sm writing-mode:vertical-rl">Bounded</div>
-</div>
-```
-
-### Use one-axis caps for layout \{#use-one-axis-caps-for-layout\}
-Use a single-axis maximum when the box should remain rectangular. Here a preferred 240 × 120px panel keeps its 120px height while `max-w:10rem` caps only its width at 160px.
-
-<DemoExample page="max-size" section="use-one-axis-caps-for-layout" />
-
-```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="h:7.5rem w:15rem max-w:10rem p-sm">Width cap only</div>
-</div>
-```
-
-Use [max-width](/reference/max-width) for wrapper widths and [max-height](/reference/max-height) for vertical limits. Paired maximums are useful only when both bounds are intended.
-
-### Apply conditionally \{#apply-conditionally\}
-Resize past `sm` to increase both caps from 64px to 96px. The image prefers 160px on each axis, so the maximum determines its visible square size.
-
-<DemoExample page="max-size" section="apply-conditionally" />
-
-```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <img id="target" class="block size:10rem max:4rem object-cover max:6rem@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
-</div>
-```
+Native page-size descriptors and logical properties such as `inline-size` and `block-size` remain available.

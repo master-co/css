@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 type BuildDiagnostic = MasterCSSError & { loc?: { file: string, line: number, column: number }, plugin?: string }
 
 async function failure(files: Record<string, string>, request: string, css?: InlineConfig['css']) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-sass-location-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-sass-location-')))
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
@@ -43,12 +43,12 @@ test.each(cases)('imported Module diagnostics identify their real source $rootEx
   expect(diagnostic.source).toContain(join(root, `nested/child.${childExtension}`))
   if (childExtension === 'css') {
     expect(diagnostic.source).toBe(join(root, 'nested/child.css'))
-    expect(diagnostic.range).toEqual({ start: { line: 2, character: 11 }, end: { line: 2, character: 26 } })
+    expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 10 } })
     expect(diagnostic.notes).toBeUndefined()
   } else {
     // Vite's imported Sass preprocessing must either provide an original range
     // or explicitly identify the generated location; never invent precision.
-    const exact = diagnostic.source === join(root, 'nested/child.scss') && diagnostic.range?.start.line === 3 && diagnostic.range.start.character === 11
+    const exact = diagnostic.source === join(root, 'nested/child.scss') && diagnostic.range?.start.line === 3 && diagnostic.range.start.character === 2
     expect(exact || diagnostic.notes?.some(note => note.includes('preprocessed CSS'))).toBe(true)
   }
 })

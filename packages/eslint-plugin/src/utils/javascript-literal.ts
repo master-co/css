@@ -40,14 +40,16 @@ export function javascriptLiteralRange(raw: string, cooked: string) {
   }
 }
 
-export function encodeJavaScriptLiteral(text: string, quote: string) {
+export function encodeJavaScriptLiteral(text: string, quote: string, newline = '\n') {
   let result = ''
   for (let index = 0; index < text.length; index++) {
     const character = text[index]
     const code = text.charCodeAt(index)
     if (character === '\\' || character === quote || (quote === '`' && character === '$' && text[index + 1] === '{')) {
       result += '\\' + character
-    } else if (character === '\t' || (quote === '`' && (character === '\n' || character === '\r'))) {
+    } else if (quote === '`' && character === '\n') {
+      result += newline
+    } else if (character === '\t') {
       result += character
     } else if (code < 0x20 || code === 0x2028 || code === 0x2029 || (code >= 0xd800 && code <= 0xdfff)) {
       result += '\\u' + code.toString(16).padStart(4, '0')

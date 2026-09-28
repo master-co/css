@@ -11,7 +11,7 @@ Run both systems while you migrate. Tailwind can keep styling existing screens w
 2. Keep the Tailwind CSS entry loaded until converted screens no longer depend on it.
 3. Move shared design values into Master CSS `@theme` tokens.
 4. Convert markup classes where the class list stays readable.
-5. Replace reusable `@apply` rules with `@compose`, `@layer components`, `@utilities`, or native CSS.
+5. Replace `@apply` with native declarations and selectors, or move utilities directly into markup.
 6. Run project checks and compare important screens before deleting Tailwind.
 
 Avoid global search-and-replace. Tailwind class names encode a different vocabulary, default theme, Preflight reset, container model, ring model, and variant syntax. A reviewable migration preserves intent instead of preserving spelling.
@@ -27,7 +27,7 @@ Inspect the Tailwind surface before changing files.
 | Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
 | Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utilities`. |
 | Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
-| Composition | Rules using `@apply` | Replace with `@compose` or ordinary CSS declarations. |
+| Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
 | Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
 | Markup | Class strings in HTML, JSX, templates, helper maps, and component props | Convert complete class strings, not fragments. |
 | Third-party styling | Plugin CSS, vendor CSS, component-library overrides | Keep regular CSS until a Master CSS replacement is clearly better. |
@@ -231,8 +231,8 @@ For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possi
 
 ---
 
-## Replace `@apply` with `@compose`
-Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@compose` for the same kind of rule-local composition, but the class list must be Master CSS syntax.
+## Replace utility composition with native CSS
+Rewrite Tailwind utility composition as native declarations and selectors, preserving token references and states. Use Master utilities directly in markup. Master CSS does not implement `@apply` or `@compose`.
 
 ```css name=tailwind.css
 .btn {
@@ -244,30 +244,45 @@ Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@
 @import "@master/css";
 
 .btn {
-  @compose inline-flex align-items:center gap-xs r-md bg-blue-60 px-md py-xs fg-white shadow-sm;
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  box-shadow: var(--shadow-sm);
+  color: oklch(100% 0 none);
+  align-items: center;
 }
 ```
 
-Use native declarations when the value is clearer than a class:
+For component-specific styles, native declarations can express the entire rule:
 
 ```css name=app.css
 .form-panel {
-  @compose p-lg r-lg bg-white shadow-sm;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background-color: oklch(100% 0 none);
+  box-shadow: var(--shadow-sm);
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
 }
 ```
 
-Use `@reference` in CSS Modules and framework style blocks when the local stylesheet needs project tokens, components, utilities, or variants without including the app CSS again.
+CSS Modules and framework style blocks automatically receive project tokens, utilities, and variants in the Vite, Next.js, and Webpack integrations. Use `@reference` only for additional definition files or standalone compilation.
 
 ```css name=Button.module.css
-@reference "../app.css";
-
 .button {
-  @compose inline-flex align-items:center px-md h:2.5rem r-md bg-blue-60 fg-white;
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  align-items: center;
+  height: 2.5rem;
 }
 ```
 
-Do not quote `@compose` values. Keep quoted strings, complex content values, and unusual selectors as ordinary CSS declarations or nested CSS.
+Keep quoted strings, complex content values, and unusual selectors as ordinary CSS declarations or nested CSS.
 
 ---
 
@@ -303,15 +318,25 @@ Use `@layer components` when the name describes a product UI role rather than a 
 ```css name=app.css
 @layer components {
   .btn {
-    @compose inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-md font-sm font-medium;
-    @compose bg-blue-60 fg-white;
+    display: inline-flex;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
 
     &:disabled {
-      @compose opacity:.5 pointer-events:none;
+      opacity: .5;
+      pointer-events: none;
     }
 
     @variant md {
-      @compose px-lg;
+      padding-inline: var(--spacing-lg);
     }
   }
 }
@@ -415,7 +440,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, `@compose`, and `@variant`.
+- [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, and `@variant`.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static source scanning behavior.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup utilities, theme tokens, custom utilities, and component classes.
 - [Code linting](/guide/code-linting) for validating Master CSS classes during migration.

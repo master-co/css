@@ -23,6 +23,7 @@ export function configuredExampleCSS(source: string, classes: string[]) {
   if (errors.length) throw new Error(`Invalid documentation configuration: ${JSON.stringify(errors)}`)
   const engine = createRenderSessionSync({ manifest: result.manifest })
   try {
+    engine.ensureStylesheetResources(result.css)
     const snapshot = engine.ensureClassRules(classes)
     for (const className of classes) {
       if (!result.nativeClassNames.includes(className) && (snapshot.invalidClassNames.includes(className) || snapshot.classRules[className].some(rule => validateCSS(rule.text).length))) {

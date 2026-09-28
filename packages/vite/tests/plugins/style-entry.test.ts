@@ -1,3 +1,4 @@
+import { normalizePath } from 'vite'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { resolve } from 'node:path'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
@@ -40,7 +41,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg-red{color:red}', inc
 }
 
 function getStylesheet(context: ReturnType<typeof makeContext>, id: string) {
-  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === id)
+  return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === resolve(id))
 }
 
 function collectDeliveredCSS(context: ReturnType<typeof makeContext>, entry: string) {
@@ -153,9 +154,9 @@ describe('StyleEntryPlugin', () => {
         '}'
       ].join('\n'),
       '/project/src/style.css'
-    )).rejects.toThrow('Invalid @compose utility')
+    )).rejects.toThrow('@compose has been removed')
 
-    expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
+    expect(addWatchFile).toHaveBeenCalledWith(normalizePath(resolve('/project/src/style.css')))
   })
 
   test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {

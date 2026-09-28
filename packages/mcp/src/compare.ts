@@ -100,7 +100,7 @@ export async function compareCSS(context: MasterCSSMCPContext, options: CompareC
   const manifest = await loadWorkspaceManifest(context, options.context)
   const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
   const activeManifest = requireWorkspaceManifest(manifest)
-  const session = createMCPToolingSession(activeManifest)
+  const session = createMCPToolingSession(activeManifest, manifest.nativeClassNames)
   try {
     const beforeClasses = resolveClasses(options, 'before', filePath, session)
     const afterClasses = resolveClasses(options, 'after', filePath, session)

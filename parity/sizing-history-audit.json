@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "baseline": "bd164e4b5ae3a713940913d745183e9ab6b54263",
+  "implementationHead": "2079d665a",
+  "counts": {
+    "removed-unmapped": 256,
+    "approved-contract-change": 19,
+    "preserved-exact": 503,
+    "changed-without-proof": 244,
+    "stale-evidence": 4,
+    "verified-superset": 5,
+    "ambiguous-mapping": 2
+  },
+  "notes": [
+    "Read-only mapping audit; unresolved mappings are not automatically product defects or approvals. Original evidence and ledger unchanged."
+  ],
+  "reviewedEvidence": [
+    {
+      "sourceId": "rc87-886095b27074cf6c",
+      "file": "packages/binding-wasm-engine/tests/session.test.ts",
+      "title": "loads the packaged Wasm artifact in Node without fetch support for file URLs",
+      "status": "stale-evidence",
+      "target": {
+        "id": "rc87-886095b27074cf6c",
+        "file": "packages/binding-wasm-engine/tests/session.test.ts",
+        "title": "loads the packaged Wasm artifact in Node without fetch support for file URLs"
+      },
+      "reason": "Packaged Wasm loading, initial empty snapshot, one block mutation, exact layered CSS and disposal remain covered. The approved inspection contract replaces valid:true with matchStatus:matched and requires languageVersion:2 in this committed target; a separate native declaration case verifies explicit var() resource emission without host support filtering."
+    },
+    {
+      "sourceId": "rc87-534a5dbe18105a92",
+      "file": "packages/binding-wasm-engine/tests/session.test.ts",
+      "title": "uses a batched CSS.supports handshake for browser-native declarations",
+      "status": "stale-evidence",
+      "target": {
+        "id": "rc87-01b18af25a7b490a",
+        "file": "packages/binding-wasm-engine/tests/session.test.ts",
+        "title": "preserves native declarations independently of browser CSS.supports"
+      },
+      "reason": "The approved preserve-and-diagnose policy removes the browser support handshake from generation. The replacement asserts identical native declaration preservation without host filtering; it intentionally reverses the old support-dependent contract."
+    },
+    {
+      "sourceId": "rc87-97379238aa6e9c52",
+      "file": "packages/binding/tests/binding.test.ts",
+      "title": "normalizes operation failures and disposes engine sessions idempotently",
+      "status": "stale-evidence",
+      "target": {
+        "id": "rc87-97379238aa6e9c52",
+        "file": "packages/binding/tests/binding.test.ts",
+        "title": "normalizes operation failures and disposes engine sessions idempotently"
+      },
+      "reason": "Original normalized engine-operation failure and idempotent disposal assertions remain. Added native declaration coverage checks the explicit var(--stripe) resource and background shorthand; the shared fixture now declares the approved language version. This is not evidence that colon token inference remains supported."
+    },
+    {
+      "sourceId": "rc87-c6f234a37661be00",
+      "file": "packages/next/tests/css-manifest-loader.test.ts",
+      "title": "wraps the manifest JSON as an external JSON facade when requested",
+      "status": "stale-evidence",
+      "target": {
+        "id": "rc87-a9210afde2b25995",
+        "file": "packages/next/tests/css-manifest-loader.test.ts",
+        "title": "exports standard ESM data without writing bundler output assets"
+      },
+      "reason": "The approved Next manifest ESM plan removes direct writes to .next/static/media and external JSON URL assembly. The replacement checks standard ESM output and absence of loader asset writes."
+    }
+  ],
+  "remainingPolicy": "Only the four individually reviewed records were updated. Unmapped/changed cases and public API surface evidence remain release blockers."
+}

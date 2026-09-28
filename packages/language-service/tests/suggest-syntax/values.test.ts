@@ -46,10 +46,10 @@ describe('named token completion', () => {
     expect(labels('bg:', settings)).not.toContain('accent')
     expect(labels('bg:', settings)).toContain('cover')
   })
-  test('offers named colors inside compose', () => {
+  test('offers named colors inside safelist', () => {
     const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', value: '#123456' }] }) }
-    const prefix = '.btn { @compose bg-'
-    const doc = createDoc('css', prefix + '; }')
+    const prefix = '@safelist "bg-'
+    const doc = createDoc('css', prefix + '";')
     const service = new CSSLanguageService(settings)
     const items = service.suggestSyntax(doc, doc.positionAt(prefix.length), { triggerKind: 1 })
     expect(items?.map(({ label }) => label)).toContain('bg-accent')

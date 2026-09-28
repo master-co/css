@@ -7,7 +7,7 @@ import { clearDevStylesheets, devStylesheetState, getDevStylesheetDelivery, publ
 
 test.each(['replace', 'delete'] as const)('resource naming captures bytes before source %s', action => {
   const root = mkdtempSync(join(tmpdir(), 'dev-resource-snapshot-')), source = join(root, 'pixel.svg')
-  const context = { config: { command: 'serve', base: '/base/' } } as MasterCSSVitePluginContext
+  const context = { config: { root, command: 'serve', base: '/base/' } } as MasterCSSVitePluginContext
   const red = '<svg xmlns="http://www.w3.org/2000/svg"><title>red</title></svg>'
   let snapshot: string | undefined
   try {

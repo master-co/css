@@ -1,20 +1,17 @@
 import { describe, expect, test, vi } from 'vitest'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import LocalComposePlugin from '../../src/plugins/local-compose'
+import { normalizePath } from 'vite'
+import LocalStylesPlugin from '../../src/plugins/local-styles'
 
 function createFixture() {
-  const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-'))
+  const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-')))
   mkdirSync(path.join(root, 'src'), { recursive: true })
   writeFileSync(path.join(root, 'app.css'), `
     @master entry;
 
-    @utilities {
-      brand {
-        background-color: #123456;
-      }
-    }
+    @theme { --color-brand: #123456; }
   `)
   return root
 }
@@ -32,35 +29,37 @@ function createContext(root: string) {
   } as any
 }
 
-describe('LocalComposePlugin', () => {
+describe('LocalStylesPlugin', () => {
   test('lowers @compose in CSS Modules without emitting a Master CSS slot', async () => {
     const root = createFixture()
     try {
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()
       await (plugin as any).buildStart.call({})
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '.button { @compose inline-flex brand; color: white; }',
+        '.button { @variant media(all){display:inline-flex;background-color:var(--color-brand);color:white;} }',
         path.join(root, 'src/Button.module.css')
       )
 
       expect(result.code).toContain('.button{')
       expect(result.code).toContain('display:inline-flex')
-      expect(result.code).toContain('background-color:#123456')
+      expect(result.code).toContain('background-color:var(--color-brand)'
+      )
+      expect(result.code).toContain('--color-brand:#123456')
       expect(result.code).toContain('color:#fff')
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'src/Button.module.css'))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'app.css')))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'src/Button.module.css')))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
   })
 
-  test('dedupes theme variables already emitted by global style entries', async () => {
+  test('retains local resources when discovered entries are not guaranteed loaded', async () => {
     const root = createFixture()
     try {
       writeFileSync(path.join(root, 'app.css'), [
@@ -68,19 +67,19 @@ describe('LocalComposePlugin', () => {
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '.home { @compose py-5xl; }',
+        ".home { @variant media(all){padding-block:var(--spacing-5xl);} }",
         path.join(root, 'src/Home.module.css')
       )
 
       expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
-      expect(result.code).not.toContain('--spacing-5xl:')
+      expect(result.code).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'app.css')))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -90,16 +89,16 @@ describe('LocalComposePlugin', () => {
     const root = createFixture()
     try {
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
 
       expect(await (plugin as any).transform.call(
         {},
-        '.button { color: red; }',
+        ".button { color: red; }",
         path.join(root, 'src/Button.module.css')
       )).toBeUndefined()
       expect(await (plugin as any).transform.call(
         {},
-        '@master entry; .button { @compose block; }',
+        "@master entry; .button { @variant media(all){display:block;} }",
         path.join(root, 'src/app.css')
       )).toBeUndefined()
     } finally {
@@ -111,15 +110,15 @@ describe('LocalComposePlugin', () => {
     const root = createFixture()
     try {
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
 
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '.button { @compose block; }',
+        ".button { @variant media(all){display:block;} }",
         path.join(root, 'src/Button.vue') + '?vue&type=style&index=0&lang.css'
       )
 
-      expect(result.code).toBe('.button{display:block}')
+      expect(result.code).toBe('@media all{.button{display:block}}')
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -146,12 +145,12 @@ describe('LocalComposePlugin', () => {
         '.referenced-native { color: red; }'
       ].join('\n'))
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '@reference "./theme.css"; .button { @compose brand; }',
+        '@reference "./theme.css"; .button { @variant media(all){padding:var(--spacing-card);animation:pop 1s;} }',
         path.join(root, 'src/Button.module.css')
       )
 
@@ -161,7 +160,7 @@ describe('LocalComposePlugin', () => {
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-css-slot')
-      expect(addWatchFile).toHaveBeenCalledWith(themePath)
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(themePath))
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -175,10 +174,10 @@ describe('LocalComposePlugin', () => {
         '@theme light { --color-brand: #123456; }',
         '@theme dark { --color-brand: #abcdef; }'
       ].join('\n'))
-      const plugin = LocalComposePlugin({} as any, createContext(root))
+      const plugin = LocalStylesPlugin({} as any, createContext(root))
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '@reference "../app.css"; .button { color: var(--color-brand); }',
+        '.button { color: var(--color-brand); }',
         path.join(root, 'src', name)
       )
 
@@ -196,7 +195,7 @@ describe('LocalComposePlugin', () => {
     const root = createFixture()
     try {
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
       const modulePath = path.join(root, 'src/Button.module.css')
       const addWatchFile = vi.fn()
 
@@ -204,12 +203,12 @@ describe('LocalComposePlugin', () => {
         { addWatchFile },
         '.button { @compose bg-missing-token; }',
         modulePath
-      )).rejects.toThrow('Invalid @compose utility')
-      expect(addWatchFile).toHaveBeenCalledWith(modulePath)
+      )).rejects.toThrow('@compose has been removed')
+      expect(addWatchFile).toHaveBeenCalledWith(normalizePath(modulePath))
 
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '.button { @compose block; }',
+        ".button { @variant media(all){display:block;} }",
         modulePath
       )
 
@@ -223,7 +222,7 @@ describe('LocalComposePlugin', () => {
     const root = createFixture()
     try {
       const context = createContext(root)
-      const plugin = LocalComposePlugin({} as any, context)
+      const plugin = LocalStylesPlugin({} as any, context)
       const modulePath = path.join(root, 'src/Button.module.css')
       const module = { id: modulePath }
       const invalidateModule = vi.fn()
@@ -232,25 +231,49 @@ describe('LocalComposePlugin', () => {
 
       await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '.button { @compose brand; }',
+        '.button { @variant media(all){background-color:var(--color-brand);} }',
         modulePath
       )
-      const result = await (plugin as any).handleHotUpdate({
-        file: path.join(root, 'app.css'),
-        server: {
-          moduleGraph: {
-            getModuleById: vi.fn((id) => id === modulePath ? module : undefined),
-            invalidateModule
-          },
-          reloadModule,
-          ws: { send }
+      const result = await (plugin as any).hotUpdate.call({
+        environment: {
+          moduleGraph: { getModuleById: vi.fn((id) => id === modulePath ? module : undefined), invalidateModule },
+          reloadModule, hot: { send }
         }
-      })
+      }, { file: path.join(root, 'app.css'), modules: [] })
 
       expect(invalidateModule).toHaveBeenCalledWith(module)
-      expect(reloadModule).toHaveBeenCalledWith(module)
       expect(send).not.toHaveBeenCalled()
+      expect(result).toEqual([module])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test('reloads the page without requesting a deleted project entry', async () => {
+    const root = createFixture()
+    try {
+      const context = createContext(root)
+      const plugin = LocalStylesPlugin({} as any, context)
+      const entry = path.join(root, 'app.css')
+      const modulePath = path.join(root, 'src/Button.svelte') + '?svelte&type=style&lang.css'
+      const localModule = { id: modulePath, file: modulePath }
+      const deletedModule = { id: entry, file: entry }
+      const send = vi.fn()
+      await (plugin as any).transform.call(
+        { addWatchFile: vi.fn() },
+        '.button { @variant media(all){background-color:var(--color-brand);} }',
+        modulePath
+      )
+      rmSync(entry)
+      const result = await (plugin as any).hotUpdate.call({
+        environment: {
+          name: 'client', hot: { send },
+          moduleGraph: { getModuleById: vi.fn((id) => id === modulePath ? localModule : undefined), invalidateModule: vi.fn() }
+        }
+      }, { type: 'delete', file: entry, modules: [deletedModule] })
+
       expect(result).toEqual([])
+      expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

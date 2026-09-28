@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 
 const require = createRequire(import.meta.url)
@@ -16,7 +16,7 @@ test.each(['default', 'glob', 'explicit'])('BH-0018 Node CLI discovers .mjs with
     writeFileSync(join(cwd, 'entry.mjs'), 'export const classes = "block"')
     writeFileSync(join(cwd, 'ignored.json'), '{"class":"hidden"}')
     const paths = mode === 'default' ? [] : [mode === 'glob' ? '**/*.mjs' : 'entry.mjs']
-    const output = execFileSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--no-export', ...paths], {
+    const output = execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--no-export', ...paths], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
     expect(output).toContain('.block{display:block}')

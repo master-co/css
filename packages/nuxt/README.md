@@ -76,9 +76,9 @@ Import the default stylesheet from a global Vue style block:
 </style>
 ```
 
-The default `progressive` mode integrates Nuxt SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configuration.
+The default `static` mode generates CSS from source files without injecting the browser runtime. Choose `progressive` to combine Nitro server rendering with browser runtime hydration across Nuxt SSR, SSG, ISR, and Hybrid rendering strategies.
 
-In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. `runtime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
+In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
 
 ## Options
 
@@ -99,8 +99,8 @@ Default options:
 | Option | Default | Description |
 | --- | --- | --- |
 | `enabled` | `true` | Enables the module. |
-| `mode` | `'progressive'` | Nuxt defaults to progressive rendering. |
+| `mode` | `'static'` | Selects static, pre-render, runtime, or progressive rendering. |
 | `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
-| `runtime` | `{ enabled: true, avoidFOUC: true }` | Controls runtime injection and FOUC protection. |
+| `runtime` | `{ enabled: false }` | Enabled by runtime/progressive modes; optional FOUC protection. Explicit enabled values must agree with the mode. |
 
 See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs) for a full project setup.

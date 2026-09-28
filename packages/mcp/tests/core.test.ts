@@ -205,13 +205,16 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_render_css',
         arguments: {
           context: 'preset',
-          classList: 'block field-sizing:content display:16px'
+          classList: 'block field-sizing:content display:16px display:banana'
         }
       }))
       expect(renderedNative.invalid).toEqual([])
       expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:banana')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'unknown' })
       expect(renderedNative.css.text).toContain('.block{display:block}')
       expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
+      expect(renderedNative.css.text).toContain('.display\\:16px{display:16px}')
+      expect(renderedNative.css.text).toContain('.display\\:banana{display:banana}')
       expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
 
       const suggestions = parseToolJSON(await connection.client.callTool({
@@ -298,7 +301,7 @@ describe('@master/css-mcp', () => {
           entryPath: 'master.css'
         }
       }))
-      expect(directives.version).toBe(1)
+      expect(directives.version).toBe(2)
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
@@ -396,7 +399,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_css_compare',
         arguments: {
           context: 'preset',
-          beforeClassList: 'block display:16px',
+          beforeClassList: 'block display:16px display:banana',
           afterClassList: 'block field-sizing:content'
         }
       }))
@@ -407,6 +410,8 @@ describe('@master/css-mcp', () => {
         removed: []
       })
       expect(nativeCompare.css.after.text).toContain('field-sizing:content')
+      expect(nativeCompare.css.before.text).toContain('.display\\:16px{display:16px}')
+      expect(nativeCompare.css.before.text).toContain('.display\\:banana{display:banana}')
     } finally {
       await connection.close()
     }
@@ -415,7 +420,7 @@ describe('@master/css-mcp', () => {
   it('previews directive formatting without writing until the preview is applied', async () => {
     const root = createTempDir('master-css-mcp-format-')
     const file = join(root, 'style.css')
-    writeFileSync(file, '@compose block   inline;')
+    writeFileSync(file, '@safelist "block   inline";')
 
     const connection = await connect(root)
     try {
@@ -423,12 +428,12 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_preview_directive_format',
         arguments: {
           context: 'preset',
-          content: '@compose block   inline;',
+          content: '@safelist "block   inline";',
           filePath: 'style.css'
         }
       }))
       expect(contentFormat.mode).toBe('content')
-      expect(contentFormat.formatted).toBe('@compose block inline;')
+      expect(contentFormat.formatted).toBe('@safelist "block inline";')
 
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
@@ -440,7 +445,7 @@ describe('@master/css-mcp', () => {
       expect(preview.mode).toBe('files')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe('@compose block   inline;')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "block   inline";')
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -449,7 +454,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).toBe('@compose block inline;')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "block inline";')
     } finally {
       await connection.close()
     }
@@ -854,7 +859,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
       expect(report.files[0].discovered.invalid).toContain('p-missing')
@@ -885,7 +890,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
       expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))

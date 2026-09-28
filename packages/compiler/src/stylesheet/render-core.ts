@@ -5,12 +5,6 @@ import type {
 } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSEngineSnapshot } from '@master/css'
 
-interface MasterCSSNativeDeclarationCandidate {
-  readonly className: string
-  readonly property: string
-  readonly value: string
-}
-
 interface MasterCSSRenderBindingResult {
   readonly classes: string[]
   readonly snapshot: MasterCSSEngineSnapshot
@@ -33,7 +27,6 @@ export interface RenderCompiledManifestCSSResult {
 }
 
 export interface StylesheetRenderSession {
-  nativeDeclarationCandidates(classNames: string[]): readonly MasterCSSNativeDeclarationCandidate[]
   ensureClasses(classNames: string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): Required<MasterCSSEmittedGlobals>

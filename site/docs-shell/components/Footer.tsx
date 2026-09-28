@@ -67,13 +67,13 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
         <label className='rel hidden@media((width<64rem))'>
           <span className='pr-xs capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
           <ThemeSelect />
-          <IconChevronDown className='inline-block size:1em vertical-align:middle' />
+          <IconChevronDown className='inline-block width:1em height:1em vertical-align:middle' />
         </label>
         <div className='bl:1px|solid|var(--color-line-muted) hidden@media((width<64rem))'></div>
         <label className='rel hidden@media((width<64rem))'>
           <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />
-          <IconChevronDown className='inline-block size:1em vertical-align:middle' />
+          <IconChevronDown className='inline-block width:1em height:1em vertical-align:middle' />
         </label>
       </div>
     </div>

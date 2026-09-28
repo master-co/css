@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { createServer, type PluginOption, type WatchOptions } from 'vite'
+import { normalizePath, createServer, type PluginOption, type WatchOptions } from 'vite'
 import { setTimeout as delay } from 'node:timers/promises'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
@@ -9,12 +9,12 @@ import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(resource = false) {
-  const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
+  const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, resource ? 'one/two/pixel.svg' : 'one/two/tokens.css')
-  const tokens = `@utilities{paint{padding:7rem;${resource ? 'background-image:url("./one/two/pixel.svg?v=1#icon")' : ''}}}`
+  const tokens = `@theme{--paint-padding:7rem;${resource ? '--paint-background-image:url("./one/two/pixel.svg?v=1#icon")' : ''}}`
   if (resource) writeFileSync(join(external, 'tokens.css'), tokens)
-  writeFileSync(join(root, 'style.css'), `${resource ? '@master entry;@preserve native;' : ''}@reference "../external/${resource ? 'tokens.css' : 'one/two/tokens.css'}";.target{@compose paint;}`)
+  writeFileSync(join(root, 'style.css'), `${resource ? '@master entry;@preserve native;' : ''}@reference "../external/${resource ? 'tokens.css' : 'one/two/tokens.css'}";.target{@variant media(all){padding:var(--paint-padding);background-image:var(--paint-background-image);}}`)
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')
   writeFileSync(join(root, 'index.html'), '<script type="module" src="./entry.js"></script>')
   return { parent, root, dependency, restore() { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, resource ? '<svg xmlns="http://www.w3.org/2000/svg"/>' : tokens) } }
@@ -95,7 +95,7 @@ test('BH-0004 unchanged failures are not retried continuously and corrected cont
     await delay(350);expect(result.transform).not.toHaveBeenCalled()
     mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '@utilities{paint{@compose definitely-missing-class;}}')
     await vi.waitFor(() => expect(result!.transform).toHaveBeenCalled(), { timeout: watchDeadline })
-    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('definitely-missing-class'), { timeout: watchDeadline })
+    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('@compose has been removed'), { timeout: watchDeadline })
     await result.server.environments.client.waitForRequestsIdle()
     const attempts = result.transform.mock.calls.length
     await delay(350);expect(result.transform).toHaveBeenCalledTimes(attempts);expect(notified(result.send.mock.calls)).toBe(false)
@@ -109,8 +109,9 @@ test('BH-0004 a successful edit drops obsolete failed dependency reconciliation'
   const f = fixture();let result: Awaited<ReturnType<typeof start>> | undefined
   try {
     result = await start(f)
-    // Isolate reconciliation: a delayed native event for this source edit must not be attributed to restoring the obsolete external dependency.
-    await result.server.watcher.unwatch(f.root)
+    // Isolate reconciliation from native events, including file watches that
+    // were registered separately from the root directory on Windows.
+    await result.server.watcher.close()
     const events: string[] = []
     result.server.watcher.on('all', (event, file) => { if (file.startsWith(f.parent)) events.push(event) })
     writeFileSync(join(f.root, 'style.css'), '.target{padding:9rem}')
@@ -139,14 +140,14 @@ test('BH-0004 two failed owners recover independently in one environment', async
   const f = fixture();let result: Awaited<ReturnType<typeof start>> | undefined
   const second = join(f.parent, 'external/other/tokens.css')
   try {
-    writeFileSync(join(f.root, 'second.css'), '@reference "../external/other/tokens.css";.second{@compose paint;}')
+    writeFileSync(join(f.root, 'second.css'), "@reference \"../external/other/tokens.css\";.second{@variant media(all){padding:9rem;}}")
     result = await start(f)
     const initial = await fetch(new URL('second.css', result.origin));expect(initial.status).toBe(500);await initial.text()
     result.transform.mockClear();f.restore()
     await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     expect(result.transform.mock.calls.some(([url]) => url.includes('second.css'))).toBe(false)
     const first = await fetch(new URL('style.css', result.origin));expect(first.status).toBe(200);expect(await first.text()).toContain('7rem')
-    result.send.mockClear();mkdirSync(dirname(second), { recursive: true });writeFileSync(second, '@utilities{paint{padding:9rem}}')
+    result.send.mockClear();mkdirSync(dirname(second), { recursive: true });writeFileSync(second, "@theme{--paint-padding:9rem}")
     await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const recovered = await fetch(new URL('second.css', result.origin));expect(recovered.status).toBe(200);expect(await recovered.text()).toContain('9rem')
   } finally { await stop(f, result) }
@@ -160,7 +161,7 @@ test.each(['client', 'server'])('BH-0004 closing %s during a reconciliation supp
   const gate = new Promise<void>(resolve => { release = resolve })
   try {
     result = await start(f, [{ name: 'hold-reconciliation', enforce: 'pre', async transform(_code, id) {
-      if (enabled && id === join(f.root, 'style.css')) { entered = true;await gate }
+      if (enabled && id === normalizePath(join(f.root, 'style.css'))) { entered = true;await gate }
     } }, ...masterCSS({ mode: 'static', runtime: false })])
     enabled = true;f.restore()
     await vi.waitFor(() => expect(entered).toBe(true), { timeout: watchDeadline })

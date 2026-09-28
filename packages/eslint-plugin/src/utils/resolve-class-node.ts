@@ -139,7 +139,9 @@ export default function resolveClassNode(
     analysisText,
     sourceRange,
     encodeReplacement: javascript ? text => {
-      const replacement = encodeJavaScriptLiteral(text, unescape || '"')
+      // The parser normalizes template line endings in its cooked value.
+      const newline = raw.match(/\r\n|\r|\n/)?.[0] ?? '\n'
+      const replacement = encodeJavaScriptLiteral(text, unescape || '"', newline)
       return html?.encode(replacement) ?? replacement
     } : undefined,
     // Unknown custom parser transformations must not receive guessed fix ranges.

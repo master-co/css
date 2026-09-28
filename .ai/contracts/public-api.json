@@ -156,7 +156,6 @@
           "MasterCSSLintBindingSession",
           "MasterCSSLintCanonicalClassGroupSuggestions",
           "MasterCSSLintCanonicalClassSuggestions",
-          "MasterCSSLintCanonicalComposeDirective",
           "MasterCSSLintRawValueCandidates",
           "MasterCSSMatchStatus",
           "MasterCSSNativeBindingLoadOptions",
@@ -194,7 +193,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "8e819e88c71a3fd1"
+      "surface": "d77d0faee6b98cb6"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -878,7 +877,6 @@
           "serializeMasterCSSHydrationManifest"
         ],
         "./css-directives": [
-          "CSSCompositionTrace",
           "CSSDirectiveAnimationDefinitions",
           "CSSDirectiveAnimationOptions",
           "CSSDirectiveConditionPathEntry",
@@ -893,7 +891,6 @@
           "CSSDirectiveSourceLocation",
           "CSSDirectiveSourceRange",
           "CSSDirectiveSourceReference",
-          "CSSDirectiveStyleComposeDefinition",
           "CSSDirectiveStyleDefinition",
           "CSSDirectiveStyleNativeDefinition",
           "CSSDirectiveUtilityDefinition",
@@ -960,7 +957,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "ac5522612740ed9c"
+      "surface": "31bc2d6d9c5f4277"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1110,8 +1107,6 @@
         ],
         "./lint": [
           "CanonicalClassNameOptions",
-          "CanonicalComposeDirectiveResult",
-          "CanonicalComposeDirectiveSuggestion",
           "MasterCSSCanonicalClassesReportOptions",
           "MasterCSSClassListEditOptions",
           "MasterCSSClassListLintReportOptions",
@@ -1227,7 +1222,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "0024cc5ce0fdb6ea"
+      "surface": "d425486d425e92f7"
     },
     "@master/css-vite": {
       "directory": "vite",

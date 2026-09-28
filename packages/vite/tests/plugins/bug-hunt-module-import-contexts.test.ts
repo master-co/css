@@ -11,7 +11,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared i
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'shared'))
-    const child = (padding: string) => `@import "./grand.css";.child{@compose p:${padding};background:url("./pixel.svg?v=1#part");animation:spin 1s}:global(.global){color:blue}@keyframes spin{to{opacity:.5}}`
+    const child = (padding: string) => `@import "./grand.css";.child{@variant media(all){padding:${padding};}background:url("./pixel.svg?v=1#part");animation:spin 1s}:global(.global){color:blue}@keyframes spin{to{opacity:.5}}`
     writeFileSync(join(root, 'shared/child.css'), child('2rem'))
     writeFileSync(join(root, 'shared/grand.css'), '.grand{border-left:1px solid red}')
     writeFileSync(join(root, 'shared/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')

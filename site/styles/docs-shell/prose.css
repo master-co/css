@@ -1,5 +1,3 @@
-@reference "../../app/globals.css";
-
 @layer defaults {
   .prose {
     h2:has(+:is(h3, section)) {

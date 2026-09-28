@@ -127,7 +127,7 @@ function createDependencyWatchPlan(dependencies: Set<string>) {
     return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative))
   }
   const directories = [...dependencies].filter(file => fs.statSync(file, { throwIfNoEntry: false })?.isDirectory())
-  const matches = (file: string) => dependencies.has(file) || directories.some(directory => contains(directory, file))
+  const matches = (file: string) => dependencies.has(path.resolve(file)) || directories.some(directory => contains(directory, file))
   const roots = [...new Set([...dependencies].map(file => {
     let directory = path.dirname(file)
     while (!fs.statSync(directory, { throwIfNoEntry: false })?.isDirectory()) {

@@ -49,6 +49,7 @@ function immutableProjectResult(
   for (const diagnostic of diagnostics) onDiagnostic?.(diagnostic)
   return Object.freeze({
     manifest: Object.freeze(result.manifest),
+    nativeClassNames: Object.freeze([...result.nativeClassNames]),
     entries: Object.freeze([...result.entries]),
     dependencies: Object.freeze([...result.dependencies]),
     diagnostics

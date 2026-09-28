@@ -12,7 +12,7 @@ const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sa
 
 for (const managed of [false, true]) {
   test.each(['edge', 'ssr', 'client'])('BH-0004 remaining environments load fresh styles after closing %s (managed=' + managed + ')', async (closing) => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-custom-environments-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-custom-environments-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     const dispose = vi.spyOn(MasterCSSScanner.prototype, 'dispose')
     let initialized = false

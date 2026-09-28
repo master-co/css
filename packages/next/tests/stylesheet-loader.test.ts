@@ -1,7 +1,8 @@
 import { readStylesheetText } from './helpers/stylesheet-output'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import masterCSSStylesheetLoader from '../src/stylesheet-loader'
 
@@ -30,10 +31,59 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
     }
 
     masterCSSStylesheetLoader.call(context, source)
-  }).then((content) => ({ content: readStylesheetText(resourcePath, content), dependencies }))
+  }).then((content) => ({ content: readStylesheetText(resourcePath, content), code: content, dependencies }))
 }
 
 describe('Next style CSS loader', () => {
+  it('passes published static sidecars through without rebuilding the project manifest', async () => {
+    const root = createFixture()
+    // An immutable output must remain loadable even while the author is editing
+    // an invalid entry. The source entry loader owns that error and its watches.
+    writeFileSync(join(root, 'app/globals.css'), '@master entry; @utilities { broken:<number> { width:--value(); } }')
+    const file = join(root, '.master', `next-style-${'a'.repeat(64)}-${'b'.repeat(64)}.css`)
+    const source = '@layer utilities{.p\\:11px{padding:11px}}'
+    const result = await runStylesheetLoader(root, file, source)
+    expect(result.code).toBe(source)
+    expect(result.dependencies).toEqual([])
+    await expect(runStylesheetLoader(root, join(root, 'app/authored.css'), '.card{color:red}')).rejects.toThrow()
+  })
+
+  it('relocates global token URLs through the resource delivery graph', async () => {
+    const root = createFixture()
+    const image = join(root, 'app/pattern.svg')
+    const tokens = join(root, 'app/tokens.css')
+    writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    writeFileSync(tokens, '@theme { --image-probe: url("./pattern.svg"); }')
+    const file = join(root, 'app/Pattern.module.css')
+    const result = await runStylesheetLoader(root, file, '@reference "./tokens.css"; .card { background-image: var(--image-probe); }')
+    const entry = fileURLToPath(new URL(result.code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
+    const globalCSS = readFileSync(entry, 'utf8')
+    const href = globalCSS.match(/url\(["']?([^"')]+)["']?\)/)![1]
+    expect(existsSync(fileURLToPath(new URL(href, pathToFileURL(entry))))).toBe(true)
+    expect(result.dependencies).toContain(image)
+    expect(result.dependencies).toContain(tokens)
+    expect(result.code).toContain('var(--image-probe)')
+    expect(globalCSS).toContain('sourceMappingURL=')
+  })
+  it('shares global resources across Modules and republishes referenced changes', async () => {
+    const root = createFixture()
+    const tokens = join(root, 'app/tokens.css')
+    const source = '@reference "./tokens.css"; .card { color: var(--color-shared); }'
+    writeFileSync(tokens, '@theme { --color-shared: red; }')
+    const a = join(root, 'app/A.module.css')
+    const b = join(root, 'app/B.module.css')
+    const first = await runStylesheetLoader(root, a, source)
+    const second = await runStylesheetLoader(root, b, source)
+    const asset = (file: string, code: string) => fileURLToPath(new URL(code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
+    expect(asset(a, first.code)).toBe(asset(b, second.code))
+    expect(second.dependencies).toContain(tokens)
+    expect(second.dependencies).toContain(asset(b, second.code))
+    writeFileSync(tokens, '@theme { --color-shared: blue; }')
+    const changed = await runStylesheetLoader(root, a, source)
+    expect(asset(a, changed.code)).not.toBe(asset(a, first.code))
+    expect(changed.content).toContain('--color-shared:blue')
+    expect(changed.code).not.toContain('--color-shared:')
+  })
   it('derives native CSS from @master/css instead of hardcoding a package subpath', async () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
@@ -106,7 +156,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       join(root, 'app/Button.module.css'),
-      '.button { @compose inline-flex brand; color: white; }'
+      ".button { @variant media(all){background-color:#123456;display:inline-flex; color: white;} }"
     )
 
     expect(result.content).toContain('.button{')
@@ -127,7 +177,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       modulePath,
-      '@reference "./tokens.css"; .button { @compose brand; }'
+      "@reference \"./tokens.css\"; .button { @variant media(all){color:#123456;} }"
     )
 
     expect(result.content).toContain('.button{color:#123456}')
@@ -167,7 +217,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       join(root, 'app', name),
-      '@reference "./globals.css"; .button { color: var(--color-brand); }'
+      '.button { color: var(--color-brand); }'
     )
 
     expect(result.content).toMatch(/color:\s*var\(--color-brand\)/)
@@ -175,9 +225,10 @@ describe('Next style CSS loader', () => {
     expect(result.content).toContain('--color-brand:#abcdef')
     expect(result.content).not.toContain('@reference')
     if (name.endsWith('.module.css')) {
-      expect(result.content).not.toMatch(/:root\s*\{--color-brand/)
-      expect(result.content).not.toMatch(/:host\s*\{--color-brand/)
-      expect(result.content).toMatch(/\.button\s*\{--color-brand:#123456\}/)
+      expect(result.code).toMatch(/^@import /)
+      expect(result.content).toMatch(/:root\s*\{--color-brand/)
+      expect(result.code).not.toContain('--color-brand:#')
+      expect(result.content).not.toMatch(/\.button\s*\{--color-brand:/)
     }
   })
 
@@ -190,7 +241,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
+      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
@@ -201,7 +252,7 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toContain(globalsPath)
   })
 
-  it('dedupes referenced default theme variables already emitted by global CSS for page-level CSS', async () => {
+  it('retains local resources when a discovered global entry is not guaranteed loaded', async () => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
     const pagePath = join(root, 'app/page.css')
@@ -213,11 +264,11 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
+      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
-    expect(result.content).not.toContain('--spacing-5xl:')
+    expect(result.content).toContain('--spacing-5xl:')
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@master/css')
     expect(result.dependencies).toContain(pagePath)
@@ -235,10 +286,10 @@ describe('Next style CSS loader', () => {
       error = caught as Error & { dependencies?: string[] }
     }
     expect(error).toBeInstanceOf(Error)
-    expect(error?.message).toContain('Invalid @compose utility')
+    expect(error?.message).toContain('@compose has been removed')
     expect(error?.dependencies).toContain(modulePath)
 
-    const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
+    const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
 
     expect(result.content).toContain('.button{display:block}')
     expect(result.dependencies).toContain(modulePath)

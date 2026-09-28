@@ -260,7 +260,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, '@layer utilities { .card { display: grid; } }')
+      writeFileSync(themePath, '@layer components { .card { display: grid; } }')
       writeFileSync(entryPath, [
         '@master entry;',
         '@import "./theme.css";',
@@ -360,19 +360,18 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(entryPath, [
         '@master entry;',
-        '@utilities {',
-        '  brand { background-color: #123456; }',
-        '}'
+        '@theme { --color-brand: #123456; }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '.button { @compose inline-flex brand; color: white; }', {
+      const result = await transformStyleSource(modulePath, '.button { @variant media(all){display:inline-flex;background-color:var(--color-brand);color:white;} }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toContain('.button{')
       expect(result.code).toContain('display:inline-flex')
-      expect(result.code).toContain('background-color:#123456')
+      expect(result.code).toContain('background-color:var(--color-brand)')
+      expect(result.globalStylesheet?.css).toContain('--color-brand:#123456')
       expect(result.code).toContain('color:#fff')
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-utilities.css')
@@ -383,7 +382,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('dedupes local theme variables already emitted by global style entries', async () => {
+  test('retains local resources separately when discovered entries are not guaranteed loaded', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-dedupe-'))
     const entryPath = path.join(root, 'app.css')
     const modulePath = path.join(root, 'Home.module.css')
@@ -393,13 +392,14 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '.home { @compose py-5xl; }', {
+      const result = await transformStyleSource(modulePath, ".home { @variant media(all){padding-block:var(--spacing-5xl);} }", {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
       expect(result.code).not.toContain('--spacing-5xl:')
+      expect(result.globalStylesheet?.css).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-utilities.css')
       expect(result.dependencies).toContain(entryPath)
       expect(result.dependencies).toContain(modulePath)
@@ -420,10 +420,10 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }
 
       expect(error).toBeInstanceOf(Error)
-      expect(error?.message).toContain('Invalid @compose utility')
+      expect(error?.message).toContain('@compose has been removed')
       expect(error?.dependencies).toContain(modulePath)
 
-      const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
+      const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
       expect(result.content).toContain('.button{display:block}')
       expect(result.dependencies).toContain(modulePath)
     } finally {
@@ -453,14 +453,14 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.referenced-native { color: red; }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose brand; }', {
+      const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @variant media(all){padding:var(--spacing-card);animation:pop 1s;} }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
-      expect(result.code).toContain('--spacing-card:2rem')
-      expect(result.code).toContain('@keyframes pop')
+      expect(result.globalStylesheet?.css).toContain('--spacing-card:2rem')
+      expect(result.globalStylesheet?.css).toContain('@keyframes pop')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-utilities.css')
@@ -481,14 +481,15 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '@theme light { --color-brand: #123456; }',
         '@theme dark { --color-brand: #abcdef; }'
       ].join('\n'))
-      const result = await transformStyleSource(localPath, '@reference "./app.css"; .button { color: var(--color-brand); }', {
+      const result = await transformStyleSource(localPath, '.button { color: var(--color-brand); }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
-      expect(result.code).toContain('--color-brand:#123456')
-      expect(result.code).toContain('--color-brand:#abcdef')
+      const globals = result.globalStylesheet?.css ?? result.code
+      expect(globals).toContain('--color-brand:#123456')
+      expect(globals).toContain('--color-brand:#abcdef')
       expect(result.code).not.toContain('@reference')
       expect(result.dependencies).toContain(entryPath)
     } finally {
@@ -617,13 +618,13 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
       writeFileSync(entryPath, [
         '@master entry;',
         '@utilities {',
-        '  card { @compose block; }',
+        "  card { @variant media(all){display:block;} }",
         '}'
       ].join('\n'))
 
@@ -738,12 +739,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
       writeFileSync(manifestPath, [
         '@utilities {',
-        '  card { @compose block; }',
+        "  card { display:block; }",
         '}'
       ].join('\n'))
 

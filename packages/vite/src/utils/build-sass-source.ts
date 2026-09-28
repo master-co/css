@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { isAbsolute, join } from 'node:path'
 import { createHash } from 'node:crypto'
 import { pathToFileURL } from 'node:url'
 import { preprocessCSS, type ResolvedConfig } from 'vite'
 import { createModuleSourceProjection, moduleSourceOwner, type ModuleSourceDiagnostic } from './module-sources'
 import { createSassSourceMarkers } from './sass-source-markers'
+import { normalizeFilePath } from './path'
 import type { MasterCSSVitePluginContext } from '../core'
 
 const CSS_SUFFIX = '.master-css-sass.css'
@@ -42,6 +43,7 @@ export function clearBuildSassSources(context: MasterCSSVitePluginContext) {
 
 /** Invalidate every prepared owner of an edited source or composed dependency. */
 export function invalidatePreparedSassSources(context: MasterCSSVitePluginContext, file: string) {
+  file = normalizeFilePath(file)
   const cache = caches.get(context)
   const affected: string[] = []
   for (const [owner, entry] of cache ?? []) {
@@ -54,7 +56,7 @@ export function invalidatePreparedSassSources(context: MasterCSSVitePluginContex
 }
 
 export function getPreparedSassSource(context: MasterCSSVitePluginContext, id: string) {
-  const file = getSassSourceFile(id) ?? id.replace(/[?#].*$/, '')
+  const file = normalizeFilePath(getSassSourceFile(id) ?? id.replace(/[?#].*$/, ''))
   const cached = caches.get(context)?.get(file)
   return cached?.prepared ? { file, ...cached, prepared: cached.prepared } : undefined
 }
@@ -80,6 +82,7 @@ export async function getPreparedSassSourceMap(context: MasterCSSVitePluginConte
 /** Use Vite's preprocessors/Modules and URL rebasing, leaving imports for Rust. */
 export function prepareBuildSassSource(context: MasterCSSVitePluginContext, file: string, onDependency?: (file: string) => void) {
   if (!context.config) throw new Error('Sass preparation requires resolved Vite configuration.')
+  file = normalizeFilePath(file)
   let cache = caches.get(context)
   if (!cache) { cache = new Map(); caches.set(context, cache) }
   let cached = cache.get(file)
@@ -108,7 +111,7 @@ export function prepareBuildSassSource(context: MasterCSSVitePluginContext, file
     const discovered = new Set<string>()
     let importDirectory: Promise<string> | undefined
     const importedSources = new Map<string, Promise<string>>()
-    const originalFile = (id: string) => projection?.sourceFiles.get(id) ?? id
+    const originalFile = (id: string) => projection?.sourceFiles.get(normalizeFilePath(id)) ?? normalizeFilePath(id)
     const preprocessorConfig: ResolvedConfig = {
       ...config,
       createResolver(options) {
@@ -117,7 +120,7 @@ export function prepareBuildSassSource(context: MasterCSSVitePluginContext, file
         return async (...args) => {
           if (args[1]) args[1] = originalFile(args[1])
           const resolved = await resolve(...args)
-          if (resolved && isAbsolute(resolved)) { dependencies.add(resolved); discovered.add(resolved) }
+          if (resolved && isAbsolute(resolved)) { dependencies.add(originalFile(resolved)); discovered.add(originalFile(resolved)) }
           if (resolved && projection && cssImport && /\.(?:scss|sass)$/.test(resolved)) {
             let prepared = importedSources.get(resolved)
             if (!prepared) {
@@ -148,12 +151,13 @@ export function prepareBuildSassSource(context: MasterCSSVitePluginContext, file
         css: { ...preprocessorConfig.css, modules: false, postcss: { plugins: [preserveImports] } }
       })
       for (const dependency of result.deps ?? []) { discovered.add(originalFile(dependency)); dependencies.add(originalFile(dependency)) }
-      importDirectory ??= mkdir(config.cacheDir, { recursive: true }).then(() => mkdtemp(join(config.cacheDir, 'master-css-sass-import-')))
-      const path = join(await importDirectory, `${createHash('sha256').update(id).digest('hex')}.css`)
+      importDirectory ??= mkdir(config.cacheDir, { recursive: true }).then(() => mkdtemp(join(config.cacheDir, 'master-css-sass-import-'))).then(directory => realpath(directory))
+      const path = normalizeFilePath(join(await importDirectory, `${createHash('sha256').update(id).digest('hex')}.css`))
       projection!.sourceFiles.set(path, id)
       const raw = typeof result.map === 'string' ? JSON.parse(result.map) as { sources?: string[], sourceRoot?: string } : result.map
-      const base = new URL(raw && 'sourceRoot' in raw && raw.sourceRoot ? raw.sourceRoot.replace(/\/?$/, '/') : './', pathToFileURL(id))
-      const map = raw && 'sources' in raw && raw.sources ? JSON.stringify({ ...raw, sourceRoot: '', sources: raw.sources.map(source => source ? new URL(source, base).href : source) }) : undefined
+      const root = raw && 'sourceRoot' in raw && raw.sourceRoot ? raw.sourceRoot.replace(/\/?$/, '/') : './'
+      const base = isAbsolute(root) ? pathToFileURL(root) : new URL(root, pathToFileURL(id))
+      const map = raw && 'sources' in raw && raw.sources ? JSON.stringify({ ...raw, sourceRoot: '', sources: raw.sources.map(source => source ? (isAbsolute(source) ? pathToFileURL(source) : new URL(source, base)).href : source) }) : undefined
       const annotation = map ? `\n/*# sourceMappingURL=data:application/json;base64,${Buffer.from(map).toString('base64')} */` : ''
       await writeFile(path, result.code + annotation)
       return path

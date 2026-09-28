@@ -1,9 +1,9 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { once } from 'node:events'
-import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, isAbsolute, join, relative, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { chromium, type Browser } from '@playwright/test'
 import { describe, expect, it, onTestFinished } from 'vitest'
@@ -11,6 +11,7 @@ import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const nextBin = fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url))
+const traceLoaderPath = fileURLToPath(new URL('./helpers/static-hmr-trace-loader.mjs', import.meta.url))
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -33,13 +34,13 @@ function getFreePort() {
   })
 }
 
-function createGlobalsCSS(compose: string) {
+function createGlobalsCSS(display: string) {
   return [
     '@import "@master/css";',
     '',
     '@layer components {',
     '    .probe {',
-    `        @compose ${compose};`,
+    `        display: ${display === 'hidden' ? 'none' : display};`,
     '        width: 40px;',
     '        height: 40px;',
     '    }',
@@ -57,11 +58,31 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
     private: true,
     type: 'module'
   }, null, 2))
-  const nextIntegrationURL = pathToFileURL(process.env.MASTER_NEXT_HMR_INTEGRATION ?? join(packageDir, 'dist/index.js')).href
+  const nextIntegrationPath = process.env.MASTER_NEXT_HMR_INTEGRATION ?? join(packageDir, 'dist/index.js')
+  // Webpack tracks config imports as files and cannot cache a file:// specifier.
+  const relativeIntegrationPath = relative(fixtureDir, nextIntegrationPath).split(sep).join('/')
+  const nextIntegrationSpecifier = isAbsolute(relativeIntegrationPath)
+    ? pathToFileURL(nextIntegrationPath).href
+    : relativeIntegrationPath.startsWith('.') ? relativeIntegrationPath : `./${relativeIntegrationPath}`
   writeFileSync(join(fixtureDir, 'next.config.js'), [
-    `import { withMasterCSS } from ${JSON.stringify(nextIntegrationURL)}`,
+    `import { withMasterCSS } from ${JSON.stringify(nextIntegrationSpecifier)}`,
     '',
-    `export default withMasterCSS({ reactStrictMode: true })`,
+    `const configured = withMasterCSS(${JSON.stringify({ reactStrictMode: true, ...(process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT ? { turbopack: { root: process.env.MASTER_NEXT_HMR_TURBOPACK_ROOT } } : {}) })})`,
+    `let result = configured`,
+    `if (process.env.MASTER_NEXT_HMR_TRACE_REPORT) {`,
+    `  result = Promise.resolve(configured).then(config => {`,
+    `  for (const rule of config.turbopack?.rules?.['*'] ?? []) {`,
+    `    for (const entry of rule.loaders ?? []) {`,
+    `      const kind = /(?:static-css-loader|static-loader|stylesheet-loader)\\.js$/.exec(entry.loader)?.[0]`,
+    `      if (!kind) continue`,
+    `      entry.options = { ...entry.options, __masterOriginalLoader: entry.loader, __masterTraceKind: kind }`,
+    `      entry.loader = ${JSON.stringify(traceLoaderPath)}`,
+    `    }`,
+    `  }`,
+    `  return config`,
+    `  })`,
+    `}`,
+    `export default result`,
     ''
   ].join('\n'))
   writeFileSync(join(fixtureDir, 'app/layout.jsx'), [
@@ -126,6 +147,7 @@ function startNextDev(fixtureDir: string, port: number, bundler: 'turbo' | 'webp
       NODE_ENV: 'development',
       ...(pipelineReport ? {
         MASTER_NEXT_HMR_PIPELINE_REPORT: pipelineReport,
+        ...(bundler === 'turbo' ? { MASTER_NEXT_HMR_TRACE_REPORT: join(dirname(pipelineReport), 'loaders.jsonl') } : {}),
         NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${new URL('./helpers/static-hmr-metrics.mjs', import.meta.url).href}`
       } : {})
     },
@@ -155,19 +177,23 @@ async function stopNextDev(child: ChildProcess) {
 
 async function waitForServer(url: string, child: ChildProcess, output: { text: string }) {
   const deadline = Date.now() + 60000
+  const recentProbes: string[] = []
   while (Date.now() < deadline) {
     if (child.exitCode !== null) {
       throw new Error(`Next dev exited early.\n${output.text}`)
     }
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(5000) })
+      recentProbes.push(`HTTP ${response.status}`)
       if (response.status < 500) return
-    } catch {
+    } catch (error) {
+      recentProbes.push(error instanceof Error ? `${error.name}: ${error.message}` : String(error))
       // Server is still starting.
     }
+    if (recentProbes.length > 8) recentProbes.shift()
     await delay(500)
   }
-  throw new Error(`Timed out waiting for Next dev server.\n${output.text}`)
+  throw new Error(`Timed out waiting for Next dev server. Recent probes: ${recentProbes.join('; ')}\n${output.text}`)
 }
 
 async function expectDisplay(browser: Browser, url: string, display: string) {
@@ -183,6 +209,78 @@ async function expectDisplay(browser: Browser, url: string, display: string) {
 }
 
 describe('Next dev HMR', () => {
+  it('updates a direct generated CSS import when sources change or appear (turbo)', async () => {
+    buildPackage()
+    const workspace = join(packageDir, 'e2e/dev-hmr-workspaces')
+    mkdirSync(workspace, { recursive: true })
+    const fixture = mkdtempSync(join(workspace, 'direct-css-'))
+    writeFixture(fixture)
+    writeFileSync(join(fixture, 'app/globals.css'), '')
+    writeFileSync(join(fixture, 'app/layout.jsx'), `import '../.master/next.css'; export default function RootLayout({ children }) { return <html lang="en"><body>{children}</body></html> }`)
+    const port = await getFreePort(), url = `http://127.0.0.1:${port}`
+    const { child, output } = startNextDev(fixture, port, 'turbo')
+    let browser: Browser | undefined
+    try {
+      await waitForServer(url, child, output)
+      browser = await chromium.launch()
+      const page = await browser.newPage()
+      await page.goto(url)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '11px')
+      await page.evaluate(() => { (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER = 'preserve' })
+      writePage(fixture, 77)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '77px')
+      const added = join(fixture, 'app/unimported.jsx')
+      writeFileSync(added, `export const hidden = 'm:37px'`)
+      await page.evaluate(() => {
+        const probe = document.createElement('div')
+        probe.id = 'new-source-probe'
+        probe.className = 'm:37px'
+        document.body.append(probe)
+      })
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '37px')
+      rmSync(added)
+      await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '0px')
+      expect(await page.evaluate(() => (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER)).toBe('preserve')
+    } finally {
+      await browser?.close()
+      await stopNextDev(child)
+      rmSync(fixture, { recursive: true, force: true })
+    }
+  }, 180000)
+
+  it('updates separated Module theme resources while preserving ancestor inheritance (webpack)', async () => {
+    buildPackage()
+    const workspace = join(packageDir, 'e2e/dev-hmr-workspaces')
+    mkdirSync(workspace, { recursive: true })
+    const fixture = mkdtempSync(join(workspace, 'module-globals-'))
+    writeFixture(fixture)
+    const tokens = join(fixture, 'app/tokens.css')
+    writeFileSync(tokens, '@theme { --color-module: red; }')
+    writeFileSync(join(fixture, 'app/Card.module.css'), '@reference "./tokens.css"; .card { color:var(--color-module); }')
+    writeFileSync(join(fixture, 'app/page.jsx'), `import styles from './Card.module.css'; export default function Page(){ return <main className={styles.card}>Theme</main> }`)
+    const port = await getFreePort(), url = `http://127.0.0.1:${port}`
+    const { child, output } = startNextDev(fixture, port, 'webpack')
+    let browser: Browser | undefined
+    try {
+      await waitForServer(url, child, output)
+      browser = await chromium.launch()
+      const page = await browser.newPage()
+      await page.goto(url)
+      await page.waitForFunction(() => getComputedStyle(document.querySelector('main')!).color === 'rgb(255, 0, 0)')
+      await page.evaluate(() => document.body.style.setProperty('--color-module', 'rgb(1, 2, 3)'))
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
+      writeFileSync(tokens, '@theme { --color-module: blue; }')
+      await page.waitForFunction(() => getComputedStyle(document.documentElement).getPropertyValue('--color-module').trim() === 'blue')
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
+      await page.evaluate(() => document.body.style.removeProperty('--color-module'))
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(0, 0, 255)')
+    } finally {
+      await browser?.close()
+      await stopNextDev(child)
+      rmSync(fixture, { recursive: true, force: true })
+    }
+  }, 180000)
+
   it.each(['turbo', 'webpack'] as const)('updates Master CSS without a full reload (%s)', async bundler => {
     buildPackage()
     const workspaceDir = join(packageDir, 'e2e/dev-hmr-workspaces')
@@ -232,13 +330,26 @@ describe('Next dev HMR', () => {
         const singleStarted = Date.now()
         let started = performance.now()
         writePage(fixtureDir, padding)
-        await page.waitForFunction(value => getComputedStyle(document.getElementById('incremental')!).padding === `${value}px`, padding)
+        try {
+          await page.waitForFunction(value => getComputedStyle(document.getElementById('incremental')!).padding === `${value}px`, padding)
+        } catch (error) {
+          const actual = await page.locator('#incremental').evaluate(element => getComputedStyle(element).padding)
+          console.error(`Next ${bundler} page round ${round}: expected ${padding}px, got ${actual}`)
+          throw error
+        }
         const singleMs = performance.now() - started
         const burstStarted = Date.now()
         started = performance.now()
         writeModules(fixtureDir, padding + 1)
-        await page.waitForFunction(value => Array.from({ length: 10 }, (_, index) =>
-          getComputedStyle(document.getElementById(`module-${index}`)!).padding === `${value + index}px`).every(Boolean), padding + 1)
+        try {
+          await page.waitForFunction(value => Array.from({ length: 10 }, (_, index) =>
+            getComputedStyle(document.getElementById(`module-${index}`)!).padding === `${value + index}px`).every(Boolean), padding + 1)
+        } catch (error) {
+          const actual = await page.evaluate(() => Array.from({ length: 10 }, (_, index) =>
+            getComputedStyle(document.getElementById(`module-${index}`)!).padding))
+          console.error(`Next ${bundler} module round ${round}: expected ${padding + 1}..${padding + 10}px, got ${actual.join(', ')}`)
+          throw error
+        }
         if (round > 0) samples.push({ singleMs, burstMs: performance.now() - started, singleStarted, burstStarted, finished: Date.now() })
       }
       if (process.env.MASTER_NEXT_HMR_REPORT && pipelineReport) {
@@ -247,15 +358,23 @@ describe('Next dev HMR', () => {
         const idleStarted = Date.now()
         await delay(2000)
         const publications = readFileSync(pipelineReport, 'utf8').trim().split('\n').map(line => JSON.parse(line) as { started: number, finished: number, composeCalls: number })
+        const loaderReport = join(metricsDir!, 'loaders.jsonl')
+        const loaderEvents = existsSync(loaderReport) ? readFileSync(loaderReport, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : []
         const idle = publications.filter(row => row.started >= idleStarted)
         appendFileSync(process.env.MASTER_NEXT_HMR_REPORT,
-          JSON.stringify({ bundler, node: process.version, samples, publications, idle,
-            note: 'File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait are separate child-process observations. Idle observes two seconds after a one-second drain.' }) + '\n')
+          JSON.stringify({ bundler, node: process.version, samples, publications, loaderEvents, idle,
+            note: 'File write to observed browser computed style; one warmup, three samples. Pipeline hold/wait and loader calls are separate child-process observations. Idle observes two seconds after a one-second drain.' }) + '\n')
         expect(idle.reduce((sum, row) => sum + row.composeCalls, 0)).toBe(0)
       }
       await expect(page.evaluate(() => {
         return (window as unknown as { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER
       })).resolves.toBe('preserve')
+    } catch (error) {
+      console.error(`Next ${bundler} output:\n${output.text}`)
+      if (pipelineReport && existsSync(pipelineReport)) {
+        console.error(`Next ${bundler} pipeline:\n${readFileSync(pipelineReport, 'utf8')}`)
+      }
+      throw error
     } finally {
       await cleanup()
     }

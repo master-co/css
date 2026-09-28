@@ -20,7 +20,7 @@
   },
   "targetAudit": {
     "ref": "latest-target-change",
-    "commit": "f6d4fb9851fb4490afa241ee3bea4373287bb624"
+    "commit": "658f46c8fbeded44811c283fe1a463cf1d03654c"
   },
   "summary": {
     "files": 7,
@@ -38,7 +38,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     },
     {
       "file": "packages/integration/tests/module.test.ts",
@@ -46,7 +46,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     },
     {
       "file": "packages/next/tests/css-manifest-loader.test.ts",
@@ -54,7 +54,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     },
     {
       "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
@@ -62,7 +62,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     },
     {
       "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
@@ -70,7 +70,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     },
     {
       "file": "packages/vscode/package.json",
@@ -85,7 +85,7 @@
       "priority": "P0",
       "decision": "approved-adaptation",
       "decisionId": "post-rc87-browser-manifest-import-fallback",
-      "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back."
+      "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax."
     }
   ],
   "commits": [
@@ -155,42 +155,42 @@
         "digest": "ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d"
       },
       "target": {
-        "behavior": "Keep JSON import attributes as the primary browser path and use fetch only when JSON import-loader construction throws SyntaxError; import rejections and non-SyntaxError construction failures do not fall back.",
+        "behavior": "The shared browser facade prefers JSON import attributes and falls back to fetch only when loader construction throws SyntaxError; import evaluation and other construction failures do not fetch. The universal server branch imports the supplied asset URL directly. Next emits standard ESM manifest data owned by the bundler. Runtime external hydration uses direct dynamic JSON import attributes without constructing a loader or providing a fetch fallback, and reports import failures as structured diagnostics. Reviewed fixtures use languageVersion 3 and current utility/token syntax.",
         "implementedAtCommit": "becef751987086ffe7a93cdbd6985f1ac0158c08",
         "files": [
           {
             "file": "packages/internal/src/manifest-facade.ts",
-            "digest": "60599b4e73be23fcc1c76a667b4325ab1afba06c8697a6e7f9874dacc80689ec"
+            "digest": "0f4c306318b71d35cf4fed2e6560601ed8a64360ee87f6c3555553e08cf35f30"
           },
           {
             "file": "packages/internal/tests/module.test.ts",
-            "digest": "1c30426470be68a74c92ed1ddba8445f18779a61862a9c654f4b4f60b4b58d7b"
+            "digest": "8f048785d4de1a0813f58aa28379455f289d72aa1fc40314f6607ee863dd1620"
           },
           {
             "file": "packages/next/tests/css-manifest-loader.test.ts",
-            "digest": "3416ad19dfe0f78787a2b33555956ee955a1cdf73c034598edfe6fd65e4dc067"
+            "digest": "bff410e72ce62b0c64d1c24ea567cea92f9eb35af95c959d0bee2832e5f612c1"
           },
           {
             "file": "packages/runtime/src/hydration.ts",
             "implementedFrom": "packages/runtime/src/core.ts",
-            "digest": "44bc1f07fd0c4b173cffd581d76c9049d1949405417ca7ad559a980458d88074"
+            "digest": "5b6d189a11c3aac3d2881b23047fcb48f2bffcb6d94d1d20b626bd3db4a2ce3f"
           },
           {
             "file": "packages/runtime/e2e/hydration-edge-cases.test.ts",
             "implementedFrom": "packages/runtime/e2e/edge-cases.test.ts",
-            "digest": "58559cb423a01e0766ecfaf572b7c5fe1cf8c876e09552bee23d55e1d8e7c11c"
+            "digest": "73f0ddbc1dd5f605a1b237b529c5f2dfab39f109636c0fd30b9e5a712110732e"
           },
           {
             "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
-            "digest": "1f02e35a9d44a87c6029b87fa01baa5aaf1f2aae77a1813edceb74cac1d62c60"
+            "digest": "d1bc876582ad6e0f9b1a88ba00a75c1b3616b072df9f67cc7dd960f02602d9cd"
           },
           {
             "file": "packages/vite/tests/plugins/manifest-virtual-module.test.ts",
-            "digest": "c08dde056a4069705653ad5336fb75128bbebcc7146dc004b1cda904b8ac3b43"
+            "digest": "bf099daae9d9bf4f3dca24ff01df97fe931039ea2024835b9352cd0790531eb0"
           },
           {
             "file": "packages/webpack/tests/plugin.test.ts",
-            "digest": "c5ff44cd713a5aa21f4dc2fce8cb4aaadf736efbd7d98c52ff0bede53e942386"
+            "digest": "40fd5d98515cee83f121f08a09bed0fd5f905aa786d2f30f2161ab1af079c002"
           }
         ],
         "tests": [
@@ -200,19 +200,19 @@
             "digest": "feb63a16b273d62cac7ceddcaf53c64baf728219284fbc81df694496200b795e"
           },
           {
-            "caseId": "rc87-2d99ea0e5a8248fe",
+            "caseId": "rc87-95afc75a0d20ce37",
             "runner": "vitest",
-            "digest": "5bb285512b710f4cb5fe56e5902499814b647ee410347a7ea3ee6d92c6d070dc"
+            "digest": "632567a524db6c1138bc2dd6116ecb22bf57625eba4b9b1b7ca40e04cff861f5"
           },
           {
             "caseId": "rc87-c3255a639bad7508",
             "runner": "vitest",
-            "digest": "31d52aeb5b1902eed217924cd53c616a1dd5bab1239d7a83e947b903694c357b"
+            "digest": "1186e1726c69d143c01523a6a1667897974782d0093e4cb5d02543c348628130"
           },
           {
             "caseId": "rc87-34bf97d92ae3004c",
             "runner": "vitest",
-            "digest": "5786f75ec220311a3517b112d90713f7d195c94dc7afcbd12f3436007a9c7964"
+            "digest": "82501ee219ea1052023e6765a0c36ec072458af5dc2b77d1804d07cdfb8dc8f0"
           },
           {
             "caseId": "rc87-28031ac807ec5325",
@@ -230,9 +230,9 @@
             "digest": "9afe02024e6e8595625453c6ab9be4bad9c1b5fed8246137612b5f076afaba68"
           },
           {
-            "caseId": "rc87-c6f234a37661be00",
+            "caseId": "rc87-a9210afde2b25995",
             "runner": "vitest",
-            "digest": "449583c35a6d3b4499950043ea16a0a2d16912810941afe4801ceac17028121e"
+            "digest": "18466eeec0c81b7e8e3f595f9b75f6593264bcdb8731aad877676e02eedb828f"
           },
           {
             "caseId": "rc87-074e56c447b243c2",
@@ -257,7 +257,7 @@
           {
             "caseId": "rc87-6c18481fc5cdfa31",
             "runner": "vitest",
-            "digest": "825fbb83678c41c1bda9025b82f6d7e0e8dd5fbb774f4793fa605974249e5ab1"
+            "digest": "c260d70c0ab9722d3fd96f1fc881cfbb35b105f634e69b0b2bc31ce76080f438"
           },
           {
             "caseId": "rc87-692ac35eb7556a3f",
@@ -267,17 +267,17 @@
           {
             "caseId": "rc87-dd785f5a00080d1c",
             "runner": "playwright-or-vitest-e2e",
-            "digest": "40c713c41d230220cf249eb8b1d6786b4f33b8579871ce716ed4406a042f1e76"
+            "digest": "98d4af3e15e524882d0eb43fbccb41329ce9a1b38522bb845a71041ccc3aa9fb"
           },
           {
-            "caseId": "rc87-82aab64164d5d4a8",
+            "caseId": "rc87-5d560f8098718cfe",
             "runner": "playwright-or-vitest-e2e",
-            "digest": "2ed4cfb0fdbb4e7e3c4fd590b93f2b87649a1f0f782498e094c590fd552613db"
+            "digest": "22139a697fb9443140839e8cdbf4b2e0a6d87a2b1abac6a6881eddef7605f815"
           },
           {
-            "caseId": "rc87-0f080221ec60651a",
+            "caseId": "rc87-3c3c79a9bd560910",
             "runner": "playwright-or-vitest-e2e",
-            "digest": "69ff6f4614ba1a53f6630d17720332f38956c60c3d9b23069f77f3bc8f639769"
+            "digest": "8e16ef448200605295b4cef7e27260dd8ac3539d5f31802e877f5b3c7650539b"
           },
           {
             "caseId": "rc87-81017bda3a0a433d",
@@ -285,9 +285,9 @@
             "digest": "c44bee73397b53ef689ac4994a2b9e2221a91d9582bb0c8450128225f3aa4a0a"
           },
           {
-            "caseId": "rc87-90b45cbedb62f8ad",
+            "caseId": "rc87-ac48cb8b3e2fe23a",
             "runner": "playwright-or-vitest-e2e",
-            "digest": "9e55cb2d82857e07d7cfa9026b9a08ffec0a13ba2f8c4e8a89fe7a62d9bb71cc"
+            "digest": "d9b1311a89b160b48de9405c1fec16db5c07e98def140decbcbc954a1175dc76"
           },
           {
             "caseId": "rc87-ce29f729c5b6ac32",
@@ -300,18 +300,19 @@
             "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
-        "digest": "65bce5983f2a05fea6fe10339768d726eb6ac655fe6e9a1bd52eec8b8cbad640"
+        "digest": "7e78c57bad6eb9692720f5580d92b62703f7a88445614b90781d1ab9774cdfa6"
       },
       "invariants": [
         "modulepreload as=\"json\" HTML bytes remain unchanged.",
-        "Node and universal server branches continue to use JSON imports.",
-        "Published APIs, package exports, virtual module IDs, rendering options, and dependencies remain unchanged."
+        "The shared browser facade retains its construction-SyntaxError fetch fallback; runtime hydration is a separate direct JSON-module path without that fallback.",
+        "Next manifest modules use standard ESM data and the bundler owns asset delivery; the shared universal server facade imports the supplied asset URL.",
+        "This decision covers only the reviewed eight files and 21 cases; it does not close other Rust-refactor migration differences or authorize package publication."
       ],
       "approval": {
-        "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-08-01T12:46:46Z",
-        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
-        "scopeDigest": "004cf73c481819fb9bea3064499b04789bfd8d96c9c3514d6b71809957d032f0"
+        "approvedBy": "Aron (authorized complete compose removal and integration in this task)",
+        "approvedAt": "2026-09-28T02:45:50.429Z",
+        "reviewRef": "parity/compose-removal-integration-review.md#manifest-file-supplement",
+        "scopeDigest": "c7765daa6db59019ae6949287a5c64b36975a3a15d5ff310b2e6e0bbfe2be4f5"
       }
     }
   ]

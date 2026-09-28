@@ -51,7 +51,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const properties = new Set(rows.flatMap(row => row.identifiers.filter(id => !id.endsWith(':'))))
     const aliases = [...new Set([...extracted.examples.flatMap(example => example.classes), ...rows.flatMap(row => row.identifiers), ...Object.entries(builtinKeyAliases).filter(([, property]) => properties.has(property)).map(([alias]) => `${alias}:`)])]
     const doc: ReferenceDocument = {
-      id: entry.name, kind: 'utility', title: metadata.title, description: metadata.description,
+      id: entry.name, kind: metadata.referenceKind ?? 'utility', ...(metadata.guide ? { guide: metadata.guide } : {}), title: metadata.title, description: metadata.description,
       category: metadata.category, url: `/reference/${entry.name}`, source: relative(file), sourceDigest: digest(await readFile(file, 'utf8')),
       language: 'en', aliases, terms: [], rows, examples: extracted.examples, related: ['rules/conditions'],
       markdown: extracted.markdown, headings: documentHeadings(extracted.markdown), extractionNotes: extracted.notes,
@@ -100,7 +100,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   // Directive sections are maintained once, in the existing directive source during migration.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives & settings')
   const sections = directive.markdown.split(/(?=^## )/m)
-  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and variants': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Rule-local composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
+  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and variants': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Removed utility composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
@@ -109,7 +109,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',
-    'compose': 'Turn an unquoted class list into declarations for the current CSS selector.',
+    'compose': 'Migrate removed @compose statements to native CSS declarations and selectors.',
     'variant': 'Apply a Master CSS condition inside a native rule or managed definition.',
     'preserve': 'Keep a stylesheet’s native class rules when source-based pruning would remove them.'
 }

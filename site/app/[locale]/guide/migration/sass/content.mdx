@@ -11,7 +11,7 @@ Start from the Sass entry files your app already builds.
 2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
 3. Move shared design values into Master CSS `@theme`.
 4. Convert local visual rules to markup classes when the markup stays readable.
-5. Convert reusable Sass patterns to `@layer components`, `@utilities`, `@compose`, or native CSS.
+5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@utilities` when they are reusable primitives.
 6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
 7. Remove Sass only after converted screens no longer depend on it.
 
@@ -115,11 +115,25 @@ Use `@layer components` for product roles:
 
 @layer components {
   .card {
-    @compose grid gap-md b:1px|solid|var(--color-line-base) r-card bg-white shadow-sm p-card;
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-base);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
   }
 
   .btn {
-    @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-primary fg-white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    height: 2.5rem;
   }
 }
 ```
@@ -171,13 +185,12 @@ Keep nested selectors in CSS when they express internal structure:
 }
 ```
 
-If that stylesheet uses `@compose`, add `@reference` instead of importing the app CSS output again.
+Project theme variables are available automatically after Sass preprocessing in the Vite, Next.js, and Webpack integrations.
 
 ```css name=Article.module.css
-@reference "../app.css";
-
 .article {
-  @compose grid gap-lg;
+  display: grid;
+  gap: var(--spacing-lg);
 }
 ```
 
@@ -196,6 +209,6 @@ If that stylesheet uses `@compose`, add `@reference` instead of importing the ap
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utilities`, `@reference`, and `@compose`.
-- [Route-level styles](/guide/route-level-styles) for local CSS files that use `@reference` and `@compose`.
+- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utilities`, and `@reference`.
+- [Route-level styles](/guide/route-level-styles) for local CSS files that use project definitions and native declarations.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.

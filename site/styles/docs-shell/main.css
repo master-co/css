@@ -1,5 +1,3 @@
-@reference "../../app/globals.css";
-
 @layer components {
 .hr {
     margin-block: var(--spacing-2xl);

@@ -632,7 +632,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             originX={'center'}
             showHandler={responsive ? [false, true, true] : false}
             className={clsx('full outline:1px|solid|var(--color-line-base).resizing', {
-              'max-size:100% outline:1px|solid|var(--color-line-muted)': responsive
+              'max-width:100% max-height:100% outline:1px|solid|var(--color-line-muted)': responsive
             })}
             showHeight={true}
           >

@@ -19,6 +19,8 @@ export interface MasterCSSProjectCompileOptions extends MasterCSSProjectLoadOpti
 }
 
 export interface MasterCSSProjectResult {
+  /** Decoded native class registrations from the resolved CSS graph. */
+  readonly nativeClassNames: readonly string[]
   readonly manifest: MasterCSSManifest
   readonly entries: readonly string[]
   readonly dependencies: readonly string[]

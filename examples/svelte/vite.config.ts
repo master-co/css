@@ -5,6 +5,6 @@ import masterCSS from '@master/css-svelte/vite'
 export default defineConfig({
   plugins: [
     sveltekit(),
-    masterCSS(),
+    masterCSS({ mode: 'progressive' }),
   ]
 })

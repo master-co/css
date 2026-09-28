@@ -54,7 +54,7 @@ it('preserves complete HAST across host languages compared with full inspection 
     ['html', '<div class="brand block block fg-red:hover invalid"></div>'],
     ['tsx', '<div className="brand display:flex" />'],
     ['mdx', '# Example\n\n<div className="block fg-red" />'],
-    ['css', '.x { @compose brand block fg-red:hover; }'],
+    ['css', ".x { @safelist \"brand block fg-red:hover\"; }"],
     ['plaintext', 'brand block fg-red:hover invalid']
   ]
   try {

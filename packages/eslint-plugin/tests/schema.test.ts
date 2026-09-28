@@ -71,18 +71,7 @@ test('rejects rule options for rules configured through settings only', async ()
     .rejects.toThrow()
 })
 
-test('provides an opt-in stylesheet config', async () => {
-  const [diagnosticResult] = await new ESLint({
-    overrideConfigFile: true,
-    overrideConfig: [plugin.configs.stylesheet]
-  }).lintText(`.btn { @compose contain:content; }`, { filePath: 'index.css' })
-  const [fixResult] = await new ESLint({
-    fix: true,
-    overrideConfigFile: true,
-    overrideConfig: [plugin.configs.stylesheet]
-  }).lintText(`.btn { @compose contain:content; }`, { filePath: 'index.css' })
-
-  expect(diagnosticResult.messages).toHaveLength(1)
-  expect(diagnosticResult.messages[0].ruleId).toBe('@master/css/prefer-canonical-classes')
-  expect(fixResult.output).toBe('.btn { contain: content; }')
+test('does not expose the removed compose stylesheet config', () => {
+  expect(plugin.configs).not.toHaveProperty('stylesheet')
+  expect(plugin.configs.recommended).toEqual([plugin.configs.source])
 })

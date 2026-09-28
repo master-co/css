@@ -47,11 +47,11 @@ fn opaque_url_payloads_and_invalid_values_do_not_create_nested_resources() {
 }
 
 #[test]
-fn source_owner_is_retained_when_managed_definition_is_composed_in_another_file() {
+fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
     let request = serde_json::from_value(json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './child.css';.example{@compose paint;}",
-            "child":"@utilities{paint{background-image:url(image.png)}}.native{background:image-set('small.png' 1x,url(big.png) 2x)}"
+            "entry":"@import './child.css';.example{@variant media(all){background-image:var(--hero);}}",
+            "child":"@theme{--hero:url(image.png)}.native{background:image-set('small.png' 1x,url(big.png) 2x)}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"/output/main.css","child":"/output/child.css"},
         "resourceURLs":{"child":{"image.png":"/original/child/image.png","small.png":"/original/child/small.png","big.png":"/original/child/big.png"}},
@@ -61,7 +61,7 @@ fn source_owner_is_retained_when_managed_definition_is_composed_in_another_file(
     assert!(
         result.stylesheets[0]
             .generated_css
-            .contains("/original/child/image.png")
+            .contains("background-image:var(--hero)")
     );
     assert!(
         result.stylesheets[1]

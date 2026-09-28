@@ -134,11 +134,19 @@ When many `sx` blocks encode the same product role, move that role into a Master
 
 @layer components {
   .panel {
-    @compose p-lg b:1px|solid|var(--color-line-base) r-lg fg-body shadow-sm bg-surface;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-base);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-text-body);
   }
 
   .toolbar {
-    @compose flex items-center gap-sm min-h:3rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 3rem;
   }
 }
 ```

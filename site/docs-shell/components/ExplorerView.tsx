@@ -15,8 +15,8 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
     return (
       <div className='flex flex-col w:100%'>
         <div className='flex items-center'>
-          {ext && <FileIcon name={option.name} ext={ext} className="size:1.2em mr-3xs" />}
-          {!ext && <FolderSvg className="size:1.2em mr-3xs" />}
+          {ext && <FileIcon name={option.name} ext={ext} className="width:1.2em height:1.2em mr-3xs" />}
+          {!ext && <FolderSvg className="width:1.2em height:1.2em mr-3xs" />}
           {option.name}
         </div>
         {option.children?.length &&

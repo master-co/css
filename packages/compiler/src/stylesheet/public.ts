@@ -40,6 +40,8 @@ import type { SassModule as MasterCSSSassCompiler } from './types'
 export { prepareStylesheetSource as prepareStylesheet } from './index'
 
 export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptions, StylesheetSourceContext {
+  /** Absolute definition files applied before authored @reference and local definitions. Does not load their native CSS or scanning policy. */
+  readonly referenceFiles?: readonly string[]
   readonly delivery?: StylesheetDeliveryOptions
   readonly baseManifest: MasterCSSManifest
   readonly projectDir?: string
@@ -62,6 +64,8 @@ export interface MasterCSSCompiledStylesheet extends MasterCSSCompileResult {
 }
 
 export interface MasterCSSStylesheetTransformResult {
+  /** Generated resources retain their original global selectors and conditions. */
+  readonly globalStylesheet?: Readonly<{ css: string, sourceMap?: string }>
   readonly diagnostics: readonly import('@master/css-schema').MasterCSSDiagnostic[]
   readonly sourceMap?: string
   /** Retained child stylesheets; delivery hosts must publish every returned asset. */
@@ -74,7 +78,9 @@ export interface MasterCSSStylesheetTransformResult {
 }
 
 export interface MasterCSSStylesheetTransformOptions extends MasterCSSStylesheetCompileOptions {
-  /** With delivery, also process native graphs prepared by a host transformer. */
+  /** Defaults to inline; separate returns globals outside code for scoped hosts. */
+  readonly generatedGlobals?: 'inline' | 'separate'
+  /** Also resolve resource usage in native CSS using the supplied context. */
   readonly transformNativeStylesheets?: boolean
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
@@ -407,7 +413,8 @@ export async function transformStylesheet(
   options.signal?.throwIfAborted()
   return Object.freeze({
     code: result.code,
-    diagnostics: validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
+    diagnostics: validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.globalStylesheet ? [stylesheetValidationSource(result.globalStylesheet.css, id, result.globalStylesheet.sourceMap)] : []), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
+    ...(result.globalStylesheet ? { globalStylesheet: Object.freeze({ ...result.globalStylesheet }) } : {}),
     ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
     transformed: result.transformed,

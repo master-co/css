@@ -38,7 +38,6 @@ export type {
   MasterCSSLintBatch,
   MasterCSSLintCanonicalClassGroupSuggestions,
   MasterCSSLintCanonicalClassSuggestions,
-  MasterCSSLintCanonicalComposeDirective,
   MasterCSSLintRawValueCandidates,
   MasterCSSLanguageClassifications,
   MasterCSSLanguageInspection,

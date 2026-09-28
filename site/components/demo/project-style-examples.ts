@@ -66,14 +66,25 @@ export const projectStyleExamples = {
     title: 'A component with native interaction states',
     source: `@layer components {
   .btn {
-    @compose inline-flex items-center justify-center px-md py-xs r-md border-width:0 font-sm font-medium bg-blue-60 fg-white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    border-width: 0;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
 
     &:hover {
-      @compose bg-blue-70;
+      background-color: var(--color-blue-70);
     }
 
     &:focus-visible {
-      @compose outline:2px|solid|var(--color-blue-60) outline-offset-4xs;
+      outline: 2px solid var(--color-blue-60);
+      outline-offset: var(--spacing-4xs);
     }
   }
 }`,
@@ -85,7 +96,11 @@ export const projectStyleExamples = {
     title: 'A local utility overrides the component',
     source: `@layer components {
   .card {
-    @compose p-lg r-lg b:1px|solid|var(--color-line-base) surface-raised text-body;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-base);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
   }
 }`,
     html: `<div class="grid gap-md">

@@ -33,7 +33,7 @@ fn graph_native_anchor_survives_import_url_length_change() {
 }
 #[test]
 fn graph_compose_and_native_siblings_keep_original_child_anchors() {
-    let child = "/* 😀 */\n@layer{.card{@compose paint;}.card{padding:3rem}}";
+    let child = "/* 😀 */\n@layer{.card{@variant media(all){padding:2rem;}}.card{padding:3rem}}";
     let result = compile(
         "@import './child.css' layer;@utilities{paint{padding:2rem}}",
         child,
@@ -46,13 +46,14 @@ fn graph_compose_and_native_siblings_keep_original_child_anchors() {
     let composed = mapping(sheet, "padding:2rem");
     assert_eq!(
         composed["source"]["range"]["start"],
-        offset(child, "paint;")
+        offset(child, "padding:2rem;")
     );
     assert_eq!(sheet["css"].as_str().unwrap().matches("@layer").count(), 1);
 }
 #[test]
 fn graph_resource_relocation_preserves_later_authored_ranges() {
-    let child = ".image{background:url('./dot.svg')}/* 😀 */\n.after{margin:1px}@utilities{paint{padding:2rem}}.card{@compose paint;}";
+    let child = r###".image{background:url('./dot.svg')}/* 😀 */
+.after{margin:1px}@utilities{paint{padding:2rem}}.card{@variant media(all){padding:2rem;}}"###;
     let result = compile(
         "@import './child.css';",
         child,
@@ -63,20 +64,23 @@ fn graph_resource_relocation_preserves_later_authored_ranges() {
     assert_eq!(map["source"]["file"], "/child.css");
     assert_eq!(map["source"]["range"]["start"], offset(child, ".after"));
     let map = mapping(sheet, "padding:2rem");
-    assert_eq!(map["source"]["range"]["start"], offset(child, "paint;"));
+    assert_eq!(
+        map["source"]["range"]["start"],
+        offset(child, "padding:2rem;")
+    );
 }
 #[test]
 fn graph_compose_slot_does_not_replace_a_quoted_marker() {
-    let child = "@utilities{paint{padding:2rem}}.label{content:'@--master-css-compose-slot-0;'}.card{@compose paint;}";
+    let child = r###"@utilities{paint{padding:2rem}}.label{content:'@--master-css-style-slot-0;'}.card{@variant media(all){padding:2rem;}}"###;
     let result = compile("@import './child.css';", child, Value::Null);
     let css = result["stylesheets"][1]["css"].as_str().unwrap();
-    assert!(css.contains("\"@--master-css-compose-slot-0;\""), "{css}");
+    assert!(css.contains("\"@--master-css-style-slot-0;\""), "{css}");
     assert!(css.contains(".card{padding:2rem}"), "{css}");
 }
 
 #[test]
 fn graph_native_suppression_keeps_composed_conditions_and_layer_identity() {
-    let source = "@utilities{paint{padding:2rem}}.plain{margin:1px}@media print{@layer{.card{@compose paint;}.other{@compose paint;}}}";
+    let source = r###"@utilities{paint{padding:2rem}}.plain{margin:1px}@media print{@layer{.card{@variant media(all){padding:2rem;}}.other{@variant media(all){padding:2rem;}}}}"###;
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"/entry.css","files":{"/entry.css":source},"edges":[]},
         "urls":{"/entry.css":"/entry.css"},"options":{"preserveNativeCSS":false},

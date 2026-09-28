@@ -14,8 +14,8 @@ test('shared plugin roots retain resource delivery as another root or SSR enviro
   const urls: URL[] = []
   try {
     for (const [index, root] of roots.entries()) {
-      writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.resource{background-image:url("./pixel%23%3F.svg")}')
-      writeFileSync(join(root, 'pixel#?.svg'), images[index])
+      writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.resource{background-image:url("./pixel%23%25.svg")}')
+      writeFileSync(join(root, 'pixel#%.svg'), images[index])
       writeFileSync(join(root, 'server.js'), 'export { default as css } from "./style.css?inline"')
       const server = await createServer({ root, base: `/base-${index}/`, configFile: false, logLevel: 'silent', plugins, server: { host: '127.0.0.1', port: 0 } })
       servers.push(server);await server.listen()

@@ -39,7 +39,7 @@ export function FoundationHue() {
   return <DemoThemeComparison name="base-hue" title="A mode-aware hue" html={`<div class="grid gap-md">
 <div class="h:4rem r-sm bg-yellow" aria-label="Yellow background swatch" role="img"></div>
 <p class="m:0 font-mono font-xs text-muted">bg-yellow</p>
-<svg class="size:3rem fg-yellow" viewBox="0 0 48 48" role="img" aria-label="Yellow diamond"><path d="M24 2 46 24 24 46 2 24Z" fill="currentColor"/></svg>
+<svg class="width:3rem height:3rem fg-yellow" viewBox="0 0 48 48" role="img" aria-label="Yellow diamond"><path d="M24 2 46 24 24 46 2 24Z" fill="currentColor"/></svg>
 <p class="m:0 font-mono font-xs text-muted">fg-yellow · currentColor</p>
 </div>`} caption="Hue aliases adapt their palette step to the mode. They do not choose a matching text color automatically." />
 }

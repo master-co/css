@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -22,7 +22,7 @@ function graph(file: string, code: string, output = new Map<string, string>()) {
   return output
 }
 for (const kind of ['nested-resource', 'external-import'] as const) test(`general Next loader publishes retained ${kind} graph`, async () => {
-  const root = mkdtempSync(join(tmpdir(), 'next-loader-graph-'))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-graph-')))
   try {
     const file = join(root, 'app/globals.css'), child = join(root, 'app/nested/child.css'), image = join(root, 'app/nested/pixel space.svg')
     mkdirSync(dirname(child), { recursive: true })
@@ -64,9 +64,9 @@ for (const kind of ['nested-resource', 'external-import'] as const) test(`genera
 })
 
 test('general Next delivered entry retains original native declaration source maps', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'next-loader-entry-map-'))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-entry-map-')))
   try {
-    const file = join(root, 'entry.css'), source = '@master entry;@utilities{paint{padding:2rem}}\n.card{@compose paint;}'
+    const file = join(root, 'entry.css'), source = "@master entry;@theme{--paint-padding:2rem}\n.card{@variant media(all){padding:var(--paint-padding);}}"
     writeFileSync(file, source)
     const result = await transform(root, file, source, []), sheets = graph(file, result.code)
     const owner = [...sheets].find(([, css]) => css.includes('.card'))!
@@ -81,15 +81,15 @@ test('general Next delivered entry retains original native declaration source ma
 })
 
 for (const syntax of ['scss', 'sass']) test(`general Next ${syntax} delivered entry retains imported partial ownership and map`, async () => {
-  const root = mkdtempSync(join(tmpdir(), 'next-loader-sass-entry-map-'))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-sass-entry-map-')))
   try {
     const requireVite = createRequire(new URL('../../vite/package.json', import.meta.url))
     const sass = createRequire(requireVite.resolve('vite')).resolve('sass')
     const file = join(root, 'entry.' + syntax), partial = join(root, 'parts/_entry.scss')
     mkdirSync(dirname(partial))
-    writeFileSync(partial, '@reference "./tokens.css";.card{@compose paint;}')
-    writeFileSync(join(root, 'parts/tokens.css'), '@utilities{paint{padding:2rem}}')
-    writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:99rem}}')
+    writeFileSync(partial, "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
+    writeFileSync(join(root, 'parts/tokens.css'), '@theme{--paint-padding:2rem}')
+    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
     const source = syntax === 'sass' ? '@use "parts/entry"\n@master entry\n' : '@use "parts/entry";@master entry;'
     writeFileSync(file, source)
     const dependencies: string[] = [], result = await transform(root, file, source, dependencies, { sassOptions: { implementation: sass } })

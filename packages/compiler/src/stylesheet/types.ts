@@ -35,6 +35,8 @@ export interface PreparedStylesheetSource {
 }
 
 export interface CompileStylesheetOptions extends CompileCSSOptions, StylesheetSourceContext {
+  /** Absolute definition files supplied by a host, before authored references. */
+  readonly referenceFiles?: readonly string[]
   /** Internal metadata retained when source collection removes import directives. */
   references?: CompileCSSResult['references']
   delivery?: StylesheetDeliveryOptions
@@ -59,6 +61,7 @@ export interface CompileRenderedStylesheetResult extends CompileCSSResult {
 }
 
 export interface TransformLocalStylesheetResult {
+  globalStylesheet?: { readonly css: string, readonly sourceMap?: string }
   stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap?: string }[]
   resources?: readonly StylesheetResourceAsset[]
   code: string
@@ -68,6 +71,8 @@ export interface TransformLocalStylesheetResult {
 }
 
 export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
+  /** Keep generated root/mode resources outside a host's locally scoped CSS. */
+  generatedGlobals?: 'inline' | 'separate'
   transformNativeStylesheets?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
 }

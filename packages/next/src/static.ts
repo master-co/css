@@ -356,6 +356,20 @@ export async function getOrCreateStaticSession(
   return session
 }
 
+/** Keep a directly imported generated CSS entry current when no source CSS entry is loaded. */
+export async function refreshStaticOutput(statePath: string) {
+  const state = readStaticState(statePath)
+  const options = resolveOptions({
+    mode: 'static',
+    scanner: state.options.scanner,
+    pruneNativeCSS: state.options.pruneNativeCSS,
+    debug: state.options.debug
+  })
+  const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
+  await session.write()
+  return readFileSync(state.outputPath, 'utf8')
+}
+
 export async function prepareNextStatic(rawOptions: MasterCSSNextOptions = {}, setupOptions: PrepareNextStaticOptions = {}) {
   const options = resolveOptions(rawOptions)
   if (options.mode !== 'static') return

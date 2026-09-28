@@ -1,5 +1,3 @@
-@reference "../app/globals.css";
-
 @layer components {
   .demo-waterfall { container: demo-waterfall / inline-size; margin: 0; }
   .demo-waterfall-axis { display: flex; justify-content: space-between; margin-left: 9.5rem; padding-bottom: .625rem; border-bottom: 1px solid var(--color-demo-line); color: var(--color-demo-muted); font: 550 .75rem/1.5 var(--font-family-mono); }

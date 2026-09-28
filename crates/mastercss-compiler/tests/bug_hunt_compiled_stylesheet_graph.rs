@@ -18,7 +18,7 @@ fn request(entry: &str, child: &str) -> CompileCssStylesheetGraphRequest {
 fn child_native_compose_resolves_managed_definitions_declared_by_parent() {
     let request = request(
         "@import './child.css' layer(shared);@utilities{paint{color:red}}",
-        ".example{@compose paint;}",
+        ".example{@variant media(all){color:red;}}",
     );
     let output = compile_css_stylesheet_graph(&request).unwrap();
     assert!(output.stylesheets[0].css.contains("layer(shared)"));
@@ -32,7 +32,7 @@ fn child_native_compose_resolves_managed_definitions_declared_by_parent() {
 #[test]
 fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
     let entry = "@import './child.css';@theme{--tone:blue;}@utilities{second{color:red}}";
-    let child = "@theme{--tone:red;}@utilities{first{@compose second;}}";
+    let child = r###"@theme{--tone:red;}@utilities{first{@variant media(all){color:red;}}}"###;
     let output = compile_css_stylesheet_graph(&request(entry, child)).unwrap();
     let flat = format!("{child}{}", entry.replace("@import './child.css';", ""));
     let parsed = compile_css_directives(&flat, &CompileNativeCssOptions::default()).unwrap();
@@ -52,7 +52,7 @@ fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
 #[test]
 fn repeated_imports_use_occurrence_order_for_manifest_overrides() {
     let mut request = request(
-        "@import './child.css';@import './other.css';@import './child.css';.example{@compose paint;}",
+        "@import './child.css';@import './other.css';@import './child.css';.example{@variant media(all){color:red;}}",
         "@utilities{paint{color:red}}",
     );
     request
@@ -88,7 +88,7 @@ fn repeated_imports_use_occurrence_order_for_manifest_overrides() {
 fn native_filtering_does_not_remove_import_topology_or_manifest_definitions() {
     let mut request = request(
         "@import './child.css' print;@utilities{paint{color:green}}.unused{color:blue}",
-        ".example{color:red}.unused{color:blue}",
+        r###".example{@variant media(all){color:red;}}.unused{color:blue}"###,
     );
     request.options.classes = Some(vec!["example".into()]);
     request.options.prune_native_css = true;
@@ -108,7 +108,7 @@ fn native_filtering_does_not_remove_import_topology_or_manifest_definitions() {
 fn generated_child_css_keeps_import_conditions_when_native_preservation_is_disabled() {
     let mut request = request(
         "@import './child.css' print;@utilities{paint{color:red}}",
-        ".native{color:blue}.example{@compose paint;}",
+        ".native{color:blue}.example{@variant media(all){color:red;}}",
     );
     request.options.preserve_native_css = false;
     let output = compile_css_stylesheet_graph(&request).unwrap();
@@ -141,7 +141,7 @@ fn compiled_browser_corpus_assets() {
 fn native_compose_keeps_its_position_before_later_native_rules() {
     let output = compile_css_stylesheet_graph(&request(
         "@import './child.css';@utilities{paint{color:red}}",
-        ".example{@compose paint;}.example{color:blue}",
+        ".example{@variant media(all){color:red;}}.example{color:blue}",
     ))
     .unwrap();
     let css = output.stylesheets[1]
@@ -162,31 +162,12 @@ fn native_compose_keeps_its_position_before_later_native_rules() {
 fn authored_unknown_at_rules_cannot_collide_with_private_compose_slots() {
     let output = compile_css_stylesheet_graph(&request(
         "@import './child.css';@utilities{paint{color:red}}",
-        "@--master-css-compose-slot-0;@--master-css-compose-slot-\\31;.example{@compose paint;}",
+        "@--master-css-style-slot-0;@--master-css-style-slot-\\31;.example{@variant media(all){color:red;}}",
     ))
     .unwrap();
     let css = &output.stylesheets[1].css;
-    assert!(css.contains("@--master-css-compose-slot-0;"), "{css}");
-    assert!(css.contains("@--master-css-compose-slot-1;"), "{css}");
-    assert!(!css.contains("@--master-css-compose-slot-2;"), "{css}");
+    assert!(css.contains("@--master-css-style-slot-0;"), "{css}");
+    assert!(css.contains("@--master-css-style-slot-1;"), "{css}");
+    assert!(!css.contains("@--master-css-style-slot-2;"), "{css}");
     assert!(css.contains("color:red"));
-}
-
-#[test]
-fn graph_preserves_compose_statement_boundaries_in_utility_definitions() {
-    let compile = |classes: &str| {
-        let entry = format!(
-            "@import './child.css';@utilities{{combo{{@compose {classes};}}}}.a{{@compose combo;}}"
-        );
-        compile_css_stylesheet_graph(&request(
-            &entry,
-            ".child{@compose color:red;@compose color:blue;}",
-        ))
-        .unwrap()
-    };
-    let first = compile("color:red color:blue");
-    let second = compile("color:blue color:red");
-    assert_eq!(first.manifest, second.manifest);
-    assert_eq!(first.stylesheets, second.stylesheets);
-    assert!(first.stylesheets[1].css.contains("color:red;color:blue"));
 }

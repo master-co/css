@@ -17,7 +17,7 @@ fn graph_diagnostics_retain_original_utf16_ranges_after_resource_edits() {
     for (source, token) in [
         (
             "/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}",
-            "unknown-utility",
+            "@compose",
         ),
         (
             "/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}",
@@ -25,11 +25,11 @@ fn graph_diagnostics_retain_original_utf16_ranges_after_resource_edits() {
         ),
         (
             ".a{background:image-set(\"a.png\" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}",
-            "unknown-utility",
+            "@compose",
         ),
         (
             "/*\u{1F600}*/.a{background:image-set(\r\n\"a.png\" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}",
-            "unknown-utility",
+            "@compose",
         ),
     ] {
         let error = compile_css_stylesheet_graph(&serde_json::from_value(request(source)).unwrap())
@@ -60,7 +60,9 @@ fn source_references(value: &Value, output: &mut Vec<Value>) {
 
 #[test]
 fn relocated_style_definition_metadata_uses_original_ranges_and_locations() {
-    let source = "/*😀*/.a{background:image-set(\"a.png\" 1x,url(b.png) 2x)}\r\n@utilities{paint{background:url(a.png)}}\n.example{@compose paint;}";
+    let source = r###"/*😀*/.a{background:image-set("a.png" 1x,url(b.png) 2x)}
+@utilities{paint{background:url(a.png)}}
+.example{@variant media(all){background:url("a.png");}}"###;
     let original = compile_css_directives(
         source,
         &CompileNativeCssOptions {

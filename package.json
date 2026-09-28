@@ -15,7 +15,7 @@
     "build:rust:native": "cargo xtask build-native --release",
     "build:rust:wasm": "cargo xtask build-wasm all",
     "build:site": "pnpm build && pnpm --filter site build",
-    "build:site:cloudflare-pages": "pnpm build && pnpm --filter site build:cloudflare-pages",
+    "build:site:cloudflare-pages": "bash scripts/build-site-hosted.sh",
     "build:examples": "node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./examples/*\"",
     "dev:site": "pnpm build && pnpm --filter site dev",
     "dev:site:clean": "pnpm --filter site clean:next && pnpm dev:site",

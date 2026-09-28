@@ -9,7 +9,7 @@
 - `pre-render` mode through the Next.js Adapter API.
 - `runtime` mode through the Next client instrumentation hook.
 - `progressive` mode as runtime plus pre-render behavior.
-- Default `static` mode through generated CSS and scanner loaders for Turbopack and Webpack.
+- Default `static` mode through generated CSS; Turbopack CSS loaders own source watches, while Webpack keeps an early source loader.
 - Next-specific manifest import/loaders and static CSS loaders.
 - Build output rendering helpers.
 
@@ -47,7 +47,7 @@
 - Next Adapter API type changes across Next major versions.
 - Accidentally processing non-HTML assets.
 - Duplicate writes for fallback HTML listed through multiple output groups.
-- Turbopack loader behavior as an incremental scanner.
+- Turbopack CSS loader watch ownership and direct generated CSS imports.
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
@@ -62,8 +62,10 @@
 - Stylesheet collections may be retained only while entries, order, processed inputs
   and dependencies are unchanged. Explicit `@source` includes and `@reference` context conservatively rebuild
   because their discovery/lowering is not fully represented by the import inventory.
-- Module notifications share work only before snapshot capture; explicit stylesheet
-  inputs remain ordered. Publish assets before the entry and the receipt after it.
+- Webpack module notifications share work only before snapshot capture; explicit
+  stylesheet inputs remain ordered. Turbopack does not publish from JS module
+  loaders: source and directory watches belong to CSS entries and imported
+  `.master/next.css`. Publish assets before the entry and the receipt after it.
 - Webpack root-context watching excludes publication locks, receipts, processed-input
   storage, scan logs and atomic temporary files. Generated CSS/assets and configuration
   state remain observable; do not ignore the entire `.master` directory.

@@ -180,6 +180,8 @@ Every tool returns a version 3 object with `metadata`, `diagnostics` and a requi
 
 Class inspection separates `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport`. Check records identify their name, version, phase and scope. A CSS grammar error is different from an unknown future capability; `var()` does not establish a computed value. Browser support stays `not-checked` unless a browser check was actually executed. Preserve diagnostics, dependency arrays and ambiguous-name alternatives when consuming reports.
 
+Known CSS math types are checked without computing lengths or converting units. Distinct token definitions remain ambiguous even when their current values are equal. A `REMOVED_PRESET_UTILITY` notice identifies the removed built-in paired dimensions; inspect the project definition before proposing changes to a custom same-name utility. Use [the RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution) for version upgrades, rather than applying ordinary canonical fixes.
+
 Markdown/MDX extraction distinguishes live markup and code from display text, and returns original UTF-16 occurrence ranges with inclusion/exclusion reasons. The CLI, editor and MCP share Rust extraction and matching. CLI report versions are independent of the MCP envelope; read each report's declared version.
 
 For CLI reports, `cwd` is the command root. For MCP payloads, `root` is the configured workspace root.
@@ -195,7 +197,7 @@ Read-only tools never write files. Tools that can lead to writes use a two-step 
 
 This keeps AI-assisted edits reviewable. If a file changes after the preview is created, applying the preview fails instead of overwriting newer work.
 
-Use `includeDirectiveFixes` only when structural `@compose` rewrites are acceptable. Class-list fixes are safer because they replace class-list text in place; directive fixes can rewrite CSS directive structure. Directive formatting previews are separate from lint fixes and use the same preview/apply safety checks.
+Class-list fixes replace class-list text in place. Directive formatting previews are separate from lint fixes and use the same preview/apply checks.
 
 ---
 

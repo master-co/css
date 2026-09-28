@@ -46,8 +46,9 @@ const WRAPPERS: [&str; 6] = [
 #[test]
 fn direct_native_conditionals_expand_compose() {
     for wrapper in WRAPPERS {
-        let source =
-            format!("@utilities{{paint{{padding:2rem}}}}{wrapper}{{.card{{@compose paint;}}}}");
+        let source = format!(
+            "@utilities{{paint{{padding:2rem}}}}{wrapper}{{.card{{@variant media(all){{padding:2rem;}}}}}}"
+        );
         let css = direct(&source);
         assert!(!css.contains("@compose"), "{wrapper}: {css}");
         assert!(css.contains("padding:2rem"), "{wrapper}: {css}");
@@ -57,8 +58,9 @@ fn direct_native_conditionals_expand_compose() {
 #[test]
 fn graph_native_conditionals_expand_compose() {
     for wrapper in WRAPPERS {
-        let source =
-            format!("@utilities{{paint{{padding:2rem}}}}{wrapper}{{.card{{@compose paint;}}}}");
+        let source = format!(
+            "@utilities{{paint{{padding:2rem}}}}{wrapper}{{.card{{@variant media(all){{padding:2rem;}}}}}}"
+        );
         let css = graph(&source);
         assert!(!css.contains("@compose"), "{wrapper}: {css}");
         assert!(css.contains("padding:2rem"), "{wrapper}: {css}");
@@ -67,7 +69,7 @@ fn graph_native_conditionals_expand_compose() {
 
 #[test]
 fn graph_preserves_unrelated_native_children_and_composed_style_order() {
-    let source = "@utilities{paint{padding:2rem}}@media(min-width:1px){@font-face{font-family:probe;src:url(probe.woff2)}.before{color:red}.card{@compose paint;}.after{color:blue}@keyframes spin{to{opacity:0}}}";
+    let source = r###"@utilities{paint{padding:2rem}}@media(min-width:1px){@font-face{font-family:probe;src:url(probe.woff2)}.before{color:red}.card{@variant media(all){padding:2rem;}}.after{color:blue}@keyframes spin{to{opacity:0}}}"###;
     let css = graph(source);
     let tokens = [
         "@font-face",
@@ -78,12 +80,12 @@ fn graph_preserves_unrelated_native_children_and_composed_style_order() {
     ];
     let positions = tokens.map(|token| css.find(token).unwrap_or_else(|| panic!("{token}: {css}")));
     assert!(positions.windows(2).all(|p| p[0] < p[1]), "{css}");
-    assert_eq!(css.matches("@media").count(), 1, "{css}");
+    assert_eq!(css.matches("@media").count(), 2, "{css}");
 }
 
 #[test]
 fn graph_preserves_one_anonymous_layer_and_nested_wrapper_structure() {
-    let source = "@utilities{paint{padding:2rem}}@layer{.before{color:red}@supports(display:grid){.card{@compose paint;}.after{padding:3rem}}}";
+    let source = r###"@utilities{paint{padding:2rem}}@layer{.before{color:red}@supports(display:grid){.card{@variant media(all){padding:2rem;}}.after{padding:3rem}}}"###;
     let css = graph(source);
     assert!(css.contains("padding:2rem"), "{css}");
     assert_eq!(css.matches("@layer").count(), 1, "{css}");
@@ -103,7 +105,7 @@ fn native_wrappers_without_directives_are_unchanged() {
 
 #[test]
 fn direct_native_conditional_order_is_preserved() {
-    let source = "@utilities{paint{padding:2rem}}@media(min-width:1px){.card{@compose paint;}.card{padding:3rem}}";
+    let source = r###"@utilities{paint{padding:2rem}}@media(min-width:1px){.card{@variant media(all){padding:2rem;}}.card{padding:3rem}}"###;
     let css = direct(source);
     let normalized = css.replace([' ', '\n'], "");
     assert!(
@@ -114,8 +116,7 @@ fn direct_native_conditional_order_is_preserved() {
 
 #[test]
 fn direct_anonymous_layer_remains_one_layer() {
-    let source =
-        "@utilities{paint{padding:2rem}}@layer{.card{@compose paint;}.after{padding:3rem}}";
+    let source = r###"@utilities{paint{padding:2rem}}@layer{.card{@variant media(all){padding:2rem;}}.after{padding:3rem}}"###;
     let css = direct(source);
     assert_eq!(css.matches("@layer").count(), 1, "{css}");
 }
@@ -124,7 +125,7 @@ fn direct_anonymous_layer_remains_one_layer() {
 fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
     for wrapper in WRAPPERS {
         let source = format!(
-            "/* 😀 */\n@utilities{{paint{{padding:2rem}}}}\n{wrapper}{{\n.card{{@compose paint;}}\n}}"
+            "/* 😀 */\n@utilities{{paint{{padding:2rem}}}}\n{wrapper}{{\n.card{{@variant media(all){{padding:2rem;}}}}\n}}"
         );
         let parsed = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
         let lowered = lower_css_directives(
@@ -134,7 +135,7 @@ fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
             &Default::default(),
         )
         .unwrap();
-        for (generated, original) in [(".card", ".card"), ("padding", "paint;")] {
+        for (generated, original) in [(".card", ".card"), ("padding", "padding:2rem;")] {
             let offset = lowered.generated_css[..lowered.generated_css.find(generated).unwrap()]
                 .encode_utf16()
                 .count() as u32;
@@ -157,8 +158,9 @@ fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
 #[test]
 fn native_conditions_nested_inside_styles_expand_compose() {
     for wrapper in WRAPPERS {
-        let source =
-            format!("@utilities{{paint{{padding:2rem}}}}.card{{{wrapper}{{@compose paint;}}}}");
+        let source = format!(
+            "@utilities{{paint{{padding:2rem}}}}.card{{{wrapper}{{@variant media(all){{padding:2rem;}}}}}}"
+        );
         for css in [direct(&source), graph(&source)] {
             assert!(!css.contains("@compose"), "{wrapper}: {css}");
             assert!(css.contains("padding:2rem"), "{wrapper}: {css}");

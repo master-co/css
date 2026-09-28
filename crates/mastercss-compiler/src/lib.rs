@@ -29,17 +29,16 @@ use lightningcss::properties::Property;
 use lightningcss::rules::CssRule;
 use lightningcss::rules::keyframes::KeyframesName;
 use lightningcss::rules::style::StyleRule;
-use lightningcss::rules::unknown::UnknownAtRule;
 use lightningcss::selector::{Component, Selector};
 use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
 use lightningcss::traits::{AtRuleParser, ToCss};
 use lightningcss::visit_types;
 use lightningcss::visitor::{Visit, VisitTypes, Visitor};
 use mastercss_lexer::{
-    StandaloneCssDirectiveStatement, byte_to_utf16_offset, collect_class_list_token_ranges,
-    extract_top_level_at_rule_blocks, find_css_directive_ranges, find_css_import_statements,
-    find_master_directive_statements, parse_css_import_source, remove_css_reference_statements,
-    remove_standalone_css_directives, utf16_to_byte_offset,
+    StandaloneCssDirectiveStatement, byte_to_utf16_offset, extract_top_level_at_rule_blocks,
+    find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
+    parse_css_import_source, remove_css_reference_statements, remove_standalone_css_directives,
+    utf16_to_byte_offset,
 };
 use mastercss_schema::{
     CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry,
@@ -114,8 +113,6 @@ pub struct CompileNativeCssResult {
 pub struct CompileCssDirectivesResult {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub native_output: Option<NativeCssOutput>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -690,7 +687,7 @@ pub(crate) use native_style::{
 };
 pub(crate) use pattern::{
     ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
-    mask_managed_pattern_names, minified_css, trim_byte_range,
+    mask_managed_pattern_names, minified_css,
 };
 pub(crate) use syntax::{
     collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
@@ -700,7 +697,7 @@ pub(crate) use syntax::{
 pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
 pub(crate) use variant::{
     combine_managed_selectors, lower_custom_variant_rule, managed_selector_definition,
-    printed_selectors, rewrite_managed_variant_directives, validate_compose_syntax,
+    printed_selectors, reject_removed_directives, rewrite_managed_variant_directives,
     validate_condition_variant_syntax,
 };
 

@@ -9,7 +9,7 @@ export async function compileRenderedDelivery(id: string, source: string, option
     const result = (await compileDeliveredSource(id, source, { ...options, transformNativeStylesheets: true }, options.classes))!
     const entry = result.stylesheets.find(asset => asset.id === result.entry)!
     const generated = renderCompiledManifestCSS({
-      manifest: result.manifest,
+      manifest: result.resolutionManifest,
       nativeCSS: result.stylesheets.map(asset => asset.css),
       classNames: options.classes,
       emittedGlobals: options.emittedGlobals

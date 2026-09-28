@@ -128,7 +128,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
   function renderPreview() {
     return (
-      <div className="size:6rem b:1.25rem|solid|var(--color-line-base) r-sm"></div>
+      <div className="width:6rem height:6rem b:1.25rem|solid|var(--color-line-base) r-sm"></div>
     )
   }
 

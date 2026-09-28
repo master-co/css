@@ -99,7 +99,8 @@ Define project classes in the CSS entry when they are intentional:
 ```css name=index.css
 @layer components {
   .btn {
-    @compose inline-flex px-md;
+    display: inline-flex;
+    padding-inline: var(--spacing-md);
   }
 }
 ```
@@ -116,57 +117,6 @@ Canonical fixes preserve value sources and cascade priority. A literal stays a l
 
 Use the explicit [v2 RC migration command](/guide/migration/v2-rc#6-preview-and-apply-migration-proposals) for historical token syntax. Canonical linting does not guess the meaning of old colon tokens.
 
-The same rules apply inside parsed `@compose` class lists. Native declarations and variant blocks can make the retained intent explicit:
-
-```css
-.btn {
-  @compose text-align:center contain:content bg-blue-60:hover@sm; /* [!code --] */
-  text-align: center; /* [!code ++] */
-  contain: content; /* [!code ++] */
-  &:hover { @variant sm { @compose bg-blue-60; } } /* [!code ++] */
-}
-```
-
-Standalone CSS files are checked by the default `@master/eslint-config-css` export:
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS
-])
-```
-
-Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can lint `@compose` in those style blocks through the normal framework parser setup.
-
-| Option | Default | Effect |
-| --- | --- | --- |
-| `preferStaticUtilities` | `true` | Recommend equivalent named utilities only when value source and cascade priority are preserved. |
-| `preferPropertyAliases` | `true` | Prefer fixed property aliases such as `m:16px` over `margin:16px`. |
-| `preferCompositionUtilities` | `true` | Recommend a composition only when it preserves the existing priority and declarations. |
-| `preferConditionOrder` | `true` | Prefer stable condition suffix order such as `@sm@dark` over `@dark@sm`. |
-| `preferNativeDeclarationsInCompose` | `true` | Prefer native declarations over declaration-like classes inside CSS `@compose`. |
-| `preferVariantBlocksInCompose` | `true` | Prefer `@variant`, `@dark`, and `@light` blocks over suffixes inside CSS `@compose`. |
-
-Disable one family when a team wants a more literal authoring style:
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS,
-  {
-    rules: {
-      '@master/css/prefer-canonical-classes': ['warn', {
-        preferStaticUtilities: true,
-        preferPropertyAliases: false
-      }]
-    }
-  }
-])
-```
 
 ### No conflicting classes
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
@@ -201,7 +151,7 @@ br-solid bb-solid bl-solid bt-dashed <!-- [!code ++] -->
 ---
 
 ## Supported sources
-The default config checks class strings in common markup, JavaScript locations, and unquoted `@compose` class lists in parsed CSS/style sources.
+The default config checks class strings in common markup, JavaScript locations.
 
 | Setting | Default | Use |
 | --- | --- | --- |

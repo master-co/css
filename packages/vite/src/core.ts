@@ -8,7 +8,7 @@ import EmittedGlobalsVirtualModulePlugin from './plugins/emitted-globals-virtual
 import ContextPlugin from './plugins/context'
 import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
-import LocalComposePlugin from './plugins/local-compose'
+import LocalStylesPlugin from './plugins/local-styles'
 import StylesheetRecoveryPlugin from './plugins/stylesheet-recovery'
 import BuildStylesheetRecoveryPlugin from './plugins/build-stylesheet-recovery'
 import SassSourcePlugin from './plugins/sass-source'
@@ -63,7 +63,7 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
     StylesheetRecoveryPlugin(context),
     BuildStylesheetRecoveryPlugin(context),
     SassSourcePlugin(context),
-    LocalComposePlugin(options, context),
+    LocalStylesPlugin(options, context),
     StyleEntryPlugin(options, context),
     StyleEntryHMRPlugin(options, context),
     InlineStylesheetPlugin(context),

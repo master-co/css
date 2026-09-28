@@ -13,7 +13,9 @@ describe('CSS validation reports knowledge without changing declarations', () =>
     ['grid-template-columns', 'repeat(foo,minmax(0,1fr))', 'invalid'],
     ['grid-template-columns', 'repeat(3,minmax(0,1fr))', 'valid'],
     ['color', 'red', 'valid'],
+    ['view-transition-scope', 'all', 'valid'],
     ['padding', 'var(--spacing)', 'unknown'],
+    ['padding', 'env(safe-area-inset-top)', 'unknown'],
     ['width', '--space(2)', 'unknown'],
     ['width', '2future', 'unknown'],
     ['future-property', 'future-value', 'unknown'],
@@ -34,6 +36,16 @@ describe('CSS validation reports knowledge without changing declarations', () =>
       ['property', 'inherits', 'valid'], ['property', 'initial-value', 'valid']
     ])
     expect(validateRuleDeclarations('@font-face{font-weight:red;future-descriptor:future(1)}').map(d => d.status)).toEqual(['invalid', 'unknown'])
+  })
+
+  it('uses the current CSS grammar without changing generated declarations', () => {
+    const rules = [{ text: '.a{view-transition-scope:all;padding:var(--space)}' }]
+    const result = withCSSValueValidation({ className: 'a', rules })
+    expect(result.rules).toBe(rules)
+    expect(result.declarations.map(declaration => declaration.status)).toEqual(['valid', 'unknown'])
+    expect(result.checks.map(check => check.name)).toEqual(['@eslint/css-tree', '@eslint/css-tree'])
+    expect(result.browserSupport).toBe('not-checked')
+    expect(cssSyntaxStatus('@supports font-tech(color-COLRv1){.a{display:block}}')).toBe('valid')
   })
 
   it('checks every declaration in managed and conditional rules', () => {

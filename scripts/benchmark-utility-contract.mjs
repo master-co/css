@@ -17,7 +17,7 @@ const paths = [
   { binding: resolve(currentBinding ?? 'packages/binding/artifacts/mastercss.node'), manifest: resolve('packages/preset/src/default-manifest.json'), js: resolve('packages/runtime/dist/global.min.js'), wasm: resolve('packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm'), runtimeManifest: resolve('packages/runtime/dist/default-manifest.json') }
 ]
 const pair = paths.map(paths => ({ paths, api: require(paths.binding), manifest: readFileSync(paths.manifest, 'utf8'), samples: {} }))
-const classes = Array.from({ length: 240 }, (_, index) => `${index % 2 ? 'size' : 'p'}:${index}px${index % 3 === 0 ? '@media((width>=50rem))' : ''}`)
+const classes = Array.from({ length: 240 }, (_, index) => `${index % 2 ? 'width' : 'p'}:${index}px${index % 3 === 0 ? '@media((width>=50rem))' : ''}`)
 classes.push('p-md@media((width>=50rem))', 'font-mono', 'text-center:hover', 'fg-red/0.5', 'block:focus-visible')
 const measured = (side, name, keep, operation) => {
   const start = performance.now()

@@ -47,7 +47,7 @@ fn css(manifest: &serde_json::Value, classes: &str) -> String {
 }
 
 #[test]
-fn qualified_files_reject_global_definitions_but_keep_native_compose() {
+fn qualified_files_reject_global_definitions_but_keep_native_variants() {
     for qualifier in [
         "",
         " layer",
@@ -63,7 +63,7 @@ fn qualified_files_reject_global_definitions_but_keep_native_compose() {
         );
         project.file(
             "child.css",
-            "@utilities{paint{color:red}}.card{@compose paint;}.ordinary{color:blue}",
+            r###"@utilities{paint{color:red}}.card{@variant media(all){color:red;}}.ordinary{color:blue}"###,
         );
         if !qualifier.is_empty() {
             let error = load_project_manifest(&project.0, json!({"version":1,"languageVersion":3}))
@@ -72,7 +72,10 @@ fn qualified_files_reject_global_definitions_but_keep_native_compose() {
             assert!(error.contains("Qualified import"), "{error}");
             assert!(error.contains("child.css"), "{error}");
             project.file("entry.css", &format!("@import './child.css'{qualifier};@master entry;@utilities{{paint{{color:red}}}}"));
-            project.file("child.css", ".card{@compose paint;}.ordinary{color:blue}");
+            project.file(
+                "child.css",
+                ".card{@variant media(all){color:red;}}.ordinary{color:blue}",
+            );
         }
         let result = project.load();
         assert!(
@@ -113,13 +116,13 @@ fn imported_source_patterns_belong_to_the_child_file() {
 }
 
 #[test]
-fn external_native_imports_do_not_block_manifest_and_compose() {
+fn external_native_imports_do_not_block_manifest_and_variants() {
     let project = Project::new();
     project.file(
         "entry.css",
         "@import './child.css' layer(cards) screen;@master entry;@utilities{paint{color:red}}",
     );
-    project.file("child.css", "@import 'https://invalid.invalid/remote.css';.card{@compose paint;}body{background:url('./missing.png')}");
+    project.file("child.css", "@import 'https://invalid.invalid/remote.css';.card{@variant media(all){color:red;}}body{background:url('./missing.png')}");
     let result = project.load();
     assert!(css(&result.manifest, "paint").contains(".paint{color:red}"));
     assert!(result.css.contains(".card{color:red}"), "{}", result.css);
@@ -128,17 +131,20 @@ fn external_native_imports_do_not_block_manifest_and_compose() {
 }
 
 #[test]
-fn references_resolve_compose_without_exporting_reference_definitions_or_sources() {
+fn references_resolve_variants_without_exporting_reference_definitions_or_sources() {
     let project = Project::new();
-    project.file("entry.css", "@master entry;@reference './tokens.css';@utilities{button{@compose paint;}}.card{@compose paint;}");
+    project.file("entry.css", "@master entry;@reference './tokens.css';@utilities{button{@variant paint{color:red;}}}.card{@variant paint{color:red;}}");
     let tokens = project.file(
         "tokens.css",
-        "@source './ignored/*.html';@utilities{paint{color:red}}",
+        "@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@utilities{paint{color:blue}}",
     );
     project.file("ignored/view.html", "ignored");
     let result = project.load();
     let actual = css(&result.manifest, "button paint");
-    assert!(actual.contains(".button{color:red}"), "{actual}");
+    assert!(
+        actual.contains("@media print{.button{color:red}}"),
+        "{actual}"
+    );
     assert!(!actual.contains(".paint{"));
     assert!(result.css.contains(".card{color:red}"), "{}", result.css);
     assert!(result.dependencies.contains(&tokens));

@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import { once } from 'node:events'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { expect, it } from 'vitest'
@@ -13,7 +14,7 @@ it('scans a new sibling HTML file after an existing-file change', async () => {
     const source = join(cwd, 'index.html')
     writeFileSync(source, '<div class="block"></div>')
     const child = spawn(process.execPath, [
-        '--import', createRequire(import.meta.url).resolve('tsx'),
+        '--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
         resolve(__dirname, '../src/bin/index.ts'), 'generate', '--watch'
     ], { cwd, env: { ...process.env, TSX_TSCONFIG_PATH: resolve(__dirname, '../../../tsconfig.json') } })
     let stderr = ''

@@ -23,7 +23,7 @@ test('BH-0019 watch matching agrees with initial discovery and prunes ignored tr
     ]) {
       const ignore = ['**/node_modules/**', '**/out/**']
       const plan = createSourceWatchPlan(fg, cwd, patterns, ignore)
-      const expected = fg.sync(patterns.map(value => value.replace(/\\/g, '/')), { cwd, ignore, absolute: true }).sort()
+      const expected = fg.sync(patterns.map(value => value.replace(/\\/g, '/')), { cwd, ignore, absolute: true }).map(file => path.resolve(file)).sort()
       const actual = files.map(file => path.join(cwd, file)).filter(plan.matches).sort()
       expect(actual, patterns.join(',')).toEqual(expected)
       expect(plan.ignored(path.join(cwd, 'node_modules'), fs.statSync(path.join(cwd, 'node_modules')))).toBe(true)

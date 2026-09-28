@@ -1,0 +1,382 @@
+{
+  "version": 1,
+  "module": "file:///Users/aron/master/css/packages/next/dist/static.js",
+  "node": "v24.20.0",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M3 Max"
+  },
+  "rounds": 10,
+  "warmup": 5,
+  "cases": [
+    "unchanged",
+    "edited",
+    "burst"
+  ],
+  "notes": [
+    "Warm sessions, tiny TSX files, 100 distinct shared utilities; filesystem growth is isolated from CSS rule count.",
+    "Burst sends ten concurrent module notifications for one edit.",
+    "Instrumentation is included on both sides; lock acquisition includes open latency and contention, not time holding the lock.",
+    "These are Master CSS static pipeline calls, not end-to-end Next HMR."
+  ],
+  "results": [
+    {
+      "size": 100,
+      "summary": {
+        "unchanged": {
+          "reads": {
+            "median": 211,
+            "p95": 211
+          },
+          "sourceReads": {
+            "median": 200,
+            "p95": 200
+          },
+          "globs": {
+            "median": 2,
+            "p95": 2
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "lockAcquisitionMs": {
+            "median": 0.1334580000002461,
+            "p95": 0.24662500000022192
+          },
+          "totalMs": {
+            "median": 48.28779200000008,
+            "p95": 48.98420900000019
+          }
+        },
+        "edited": {
+          "reads": {
+            "median": 418,
+            "p95": 418
+          },
+          "sourceReads": {
+            "median": 400,
+            "p95": 400
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 56.685875000000124,
+            "p95": 59.57141599999977
+          },
+          "lockAcquisitionMs": {
+            "median": 0.07970800000020972,
+            "p95": 0.09074999999984357
+          },
+          "totalMs": {
+            "median": 153.76974999999993,
+            "p95": 160.14704100000017
+          }
+        },
+        "burst": {
+          "reads": {
+            "median": 418,
+            "p95": 418
+          },
+          "sourceReads": {
+            "median": 400,
+            "p95": 400
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 56.82845899999984,
+            "p95": 57.22716700000001
+          },
+          "lockAcquisitionMs": {
+            "median": 0.09887499999967986,
+            "p95": 0.11662500000011278
+          },
+          "totalMs": {
+            "median": 172.7661250000001,
+            "p95": 175.49000000000024
+          }
+        }
+      }
+    },
+    {
+      "size": 1000,
+      "summary": {
+        "unchanged": {
+          "reads": {
+            "median": 2011,
+            "p95": 2011
+          },
+          "sourceReads": {
+            "median": 2000,
+            "p95": 2000
+          },
+          "globs": {
+            "median": 2,
+            "p95": 2
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "lockAcquisitionMs": {
+            "median": 0.07666700000117999,
+            "p95": 0.08591700000033597
+          },
+          "totalMs": {
+            "median": 365.3471669999999,
+            "p95": 379.9303329999966
+          }
+        },
+        "edited": {
+          "reads": {
+            "median": 4018,
+            "p95": 4018
+          },
+          "sourceReads": {
+            "median": 4000,
+            "p95": 4000
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 60.049833000000945,
+            "p95": 62.085416999998415
+          },
+          "lockAcquisitionMs": {
+            "median": 0.08983400000033726,
+            "p95": 0.10883300000205054
+          },
+          "totalMs": {
+            "median": 816.0483339999992,
+            "p95": 839.3431660000024
+          }
+        },
+        "burst": {
+          "reads": {
+            "median": 4018,
+            "p95": 4018
+          },
+          "sourceReads": {
+            "median": 4000,
+            "p95": 4000
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 59.7354579999992,
+            "p95": 60.90799999999945
+          },
+          "lockAcquisitionMs": {
+            "median": 0.10062500000276486,
+            "p95": 0.11845800000082818
+          },
+          "totalMs": {
+            "median": 831.9469170000011,
+            "p95": 855.7923340000016
+          }
+        }
+      }
+    },
+    {
+      "size": 5000,
+      "summary": {
+        "unchanged": {
+          "reads": {
+            "median": 10011,
+            "p95": 10011
+          },
+          "sourceReads": {
+            "median": 10000,
+            "p95": 10000
+          },
+          "globs": {
+            "median": 2,
+            "p95": 2
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "lockAcquisitionMs": {
+            "median": 0.07583299999532755,
+            "p95": 0.0871670000051381
+          },
+          "totalMs": {
+            "median": 1871.0755409999983,
+            "p95": 1907.3184160000092
+          }
+        },
+        "edited": {
+          "reads": {
+            "median": 20018,
+            "p95": 20018
+          },
+          "sourceReads": {
+            "median": 20000,
+            "p95": 20000
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 62.71870799998578,
+            "p95": 64.86237600000459
+          },
+          "lockAcquisitionMs": {
+            "median": 0.10837500001071021,
+            "p95": 0.11691699999209959
+          },
+          "totalMs": {
+            "median": 3804.644790999999,
+            "p95": 3833.63904200001
+          }
+        },
+        "burst": {
+          "reads": {
+            "median": 20018,
+            "p95": 20018
+          },
+          "sourceReads": {
+            "median": 20000,
+            "p95": 20000
+          },
+          "globs": {
+            "median": 4,
+            "p95": 4
+          },
+          "registerCalls": {
+            "median": 0,
+            "p95": 0
+          },
+          "registerMs": {
+            "median": 0,
+            "p95": 0
+          },
+          "composeCalls": {
+            "median": 2,
+            "p95": 2
+          },
+          "composeMs": {
+            "median": 64.03120799998578,
+            "p95": 66.39441700000316
+          },
+          "lockAcquisitionMs": {
+            "median": 0.08974999999918509,
+            "p95": 0.12054200000420678
+          },
+          "totalMs": {
+            "median": 3897.9092919999966,
+            "p95": 3941.430333000011
+          }
+        }
+      }
+    }
+  ]
+}

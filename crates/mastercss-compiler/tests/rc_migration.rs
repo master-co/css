@@ -128,7 +128,10 @@ fn migrates_directives_and_reports_selector_references() {
         ".p\\:md{color:red}".into()];
     let result = migrate_rc(&input).unwrap();
     assert!(
-        result.stylesheets[0].notes.is_empty(),
+        result.stylesheets[0]
+            .notes
+            .iter()
+            .any(|note| note.contains("@compose has been removed")),
         "{:?}",
         result.stylesheets[0].notes
     );
@@ -142,7 +145,7 @@ fn migrates_directives_and_reports_selector_references() {
     assert!(!migrated.contains("base-unit"));
     assert!(migrated.contains("font-<~font-size>"));
     assert!(migrated.contains("font-size:<*>"));
-    assert!(migrated.contains("@compose p-md font-mono"));
+    assert!(migrated.contains("@compose p:md font:mono"));
     assert!(!result.stylesheets[1].notes.is_empty());
     input.stylesheets = vec![migrated];
     let again = migrate_rc(&input).unwrap();

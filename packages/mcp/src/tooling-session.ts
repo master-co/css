@@ -7,8 +7,8 @@ import type {
 } from '@master/css-tooling/language'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-export function createMCPToolingSession(manifest: MasterCSSManifest) {
-  return createToolingSessionSync({ manifest })
+export function createMCPToolingSession(manifest: MasterCSSManifest, nativeClassNames: readonly string[] = []) {
+  return createToolingSessionSync({ manifest, nativeClassNames })
 }
 
 export function compactClassInspection(

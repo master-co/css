@@ -58,6 +58,18 @@ test('clear uses different float heights and real side-specific clearing', async
   }
 })
 
+test('native demo rules retain theme variables used without utility classes', () => {
+  const html = '<div class="native-card">Preview</div>'
+  const document = demoDocument({
+    page: 'project-styles', id: 'native-card', title: 'Native card', html: [html],
+    css: '.native-card { background-color: var(--color-blue-60); border-radius: var(--radius-md); }',
+    classes: [], classLists: [], highlighted: []
+  }, { html, caption: 'Native theme references' })
+  assert.match(document, /\.native-card\s*\{[^}]*var\(--color-blue-60\)/)
+  assert.match(document, /--color-blue-60:/)
+  assert.match(document, /--radius-md:/)
+})
+
 test('new demo tokens are defined and specimens do not force layout on demo items', async () => {
   const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
   const theme = await readFile(new URL('../../../styles/demo-theme.css', import.meta.url), 'utf8')

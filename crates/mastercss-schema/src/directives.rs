@@ -92,25 +92,6 @@ pub enum CssDirectiveStyleDefinition {
         #[serde(skip_serializing_if = "Option::is_none")]
         name: Option<String>,
     },
-    Compose {
-        order: u32,
-        class_name: String,
-        selector: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        source: Option<CssDirectiveSourceReference>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        directive_source: Option<CssDirectiveSourceReference>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        selector_source: Option<CssDirectiveSourceReference>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        conditions: Option<Vec<String>>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        condition_path: Option<Vec<CssDirectiveConditionPathEntry>>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        layer: Option<UtilityLayerName>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        name: Option<String>,
-    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -128,16 +109,10 @@ pub enum ErrorCode {
     CssParseError,
     CssPrintError,
     CssDirectiveError,
-    #[serde(rename = "invalid-compose-class")]
-    InvalidComposeClass,
-    #[serde(rename = "invalid-compose-layer")]
-    InvalidComposeLayer,
     #[serde(rename = "removed-managed-directive")]
     RemovedManagedDirective,
-    #[serde(rename = "compose-quoted-syntax")]
-    ComposeQuotedSyntax,
-    #[serde(rename = "compose-group-syntax")]
-    ComposeGroupSyntax,
+    #[serde(rename = "removed-compose-directive")]
+    RemovedComposeDirective,
     CssImportError,
     SessionDisposed,
     InvalidInput,
@@ -145,6 +120,7 @@ pub enum ErrorCode {
     SourceParseError,
     UnknownCondition,
     MasterQueryRequiresCss,
+    RemovedPresetUtility,
     UndefinedMode,
     UtilityNameConflict,
     AmbiguousToken,
@@ -153,7 +129,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 29] = [
+    pub const ALL: [Self; 27] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -166,11 +142,8 @@ impl ErrorCode {
         Self::CssParseError,
         Self::CssPrintError,
         Self::CssDirectiveError,
-        Self::InvalidComposeClass,
-        Self::InvalidComposeLayer,
         Self::RemovedManagedDirective,
-        Self::ComposeQuotedSyntax,
-        Self::ComposeGroupSyntax,
+        Self::RemovedComposeDirective,
         Self::CssImportError,
         Self::SessionDisposed,
         Self::InvalidInput,
@@ -178,6 +151,7 @@ impl ErrorCode {
         Self::SourceParseError,
         Self::UnknownCondition,
         Self::MasterQueryRequiresCss,
+        Self::RemovedPresetUtility,
         Self::UndefinedMode,
         Self::UtilityNameConflict,
         Self::AmbiguousToken,
@@ -199,17 +173,15 @@ impl ErrorCode {
             Self::CssParseError => "CSS_PARSE_ERROR",
             Self::CssPrintError => "CSS_PRINT_ERROR",
             Self::CssDirectiveError => "CSS_DIRECTIVE_ERROR",
-            Self::InvalidComposeClass => "invalid-compose-class",
-            Self::InvalidComposeLayer => "invalid-compose-layer",
             Self::RemovedManagedDirective => "removed-managed-directive",
-            Self::ComposeQuotedSyntax => "compose-quoted-syntax",
-            Self::ComposeGroupSyntax => "compose-group-syntax",
+            Self::RemovedComposeDirective => "removed-compose-directive",
             Self::CssImportError => "CSS_IMPORT_ERROR",
             Self::SessionDisposed => "SESSION_DISPOSED",
             Self::InvalidInput => "INVALID_INPUT",
             Self::ClassSyntaxError => "CLASS_SYNTAX_ERROR",
             Self::SourceParseError => "SOURCE_PARSE_ERROR",
             Self::UnknownCondition => "UNKNOWN_CONDITION",
+            Self::RemovedPresetUtility => "REMOVED_PRESET_UTILITY",
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UndefinedMode => "UNDEFINED_MODE",
             Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",
@@ -438,23 +410,6 @@ fn css_blocklist_pattern_matches(source: &str, value: &str) -> bool {
             matches(&tokens, &value, 0, value_index, anchored_end, &mut matched)
         })
     }
-}
-
-/// Build-time composition inspection; deliberately absent from Manifest v1.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CssCompositionTrace {
-    pub order: u32,
-    pub classes: Vec<String>,
-    /// Resolved definition identities used while attaching compiler sources.
-    #[serde(skip)]
-    pub resolved_utilities: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub source: Option<CssDirectiveSourceReference>,
-    pub definition_sources: Vec<CssDirectiveSourceReference>,
-    pub css: String,
-    pub variable_names: Vec<String>,
-    pub animation_names: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

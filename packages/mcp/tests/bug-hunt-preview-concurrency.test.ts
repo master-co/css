@@ -1,4 +1,4 @@
-import { linkSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { linkSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, expect, it } from 'vitest'
@@ -17,6 +17,19 @@ function setup() {
 afterEach(() => {
   for (const context of contexts.splice(0)) context.dispose()
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true })
+})
+
+it('keeps a new writable file identity stable through a directory alias', async () => {
+  const { root, context } = setup()
+  const directory = join(root, 'real'), alias = join(root, 'alias')
+  mkdirSync(directory)
+  symlinkSync(directory, alias, 'junction')
+  const requested = join(alias, 'new.txt')
+  const before = await context.resolveWritableFile(requested)
+  const preview = await context.createPreview([{ filePath: requested, afterText: 'created' }])
+  await context.applyPreview(preview.confirmToken!)
+  expect(await context.resolveWritableFile(requested)).toBe(before)
+  expect(readFileSync(join(directory, 'new.txt'), 'utf8')).toBe('created')
 })
 
 it('accepts exactly one simultaneous use of a preview token', async () => {
