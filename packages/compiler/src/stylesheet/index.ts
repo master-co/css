@@ -390,7 +390,7 @@ export async function compileRenderedStylesheet(
   const { compileOptions, finalizedResult, result, outputMap } = await compileStylesheetResult(id, source, options, true)
   const renderedCSS = renderCompiledManifestCSS({
     manifest: finalizedResult.resolutionManifest,
-    // Lowering emits composed native rules separately from parsed native CSS.
+    // Include lowered native variants as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
     emittedGlobals: options.emittedGlobals

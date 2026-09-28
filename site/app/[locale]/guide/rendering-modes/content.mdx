@@ -496,7 +496,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 }
 ```
 
-These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, components, utilities, and native composed rules into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, utilities and native variant blocks into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |

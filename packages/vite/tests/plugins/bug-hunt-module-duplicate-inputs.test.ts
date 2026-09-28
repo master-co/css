@@ -11,7 +11,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('identica
   try {
     for (const name of ['a', 'b']) {
       mkdirSync(join(root, name))
-      writeFileSync(join(root, name, 'child.css'), '.same{@compose p:2rem;background:url("./pixel.svg")}')
+      writeFileSync(join(root, name, 'child.css'), ".same{@variant media(all){padding:2rem;background:url(\"./pixel.svg\")}}")
       writeFileSync(join(root, name, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>${name}</title></svg>`)
     }
     writeFileSync(join(root, 'style.module.css'), '@import "./a/child.css" layer(guard);@import "./b/child.css" layer(guard);.local{display:block}:export{token:shared}')

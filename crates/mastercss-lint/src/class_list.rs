@@ -1,7 +1,6 @@
 use crate::{
-    CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, CanonicalComposeDirectiveIr,
-    CanonicalComposeSuggestionKind, LintBatchIr, LintClassListIr, LintDiagnosticIr, LintEditIr,
-    LintEditScope, RawValueCandidateIr, RawValuePolicy,
+    CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, LintBatchIr, LintClassListIr,
+    LintDiagnosticIr, LintEditIr, LintEditScope, RawValueCandidateIr, RawValuePolicy,
 };
 use mastercss_lexer::utf16_len;
 use mastercss_schema::{LINT_BATCH_VERSION, SourceRange};
@@ -589,75 +588,6 @@ pub(crate) fn add_canonical_class_diagnostics(
         }
     }
     result.diagnostics.extend(diagnostics);
-}
-
-pub(crate) fn add_canonical_compose_diagnostics(
-    result: &mut LintClassListIr,
-    class_list: &str,
-    class_names: &[String],
-    compose: &CanonicalComposeDirectiveIr,
-) {
-    let items = parse_class_list(class_list, class_names);
-    let fix = compose.replacement.as_ref().map(|text| LintEditIr {
-        range: SourceRange {
-            start: 0,
-            end: utf16_len(class_list),
-        },
-        text: text.clone(),
-        scope: LintEditScope::Directive,
-    });
-    for suggestion in &compose.suggestions {
-        let range = suggestion
-            .class_names
-            .first()
-            .and_then(|class_name| find_class_range(&items, class_name))
-            .unwrap_or(SourceRange {
-                start: 0,
-                end: utf16_len(class_list),
-            });
-        let (code, message) = match suggestion.kind {
-            CanonicalComposeSuggestionKind::Class => (
-                "prefer-canonical-class",
-                canonical_message(&suggestion.actual, &suggestion.recommended),
-            ),
-            CanonicalComposeSuggestionKind::NativeDeclaration => (
-                "prefer-native-declaration",
-                format!(
-                    "Use CSS declaration `{}` instead of class `{}`.",
-                    suggestion.recommended.replace('`', "\\`"),
-                    suggestion.actual.replace('`', "\\`")
-                ),
-            ),
-            CanonicalComposeSuggestionKind::VariantBlock => (
-                "prefer-variant-block",
-                format!(
-                    "Move class `{}` into the canonical @compose block.",
-                    suggestion.actual.replace('`', "\\`")
-                ),
-            ),
-        };
-        result.diagnostics.push(LintDiagnosticIr {
-            rule_id: "prefer-canonical-classes".into(),
-            code: code.into(),
-            message,
-            range,
-            data: serde_json::Map::from_iter([
-                (
-                    "actual".into(),
-                    serde_json::Value::String(suggestion.actual.clone()),
-                ),
-                (
-                    "recommended".into(),
-                    serde_json::Value::String(suggestion.recommended.clone()),
-                ),
-                (
-                    "kind".into(),
-                    serde_json::to_value(suggestion.kind).unwrap_or_default(),
-                ),
-            ]),
-            fix: fix.clone(),
-        });
-    }
 }
 
 fn sort_class_list(items: &[ClassListItem], sorted_class_names: &[String]) -> String {

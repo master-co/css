@@ -17,7 +17,7 @@ utilities > components > defaults > base > theme
 
 Normal unlayered author rules take precedence over normal layered author rules. `!important` reverses the order between layers; it also gives important layered declarations precedence over important unlayered declarations. The order above describes normal declarations, not every case in the native cascade.
 
-Generated CSS emits rules into those layer blocks. Native style rules that use `@compose` or `@variant` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
+Generated CSS emits rules into those layer blocks. Native style rules that use `@variant` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
 
 ## The five layers \{#the-five-layers\}
 ### Theme \{#theme\}
@@ -45,7 +45,7 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@variant` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
 
 ```css name=index.css
 @utilities {
@@ -177,14 +177,15 @@ Native `@layer` blocks remain ordinary stylesheet output; they do not define on-
 }
 ```
 
-Native style rules can still compose Master CSS utilities when the rule should remain ordinary stylesheet output:
+Write native declarations in the layer that owns the rule:
 
 ```css name=app.css
 .card {
-  @compose block p-md;
+  display: block;
+  padding: var(--spacing-md);
 
   @dark {
-    @compose bg-neutral-90;
+    background-color: var(--color-neutral-90);
   }
 }
 ```

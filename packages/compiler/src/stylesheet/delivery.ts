@@ -172,8 +172,8 @@ export function compileDeliveredFile(file: string, options: CompileStylesheetOpt
 /** Compile supplied local CSS and its imports without flattening their boundaries. */
 export async function compileDeliveredSource(id: string, source: string, options: TransformLocalStylesheetOptions, nativeClasses?: readonly string[]) {
   const filename = normalizeStylesheetGraphID(id), delivery = options.delivery!
-  const graphOptions = { baseFile: delivery.baseFile, sourceMap: delivery.sourceMap, projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }
-  const graph = delivery.resolveImport || delivery.baseFile || delivery.sourceMap
+  const graphOptions = { baseFile: delivery.baseFile ?? options.baseFile, sourceMap: delivery.sourceMap ?? options.sourceMap, projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }
+  const graph = delivery.resolveImport || graphOptions.baseFile || graphOptions.sourceMap
     ? await prepareCSSImportGraphWithResolver(filename, source, graphOptions, analyzeCSSDependencies, delivery.resolveImport ?? (() => undefined))
     : prepareCSSImportGraph(filename, source, graphOptions, analyzeCSSDependencies)
   if (!options.transformNativeStylesheets && !Object.entries(graph.files).some(([file, source]) => hasLocalStyleDirectives(source, file))) return
@@ -271,14 +271,21 @@ export function composeDeliveredStylesheets(
   }
   const rendered = renderCompiledManifestCSS({
     manifest: result.manifest as MasterCSSManifest,
-    nativeCSS: result.stylesheets.map(asset => asset.css),
     classNames: generatedClasses,
     includeGeneratedCSS: options.includeGeneratedCSS
   })
-  const css = `${result.directives.css}\n${rendered.generatedCSS}`
+  // References supply resources used by native declarations, while only the
+  // public manifest can generate markup utilities for this collection.
+  const referenced = renderCompiledManifestCSS({
+    manifest: result.resolutionManifest,
+    nativeCSS: result.stylesheets.map(asset => asset.css),
+    includeGeneratedCSS: false,
+    emittedGlobals: rendered.emittedGlobals
+  })
+  const css = [result.directives.css, rendered.generatedCSS, referenced.generatedCSS].filter(Boolean).join('\n')
   return {
     css,
-    emittedGlobals: rendered.emittedGlobals,
+    emittedGlobals: referenced.emittedGlobals,
     stylesheets: result.stylesheets.filter(asset => asset.id !== entry),
     resources: result.resources,
     dependencies: result.directives.dependencies.filter(file => file !== entry)

@@ -11,12 +11,12 @@ const require = createRequire(import.meta.url)
 const cli = fileURLToPath(new URL('../src/bin/index.ts', import.meta.url))
 const tsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 
-test('BH-0004 CLI emits a referenced resource and native compose without emitting reference CSS', () => {
+test('BH-0004 CLI emits a referenced resource and native declarations without emitting reference CSS', () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-reference-'))
   try {
     mkdirSync(join(cwd, 'tokens'))
-    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@master entry;.example{@compose paint;}")
-    writeFileSync(join(cwd, 'tokens/theme.css'), "@utilities{paint{color:red;background-image:url('./icon%23one.svg?q=1#mark')}}.reference-only{color:blue}")
+    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@master entry;.example{@variant media(all){color:red;background-image:var(--image-icon);}}")
+    writeFileSync(join(cwd, 'tokens/theme.css'), "@theme{--image-icon:url('./icon%23one.svg?q=1#mark')}.reference-only{color:blue}")
     const bytes = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
     writeFileSync(join(cwd, 'tokens/icon#one.svg'), bytes)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')

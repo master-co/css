@@ -18,8 +18,6 @@ export const toolingOptions = {
       { name: 'preferPropertyAliases', defaultValue: 'true', description: 'Use shorter property keys: margin:1rem → m:1rem.' },
       { name: 'preferCompositionUtilities', defaultValue: 'true', description: 'Combine declarations only when value sources and cascade priorities are preserved.' },
       { name: 'preferConditionOrder', defaultValue: 'true', description: 'Normalize safe condition combinations: @dark@sm → @sm@dark.' },
-      { name: 'preferNativeDeclarationsInCompose', defaultValue: 'true', description: 'Move declaration-like classes out of @compose into native CSS declarations.' },
-      { name: 'preferVariantBlocksInCompose', defaultValue: 'true', description: 'Move conditional @compose classes into selector, @variant, or mode blocks.' }
     ]
   },
   lintSources: {
@@ -93,7 +91,7 @@ export const toolingExamples = {
   },
   format: {
     title: 'Keep the important marker with its class', language: 'css', sourceLabel: 'Before formatting', resultLabel: 'After formatting',
-    source: '.card {\n  @compose bg:transparent !;\n}', result: '.card {\n  @compose bg:transparent!;\n}'
+    source: '@safelist "bg:transparent !";', result: '@safelist "bg:transparent!";'
   }
 } satisfies Record<string, DocumentCodeExampleProps>
 

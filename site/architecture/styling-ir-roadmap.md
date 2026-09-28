@@ -83,7 +83,7 @@ APIs already promised by 2.0:
 3. **Source-aware edit proposal:** define preview inputs, source identity,
    diagnostics and stale-source rejection before exposing mutation APIs.
    Acceptance: edits cannot silently apply to changed source or unrelated files;
-   duplicate declarations and compose boundaries survive accepted edits.
+   duplicate declarations and native conditional boundaries survive accepted edits.
 4. **Semantic comparison proposal:** compare supported execution data by generated
    behavior, including value source and cascade identity, rather than JSON text.
    Acceptance: an apparent spelling simplification that changes a competing rule's
@@ -101,7 +101,7 @@ for separate lossless CSS roundtrip research.
 | Third-party task | Existing path | Missing capability, if any | Owner and compatibility |
 | --- | --- | --- | --- |
 | Browse tokens and explain a known class | Project loader, schema token helper, engine inspection, tooling validator; the executable example above | No new API is required for a read-only result. Project failure must be reported. | Keep compiler/tooling data outside the runtime bundle. |
-| Explain which authored definition won after imports and replacement | Compiler composition traces and project report expose sources for some operations; Rust lowering also tracks replaced utility sources internally | A complete public, source-located definition provenance view is not yet established for all effective definitions. Do not import the binding's raw parse IR as an SPI. | Add a read-only compiler report only after fixture-backed gaps are specified. It must preserve Manifest v1 execution bytes. |
+| Explain which authored definition won after imports and replacement | Compiler project reports expose source files; Rust lowering also tracks replaced utility sources internally | A complete public, source-located definition provenance view is not yet established for all effective definitions. Do not import the binding's raw parse IR as an SPI. | Add a read-only compiler report only after fixture-backed gaps are specified. It must preserve Manifest v1 execution bytes. |
 | Preview an editor change to an imported utility | Compiler can compile a whole project, but it does not expose a source-aware edit proposal or stale-source precondition | Preview and patch ownership, exact authored range, and revision checks need a separate authoring contract. | Compiler/project orchestrates sources; Rust owns parsing and lowering. Add an authoring API separately from the runtime manifest. |
 | Compare two projects' styling behavior | Engine can inspect a finite class set and tooling can validate values, but callers cannot claim general CSS equivalence from JSON equality | A finite-scope semantic diff needs a specified class/context corpus, rule order, resources, and an explicit `unknown` result for unsupported contexts. | Semantic comparison belongs to Rust with a compiler/tooling wrapper. No TypeScript semantic fallback. |
 
@@ -119,7 +119,7 @@ Consider an imported stylesheet with this definition:
   badge {
     color: oklch(60% 0.1 20);
     color: red;
-    @compose text-sm;
+    font-size: 0.875rem;
   }
 }
 ```
@@ -128,7 +128,7 @@ An editor may propose changing only the second color declaration. Its preview
 must identify the owning file and its original content revision, show an exact
 source patch, recompile the affected graph, and return diagnostics plus a
 before/after behavior report for the stated class set. It must retain the first
-fallback declaration and the `@compose` statement at their authored positions.
+fallback declaration and the `font-size` declaration at their authored positions.
 Writing is a separate, explicitly invoked host action; preview itself changes no
 file. If the owner file changed, disappeared, or ceased to match the requested
 target, reject the proposal rather than applying it elsewhere or silently

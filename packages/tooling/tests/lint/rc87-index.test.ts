@@ -4,7 +4,6 @@ import {
   createCSSWithNativeDeclarations,
   defaultCanonicalClassNameOptions,
   defaultClassLintSettings,
-  createCanonicalComposeDirectiveReport,
   createCanonicalClassesReport,
   createClassListLintReport,
   createConflictingClassesReport,
@@ -22,7 +21,6 @@ import {
   resolveMasterCSSLintRules,
   summarizeMasterCSSLintFiles,
   suggestCanonicalClassGroups,
-  suggestCanonicalComposeDirective,
   sortClassList,
   sortClassNames,
   suggestCanonicalClassName
@@ -264,30 +262,6 @@ describe('lint diagnostics', () => {
     }).diagnostics.map(({ code }) => code))
       .toContain('unapproved-raw-value')
   })
-
-  test('reports structural compose fixes with directive scope', () => {
-    const report = createCanonicalComposeDirectiveReport('contain:content bg-blue-60:hover@sm', css)
-    expect(report.diagnostics).toContainEqual(expect.objectContaining({
-      ruleId: 'prefer-canonical-classes',
-      code: 'prefer-native-declaration',
-      data: expect.objectContaining({
-        actual: 'contain:content',
-        recommended: 'contain: content'
-      }),
-      fix: expect.objectContaining({
-        scope: 'directive',
-        text: expect.stringContaining('contain: content;')
-      })
-    }))
-    expect(report.diagnostics).toContainEqual(expect.objectContaining({
-      code: 'prefer-native-declaration',
-      message: 'Use CSS declaration `contain: content` instead of class `contain:content`.'
-    }))
-    expect(report.diagnostics).toContainEqual(expect.objectContaining({
-      code: 'prefer-variant-block',
-      message: 'Move class `bg-blue-60:hover@sm` into the canonical @compose block.'
-    }))
-  })
 })
 
 describe('source content linting', () => {
@@ -415,32 +389,12 @@ describe('source content linting', () => {
     })
   })
 
-  test('reports and applies structural compose directive fixes when allowed', () => {
+  test('leaves removed compose statements to compiler diagnostics', () => {
     const content = '.btn { @compose contain:content; }'
-    const result = lintMasterCSSContent({
-      content,
-      filePath: '/project/index.css',
-      css
-    })
-
-    expect(result.sourceKind).toBe('stylesheet')
-    expect(result.diagnostics).toContainEqual(expect.objectContaining({
-      code: 'prefer-native-declaration',
-      sourceKind: 'compose-directive',
-      fixes: [expect.objectContaining({ kind: 'directive', safety: 'structural' })]
-    }))
-    expect(fixMasterCSSContent({
-      content,
-      filePath: '/project/index.css',
-      css
-    })).toBe(content)
-    expect(fixMasterCSSContent({
-      content,
-      filePath: '/project/index.css',
-      css,
-      includeDirectiveFixes: true
-    })).toBe('.btn { contain: content; }')
+    expect(lintMasterCSSContent({ content, filePath: '/project/index.css', css }).diagnostics).toEqual([])
+    expect(fixMasterCSSContent({ content, filePath: '/project/index.css', css })).toBe(content)
   })
+
 })
 
 describe('class conflicts', () => {
@@ -754,92 +708,6 @@ describe('canonical class group suggestions', () => {
   })
 })
 
-describe('canonical compose directive suggestions', () => {
-  test('keeps canonical utilities and extracts native declarations', () => {
-    expect(suggestCanonicalComposeDirective('text-align:center contain:content', css)).toEqual({
-      suggestions: [
-        {
-          actual: 'text-align:center',
-          recommended: 'text-align: center',
-          classNames: ['text-align:center'],
-          kind: 'native-declaration'
-        },
-        {
-          actual: 'contain:content',
-          recommended: 'contain: content',
-          classNames: ['contain:content'],
-          kind: 'native-declaration'
-        }
-      ],
-      structuralChange: true,
-      replacement: 'text-align: center;\ncontain: content;'
-    })
-  })
-
-  test('extracts variant suffixes into variant blocks', () => {
-    expect(suggestCanonicalComposeDirective('bg-blue-60:hover@sm block@dark', css)).toEqual({
-      suggestions: [
-        {
-          actual: 'bg-blue-60:hover@sm',
-          recommended: '&:hover { @variant sm { @compose bg-blue-60; } }',
-          classNames: ['bg-blue-60:hover@sm'],
-          kind: 'variant-block'
-        },
-        {
-          actual: 'block@dark',
-          recommended: '@dark { @compose block; }',
-          classNames: ['block@dark'],
-          kind: 'variant-block'
-        }
-      ],
-      structuralChange: true,
-      replacement: '&:hover { @variant sm { @compose bg-blue-60; } }\n@dark { @compose block; }'
-    })
-  })
-
-  test('extracts important native declarations', () => {
-    expect(suggestCanonicalComposeDirective('contain:content!', css)).toEqual({
-      suggestions: [
-        {
-          actual: 'contain:content!',
-          recommended: 'contain: content !important',
-          classNames: ['contain:content!'],
-          kind: 'native-declaration'
-        }
-      ],
-      structuralChange: true,
-      replacement: 'contain: content !important;'
-    })
-  })
-
-  test('does not extract token-backed, semantic, or alias classes as native declarations', () => {
-    expect(suggestCanonicalComposeDirective('font-md block w:10px', css, {
-      ...defaultCanonicalClassNameOptions,
-      preferStaticUtilities: false,
-      preferPropertyAliases: false
-    })).toBeUndefined()
-  })
-
-  test('reports duplicate native declarations without autofix', () => {
-    expect(suggestCanonicalComposeDirective('contain:content contain:none', css)).toEqual({
-      suggestions: [
-        {
-          actual: 'contain:content',
-          recommended: 'contain: content',
-          classNames: ['contain:content'],
-          kind: 'native-declaration'
-        },
-        {
-          actual: 'contain:none',
-          recommended: 'contain: none',
-          classNames: ['contain:none'],
-          kind: 'native-declaration'
-        }
-      ],
-      structuralChange: true
-    })
-  })
-})
 
 test('exports default lint target settings', () => {
   expect(defaultClassLintSettings.classAttributes).toEqual(['class', 'className'])

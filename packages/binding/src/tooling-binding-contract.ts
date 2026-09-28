@@ -15,7 +15,6 @@ import type {
   MasterCSSLintCanonicalClassGroupSuggestions,
   MasterCSSLintCanonicalClassNameOptions,
   MasterCSSLintCanonicalClassSuggestions,
-  MasterCSSLintCanonicalComposeDirective,
   MasterCSSLintClassList,
   MasterCSSLintClassListPolicyRequest,
   MasterCSSLintHostValidation,
@@ -114,11 +113,6 @@ export interface MasterCSSLintBindingSession extends MasterCSSToolingBindingSess
     nativeSupport: readonly boolean[] | undefined,
     options?: Partial<MasterCSSLintCanonicalClassNameOptions>
   ): MasterCSSLintCanonicalClassGroupSuggestions
-  canonicalComposeDirective(
-    classNames: readonly string[],
-    nativeSupport: readonly boolean[] | undefined,
-    options?: Partial<MasterCSSLintCanonicalClassNameOptions>
-  ): MasterCSSLintCanonicalComposeDirective
   rawValueCandidates(
     classNames: readonly string[],
     nativeSupport: readonly boolean[] | undefined,

@@ -144,6 +144,7 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Preserved exact cases | ${rustRefactorContractLedger.summary.byStatus['preserved-exact'] ?? 0} |
 | Verified supersets | ${rustRefactorContractLedger.summary.byStatus['verified-superset'] ?? 0} |
 | Approved contract changes | ${rustRefactorContractLedger.summary.byStatus['approved-contract-change'] ?? 0} |
+| Approved contract removals (historical cases retained) | ${rustRefactorContractLedger.summary.byStatus['approved-contract-removal'] ?? 0} |
 | Regressed or removed cases | ${(rustRefactorContractLedger.summary.byStatus.regressed ?? 0) + (rustRefactorContractLedger.summary.byStatus['removed-unapproved'] ?? 0)} |
 | Target-added supplemental cases | ${rustRefactorContractLedger.summary.addedCases} |
 

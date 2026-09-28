@@ -197,7 +197,7 @@ Read-only tools never write files. Tools that can lead to writes use a two-step 
 
 This keeps AI-assisted edits reviewable. If a file changes after the preview is created, applying the preview fails instead of overwriting newer work.
 
-Use `includeDirectiveFixes` only when structural `@compose` rewrites are acceptable. Class-list fixes are safer because they replace class-list text in place; directive fixes can rewrite CSS directive structure. Directive formatting previews are separate from lint fixes and use the same preview/apply safety checks.
+Class-list fixes replace class-list text in place. Directive formatting previews are separate from lint fixes and use the same preview/apply checks.
 
 ---
 

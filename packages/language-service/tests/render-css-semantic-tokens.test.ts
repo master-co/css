@@ -196,7 +196,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   const utilitiesDirective = [
     '@utilities {',
     '    text-<left|right> {',
-    '        @compose block fg-red;',
+    "        @safelist \"block fg-red\";",
     '        text-align: --value();',
     '    }',
     '}'
@@ -253,17 +253,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
 })
 
 test.concurrent('renders CSS directives in SCSS-like sources', () => {
-  const { tokens } = renderTokens(`
-    $color: red;
-
-    @theme {
-      --color-primary: #123;
-    }
-
-    .btn {
-      @compose block;
-    }
-  `, 'scss')
+  const { tokens } = renderTokens("\n    $color: red;\n\n    @theme {\n      --color-primary: #123;\n    }\n\n    .btn {\n      @safelist \"block\";\n    }\n  ", 'scss')
 
   expectToken(tokens, 'block', 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
@@ -272,41 +262,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
-  const { tokens } = renderTokens(`
-    @source not "src/**/*.{ts,tsx}";
-    @reference "./tokens.css";
-    @blocklist "debug-*";
-    @safelist "block fg-red:hover@md";
-
-    @theme static brand {
-      --color-primary: --alpha(var(--color-blue-60) / 80%);
-      --radius-card: 1rem;
-    }
-
-    @custom-variant headings { @media all { @slot; } }
-
-    @utilities {
-      btn {
-        @compose inline-flex align-items:center fg-primary:hover@md;
-
-        @variant h>=sm&h<lg {
-          @compose block;
-        }
-
-        ::scrollbar-thumb:hover {
-          @dark {
-            @compose fg-primary;
-          }
-        }
-      }
-    }
-
-    @utilities {
-      text-decoration-<~color> {
-        text-decoration: --value();
-      }
-    }
-  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
+  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"block fg-red:hover@md\";\n\n    @theme static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    }\n\n    @custom-variant headings { @media all { @slot; } }\n\n    @utilities {\n      btn {\n        @safelist \"inline-flex align-items:center fg-primary:hover@md\";\n\n        @variant h>=sm&h<lg {\n          @safelist \"block\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @dark {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n    }\n\n    @utilities {\n      text-decoration-<~color> {\n        text-decoration: --value();\n      }\n    }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -441,7 +397,7 @@ test.concurrent('does not render active semantic tokens for CSS directive syntax
 })
 
 test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
-  const content = '@utilities { btn { @compose fg-red block:hover; } }'
+  const content = "@utilities { btn { @safelist \"fg-red block:hover\"; } }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
@@ -486,7 +442,7 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
-  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @compose block; } }'
+  const content = "@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @safelist \"block\"; } }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)

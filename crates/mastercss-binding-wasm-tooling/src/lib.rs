@@ -125,8 +125,6 @@ struct LintClassListRequest {
     disallow_unknown_class: bool,
     raw_value_policy: Option<LintRawValuePolicyRequest>,
     canonical_options: Option<mastercss_lint::CanonicalClassNameOptions>,
-    #[serde(default)]
-    compose_directive: bool,
 }
 
 #[derive(Deserialize)]
@@ -326,7 +324,6 @@ impl ToolingLintSession {
                     disallow_unknown_class: request.disallow_unknown_class,
                     raw_value_policy: raw_value_policy.as_ref(),
                     canonical_options: request.canonical_options.as_ref(),
-                    compose_directive: request.compose_directive,
                 },
             )
             .map_err(scanner_error)?;
@@ -416,34 +413,6 @@ impl ToolingLintSession {
         };
         self.inner
             .canonical_class_groups(&class_names, native_support.as_deref(), &options)
-            .map_err(scanner_error)?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = canonicalComposeDirective)]
-    pub fn canonical_compose_directive(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: JsValue,
-        options: JsValue,
-    ) -> Result<JsValue, JsValue> {
-        let native_support = if native_support.is_null() || native_support.is_undefined() {
-            None
-        } else {
-            Some(
-                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-                    .map_err(|error| JsValue::from_str(&error.to_string()))?,
-            )
-        };
-        let options = if options.is_null() || options.is_undefined() {
-            mastercss_lint::CanonicalClassNameOptions::default()
-        } else {
-            serde_wasm_bindgen::from_value(options)
-                .map_err(|error| JsValue::from_str(&error.to_string()))?
-        };
-        self.inner
-            .canonical_compose_directive(&class_names, native_support.as_deref(), &options)
             .map_err(scanner_error)?
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
             .map_err(|error| JsValue::from_str(&error.to_string()))

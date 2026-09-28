@@ -50,7 +50,7 @@ test('BH-0004 actual referenced CSS with encoded filename and query keeps contex
   try {
     const entry = join(root, 'entry #.css')
     const reference = join(root, 'tokens #.css')
-    writeFileSync(entry, '@reference "./tokens%20%23.css?version=1#context";.example{@compose paint;}')
+    writeFileSync(entry, "@reference \"./tokens%20%23.css?version=1#context\";.example{@variant media(all){color:red;}}")
     writeFileSync(reference, '@utilities{paint{color:red}}.reference-only{color:blue}')
     const result = compileManifestFileSync(entry, { baseManifest: { version: 1, languageVersion: 3, utilities: [] }, preserveNativeCSS: true })
     expect(result.dependencies).toContain(reference)

@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest'
 import { compileCSS, compileCSSManifest } from '../src/node-compiler'
-import type { CompilerDiagnosticRecorder } from '../src/compiler-diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import { UtilityType } from '@master/css-schema/utility-type'
@@ -18,31 +17,6 @@ function normalizeDeclarationOrder(css: string) {
     const declarations = body.split(';').filter(Boolean).sort()
     return `{${declarations.join(';')}}`
   })
-}
-
-class TestDiagnosticRecorder implements CompilerDiagnosticRecorder {
-  readonly counts: Record<string, number> = {}
-
-  time<T>(_metricId: string, callback: () => T): T {
-    return callback()
-  }
-
-  addCount(metricId: string, value = 1) {
-    this.counts[metricId] = (this.counts[metricId] || 0) + value
-  }
-
-  setCount(metricId: string, value: number) {
-    this.counts[metricId] = value
-  }
-}
-
-function compileCSSManifestWithDiagnostics(source: string) {
-  const diagnostics = new TestDiagnosticRecorder()
-  const result = compileCSSManifest(source, {
-    baseManifest: defaultManifest,
-    diagnostics
-  } as NonNullable<Parameters<typeof compileCSSManifest>[1]> & { diagnostics: CompilerDiagnosticRecorder })
-  return { result, diagnostics }
 }
 
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
@@ -254,24 +228,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
   })
 
   test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme {
-        --content-stripe: 'stripe';
-        --box-shadow-panel: 0 1px 2px #000;
-        --shadow-panel: 0 1px 2px #000;
-        --spacing-card: 1.5rem;
-        --leading-body: 1.7;
-        --color-line-brand: #abcdef;
-        --color-brand: #123456;
-        --color-primary: #123456;
-      }
-
-      @utilities {
-        demo {
-          @compose content-stripe;
-        }
-      }
-    `, { baseManifest: defaultManifest })
+    const { manifest } = compileCSSManifest("\n      @theme {\n        --content-stripe: 'stripe';\n        --box-shadow-panel: 0 1px 2px #000;\n        --shadow-panel: 0 1px 2px #000;\n        --spacing-card: 1.5rem;\n        --leading-body: 1.7;\n        --color-line-brand: #abcdef;\n        --color-brand: #123456;\n        --color-primary: #123456;\n      }\n\n      @utilities {\n        demo {\n          @variant media(all){content:var(--content-stripe);}\n        }\n      }\n    ", { baseManifest: defaultManifest })
 
     expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
       name: 'content-stripe',
@@ -325,140 +282,6 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.themeLayer.text).toContain('--content-stripe:"stripe"')
   })
 
-  test('lowers unquoted compose class lists from raw source', () => {
-    const result = compileCSSManifest(`
-      @theme {
-        --color-primary: #123456;
-      }
-
-      @utilities {
-        card {
-          @compose inline-flex bg-primary/.9 opacity:.7 translate:-5px;
-        }
-      }
-
-      .list {
-        @compose text-center>li;
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(result.manifest)
-
-    css.ensureClassRules('card')
-
-    const definitions = [...(result.directives.styleDefinitions ?? []), ...(result.directives.manifestInput.utilities ?? []).flatMap(definition => definition.body ?? [])]
-    expect(definitions).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        type: 'compose',
-        className: 'bg-primary/.9'
-      }),
-      expect.objectContaining({
-        type: 'compose',
-        className: 'translate:-5px'
-      }),
-      expect.objectContaining({
-        type: 'compose',
-        className: 'opacity:.7'
-      }),
-      expect.objectContaining({
-        type: 'compose',
-        className: 'text-center>li'
-      })
-    ]))
-    expect(css.text).toContain('.card')
-    expect(css.text).toContain('display:inline-flex')
-    expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
-    expect(css.text).toContain('opacity:.7')
-    expect(css.text).toContain('translate:-5px')
-    expect(result.css).toContain('.list>li{text-align:center}')
-  })
-
-  test('reuses native declaration seeds before composing independent utilities', () => {
-    const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @utilities {
-        alpha {
-          color: red;
-        }
-
-        beta {
-          background: blue;
-        }
-      }
-
-      .card {
-        @compose alpha beta;
-      }
-    `)
-
-    expect(result.css).toContain('.card{color:red;background:#00f}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(0)
-  })
-
-  test('refreshes once before a managed compose dependency', () => {
-    const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @utilities {
-        alpha {
-          color: red;
-        }
-
-        beta {
-          @compose alpha;
-          background: blue;
-        }
-      }
-    `)
-    const css = createTestCSS(result.manifest)
-
-    css.ensureClassRules('beta')
-    expect(css.utilitiesLayer.text).toContain('.beta{color:red;background:#00f}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
-  })
-
-  test('refreshes once for a multi-dependency managed compose group', () => {
-    const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @utilities {
-        alpha {
-          color: red;
-        }
-
-        beta {
-          background: blue;
-        }
-
-        gamma {
-          @compose alpha beta;
-          border-color: green;
-        }
-      }
-    `)
-    const css = createTestCSS(result.manifest)
-
-    css.ensureClassRules('gamma')
-    expect(css.utilitiesLayer.text).toContain('.gamma{color:red;background:#00f;border-color:green}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
-  })
-
-  test('refreshes pending managed definitions before native compose', () => {
-    const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @utilities {
-        alpha {
-          color: red;
-        }
-
-        beta {
-          @compose alpha;
-          background: blue;
-        }
-      }
-
-      .card {
-        @compose beta;
-      }
-    `)
-
-    expect(result.css).toContain('.card{color:red;background:#00f}')
-    expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
-  })
-
   test('rejects quoted and grouped compose class lists', () => {
     const expectComposeError = (source: string, code: string, syntax: string) => {
       let error: unknown
@@ -482,9 +305,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       expect(source).toContain(syntax)
     }
 
-    expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax', '"block"')
-    expect(compileCSSManifest(".card { @compose content:'-'; }", { baseManifest: defaultManifest }).css).toContain("content:'-'")
-    expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax', '{text-center;block}')
+    expectComposeError('.card { @compose "block"; }', 'removed-compose-directive', '"block"')
+    expect(compileCSSManifest(".card { content:'-'; }", { baseManifest: defaultManifest }).css).toContain("content:")
+    expectComposeError('.card { @compose {text-center;block}>li; }', 'removed-compose-directive', '{text-center;block}')
   })
 
   test('executes CSS-first number variables and native value functions through engine semantics', () => {

@@ -274,7 +274,7 @@ test.concurrent('separates named opacity and native values without coloring unre
   const samples = [
     { lang: 'html', code: '<!-- fg-red -->\n<div class="fg-red/0.5! block:hover@sm unknown-widget"></div>' },
     { lang: 'tsx', code: 'const label = "fg-blue";\n<div className="-m-sm fg-red/0.5" />' },
-    { lang: 'css', code: '@utilities { card { @compose fg-red/0.5 b:1px|solid|var(--color-line-base) unknown-widget; } }' },
+    { lang: 'css', code: "@utilities { card { @safelist \"fg-red/0.5 b:1px|solid|var(--color-line-base) unknown-widget\"; } }" },
     { lang: 'mcss', code: 'fg-red/0.5 block:hover@sm color:red unknown-widget' }
   ]
   for (const { lang, code } of samples) {
@@ -352,7 +352,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '}',
     '@utilities {',
     '    btn {',
-    '        @compose inline-flex fg-brand:hover@sm;',
+    "        @safelist \"inline-flex fg-brand:hover@sm\";",
     '    }',
     '}'
   ].join('\n')
@@ -811,7 +811,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     '  --spacing-card: 24;',
     '}',
     '@utilities {',
-    '  card { @compose bg-blue fg-brand:hover; }',
+    "  card { @safelist \"bg-blue fg-brand:hover\"; }",
     '}'
   ].join('\n')
   const cssOptions = {
@@ -897,9 +897,9 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
     '@utilities {',
     '    card {',
-    '        @compose p-md r-xl;',
+    "        @safelist \"p-md r-xl\";",
     '        @variant <sm {',
-    '            @compose block;',
+    "            @safelist \"block\";",
     '        }',
     '    }',
     '}'

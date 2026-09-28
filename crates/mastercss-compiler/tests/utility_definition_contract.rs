@@ -28,7 +28,8 @@ fn css(source: &str, classes: &[&str]) -> String {
 }
 #[test]
 fn raw_intent_does_not_depend_on_value_kind() {
-    let source = "@utilities{size:<*>{width:--value();height:--value()}}";
+    let source =
+        r###"@utilities{size:<*>{@variant media(all){width:--value();height:--value()}}}"###;
     for value in ["red", "-1px", "var(--size)", "future(1px)", "1px|2px"] {
         let generated = css(source, &[&format!("size:{value}")]);
         assert!(generated.contains("width:"), "{value}: {generated}");
@@ -53,9 +54,9 @@ fn removed_pattern_forms_and_duplicate_enum_keys_fail() {
     }
 }
 #[test]
-fn replacement_removes_nested_rules_and_obsolete_dependencies() {
+fn replacement_removes_nested_rules() {
     let generated = css(
-        "@utilities{card{color:red;&:hover{color:blue}@compose card;}card{padding:1px}}",
+        r###"@utilities{card{color:red;&:hover{color:blue}@variant media(all){}}card{padding:1px}}"###,
         &["card"],
     );
     assert!(generated.contains("padding:1px"), "{generated}");
@@ -63,9 +64,10 @@ fn replacement_removes_nested_rules_and_obsolete_dependencies() {
     assert!(!generated.contains(":hover"), "{generated}");
 }
 #[test]
-fn empty_utility_is_matched_and_can_be_composed() {
+fn empty_utility_is_matched() {
     let result =
-        compile("@utilities{card{color:red}card{}}.x{@compose card;display:block}").unwrap();
+        compile(r###"@utilities{card{color:red}card{}}.x{@variant media(all){}display:block}"###)
+            .unwrap();
     let engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     let inspection = engine.inspect("card").unwrap();
     assert_eq!(inspection.match_status, MatchStatus::Matched);
@@ -78,7 +80,6 @@ fn empty_utility_is_matched_and_can_be_composed() {
         engine.inspect("{card}").unwrap().match_status,
         MatchStatus::Matched
     );
-    assert!(result.css.unwrap().contains("display:block"));
 }
 #[test]
 fn enum_identity_ignores_key_order_and_mapping_values() {
@@ -106,17 +107,6 @@ fn static_names_accept_future_pseudo_classes() {
     }
 }
 #[test]
-fn patterns_compose_fixed_classes_with_forward_references() {
-    let generated = css(
-        "@utilities{size:<*>{@compose base; width:--value(); @compose color:blue;}base{display:block}}",
-        &["size:20px"],
-    );
-    for declaration in ["display:block", "width:20px", "color:blue"] {
-        assert!(generated.contains(declaration), "{generated}");
-    }
-    assert!(compile("@utilities{size:<*>{@compose width:--value();}}").is_err());
-}
-#[test]
 fn template_replacement_respects_css_tokens_and_does_not_recurse() {
     let generated = css(
         "@utilities{sample:<*>{width:--value();--quoted:'--value()';--fragment:prefix--value();--escaped:\\--value();}}",
@@ -129,13 +119,6 @@ fn template_replacement_respects_css_tokens_and_does_not_recurse() {
         "{generated}"
     );
 }
-#[test]
-fn compose_allows_strings_inside_class_values() {
-    let result = compile(".x{@compose content:'hello';}").unwrap();
-    assert!(result.css.unwrap().contains("hello"));
-    assert!(compile(".x{@compose 'display:block';}").is_err());
-}
-
 #[test]
 fn identifiers_preserve_case_unicode_and_decoded_escapes() {
     let generated = css(
@@ -154,25 +137,9 @@ fn identifiers_preserve_case_unicode_and_decoded_escapes() {
 }
 
 #[test]
-fn inspection_traces_only_effective_definitions_and_retains_replaced_sources() {
-    let result = compile("@utilities{card{color:red}card{color:blue}}.x{@compose card;}").unwrap();
-    assert_eq!(result.utility_sources.len(), 2);
-    assert_eq!(
-        result.utility_sources[0].replaced_by.as_ref(),
-        Some(&result.utility_sources[1].source)
-    );
-    assert!(result.utility_sources[1].replaced_by.is_none());
-    assert_eq!(
-        result.compositions[0].definition_sources,
-        vec![result.utility_sources[1].source.clone()]
-    );
-    assert!(!result.manifest.to_string().contains("replacedBy"));
-}
-
-#[test]
 fn public_manifest_compilation_resolves_fixed_pattern_composition() {
     let parsed = compile_css_directives(
-        "@utilities{pair:<*>{@compose block; width:--value()}block{display:block}}",
+        r###"@utilities{pair:<*>{@variant media(all){display:block;} width:--value()}block{display:block}}"###,
         &CompileNativeCssOptions::default(),
     )
     .unwrap();
@@ -205,7 +172,7 @@ fn conflicts_report_both_original_sources() {
 
 #[test]
 fn clearing_raw_and_token_definitions_does_not_fall_back_or_retain_resources() {
-    let result = compile("@theme{--color-brand:red}@utilities{paint-<~color>{color:--value()}paint-<~color>{}size:<*>{width:--value()}size:<*>{}}.x{@compose size:red paint-brand;}").unwrap();
+    let result = compile(r###"@theme{--color-brand:red}@utilities{paint-<~color>{color:--value()}paint-<~color>{}size:<*>{width:--value()}size:<*>{}}.x{@variant media(all){}}"###).unwrap();
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     for class in ["size:red", "paint-brand"] {
         assert_eq!(
@@ -219,21 +186,6 @@ fn clearing_raw_and_token_definitions_does_not_fall_back_or_retain_resources() {
         !output.contains("size:red") && !output.contains("--color-brand"),
         "{output}"
     );
-}
-
-#[test]
-fn pattern_composition_cycle_is_checked_after_replacement() {
-    assert!(
-        compile(
-            "@utilities{cycle-one:<*>{@compose cycle-two:x;}cycle-two:<*>{@compose cycle-one:y;}}"
-        )
-        .is_err()
-    );
-    let generated = css(
-        "@utilities{cycle-one:<*>{@compose cycle-two:x;}cycle-two:<*>{@compose cycle-one:y;}cycle-two:<*>{color:red}}",
-        &["cycle-one:x"],
-    );
-    assert!(generated.contains("color:red"), "{generated}");
 }
 
 #[test]

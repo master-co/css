@@ -36,7 +36,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 3, bindingAbiVersion: 13 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 3, bindingAbiVersion: 14 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -61,25 +61,6 @@ it('keeps complete ambiguity alternatives in both structured and JSON output', a
     expect(JSON.stringify(response.structuredContent)).toContain('font-size-brand')
   } finally { context.dispose() }
 })
-
-it('reports compose statements, definition locations and resource dependencies', async () => {
-  const context = project()
-  const content = '@theme{--color-accent:red;@keyframes spin{to{opacity:1}}}@utilities{paint{color:var(--color-accent);animation:spin 1s}}@layer components{.native{@compose paint;@compose color:blue;}}'
-  try {
-    const result = await inspectDirectives(context, { context: 'preset', content, filePath: 'button.css' })
-    expect(result.directives.nativeClassNames).toContain('native')
-    expect(result.directives.classNames).not.toContain('native')
-    expect(result.compositions).toHaveLength(2)
-    expect(result.compositions[0]).toMatchObject({ classes: ['paint'], variableNames: ['color-accent'], animationNames: ['spin'] })
-    expect(result.compositions[0].css).toContain('color:var(--color-accent)')
-    const definition = result.compositions[0].definitionSources[0]
-    expect(content.slice(definition.range.start, definition.range.end)).toBe('paint')
-    const call = result.compositions[0].source!
-    expect(content.slice(call.range.start, call.range.end)).toBe('@compose paint;')
-    expect(result.compositions[1].classes).toEqual(['color:blue'])
-  } finally { context.dispose() }
-})
-
 
 it('does not warn about retired builtins for registered project CSS classes', async () => {
   const context = project(String.raw`@master entry; .size\:20px { color:red; }`)

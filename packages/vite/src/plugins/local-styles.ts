@@ -24,11 +24,11 @@ import { getBuildStylesheetDelivery } from '../utils/build-stylesheet-delivery'
 import { inlineDelivery, isInlineStylesheet, registerLocalInlineStylesheet } from '../utils/inline-stylesheet'
 import { clearLocalStylesheets, registerLocalStylesheet } from '../utils/local-stylesheet'
 
-export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
+export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
   let projectManifestEntries: string[] = []
   let projectManifestDependencies: string[] = []
-  const localComposeModules = new Set<string>()
+  const localStyleModules = new Set<string>()
 
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
@@ -38,7 +38,7 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
     }
   }
 
-  const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
+  const loadStyleContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
     if (projectManifest) {
       for (const dependency of projectManifestDependencies) pluginContext.addWatchFile?.(dependency)
       return projectManifest
@@ -74,7 +74,7 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
   }
 
   return {
-    name: 'master-css:local-compose',
+    name: 'master-css:local-styles',
     enforce: 'pre',
     async buildStart() {
       clearBuildStylesheetSources(context)
@@ -95,6 +95,9 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
           preserveImports: true,
           resolveImport: getBuildImportResolver(context, dependencyHost),
           onDependency
+        }).catch(error => {
+          onDependency(getSassSourceFile(id) ?? id.replace(/[?#].*$/, ''))
+          throw error
         })
         const prepared = getPreparedSassSource(context, id)
         const moduleGraph = prepared && (await prepared.prepared).moduleSources
@@ -105,9 +108,9 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
         for (const dependency of dependencies) {
           onDependency(dependency)
         }
-        const manifestResult = await loadComposeContext(dependencyHost)
+        const manifestResult = await loadStyleContext(dependencyHost)
         // Even a no-op depends on the context: adding a token can make it managed.
-        localComposeModules.add(id)
+        localStyleModules.add(id)
         if (!projectManifestEntries.length && resolution.kind === 'plain' && !nativeModuleGraph) return sourceMeta ? { meta: sourceMeta } : undefined
         const scopedVueStyle = id.includes('?vue&') && /(?:^|[?&])scoped(?:=|&|$)/u.test(id)
         const compileOptions = {
@@ -130,7 +133,7 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
           } } : {})
         })
         if (!result.transformed) return sourceMeta ? { meta: sourceMeta } : undefined
-        localComposeModules.add(id)
+        localStyleModules.add(id)
         for (const dependency of result.dependencies) {
           if (dependencies.has(dependency)) continue
           onDependency(dependency)
@@ -165,7 +168,7 @@ export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginO
       if (!includesFile(projectManifestDependencies, file) && !entriesChanged) return
       projectManifest = undefined
       const affected = new Set(modules)
-      for (const moduleId of localComposeModules) {
+      for (const moduleId of localStyleModules) {
         const module = this.environment.moduleGraph.getModuleById(moduleId)
         if (!module) continue
         this.environment.moduleGraph.invalidateModule(module)

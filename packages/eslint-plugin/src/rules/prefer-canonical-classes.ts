@@ -1,6 +1,5 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import resolveComposeDirectiveClassNodes from '../utils/resolve-compose-directive-class-nodes'
 import createRule from '../create-rule'
 import {
   defaultCanonicalClassNameOptions,
@@ -8,7 +7,6 @@ import {
 } from '@master/css-tooling/lint'
 import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
-import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import withContextRelease from '../utils/with-context-release'
@@ -31,8 +29,6 @@ export default createRule({
         preferPropertyAliases: { type: 'boolean' },
         preferCompositionUtilities: { type: 'boolean' },
         preferConditionOrder: { type: 'boolean' },
-        preferNativeDeclarationsInCompose: { type: 'boolean' },
-        preferVariantBlocksInCompose: { type: 'boolean' },
       },
       additionalProperties: false
     }]
@@ -66,61 +62,6 @@ export default createRule({
       )
     }
 
-    const reportCanonicalComposeDirective = (node, classNode: ResolvedComposeDirectiveClassNode) => {
-      reportLintDiagnostics(
-        context,
-        node,
-        classNode,
-        createMasterCSSLintDiagnostics(
-          tooling.analyzeLintClassList(classNode.raw, classNode.classValues, {
-            canonicalOptions: options,
-            composeDirective: true
-          }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
-        ),
-        {
-          getFix(_, fix) {
-            if (fix.scope !== 'directive') {
-              return {
-                range: [classNode.start + fix.range.start, classNode.start + fix.range.end],
-                text: fix.text
-              }
-            }
-            return {
-              range: [classNode.directiveStart, classNode.directiveEnd],
-              text: formatComposeDirectiveReplacement(
-                context.sourceCode.getText(),
-                classNode.directiveStart,
-                fix.text
-              )
-            }
-          }
-        }
-      )
-    }
-
-    const visitors = defineVisitors({ context, settings, tooling }, reportCanonicalClassList)
-    const visitProgram = visitors.Program
-
-    return withContextRelease({
-      ...visitors,
-      Program(node) {
-        if (typeof visitProgram === 'function') {
-          visitProgram(node)
-        }
-        for (const classNode of resolveComposeDirectiveClassNodes(context, tooling)) {
-          reportCanonicalComposeDirective(node, classNode)
-        }
-      }
-    }, release)
+    return withContextRelease(defineVisitors({ context, settings, tooling }, reportCanonicalClassList), release)
   }
 })
-
-function getLinePrefix(source: string, index: number) {
-  return source.slice(source.lastIndexOf('\n', index - 1) + 1, index)
-}
-
-function formatComposeDirectiveReplacement(source: string, index: number, replacement: string) {
-  const linePrefix = getLinePrefix(source, index)
-  if (/\S/.test(linePrefix)) return replacement.replace(/\n\s*/g, ' ')
-  return replacement.replace(/\n/g, `\n${linePrefix}`)
-}

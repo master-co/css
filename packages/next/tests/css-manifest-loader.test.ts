@@ -231,14 +231,14 @@ describe('css manifest loader', () => {
       rootContext: projectDir,
       getOptions: () => ({ virtual: true, module: true }),
       addDependency: (dependency: string) => dependencies.push(dependency)
-    })).rejects.toThrow('Invalid @compose utility')
+    })).rejects.toThrow('@compose has been removed')
     expect(dependencies).toContain(entryPath)
 
     writeFileSync(entryPath, [
       '@import "@master/css";',
       '@utilities {',
       '    card {',
-      '        @compose block;',
+      '        @variant media(all){display:block;}',
       '    }',
       '}'
     ].join('\n'))

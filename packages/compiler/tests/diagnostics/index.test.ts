@@ -34,7 +34,7 @@ describe('@master/css-compiler/diagnostics', () => {
         classes: ['block', 'never-generated-class']
       })
 
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')

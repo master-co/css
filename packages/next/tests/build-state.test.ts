@@ -33,7 +33,7 @@ describe('resolveMasterCSSBuildState', () => {
       '.host { color: var(--color-host); }',
       '',
       '.hidden-card {',
-      '    @compose hidden;',
+      '    @variant media(all){display:none;}',
       '}'
     ].join('\n'))
 

@@ -10,8 +10,8 @@ for (const command of ['serve', 'build'] as const) {
     const root = mkdtempSync(join(parent, 'local-graph-requests-'))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     try {
-      writeFileSync(join(root, 'style.module.css'), '@import "./child.css" layer(guard);.local{@compose inline-flex;}')
-      writeFileSync(join(root, 'child.css'), '@import "https://external.test/style.css";.child{@compose p:2rem;}')
+      writeFileSync(join(root, 'style.module.css'), "@import \"./child.css\" layer(guard);.local{@variant media(all){display:inline-flex;}}")
+      writeFileSync(join(root, 'child.css'), "@import \"https://external.test/style.css\";.child{@variant media(all){padding:2rem;}}")
       writeFileSync(join(root, 'server.js'), 'export {default as names} from "./style.module.css";export {default as css} from "./style.module.css?inline";export {default as raw} from "./style.module.css?raw";')
       writeFileSync(join(root, 'client.js'), 'import {names,css,raw} from "./server.js";console.log(names.local,css,raw)')
       writeFileSync(join(root, 'index.html'), '<script type="module" src="./client.js"></script>')

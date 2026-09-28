@@ -35,7 +35,7 @@ macOS arm64, Node 24.20.0, pnpm 12.3.4, Cargo 1.98.1.
 | Finding | Decision | Tracking |
 | --- | --- | --- |
 | Missing public inspection status and diagnostic types | Required for 2.0; expose existing Rust output through the owner | #447, #452 |
-| Pattern composition documented as unsupported | Required for 2.0; correct prose against source and executable examples | #448, #453 |
+| Complete removal of `@compose` | Integrated from `9d9817241`; reject the directive and retain native declaration ordering | #448, #453 |
 | ABI census and schema export guidance drift | Required for 2.0 audit accuracy; no ABI change | #446 |
 | Native/Wasm, directive, cascade and roundtrip coverage | Required for 2.0; extend existing tests where coverage is missing | #447–#452 |
 | Joint JS/Wasm/manifest size gate | Deferred to 2.x measurement policy; measure the current assets without changing the gate | #451, #455 |
@@ -60,9 +60,10 @@ directives, cascade-layers and rendering-modes guides under `site/`.
 
 ## Verified Findings And Changes
 
-1. **Contract bookkeeping:** binding ABI is 13 in both Rust schema and generated
-   TypeScript protocol; the API census incorrectly recorded 12. Regenerating the
-   census changes that single value. No ABI or package export changed.
+1. **Contract bookkeeping:** the initial audit corrected the census from 12 to
+   the then-current ABI 13. The later authorized compose-removal integration
+   advances ABI to 14, diagnostics report to 4 and lint batch to 2. Manifest v1
+   and language v3 remain unchanged; generated protocol and census agree.
 2. **Guidance drift:** schema's AI notes listed private `./manifest-json` as a
    public subpath and omitted emitted-globals, diagnostics and integration.
    Corrected against `packages/schema/package.json`; codec helpers are exported
@@ -96,11 +97,11 @@ directives, cascade-layers and rendering-modes guides under `site/`.
    insertion keeps rule order and resource content/ref counts; theme variable
    declarations follow first activation order, so distinct variable declaration
    order is not a byte-equality promise across different insertion sequences.
-9. **Pattern composition documentation:** fixed class composition in enum, token
-   and raw patterns already works, including forward references. The directive
-   contract incorrectly excluded it. Corrected the prose and added native/Wasm
-   public compiler tests preserving duplicate fallbacks and statement boundaries,
-   while rejecting `--value()` inside a compose target. No lowering changed.
+9. **Directive removal integration:** the user requested integration of the
+   complete `@compose` removal committed in `9d9817241`. Compiler, lint, language,
+   CLI and MCP no longer expand or fix this directive. Public native/Wasm tests
+   now preserve duplicate fallbacks with explicit declarations in static, raw,
+   token and enum utilities, and reject fixed and dynamic compose targets.
 10. **Manifest boundary matrix:** `packages/compiler/tests/issues/450.test.ts`
     roundtrips compiled and publicly constructed definitions through both bindings.
     It preserves ordered duplicate declarations, transitive variables, keyframes
@@ -126,22 +127,25 @@ directives, cascade-layers and rendering-modes guides under `site/`.
     was executed with Node 24 from a separate project directory. Valid, empty,
     known-invalid, unmatched and failed-project outcomes stay distinct. It adds
     no runtime import or public package export.
-14. **Migration ABI wording:** the migration overview and rendering guide still
-    named ABI 8, while the current Rust/TypeScript binding ABI is 13. Corrected
-    both public pages and retained the historical behavior explanation without
-    claiming that ABI 8 is the current upgrade target.
+14. **Migration ABI wording:** the initial audit corrected obsolete ABI 8 prose
+    to 13. Incoming removal documentation now records ABI 14 and the deleted
+    directive APIs; historical behavior is not described as current support.
 
 ### Directive Review (#448)
 
 | Contract | Source / behavior evidence | Public documentation |
 | --- | --- | --- |
-| Global definition positions; rule-local variants/composition | compiler `directives.rs`, `bug-hunt-directive-positions.test.ts`, `bug-hunt-ordered-direct-output.test.ts` | directives: Definition scope and imports; Supported contexts |
+| Global definition positions; rule-local variants and removed compose rejection | compiler `directives.rs`, `bug-hunt-directive-positions.test.ts`, `bug-hunt-ordered-direct-output.test.ts` | directives: Definition scope and imports; Removed utility composition |
 | Replacement, empty definitions, ambiguity and source locations | Rust `utility_definition_contract`, engine `utility_entry_resolution` | directives: Whole-definition replacement; Named token patterns |
 | Import/reference scope, graph ordering, reference cycles | project `bug_hunt_manifest_graphs`, compiler `bug-hunt-reference-source-maps.test.ts` | directives: Reference context; Stylesheet boundaries and resource URLs |
-| Duplicate declarations, fixed forward composition, cycles, native token streams | Rust `native_components_compose`, `utility_definition_contract`; compiler `tests/issues/448.test.ts` | directives: Rule-local composition; Native CSS preservation |
+| Duplicate declarations, removed compose rejection, native token streams | Rust `removed_compose`, `utility_definition_contract`; compiler `tests/issues/448.test.ts` | directives: Removed utility composition; Native CSS preservation |
 | Removed typed raw matchers and managed layer directives | Rust `removed_pattern_forms_and_duplicate_enum_keys_fail`, `removed_managed_directives_are_diagnosed` | directives: Dynamic values; Native defaults/components |
 
-## Validation Evidence
+## Validation Evidence Before Compose Removal
+
+These results establish the pre-integration freeze branch. Combined-version
+validation is tracked separately below; prior results are not carried forward
+as proof of unchanged behavior.
 
 | Command / scope | Result |
 | --- | --- |
@@ -220,147 +224,73 @@ enforce the three-file total. This audit does not silently broaden that gate or
 raise its budget. No production hot path changed, so CPU/memory/cold-start
 benchmarks were not run.
 
-## Freeze readiness: local source PASS; PR integration BLOCKED
+## Freeze Integration Status
 
-All required/recommended findings identified in this audit have implementation
-or documentation evidence and the local support matrix passed. The 2.x authoring
-and extension capabilities remain separate roadmap proposals with follow-up
-issues; no editable IR or public SPI is implied by this PASS. This is a source
-freeze assessment, not npm publication approval or cross-platform release
-certification. The initial local artifact validation covered macOS arm64; later CI
-passes all eight native build/install/load/CLI targets, without publication.
+The user approved all outstanding reviewed differences on 2026-09-28. Commit
+`0509284e3` records the last 192 exact case decisions and the generated ledgers.
+Before compose integration, `check:migration` passed: 1,546 rc.87 cases, 1,033
+Rust-refactor cases, seven post-rc.87 files; all 503 changed cases approved,
+503 exact and 27 supersets. Earlier approval documents remain historical evidence.
 
-PR [#461](https://github.com/master-co/css/pull/461) exposed additional
-integration gates that the local scoped suite did not exercise:
+[CI at `0a81364e5`](https://github.com/master-co/css/actions/runs/36344836324)
+completed with Windows package validation 59/59 tasks and examples 36/36 tasks,
+Linux e2e 34/34 tasks (432 runtime and 10 Next cases), Rust quality and all eight
+native target jobs passing. Linux quality failed only the then-unapproved
+192-case migration gate, skipping its later quality checks. The local approval
+checkpoint resolves that earlier gate; it does not certify the combined branch.
 
-- The user explicitly approved three stale contract records and the separate
-  eight-file/21-case Manifest adaptation after exact old/new reviews. Fresh
-  approval metadata and scope digests are recorded in
-  `parity/freeze-migration-approval.md`. Separate approvals cover 62 named-token
-  24 utility-registration, 183 ESLint and 19 highlighting cases. Four native layer fixtures were
-  restored, and ten further assertion-preserving supersets were verified. Two Shiki case
-  names were disambiguated without changing assertions; the independent Rust
-  contract review now has 192 pending cases. Supplemental QA approves the restored
-  Webpack fixture hash; all 21 Manifest cases and seven other files are unchanged.
-  Windows now passes Compiler 491, Next 206, MCP 51 and Vite 676 tests; only VSCode fails.
-  Migration still fails on 192 unapproved cases; no generated ledger rewrite was made.
-- Windows checkout and installation now pass after untracking eight ignored
-  generated stylesheet paths and preserving LF in `patches/*.patch`. The shared
-  tsdown external rule now excludes resolved Windows drive paths from bare
-  imports, resolving the declaration-build failure. The native smoke payload
-  uses the current language version; all eight native-target jobs pass.
-- [CI at `7836f3b54`](https://github.com/master-co/css/actions/runs/36324861696)
-  confirms Windows migration, watch and publication-recovery fixes. CLI improved
-  from 53/84 to 79/84; remaining failures were four Unix-only process-signal
-  expectations and one transient lock-register rename denial. The tests now
-  verify Windows self-termination status while retaining all recovery assertions.
-  Publication locks retry Windows sharing violations for at most one second
-  (within the existing acquisition deadline), keeping the old register visible.
-  Persistent errors still fail without entering publication. Five focused
-  regressions cover retry, cleanup, exclusion and terminal errors. Local CLI
-  tests pass 89/89, with lint, type-check and build passing. CI at `147dbcd4d`
-  confirms all 89 CLI tests pass on Windows.
-- That Windows run next exposed nine Webpack failures: CRLF imports survived
-  the runtime test harness, native directory separators mismatched Webpack asset
-  keys, and the runtime browser test rebuilt shared `dist` while other tests
-  loaded it. The harness accepts CRLF, asset keys use forward slashes, and all
-  tests consume the existing pre-test build. Assertions and deadlines remain
-  unchanged. Local Webpack tests pass 93/93 with lint and type-check; explicit
-  LF/CRLF parsing reproduces the old failure and verifies the correction.
-  Windows CI at `4b8eb7f0b` confirms 93/93 passed; CLI remains 89/89.
-- Linux e2e at `7836f3b54` passed 9/10 Next cases; the full Webpack HMR case
-  exhausted its unchanged 180-second deadline. Earlier isolated reruns passed
-  10/10. Relative fixture imports removed an invalid file-URL cache dependency,
-  but did not resolve the intermittent failure. Failure diagnostics remain in
-  place; temporary timeout and Next agent-rule experiments were reverted.
-- CPU profiling then traced repeated Webpack HMR work to `stylesheet-loader`
-  recompiling immutable `.master/next-style-*.css` outputs. These now pass through
-  unchanged, like the generated entry. The regression test fails before the fix
-  and passes afterward; authored entry errors still propagate. Next unit tests
-  pass 199/199 and e2e passes 10/10 with unchanged deadlines/assertions. On this
-  macOS host, three Webpack single/burst samples improved from 12–21 seconds to
-  3.0–3.5 seconds; profiling overhead and host load limit the comparison. This
-  affects build tooling, not runtime bundle size or authored CSS syntax. The
-  earlier remote run does not contain this fix. CI at `147dbcd4d` then passed
-  Next 10/10, runtime 432/432 and all 34 Linux e2e Turbo tasks. Linux e2e,
-  Rust quality and all eight native targets also passed at `f4f427f0d`.
-- Shared build, CI and preview repairs were authorized on 2026-09-27. The
-  hosted script prepares the pinned Rust toolchain before parallel tasks; Turbo
-  preserves `CARGO_HOME` and `RUSTUP_HOME`. Vercel uses Node 24 and serves the
-  completed static `out` directory with clean URLs. Its obsolete submodules
-  command and Next output-directory mismatch have been corrected.
-  Local hosted builds pass with 830 pages and 95/95 referenced assets. All
-  2,468 root-locale files and the homepage match their locale exports byte for
-  byte. Temporary worker/heap diagnostics were reverted.
-  Both hosts deploy `f4f427f0d` successfully. On each host, the root compose
-  reference, Traditional Chinese reference and legacy directive guide return
-  HTTP 200 with the expected deployment-aware canonical URLs. The legacy guide
-  deliberately canonicalizes and redirects to Syntax Tutorial. Chrome confirms
-  reference styling, Vercel sidebar navigation and the Cloudflare guide redirect.
-  Cloudflare health returns HTTP 200 with `{"ok":true}`; storage writes are untested.
-  Previews: `master-li71876t9-aoyue.vercel.app`, `dbca2f89.master-css-e8w.pages.dev`.
-  URL resolution: 16 tests, type-check and site lint pass (266 existing warnings).
-- Windows at `4b8eb7f0b` exposed an ESLint CRLF autofix regression (295/296
-  passed). The JavaScript adapter now restores template line endings and escapes
-  cooked carriage returns. LF, CRLF and CR sorting regressions failed before
-  the fix and pass afterward; escaped CR keeps its cooked value. Local ESLint
-  tests passed 299/299, followed by 42/42 focused tests after the escaped-CR
-  addition; lint, type-check and build passed.
-- Compiler output maps now convert absolute paths with `pathToFileURL`, avoiding
-  Windows drive URL schemes and fragment/percent corruption. The new filename
-  regressions failed before the fix; all 24 focused map/preparation tests, lint,
-  type-check and build passed. Next's loader assertion normalizes separators
-  (15/15 focused tests); Astro and Svelte harnesses invoke Node entrypoints and
-  consume prebuilt packages (16/16 and 17/17 tests). Each package lint passed.
-  Another 18 related graph/source-ownership tests passed after the map fix.
-  Windows at `60830b88a` passes Webpack 93/93 and CLI 89/89, while Compiler
-  reports 34 failures: 15 expose Windows verbatim prefixes entering source-glob
-  matching; 19 use nonportable fixture paths or URL callbacks. Rust now removes
-  filesystem prefixes before glob matching (red/green regression, 18 Rust tests
-  and Clippy pass). Compiler fixtures use canonical roots, native path helpers
-  and file URLs without changing CSS, source positions or dependency coverage;
-  56 focused tests, lint/type-check and 17 rebuilt-native project tests pass.
-  The directive contract documents Windows path handling; generation and all
-  20 Reference tests pass; site lint has no errors and 266 existing warnings.
-  Windows Turbo now continues tasks whose dependencies succeeded so one failure
-  does not discard unrelated failure details; task failures still fail the job.
-- Eighteen cases have new reviewed `verified-superset` evidence: lint/workspace,
-  hydration, portable paths, Manifest inputs, workspace resolution, VSCode client and
-  staged-server checks, five Next CSS-graph inspections, Nuxt delivered CSS and
-  Webpack preload DOM attributes. Focused suites and owning-package lint pass;
-  original assertions remain; evidence is separate from approved contract changes.
-- Windows Next reports 21 failures: canonical fixture roots and native path
-  assertions account for harness differences; equivalent `~`/`%7E` Sass URLs
-  exposed incorrect additional-data offsets. File-URL identity now compares
-  decoded paths while retaining query/fragment distinctions. Real Sass red/green
-  regressions, 38 focused tests plus the final 8-case rerun, lint/type-check/build,
-  10 e2e cases and the playground build pass. The playground script could not
-  find its local `next` shim; invoking the installed parent Next entrypoint passes.
-- MCP's Windows new-file race check exposed inconsistent identity before/after
-  creation through a directory alias. Resolve missing files against the already
-  validated canonical parent. The new alias regression fails before the fix;
-  all 51 MCP tests and lint/type-check/build pass. Containment checks remain.
-  Windows `60830b88a` completed: Compiler 34, Next 21, MCP 1, Vite 329 and
-  VSCode 1 failed; the later `cdc0ccc0a` results below supersede this failure count.
-- Compiler host maps now recognize native absolute paths and source roots before
-  URL resolution. Six filename/reference/diagnostic regressions fail before the
-  fix; all 491 Compiler tests and lint/type-check/build pass. Fixture roots use
-  native realpath to expand Windows short names. Next's four affected files pass
-  26 tests and lint after the same fixture correction.
-- Vite canonicalizes Modules, Sass caches, deleted dependencies and HMR owners;
-  immutable resources use the project drive and root-relative serving. Local
-  678/678 tests, 22 reconciliation checks, lint/type-check/build and example pass.
-  Two case digests and the Manifest file hash have supplemental QA; 21 cases stay.
-  Windows `cdc0ccc0a` had six failures: four Sass-map path comparisons and two
-  denied cross-drive fixtures reaching Vite's 404 fallback. Normalize paths and
-  put denial fixtures on the process drive to verify 403; 41 focused tests and lint
-  pass locally. Windows `f4f427f0d` confirms 676/676 and 58/59 tasks; only VSCode fails.
-- VSCode `f4f427f0d` hits five seconds during native cold indexing, after 1.57s setup.
-  Completion requests now allow 30s; initialize/shutdown retain their 5s deadline.
-  All assertions remain; 33/33 local tests and lint pass. Windows confirmation is pending.
+Earlier Windows repairs retained by this merge include canonical path identity,
+file-URL source mapping, watcher/recovery assertions, portable process handling,
+CRLF autofix preservation and immutable Next output bypass. VSCode's completion
+request allows 30 seconds for cold indexing while initialization/shutdown retain
+five seconds; Windows now passes all 33 tests with unchanged assertions.
 
-The source audit PASS does not override these integration failures. Do not close
-#454 or #445 until the review-bound ledger and applicable CI gates are resolved.
+The successful pre-integration previews are
+[Vercel](https://master-mbyqnrl4l-aoyue.vercel.app) and
+[Cloudflare](https://b856d7d4.master-css-e8w.pages.dev). Root/TW compose reference
+and legacy guide routes returned HTTP 200 with expected canonicals; Cloudflare
+health returned `{"ok":true}`. These precede the new removal documentation and
+must be checked again on the integrated deployment. No storage writes were tested.
+
+### Compose Removal Integration
+
+The user asked whether to merge the result of chat
+`01a0e0b3-2b97-7bc1-9890-8a328f97f201` before finishing the freeze. Both dry-run
+merge directions had the same 11 content-conflict paths. Incoming commit
+`9d9817241bede3f4cf8b542e5e59380ffa0d9272` is merged into the freeze branch first
+so the final contract and CI are verified together before PR #461 joins `rust`.
+No primary-checkout changes or package publication are part of this integration.
+
+Conflict resolutions retain new native/theme/variant fixtures and removal
+error codes/ranges together with existing Windows normalization and recovery
+assertions. The obsolete positive compose ordering case is removed as upstream
+intended. The freeze-added issue #448 regression uses native declarations and
+checks compose rejection in both bindings; the 2.x roadmap no longer promises
+compose traces or composition-aware edits. Generic stylesheet composition APIs
+and engine composition rules remain separate, supported concepts.
+
+Combined-version native/Wasm and 32 package build tasks pass. Conflict-focused
+checks pass: Vite 153, Next 6, compiler migration/ordering 19 and issue #448 four,
+Rust removal four. Full Rust fmt, Clippy, workspace tests, codegen and parity pass.
+The complete package test/lint/type-check run passed 110/111 tasks; its four
+obsolete VSCode grammar expectations were corrected, and the scoped rerun passes
+36/36 tasks including all 34 VSCode tests. The Wasm smoke fixture also needed nine
+lint version fields (1 to 2) and two inspection fields (3 to 4) updated; all four
+smoke tests pass. Public API golden/census now remove five retired Compose types.
+Package contracts, boundaries, census and AI context checks pass. Site example,
+Reference and LLM-export tests pass 17 + 20 + 32; site lint/type-check is ongoing.
+
+The integration review records 102 affected historical cases: 76 changed/renamed
+executable cases and 26 explicit retirements. All 1,033 baseline cases remain in
+the denominator; 494 are approved changes, 488 exact, 25 supersets and 26 approved
+removals. The 21 Manifest test digests remain unchanged; four containing test-file
+hashes change. See `parity/compose-removal-integration-review.md` for source trees,
+old/new digests, removed API rationale and the authorized integration provenance.
+Six migration-gate tests verify rename/removal identity, approval and absence.
+No earlier approval digest is silently repurposed for new bytes.
+
+Final generated-ledger validation, combined-branch CI and refreshed previews are
+still required. Do not close #454 or #445 before those gates pass.
 
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
@@ -383,13 +313,13 @@ integrated and linked; this report alone does not merge the code.
 
 ## Issue State And Remaining Work
 
-- #446–#452: local source, compiler, browser and integration acceptance evidence
-  has passed; code integration and issue closure are pending.
+- #446–#452: prior acceptance evidence passed; compose-removal integration is
+  being validated before final acceptance and issue closure.
 - #453: directive, inspection, layer, Manifest, current ABI and integration
   guidance are corrected; public examples, migration exports and Reference
   checks passed locally.
-- #454: local source-freeze assessment is PASS with the explicit environment and
-  release-certification limits above; integration is pending.
+- #454: prior source-freeze assessment passed; the combined branch remains
+  under validation, with the environment and release-certification limits above.
 - #455–#456: a type-checked, executed public workflow and a separate 2.x RFC
   define current capabilities, gaps and non-goals. Follow-up issues #457–#460
   now track the individual proposals. They do not ship an editable IR or commit

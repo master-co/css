@@ -72,7 +72,7 @@ fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
     for source in [
         "@reference \"./😀.css\";.card { padding: 1rem; }",
         "/* 😀 */\r\n@master entry;\r\n.card { padding: 1rem; }",
-        "@utilities { paint { color: red } } .managed { @variant dark { @compose paint; } } .card { padding: 1rem; }",
+        r###"@utilities { paint { color: red } } .managed { @variant dark { @variant media(all){color:red;} } } .card { padding: 1rem; }"###,
         ".empty {} .card { padding: 1rem; } .after { color: blue; }",
         "@layer base { @supports (display:grid) { .card { padding: 1rem; } } }",
     ] {
@@ -104,8 +104,10 @@ fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
 
 #[test]
 fn lower_output_retains_compose_and_native_declaration_origins() {
-    let source =
-        "@utilities { paint { padding: 2rem; } }\n.card {\n @compose paint;\n color: red;\n}";
+    let source = r###"@utilities { paint { padding: 2rem; } }
+.card {
+ @variant media(all) { padding:2rem; color: red; }
+}"###;
     let parsed = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -127,7 +129,7 @@ fn lower_output_retains_compose_and_native_declaration_origins() {
         .expect("lowered output mappings");
     for (generated, authored) in [
         (".card", ".card"),
-        ("padding", "paint;"),
+        ("padding", "padding:2rem;"),
         ("color", "color:"),
     ] {
         let offset = result.generated_css[..result.generated_css.find(generated).unwrap()]
@@ -215,7 +217,8 @@ fn expanded_import_graph_retains_copied_spans_through_references_wrappers_and_ho
 
 #[test]
 fn composed_declaration_mappings_preserve_the_important_and_fallback_declarations() {
-    let source = "@utilities{low{padding:2rem}high{padding:3rem!important}}\n.card{@compose high low;padding:4rem}";
+    let source = r###"@utilities{low{padding:2rem}high{padding:3rem!important}}
+.card{@variant media(all){padding:3rem !important;padding:2rem;}padding:4rem}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
         &parsed.manifest_input,
@@ -226,24 +229,31 @@ fn composed_declaration_mappings_preserve_the_important_and_fallback_declaration
     .unwrap();
     assert_eq!(
         lowered.generated_css,
-        ".card{padding:3rem !important;padding:2rem;padding:4rem}"
+        "@media all{.card{padding:3rem !important;padding:2rem}}.card{padding:4rem}"
     );
     let mapping = lowered
         .generated_mappings
         .iter()
-        .find(|mapping| mapping.generated_start == 6)
+        .find(|mapping| {
+            mapping.generated_start as usize == lowered.generated_css.find("padding:").unwrap()
+        })
         .expect("winning declaration origin");
     assert_eq!(
         mapping.source.range.start as usize,
-        source.rfind("high").unwrap()
+        source.rfind("padding:3rem !important").unwrap()
     );
-    assert_eq!(mapping.source.range.end - mapping.source.range.start, 4);
+    assert_eq!(
+        mapping.source.range.end - mapping.source.range.start,
+        "padding:3rem !important".len() as u32
+    );
 }
 
 #[test]
 fn wrapped_lowered_selectors_map_after_generated_condition_prefixes() {
-    let source =
-        "@utilities{paint{padding:2rem}}\n@media (min-width:10px){\n.card{@compose paint;}\n}";
+    let source = r###"@utilities{paint{padding:2rem}}
+@media (min-width:10px){
+.card{@variant media(all){padding:2rem;}}
+}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
         &parsed.manifest_input,

@@ -20,7 +20,7 @@ export const cliEditorial: Record<string, CLIEditorial> = {
   },
   lint: {
     introduction: sourceScope + ' This command runs native class diagnostics; it does not load the project’s ESLint configuration.',
-    effects: 'Without `--fix`, source files remain unchanged. `--fix` applies supported class-list fixes, then reports remaining diagnostics. `--fix-dry-run` prevents writes even when `--fix` is also present. Add `--fix-directives` only when structural directive rewrites are intended.\n\n`--stdin` reads a buffer instead of project files; `--stdin-filepath` supplies its language context and defaults to `stdin.html`. Stdin buffers are not written back to disk, even with `--fix`.',
+    effects: 'Without `--fix`, source files remain unchanged. `--fix` applies supported class-list fixes, then reports remaining diagnostics. `--fix-dry-run` prevents writes even when `--fix` is also present.\n\n`--stdin` reads a buffer instead of project files; `--stdin-filepath` supplies its language context and defaults to `stdin.html`. Stdin buffers are not written back to disk, even with `--fix`.',
     output: reports + '\n\nThe JSON report contains `cwd`, `manifest`, `files`, and `summary`. Clean files are omitted from `files`; diagnostic records may contain fix proposals. This report is not a complete before/after file diff. Use the MCP preview workflow when you need full proposed file contents before applying them.',
     examples: [
       { description: 'Inspect class-order proposals in one existing source file:', command: "master-css lint \"src/button.html\" \\\n  --rules sort-classes \\\n  --fix-dry-run" },

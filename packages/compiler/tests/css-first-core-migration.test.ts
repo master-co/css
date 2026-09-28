@@ -515,14 +515,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       .card {
         @variant dark {
-          @compose block;
+          display:block;
           color: white;
         }
       }
 
       @variant light {
         .banner {
-          @compose hidden;
+          display:none;
         }
       }
     `, { baseManifest: defaultManifest })
@@ -543,14 +543,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       .card {
         @dark {
-          @compose block;
+          display:block;
           color: white;
         }
       }
 
       @light {
         .banner {
-          @compose hidden;
+          display:none;
         }
       }
     `, { baseManifest: defaultManifest })
@@ -566,95 +566,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(shorthandCSS.utilitiesLayer.text).toContain('.panel:where(.light,.light *){color:#000}')
   })
 
-  test('keeps rewritten compose blocks in their authored condition order', () => {
-    const before = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @utilities {
-        btn {
-          @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
-        }
-      }
-
-      .card {
-        @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
-      }
-    `, { baseManifest: defaultManifest })
-    const after = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @utilities {
-        btn {
-          @compose text-center;
-          contain: content;
-
-          &:hover {
-            @variant sm {
-              @compose bg-blue-60;
-            }
-          }
-
-          @dark {
-            @compose block;
-          }
-        }
-      }
-
-      .card {
-        @compose text-center;
-        contain: content;
-
-        &:hover {
-          @variant sm {
-            @compose bg-blue-60;
-          }
-        }
-
-        @dark {
-          @compose block;
-        }
-      }
-    `, { baseManifest: defaultManifest })
-
-    expect(after.css.indexOf('@media')).toBeLessThan(after.css.indexOf('.card:where(.dark'))
-    expect(before.css.indexOf('.card:where(.dark')).toBeLessThan(before.css.indexOf('@media'))
-    for (const result of [before, after]) {
-      const managed = createTestCSS(result.manifest).ensureClassRules('btn').utilitiesLayer.text
-      expect(managed).toContain('.btn')
-      expect(managed).toContain('.btn:where(.dark')
-      expect(managed).toContain('@media')
-      if (result === before) {
-        expect(managed.indexOf('.btn:where(.dark')).toBeLessThan(managed.indexOf('@media'))
-      } else {
-        expect(managed.indexOf('@media')).toBeLessThan(managed.indexOf('.btn:where(.dark'))
-      }
-      for (const css of [result.css, managed]) {
-        expect(css).toContain('text-align:center')
-        expect(css).toContain('contain:content')
-        expect(css).toContain('display:block')
-        expect(css).toContain('background-color:var(--color-blue-60)')
-      }
-    }
-  })
-
   test('keeps authored responsive declarations before later base declarations', () => {
-    const { manifest } = compileCSSManifest(`
-      @utilities {
-        prose {
-          @variant sm {
-            :is(h1, h2, h3, h4, h5, h6) {
-              @compose mt-2xl scroll-mt:100px;
-            }
-          }
-
-          :is(h1, h2, h3, h4, h5, h6) {
-            @compose mt-lg scroll-mt:60px;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })
+    const { manifest } = compileCSSManifest("\n      @utilities {\n        prose {\n          @variant sm {\n            :is(h1, h2, h3, h4, h5, h6) {\n              margin-top:var(--spacing-2xl);scroll-margin-top:100px;\n            }\n          }\n\n          :is(h1, h2, h3, h4, h5, h6) {\n            margin-top:var(--spacing-lg);scroll-margin-top:60px;\n          }\n        }\n      }\n    ", { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('prose')
 
     expect(css.utilitiesLayer.text).toContain(

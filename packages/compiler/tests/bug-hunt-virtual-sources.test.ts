@@ -19,7 +19,7 @@ test('BH-0004 virtual identities and supplied resource bases survive classificat
     writeFileSync(join(f.root, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
     const id = '\0virtual:entry.css?entry=2', child = '\0virtual:child.css?part=1'
     const source = '@import "virtual:child.css" layer(shared) print;@utilities{paint{color:blue}}'
-    const resolveImport = vi.fn(async () => ({ id: child, source: '@master entry;@preserve native;.example{@compose paint;background:url("./image.svg?v=1#icon")}', baseFile: join(f.root, 'owner.css') }))
+    const resolveImport = vi.fn(async () => ({ id: child, source: "@master entry;@preserve native;.example{@variant media(all){color:#00f;}background:url(\"./image.svg?v=1#icon\")}", baseFile: join(f.root, 'owner.css') }))
     const resolution = await resolveStylesheet(id, source, { preserveImports: true, resolveImport })
     expect(resolution).toMatchObject({ id, kind: 'entry', dependencies: [id, child] })
     using collection = createStylesheetCollection()

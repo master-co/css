@@ -19,7 +19,7 @@ test('imported Sass is prepared once, retains real dependencies and removes scra
     const children = ['a', 'b'].map(name => join(root, `${name}.scss`))
     const partial = join(root, '_shared.scss')
     writeFileSync(partial, '.partial { color: red }')
-    for (const child of children) writeFileSync(child, '@use "./shared";.item{width:probe();@compose p:1rem;}')
+    for (const child of children) writeFileSync(child, "@use \"./shared\";.item{width:probe();@variant media(all){padding:1rem;}}")
     writeFileSync(entry, '@import "./a.scss" layer(a);@import "./b.scss" layer(b);')
     const additionalCalls: string[] = []
     let functionCalls = 0, fail = false

@@ -56,3 +56,24 @@ test('strict registration failure retains both the successful stylesheet and nat
     expect(result.css).not.toContain('.failed')
   } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }
 })
+
+test('collection emits referenced native resources once without exposing reference utilities', async () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-reference-native-resources-')))
+  const scanner = new MasterCSSScanner({}, root)
+  using collection = createStylesheetCollection()
+  try {
+    await scanner.init()
+    writeFileSync(join(root, 'tokens.css'), '@theme{--color-accent:#123456;@keyframes pop{to{opacity:1}}}@utilities{reference-only{color:blue}}.reference-native{color:red}')
+    const source = '@master entry;@reference "./tokens.css";@keyframes local{to{opacity:0}}.card{color:var(--color-accent);animation:pop 1s,local 2s}'
+    const id = join(root, 'entry.css')
+    await collection.register(scanner, id, source, { baseManifest: scanner.css.manifest, projectDir: root })
+    const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['reference-only', 'block'] })
+    const css = [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
+    expect(css).toContain('--color-accent:#123456')
+    expect(css.match(/@keyframes pop/g)).toHaveLength(1)
+    expect(css.match(/@keyframes local/g)).toHaveLength(1)
+    expect(result.emittedGlobals).toEqual({ variables: { 'color-accent': 1 }, animations: { pop: 1, local: 1 } })
+    expect(css).toContain('.block{display:block}')
+    expect(css).not.toMatch(/reference-only|reference-native/)
+  } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }
+})

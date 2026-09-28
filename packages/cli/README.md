@@ -137,7 +137,6 @@ Options:
 | `--stdin-filepath <path>` | `string` | `stdin.html` | File path used to infer the stdin language. |
 | `--fix` | `boolean` | `false` | Apply safe class-list fixes to files. |
 | `--fix-dry-run` | `boolean` | `false` | Return fix proposals without writing files. |
-| `--fix-directives` | `boolean` | `false` | Allow structural directive fixes when `--fix` writes files. |
 | `--format <format>` | `json` or `stylish` | `json` | Print machine-readable diagnostics or human-readable output. |
 | `--rules <rules>` | comma list | recommended | Select lint rules, `recommended`, or `all`. |
 | `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |

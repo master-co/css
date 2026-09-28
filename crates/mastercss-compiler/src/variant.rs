@@ -2,8 +2,8 @@ use super::{
     CompilerError, Component, CssDirectiveManifestInput, CssDirectiveSourceReference, CssRule,
     ErrorCode, HashMap, ParserOptions, PrinterOptions, Selector, SourceLocation,
     SourceLocationRange, SourceRange, StyleSheet, ThemeAtRule, ToCss, UtilityLayerName, Value,
-    byte_to_utf16_offset, collect_declarations, css_block_end, css_comment_end, css_quote_end,
-    directive_error, is_alias_character, minified_css, next_char_end, ranged_directive_diagnostic,
+    byte_to_utf16_offset, collect_declarations, css_comment_end, css_quote_end, directive_error,
+    is_alias_character, minified_css, next_char_end, ranged_directive_diagnostic,
 };
 
 pub(crate) fn custom_variant_branch(
@@ -567,78 +567,23 @@ pub(crate) fn validate_condition_variant_syntax(
     Ok(())
 }
 
-pub(crate) fn validate_compose_syntax(source: &str, filename: &str) -> Result<(), CompilerError> {
-    let mut index = 0;
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = css_quote_end(source, index, character);
+pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<(), CompilerError> {
+    use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
+    for statement in collect_css_syntax_statements(&tokens) {
+        let Some(token) = tokens.get(statement.tokens.start) else {
             continue;
-        }
-        if source[index..].starts_with("/*") {
-            index = css_comment_end(source, index);
-            continue;
-        }
-        if !source[index..].starts_with("@compose")
-            || source
-                .as_bytes()
-                .get(index + "@compose".len())
-                .is_some_and(|byte| is_alias_character(*byte))
+        };
+        if matches!(&token.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("compose"))
         {
-            index = next_char_end(source, index);
-            continue;
-        }
-        index += "@compose".len();
-        while source
-            .as_bytes()
-            .get(index)
-            .is_some_and(u8::is_ascii_whitespace)
-        {
-            index += 1;
-        }
-        if source.as_bytes().get(index) == Some(&b'{') {
-            let group_end = css_block_end(source, index, source.len())
-                .map(|end| next_char_end(source, end))
-                .unwrap_or(index + 1);
             return Err(ranged_directive_diagnostic(
                 source,
                 filename,
-                index,
-                group_end,
-                ErrorCode::ComposeGroupSyntax,
-                "@compose does not accept group syntax",
+                token.bytes.start,
+                token.bytes.end,
+                ErrorCode::RemovedComposeDirective,
+                "@compose has been removed; use native CSS declarations and selectors, or use utilities directly in markup",
             ));
-        }
-        let mut cursor = index;
-        while cursor < source.len() {
-            let character = source[cursor..].chars().next().unwrap_or_default();
-            if matches!(character, '\'' | '"') {
-                let quote_end = css_quote_end(source, cursor, character);
-                if cursor != index {
-                    cursor = quote_end;
-                    continue;
-                }
-                return Err(ranged_directive_diagnostic(
-                    source,
-                    filename,
-                    cursor,
-                    quote_end,
-                    ErrorCode::ComposeQuotedSyntax,
-                    "@compose only accepts unquoted class lists",
-                ));
-            }
-            if source[cursor..].starts_with("/*") {
-                cursor = css_comment_end(source, cursor);
-                continue;
-            }
-            if character == ';' {
-                index = cursor + 1;
-                break;
-            }
-            cursor = next_char_end(source, cursor);
-        }
-        if cursor >= source.len() {
-            index = cursor;
         }
     }
     Ok(())

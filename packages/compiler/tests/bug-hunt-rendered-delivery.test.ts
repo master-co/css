@@ -14,7 +14,7 @@ for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) scr
       mkdirSync(join(root, 'nested'))
       const entry = join(root, 'entry.css'), child = join(root, 'nested/child.css'), resource = join(root, 'nested/dot.svg')
       const source = `@import "./nested/child.css"${qualifier};@import "https://remote.test/last.css";@utilities{paint{padding:2rem}}\n.after{margin:1px}`
-      const childSource = '/* child */\n.card{@compose paint;}\n.card{background:url("./dot.svg")}';writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
+      const childSource = '/* child */\n.card{@variant media(all){padding:2rem;}}\n.card{background:url("./dot.svg")}';writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
       const result = await compileRenderedStylesheet(entry, source, { projectDir: root, baseManifest: { version: 1, languageVersion: 3, utilities: [] }, delivery: { entryURL: '/built/main.css', stylesheetURL: file => `/built/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` } })
       expect(result.css.indexOf('/built/child.css')).toBeLessThan(result.css.indexOf('https://remote.test/last.css'))
       const asset = result.stylesheets!.find(asset => asset.id === child)!
@@ -36,7 +36,7 @@ test('rendered delivery preserves host maps, supplied references, native pruning
     const entry = join(root, 'entry.css'), original = join(root, 'original.scss'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
     writeFileSync(child, '.used{color:red}.unused{color:blue}')
     writeFileSync(tokens, '@utilities{paint{padding:2rem}}')
-    const source = '@import "./child.css";\n.card{@compose paint;}'
+    const source = "@import \"./child.css\";\n.card{@variant media(all){padding:2rem;}}"
     const dependencies: string[] = [], deliveryDependencies: string[] = []
     const result = await compileRenderedInternal(entry, source, { projectDir: root,
       baseManifest: { version: 1, languageVersion: 3, utilities: [] }, classes: ['used', 'card'], pruneNativeCSS: true,

@@ -6,7 +6,7 @@
 
 ## Owns
 
-- CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, `@utilities` and rule-local `@compose`.
+- CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, `@utilities` and rule-local `@variant`.
 - Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
@@ -81,4 +81,4 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-`@utilities` uses first-level bare names. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. Put selector states and descendants in nested selectors inside the named block. `@compose` is allowed in all four utility forms and native style rules, including inside `@variant`; pattern targets must be fixed classes, never placeholders. Raw patterns use only `key:<*>`; token patterns use only `prefix-<~namespace>`. Later definitions replace the complete matching identity before composition dependencies are resolved. Preserve declaration order and duplicates; sort utilities only within a single compose statement, never across statements. Prefer native CSS authoring and use composition only for shared utility behavior. If directive syntax, semantics, lowering, or extraction changes, update `site/app/[locale]/guide/directives/contract.mdx`.
+`@utilities` uses first-level bare names. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. `@compose` is removed in every context: retain only the ranged removal diagnostic, not parsing, execution or compatibility IR. Use native declarations and nested selectors; `@variant` remains supported. Raw patterns use only `key:<*>`; token patterns use only `prefix-<~namespace>`. Later definitions replace the complete matching identity. Preserve declaration order and duplicates. Directive changes require updating `site/app/[locale]/guide/directives/contract.mdx`.

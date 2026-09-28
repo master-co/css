@@ -21,8 +21,8 @@ function fixture() {
     mkdirSync(directory)
     const owner = join(directory, 'owner.scss'), reference = join(directory, 'tokens #.css'), resource = join(directory, 'pixel.svg')
     writeFileSync(resource, `<svg data-owner="${side}"/>`)
-    writeFileSync(reference, `@utilities{paint-${side}{padding:${index + 2}rem;background:url("./pixel.svg?q=${side}#icon")}}.never-${side}{color:red}`)
-    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@compose paint-${side};}` }
+    writeFileSync(reference, `@theme{--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}.never-${side}{color:red}`)
+    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@variant media(all){padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
   })
   writeFileSync(join(root, 'tokens #.css'), '@utilities{paint-a{padding:99rem}paint-b{padding:99rem}}')
   return { root, sources, scanner, delivery, dependencies, remove: () => rmSync(root, { recursive: true, force: true }) }
@@ -42,10 +42,10 @@ test('BH-0004 missing virtual reference reports its attempted path and registrat
     await expect(collection.register(f.scanner, id, source, options)).rejects.toThrow('ENOENT')
     expect(f.dependencies).toContain(item.reference)
     expect(collection.snapshot()).toEqual(before)
-    writeFileSync(item.reference, '@utilities{paint-a{padding:7rem}}')
+    writeFileSync(item.reference, '@theme{--paint-a-padding:7rem}')
     await collection.register(f.scanner, id, source, options)
     const output = await collection.compose({ ...options, scanner: f.scanner })
-    expect(output.stylesheets?.map(asset => asset.css).join('')).toContain('padding:7rem')
+    expect(output.css).toContain('padding:7rem')
     expect(output.resources).toEqual([])
     expect(collection.snapshot().dependencies).not.toContain(item.resource)
   } finally { f.remove() }
@@ -57,7 +57,7 @@ test.each(['self', 'indirect'])('BH-0004 virtual owner participates in %s refere
     const owner = join(f.root, 'owner.css')
     writeFileSync(owner, '@utilities{paint{color:red}}')
     writeFileSync(join(f.root, 'other.css'), '@reference "./owner.css";')
-    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@compose paint;}`, {
+    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@variant media(all){color:red;}}`, {
       baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: owner }
     })).rejects.toThrow('Circular CSS reference:')
   } finally { f.remove() }
@@ -69,7 +69,7 @@ test('BH-0004 original virtual diagnostic identity survives filesystem reference
     const id = '\0prepared:diagnostic.css'
     await expect(transformStylesheet(id, f.sources[0].source + '\n.bad{@compose unknown-owner-utility;}', {
       baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: f.sources[0].owner }
-    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: id, code: 'invalid-compose-class' })]) })
+    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: id, code: 'removed-compose-directive' })]) })
   } finally { f.remove() }
 })
 

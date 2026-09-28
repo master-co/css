@@ -12,7 +12,7 @@ withFixture('invalid-manifest', context => {
       const error = context.rootWorkspace?.manifestErrors?.[0]
       expect(error).toMatchObject({ name: 'MasterCSSError' })
       const original = getMasterCSSDiagnostics(error)?.[0]
-      expect(original?.code).toBe('compose-quoted-syntax')
+      expect(original?.code).toBe('removed-compose-directive')
       expect(original?.source).toMatch(/invalid-manifest[/\\]index\.css$/)
       const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics
       expect(diagnostics).toHaveLength(1)

@@ -5,9 +5,9 @@ use serde_json::json;
 fn selected_native_output_keeps_local_reachability_and_only_selected_external_imports() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './bridge.css' supports(display:grid);@import 'https://external.test/entry.css';@utilities{paint{color:blue}}.entry{color:red}.entry-compose{@compose paint;}",
+            "entry":r###"@import './bridge.css' supports(display:grid);@import 'https://external.test/entry.css';@utilities{paint{color:blue}}.entry{color:red}.entry-compose{@variant media(all){color:#00f;}}"###,
             "bridge":"@import './selected.css' layer(base);@import 'https://external.test/bridge.css';.bridge{color:red}",
-            "selected":"@import 'https://external.test/selected.css';.selected{color:blue}.selected-compose{@compose paint;}"
+            "selected":"@import 'https://external.test/selected.css';.selected{color:blue}.selected-compose{@variant media(all){color:purple;}}"
         }, "edges":[
             {"from":"entry","specifier":"./bridge.css","resolved":"bridge"},
             {"from":"bridge","specifier":"./selected.css","resolved":"selected"}
@@ -76,10 +76,10 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
 fn suppressed_native_imports_do_not_declare_unused_layers() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@utilities{paint{color:purple}unused{color:red}}.live{@compose paint;}",
+            "entry":r###"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@utilities{paint{color:purple}unused{color:red}}.live{@variant media(all){color:purple;}}"###,
             "dead":".dead{color:red}",
             "bridge":"@import './leaf.css' layer(base);",
-            "leaf":".leaf{@compose paint;}"
+            "leaf":".leaf{@variant media(all){color:purple;}}"
         }, "edges":[
             {"from":"entry","specifier":"./dead.css","resolved":"dead"},
             {"from":"entry","specifier":"./bridge.css","resolved":"bridge"},

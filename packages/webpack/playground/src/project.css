@@ -34,23 +34,23 @@
 /* Components */
 @layer components {
   .page {
-    @compose grid items-center justify-center min-h:100vh p:1.25rem bg-panel fg-ink;
+    @layer components{display:grid;align-items:center;justify-content:center;padding:1.25rem;background-color:var(--color-panel);color:var(--color-ink);min-height:100vh;}
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   }
 
   .card {
-    @compose grid gap:1rem p-card surface-raised r-card max-w:42rem content-auto;
+    @layer components{content-visibility:auto;contain-intrinsic-size:auto 28rem;display:grid;border-radius:var(--radius-card);padding:var(--spacing-card);gap:1rem;background-color:var(--color-surface-raised);max-width:42rem;}
     @variant motion-safe {
-      @compose animation:demo-fade-in|.55s;
+      @layer components{@media (prefers-reduced-motion:no-preference){animation:demo-fade-in .55s;}}
     }
     border: 1px solid var(--color-ring);
     box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
   }
 
   .live-label {
-    @compose inline-flex items-center justify-center h:1.5rem px:.75rem bg-primary r-pill font-size:.75rem font-semibold;
+    @layer components{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-pill);padding-inline:.75rem;background-color:var(--color-primary);font-weight:var(--font-weight-semibold);font-size:.75rem;height:1.5rem;}
     @variant motion-safe {
-      @compose animation:demo-pulse|1.4s|infinite;
+      @layer components{@media (prefers-reduced-motion:no-preference){animation:demo-pulse 1.4s infinite;}}
     }
     color: white;
     justify-self: start;
@@ -59,19 +59,19 @@
   }
 
   .title {
-    @compose m:0 font-size:2.5rem leading:1 fg-ink;
+    @layer components{margin:0;color:var(--color-ink);font-size:2.5rem;line-height:1;}
     @variant md {
-      @compose font-size:3.5rem;
+      @layer components{@media (width>=3rem){font-size:3.5rem;}}
     }
     max-width: 12ch;
   }
 
   .desc {
-    @compose m:0 font-size:1.125rem leading:1.7 fg-muted max-w:34rem;
+    @layer components{margin:0;color:var(--color-muted);font-size:1.125rem;line-height:1.7;max-width:34rem;}
   }
 
   .btn {
-    @compose inline-flex items-center justify-center h:2.75rem px:1rem bg-primary r-pill font-semibold;
+    @layer components{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-pill);padding-inline:1rem;background-color:var(--color-primary);font-weight:var(--font-weight-semibold);height:2.75rem;}
     border: 0;
     box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
     color: white;

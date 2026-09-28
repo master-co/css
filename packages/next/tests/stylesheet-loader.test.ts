@@ -156,7 +156,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       join(root, 'app/Button.module.css'),
-      '.button { @compose inline-flex brand; color: white; }'
+      ".button { @variant media(all){background-color:#123456;display:inline-flex; color: white;} }"
     )
 
     expect(result.content).toContain('.button{')
@@ -177,7 +177,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       modulePath,
-      '@reference "./tokens.css"; .button { @compose brand; }'
+      "@reference \"./tokens.css\"; .button { @variant media(all){color:#123456;} }"
     )
 
     expect(result.content).toContain('.button{color:#123456}')
@@ -241,7 +241,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
+      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
@@ -264,7 +264,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
+      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
@@ -286,10 +286,10 @@ describe('Next style CSS loader', () => {
       error = caught as Error & { dependencies?: string[] }
     }
     expect(error).toBeInstanceOf(Error)
-    expect(error?.message).toContain('Invalid @compose utility')
+    expect(error?.message).toContain('@compose has been removed')
     expect(error?.dependencies).toContain(modulePath)
 
-    const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
+    const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
 
     expect(result.content).toContain('.button{display:block}')
     expect(result.dependencies).toContain(modulePath)

@@ -189,7 +189,7 @@ Use native component classes for repeated product roles. Define class selectors 
 <button class="btn">Save changes</button>
 ```
 
-Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `@compose btn` and `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
+Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
 
 Keep component classes small enough to combine:
 
@@ -320,4 +320,4 @@ styles/
 
 Keep project-wide tokens, variants, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Route-level styles](/guide/route-level-styles), and promote them here only after they become shared.
 
-Use `@compose` only when a shared utility owns behavior that should stay synchronized, such as a reusable focus ring. Native CSS is the default for component declarations; composition is optional.
+Use native declarations and selectors for component styles. Share design values through CSS custom properties; use shared native classes or component interfaces for common behavior.

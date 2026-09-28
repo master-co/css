@@ -4,7 +4,7 @@ use super::{
 };
 
 pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
-    const NAMES: [&str; 19] = [
+    const NAMES: [&str; 18] = [
         "master",
         "settings",
         "source",
@@ -19,7 +19,6 @@ pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
         "components",
         "utilities",
         "custom-variant",
-        "compose",
         "variant",
         "slot",
         "dark",

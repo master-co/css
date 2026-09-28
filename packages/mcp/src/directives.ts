@@ -11,7 +11,7 @@ import { createMCPTextDocument } from './document'
 import { summarizeManifest } from './manifest-summary'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, manifestFingerprint, type SemanticContext } from './project'
 
-const DIRECTIVE_INSPECTION_VERSION = 1
+const DIRECTIVE_INSPECTION_VERSION = 2
 
 export interface InspectDirectivesOptions {
   context?: SemanticContext
@@ -42,7 +42,6 @@ function summarizeCompileResult(result: MasterCSSCompileManifestResult) {
     .map((diagnostic) => diagnostic.message)
   return {
     manifest: summarizeManifest(result.manifest),
-    compositions: result.compositions ?? [],
     directives: {
       manifestInput: result.directiveSummary.manifestInput,
       classNames: result.classNames,

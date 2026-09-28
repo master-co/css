@@ -15,7 +15,7 @@ for (const managed of [false, true]) {
     try {
       mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
       writeFileSync(join(root, 'style.scss'), '$layout:inline-flex;@import "./child.css" layer(guard);.local{display:$layout}')
-      writeFileSync(join(root, 'child.css'), `.child{${managed ? '@compose p:2rem;' : 'padding:2rem;'}}`)
+      writeFileSync(join(root, 'child.css'), `.child{${managed ? '@variant media(all){padding:2rem;}' : 'padding:2rem;'}}`)
       writeFileSync(join(root, 'client.js'), 'import url from "./style.scss?url";const link=document.createElement("link");link.rel="stylesheet";link.href=url;document.head.append(link)')
       writeFileSync(join(root, 'index.html'), '<script type="module" src="./client.js"></script>')
       const result = await build({ root, configFile: false, logLevel: 'silent', plugins: managed ? masterCSS({ mode }) : [], build: { write: false, minify: false, cssMinify: false } })
@@ -36,7 +36,7 @@ for (const managed of [false, true]) {
     const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
     const root = mkdtempSync(join(parent, 'sass-raw-build-'))
     try {
-      const source = '$layout:inline-flex;.local{@compose p:2rem;display:$layout}'
+      const source = '$layout:inline-flex;.local{@variant media(all){padding:2rem;}display:$layout}'
       writeFileSync(join(root, 'style.scss'), source)
       writeFileSync(join(root, 'client.js'), 'import source from "./style.scss?raw";console.log(source)')
       writeFileSync(join(root, 'index.html'), '<script type="module" src="./client.js"></script>')

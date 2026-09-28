@@ -8,7 +8,6 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSLintCanonicalClassGroupSuggestions,
   MasterCSSLintCanonicalClassSuggestions,
-  MasterCSSLintCanonicalComposeDirective,
   MasterCSSLintRawValueCandidates,
   MasterCSSValidatorBatch
 } from '@master/css-binding/tooling'
@@ -16,7 +15,6 @@ import { MASTER_CSS_LINT_BATCH_VERSION } from '@master/css-binding/tooling'
 import { validateRuleDeclarations } from '../value-validation'
 import type {
   CanonicalClassNameOptions,
-  CanonicalComposeDirectiveResult,
   RawValuePolicyOptions
 } from './contracts'
 import type {
@@ -42,10 +40,6 @@ export interface LintSession {
     classNames: string[],
     options?: CanonicalClassNameOptions
   ): readonly MasterCSSLintCanonicalClassSuggestion[]
-  canonicalComposeDirective(
-    classNames: string[],
-    options?: CanonicalClassNameOptions
-  ): CanonicalComposeDirectiveResult | undefined
   rawValueCandidates(classNames: string[]): readonly MasterCSSLintRawValueCandidate[]
   analyzeClassList(
     classList: string,
@@ -143,16 +137,6 @@ export function bindLintSession(
         options
       ) as MasterCSSLintCanonicalClassGroupSuggestions).suggestions
     },
-    canonicalComposeDirective(classNames, options) {
-      const inputs = resolveInputs(classNames)
-      const result = lint.canonicalComposeDirective(
-        classNames,
-        inputs.nativeSupport,
-        options
-      ) as MasterCSSLintCanonicalComposeDirective
-      const { version: _, ...compose } = result
-      return compose.suggestions.length ? compose : undefined
-    },
     rawValueCandidates(classNames) {
       const inputs = resolveInputs(classNames)
       return (lint.rawValueCandidates(
@@ -172,7 +156,6 @@ export function bindLintSession(
         validationErrors: inputs.validationErrors,
         disallowUnknownClass: options?.disallowUnknownClass,
         canonicalOptions: options?.canonicalOptions,
-        composeDirective: options?.composeDirective,
         rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy)
       }) as MasterCSSLintClassListAnalysis
     },

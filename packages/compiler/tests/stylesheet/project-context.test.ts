@@ -43,12 +43,12 @@ test('native styles receive project tokens, modes, fallbacks and managed animati
 test('host references precede authored references and local definitions, without leaking between calls', async () => {
   const f = fixture(), override = join(f.root, 'override.css')
   writeFileSync(override, '@theme { --color-brand: green; }')
-  const source = '@reference "./override.css";.card{@compose action;}'
+  const source = '@reference "./override.css";.card{color:var(--color-action);}'
   const explicit = await transformStylesheet(f.file, source, f.options)
   expect(explicit.code).toContain('--color-brand:green')
   const local = await transformStylesheet(f.file, source + '@theme { --color-brand: purple; }', f.options)
   expect(local.code).toContain('--color-brand:purple')
-  const next = await transformStylesheet(f.file, '.card{@compose action;}', f.options)
+  const next = await transformStylesheet(f.file, '.card{color:var(--color-action);}', f.options)
   expect(next.code).toContain('--color-brand:red')
   expect(next.code).not.toContain('purple')
 })
@@ -81,8 +81,8 @@ test('separate globals preserve global mode selectors and external emission rema
 test.each([false, true])('definition files retain resource owners and dependencies with delivery=%s', async delivery => {
   const f = fixture(), image = join(f.root, 'theme', 'pixel.svg')
   writeFileSync(image, '<svg/>')
-  writeFileSync(f.entry, '@utilities { image { background: url("./pixel.svg?v=1#icon"); } }')
-  const result = await transformStylesheet(f.file, '.card{@compose image;}', { ...f.options,
+  writeFileSync(f.entry, '@theme { --image-card: url("./pixel.svg?v=1#icon"); }')
+  const result = await transformStylesheet(f.file, '.card{background:var(--image-card);}', { ...f.options,
     ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
   })
   expect(result.dependencies).toContain(f.entry)
@@ -92,7 +92,7 @@ test.each([false, true])('definition files retain resource owners and dependenci
 
 test('reference files apply to rendered graphs without recursively referencing themselves', async () => {
   const f = fixture(), child = join(f.root, 'child.css')
-  writeFileSync(child, '.child{@compose action;}')
+  writeFileSync(child, '.child{color:var(--color-action);}')
   const result = await transformStylesheet(f.file, '@import "./child.css" layer(card);', { ...f.options,
     delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) }
   })
@@ -103,8 +103,8 @@ test('reference files apply to rendered graphs without recursively referencing t
 
 test('direct compilation shares definition files and reports missing inputs before failure', async () => {
   const f = fixture()
-  const result = await compileStylesheet(f.file, '.card{@compose action;}', f.options)
-  expect(result.css).toContain('color:var(--color-action)')
+  const result = await compileStylesheet(f.file, '.card{color:var(--color-action);}', f.options)
+  expect(result.css).toContain('var(--color-action)')
   const missing = join(f.root, 'missing.css'), dependencies: string[] = []
   await expect(transformStylesheet(f.file, '.x{color:var(--color-brand)}', { ...f.options, referenceFiles: [missing], onDependency: file => dependencies.push(file) })).rejects.toThrow()
   expect(dependencies).toContain(missing)

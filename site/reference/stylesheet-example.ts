@@ -13,7 +13,7 @@ export async function stylesheetExampleCSS(source: string) {
   if (errors.length) throw new Error(`Invalid documentation stylesheet: ${JSON.stringify(errors)}`)
   const renderer = createRenderSessionSync({ manifest: result.manifest })
   try {
-    renderer.ensureClassRules([])
+    renderer.ensureClassRules([...result.directiveSummary.extractionPolicy.safelist])
     renderer.ensureStylesheetResources(result.css)
     return beautifyCSS([result.css, renderer.snapshot().cssText].filter(Boolean).join('\n\n')).trim()
   } finally { renderer.dispose() }

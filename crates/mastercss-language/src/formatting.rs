@@ -120,17 +120,6 @@ pub(crate) fn formatted_directive_prelude(
     directive: &CssDirectiveRange,
 ) -> Option<String> {
     let prelude = source_slice(source, &directive.prelude_range)?;
-    if directive.name == "compose" {
-        if directive.block_range.is_some() || !directive.quoted_string_ranges.is_empty() {
-            return None;
-        }
-        let formatted = format_class_list(prelude);
-        return Some(if formatted.is_empty() {
-            String::new()
-        } else {
-            format!(" {formatted}")
-        });
-    }
     if directive.name == "safelist" {
         let mut edits = Vec::new();
         for quoted in &directive.quoted_string_ranges {

@@ -379,7 +379,7 @@ const SEMANTIC_SCOPE_STYLE_PROBE = [
   '  --token: var(--value);',
   '}',
   '@utilities {',
-  '  btn { @compose block fg-red:hover@md; }',
+  '  btn { display: block; &:hover { color: red; } }',
   '}',
   '.x, div > li:hover::before {',
   '  color: red !important;',

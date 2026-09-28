@@ -1,11 +1,9 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
-    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap,
-    ParsedManagedPattern, StyleRule, UnknownAtRule, UtilityLayerName, Value,
-    collect_class_list_token_ranges, collect_ordered_declarations, combine_managed_selectors,
-    condition_properties, css_statement_delimiter, directive_error, managed_selector_definition,
-    minified_css, next_char_end, preserve_ordered_literal_spelling, printed_selectors,
-    trim_byte_range, utf16_to_byte_offset,
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, HashMap,
+    ParsedManagedPattern, StyleRule, UtilityLayerName, Value, collect_ordered_declarations,
+    combine_managed_selectors, condition_properties, directive_error, managed_selector_definition,
+    minified_css, preserve_ordered_literal_spelling, printed_selectors,
 };
 use crate::source_index::SourceIndex;
 
@@ -41,103 +39,6 @@ pub(crate) fn push_managed_declarations(
         layer: Some(layer),
         name: Some(context.name.clone()),
     });
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn lower_compose_rule(
-    source: &SourceIndex<'_>,
-    filename: &str,
-    body: &SourceIndex<'_>,
-    body_start_byte: usize,
-    rule: UnknownAtRule<'_>,
-    context: &ManagedStyleContext,
-    condition_path: &[CssDirectiveConditionPathEntry],
-    layer: UtilityLayerName,
-    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
-    style_order: &mut u32,
-) -> Result<(), CompilerError> {
-    if rule.block.is_some() {
-        return Err(CompilerError::DirectiveDiagnostic {
-            code: ErrorCode::ComposeGroupSyntax,
-            message: "@compose does not accept group syntax".into(),
-            filename: filename.to_owned(),
-            range: None,
-        });
-    }
-    let local_start = body
-        .byte_offset_for_location(rule.loc.line, rule.loc.column)
-        .ok_or_else(|| CompilerError::Directive {
-            message: "Cannot resolve @compose source range".into(),
-            filename: filename.to_owned(),
-            range: None,
-        })?;
-    let body = body.text();
-    let Some((semicolon, ';')) = css_statement_delimiter(body, local_start, body.len()) else {
-        return Err(CompilerError::Directive {
-            message: "@compose requires a semicolon".into(),
-            filename: filename.to_owned(),
-            range: None,
-        });
-    };
-    let directive_end = semicolon + 1;
-    let mut content_start = local_start + "@compose".len();
-    while content_start < semicolon
-        && body[content_start..]
-            .chars()
-            .next()
-            .is_some_and(char::is_whitespace)
-    {
-        content_start = next_char_end(body, content_start);
-    }
-    let (_, content_end) = trim_byte_range(body, content_start, semicolon);
-    let class_list = &body[content_start..content_end];
-    if class_list.starts_with(['\'', '"']) {
-        return Err(CompilerError::DirectiveDiagnostic {
-            code: ErrorCode::ComposeQuotedSyntax,
-            message: "@compose only accepts unquoted class lists".into(),
-            filename: filename.to_owned(),
-            range: None,
-        });
-    }
-    let absolute_directive_start = body_start_byte + local_start;
-    let directive_source = source.reference(
-        filename,
-        absolute_directive_start,
-        body_start_byte + directive_end,
-    );
-    let (conditions, path) = condition_properties(condition_path);
-    *style_order += 1;
-    for token in collect_class_list_token_ranges(class_list) {
-        if token.token.starts_with('{') {
-            return Err(CompilerError::DirectiveDiagnostic {
-                code: ErrorCode::ComposeGroupSyntax,
-                message: "@compose does not accept group syntax".into(),
-                filename: filename.to_owned(),
-                range: None,
-            });
-        }
-        let token_start = utf16_to_byte_offset(class_list, token.range.start)
-            .expect("lexer ranges are valid UTF-16 boundaries");
-        let token_end = utf16_to_byte_offset(class_list, token.range.end)
-            .expect("lexer ranges are valid UTF-16 boundaries");
-        style_definitions.push(CssDirectiveStyleDefinition::Compose {
-            order: *style_order,
-            class_name: token.token,
-            selector: context.selectors.join(","),
-            source: source.reference(
-                filename,
-                body_start_byte + content_start + token_start,
-                body_start_byte + content_start + token_end,
-            ),
-            directive_source: directive_source.clone(),
-            selector_source: context.selector_source.clone(),
-            conditions: conditions.clone(),
-            condition_path: path.clone(),
-            layer: Some(layer),
-            name: Some(context.name.clone()),
-        });
-    }
-    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -478,27 +379,7 @@ pub(crate) fn lower_managed_rule_list(
                     style_order,
                 )?;
             }
-            CssRule::Unknown(rule) if rule.name.eq_ignore_ascii_case("compose") => {
-                let Some(context) = &context else {
-                    return Err(CompilerError::Directive {
-                        message: "@compose requires a style rule".into(),
-                        filename: filename.to_owned(),
-                        range: None,
-                    });
-                };
-                lower_compose_rule(
-                    source,
-                    filename,
-                    body,
-                    body_start_byte,
-                    rule,
-                    context,
-                    condition_path,
-                    layer,
-                    style_definitions,
-                    style_order,
-                )?;
-            }
+
             CssRule::LayerBlock(_) => {
                 return Err(directive_error(
                     source.text(),

@@ -174,20 +174,6 @@ export interface CSSDirectiveReference {
   file?: string
 }
 
-export interface CSSDirectiveStyleComposeDefinition {
-  type: 'compose'
-  order: number
-  className: string
-  selector: string
-  source?: CSSDirectiveSourceReference
-  directiveSource?: CSSDirectiveSourceReference
-  selectorSource?: CSSDirectiveSourceReference
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  layer?: CSSDirectiveLayerName
-  name?: string
-}
-
 export interface CSSOrderedDeclaration {
   property: string
   value: string
@@ -208,7 +194,6 @@ export interface CSSDirectiveStyleNativeDefinition {
 }
 
 export type CSSDirectiveStyleDefinition =
-  | CSSDirectiveStyleComposeDefinition
   | CSSDirectiveStyleNativeDefinition
 
 /** Generated UTF-16 offset and its original authoring-source anchor. */
@@ -232,19 +217,8 @@ export interface CSSUtilitySource {
   source: CSSDirectiveSourceReference
 }
 
-export interface CSSCompositionTrace {
-  order: number
-  classes: string[]
-  source?: CSSDirectiveSourceReference
-  definitionSources: CSSDirectiveSourceReference[]
-  css: string
-  variableNames: string[]
-  animationNames: string[]
-}
-
 export interface CSSDirectiveResult {
   utilitySources?: CSSUtilitySource[]
-  compositions?: CSSCompositionTrace[]
   nativeOutput?: CSSNativeOutput
   outputMappings?: CSSOutputMapping[]
   /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */

@@ -376,7 +376,6 @@ function compileManifestInputWithBinding(
 
 interface BindingLowerCSSDirectivesResult {
   utilitySources: CSSUtilitySource[]
-  compositions: NonNullable<CompileCSSResult['compositions']>
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: CompileCSSResult['generatedMappings']
@@ -517,7 +516,6 @@ function toCompileCSSManifestResult(
   return {
     ...directiveData,
     utilitySources: lowerResult.utilitySources,
-    compositions: lowerResult.compositions,
     ...(lowerResult.css === undefined ? {} : { outputMappings: lowerResult.outputMappings ?? [] }),
     dependencies,
     manifest: lowerResult.manifest,

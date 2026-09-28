@@ -22,7 +22,7 @@ function writeStyle(root: string, displayClass: string) {
     '@master entry;',
     '@utilities {',
     '    probe {',
-    `        @compose ${displayClass};`,
+    `        display: ${displayClass === 'hidden' ? 'none' : displayClass};`,
     '        width: 4px;',
     '        height: 4px;',
     '    }',

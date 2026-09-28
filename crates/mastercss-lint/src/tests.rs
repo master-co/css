@@ -2,9 +2,8 @@ use std::collections::HashSet;
 
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
-    CanonicalComposeDirectiveIr, CanonicalComposeSuggestionIr, CanonicalComposeSuggestionKind,
-    EngineSession, LINT_BATCH_VERSION, LintClassListPolicy, LintSession, RawValueCandidateIr,
-    RawValuePolicy, SourceRange, ValidatorBatchIr, classify_host_rule_validation,
+    EngineSession, LintClassListPolicy, LintSession, RawValueCandidateIr, RawValuePolicy,
+    SourceRange, ValidatorBatchIr, classify_host_rule_validation,
 };
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
@@ -80,7 +79,7 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
             &HashSet::new(),
         )
         .unwrap();
-    assert_eq!(batch.version, 1);
+    assert_eq!(batch.version, 2);
     assert_eq!(
         batch.sorted_class_names,
         ["m:2px", "m:3px", "fg:white", "unknown"]
@@ -261,93 +260,6 @@ fn suggests_canonical_composition_groups_from_engine_facts() {
         );
         assert_eq!(session.engine.css_text(), "");
     }
-}
-
-#[test]
-fn creates_structural_compose_directives_from_engine_facts() {
-    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
-    let class_names = ["text-align:center", "contain:content"].map(str::to_owned);
-    let native_support = vec![
-        true;
-        session
-            .native_declaration_candidates(&class_names)
-            .unwrap()
-            .len()
-    ];
-    assert_eq!(
-        session
-            .canonical_compose_directive(
-                &class_names,
-                Some(&native_support),
-                &CanonicalClassNameOptions::default(),
-            )
-            .unwrap(),
-        CanonicalComposeDirectiveIr {
-            version: LINT_BATCH_VERSION,
-            suggestions: vec![
-                CanonicalComposeSuggestionIr {
-                    actual: "text-align:center".into(),
-                    recommended: "text-align: center".into(),
-                    class_names: vec!["text-align:center".into()],
-                    kind: CanonicalComposeSuggestionKind::NativeDeclaration,
-                },
-                CanonicalComposeSuggestionIr {
-                    actual: "contain:content".into(),
-                    recommended: "contain: content".into(),
-                    class_names: vec!["contain:content".into()],
-                    kind: CanonicalComposeSuggestionKind::NativeDeclaration,
-                },
-            ],
-            structural_change: Some(true),
-            replacement: Some("text-align: center;\ncontain: content;".into()),
-        }
-    );
-
-    let class_names = ["bg-blue-60:hover@sm", "block@dark"].map(str::to_owned);
-    let native_support = vec![
-        true;
-        session
-            .native_declaration_candidates(&class_names)
-            .unwrap()
-            .len()
-    ];
-    let result = session
-        .canonical_compose_directive(
-            &class_names,
-            Some(&native_support),
-            &CanonicalClassNameOptions::default(),
-        )
-        .unwrap();
-    assert_eq!(
-        result.replacement.as_deref(),
-        Some("&:hover { @variant sm { @compose bg-blue-60; } }\n@dark { @compose block; }")
-    );
-    assert_eq!(
-        result
-            .suggestions
-            .iter()
-            .map(|suggestion| suggestion.kind)
-            .collect::<Vec<_>>(),
-        [
-            CanonicalComposeSuggestionKind::VariantBlock,
-            CanonicalComposeSuggestionKind::VariantBlock,
-        ]
-    );
-
-    let class_names = ["contain:content!"].map(str::to_owned);
-    let native_support = vec![true];
-    let result = session
-        .canonical_compose_directive(
-            &class_names,
-            Some(&native_support),
-            &CanonicalClassNameOptions::default(),
-        )
-        .unwrap();
-    assert_eq!(
-        result.replacement.as_deref(),
-        Some("contain: content !important;")
-    );
-    assert_eq!(session.engine.css_text(), "");
 }
 
 #[test]

@@ -2,15 +2,29 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "./rust-refactor-contract-evidence.schema.json",
   "type": "object",
-  "required": ["version", "baseline", "records", "surfaces"],
+  "required": [
+    "version",
+    "baseline",
+    "records",
+    "surfaces"
+  ],
   "properties": {
-    "version": { "const": 1 },
+    "version": {
+      "const": 1
+    },
     "baseline": {
       "type": "object",
-      "required": ["ref", "commit"],
+      "required": [
+        "ref",
+        "commit"
+      ],
       "properties": {
-        "ref": { "const": "bd164e4b5" },
-        "commit": { "const": "bd164e4b5ae3a713940913d745183e9ab6b54263" }
+        "ref": {
+          "const": "bd164e4b5"
+        },
+        "commit": {
+          "const": "bd164e4b5ae3a713940913d745183e9ab6b54263"
+        }
       },
       "additionalProperties": false
     },
@@ -18,24 +32,108 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["sourceId", "sourceDigest", "targetDigest", "proof", "reason"],
+        "required": [
+          "sourceId",
+          "sourceDigest",
+          "targetDigest",
+          "proof",
+          "reason"
+        ],
         "properties": {
-          "sourceId": { "type": "string" },
-          "sourceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-          "targetId": { "type": "string", "pattern": "^rc87-[a-f0-9]{16}$" },
-          "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-          "proof": { "enum": ["verified-superset", "approved-contract-change"] },
-          "reason": { "type": "string", "minLength": 1 },
-          "approval": { "$ref": "#/$defs/approval" }
+          "sourceId": {
+            "type": "string"
+          },
+          "sourceDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "targetId": {
+            "type": "string",
+            "pattern": "^rc87-[a-f0-9]{16}$"
+          },
+          "targetDigest": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "proof": {
+            "enum": [
+              "verified-superset",
+              "approved-contract-change",
+              "approved-contract-removal"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approval": {
+            "$ref": "#/$defs/approval"
+          }
         },
         "additionalProperties": false,
         "allOf": [
           {
             "if": {
-              "properties": { "proof": { "const": "approved-contract-change" } }
+              "properties": {
+                "proof": {
+                  "enum": [
+                    "approved-contract-change",
+                    "approved-contract-removal"
+                  ]
+                }
+              }
             },
-            "then": { "required": ["approval"] },
-            "else": { "not": { "anyOf": [{ "required": ["approval"] }, { "required": ["targetId"] }] } }
+            "then": {
+              "required": [
+                "approval"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "approval"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "targetId"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "proof": {
+                  "const": "approved-contract-removal"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "targetId"
+              ],
+              "properties": {
+                "targetDigest": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "targetDigest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
           }
         ]
       }
@@ -44,14 +142,36 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["surfaceId", "baselineDigest", "targetDigest", "proof", "reason", "approval"],
+        "required": [
+          "surfaceId",
+          "baselineDigest",
+          "targetDigest",
+          "proof",
+          "reason",
+          "approval"
+        ],
         "properties": {
-          "surfaceId": { "type": "string" },
-          "baselineDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-          "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-          "proof": { "const": "approved-contract-change" },
-          "reason": { "type": "string", "minLength": 1 },
-          "approval": { "$ref": "#/$defs/approval" }
+          "surfaceId": {
+            "type": "string"
+          },
+          "baselineDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "targetDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "proof": {
+            "const": "approved-contract-change"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approval": {
+            "$ref": "#/$defs/approval"
+          }
         },
         "additionalProperties": false
       }
@@ -60,12 +180,29 @@
   "$defs": {
     "approval": {
       "type": "object",
-      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest"],
+      "required": [
+        "approvedBy",
+        "approvedAt",
+        "reviewRef",
+        "scopeDigest"
+      ],
       "properties": {
-        "approvedBy": { "type": "string", "minLength": 1 },
-        "approvedAt": { "type": "string", "format": "date-time" },
-        "reviewRef": { "type": "string", "minLength": 1 },
-        "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        "approvedBy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scopeDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       },
       "additionalProperties": false
     }

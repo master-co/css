@@ -4,18 +4,7 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const compiled = compileManifestSync(`
-@theme { --color-obsolete: red; }
-@utilities {
-  panel:<*> { @compose display:block padding:5px; width:--value(); height:--value(); }
-  cleared { color:var(--color-obsolete); &:hover { padding:100px; } }
-  cleared { }
-  aligned-<start=left|end=right> { text-align:--value(); }
-  aligned-<end=center|start=justify> { text-align:--value(); }
-  aligned-end { text-align:left; }
-}
-@layer base { .stroke { color:blue; -webkit-text-stroke:3px red; } }
-`, {})
+const compiled = compileManifestSync("\n@theme { --color-obsolete: red; }\n@utilities {\n  panel:<*> { @variant media(all){padding:5px;display:block;} width:--value(); height:--value(); }\n  cleared { color:var(--color-obsolete); &:hover { padding:100px; } }\n  cleared { }\n  aligned-<start=left|end=right> { text-align:--value(); }\n  aligned-<end=center|start=justify> { text-align:--value(); }\n  aligned-end { text-align:left; }\n}\n@layer base { .stroke { color:blue; -webkit-text-stroke:3px red; } }\n", {})
 const classes = ['panel:var(--dimension)', 'cleared', 'aligned-start', 'aligned-end', 'text-stroke:1px', 'text-stroke-width:1px']
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {

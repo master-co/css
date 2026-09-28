@@ -150,50 +150,39 @@ test('loads the isolated source tooling Wasm surface', async () => {
     ]
   }))
   expect(lint.analyze(['block', 'm:2px', 'm:3px', 'unknown'], undefined, [])).toEqual({
-    version: 1,
+    version: 2,
     sortedClassNames: ['block', 'm:2px', 'm:3px', 'unknown'],
     conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }],
     partialConflicts: []
   })
   expect(lint.analyze(['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 1,
+    version: 2,
     sortedClassNames: ['mx:2px', 'mxs:3px'],
     conflicts: [],
     partialConflicts: []
   })
   expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
-    version: 1,
+    version: 2,
     suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
   })
   expect(lint.canonicalClassGroups(['mxs-md', 'mxe-md'], undefined, undefined)).toEqual({
-    version: 1,
+    version: 2,
     suggestions: []
   })
-  expect(lint.canonicalComposeDirective(['contain:content'], [true], undefined)).toEqual({
-    version: 1,
-    suggestions: [{
-      actual: 'contain:content',
-      recommended: 'contain: content',
-      classNames: ['contain:content'],
-      kind: 'native-declaration'
-    }],
-    structuralChange: true,
-    replacement: 'contain: content;'
-  })
   expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-    version: 1,
+    version: 2,
     candidates: [
       { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
     ]
   })
   // Decomposing a shorthand would change its cascade tier, so no partial autofix.
   expect(lint.analyzeClassList('mx:2px  mxs:3px', ['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 1,
-    analysis: { version: 1, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
+    version: 2,
+    analysis: { version: 2, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
     diagnostics: []
   })
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 1,
+    version: 2,
     classList: 'block unknown',
     classNames: ['block', 'unknown'],
     validationErrors: [
@@ -215,7 +204,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     })
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 1,
+    version: 2,
     classList: '😀 m:var(--spacing-md)|17px',
     classNames: ['😀', 'm:var(--spacing-md)|17px'],
     rawValuePolicy: {
@@ -284,7 +273,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   language.free()
 
   expect(tooling.createInspectionReport({
-    version: 3,
+    version: 4,
     cwd: '/project',
     patterns: ['index.html'],
     files: [],
@@ -293,7 +282,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     stylesheets: {},
     css: { text: '😀' }
   })).toMatchObject({
-    version: 3,
+    version: 4,
     // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
     // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
     css: { bytes: 4, included: false },

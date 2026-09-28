@@ -165,7 +165,7 @@ export default defineConfig([
 
 For example, equivalent property aliases can shorten `margin-md` to `m-md` while retaining the same token. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`width-sm height-sm`); the preset no longer supplies the `size`, `min-size`, or `max-size` families. Version upgrades belong to `master-css migrate` with the saved RC manifest.
 
-The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
+`@compose` and `configs.stylesheet` are removed. Canonicalization applies to class lists in markup and class builders; stylesheet declarations use native CSS.
 
 Standalone CSS files are included by default when using `@master/eslint-config-css`:
 
@@ -190,9 +190,7 @@ export default defineConfig([
         preferStaticUtilities: true,
         preferPropertyAliases: true,
         preferCompositionUtilities: true,
-        preferConditionOrder: true,
-        preferNativeDeclarationsInCompose: true,
-        preferVariantBlocksInCompose: true
+        preferConditionOrder: true
       }]
     }
   }

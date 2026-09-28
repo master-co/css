@@ -125,14 +125,14 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   const directive = grammarEntry('master-directive')
   const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
   const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(utilities)\\b')
-  const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
+  const safelistDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(safelist)\\b')
 
   expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(composeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(safelistDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
   expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
-  expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])
+  expectGrammarIncludes({ patterns: safelistDirective.patterns ?? [] }, ['#master-string'])
 
   const themeBlock = grammarEntry('master-theme-block')
   expectGrammarIncludes({ patterns: themeBlock.patterns[0]?.patterns ?? [] }, [
@@ -148,8 +148,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   }))
   expect(JSON.stringify(themeValue)).not.toContain('--alpha')
 
-  const composePrelude = grammarEntry('master-compose-prelude')
-  expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
+  expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
 
   const classFragment = grammarEntry('master-class-fragment')
   findGrammarPattern(classFragment, (pattern) => pattern.name === 'support.constant.property-value.master-css')
@@ -198,7 +197,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
       '}',
       '@utilities {',
       '    btn {',
-      '        @compose inline-flex fg-primary:hover@md;',
+      "        @safelist \"inline-flex fg-primary:hover@md\";",
       '    }',
       '}',
       '@keyframes fade {',
@@ -375,7 +374,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '}',
     '@utilities {',
     '    btn {',
-    '        @compose inline-flex fg-brand:hover@sm;',
+    "        @safelist \"inline-flex fg-brand:hover@sm\";",
     '    }',
     '}'
   ].join('\n')
@@ -604,7 +603,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     '  --spacing-card: 24;',
     '}',
     '@utilities {',
-    '  card { @compose bg-blue fg-brand:hover; }',
+    "  card { @safelist \"bg-blue fg-brand:hover\"; }",
     '}'
   ].join('\n')
   const cssOptions = {
@@ -690,9 +689,9 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
     '@utilities {',
     '    card {',
-    '        @compose p-md r-xl;',
+    "        @safelist \"p-md r-xl\";",
     '        @variant <sm {',
-    '            @compose block;',
+    "            @safelist \"block\";",
     '        }',
     '    }',
     '}'

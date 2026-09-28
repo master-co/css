@@ -572,14 +572,7 @@ function extractCandidatesFromSnippet(input: {
     }
   }
 
-  // Prose and agent-instruction fences mention directives without authoring CSS.
-  if (input.kind === 'fenced:css') {
-    for (const each of extractDirectiveValues(input.text, '@compose')) {
-      add(each.value, each.index, `${input.kind}:compose`)
-    }
-  }
-
-  for (const each of extractDirectiveValues(input.text, '@safelist')) {
+  for (const each of extractSafelistValues(input.text)) {
     add(each.value, each.index, `${input.kind}:safelist`)
   }
 
@@ -608,14 +601,12 @@ function extractMarkedClasses(text: string): { index: number, value: string }[] 
   return out
 }
 
-function extractDirectiveValues(text: string, directive: '@compose' | '@safelist'): { index: number, value: string }[] {
+function extractSafelistValues(text: string): { index: number, value: string }[] {
   const out: { index: number, value: string }[] = []
-  const pattern = directive === '@compose'
-    ? /@compose\s+([^;\n]+)/g
-    : /@safelist\s+(["'])([\s\S]*?)\1/g
+  const pattern = /@safelist\s+(["'])([\s\S]*?)\1/g
   let match: RegExpExecArray | null
   while ((match = pattern.exec(text))) {
-    const value = directive === '@compose' ? match[1] : match[2]
+    const value = match[2]
     out.push({ index: match.index, value })
   }
   return out
@@ -949,11 +940,11 @@ test('all CLI reference commands use the documented output and file effects', ve
 test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
 
 
-test('compose examples are extracted from CSS fences without treating prose as CSS', () => {
+test('removed compose statements are not treated as class-list sources', () => {
   const snippet = (kind: string, text: string) => extractCandidatesFromSnippet({ content: text, file: 'guide.mdx', index: 0, kind, scanClassAttributes: false, text }).filter(candidate => candidate.kind.endsWith(':compose'))
   assert.deepEqual(snippet('mdx', 'Replace `@compose button` with native declarations.'), [])
   assert.deepEqual(snippet('fenced:text', 'Use @compose only for shared behavior;'), [])
-  assert.deepEqual(snippet('fenced:css', '.a { @compose block; }').map(candidate => candidate.candidate), ['block'])
+  assert.deepEqual(snippet('fenced:css', '.a { @compose block; }').map(candidate => candidate.candidate), [])
 })
 
 

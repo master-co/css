@@ -51,7 +51,7 @@ const result = compiler.compileStylesheets({
     entry: 'app',
     files: {
       app: '@import "./theme.css" layer(theme);',
-      theme: '@utilities { paint { color: red } } .example { @compose paint; }'
+      theme: '@utilities { paint { color: red } } .example { color: red; }'
     },
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },
@@ -63,13 +63,13 @@ const result = compiler.compileStylesheets({
 Deliver every item in `result.stylesheets` at its `href`, and load the entry's
 stylesheet. `result.css` contains the entry CSS only. Imports without prepared
 edges remain external CSS imports. Imported authoring definitions share the
-manifest; native CSS and native `@compose` output retain their stylesheet scopes
+manifest; native CSS and native `@variant` output retain their stylesheet scopes
 and rule positions.
 
 The host supplies file contents, import resolution, and delivery URLs. Use `resourceURLs` to map each source file ID and decoded resource URL to a
 root-relative or absolute delivery URL before definitions are merged. For example,
 `resourceURLs: { child: { "image.png": "/assets/image.png" } }` preserves a child
-definition's image when another file composes it. With this option present, every
+theme token's image when another file references it. With this option present, every
 parsed relative `url()` or `image-set()` resource requires a mapping. Empty URLs,
 fragment-only references, import edges, and namespace identifiers are preserved.
 Root-relative replacements require assets to share an origin; use absolute URLs
@@ -93,21 +93,21 @@ registration or composition completes. Use the optional `variant` identity for
 stylesheet URLs: shared files can need separate assets for different entry
 pruning scopes. Each variant must have a distinct URL. Composition independently
 supports `includeNativeCSS`, `includeMasterBaseCSS`, and `includeGeneratedCSS`.
-Disabling native output suppresses that file's rules, native compose output and
+Disabling native output suppresses that file's rules, native variant output and
 external imports. Local links from suppressed files remain only when needed to
 reach selected output, so empty imports cannot declare excluded cascade layers.
 Unreachable stylesheet assets are omitted; authoring definitions and dependencies
 still contribute to compilation. The low-level graph
 request exposes the same native selection through `nativeStylesheets` (file IDs).
 `preserveNativeCSS: false` omits raw native rules and unresolved external imports
-while retaining compiled native `@compose` in otherwise included stylesheets;
+while retaining compiled native `@variant` in otherwise included stylesheets;
 `includeNativeCSS: false` excludes both kinds of project-native output.
 Publish all returned assets together. References are
 resolved without emitting their native CSS, while their used resources retain
 the reference file's ownership.
 
 `transformStylesheet(id, source, { baseManifest, delivery })` also supports
-supplied local stylesheets. It compiles imported `@compose` rules and shared
+supplied local stylesheets. It compiles imported `@variant` rules and shared
 authoring definitions through the Rust graph compiler, including roots whose
 directives occur only in imported descendants. With `preserveImports: true`,
 stylesheet resolution classifies these graphs as local while preserving the
@@ -121,7 +121,7 @@ to publish. The host must publish the complete returned asset set at the supplie
 URLs. `resolveImport` can supply host aliases, and `emittedGlobals` suppresses
 variables and animations already provided by global stylesheets. Reference-only
 native rules stay excluded. Omitting `delivery` keeps the existing single-source
-transform contract. Vite consumes this asset result for local compose entries in
+transform contract. Vite consumes this asset result for local variant entries in
 development and production, including inline requests. Further host input and
 lifecycle combinations remain under integration validation.
 
@@ -226,7 +226,7 @@ compiler; they do not contain a TypeScript semantic fallback.
 
 The native binding's filesystem project loader retains imported file boundaries
 when collecting managed definitions, resolving references and planning source
-scans. Native `@compose` output keeps import conditions and layer scopes, while
+scans. Native `@variant` output keeps import conditions and layer scopes, while
 the separate `generatedCSS` field remains a definition metadata view. Ordinary
 native CSS and asset publication belong to stylesheet delivery APIs. This does
 not extend the raw `resolveCSSImportGraph().source` flattening contract.
@@ -254,7 +254,7 @@ they prevent safe inlining.
 can prepare a file and its imports for publication as separate stylesheets. The
 Node host resolves local imports, package entries and references; the existing
 Rust graph compiler retains external import order, conditions and native
-`@compose` positions. `delivery` uses the same URL callbacks as standalone
+`@variant` positions. `delivery` uses the same URL callbacks as standalone
 stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
 Each stylesheet must have a distinct final URL.
 
@@ -266,7 +266,7 @@ and returns assets without writing output files. `css`, `nativeCSS` and
 Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
 Omitting `preserveNativeCSS` retains the file API's existing default of removing
-raw native CSS while preserving compiled native `@compose` and its conditions.
+raw native CSS while preserving compiled native `@variant` and its conditions.
 Omitting `delivery` continues to use the legacy single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.
@@ -375,11 +375,10 @@ The direct Node stylesheet APIs return a serialized source map v3 in `sourceMap`
 `transformStylesheet()` maps its returned `code`. Pass a host-prepared input map
 through the `sourceMap` option; Sass preparation also supplies its original map.
 The compiler chains these inputs through directive removal, import expansion,
-native printing and compose lowering, retaining original source contents.
+native printing and variant lowering, retaining original source contents.
 
 Mappings are source anchors: printed native rules identify their originating rule,
-and composed declarations identify the winning authored declaration group or
-`@compose` token. An expanded interpolation retains the host map's segment anchor.
+and lowered declarations identify the authored declaration. An expanded interpolation retains the host map's segment anchor.
 Generated wrappers, classes and resources without an authoring location are left
 unmapped. Separate assets returned by the `delivery` path do not yet carry output
 maps. For otherwise valid native CSS, malformed input maps label the successful
@@ -408,7 +407,7 @@ inlining and qualifier wrappers. `nativeCSS` and `generatedCSS` remain metadata
 views of the separately compiled files; use `css` for delivery.
 
 The Node rendered stylesheet path uses this graph compilation for file imports,
-so qualified imported files may define managed utilities and compose them in native
+so qualified imported files may define managed utilities and use variants in native
 rules. If boundaries require multiple assets, use stylesheet delivery options;
 the single-output path reports `CSS_IMPORT_ERROR` instead of losing those assets.
 
@@ -422,7 +421,7 @@ and original diagnostic locations remain attached to their source files.
 ### Ordered native composition
 
 Direct `compileManifest()`, stylesheet compilation and local transforms return
-final `css` with native and composed rules in their original positions. Repeated
+final `css` with native and lowered rules in their original positions. Repeated
 selectors retain their cascade order; anonymous layers remain the same layer.
 Do not reconstruct this output by concatenating `nativeCSS` and `generatedCSS`:
 those fields are separate metadata views.

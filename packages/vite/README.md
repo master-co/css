@@ -177,13 +177,13 @@ the default pruning policy keeps their rules.
 
 Production build-watch tracks resolved CSS Modules `composes` dependencies,
 including nested compositions. Editing a composed file rebuilds its consumers;
-correcting an invalid Master CSS composition in that file recovers the build.
+correcting an invalid Master CSS directive in that file recovers the build.
 When Vite provides no original location for composed CSS, diagnostics explicitly
 identify the preprocessed location.
 
 Development CSS and Sass modules retain their scoped exports and native rules.
 Editing the module or a resolved `composes` dependency updates both its CSS and
-exports through HMR, including modules that use local `@compose`.
+exports through HMR, including modules that use local `@variant`.
 
 During development, editing a CSS project entry updates ordinary stylesheet
 imports and its `?inline` and `?raw` consumers. Inline requests export processed
@@ -244,7 +244,7 @@ context's resource copies. Connected pages reload and reconnect to new asset URL
 subsequent child CSS and image edits update without another page reload.
 Local stylesheets compile imported local rules and retain qualified child imports
 and resources in development and production builds. This also applies when the
-root and intermediate stylesheets contain only native CSS, and `@compose` appears
+root and intermediate stylesheets contain only native CSS, and `@variant` appears
 only in an imported descendant. These graphs remain local stylesheets rather than
 becoming project entries or native CSS pruning roots.
 CSS Modules keep the root module's scoped exports; SSR inline requests return
@@ -257,7 +257,7 @@ asynchronous entry registration order.
 Local CSS and Sass imported through `?url` deliver their compiled stylesheet
 and retained child assets. When that URL is attached as a stylesheet link,
 editing a retained CSS child or its image updates the styles without reloading
-the page, including when only an imported descendant contains `@compose`.
+the page, including when only an imported descendant contains `@variant`.
 CSS Modules that import local CSS files expose the imported classes through the
 root module's exports, with the same scope as its own classes. Imports retain their
 conditions and layers, and relative resources keep their original file's directory.
@@ -277,7 +277,7 @@ Stylesheet URLs emitted for CSS Modules also support direct CSS requests through
 policy, including allowed directories and denied files. A supplied map that cannot identify an
 original filesystem source produces an error.
 
-During development, local CSS and Sass compositions retain their attempted CSS
+During development, local CSS and Sass variants retain their attempted CSS
 reference dependencies after a compilation error. Creating a missing reference
 retries its consumers; a failed initial page load reloads after compilation succeeds.
 Deleting and restoring a reference after a successful load updates the stylesheet

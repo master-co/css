@@ -9,15 +9,9 @@ fn diagnostics_after_removed_directives_retain_original_utf16_offsets() {
         "@source './😀.html';\n/*😀*/@master entry;\n",
     ] {
         for (body, token) in [
-            (
-                ".example {\n  @compose unknown-utility;\n}",
-                "unknown-utility",
-            ),
+            (".example {\n  @compose unknown-utility;\n}", "@compose"),
             ("@utilities invalid {paint{color:red}}", "@utilities"),
-            (
-                "@utilities {paint{@compose unknown-utility;}}",
-                "unknown-utility",
-            ),
+            ("@utilities {paint{@compose unknown-utility;}}", "@compose"),
         ] {
             let source = format!("{prefix}{body}");
             let request = serde_json::from_value(json!({

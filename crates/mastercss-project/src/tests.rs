@@ -120,10 +120,14 @@ fn excludes_generated_stylesheets_from_implicit_entries_only() {
 }
 
 #[test]
-fn lowers_compose_definitions_against_the_base_manifest() {
+fn lowers_native_variants_against_the_base_manifest() {
     let project = temp_project();
     let entry = project.join("entry.css");
-    fs::write(&entry, "@master entry; .hidden-card { @compose hidden; }").unwrap();
+    fs::write(
+        &entry,
+        r###"@master entry; .hidden-card { @variant media(all) { display:none; } }"###,
+    )
+    .unwrap();
     let base_manifest = serde_json::from_str(include_str!(
         "../../../packages/preset/src/default-manifest.json"
     ))

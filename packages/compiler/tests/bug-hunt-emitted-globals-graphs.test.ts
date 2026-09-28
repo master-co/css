@@ -12,7 +12,7 @@ for (const qualifier of ['', 'layer(shared)', 'layer', 'supports(display:grid) s
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-emitted-graph-')))
     const entry = join(root, 'entry.css'), child = join(root, 'child.css'), reference = join(root, 'reference.css')
     try {
-      writeFileSync(entry, `@import "./child.css" ${qualifier};@master entry;@reference "./reference.css";.native{@compose paint;}`)
+      writeFileSync(entry, `@import "./child.css" ${qualifier};@master entry;@reference "./reference.css";.native{color:var(--color-blue-60);}`)
       writeFileSync(child, '@import "https://external.test/style.css";.child{padding-block:var(--spacing-5xl);background:url(host-owned.svg)}')
       writeFileSync(reference, '@utilities{paint{color:var(--color-blue-60)}}.reference-only{padding:var(--spacing-6xl)}')
       const result = await collectStylesheetEmittedGlobals([entry], { baseManifest, projectDir: root })

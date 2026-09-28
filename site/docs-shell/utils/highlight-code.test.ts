@@ -10,7 +10,7 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
     '    --color-primary: var(--color-blue-60);',
     '}',
     '@layer components {',
-    '    btn { @compose inline-flex text-red:hover@md; }',
+    '    btn { @safelist "inline-flex text-red:hover@md"; }',
     '}'
   ].join('\n'), { lang: 'css' })
 
@@ -26,7 +26,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   const source = [
     '@import "base.css";',
     '@theme light { --color-brand: red; }',
-    '@layer components { .btn { @compose fg-red@md; @variant <sm { color: red; } } }',
+    '@layer components { .btn { @safelist "fg-red@md"; @variant <sm { color: red; } } }',
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
   ].join('\n')
   const hast = await highlightCode(source, { lang: 'css' })
@@ -43,7 +43,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   }
 
   assert.equal(highlightedCodeText(hast), source)
-  for (const keyword of ['@theme', '@layer', '@compose', '@custom-variant', '@media', '@slot']) {
+  for (const keyword of ['@theme', '@layer', '@safelist', '@custom-variant', '@media', '@slot']) {
     assert.equal(styleOf(keyword), styleOf('@import'), keyword)
   }
   assert.equal(styleOf('@md', true), styleOf('@import'))

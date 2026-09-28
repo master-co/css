@@ -1,15 +1,13 @@
 use super::resolution::{compile_with_base, directive_error, engine_for_manifest};
-use super::{
-    CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition, EngineSession, Value,
-};
+use super::{CompilerError, CssDirectiveManifestInput, EngineSession, Value};
 use crate::utility_definitions;
 
-/// Override complete units before building the composition graph. Ordered body
+/// Override complete units before lowering their ordered body.
 /// fragments are lowered together; a nested rule can never outlive its owner.
 pub(super) fn resolve_bodies(
     input: &mut CssDirectiveManifestInput,
     base: Option<Value>,
-) -> Result<(Vec<CssDirectiveStyleDefinition>, EngineSession, Value, u64), CompilerError> {
+) -> Result<(EngineSession, Value, u64), CompilerError> {
     if let Some(utilities) = &mut input.utilities {
         *utilities = utility_definitions::effective(utilities);
     }
@@ -35,34 +33,8 @@ pub(super) fn resolve_bodies(
         ));
         indices.push(index);
     }
-    let mut dependencies = vec![Vec::new(); groups.len()];
-    for (index, (_, body)) in groups.iter().enumerate() {
-        for fragment in body {
-            if let CssDirectiveStyleDefinition::Compose { class_name, .. } = fragment {
-                let names = engine
-                    .matched_utility_names(class_name)
-                    .map_err(|error| directive_error(error.to_string()))?;
-                for (dependency, ((name, _), _)) in groups.iter().enumerate() {
-                    if names.contains(name) && !dependencies[index].contains(&dependency) {
-                        dependencies[index].push(dependency);
-                    }
-                }
-            }
-        }
-    }
-    let order = super::render::managed_dependency_order(&groups, &dependencies)?;
-    let mut dirty = std::collections::HashSet::new();
-    let mut refresh_count = 0;
-    for index in order {
-        if dependencies[index]
-            .iter()
-            .any(|dependency| dirty.contains(dependency))
-        {
-            manifest = compile_with_base(input, base.clone())?;
-            engine = engine_for_manifest(&manifest)?;
-            dirty.clear();
-            refresh_count += 1;
-        }
+    let mut changed = false;
+    for index in 0..groups.len() {
         let mut rules = Vec::new();
         for style in super::merge::create_merged_style_definitions(
             &groups[index].1,
@@ -84,19 +56,13 @@ pub(super) fn resolve_bodies(
             .map(Ok)
             .unwrap_or_else(|| utility_definitions::seed_rules(definition.as_object().unwrap()))?;
         if previous != rules {
-            dirty.insert(index);
+            changed = true;
         }
         definition["compiledBody"] = Value::Array(rules);
     }
-    if !dirty.is_empty() {
+    if changed {
         manifest = compile_with_base(input, base)?;
         engine = engine_for_manifest(&manifest)?;
-        refresh_count += 1;
     }
-    Ok((
-        groups.into_iter().flat_map(|(_, body)| body).collect(),
-        engine,
-        manifest,
-        refresh_count,
-    ))
+    Ok((engine, manifest, u64::from(changed)))
 }

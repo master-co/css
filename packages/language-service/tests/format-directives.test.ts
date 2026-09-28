@@ -19,48 +19,48 @@ function format(ext: Parameters<typeof createDoc>[0], source: string, settings?:
   return applyTextEdits(source, languageService.formatDirectives(doc) ?? [], doc)
 }
 
-test.concurrent('formats CSS @compose important markers', () => {
-  expect(format('css', '.btn { @compose background-color:transparent ! fg-red !@sm; }'))
-    .toBe('.btn { @compose background-color:transparent! fg-red!@sm; }')
+test.concurrent('formats CSS @safelist important markers', () => {
+  expect(format('css', ".btn { @safelist \"background-color:transparent ! fg-red !@sm\"; }"))
+    .toBe(".btn { @safelist \"background-color:transparent! fg-red!@sm\"; }")
 })
 
 test.concurrent('formats SCSS and LESS directive class lists', () => {
-  expect(format('scss', '.btn { @compose background-color:transparent !; }')).toBe('.btn { @compose background-color:transparent!; }')
-  expect(format('less', '.btn { @compose background-color:transparent !; }')).toBe('.btn { @compose background-color:transparent!; }')
+  expect(format('scss', ".btn { @safelist \"background-color:transparent !\"; }")).toBe(".btn { @safelist \"background-color:transparent!\"; }")
+  expect(format('less', ".btn { @safelist \"background-color:transparent !\"; }")).toBe(".btn { @safelist \"background-color:transparent!\"; }")
 })
 
 test.concurrent('formats CSS-family SFC style blocks only', () => {
   const source = [
     '<template><div class="bg-red !"></div></template>',
     '<style>',
-    '.btn { @compose background-color:transparent !; }',
+    ".btn { @safelist \"background-color:transparent !\"; }",
     '</style>',
     '<style lang="postcss">',
-    '.postcss { @compose bg-red !; }',
+    ".postcss { @safelist \"bg-red !\"; }",
     '</style>',
     '<style lang="scss">',
-    '.card { @compose fg-red !@sm; }',
+    ".card { @safelist \"fg-red !@sm\"; }",
     '</style>'
   ].join('\n')
   expect(format('vue', source)).toBe([
     '<template><div class="bg-red !"></div></template>',
     '<style>',
-    '.btn { @compose background-color:transparent!; }',
+    ".btn { @safelist \"background-color:transparent!\"; }",
     '</style>',
     '<style lang="postcss">',
-    '.postcss { @compose bg-red !; }',
+    ".postcss { @safelist \"bg-red !\"; }",
     '</style>',
     '<style lang="scss">',
-    '.card { @compose fg-red!@sm; }',
+    ".card { @safelist \"fg-red!@sm\"; }",
     '</style>'
   ].join('\n'))
 })
 
 test.concurrent('locates SFC style content after matching attribute text', () => {
-  const directive = '.btn { @compose background-color:transparent !; }'
-  const source = `<style data-source="${directive}">${directive}</style>`
+  const directive = ".btn { @safelist \"background-color:transparent !\"; }"
+  const source = `<style data-source='${directive}'>${directive}</style>`
   expect(format('vue', source))
-    .toBe(`<style data-source="${directive}">.btn { @compose background-color:transparent!; }</style>`)
+    .toBe(`<style data-source='${directive}'>.btn { @safelist "background-color:transparent!"; }</style>`)
 })
 
 test.concurrent('formats safelist quoted class lists', () => {
@@ -69,18 +69,18 @@ test.concurrent('formats safelist quoted class lists', () => {
 })
 
 test.concurrent('returns no edits when directive formatting is disabled', () => {
-  expect(format('css', '.btn { @compose background-color:transparent !; }', { formatDirectives: false }))
-    .toBe('.btn { @compose background-color:transparent !; }')
+  expect(format('css', ".btn { @safelist \"background-color:transparent !\"; }", { formatDirectives: false }))
+    .toBe(".btn { @safelist \"background-color:transparent !\"; }")
 })
 
 test.concurrent('respects range formatting', () => {
-  const source = '.a { @compose bg-red !; }\n.b { @compose bg-blue !; }'
+  const source = ".a { @safelist \"bg-red !\"; }\n.b { @safelist \"bg-blue !\"; }"
   const doc = createDoc('css', source)
   const languageService = new CSSLanguageService()
-  const start = doc.positionAt(source.indexOf('@compose bg-blue'))
+  const start = doc.positionAt(source.indexOf('@safelist "bg-blue'))
   const edits = languageService.formatDirectives(doc, {
     start,
     end: doc.positionAt(source.length)
   }) ?? []
-  expect(applyTextEdits(source, edits, doc)).toBe('.a { @compose bg-red !; }\n.b { @compose bg-blue!; }')
+  expect(applyTextEdits(source, edits, doc)).toBe(".a { @safelist \"bg-red !\"; }\n.b { @safelist \"bg-blue!\"; }")
 })

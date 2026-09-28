@@ -119,7 +119,7 @@ fn executes_rc87_lexer_parity_corpus() {
             ),
             lexer_parity_case(
                 "rc87-0ecc38899002a5db",
-                ".card { @dark { @compose fg:white; } @light { color: black; } }",
+                r###".card { @dark { color:white; } @light { color: black; } }"###,
                 "variants",
             ),
             lexer_parity_case(
@@ -349,15 +349,11 @@ fn executes_rc87_lexer_parity_corpus() {
                         .iter()
                         .map(|range| range.name.as_str())
                         .collect::<Vec<_>>(),
-                    ["compose", "variant", "compose"]
+                    ["variant"]
                 );
                 assert_eq!(
-                    slice_utf16(&case.input, &ranges[1].prelude_range).trim(),
+                    slice_utf16(&case.input, &ranges[0].prelude_range).trim(),
                     "<sm"
-                );
-                assert_eq!(
-                    slice_utf16(&case.input, &ranges[2].prelude_range).trim(),
-                    "hidden"
                 );
             }
             "rc87-0ecc38899002a5db" => {
@@ -367,10 +363,10 @@ fn executes_rc87_lexer_parity_corpus() {
                         .iter()
                         .map(|range| range.name.as_str())
                         .collect::<Vec<_>>(),
-                    ["variant", "compose", "variant"]
+                    ["variant", "variant"]
                 );
                 assert!(slice_utf16(&case.input, &ranges[0].range).starts_with("@dark"));
-                assert!(slice_utf16(&case.input, &ranges[2].range).starts_with("@light"));
+                assert!(slice_utf16(&case.input, &ranges[1].range).starts_with("@light"));
             }
             "rc87-bf007c1edf054a11" => {
                 let ranges = find_css_directive_ranges(&case.input);
@@ -390,11 +386,7 @@ fn executes_rc87_lexer_parity_corpus() {
                         .iter()
                         .map(|range| range.name.as_str())
                         .collect::<Vec<_>>(),
-                    ["components", "compose"]
-                );
-                assert_eq!(
-                    slice_utf16(&case.input, &ranges[1].prelude_range).trim(),
-                    "block"
+                    ["components"]
                 );
             }
             "rc87-2f3cc1f8149e5aac" => {

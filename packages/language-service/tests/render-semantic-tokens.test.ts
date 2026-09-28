@@ -192,7 +192,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
   const { tokens } = renderTokens([
     '@utilities {',
     '    monaco-editor {',
-    '        @compose --vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
+    "        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";",
     '    }',
     '}'
   ].join('\n'), 'css')
@@ -259,90 +259,7 @@ test.concurrent('renders native-aligned semantic tokens for grouped classes with
 })
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
-  const { tokens } = renderTokens(`
-    @master entry;
-    @reference "./tokens.css";
-    @safelist "block fg-red:hover@md";
-
-    @settings {
-      root-size: 16;
-    }
-
-    @theme dark {
-      --color-primary: --alpha(var(--color-blue-60) / 80%);
-    }
-
-    @theme {
-      @keyframes fade {
-        to {
-          opacity: 1;
-        }
-      }
-    }
-
-    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-
-    @utilities {
-      reset {
-        @compose block;
-      }
-    }
-
-    @utilities {
-      btn {
-        @compose inline-flex fg-primary:hover@md;
-        @dark {
-          @compose bg-blue;
-        }
-        @variant <sm {
-          @compose block;
-        }
-        ::scrollbar-thumb:hover {
-          @dark {
-            @compose fg-primary;
-          }
-        }
-      }
-    }
-
-    @utilities {
-      content-auto {
-        @compose block;
-      }
-
-      text-<left|center|right> {
-        text-align: --value();
-      }
-
-      font-<~font-size> {
-        font-size: --value();
-      }
-
-      bg-<~color> {
-        background-color: --value();
-      }
-
-      text-decoration-<~color> {
-        text-decoration: --value();
-      }
-
-      user-select:<auto|none|text|all> {
-        user-select: --value();
-      }
-
-      grid-cols:<*> {
-        grid-template-columns: repeat(--value(), minmax(0, 1fr));
-
-        @variant <sm {
-          font-size: --value();
-        }
-
-        &:hover {
-          text-align: --value();
-        }
-      }
-    }
-  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
+  const { tokens } = renderTokens("\n    @master entry;\n    @reference \"./tokens.css\";\n    @safelist \"block fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    }\n\n    @theme {\n      @keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n    }\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @utilities {\n      reset {\n        @safelist \"block\";\n      }\n    }\n\n    @utilities {\n      btn {\n        @safelist \"inline-flex fg-primary:hover@md\";\n        @dark {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"block\";\n        }\n        ::scrollbar-thumb:hover {\n          @dark {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n    }\n\n    @utilities {\n      content-auto {\n        @safelist \"block\";\n      }\n\n      text-<left|center|right> {\n        text-align: --value();\n      }\n\n      font-<~font-size> {\n        font-size: --value();\n      }\n\n      bg-<~color> {\n        background-color: --value();\n      }\n\n      text-decoration-<~color> {\n        text-decoration: --value();\n      }\n\n      user-select:<auto|none|text|all> {\n        user-select: --value();\n      }\n\n      grid-cols:<*> {\n        grid-template-columns: repeat(--value(), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: --value();\n        }\n\n        &:hover {\n          text-align: --value();\n        }\n      }\n    }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -410,46 +327,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens(`
-    @utilities {
-      reset {
-        @light {
-          color: var(--text, black);
-        }
-      }
-    }
-
-    @utilities {
-      btn {
-        @compose inline-flex;
-        @dark {
-          background-color: oklch(20% 0.03 250);
-        }
-        @media (width >= 42rem) {
-          .label:hover {
-            transform: scale(1);
-          }
-        }
-      }
-
-      btn:hover {
-        @compose block;
-      }
-    }
-
-    @utilities {
-      font:<~font-size|number> {
-        font-size: --value();
-        &:hover {
-          text-align: var(--align, center);
-        }
-      }
-
-      text-<left|right> {
-        text-align: --value();
-      }
-    }
-  `, 'css')
+  const { tokens } = renderTokens("\n    @utilities {\n      reset {\n        @light {\n          color: var(--text, black);\n        }\n      }\n    }\n\n    @utilities {\n      btn {\n        @safelist \"inline-flex\";\n        @dark {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n\n      btn:hover {\n        @safelist \"block\";\n      }\n    }\n\n    @utilities {\n      font:<~font-size|number> {\n        font-size: --value();\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n\n      text-<left|right> {\n        text-align: --value();\n      }\n    }\n  ", 'css')
 
   expectToken(tokens, 'inline-flex', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
@@ -473,20 +351,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
-  const { tokens } = renderTokens(`
-    @source not "a;b.css";
-    @source "critical.tsx";
-    @reference "./a;b.css";
-    @safelist "block fg-red";
-    @blocklist "debug-*";
-    @preserve native;
-
-    .btn {
-      @compose fg-red;
-    }
-
-    @custom-variant quoted { @media (x: "a;b") { @slot; } }
-  `, 'css')
+  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"block fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')

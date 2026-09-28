@@ -360,7 +360,6 @@ export interface MasterCSSSourceInspection {
 }
 
 export interface MasterCSSStylesheetInspection {
-  compositions?: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   filePath: string
   masterCSS: boolean
   pruneNativeCSS: boolean
@@ -527,8 +526,6 @@ export interface MasterCSSLintCanonicalClassNameOptions {
   preferPropertyAliases: boolean
   preferCompositionUtilities: boolean
   preferConditionOrder: boolean
-  preferNativeDeclarationsInCompose: boolean
-  preferVariantBlocksInCompose: boolean
 }
 
 export interface MasterCSSLintCanonicalClassSuggestion {
@@ -551,29 +548,10 @@ export interface MasterCSSLintCanonicalClassGroupSuggestions {
   suggestions: MasterCSSLintCanonicalClassGroupSuggestion[]
 }
 
-export type MasterCSSLintCanonicalComposeSuggestionKind =
-  | 'class'
-  | 'native-declaration'
-  | 'variant-block'
-
-export interface MasterCSSLintCanonicalComposeSuggestion {
-  actual: string
-  recommended: string
-  classNames: string[]
-  kind: MasterCSSLintCanonicalComposeSuggestionKind
-}
-
-export interface MasterCSSLintCanonicalComposeDirective {
-  version: typeof MASTER_CSS_LINT_BATCH_VERSION
-  suggestions: MasterCSSLintCanonicalComposeSuggestion[]
-  structuralChange?: boolean
-  replacement?: string
-}
-
 export interface MasterCSSLintEdit {
   range: MasterCSSSourceRange
   text: string
-  scope: 'class-list' | 'directive'
+  scope: 'class-list'
 }
 
 export interface MasterCSSLintDiagnostic {
@@ -623,7 +601,6 @@ export interface MasterCSSLintClassListPolicyRequest {
   validationErrors?: readonly (readonly string[])[]
   disallowUnknownClass?: boolean
   canonicalOptions?: Partial<MasterCSSLintCanonicalClassNameOptions>
-  composeDirective?: boolean
   rawValuePolicy?: MasterCSSLintRawValuePolicy
 }
 
@@ -827,7 +804,6 @@ export interface MasterCSSDirectiveExtractionPolicy {
 }
 
 export interface MasterCSSDirectiveCompilation {
-  compositions?: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
@@ -925,7 +901,6 @@ export interface MasterCSSLowerDirectivesOptions {
 }
 
 export interface MasterCSSLowerDirectivesResult {
-  compositions: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
@@ -975,7 +950,7 @@ export interface MasterCSSCompileStylesheetGraphRequest {
   relativeResourceURLs?: boolean
   /** Per-file pruning override; null preserves native rules in that stylesheet. */
   classesByStylesheet?: Record<string, string[] | null>
-  /** Select native rules/compose and external imports; local links retain reachability. */
+  /** Select native rules/variants and external imports; local links retain reachability. */
   nativeStylesheets?: string[]
   pruneNativeStylesheets?: string[]
   options?: MasterCSSDirectiveCompileOptions

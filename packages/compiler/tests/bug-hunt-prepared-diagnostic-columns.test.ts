@@ -24,7 +24,7 @@ for (const source of [
     expect(start.character).toBeGreaterThanOrEqual(0)
     expect(end.character).toBeLessThanOrEqual(source.length)
     const original = source.slice(start.character, end.character)
-    expect(original === '"block"' || start.character === end.character).toBe(true)
+    expect(original === '@compose' || start.character === end.character).toBe(true)
     if (start.character === end.character) expect(diagnostic.notes?.join(' ')).toContain('segment')
   }
 })

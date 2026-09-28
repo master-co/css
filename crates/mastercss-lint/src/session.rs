@@ -1,8 +1,8 @@
 use super::{
     CanonicalClassGroupSuggestionsIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
-    CanonicalClassSuggestionsIr, CanonicalComposeDirectiveIr, ClassDescriptor, EngineError,
-    EngineSession, HashMap, HashSet, LINT_BATCH_VERSION, LintBatchIr, LintClassListIr,
-    LintClassListPolicy, LintSession, NativeDeclarationCandidateIr, RawValueCandidatesIr, Value,
+    CanonicalClassSuggestionsIr, ClassDescriptor, EngineError, EngineSession, HashSet,
+    LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, LintClassListPolicy, LintSession,
+    NativeDeclarationCandidateIr, RawValueCandidatesIr, Value,
     build_canonical_recommendation_index, class_list, collect_manifest_variables, find_conflicts,
     find_partial_conflicts, sort_descriptors,
 };
@@ -162,39 +162,15 @@ impl LintSession {
             }
         }
         if let Some(options) = policy.canonical_options {
-            if policy.compose_directive {
-                let compose =
-                    self.canonical_compose_directive(class_names, native_support, options)?;
-                if compose.structural_change == Some(true) {
-                    class_list::add_canonical_compose_diagnostics(
-                        &mut result,
-                        class_list,
-                        class_names,
-                        &compose,
-                    );
-                } else {
-                    let groups =
-                        self.canonical_class_groups(class_names, native_support, options)?;
-                    let names = self.canonical_class_names(class_names, native_support, options)?;
-                    class_list::add_canonical_class_diagnostics(
-                        &mut result,
-                        class_list,
-                        class_names,
-                        &groups.suggestions,
-                        &names.suggestions,
-                    );
-                }
-            } else {
-                let groups = self.canonical_class_groups(class_names, native_support, options)?;
-                let names = self.canonical_class_names(class_names, native_support, options)?;
-                class_list::add_canonical_class_diagnostics(
-                    &mut result,
-                    class_list,
-                    class_names,
-                    &groups.suggestions,
-                    &names.suggestions,
-                );
-            }
+            let groups = self.canonical_class_groups(class_names, native_support, options)?;
+            let names = self.canonical_class_names(class_names, native_support, options)?;
+            class_list::add_canonical_class_diagnostics(
+                &mut result,
+                class_list,
+                class_names,
+                &groups.suggestions,
+                &names.suggestions,
+            );
         }
         Ok(result)
     }
@@ -272,41 +248,6 @@ impl LintSession {
                     version: LINT_BATCH_VERSION,
                     suggestions,
                 })
-            }
-            Err(error) => {
-                let _ = cleanup;
-                Err(error)
-            }
-        }
-    }
-
-    pub fn canonical_compose_directive(
-        &mut self,
-        class_names: &[String],
-        native_support: Option<&[bool]>,
-        options: &CanonicalClassNameOptions,
-    ) -> Result<CanonicalComposeDirectiveIr, EngineError> {
-        let native_candidates = self.ensure_class_rules(class_names, native_support)?;
-        let mut native_declarations = HashMap::new();
-        for candidate in native_candidates {
-            if self.is_compose_native_declaration(&candidate)? {
-                native_declarations.insert(candidate.class_name.clone(), candidate);
-            }
-        }
-        for class_name in class_names {
-            if !native_declarations.contains_key(class_name)
-                && let Some(candidate) = self.known_native_declaration(class_name)?
-            {
-                native_declarations.insert(class_name.clone(), candidate);
-            }
-        }
-        let result =
-            self.suggest_canonical_compose_directive(class_names, options, native_declarations);
-        let cleanup = self.engine.delete_class_rules(class_names);
-        match result {
-            Ok(result) => {
-                cleanup?;
-                Ok(result)
             }
             Err(error) => {
                 let _ = cleanup;

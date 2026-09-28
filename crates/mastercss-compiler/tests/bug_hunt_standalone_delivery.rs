@@ -5,8 +5,8 @@ use serde_json::json;
 fn relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_ownership() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './child.css';.example{@compose paint;}",
-            "child":"@utilities{paint{background-image:url(image.svg)}}"
+            "entry":"@import './child.css';.example{@variant media(all){background-image:var(--hero);}}",
+            "child":"@theme{--hero:url(image.svg)}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"./main.css","child":"./child.css"},
         "resourceURLs":{"child":{"image.svg":"./asset.svg?q=1#part"}},
@@ -19,7 +19,11 @@ fn relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_owne
     request["relativeResourceURLs"] = json!(true);
     let result =
         compile_css_stylesheet_graph(&serde_json::from_value(request.clone()).unwrap()).unwrap();
-    assert!(result.stylesheets[0].css.contains("./asset.svg?q=1#part"));
+    assert!(
+        result.stylesheets[0]
+            .css
+            .contains("background-image:var(--hero)")
+    );
     assert!(result.manifest.to_string().contains("./asset.svg?q=1#part"));
     for invalid in [
         "./nested/child.css",

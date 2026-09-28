@@ -31,9 +31,9 @@ export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boo
 })
 
 export type MasterCSSLintFileSourceKind = 'source' | 'stylesheet' | 'manifest'
-export type MasterCSSLintDiagnosticSourceKind = 'class-attribute' | 'class-expression' | 'compose-directive' | 'manifest'
-export type MasterCSSLintSourceFixKind = 'class-list' | 'directive'
-export type MasterCSSLintSourceFixSafety = 'safe' | 'structural'
+export type MasterCSSLintDiagnosticSourceKind = 'class-attribute' | 'class-expression' | 'manifest'
+export type MasterCSSLintSourceFixKind = 'class-list'
+export type MasterCSSLintSourceFixSafety = 'safe'
 
 export interface MasterCSSLintSourceLocation {
   line: number
@@ -81,7 +81,6 @@ export interface MasterCSSLintSummary {
   warnings: number
   fixable: number
   safeFixes: number
-  structuralFixes: number
 }
 
 export interface MasterCSSLintContentOptions {
@@ -96,9 +95,7 @@ export interface MasterCSSLintContentOptions {
   >
 }
 
-export interface MasterCSSFixContentOptions extends MasterCSSLintContentOptions {
-  includeDirectiveFixes?: boolean
-}
+export type MasterCSSFixContentOptions = MasterCSSLintContentOptions
 
 export interface MasterCSSLintContentRuleOptions {
   'no-invalid-classes'?: MasterCSSInvalidClassesReportOptions
@@ -111,7 +108,6 @@ interface ClassListContext {
   text: string
   sourceKind: Exclude<MasterCSSLintDiagnosticSourceKind, 'manifest'>
   unescape?: string | false
-  directive?: SourceRange
   classNames: string[]
   transformed: boolean
 }
@@ -183,15 +179,7 @@ function detectClassListUnescape(content: string, range: SourceRange) {
   return quote === '"' || quote === '\'' || quote === '`' ? quote : false
 }
 
-function findComposeDirective(content: string, range: SourceRange): SourceRange | undefined {
-  const start = content.lastIndexOf('@compose', range.start)
-  if (start === -1) return
-  const semicolon = content.indexOf(';', range.end)
-  if (semicolon === -1 || content.slice(start, range.start).includes('{')) return
-  return { start, end: semicolon + 1 }
-}
-
-function inferClassSourceKind(content: string, range: SourceRange): Exclude<MasterCSSLintDiagnosticSourceKind, 'compose-directive' | 'manifest'> {
+function inferClassSourceKind(content: string, range: SourceRange): Exclude<MasterCSSLintDiagnosticSourceKind, 'manifest'> {
   const prefix = content.slice(Math.max(0, range.start - 80), range.start)
   return /(?:^|[\s{<])(?:class|className|class:list|:class|v-bind:class|\[class\]|\[className\]|\[ngClass\])\s*=\s*(?:"|'|`|\{[^]*$)/.test(prefix)
     ? 'class-attribute'
@@ -215,15 +203,13 @@ function collectClassListContexts(
       existing.transformed ||= position.raw !== position.token
       continue
     }
-    const directive = findComposeDirective(content, contextRange)
     contexts.set(key, {
       range: contextRange,
       text: content.slice(contextRange.start, contextRange.end),
-      sourceKind: directive ? 'compose-directive' : inferClassSourceKind(content, contextRange),
+      sourceKind: inferClassSourceKind(content, contextRange),
       unescape: detectClassListUnescape(content, contextRange),
       classNames: [position.token],
       transformed: position.raw !== position.token,
-      ...(directive ? { directive } : {})
     })
   }
   return [...contexts.values()].map(context => {
@@ -270,7 +256,6 @@ function createContextLintDiagnostics(
       canonicalOptions: rules['prefer-canonical-classes']
         ? options.ruleOptions?.['prefer-canonical-classes'] || {}
         : undefined,
-      composeDirective: context.sourceKind === 'compose-directive'
     }).diagnostics
       .filter(({ ruleId }) => rules[ruleId])
       .map((diagnostic): MasterCSSLintDiagnostic => ({
@@ -285,20 +270,7 @@ function createContextLintDiagnostics(
 
 function toSourceFix(context: ClassListContext, fix: MasterCSSLintFix): MasterCSSLintSourceFix | undefined {
   if (context.transformed) return
-  if (fix.scope === 'directive') {
-    if (!context.directive) return
-    return {
-      kind: 'directive',
-      safety: 'structural',
-      range: {
-        start: context.directive.start,
-        end: context.directive.end
-      },
-      text: fix.text,
-      description: 'Apply structural @compose rewrite.',
-      requiresFormatting: true
-    }
-  }
+
   return {
     kind: 'class-list',
     safety: 'safe',
@@ -380,11 +352,6 @@ function uniqueFixes(fixes: MasterCSSLintSourceFix[]) {
   })
 }
 
-function collectStructuralFixes(file: MasterCSSLintFileResult) {
-  return uniqueFixes(file.diagnostics.flatMap((diagnostic) => diagnostic.fixes ?? []))
-    .filter((fix) => fix.kind === 'directive')
-    .sort((a, b) => b.range.start - a.range.start || b.range.end - a.range.end)
-}
 
 function applyFixes(content: string, fixes: MasterCSSLintSourceFix[]) {
   let fixed = content
@@ -406,7 +373,7 @@ function fixClassListText(context: ClassListContext, rules: Record<MasterCSSLint
     }
     const fix = createContextLintDiagnostics(nextContext, rules, options)
       .map((diagnostic) => diagnostic.fix)
-      .find((fix): fix is MasterCSSLintFix => Boolean(fix && fix.scope !== 'directive'))
+      .find((fix): fix is MasterCSSLintFix => Boolean(fix))
     if (!fix) return fixed
     const next = applyReplacement(fixed, fix.range, fix.text)
     if (next === fixed) return fixed
@@ -435,16 +402,7 @@ function fixSafeClassLists(content: string, filePath: string, rules: Record<Mast
 }
 
 export function fixMasterCSSContent(options: MasterCSSFixContentOptions) {
-  const rules = resolveRules(options.rules)
-  let fixed = fixSafeClassLists(options.content, options.filePath, rules, options)
-  if (!options.includeDirectiveFixes) return fixed
-  const structuralFixes = collectStructuralFixes(lintMasterCSSContent({
-    ...options,
-    content: fixed,
-    rules
-  }))
-  if (structuralFixes.length) fixed = applyFixes(fixed, structuralFixes)
-  return fixed
+  return fixSafeClassLists(options.content, options.filePath, resolveRules(options.rules), options)
 }
 
 export function summarizeMasterCSSLintFiles(files: MasterCSSLintFileResult[]): MasterCSSLintSummary {
@@ -457,6 +415,5 @@ export function summarizeMasterCSSLintFiles(files: MasterCSSLintFileResult[]): M
     warnings: diagnostics.filter((diagnostic) => diagnostic.severity === 'warning').length,
     fixable: diagnostics.filter((diagnostic) => diagnostic.fixes?.length).length,
     safeFixes: fixes.filter((fix) => fix.safety === 'safe').length,
-    structuralFixes: fixes.filter((fix) => fix.safety === 'structural').length
   }
 }

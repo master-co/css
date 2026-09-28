@@ -150,12 +150,6 @@ export function loadNativeToolingBinding(
               nativeSupport ? [...nativeSupport] : undefined,
               options === undefined ? undefined : request(options)
             )),
-          canonicalComposeDirective: (classNames, nativeSupport, options) =>
-            parse(session.canonicalComposeDirective(
-              [...classNames],
-              nativeSupport ? [...nativeSupport] : undefined,
-              options === undefined ? undefined : request(options)
-            )),
           rawValueCandidates: (classNames, nativeSupport, invalidGeneratedClasses) =>
             parse(session.rawValueCandidates(
               [...classNames],
@@ -235,9 +229,6 @@ export {
   type MasterCSSLintCanonicalClassNameOptions,
   type MasterCSSLintCanonicalClassSuggestion,
   type MasterCSSLintCanonicalClassSuggestions,
-  type MasterCSSLintCanonicalComposeDirective,
-  type MasterCSSLintCanonicalComposeSuggestion,
-  type MasterCSSLintCanonicalComposeSuggestionKind,
   type MasterCSSLintClassConflict,
   type MasterCSSLintClassList,
   type MasterCSSLintDiagnostic,

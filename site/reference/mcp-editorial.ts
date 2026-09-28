@@ -120,7 +120,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   },
   mastercss_preview_fixes: {
     purpose: 'Prepare a reviewable diff for native lint fixes or generated CSS output. This request does not apply its changes.',
-    fields: { context, mode: 'Preview operation. Defaults to `lint-fixes`.', patterns, rules, includeDirectiveFixes: 'Allow structural directive fixes in lint mode. Defaults to false.', outputPath: 'Target path inside the workspace. Required in `generated-css` mode; its parent directory must exist.', ttlMs },
+    fields: { context, mode: 'Preview operation. Defaults to `lint-fixes`.', patterns, rules, outputPath: 'Target path inside the workspace. Required in `generated-css` mode; its parent directory must exist.', ttlMs },
     example: { mode: 'lint-fixes', patterns: ['src/button.html'], rules: 'sort-classes' }, exampleNote: 'Review `preview.changes` and its diffs before passing a returned token to the apply tool.',
     output: '`preview` contains changed files, complete proposed text, diffs, hashes, and a summary. A changed result includes `confirmToken` and `expiresAt`. Lint mode includes a `lint` report; generated-CSS mode includes `outputPath` and a scan summary. Manifest errors return the error envelope; an error must not be interpreted as an empty successful preview.',
     lifecycle: previewLife
@@ -128,7 +128,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_preview_directive_format: {
     purpose: 'Format directives in a source buffer or create a file-formatting preview. Content mode returns formatted text directly and does not create an apply token.',
     fields: { context, content: 'Source buffer. When present, selects content mode and takes precedence over patterns.', filePath: filePath + ' Defaults to `master.css` in content mode.', patterns: 'File paths or glob patterns for file mode. Defaults to CSS, SCSS, Less, Vue, Svelte, and Astro sources outside node_modules.', range: 'Optional formatting range, using zero-based UTF-16 positions.', 'range.start': 'Inclusive start position.', 'range.start.line': 'Zero-based line index.', 'range.start.character': 'Zero-based UTF-16 code-unit offset.', 'range.end': 'Exclusive end position.', 'range.end.line': 'Zero-based line index.', 'range.end.character': 'Zero-based UTF-16 code-unit offset.', ttlMs },
-    example: { content: '.card {\n  @compose background-color:transparent !;\n}', filePath: 'card.css' }, exampleNote: 'The returned `formatted` string joins the importance marker to its class without editing a file.',
+    example: { content: '@safelist "background-color:transparent !";', filePath: 'card.css' }, exampleNote: 'The returned `formatted` string joins the importance marker to its class without editing a file.',
     output: 'Both modes report files, edits, changed counts, and `mode`. Content mode includes `formatted`; file mode includes `inputs` and `preview`. Formatting uses the default preset language service and does not load the project manifest.',
     lifecycle: 'Content mode does not write files or store a token. In file mode, ' + previewLife[0].toLowerCase() + previewLife.slice(1)
   },

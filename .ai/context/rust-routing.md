@@ -26,7 +26,7 @@ own loading, filesystem, browser, editor, and platform adaptation.
 | `mastercss-source` | HTML/JS/Vue/Svelte-neutral source extraction IR | `src/lib.rs` and scanner tests |
 | `mastercss-scanner` | Multi-file scan state over source extraction and engine transitions | `src/lib.rs` and tooling scanner tests |
 | `mastercss-validator` | Rust validation operations | `src/lib.rs` |
-| `mastercss-lint` | Ordering, conflict, compose, and recommendation policy | matching domain module and its tests |
+| `mastercss-lint` | Ordering, conflict, and recommendation policy | matching domain module and its tests |
 | `mastercss-language` | UTF-16 positions, document analysis, formatting, semantic tokens | `src/session.rs`, then domain module |
 | `mastercss-render` | Server render/hydration IR | `src/lib.rs` and server fixtures |
 | `mastercss-diagnostics` | Dependency-light diagnostic/report contracts | `src/lib.rs` |

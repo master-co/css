@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 919,
+    "records": 914,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 735,
+      "export": 730,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -2898,28 +2898,6 @@
       "package": "@master/css-binding",
       "subpath": "./tooling",
       "name": "MasterCSSLintCanonicalClassSuggestions"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-binding",
-      "responsibility": "native and Wasm binding loading",
-      "consumers": [
-        "@master/css",
-        "@master/css-compiler",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-tooling",
-        "@master/css-vscode"
-      ],
-      "platform": "conditional",
-      "lifecycle": "binding-session",
-      "visibility": "published-internal",
-      "disposition": "loader",
-      "id": "export:@master/css-binding:./tooling#MasterCSSLintCanonicalComposeDirective",
-      "package": "@master/css-binding",
-      "subpath": "./tooling",
-      "name": "MasterCSSLintCanonicalComposeDirective"
     },
     {
       "kind": "export",
@@ -8273,46 +8251,6 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-schema:./css-directives#CSSCompositionTrace",
-      "package": "@master/css-schema",
-      "subpath": "./css-directives",
-      "name": "CSSCompositionTrace"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-schema:./css-directives#CSSDirectiveAnimationDefinitions",
       "package": "@master/css-schema",
       "subpath": "./css-directives",
@@ -8837,46 +8775,6 @@
       "package": "@master/css-schema",
       "subpath": "./css-directives",
       "name": "CSSDirectiveSourceReference"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-schema:./css-directives#CSSDirectiveStyleComposeDefinition",
-      "package": "@master/css-schema",
-      "subpath": "./css-directives",
-      "name": "CSSDirectiveStyleComposeDefinition"
     },
     {
       "kind": "export",
@@ -16258,60 +16156,6 @@
       "package": "@master/css-tooling",
       "subpath": "./lint",
       "name": "CanonicalClassNameOptions"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-tooling:./lint#CanonicalComposeDirectiveResult",
-      "package": "@master/css-tooling",
-      "subpath": "./lint",
-      "name": "CanonicalComposeDirectiveResult"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-tooling:./lint#CanonicalComposeDirectiveSuggestion",
-      "package": "@master/css-tooling",
-      "subpath": "./lint",
-      "name": "CanonicalComposeDirectiveSuggestion"
     },
     {
       "kind": "export",
@@ -24362,7 +24206,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 13
+      "value": 14
     },
     {
       "kind": "wire-contract",
@@ -24384,7 +24228,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "name": "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -24516,7 +24360,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LINT_BATCH_VERSION",
       "name": "MASTER_CSS_LINT_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24598,7 +24442,7 @@
       "id": "wire-contract:packages/cli/src/lint.ts#REPORT_VERSION",
       "name": "REPORT_VERSION",
       "source": "packages/cli/src/lint.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -24668,7 +24512,7 @@
       "id": "wire-contract:packages/mcp/src/directives.ts#DIRECTIVE_INSPECTION_VERSION",
       "name": "DIRECTIVE_INSPECTION_VERSION",
       "source": "packages/mcp/src/directives.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24696,7 +24540,7 @@
       "id": "wire-contract:packages/mcp/src/lint.ts#LINT_REPORT_VERSION",
       "name": "LINT_REPORT_VERSION",
       "source": "packages/mcp/src/lint.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",

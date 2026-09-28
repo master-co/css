@@ -198,14 +198,14 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('detects local compose styles without treating them as Master entries', () => {
-    expect(hasLocalStyleDirectives('.card { @compose block; }')).toBe(true)
+    expect(hasLocalStyleDirectives(".card { @variant media(all){display:block;} }")).toBe(true)
     expect(hasLocalStyleDirectives('.card { @variant print { color: red; } }')).toBe(true)
     expect(hasLocalStyleDirectives('.card { @dark { color: red; } }')).toBe(true)
     expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
     expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
     expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
     expect(isStylesheetRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
-    expect(isMasterStyleSource('.card { @compose block; }')).toBe(false)
+    expect(isMasterStyleSource(".card { display:block; }")).toBe(false)
   })
 
   it('preserves Windows extended-length path prefixes while cleaning style requests', () => {
@@ -253,12 +253,7 @@ describe('style CSS extraction helpers', () => {
     const { manifest } = compileCSSManifest('@utilities { brand { color: #fff; } }', {
       baseManifest: defaultManifest
     })
-    const result = await transformLocalStylesheet('/project/src/Button.module.css', `
-      .button {
-        @compose inline-flex brand;
-        color: white;
-      }
-    `, {
+    const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @variant media(all){color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
       baseManifest: manifest
     })
 
@@ -284,7 +279,7 @@ describe('style CSS extraction helpers', () => {
       @reference "./tokens.css";
 
       .button {
-        @compose brand;
+        @variant media(all){background-color:#123456;}
       }
     `, {
       baseManifest: defaultManifest,
@@ -324,7 +319,7 @@ describe('style CSS extraction helpers', () => {
       @reference "./tokens.css";
 
       .page-panel {
-        @compose panel;
+        @variant media(all){padding:var(--spacing-card);animation:pop 1s;}
       }
     `, {
       baseManifest: defaultManifest,
@@ -365,7 +360,7 @@ describe('style CSS extraction helpers', () => {
       @reference "./tokens.css";
 
       .page-panel {
-        @compose panel;
+        @variant media(all){padding:var(--spacing-card);animation:pop 1s;}
       }
     `, {
       baseManifest: defaultManifest,
@@ -389,13 +384,7 @@ describe('style CSS extraction helpers', () => {
     const pagePath = join(root, 'app/page.css')
     writeFileSync(globalsPath, '@import "@master/css";')
 
-    const result = await transformLocalStylesheet(pagePath, `
-      @reference "./globals.css";
-
-      .home-section {
-        @compose py-5xl;
-      }
-    `, {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant media(all){padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -422,13 +411,7 @@ describe('style CSS extraction helpers', () => {
       baseManifest: defaultManifest,
       projectDir: root
     })
-    const result = await transformLocalStylesheet(pagePath, `
-      @reference "./globals.css";
-
-      .home-section {
-        @compose py-5xl;
-      }
-    `, {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant media(all){padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: globalResult.emittedGlobals

@@ -53,7 +53,6 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('--stdin-filepath <path>', 'File path used to infer the stdin source language.')
     .option('--fix', 'Apply safe class-list fixes to files.')
     .option('--fix-dry-run', 'Return fix proposals without writing files.')
-    .option('--fix-directives', 'Allow structural directive fixes when --fix writes files.')
     .option('--format <format>', 'Diagnostic output format: json or stylish.', 'json')
     .option('--rules <rules>', 'Comma-separated lint rules, "recommended", or "all".')
     .option('--exit-code <mode>', 'Exit code behavior: diagnostics or never.', 'diagnostics')

@@ -8,14 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStylesheet(`
-      @utilities {
-        btn {
-          @compose flex;
-          color: red;
-        }
-      }
-    `, {
+    const result = await compileBrowserStylesheet("\n      @utilities {\n        btn {\n          @variant media(all){display:flex;}\n          color: red;\n        }\n      }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['btn']
     })

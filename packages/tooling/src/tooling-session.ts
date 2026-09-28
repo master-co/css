@@ -171,16 +171,6 @@ export class MasterCSSToolingSession implements Disposable {
     )
   }
 
-  canonicalComposeDirective(
-    classNames: readonly string[],
-    options?: CanonicalClassNameOptions
-  ) {
-    this.assertActive()
-    return freezeToolingResult(
-      this.parts.lint.canonicalComposeDirective([...classNames], options)
-    )
-  }
-
   rawValueCandidates(classNames: readonly string[]): readonly MasterCSSLintRawValueCandidate[] {
     this.assertActive()
     return freezeToolingResult(this.parts.lint.rawValueCandidates([...classNames]))

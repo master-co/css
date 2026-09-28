@@ -129,7 +129,6 @@ async function registerManagedCSSEntries(
         pruneNativeCSS: Boolean(styleSource?.pruneNativeCSS),
         dependencies: [...(styleSource?.dependencies ?? [])].map((dependency) => preserveWorkspacePath(scanner.cwd, dependency)),
         sourceDependencies: [...(styleSource?.sourceDependencies ?? [])].map((dependency) => preserveWorkspacePath(scanner.cwd, dependency)),
-        compositions: result.compositions ?? [],
         warnings: result.warnings ?? [],
         errors: []
       })

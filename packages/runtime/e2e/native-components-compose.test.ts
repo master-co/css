@@ -4,20 +4,7 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const compiled = compileManifestSync(`
-@utilities {
-  fallback { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }
-}
-@layer components {
-  .native { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }
-  .composed { @compose color:red; @compose color:blue; }
-  .same-list { @compose color:red color:blue; }
-  .reversed-list { @compose color:blue color:red; }
-  .unused { color:green; }
-  .z-first { color:red; } .a-last { color:blue; }
-  .override { height:10px; }
-}
-`, {})
+const compiled = compileManifestSync("\n@utilities {\n  fallback { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n}\n@layer components {\n  .native { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n  .composed { @variant media(all){color:red;} @variant media(all){color:blue;} }\n  .same-list { @variant media(all){color:blue;color:red;} }\n  .reversed-list { @variant media(all){color:blue;color:red;} }\n  .unused { color:green; }\n  .z-first { color:red; } .a-last { color:blue; }\n  .override { height:10px; }\n}\n", {})
 const classes = ['fallback', 'height:48px']
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: ordered fallbacks and native components retain the browser cascade`, async ({ page }) => {

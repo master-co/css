@@ -34,13 +34,13 @@ function getFreePort() {
   })
 }
 
-function createGlobalsCSS(compose: string) {
+function createGlobalsCSS(display: string) {
   return [
     '@import "@master/css";',
     '',
     '@layer components {',
     '    .probe {',
-    `        @compose ${compose};`,
+    `        display: ${display === 'hidden' ? 'none' : display};`,
     '        width: 40px;',
     '        height: 40px;',
     '    }',
