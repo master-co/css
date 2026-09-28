@@ -301,6 +301,18 @@ Generated-ledger validation passes at merged source `e231a700e`: 1,546 rc.87
 cases, 1,033 Rust-refactor cases and seven post-rc.87 files. Combined-branch CI
 and refreshed previews are still required. Do not close #454 or #445 before those gates pass.
 
+Integrated CI run `36373117361` exposed a clean-checkout TypeScript resolution
+failure hidden by local build artifacts: the compiler project entry and private
+project helper did not map to their source files. Explicit project/project-sync
+and internal source paths fix the reproduced failure. All workspace type-check
+references pass with compiler/internal `dist` temporarily absent; root build and
+type-check pass 32/32 and 40/40 tasks. The corrected paths also exposed an inferred
+private type in Next's declaration output. Its entry-graph return type now uses
+the existing public compiler option type; all 788 published artifact checks pass.
+This changes build-time type resolution only, without changing emitted CSS or
+runtime execution. All 206 Next tests and Next/compiler/internal lint checks pass. The run's Linux
+E2E and eight native platform jobs pass; Windows compatibility is still running.
+
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
 examples passed using a temporary local wrapper that supplied an isolated
