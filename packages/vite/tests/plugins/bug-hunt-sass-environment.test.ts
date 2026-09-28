@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import { normalizePath, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -28,7 +29,8 @@ test('BH-0004 Sass updates invalidate SSR imports without sending browser CSS up
     await vi.waitFor(() => expect(clientSend).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
       { type: 'css-update', path: '/style.scss', acceptedPath: '/style.scss', timestamp: expect.any(Number) }
     ]) }))
-    await vi.waitFor(async () => expect((await server!.ssrLoadModule('/server.js')).css).toContain('green'))
+    // SSR reimport recompiles Sass; use the shared rebuild budget, not waitFor's one-second default.
+    await vi.waitFor(async () => expect((await server!.ssrLoadModule('/server.js')).css).toContain('green'), { timeout: watchDeadline })
     expect(serverSend).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'update', updates: expect.arrayContaining([expect.objectContaining({ type: 'css-update' })]) }))
   } finally { await server?.close();rmSync(root, { recursive: true, force: true }) }
 })
