@@ -181,7 +181,7 @@ These entries do not affect rc.87 parity completion or belong in `parity-excepti
 The browser manifest adaptation has its own approved decision source, implementation
 commit, upstream and target scope digests, target test bindings, and human approval.
 The target audit follows the latest package commit at
-`latest-target-change@e231a700ef1fe03bd323001e42fb9af03d47ea32`.
+`latest-target-change@143958f349f8c4c3b0fc00df31d29eaa5c1ba59e`.
 
 | Decision | Status | Owner | Implementation commit | Upstream → target digest | Tests | Human approval |
 |---|---|---|---|---|---:|---|
