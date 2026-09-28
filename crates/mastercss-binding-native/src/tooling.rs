@@ -126,7 +126,6 @@ impl NodeLintSession {
                         disallow_unknown_class: request.disallow_unknown_class,
                         raw_value_policy: raw_value_policy.as_ref(),
                         canonical_options: request.canonical_options.as_ref(),
-                        compose_directive: request.compose_directive,
                     },
                 )
                 .map_err(to_napi_error)?,
@@ -192,27 +191,6 @@ impl NodeLintSession {
             &self
                 .inner
                 .canonical_class_groups(&class_names, native_support.as_deref(), &options)
-                .map_err(to_napi_error)?,
-        )
-    }
-
-    #[napi]
-    pub fn canonical_compose_directive(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: Option<Vec<bool>>,
-        options_json: Option<String>,
-    ) -> Result<String> {
-        let options = options_json
-            .as_deref()
-            .map(serde_json::from_str::<CanonicalClassNameOptions>)
-            .transpose()
-            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
-            .unwrap_or_default();
-        to_json(
-            &self
-                .inner
-                .canonical_compose_directive(&class_names, native_support.as_deref(), &options)
                 .map_err(to_napi_error)?,
         )
     }

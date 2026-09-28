@@ -54,7 +54,7 @@ export async function verifyPackageAuthoringExamples() {
     const local = fences.find(f => f.name === 'components/Button.module.css')!
     const compiled = await compileRenderedStylesheet(files.write(local.name, local.text), local.text, options)
     assert.deepEqual(compiled.diagnostics.filter(d => d.severity === 'error'), [])
-    assert.match(compiled.css, /\.button\{content-visibility:auto;contain-intrinsic-size:auto 32rem\}/)
+    assert.match(compiled.css.replace(/\s+/g, ''), /\.button\{content-visibility:auto;contain-intrinsic-size:auto32rem;?\}/)
     assert.doesNotMatch(compiled.css, /\.btn\s*\{/)
     assert.doesNotMatch(compiled.css, /@reference|@compose/)
 

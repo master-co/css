@@ -194,8 +194,13 @@ impl Migration {
                     Err(note) => result.notes.push(note),
                 }
             }
+            if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("compose"))
+            {
+                result.notes.push(format!("UTF-16 {}: @compose has been removed; replace it with native CSS declarations/selectors or use utilities in markup", byte_to_utf16_offset(source, first.bytes.start).unwrap()));
+                continue;
+            }
             if let CssSyntaxKind::AtKeyword(name) = &first.kind
-                && matches!(name.as_ref(), "compose" | "safelist" | "blocklist")
+                && matches!(name.as_ref(), "safelist" | "blocklist")
             {
                 let body_start = first.bytes.end;
                 let body = &source[body_start..end];
@@ -229,7 +234,7 @@ impl Migration {
                             .filter(|byte| *byte == b'\n')
                             .count()
                             + 1;
-                        if name == "compose" || name == "safelist" || name == "blocklist" {
+                        if name == "safelist" || name == "blocklist" {
                             result.notes.push(format!("line {line}, UTF-16 {}: @{name} references removed managed class `{managed}`; write native declarations/selectors, or explicitly extract shared behavior into @utilities after reviewing its layer and emission", byte_to_utf16_offset(source, body_start + start).unwrap()));
                             continue;
                         }

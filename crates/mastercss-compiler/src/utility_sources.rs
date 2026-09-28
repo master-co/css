@@ -1,6 +1,6 @@
 use crate::source_index::SourceIndex;
 use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
-use mastercss_schema::{CssCompositionTrace, CssUtilitySource};
+use mastercss_schema::CssUtilitySource;
 
 pub(crate) fn collect(source: &str, filename: &str) -> Vec<CssUtilitySource> {
     let index = SourceIndex::new(source);
@@ -74,19 +74,5 @@ pub(crate) fn resolve(definitions: &mut [CssUtilitySource]) {
         latest
             .entry(identity.clone())
             .or_insert_with(|| definition.source.clone());
-    }
-}
-
-pub(crate) fn attach(trace: &mut CssCompositionTrace, definitions: &[CssUtilitySource]) {
-    trace.definition_sources.clear();
-    for name in &trace.resolved_utilities {
-        for definition in definitions {
-            if definition.replaced_by.is_none()
-                && *name == definition.name
-                && !trace.definition_sources.contains(&definition.source)
-            {
-                trace.definition_sources.push(definition.source.clone());
-            }
-        }
     }
 }

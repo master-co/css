@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { expect, test } from 'vitest'
 import loader from '../src/stylesheet-loader'
+import { readStylesheetText } from './helpers/stylesheet-output'
 
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
@@ -19,26 +20,26 @@ async function fixture(run: (root: string) => Promise<void>) {
 function compile(root: string, file: string, source: string, dependencies: string[], sassOptions?: Record<string, unknown>) {
   return new Promise<string>((resolve, reject) => loader.call({
     resourcePath: file, rootContext: root, getOptions: () => ({ sassOptions }), addDependency: file => dependencies.push(file),
-    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(output!)
+    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(readStylesheetText(file, output!))
   }, source))
 }
 for (const syntax of ['scss', 'sass']) test(`Next raw ${syntax} retains partial reference and edit dependencies`, async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax), partial = join(root, 'parts/_rules.scss'), token = join(root, 'parts/tokens.css')
-    writeFileSync(partial, '@reference "./tokens.css";.card{@compose paint;}')
-    writeFileSync(token, '@utilities{paint{padding:2rem}}')
-    writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:99rem}}')
+    writeFileSync(partial, "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
+    writeFileSync(token, '@theme{--paint-padding:2rem}')
+    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
     const source = syntax === 'sass' ? '@use "parts/rules"\n' : '@use "parts/rules";', dependencies: string[] = []
-    expect(await compile(root, file, source, dependencies)).toContain('padding:2rem')
+    expect(await compile(root, file, source, dependencies)).toContain('--paint-padding:2rem')
     expect(dependencies).toEqual(expect.arrayContaining([file, partial, token]))
-    writeFileSync(token, '@utilities{paint{padding:4rem}}')
-    expect(await compile(root, file, source, [])).toContain('padding:4rem')
+    writeFileSync(token, '@theme{--paint-padding:4rem}')
+    expect(await compile(root, file, source, [])).toContain('--paint-padding:4rem')
   })
 })
 test('Next raw Sass uses configured implementation, load paths and additional data', async () => {
   await fixture(async root => {
     writeFileSync(join(root, 'parts/_tokens.scss'), '$space:3rem;')
-    const css = await compile(root, join(root, 'card.module.scss'), '@use "tokens";@reference "./master.css";.card{@compose p:#{tokens.$space};margin:$extra}', [], {
+    const css = await compile(root, join(root, 'card.module.scss'), '@use "tokens";@reference "./master.css";.card{@variant media(all){padding:#{tokens.$space};}margin:$extra}', [], {
       implementation: sassFile, loadPaths: [join(root, 'parts')], additionalData: '$extra:4rem;', style: 'compressed'
     })
     expect(css).toContain('padding:3rem')
@@ -48,11 +49,11 @@ test('Next raw Sass uses configured implementation, load paths and additional da
 test('Next registers missing mapped CSS reference before error and recovers on creation', async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.scss'), missing = join(root, 'parts/missing.css'), dependencies: string[] = []
-    writeFileSync(join(root, 'parts/_rules.scss'), '@reference "./missing.css";.card{@compose paint;}')
+    writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./missing.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
     await expect(compile(root, file, '@use "parts/rules";', dependencies)).rejects.toThrow()
     expect(dependencies).toContain(missing)
-    writeFileSync(missing, '@utilities{paint{padding:5rem}}')
-    expect(await compile(root, file, '@use "parts/rules";', [])).toContain('padding:5rem')
+    writeFileSync(missing, '@theme{--paint-padding:5rem}')
+    expect(await compile(root, file, '@use "parts/rules";', [])).toContain('--paint-padding:5rem')
   })
 })
 test('Next reports invalid compose in the original Sass partial', async () => {

@@ -9,7 +9,7 @@ for (const child of [false, true]) test(`Next build completion preserves entry r
     mkdirSync(join(root, 'app'))
     const entry = join(root, 'app/globals.css'), rules = join(root, 'app/rules.css'), token = join(root, 'app/tokens.css')
     writeFileSync(token, '@utilities{audit-margin{margin:3rem}}')
-    const source = '@reference "./tokens.css";.card{@compose audit-margin;}'
+    const source = "@reference \"./tokens.css\";.card{@variant media(all){margin:3rem;}}"
     writeFileSync(entry, '@master entry;' + (child ? '@import "./rules.css";' : source))
     if (child) writeFileSync(rules, source)
     const result = await resolveMasterCSSBuildState(root, ['card'])

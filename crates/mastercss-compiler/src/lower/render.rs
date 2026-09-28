@@ -1,7 +1,7 @@
 use super::resolution::directive_error;
 use super::{
     CompilerError, CssDirectiveManifestInput, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssOutputMapping, HashMap, HashSet, Map, MergedStyleDefinition,
+    CssDirectiveStyleDefinition, CssOutputMapping, HashMap, Map, MergedStyleDefinition,
     UtilityLayerName, Value, json,
 };
 
@@ -107,8 +107,7 @@ pub(super) fn managed_style_groups(
     let mut indexes = HashMap::new();
     for definition in definitions {
         let (name, layer) = match definition {
-            CssDirectiveStyleDefinition::Native { name, layer, .. }
-            | CssDirectiveStyleDefinition::Compose { name, layer, .. } => {
+            CssDirectiveStyleDefinition::Native { name, layer, .. } => {
                 let Some(name) = name else { continue };
                 (name.clone(), layer.unwrap_or(UtilityLayerName::Components))
             }
@@ -121,114 +120,6 @@ pub(super) fn managed_style_groups(
         groups[index].1.push(definition.clone());
     }
     groups
-}
-
-pub(super) fn managed_dependencies(
-    groups: &[((String, UtilityLayerName), Vec<CssDirectiveStyleDefinition>)],
-) -> Vec<Vec<usize>> {
-    let mut keys_by_name: HashMap<&str, Vec<usize>> = HashMap::new();
-    for (index, ((name, _), _)) in groups.iter().enumerate() {
-        keys_by_name.entry(name).or_default().push(index);
-    }
-    let mut names = keys_by_name.keys().copied().collect::<Vec<_>>();
-    names.sort_by_key(|name| std::cmp::Reverse(name.len()));
-    let mut dependencies = vec![Vec::new(); groups.len()];
-    for (index, (_, definitions)) in groups.iter().enumerate() {
-        for definition in definitions {
-            let CssDirectiveStyleDefinition::Compose { class_name, .. } = definition else {
-                continue;
-            };
-            let dependency_name = names.iter().find(|name| {
-                class_name.as_str() == **name
-                    || class_name
-                        .strip_prefix(**name)
-                        .and_then(|rest| rest.chars().next())
-                        .is_some_and(|next| matches!(next, ':' | '@' | '!'))
-            });
-            if let Some(dependency_name) = dependency_name {
-                for dependency in &keys_by_name[*dependency_name] {
-                    if !dependencies[index].contains(dependency) {
-                        dependencies[index].push(*dependency);
-                    }
-                }
-            }
-        }
-    }
-    dependencies
-}
-
-pub(super) fn managed_dependency_order(
-    groups: &[((String, UtilityLayerName), Vec<CssDirectiveStyleDefinition>)],
-    dependencies: &[Vec<usize>],
-) -> Result<Vec<usize>, CompilerError> {
-    fn visit(
-        index: usize,
-        groups: &[((String, UtilityLayerName), Vec<CssDirectiveStyleDefinition>)],
-        dependencies: &[Vec<usize>],
-        seen: &mut HashSet<usize>,
-        visiting: &mut Vec<usize>,
-        output: &mut Vec<usize>,
-    ) -> Result<(), CompilerError> {
-        if seen.contains(&index) {
-            return Ok(());
-        }
-        if let Some(start) = visiting.iter().position(|current| *current == index) {
-            let mut cycle = visiting[start..]
-                .iter()
-                .map(|current| groups[*current].0.0.as_str())
-                .collect::<Vec<_>>();
-            cycle.push(groups[index].0.0.as_str());
-            return Err(directive_error(format!(
-                "Circular @compose dependency detected: {}",
-                cycle.join(" -> ")
-            )));
-        }
-        visiting.push(index);
-        for dependency in &dependencies[index] {
-            visit(*dependency, groups, dependencies, seen, visiting, output)?;
-        }
-        visiting.pop();
-        seen.insert(index);
-        output.push(index);
-        Ok(())
-    }
-    let mut seen = HashSet::new();
-    let mut visiting = Vec::new();
-    let mut output = Vec::new();
-    for index in 0..groups.len() {
-        visit(
-            index,
-            groups,
-            dependencies,
-            &mut seen,
-            &mut visiting,
-            &mut output,
-        )?;
-    }
-    Ok(output)
-}
-
-pub(super) fn managed_refresh_count(
-    order: &[usize],
-    dependencies: &[Vec<usize>],
-    has_native_definitions: bool,
-) -> u64 {
-    let mut count = 0;
-    let mut unrefreshed = HashSet::new();
-    for index in order {
-        if dependencies[*index]
-            .iter()
-            .any(|dependency| unrefreshed.contains(dependency))
-        {
-            count += 1;
-            unrefreshed.clear();
-        }
-        unrefreshed.insert(*index);
-    }
-    if has_native_definitions && !unrefreshed.is_empty() {
-        count += 1;
-    }
-    count
 }
 
 pub(super) fn render_style_definitions(

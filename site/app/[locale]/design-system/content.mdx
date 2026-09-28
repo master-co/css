@@ -823,7 +823,7 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 
 <StylesheetExample
   title="An inline token"
-  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
+  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n@safelist \"bg-brand\";"}
 />
 
 <StylesheetExample
@@ -840,7 +840,7 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <StylesheetExample
   title="An inline color token"
   source={`@theme inline { --color-brand: #4f46e5; }
-.card { @compose bg-brand; }`}
+@safelist "bg-brand";`}
 />
 ```
 
@@ -848,7 +848,7 @@ The component accepts a title and standalone CSS source. Use a fixture-backed ex
 
 The default, inline and static examples above share one presentation. `DocumentOptions` also accepts inline code and links in its description; its name and optional default stay separate. Both components belong outside measured demo layouts.
 
-See [Theme and variants](/reference/directives/theme), [Managed definitions](/reference/directives/definitions), [Rule-local composition](/reference/directives/compose) and [Conditional blocks](/reference/directives/variant) for working uses.
+See [Theme and variants](/reference/directives/theme), [Managed definitions](/reference/directives/definitions) and [Conditional blocks](/reference/directives/variant) for working uses.
 
 ## Benchmark charts
 Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. The examples below use **illustrative data**, not measured results. See [Benchmarks](/guide/benchmarks) for real fixtures, sources, and limits.

@@ -5,7 +5,8 @@ use super::{
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
     lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
-    rewrite_managed_variant_directives, validate_compose_syntax, validate_condition_variant_syntax,
+    reject_removed_directives, rewrite_managed_variant_directives,
+    validate_condition_variant_syntax,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -125,7 +126,7 @@ fn compile_css_directives_impl(
         None => &mut local_slots,
     });
     validate_condition_variant_syntax(source, &options.from)?;
-    validate_compose_syntax(source, &options.from)?;
+    reject_removed_directives(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
     let standalone_directives = find_standalone_css_directive_statements(source);
     // Parsing still addresses the original source. Blank consumed statements
@@ -413,7 +414,6 @@ fn compile_css_directives_impl(
     };
     Ok(CompileCssDirectivesResult {
         utility_sources: crate::utility_sources::collect(source, &options.from),
-        compositions: Vec::new(),
         native_output,
         native_mappings,
         manifest_input,
@@ -438,7 +438,7 @@ pub(crate) fn native_style_slot<'a>(
 ) -> CssRule<'a, ThemeAtRule> {
     let mut index = slots.len();
     let name = loop {
-        let name = format!("--master-css-compose-slot-{index}");
+        let name = format!("--master-css-style-slot-{index}");
         if occupied.insert(name.clone()) {
             break name;
         }

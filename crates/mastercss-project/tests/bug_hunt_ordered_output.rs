@@ -17,7 +17,7 @@ fn flat_project_css_uses_ordered_output_while_preserving_metadata_views() {
     ));
     fs::create_dir_all(&root).unwrap();
     let entry = root.join("entry.css");
-    fs::write(&entry, "@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@compose paint;}.b{@compose low;}}").unwrap();
+    fs::write(&entry, r###"@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@variant media(all){padding:2rem!important;}}.b{@variant media(all){padding:1rem!important;}}}"###).unwrap();
     let result = load_project_manifest_entries(
         &[entry],
         json!({"version":1,"languageVersion":3,"utilities":[]}),

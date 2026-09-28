@@ -12,11 +12,11 @@ for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'child.css')
         writeFileSync(entry, `@import "./child.css"${qualifier};.after{margin:1px}`)
-        writeFileSync(child, '@utilities{paint{padding:2rem}}\n' + (compose ? '.composed{@compose paint;}' : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        writeFileSync(child, '@utilities{paint{padding:2rem}}\n' + (compose ? ".composed{@variant media(all){padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         if (qualifier) {
           expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @utilities/)
           writeFileSync(entry, `@import "./child.css"${qualifier};@utilities{paint{padding:2rem}}.after{margin:1px}`)
-          writeFileSync(child, (compose ? '.composed{@compose paint;}' : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+          writeFileSync(child, (compose ? ".composed{padding:2rem;}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         }
         const result = compileProjectManifest([entry], { root, baseManifest, preserveNativeCSS: true, classes: ['composed', 'card', 'after'] })
         expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)
@@ -38,7 +38,7 @@ test('Node project merges prior entries while resolving child-owned references a
     const first = join(root, 'first.css'), second = join(root, 'second.css'), child = join(root, 'child.css'), reference = join(root, 'tokens.css')
     writeFileSync(first, '@utilities{paint{padding:2rem}}')
     writeFileSync(second, '@import "./child.css" layer(cards);')
-    writeFileSync(child, '@reference "./tokens.css";@safelist "paint";@source "./index.html";.card{@compose paint accent;}')
+    writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@variant media(all){color:red;padding:2rem;}}")
     writeFileSync(reference, '@utilities{accent{color:red}}')
     const result = compileProjectManifest([first, second], { root, baseManifest, preserveNativeCSS: true, classes: ['card'] })
     expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)

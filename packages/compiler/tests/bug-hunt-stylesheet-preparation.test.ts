@@ -21,7 +21,7 @@ async function fixture(run: (root: string) => Promise<void>) {
 
 test('CSS preparation preserves source without loading Sass or requiring a manifest', async () => {
   await fixture(async root => {
-    const id = join(root, 'entry.css'), source = '@reference "./master.css"; .card { @compose p:2rem; }'
+    const id = join(root, 'entry.css'), source = "@reference \"./master.css\"; .card { @variant media(all){padding:2rem;} }"
     const prepared = await stylesheets.prepareStylesheet(id + '?direct', source, { loadSass: () => { throw new Error('CSS must not load Sass') } })
     expect(prepared).toEqual({ id, baseFile: id, source, dependencies: [id] })
     expect(Object.isFrozen(prepared)).toBe(true)
@@ -35,12 +35,12 @@ for (const syntax of ['scss', 'sass']) test(`prepare ${syntax} before classifica
     const partialSource = '$space: 2rem; .imported { margin: $space; }'
     writeFileSync(partial, partialSource)
     const source = syntax === 'scss'
-      ? '@use "tokens"; @reference "./master.css"; .card { @compose p:#{tokens.$space}; }'
-      : '@use "tokens"\n@reference "./master.css"\n.card\n  @compose p:#{tokens.$space}\n'
+      ? '@use "tokens"; @reference "./master.css"; .card { @variant media(all) { padding: #{tokens.$space}; } }'
+      : '@use "tokens"\n@reference "./master.css"\n.card\n  @variant media(all)\n    padding: #{tokens.$space}\n'
     writeFileSync(id, source)
     const observed: string[] = []
     const prepared = await stylesheets.prepareStylesheet(id, source, { projectDir: root, onDependency: file => observed.push(file) })
-    expect(prepared.source).toContain('@compose p:2rem;')
+    expect(prepared.source).toContain('padding: 2rem;')
     expect(prepared.source).toContain('margin: 2rem')
     expect(new Set(prepared.dependencies)).toEqual(new Set([id, partial]))
     expect(new Set(observed)).toEqual(new Set([id, partial]))
@@ -53,14 +53,14 @@ for (const syntax of ['scss', 'sass']) test(`prepare ${syntax} before classifica
     expect(classified?.kind).toBe('local')
     writeFileSync(partial, '$space: 4rem; .imported { margin: $space; }')
     const updated = await stylesheets.prepareStylesheet(id, source, { projectDir: root })
-    expect(updated.source).toContain('@compose p:4rem;')
+    expect(updated.source).toContain('padding: 4rem;')
   })
 })
 
 test('host Sass callback receives preparation options and keeps host importers', async () => {
   await fixture(async root => {
     const file = join(root, 'component.vue'), id = file + '?type=style&lang=scss', canonical = new URL('host:tokens')
-    const prepared = await stylesheets.prepareStylesheet(id, '@use "host:tokens"; .card { @compose p:#{tokens.$space}; }', {
+    const prepared = await stylesheets.prepareStylesheet(id, '@use "host:tokens"; .card { @variant media(all) { padding: #{tokens.$space}; } }', {
       projectDir: root,
       loadSass(projectDir) {
         expect(projectDir).toBe(root)
@@ -71,7 +71,7 @@ test('host Sass callback receives preparation options and keeps host importers',
         } }
       }
     })
-    expect(prepared.source).toContain('@compose p:3rem;')
+    expect(prepared.source).toContain('padding: 3rem;')
     expect(prepared.dependencies).toEqual([file])
     expect(JSON.parse(prepared.sourceMap!).sources).toContain('host:tokens')
   })
@@ -80,11 +80,11 @@ test('host Sass callback receives preparation options and keeps host importers',
 test('a virtual style uses its explicit physical base file for Sass and dependencies', async () => {
   await fixture(async root => {
     const file = join(root, 'card.scss'), id = '\0host:card.scss?opaque'
-    const prepared = await stylesheets.prepareStylesheet(id, '$space:2rem;.card{@compose p:#{$space};}', { projectDir: root, baseFile: file })
+    const prepared = await stylesheets.prepareStylesheet(id, '$space:2rem;.card{padding: #{$space};}', { projectDir: root, baseFile: file })
     expect(prepared.id).toBe(id)
     expect(prepared.baseFile).toBe(file)
     expect(prepared.dependencies).toEqual([file])
-    expect(prepared.source).toContain('@compose p:2rem;')
+    expect(prepared.source).toContain('padding: 2rem;')
     expect(JSON.parse(prepared.sourceMap!).sources).toContain(pathToFileURL(file).href)
   })
 })
@@ -113,9 +113,9 @@ test('prepared Sass maps resolve relative references from an imported partial', 
     mkdirSync(join(root, 'parts'))
     const file = join(root, 'entry.scss'), partial = join(root, 'parts/_rules.scss')
     const token = join(root, 'parts/tokens.css')
-    writeFileSync(partial, '@reference "./tokens.css"; .card { @compose paint; }')
-    writeFileSync(token, '@utilities { paint { padding: 2rem; } }')
-    writeFileSync(join(root, 'tokens.css'), '@utilities { paint { padding: 99rem; } }')
+    writeFileSync(partial, "@reference \"./tokens.css\"; .card { @variant media(all){padding:var(--paint-padding);} }")
+    writeFileSync(token, '@theme { --paint-padding: 2rem; }')
+    writeFileSync(join(root, 'tokens.css'), '@theme { --paint-padding: 99rem; }')
     const prepared = await stylesheets.prepareStylesheet(file, '@use "parts/rules";', { projectDir: root })
     const result = await stylesheets.transformStylesheet('\0prepared:entry.css', prepared.source, {
       baseManifest: { version: 1, languageVersion: 3, utilities: [] }, projectDir: root,

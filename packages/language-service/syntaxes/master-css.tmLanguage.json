@@ -194,25 +194,6 @@
           ]
         },
         {
-          "begin": "(@)(compose)\\b",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.control.at-rule.master-css"
-            }
-          },
-          "end": "(;)|$",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#master-compose-prelude"
-            }
-          ]
-        },
-        {
           "begin": "(@)(variant|dark|light)\\b",
           "beginCaptures": {
             "0": {
@@ -280,26 +261,6 @@
               "name": "punctuation.section.master-css"
             }
           ]
-        }
-      ]
-    },
-    "master-compose-prelude": {
-      "patterns": [
-        {
-          "include": "#master-string"
-        },
-        {
-          "include": "#master-query"
-        },
-        {
-          "include": "#master-selector"
-        },
-        {
-          "include": "#master-class-fragment"
-        },
-        {
-          "match": "[;{}]",
-          "name": "punctuation.section.master-css"
         }
       ]
     },

@@ -648,7 +648,7 @@
       "sourceId": "rc87-cd1d137ee89e9efb",
       "kind": "lexer",
       "input": "@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }",
-      "expectedCanonical": "compose|variant|compose",
+      "expectedCanonical": "variant",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -657,7 +657,7 @@
       "sourceId": "rc87-0ecc38899002a5db",
       "kind": "lexer",
       "input": ".card { @dark { @compose fg:white; } @light { color: black; } }",
-      "expectedCanonical": "variant|compose|variant",
+      "expectedCanonical": "variant|variant",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -675,7 +675,7 @@
       "sourceId": "rc87-8b8911fa6dc3e148",
       "kind": "lexer",
       "input": "@components { btn { @compose block; } }",
-      "expectedCanonical": "components|compose",
+      "expectedCanonical": "components",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -2642,7 +2642,7 @@
   "compilerCases": [
     {
       "id": "compiler-prose-base-responsive-order",
-      "source": "@utilities { prose { @variant sm { :is(h1,h2) { @compose mt-2xl scroll-mt:100px; } } :is(h1,h2) { @compose mt-lg scroll-mt:60px; } } }",
+      "source": "@utilities { prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2685,13 +2685,13 @@
     },
     {
       "id": "compiler-native-condition-order",
-      "source": ".card { @media (width>=40rem) { @compose grid; } @compose block; @container panel (inline-size>30rem) { @compose flex; } @starting-style { @compose hidden; } }",
+      "source": ".card { @media (width>=40rem) { @variant media(all){display:grid;} } @variant media(all){display:block;} @container panel (inline-size>30rem) { @variant media(all){display:flex;} } @starting-style { @variant media(all){display:none;} } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": "@media (width>=40rem){.card{display:grid}}.card{display:block}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
+      "expectedGeneratedCss": "@media (width>=40rem){@media all{.card{display:grid}}}@media all{.card{display:block}}@container panel (inline-size>30rem){@media all{.card{display:flex}}}@starting-style{@media all{.card{display:none}}}"
     },
     {
       "id": "compiler-managed-compose-order",
-      "source": "@utilities { btn { @variant sm { @compose grid; } @compose block; } }",
+      "source": "@utilities { btn { @variant sm { display:grid; } display:block; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2730,9 +2730,9 @@
     },
     {
       "id": "compiler-root-size-condition-order",
-      "source": ".card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
+      "source": ".card { @media (width>=42rem) { @variant media(all){display:grid;} } @media (width>=800px) { @variant media(all){display:flex;} } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": "@media (width>=42rem){.card{display:grid}}@media (width>=800px){.card{display:flex}}"
+      "expectedGeneratedCss": "@media (width>=42rem){@media all{.card{display:grid}}}@media (width>=800px){@media all{.card{display:flex}}}"
     },
     {
       "id": "rc87-compiler-variables-modes-dependencies",

@@ -61,7 +61,6 @@ interface MasterCSSToolingWasmLintProviderSession {
   resolveValidation(batch: unknown, ruleErrors: string[][][]): unknown
   canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
   canonicalClassGroups(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
-  canonicalComposeDirective(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
   rawValueCandidates(
     classNames: string[],
     nativeSupport: boolean[] | undefined,

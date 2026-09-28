@@ -30,7 +30,7 @@ test.each([
 
 test('BH-0004 local directives declared by an imported file classify the root as local', () => {
   const source = '@import "./child.css";'
-  const f = fixture(source, '.child{@compose p:2rem;}')
+  const f = fixture(source, ".child{@variant media(all){padding:2rem;}}")
   try {
     expect(resolveStylesheetSync(f.entry, source, { projectDir: f.root })?.kind).toBe('plain')
     const resolution = resolveStylesheetSync(f.entry, source, { projectDir: f.root, preserveImports: true })
@@ -43,7 +43,7 @@ test.each([
   ['a plain entry', '@master entry;\n.a{color:red}', undefined, 'entry', 1],
   ['a local import', '@master entry;@import "./child.css";', '.b{color:red}', 'entry', 2],
   ['a qualified import', '@master entry;@import "./child.css" layer(cards);', '.b{color:red}', 'entry', 2],
-  ['local directives', '.a{@compose p:2rem;}', undefined, 'local', 1],
+  ['local directives', ".a{@variant media(all){padding:2rem;}}", undefined, 'local', 1],
   ['plain css', '.a{color:red}', undefined, 'plain', 1]
 ])('BH-0004 %s classifies the same either way', (_name, source, child, kind, dependencies) => {
   const f = fixture(source, child)

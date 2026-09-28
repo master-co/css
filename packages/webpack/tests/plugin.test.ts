@@ -360,19 +360,18 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(entryPath, [
         '@master entry;',
-        '@utilities {',
-        '  brand { background-color: #123456; }',
-        '}'
+        '@theme { --color-brand: #123456; }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '.button { @compose inline-flex brand; color: white; }', {
+      const result = await transformStyleSource(modulePath, '.button { @variant media(all){display:inline-flex;background-color:var(--color-brand);color:white;} }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
       expect(result.code).toContain('.button{')
       expect(result.code).toContain('display:inline-flex')
-      expect(result.code).toContain('background-color:#123456')
+      expect(result.code).toContain('background-color:var(--color-brand)')
+      expect(result.globalStylesheet?.css).toContain('--color-brand:#123456')
       expect(result.code).toContain('color:#fff')
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-utilities.css')
@@ -393,7 +392,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '.home { @compose py-5xl; }', {
+      const result = await transformStyleSource(modulePath, ".home { @variant media(all){padding-block:var(--spacing-5xl);} }", {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
@@ -421,10 +420,10 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }
 
       expect(error).toBeInstanceOf(Error)
-      expect(error?.message).toContain('Invalid @compose utility')
+      expect(error?.message).toContain('@compose has been removed')
       expect(error?.dependencies).toContain(modulePath)
 
-      const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
+      const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
       expect(result.content).toContain('.button{display:block}')
       expect(result.dependencies).toContain(modulePath)
     } finally {
@@ -454,7 +453,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.referenced-native { color: red; }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose brand; }', {
+      const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @variant media(all){padding:var(--spacing-card);animation:pop 1s;} }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
@@ -619,13 +618,13 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
       writeFileSync(entryPath, [
         '@master entry;',
         '@utilities {',
-        '  card { @compose block; }',
+        "  card { @variant media(all){display:block;} }",
         '}'
       ].join('\n'))
 
@@ -740,12 +739,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
       writeFileSync(manifestPath, [
         '@utilities {',
-        '  card { @compose block; }',
+        "  card { display:block; }",
         '}'
       ].join('\n'))
 

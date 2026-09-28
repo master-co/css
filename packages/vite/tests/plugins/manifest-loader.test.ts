@@ -82,13 +82,13 @@ describe('ManifestLoaderPlugin', () => {
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, resolvedId))
-        .rejects.toThrow('Invalid @compose utility')
+        .rejects.toThrow('@compose has been removed')
       expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
       expect(context.config.server.fs.allow).toContain(manifestPath)
 
       writeFileSync(manifestPath, [
         '@utilities {',
-        '    card { @compose block; }',
+        "    card { @variant media(all){display:block;} }",
         '}'
       ].join('\n'))
 

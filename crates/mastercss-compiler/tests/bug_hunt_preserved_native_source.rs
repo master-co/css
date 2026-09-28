@@ -30,7 +30,7 @@ fn preserves_unicode_comments_and_literal_directive_text() {
 
 #[test]
 fn preserves_siblings_and_containers_around_lowered_slots() {
-    let source = "@theme{--color-x:red}@media screen{/* keep */.empty{} .composed{@compose p:2rem;} .other{color:rgb(0, 0, 255)}}";
+    let source = r###"@theme{--color-x:red}@media screen{/* keep */.empty{} .composed{@variant media(all){padding:2rem;}} .other{color:rgb(0, 0, 255)}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -50,7 +50,9 @@ fn preserves_siblings_and_containers_around_lowered_slots() {
 
 #[test]
 fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
-    let source = "@theme{--color-x:red}\n@utilities{brand{color:red}}\n.button{@compose brand;}";
+    let source = r###"@theme{--color-x:red}
+@utilities{brand{color:red}}
+.button{@variant media(all){color:red;}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {

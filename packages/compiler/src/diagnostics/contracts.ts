@@ -61,7 +61,6 @@ export interface MasterCSSSourceInspection {
 }
 
 export interface MasterCSSStylesheetInspection {
-  compositions?: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   readonly filePath: string
   readonly masterCSS: boolean
   readonly pruneNativeCSS: boolean
@@ -77,7 +76,7 @@ export interface MasterCSSStylesheetError {
 }
 
 export interface MasterCSSInspectionReport {
-  readonly version: 3
+  readonly version: 4
   readonly cwd: string
   readonly inputs: Readonly<{
     patterns: readonly string[]

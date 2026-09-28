@@ -9,10 +9,10 @@ import { createStylesheetCollection } from '../src/stylesheet/index-public'
 
 const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
 const inputs = [
-  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: 'unknown-utility', code: 'invalid-compose-class' },
+  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
   { source: '/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}', token: '@utilities', code: 'CSS_DIRECTIVE_ERROR' },
-  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: 'unknown-utility', code: 'invalid-compose-class' },
-  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: 'unknown-utility', code: 'invalid-compose-class' }
+  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
+  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' }
 ]
 function rangeFor(source: string, token: string) {
   const start = source.indexOf(token)
@@ -44,27 +44,17 @@ for (const binding of ['native', 'wasm'] as const) {
   })
 }
 
-test('BH-0004 collection composition diagnostic uses original owner instead of variant ID', async () => {
+test('collection reports removed directives using the original owner', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-graph-diagnostic-'))
-  using compiler = await createCompiler({ binding: 'native' })
-  const manifest = compiler.compileManifest('@utilities{known{color:red}}', { baseManifest }).manifest
-  const child = join(cwd, 'child.css')
-  const entry = join(cwd, 'entry.css')
-  const source = '.image{background:url(a.png)}\r\n/*😀*/.x{@compose known;}'
-  writeFileSync(entry, "@import './child.css';@master entry;")
+  const child = join(cwd, 'child.css'), entry = join(cwd, 'entry.css')
+  const source = '/*😀*/.x{@compose known;}'
+  writeFileSync(entry, '@import "./child.css";@master entry;')
   writeFileSync(child, source)
-  writeFileSync(join(cwd, 'a.png'), 'placeholder bytes; no browser requests in this diagnostic test')
-  const scanner = new MasterCSSScanner({ manifest, verbose: 0 }, cwd)
+  const scanner = new MasterCSSScanner({ manifest: baseManifest, verbose: 0 }, cwd)
   const collection = createStylesheetCollection()
-  const delivery = { entryURL: '/output.css', stylesheetURL: (_file: string, variant?: string) => `/asset-${encodeURIComponent(variant ?? _file)}.css`, resourceURL: () => '/a-much-longer-resource-name.png' }
   try {
     await scanner.init()
-    await collection.register(scanner, entry, "@import './child.css';@master entry;", { baseManifest: manifest, projectDir: cwd, delivery })
-    await scanner.scan(join(cwd, 'index.html'), '<div class="x image"></div>')
-    const error = await collection.compose({ scanner, baseManifest, projectDir: cwd, delivery }).then(() => { throw new Error('Expected invalid compose') }, error => error)
-    expect(error).toBeInstanceOf(MasterCSSError)
-    expect(error.code).toBe('invalid-compose-class')
-    expect(error.diagnostics[0]).toMatchObject({ source: child, range: rangeFor(source, 'known') })
-    expect(JSON.stringify(error.toJSON())).not.toContain('\\u0000')
+    await expect(collection.register(scanner, entry, '@import "./child.css";@master entry;', { baseManifest, projectDir: cwd }))
+      .rejects.toMatchObject({ code: 'removed-compose-directive', diagnostics: [expect.objectContaining({ source: child, range: rangeFor(source, '@compose') })] })
   } finally { await scanner.dispose(); collection.dispose(); rmSync(cwd, { recursive: true, force: true }) }
 })

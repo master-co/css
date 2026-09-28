@@ -9,7 +9,8 @@ fn request(classes: Vec<Vec<&str>>, stylesheets: Vec<&str>) -> RcMigrationReques
 }
 #[test]
 fn migrates_static_names_without_rewriting_native_values_or_nested_rules() {
-    let source = "@defaults{wide{width:10px}}@components{card{color:red;&:hover{color:blue}@compose display:block;}}";
+    let source =
+        "@defaults{wide{width:10px}}@components{card{color:red;&:hover{color:blue}display:block;}}";
     let result = migrate_rc(&request(vec![vec!["card"]], vec![source])).unwrap();
     assert!(result.notes.is_empty());
     assert!(
@@ -26,7 +27,7 @@ fn migrates_static_names_without_rewriting_native_values_or_nested_rules() {
     }
     assert_eq!(
         output,
-        "@layer defaults{.wide{width:10px}}@layer components{.card{color:red;&:hover{color:blue}@compose display:block;}}"
+        r###"@layer defaults{.wide{width:10px}}@layer components{.card{color:red;&:hover{color:blue}display:block;}}"###
     );
     let second = migrate_rc(&request(vec![vec!["card"]], vec![&output])).unwrap();
     assert!(second.stylesheets[0].edits.is_empty());

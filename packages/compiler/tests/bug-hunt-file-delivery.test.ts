@@ -9,8 +9,8 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) print
     const root = mkdtempSync(join(tmpdir(), 'master-css-file-delivery-'))
     try {
       const entry = join(root, 'entry.css'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
-      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@utilities{button{@compose paint;}}.example{color:green}`)
-      writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@compose paint;}")
+      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@utilities{button{@variant media(all){color:red;}}}.example{color:green}`)
+      writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@variant media(all){color:red;}}")
       writeFileSync(tokens, '@utilities{paint{color:red}}.reference-only{color:blue}')
       const options = {
         root, baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] }, preserveNativeCSS: true,
@@ -40,7 +40,7 @@ for (const preserveNativeCSS of [undefined, true]) {
       mkdirSync(join(root, 'styles'))
       const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'styles/tokens.css'), resource = join(root, 'styles/pixel.svg')
       writeFileSync(entry, "@import './styles/child.css' print;")
-      writeFileSync(child, "@reference './tokens.css';.example{@compose paint;}.raw{color:blue}")
+      writeFileSync(child, "@reference './tokens.css';.example{@variant media(all){color:red;background-image:url(\"./pixel.svg?version=1#icon\");}}.raw{color:blue}")
       writeFileSync(tokens, "@utilities{paint{color:red;background-image:url('./pixel.svg?version=1#icon')}}")
       writeFileSync(resource, '<svg xmlns="http://www.w3.org/2000/svg"/>')
       const result = compileManifestFileSync('entry.css', {

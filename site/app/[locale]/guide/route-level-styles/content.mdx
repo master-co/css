@@ -11,7 +11,7 @@ app/
     home.css
 ```
 
-Then write native CSS selectors and declarations. Reserve `@compose` for a shared utility whose behavior should stay synchronized across stylesheets.
+Then write native CSS selectors and declarations. Share design values with CSS custom properties and shared behavior with native classes or component interfaces.
 
 ```css name=app/home/home.css
 .home-section {
@@ -43,7 +43,7 @@ A route stylesheet can use project tokens, variants, and shared utilities direct
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   border: 1px solid var(--color-line-base);
-  @compose surface-raised;
+  background-color:var(--color-surface-raised);
 }
 ```
 
@@ -56,7 +56,7 @@ Use `@reference` for definitions outside the project context, such as a package 
 ```css
 @reference "@acme/theme/tokens.css";
 
-.route-card { @compose surface-raised; }
+.route-card { background-color:var(--color-surface-raised); }
 ```
 
 An independent compiler call has no automatic project context. Supply `referenceFiles` with absolute definition filenames and enable `transformNativeStylesheets`, or write an explicit `@reference`.

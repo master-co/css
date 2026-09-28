@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
 use super::{
-    CompileNativeCssOptions, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition,
-    CssImportProvider, ErrorCode, SourceRange, compile_css_directives, compile_native_css,
-    inspect_css, resolve_css_import_graph,
+    CompileNativeCssOptions, CssImportProvider, ErrorCode, SourceRange, compile_css_directives,
+    compile_native_css, inspect_css, resolve_css_import_graph,
 };
 
 struct MemoryImportProvider {
@@ -201,27 +200,6 @@ fn rejects_invalid_theme_modifier_combinations() {
 }
 
 #[test]
-fn owns_compose_syntax_diagnostic_codes_and_utf16_ranges() {
-    let quoted = compile_css_directives(
-        "/*😀*/ .btn { @compose \"block\"; }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err()
-    .diagnostic();
-    assert_eq!(quoted.code, ErrorCode::ComposeQuotedSyntax);
-    assert_eq!(quoted.range, Some(SourceRange { start: 23, end: 30 }));
-
-    let grouped = compile_css_directives(
-        ".btn { @compose {block}; }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err()
-    .diagnostic();
-    assert_eq!(grouped.code, ErrorCode::ComposeGroupSyntax);
-    assert_eq!(grouped.range, Some(SourceRange { start: 16, end: 23 }));
-}
-
-#[test]
 fn lowers_static_theme_keyframes_outside_layers() {
     let result = compile_css_directives(
         "@theme static {\n\
@@ -336,65 +314,4 @@ fn lowers_static_managed_definitions_with_utf16_source_ranges() {
         definitions[1]["declarations"][0]["source"]["range"],
         serde_json::json!({"start":96,"end":120})
     );
-}
-
-#[test]
-fn lowers_native_compose_and_variant_styles() {
-    let result = compile_css_directives(
-        "@custom-variant wide { @media (width >= 640px) { @slot; } }\n\
-             @utilities { brand { color: red; } }\n\
-             .button { @compose brand; @variant wide { @compose brand; } }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
-    let native_composes = result
-        .style_definitions
-        .as_ref()
-        .unwrap()
-        .iter()
-        .filter_map(|definition| match definition {
-            CssDirectiveStyleDefinition::Compose {
-                selector,
-                condition_path,
-                name,
-                ..
-            } if name.is_none() => Some((selector, condition_path)),
-            _ => None,
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(native_composes.len(), 2);
-    assert_eq!(native_composes[0].0, ".button");
-    assert_eq!(
-        native_composes[1].1,
-        &Some(vec![CssDirectiveConditionPathEntry::Variant {
-            token: "@wide".into()
-        }])
-    );
-    assert!(result.native_css.is_empty());
-}
-
-#[test]
-fn lowers_numeric_leading_variant_names() {
-    let result = compile_css_directives(
-        ".button { @variant 3xs { @compose block; } }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
-    let condition_path = result
-        .style_definitions
-        .as_ref()
-        .unwrap()
-        .iter()
-        .find_map(|definition| match definition {
-            CssDirectiveStyleDefinition::Compose { condition_path, .. } => condition_path.as_ref(),
-            _ => None,
-        })
-        .unwrap();
-    assert_eq!(
-        condition_path,
-        &[CssDirectiveConditionPathEntry::Variant {
-            token: "@3xs".into()
-        }]
-    );
-    assert!(result.native_css.is_empty());
 }

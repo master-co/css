@@ -1,7 +1,7 @@
 use super::{
     CompileManifestOptions, CompilerError, CssDirectiveConditionPathEntry,
-    CssDirectiveManifestInput, CssDirectiveSourceReference, EngineCompositionRuleIr, EngineSession,
-    ErrorCode, Map, ResolvedStyleBranch, UtilityLayerName, Value, json,
+    CssDirectiveManifestInput, EngineCompositionRuleIr, EngineSession, Map, ResolvedStyleBranch,
+    UtilityLayerName, Value, json,
 };
 
 pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
@@ -9,21 +9,6 @@ pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
         message: message.into(),
         filename: "manifest.css".into(),
         range: None,
-    }
-}
-
-pub(super) fn directive_diagnostic(
-    code: ErrorCode,
-    message: impl Into<String>,
-    source: Option<&CssDirectiveSourceReference>,
-) -> CompilerError {
-    CompilerError::DirectiveDiagnostic {
-        code,
-        message: message.into(),
-        filename: source
-            .and_then(|source| source.file.clone())
-            .unwrap_or_else(|| "manifest.css".into()),
-        range: source.map(|source| source.range.clone()),
     }
 }
 
@@ -63,63 +48,6 @@ pub(super) fn condition_path(
 
 pub(super) fn combine_selector_wrapper(selector: &str, wrapper: &str) -> String {
     mastercss_lexer::replace_nesting_selector(wrapper, selector).unwrap_or_else(|| wrapper.into())
-}
-
-pub(super) fn split_selector_list(selector: &str) -> Vec<String> {
-    let mut selectors = Vec::new();
-    let mut start = 0;
-    let mut quote = None;
-    let mut escaped = false;
-    let mut depth = 0_u32;
-    for (index, character) in selector.char_indices() {
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if character == '\\' {
-            escaped = true;
-            continue;
-        }
-        if let Some(current_quote) = quote {
-            if character == current_quote {
-                quote = None;
-            }
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            quote = Some(character);
-        } else if matches!(character, '(' | '[') {
-            depth += 1;
-        } else if matches!(character, ')' | ']') {
-            depth = depth.saturating_sub(1);
-        } else if character == ',' && depth == 0 {
-            let value = selector[start..index].trim();
-            if !value.is_empty() {
-                selectors.push(value.into());
-            }
-            start = index + 1;
-        }
-    }
-    let value = selector[start..].trim();
-    if !value.is_empty() {
-        selectors.push(value.into());
-    }
-    selectors
-}
-
-pub(super) fn combine_style_selectors(parent: &str, child: &str) -> String {
-    let parents = split_selector_list(parent);
-    let children = split_selector_list(child);
-    let mut selectors = Vec::new();
-    for child in children {
-        for parent in &parents {
-            selectors.push(
-                mastercss_lexer::replace_nesting_selector(&child, parent)
-                    .unwrap_or_else(|| format!("{parent} {child}")),
-            );
-        }
-    }
-    selectors.join(",")
 }
 
 pub(super) fn composition_rules(

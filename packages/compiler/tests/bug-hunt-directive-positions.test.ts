@@ -7,7 +7,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding} directives and references retain original diagnostic ranges`, async () => {
     using compiler = await createCompiler({ binding })
     for (const prefix of ['@master entry;\n', '@reference "./😀.css";\r\n@master entry;@preserve native;\n', '@source "./😀.html";\n/*😀*/@master entry;\n']) {
-      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', 'unknown-utility'], ['@utilities invalid {paint{color:red}}', '@utilities'], ['@utilities {paint{@compose unknown-utility;}}', 'unknown-utility']]) {
+      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', '@compose'], ['@utilities invalid {paint{color:red}}', '@utilities'], ['@utilities {paint{@compose unknown-utility;}}', '@compose']]) {
         const source = prefix + body
         const start = source.indexOf(token!)
         const position = (offset: number) => {
@@ -31,6 +31,6 @@ for (const binding of ['native', 'wasm'] as const) {
 test('BH-0004 local stylesheet lowering retains source text for diagnostics', async () => {
   const source = '/*😀*/\n.example {\n  @compose unknown-utility;\n}'
   await expect(transformStylesheet('local.css', source, { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).rejects.toMatchObject({
-    diagnostics: [{ code: 'invalid-compose-class', source: 'local.css', range: { start: { line: 2, character: 11 }, end: { line: 2, character: 26 } } }]
+    diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })
 })

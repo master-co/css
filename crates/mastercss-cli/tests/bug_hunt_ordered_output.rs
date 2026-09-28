@@ -5,7 +5,7 @@ use std::{
 };
 
 #[test]
-fn native_cli_keeps_composed_styles_in_one_anonymous_layer() {
+fn native_cli_keeps_native_variants_in_one_anonymous_layer() {
     let root = std::env::temp_dir().join(format!(
         "master-cli-ordered-{}-{}",
         std::process::id(),
@@ -15,7 +15,7 @@ fn native_cli_keeps_composed_styles_in_one_anonymous_layer() {
             .as_nanos()
     ));
     fs::create_dir_all(&root).unwrap();
-    fs::write(root.join("entry.css"), "@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@compose paint;}.b{@compose low;}}").unwrap();
+    fs::write(root.join("entry.css"), r###"@master entry;@preserve native;@layer{.a{@variant media(all){padding:2rem!important}}.b{@variant media(all){padding:1rem!important}}}"###).unwrap();
     let output = Command::new(env!("CARGO_BIN_EXE_mcss"))
         .current_dir(&root)
         .args(["--no-export", "-v", "0"])

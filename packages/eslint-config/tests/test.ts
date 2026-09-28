@@ -8,10 +8,10 @@ const css = config
 test('exports the plugin-owned recommended flat config', () => {
   expect(config).toBe(recommended)
   expect(config).toBe(masterCSS.configs.recommended)
-  expect(config).toHaveLength(2)
+  expect(config).toHaveLength(1)
 })
 
-test('lints markup and standalone stylesheets', async () => {
+test('lints markup and leaves standalone stylesheets to CSS tooling', async () => {
   const eslint = new ESLint({ cwd: __dirname })
   const [markup] = await eslint.lintFiles('./index.html')
   expect(markup.errorCount).toBe(0)
@@ -45,7 +45,7 @@ test('ESLint Configuration is valid', async () => {
   )
 })
 
-test('Default ESLint configuration lints standalone stylesheets', async () => {
+test('the default configuration does not lint or fix removed directives', async () => {
   const diagnosticESLint = new ESLint({
     cwd: __dirname,
     overrideConfigFile: true,
@@ -62,5 +62,7 @@ test('Default ESLint configuration lints standalone stylesheets', async () => {
 
   expect(diagnosticResult.errorCount).toBe(0)
   expect(diagnosticResult.warningCount).toBe(1)
-  expect(fixResult.output).toBe('.btn { contain: content; }')
+  expect(fixResult.output).toBeUndefined()
+  expect(diagnosticResult.messages[0].message).toContain('no matching configuration')
+  expect(await diagnosticESLint.isPathIgnored('index.css')).toBe(true)
 })

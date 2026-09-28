@@ -13,7 +13,7 @@ for (const command of ['serve', 'build'] as const) {
       try {
         writeFileSync(join(root, 'style.css'), '@import "./bridge.css" layer(guard) supports(display:grid) screen and (min-width:700px);.local{display:inline-flex}')
         writeFileSync(join(root, 'bridge.css'), '@import "./child.css";.bridge{display:block}')
-        writeFileSync(join(root, 'child.css'), '@import "https://external.test/style.css";.child{@compose p:2rem;}')
+        writeFileSync(join(root, 'child.css'), "@import \"https://external.test/style.css\";.child{@variant media(all){padding:2rem;}}")
         const module = query === 'url' ? 'export {default as url} from "./style.css?url";' : 'import "./style.css?theme=dark";export const url="/style.css?theme=dark";'
         writeFileSync(join(root, 'server.js'), module)
         writeFileSync(join(root, 'client.js'), 'import {url} from "./server.js";console.log(url)')

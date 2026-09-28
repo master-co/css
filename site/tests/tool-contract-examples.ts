@@ -50,7 +50,7 @@ export async function verifyToolContractExamples() {
     }
     assert.equal(reports.suggest_syntax.completions.length, 5)
     assert.ok(reports.suggest_syntax.total > 5)
-    assert.equal(reports.preview_directive_format.formatted, '.card {\n  @compose background-color:transparent!;\n}')
+    assert.equal(reports.preview_directive_format.formatted, '@safelist "background-color:transparent!";' )
     assert.equal(reports.preview_directive_format.preview, undefined)
     for (const name of ['repo_context', 'change_impact', 'test_router', 'package_graph']) assert.equal(reports[name].status, 'limited')
     const preview = reports.preview_fixes.preview

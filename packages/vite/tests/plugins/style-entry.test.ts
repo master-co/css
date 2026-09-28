@@ -153,7 +153,7 @@ describe('StyleEntryPlugin', () => {
         '}'
       ].join('\n'),
       '/project/src/style.css'
-    )).rejects.toThrow('Invalid @compose utility')
+    )).rejects.toThrow('@compose has been removed')
 
     expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
   })

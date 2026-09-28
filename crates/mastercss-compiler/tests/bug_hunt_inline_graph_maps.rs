@@ -11,7 +11,7 @@ fn compile(entry: &str, child: &str, child_url: &str) -> Value {
 }
 #[test]
 fn inline_qualified_child_keeps_composition_and_original_anchors() {
-    let child = "\n.card{@compose paint;}.card{padding:3rem}";
+    let child = "\n.card{@variant media(all){padding:2rem;}}.card{padding:3rem}";
     let entry = "@import './child.css' layer supports(display:grid) screen;@utilities{paint{padding:2rem}}/* 😀 */\n.after{margin:1px}";
     let result = compile(entry, child, "/child.css");
     assert_eq!(result["stylesheets"].as_array().unwrap().len(), 1);

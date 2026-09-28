@@ -94,7 +94,7 @@ describe('inspect command', () => {
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -192,7 +192,7 @@ describe('lint command', () => {
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(3)
+      expect(report.version).toBe(4)
       expect(report.manifest.status).toBe('loaded')
       expect(report.files).toHaveLength(1)
       expect(report.files[0].diagnostics.map((diagnostic: TestDiagnostic) => diagnostic.code)).toEqual(expect.arrayContaining([
@@ -224,29 +224,6 @@ describe('lint command', () => {
       expect(report.files).toHaveLength(1)
       expect(report.files[0].filePath).toMatch(/src[/\\]App\.tsx$/)
       expect(report.files[0].diagnostics.some((diagnostic: TestDiagnostic) => diagnostic.code === 'invalid-class-order')).toBe(true)
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
-
-  it('includes stylesheet compose diagnostics in the default source set', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-css-'))
-    try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '.btn { @compose text-align:center contain:content; }')
-      const output = runCLI(['lint', '--exit-code', 'never'], { cwd })
-      const report = JSON.parse(output)
-      expect(report.files).toHaveLength(1)
-      expect(report.files[0].sourceKind).toBe('stylesheet')
-      expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
-        code: 'prefer-native-declaration',
-        data: expect.objectContaining({ actual: 'text-align:center', recommended: 'text-align: center' }),
-        sourceKind: 'compose-directive'
-      }))
-      expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
-        code: 'prefer-native-declaration',
-        sourceKind: 'compose-directive',
-        fixes: [expect.objectContaining({ kind: 'directive', safety: 'structural' })]
-      }))
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
     }
@@ -284,18 +261,5 @@ describe('lint command', () => {
     }
   })
 
-  it('does not write structural directive fixes unless explicitly allowed', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-directive-fix-'))
-    try {
-      const file = resolve(cwd, 'index.css')
-      fs.writeFileSync(file, '.btn { @compose contain:content; }')
-      runCLI(['lint', '--fix', 'index.css'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('.btn { @compose contain:content; }')
 
-      runCLI(['lint', '--fix', '--fix-directives', 'index.css'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('.btn { contain: content; }')
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
 })

@@ -53,8 +53,6 @@ export {
 } from './contracts'
 export type {
   CanonicalClassNameOptions,
-  CanonicalComposeDirectiveResult,
-  CanonicalComposeDirectiveSuggestion,
   RawValuePolicyOptions
 } from './contracts'
 export type {

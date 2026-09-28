@@ -169,8 +169,6 @@ export async function createWasmToolingBinding(
           session.canonicalClassNames([...classNames], nativeSupport ? [...nativeSupport] : undefined, lintOptions),
         canonicalClassGroups: (classNames, nativeSupport, lintOptions) =>
           session.canonicalClassGroups([...classNames], nativeSupport ? [...nativeSupport] : undefined, lintOptions),
-        canonicalComposeDirective: (classNames, nativeSupport, lintOptions) =>
-          session.canonicalComposeDirective([...classNames], nativeSupport ? [...nativeSupport] : undefined, lintOptions),
         rawValueCandidates: (classNames, nativeSupport, invalidGeneratedClasses) =>
           session.rawValueCandidates([...classNames], nativeSupport ? [...nativeSupport] : undefined, [...invalidGeneratedClasses]),
         analyze: (classNames, nativeSupport, invalidGeneratedClasses) =>

@@ -518,36 +518,7 @@ pub(crate) fn collect_css_directive_contexts(
 ) {
     let offset = positions.byte_to_utf16(region.start).unwrap();
     for directive in find_css_directive_ranges(&source[region]) {
-        if directive.name == "compose" {
-            if directive.block_range.is_some() || !directive.quoted_string_ranges.is_empty() {
-                continue;
-            }
-            let Some(mut start) = positions.utf16_to_byte(offset + directive.prelude_range.start)
-            else {
-                continue;
-            };
-            let Some(mut end) = positions.utf16_to_byte(offset + directive.prelude_range.end)
-            else {
-                continue;
-            };
-            while start < end && source.as_bytes()[start].is_ascii_whitespace() {
-                start += 1;
-            }
-            while end > start && source.as_bytes()[end - 1].is_ascii_whitespace() {
-                end -= 1;
-            }
-            let Some(start) = positions.byte_to_utf16(start) else {
-                continue;
-            };
-            let Some(end) = positions.byte_to_utf16(end) else {
-                continue;
-            };
-            contexts.push(ClassListContextIr {
-                start,
-                end,
-                unescape: Vec::new(),
-            });
-        } else if directive.name == "safelist" {
+        if directive.name == "safelist" {
             for quoted in directive.quoted_string_ranges {
                 contexts.push(ClassListContextIr {
                     start: offset + quoted.content_range.start,

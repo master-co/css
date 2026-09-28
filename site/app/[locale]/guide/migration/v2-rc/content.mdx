@@ -11,7 +11,7 @@ Save the old generated CSS and browser results first. Upgrade related packages, 
 - Record the installed versions of core, preset, compiler, runtime, server, framework integrations, language tooling, ESLint, and custom bindings.
 - Save the **resolved RC manifest**, its source CSS entries and imports, and the effective `base-unit` and `root-size` settings. A failed settings lookup is not permission to assume defaults.
 - List custom tokens, inline tokens, modes, namespace fallbacks, managed utilities, variants, and component definitions.
-- Find classes in templates, class builders, `@compose`, safelists, blocklists, test fixtures, and selectors in CSS or JavaScript. Include classes supplied by dependencies and generated content.
+- Find classes in templates, class builders, legacy `@compose` statements, safelists, blocklists, test fixtures, and selectors in CSS or JavaScript. Include classes supplied by dependencies and generated content.
 - Record static, server, runtime, and progressive rendering paths, including hydration manifests, CSS asset URLs, and cached pages.
 - Save generated declarations and representative screenshots or computed styles at relevant breakpoints and themes. Include font metrics, background layers, border styles, outlines, and SVG strokes.
 
@@ -207,7 +207,7 @@ Review these cases manually:
 
 `--write` does not override these uncertainties. If any selected file has review diagnostics, the entire selected batch remains unwritten because class and selector dependencies can cross file boundaries. Resolve the diagnostics and preview the batch again. Supply `--target-manifest path/to/migrated.json` when a migrated project manifest is needed to verify custom definitions. Preserve diagnostics in the upgrade review and resolve them before relying on new build output. Run migration again afterward: already migrated source should produce no additional edits.
 
-Update `@compose`, safelists, blocklists, dependency-provided classes, and generated-source producers as well as ordinary markup. Update a generator's source before regenerating its output.
+Replace removed `@compose` statements manually with native declarations and selectors. The migration tool leaves these statements unchanged and reports them for review. Update safelists, blocklists, dependency-provided classes, and generated-source producers as well as ordinary markup. Update a generator's source before regenerating its output.
 
 ---
 
@@ -307,7 +307,7 @@ explicitly omit native output and is not a pruning option.
 
 Qualified imports cannot contain global definitions. Move `@settings`, `@theme`,
 `@mode`, custom variants, and managed definitions to unqualified imports or
-reference inputs. Pure native qualified imports and native `@compose` retain
+reference inputs. Pure native qualified imports and native `@variant` retain
 native conditions. Review imports whose old behavior hoisted definitions.
 
 Official integration defaults are static. Explicitly set the old rendering mode
@@ -441,7 +441,7 @@ Save the resolved manifest with the original installation before upgrading. Prev
 
 Simple `@defaults { prose { ... } }` becomes `@layer defaults { .prose { ... } }`, and `@components` becomes `@layer components` with escaped class selectors. Inner declarations and nested rules are preserved. Native styles now ship even when unused and use CSS source order within a layer; native pruning remains opt-in.
 
-Review reported locations for patterns, derived class suffixes, composition references, extraction policy and cascade conflicts. Replace `@compose button` with native declarations, or intentionally extract shared utility behavior into `@utilities`. Write component states and conditions as native CSS. The tool does not silently move components into the utilities layer. Rerunning a completed migration produces no further edits.
+Review reported locations for patterns, derived class suffixes, composition references, extraction policy and cascade conflicts. Replace `@compose button` with native declarations and selectors. Utilities can still be used directly in markup. Write component states and conditions as native CSS. The tool does not silently move components into the utilities layer. Rerunning a completed migration produces no further edits.
 
 
 ## Utility intent and whole-definition replacement
@@ -481,7 +481,7 @@ A later utility replaces an entire earlier definition, including nested selector
 
 Enum identity uses the key set, so changing key order is still replacement. Duplicate keys are errors. Token identity preserves the ordered namespace list; `=namespace` becomes `~namespace`. Exact static names precede enum names, and both precede tokens. Unknown but structurally valid static pseudo-classes no longer fall through to a declaration.
 
-All four definition forms accept fixed-class `@compose`. Placeholder substitution is limited to parameterized declaration values. Replace parameter-dependent compose targets with declarations. Native strings, comments and same-name functions outside managed templates are unchanged.
+All four definition forms accept native declarations and nested rules. Placeholder substitution is limited to parameterized declaration values. Native strings, comments and same-name functions outside managed templates are unchanged.
 
 Compare saved and new declarations, their order, selectors, conditions, variables and animations. Inspect the source of every effective and replaced definition. Verify removal and reinsertion release obsolete resources and that a second migration produces no edits. A batch with any review item writes nothing; changed inputs invalidate a pending write.
 

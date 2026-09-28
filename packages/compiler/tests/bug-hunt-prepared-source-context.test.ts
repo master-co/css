@@ -20,9 +20,9 @@ const identitySass = () => ({ async compileStringAsync(css: string) { return { c
 for (const syntax of ['scss', 'sass']) test(`single-source ${syntax} lowering retains an imported partial reference owner`, async () => {
   await fixture(async root => {
     const file = join(root, 'entry.' + syntax), token = join(root, 'parts/tokens.css')
-    writeFileSync(join(root, 'parts/_rules.scss'), '@reference "./tokens.css";.card{@compose paint;}')
-    writeFileSync(token, '@utilities{paint{padding:2rem}}')
-    writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:99rem}}')
+    writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
+    writeFileSync(token, '@theme{--paint-padding:2rem}')
+    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
     const prepared = await prepareStylesheet(file, syntax === 'sass' ? '@use "parts/rules"\n' : '@use "parts/rules";', { loadSass: () => sass })
     const observed: string[] = []
     const result = await transformStylesheet(file, prepared.source, {
@@ -39,12 +39,12 @@ for (const syntax of ['scss', 'sass']) test(`single-source ${syntax} lowering re
 test('prepared source registers a missing mapped reference before failure and recovers', async () => {
   await fixture(async root => {
     const file = join(root, 'entry.scss'), token = join(root, 'parts/missing.css')
-    writeFileSync(join(root, 'parts/_rules.scss'), '@reference "./missing.css";.card{@compose paint;}')
+    writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./missing.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
     const prepared = await prepareStylesheet(file, '@use "parts/rules";', { loadSass: () => sass })
     const observed: string[] = [], options = { baseManifest, projectDir: root, loadSass: identitySass, sourceMap: prepared.sourceMap, onDependency: (file: string) => observed.push(file) }
     await expect(transformStylesheet(file, prepared.source, options)).rejects.toThrow()
     expect(observed).toContain(token)
-    writeFileSync(token, '@utilities{paint{padding:4rem}}')
+    writeFileSync(token, '@theme{--paint-padding:4rem}')
     expect((await transformStylesheet(file, prepared.source, options)).code).toContain('padding:4rem')
   })
 })

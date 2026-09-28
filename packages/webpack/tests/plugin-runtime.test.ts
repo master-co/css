@@ -399,7 +399,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }, root).init()
 
       await expect((plugin as any).processModuleContents([[entryPath, source]], () => false))
-        .rejects.toThrow('Invalid @compose utility')
+        .rejects.toThrow('@compose has been removed')
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 

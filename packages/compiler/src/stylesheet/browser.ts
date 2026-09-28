@@ -83,8 +83,6 @@ export async function compileBrowserStylesheet(
     { binding: 'wasm', wasm: binding }
   )
   const renderSession: StylesheetRenderSession = {
-    nativeDeclarationCandidates: (classNames) =>
-      bindingSession.nativeDeclarationCandidates(classNames),
     ensureClasses: (classNames) =>
       bindingSession.ensureClasses(classNames),
     ensureStylesheetResources: (nativeCSS) =>

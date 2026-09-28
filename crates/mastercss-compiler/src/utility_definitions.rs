@@ -62,12 +62,6 @@ pub(crate) fn body(
                     conditions,
                     condition_path,
                     ..
-                }
-                | CssDirectiveStyleDefinition::Compose {
-                    selector,
-                    conditions,
-                    condition_path,
-                    ..
                 } => (selector, conditions, condition_path),
             };
             if placeholder(selector)
@@ -98,14 +92,6 @@ pub(crate) fn body(
                         }
                     }
                 }
-                CssDirectiveStyleDefinition::Compose { class_name, .. }
-                    if placeholder(class_name) =>
-                {
-                    return Err(crate::manifest::definition_error(
-                        "@compose targets must be fixed classes; write width:--value() as a declaration instead",
-                    ));
-                }
-                _ => {}
             }
         }
     }
@@ -119,12 +105,12 @@ fn placeholder(source: &str) -> bool {
 pub(crate) fn seed_rules(definition: &Map<String, Value>) -> Result<Vec<Value>, CompilerError> {
     let mut rules = Vec::new();
     for fragment in body(definition)? {
-        if let CssDirectiveStyleDefinition::Native {
+        let CssDirectiveStyleDefinition::Native {
             declarations,
             selector,
             conditions,
             ..
-        } = fragment
+        } = fragment;
         {
             append_rules(
                 &mut rules,

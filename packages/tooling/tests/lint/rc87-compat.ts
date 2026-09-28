@@ -280,15 +280,6 @@ export function suggestCanonicalClassGroups(
   return [...sessionFrom(css, names).canonicalClassGroups(names, options)]
 }
 
-export function suggestCanonicalComposeDirective(
-  classList: string,
-  css: CSSCompat,
-  options = defaultCanonicalClassNameOptions
-) {
-  const session = sessionFrom(css)
-  return session.canonicalComposeDirective(classNames(classList, session), options)
-}
-
 function report(
   classList: string,
   css: CSSCompat,
@@ -300,7 +291,6 @@ function report(
     disallowUnknownClass: Boolean(options.disallowUnknownClass),
     rawValuePolicy: options.rawValuePolicy as never,
     canonicalOptions: options.canonicalOptions as never,
-    composeDirective: Boolean(options.composeDirective)
   })
   return {
     diagnostics: analysis.diagnostics.map((diagnostic) => ({
@@ -340,18 +330,6 @@ export function createCanonicalClassesReport(
   return only(report(classList, css, {
     ...options,
     canonicalOptions: Object.fromEntries(Object.entries(options).filter(([key]) => key in defaultCanonicalClassNameOptions))
-  }), 'prefer-canonical-classes')
-}
-
-export function createCanonicalComposeDirectiveReport(
-  classList: string,
-  css: CSSCompat,
-  options: Record<string, unknown> = {}
-) {
-  return only(report(classList, css, {
-    ...options,
-    canonicalOptions: options,
-    composeDirective: true
   }), 'prefer-canonical-classes')
 }
 

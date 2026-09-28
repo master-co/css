@@ -46,12 +46,12 @@ test.each(cases)('imported Sass maps original file and token: $rootExtension / $
       }
     } catch (error) { failure = (error as MasterCSSError).diagnostics ? error as MasterCSSError : (error as { errors?: MasterCSSError[] }).errors?.[0] }
     finally { await server?.environments.client.waitForRequestsIdle(); await server?.close() }
-    expect(failure?.diagnostics[0]?.code).toBe('invalid-compose-class')
+    expect(failure?.diagnostics[0]?.code).toBe('removed-compose-directive')
     expect(calls.filter(file => file === child)).toHaveLength(addition === 'string' ? 0 : 1)
     const diagnostic = failure!.diagnostics[0]
     console.log(JSON.stringify({ rootExtension, syntax, partial, addition, command, diagnostic, additionalDataCalls: calls }))
     expect(diagnostic.source).toBe(original)
-    expect(diagnostic.range).toEqual({ start: { line: 3, character: 11 }, end: { line: 3, character: 26 } })
+    expect(diagnostic.range).toEqual({ start: { line: 3, character: 2 }, end: { line: 3, character: 10 } })
     expect(diagnostic.notes).toBeUndefined()
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
@@ -98,11 +98,11 @@ for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unma
     } catch (error) { failure = (error as { errors?: MasterCSSError[] }).errors?.[0] }
     expect(calls).toBe(1)
     const diagnostic = failure!.diagnostics[0]
-    expect(diagnostic.code).toBe('invalid-compose-class')
+    expect(diagnostic.code).toBe('removed-compose-directive')
     if (kind === 'interpolated') {
       expect(diagnostic.source).toBe(child)
-      expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 2 } })
-      expect(diagnostic.notes).toContain('The source map identifies the originating segment; an exact original token range is unavailable.')
+      expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 10 } })
+      expect(diagnostic.notes).toBeUndefined()
     } else {
       expect(diagnostic.source).toBe(child + '.master-css-sass.css')
       expect(diagnostic.notes).toContain('Original Sass location is unavailable; this range refers to preprocessed CSS.')

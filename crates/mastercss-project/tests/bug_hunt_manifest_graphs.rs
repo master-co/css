@@ -72,7 +72,7 @@ fn css(manifest: &serde_json::Value, classes: &str) -> String {
 #[test]
 fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation() {
     let project = Project::new();
-    let entry_source = "@import './styles/child.css' layer(outer) supports(display:grid) screen;@master entry;@utilities{paint{color:red}}@utilities{button{@compose paint;}}";
+    let entry_source = r###"@import './styles/child.css' layer(outer) supports(display:grid) screen;@master entry;@utilities{paint{color:red}}@utilities{button{color:red;}}"###;
     let child_source = "@import 'https://invalid.invalid/external.css';@source './views/*.html';.native{background:url('./missing.png')}";
     let entry = project.file("entry.css", entry_source);
     let child = project.file("styles/child.css", child_source);
@@ -100,8 +100,8 @@ fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation()
 fn references_resolve_managed_definitions_without_importing_their_sources_or_classes() {
     let project = Project::new();
     let entry_source =
-        "@master entry;@reference './tokens.css';@utilities{button{@compose paint;}}";
-    let reference_source = "@import 'https://invalid.invalid/external.css';@source './ignored/*.html';@utilities{paint{color:red}}.reference-native{color:blue}";
+        "@master entry;@reference './tokens.css';@utilities{button{@variant paint{color:red;}}}";
+    let reference_source = "@import 'https://invalid.invalid/external.css';@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@utilities{paint{color:blue}}.reference-native{color:blue}";
     let entry = project.file("entry.css", entry_source);
     let reference = project.file("tokens.css", reference_source);
     project.file("ignored/view.html", "ignored");
@@ -116,7 +116,7 @@ fn references_resolve_managed_definitions_without_importing_their_sources_or_cla
     )
     .unwrap();
     let generated = css(&result.manifest, "button paint");
-    assert!(generated.contains(".button{color:red}"));
+    assert!(generated.contains("@media print{.button{color:red}}"));
     assert!(!generated.contains(".paint{"));
     assert!(result.source_plan.files.is_empty());
     assert!(

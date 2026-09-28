@@ -26,8 +26,6 @@ export function hasStylesheetResourceReferences(manifest: RenderCompiledManifest
 export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOptions): RenderCompiledManifestCSSResult {
   const nativeSession = createRenderBindingSessionSync(options)
   const session: StylesheetRenderSession = {
-    nativeDeclarationCandidates: (classNames) =>
-      [...nativeSession.nativeDeclarationCandidates(classNames)],
     ensureClasses: (classNames) => nativeSession.ensureClassRules(classNames),
     ensureStylesheetResources: (nativeCSS) => nativeSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => nativeSession.emittedGlobals() as Required<import('@master/css-schema/emitted-globals').MasterCSSEmittedGlobals>,

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, expect, test, vi } from 'vitest'
-import LocalComposePlugin from '../../src/plugins/local-compose'
+import LocalStylesPlugin from '../../src/plugins/local-styles'
 import { devStylesheetState } from '../../src/utils/dev-stylesheet-delivery'
 import { localStylesheets } from '../../src/utils/local-stylesheet'
 import { createServer } from 'vite'
@@ -15,7 +15,7 @@ function fixture(command = 'serve') {
   roots.push(root)
   mkdirSync(join(root, 'src'))
   const context = { config: { root, command, server: { fs: { allow: [] } } } } as any
-  const plugin = LocalComposePlugin({} as any, context) as any
+  const plugin = LocalStylesPlugin({} as any, context) as any
   return { root, context, plugin }
 }
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })

@@ -12,10 +12,28 @@
 
 @layer components {
   .btn {
-    @compose rel w:100% h:48px box-border mt-md inline-flex items-center justify-center px-lg bg-master fg-master-ink b:1px|solid|var(--color-master-hover) r-sm font-sm font-medium text-center text-decoration:none transition:all|var(--duration-fast)|var(--easing-smooth);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    padding-inline: var(--spacing-lg);
+    -webkit-text-decoration: none;
+    text-decoration: none;
+    border: 1px solid var(--color-master-hover);
+    transition: all var(--duration-fast) var(--easing-smooth);
+    background-color: var(--color-master);
+    color: var(--color-master-ink);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--spacing-md);
+    height: 48px;
+    width: 100%;
 
     &:hover {
-      @compose bg-master-hover;
+      background-color:var(--color-master-hover);
     }
 
     &:hover .btn-arrow-line {
@@ -25,11 +43,13 @@
   }
 
   .btn-icon {
-    @compose abs right-md;
+    position: absolute;
+    right: var(--spacing-md);
   }
 
   .btn-arrow-line {
-    @compose transform-origin:1.25rem|center transition:all|var(--duration-fast)|var(--easing-smooth);
+    transition: all var(--duration-fast) var(--easing-smooth);
+    transform-origin: 1.25rem center;
     opacity: 0;
     transform: scale(0);
   }

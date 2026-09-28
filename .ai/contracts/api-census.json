@@ -24362,7 +24362,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 12
+      "value": 14
     },
     {
       "kind": "wire-contract",
@@ -24384,7 +24384,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "name": "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -24516,7 +24516,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LINT_BATCH_VERSION",
       "name": "MASTER_CSS_LINT_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24598,7 +24598,7 @@
       "id": "wire-contract:packages/cli/src/lint.ts#REPORT_VERSION",
       "name": "REPORT_VERSION",
       "source": "packages/cli/src/lint.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -24668,7 +24668,7 @@
       "id": "wire-contract:packages/mcp/src/directives.ts#DIRECTIVE_INSPECTION_VERSION",
       "name": "DIRECTIVE_INSPECTION_VERSION",
       "source": "packages/mcp/src/directives.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24696,7 +24696,7 @@
       "id": "wire-contract:packages/mcp/src/lint.ts#LINT_REPORT_VERSION",
       "name": "LINT_REPORT_VERSION",
       "source": "packages/mcp/src/lint.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",

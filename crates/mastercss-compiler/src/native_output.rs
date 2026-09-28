@@ -102,7 +102,7 @@ pub(crate) fn prepare_native_output(
     })
 }
 
-/// When native output is disabled, retain the context around composed styles but
+/// When native output is disabled, retain the context around lowered styles but
 /// discard ordinary native rules. No container is reconstructed from strings.
 pub(crate) fn retain_style_slots<'i>(
     rules: Vec<CssRule<'i, ThemeAtRule>>,

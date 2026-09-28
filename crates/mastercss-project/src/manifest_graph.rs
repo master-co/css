@@ -126,7 +126,6 @@ pub(super) fn compile_manifest_graph_with_output(
                 matches!(
                     definition,
                     CssDirectiveStyleDefinition::Native { name: None, .. }
-                        | CssDirectiveStyleDefinition::Compose { name: None, .. }
                 )
             })
             .cloned()

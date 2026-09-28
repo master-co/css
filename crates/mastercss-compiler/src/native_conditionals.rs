@@ -154,11 +154,6 @@ impl NativeConditionalLowerer<'_> {
                     conditions,
                     condition_path,
                     ..
-                }
-                | CssDirectiveStyleDefinition::Compose {
-                    conditions,
-                    condition_path,
-                    ..
                 } => (conditions, condition_path),
             };
             let suffix = path.as_deref().unwrap_or_default()[retained_prefix..].to_vec();

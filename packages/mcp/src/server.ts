@@ -550,7 +550,6 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         mode: z.enum(['lint-fixes', 'generated-css']).optional(),
         patterns: z.array(z.string()).optional(),
         rules: z.string().optional(),
-        includeDirectiveFixes: z.boolean().optional(),
         outputPath: z.string().optional(),
         ttlMs: z.number().int().min(1000).max(60 * 60 * 1000).optional()
       },

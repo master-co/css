@@ -112,7 +112,8 @@ Packages imported by a project entry are already available to local stylesheets.
 @reference '<package-name>';
 
 .button {
-  @compose content-auto;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
 }
 ```
 
@@ -135,7 +136,7 @@ Use the package for shared vocabulary. Use the app CSS entry for local source bo
 ---
 
 ## Version vocabulary
-Treat exported tokens, utilities and native class names like public API. Native component CSS ships by default; its same-layer conflicts follow source order. A component class is not a target for `@compose` or Master suffixes.
+Treat exported tokens, utilities and native class names like public API. Native component CSS ships by default; its same-layer conflicts follow source order. Native classes do not derive Master suffixes.
 
 Removing or renaming a token, variant, utility, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, variants, utilities, or component classes is usually a minor change when it does not alter existing output.
 

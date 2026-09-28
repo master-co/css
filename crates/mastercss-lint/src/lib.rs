@@ -150,10 +150,6 @@ pub struct CanonicalClassNameOptions {
     pub prefer_composition_utilities: bool,
     #[serde(default = "default_true")]
     pub prefer_condition_order: bool,
-    #[serde(default = "default_true")]
-    pub prefer_native_declarations_in_compose: bool,
-    #[serde(default = "default_true")]
-    pub prefer_variant_blocks_in_compose: bool,
 }
 
 impl Default for CanonicalClassNameOptions {
@@ -163,8 +159,6 @@ impl Default for CanonicalClassNameOptions {
             prefer_property_aliases: true,
             prefer_composition_utilities: true,
             prefer_condition_order: true,
-            prefer_native_declarations_in_compose: true,
-            prefer_variant_blocks_in_compose: true,
         }
     }
 }
@@ -195,34 +189,6 @@ pub struct CanonicalClassGroupSuggestionIr {
 pub struct CanonicalClassGroupSuggestionsIr {
     pub version: u32,
     pub suggestions: Vec<CanonicalClassGroupSuggestionIr>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "kebab-case")]
-pub enum CanonicalComposeSuggestionKind {
-    Class,
-    NativeDeclaration,
-    VariantBlock,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CanonicalComposeSuggestionIr {
-    pub actual: String,
-    pub recommended: String,
-    pub class_names: Vec<String>,
-    pub kind: CanonicalComposeSuggestionKind,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CanonicalComposeDirectiveIr {
-    pub version: u32,
-    pub suggestions: Vec<CanonicalComposeSuggestionIr>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub structural_change: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub replacement: Option<String>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -259,7 +225,6 @@ pub struct LintClassListPolicy<'a> {
     pub disallow_unknown_class: bool,
     pub raw_value_policy: Option<&'a RawValuePolicy>,
     pub canonical_options: Option<&'a CanonicalClassNameOptions>,
-    pub compose_directive: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -358,20 +323,6 @@ const COMPOSITION_RECIPES: [CompositionRecipe; 7] = [
     },
 ];
 
-#[derive(Debug, Clone)]
-struct ComposeNativeDeclaration {
-    property: String,
-    value: String,
-    important: bool,
-}
-
-#[derive(Debug, Default)]
-struct ComposeBucket {
-    classes: Vec<String>,
-    declarations: Vec<ComposeNativeDeclaration>,
-    variants: Vec<(String, ComposeBucket)>,
-}
-
 const fn default_true() -> bool {
     true
 }
@@ -390,20 +341,18 @@ struct ClassDescriptor {
     type_order: u8,
 }
 
-mod compose;
+mod composition;
 mod conflicts;
 mod order;
 mod partial_conflicts;
 mod recommendation;
 mod session;
 mod session_canonical;
-mod session_compose;
+mod session_native;
 
-pub(crate) use compose::{
-    compose_variant_block_text, has_duplicate_compose_declaration_properties,
-    is_safe_compose_variant_token, matching_composition_recipe, merge_group_declarations,
-    normalize_composition_declarations, process_compose_leaf, push_index_value,
-    replace_compose_class_group, replace_first_compose_class, serialize_compose_bucket,
+pub(crate) use composition::{
+    matching_composition_recipe, merge_group_declarations, normalize_composition_declarations,
+    push_index_value,
 };
 pub(crate) use conflicts::{
     collect_rule_declarations, equal_variant_scope, find_conflicts, sort_descriptors,

@@ -87,7 +87,7 @@ The language server supports full-document and active-position semantic tokens.
 | `active` | Uses the VS Code extension request for active class-context highlighting. |
 | `off` | Disables embedded utility highlighting. |
 
-CSS directive syntax is highlighted by the shared TextMate grammar. Server semantic tokens cover Master CSS class-list spans and directive class-list spans such as `@compose` and `@safelist`.
+CSS directive syntax is highlighted by the shared TextMate grammar. Server semantic tokens cover Master CSS class-list spans and directive class-list spans such as `@safelist`.
 
 ## Formatting
 

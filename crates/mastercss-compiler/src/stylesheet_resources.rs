@@ -108,19 +108,6 @@ impl RelocatedStylesheet {
                     self.restore_reference(original, reference);
                 }
             }
-            CssDirectiveStyleDefinition::Compose {
-                source,
-                directive_source,
-                selector_source,
-                ..
-            } => {
-                for reference in [source, directive_source, selector_source]
-                    .into_iter()
-                    .flatten()
-                {
-                    self.restore_reference(original, reference);
-                }
-            }
         }
     }
 }

@@ -38,17 +38,7 @@ describe('CSS @reference', () => {
           color: red;
         }
       `)
-      writeFileSync(entryPath, `
-        @reference "../tokens.css";
-
-        .button {
-          @compose brand;
-
-          @variant wide {
-            @compose brand;
-          }
-        }
-      `)
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @variant media(all){color:var(--color-brand);}\n\n          @variant wide {\n            @variant media(all){color:var(--color-brand);}\n          }\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath)
 
@@ -59,8 +49,6 @@ describe('CSS @reference', () => {
       expect(result.manifest.utilities?.some((utility) => utility.name === 'brand') ?? false).toBe(false)
       expect(result.dependencies).toContain(entryPath)
       expect(result.dependencies).toContain(tokensPath)
-      expect(result.compositions?.[0].definitionSources).toEqual(expect.arrayContaining([expect.objectContaining({ file: tokensPath })]))
-      expect(result.compositions?.[0].source?.file).toBe(entryPath)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -72,19 +60,7 @@ describe('CSS @reference', () => {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
       writeFileSync(tokensPath, '@utilities { brand { color: red; } }')
-      writeFileSync(entryPath, `
-        @reference "../tokens.css";
-
-        @utilities {
-          brand {
-            color: blue;
-          }
-        }
-
-        .button {
-          @compose brand;
-        }
-      `)
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @utilities {\n          brand {\n            color: blue;\n          }\n        }\n\n        .button {\n          @variant media(all){color:#00f;}\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath)
 
@@ -103,7 +79,7 @@ describe('CSS @reference', () => {
       writeFileSync(aPath, [
         '@master entry;',
         '@reference "./b.css";',
-        '.a { @compose b; }'
+        ".a { @variant media(all){display:block;} }"
       ].join('\n'))
       writeFileSync(bPath, '@utilities { b { display: block; } }')
 
@@ -157,10 +133,9 @@ test('references exported CSS authoring packages with compiler-only definition l
     writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/theme', exports: { '.': './master.css' } }))
     writeFileSync(join(packageDir, 'master.css'), '@utilities{paint{color:red}}@layer components{.button{display:flex}}')
     const file = join(root, 'src', 'local.css')
-    writeFileSync(file, '@reference "@acme/theme";.local{@compose paint;}')
+    writeFileSync(file, "@reference \"@acme/theme\";.local{@variant media(all){color:red;}}")
     const result = compileCSSManifestFile(file)
     expect(result.css).toContain('.local{color:red}')
     expect(result.css).not.toContain('.button')
-    expect(result.compositions?.[0].definitionSources[0].file).toBe(realpathSync(join(packageDir, 'master.css')))
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

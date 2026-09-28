@@ -16,11 +16,11 @@ function fixture(syntax: string) {
   mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
   for (const directory of ['main', 'shared']) mkdirSync(join(root, directory))
   const partial = join(root, `shared/_rules.${syntax}`)
-  const source = syntax === 'scss' ? '@reference "./tokens.css";\n.target{@compose paint;}' : '@reference "./tokens.css"\n.target\n  @compose paint\n'
+  const source = syntax === 'scss' ? '@reference "./tokens.css";\n.target{@variant media(all){background:var(--paint-background);padding:var(--paint-padding);}}' : '@reference "./tokens.css"\n.target\n  @variant media(all)\n    background: var(--paint-background)\n    padding: var(--paint-padding)\n'
   writeFileSync(partial, source)
-  writeFileSync(join(root, 'shared/tokens.css'), '@utilities{paint{padding:7rem;background:url("./pixel.svg?v=partial#icon")}}.never{color:red}')
+  writeFileSync(join(root, 'shared/tokens.css'), '@theme{--paint-padding:7rem;--paint-background:url("./pixel.svg?v=partial#icon")}.never{color:red}')
   writeFileSync(join(root, 'shared/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg" data-owner="partial"/>')
-  for (const directory of ['', 'main/']) writeFileSync(join(root, directory, 'tokens.css'), '@utilities{paint{padding:99rem}}')
+  for (const directory of ['', 'main/']) writeFileSync(join(root, directory, 'tokens.css'), '@theme{--paint-padding:99rem}')
   const input = syntax === 'scss' ? '@use "../shared/rules";' : '@use "../shared/rules"\n'
   return { root, partial, input, remove: () => rmSync(root, { recursive: true, force: true }) }
 }

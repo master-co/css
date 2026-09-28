@@ -9,7 +9,7 @@ import { renderCSS } from '../src/scan'
 test('BH-0020 directive formatting reports UTF-8 sizes in content and file previews', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-css-format-bytes-'))
   const context = new MasterCSSMCPContext({ root })
-  const content = '/* 中文😀 */\n@compose   block   inline ;'
+  const content = '/* 中文😀 */\n@safelist "block   inline";'
   try {
     const result = await previewDirectiveFormat(context, { context: 'preset', content })
     expect(result.mode).toBe('content')

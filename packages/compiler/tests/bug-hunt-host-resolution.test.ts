@@ -10,7 +10,7 @@ function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-host-resolution-'))
   mkdirSync(join(root, 'styles'))
   const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css')
-  writeFileSync(child, '@master entry;@preserve native;.example{@compose paint;}')
+  writeFileSync(child, "@master entry;@preserve native;.example{@variant media(all){color:red;}}")
   const scanner = { cwd: root, options: {}, css: { text: '', manifest: { version: 1, languageVersion: 3, utilities: [] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, entry, child, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }
@@ -27,7 +27,7 @@ test('BH-0004 async host classification and registration preserve transitive def
     using collection = createStylesheetCollection()
     await collection.register(f.scanner, f.entry, source, { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })
     const result = await collection.compose({ scanner: f.scanner, baseManifest: f.scanner.css.manifest, delivery: f.delivery })
-    expect(result.stylesheets?.some(asset => asset.css === '.example{color:#00f}')).toBe(true)
+    expect(result.stylesheets?.some(asset => asset.css.includes('.example{color:red}'))).toBe(true)
     expect(result.stylesheets?.some(asset => asset.css.includes('layer(shared)') && asset.css.includes('print'))).toBe(true)
     expect(calls.every(importer => importer === f.entry)).toBe(true)
   } finally { f.remove() }
