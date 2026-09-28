@@ -325,6 +325,15 @@ Migration cases and approvals are unchanged. The run also passes Linux E2E,
 Rust quality and all eight native targets; final Windows and Linux quality
 validation must finish before integration.
 
+The Windows package step in that run timed out waiting for a Webpack watch
+callback after attaching two sheets. The previous run instead timed out during
+CLI initial readiness. Both retain bounded assertions and pass locally. Four
+concurrent Turbo tasks, each allowing a half-CPU Vitest pool, oversubscribe the
+runner; Windows test-task concurrency is reduced to two without changing product
+code, test deadlines or assertions. This is a resource-contention correction;
+the next complete Windows result is required before claiming it resolves the
+observed timeouts.
+
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
 examples passed using a temporary local wrapper that supplied an isolated

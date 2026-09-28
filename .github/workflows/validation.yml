@@ -385,7 +385,9 @@ jobs:
           FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
         run: |
           set -euo pipefail
-          args=(run test '--filter=./packages/*' --concurrency=4 --continue=dependencies-successful)
+          # Each Vitest suite can use half the runner's CPU. Keep two task
+          # slots so concurrent cold builds do not starve bounded watch tests.
+          args=(run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful)
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
