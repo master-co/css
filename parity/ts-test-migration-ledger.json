@@ -13,7 +13,7 @@
       "P2": "CLI, extension, packaging, host, and peripheral integration behavior.",
       "P3": "Performance, bundle size, examples, site, and benchmark residual risk outside the migration denominator."
     },
-    "ciGate": false
+    "ciGate": true
   },
   "baseline": {
     "ref": "v2.0.0-rc.87",
@@ -10551,7 +10551,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#preserves_unsupported_units_for_host_validation_inside_css_math_functions",
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-negative-base-unit-bytes"
         ],
@@ -10668,7 +10668,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations",
-          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -11422,7 +11422,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13753,7 +13753,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
-          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#preserves_unsupported_units_for_host_validation_inside_css_math_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14037,7 +14037,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14675,7 +14675,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#preserves_unsupported_units_for_host_validation_inside_css_math_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
