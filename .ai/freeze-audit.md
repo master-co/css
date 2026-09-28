@@ -342,7 +342,19 @@ matching the shared half-CPU worker policy. No test is removed, skipped, retried
 automatically or given a longer deadline. The complete local package validation
 with two task slots passes 111/111 tasks (32 build tasks cached); all package
 test/lint/type-check tasks pass, including 678 Vite cases. Windows CLI passes
-87/87 at `5ee8e180e`; the remaining Windows and corrected Linux gates are pending.
+87/87 at `5ee8e180e`; its complete Windows result is 58/59 package tasks. The
+only failure is a Sass SSR reimport exceeding `vi.waitFor`'s one-second default
+before its async assertion returns. That wait now uses the existing 30-second CI
+rebuild budget; the green-CSS and server-channel exclusion assertions remain.
+Focused Sass/SSR suites pass 21/21; remote confirmation is still required.
+
+The integrated site check exposed stale Compose-era Playground expectations and
+a pre-integration CSS snapshot. Native nesting and informative unknown-variable
+diagnostics now retain the original test intent; all 17 Playground cases pass.
+`parity/site-css-integration-review.md` explains the exact refreshed snapshot:
+1,240 retained routes, 1,811 identical rules, 16 size rules replaced by 32 width/
+height rules, native font resources and documented reference-page changes.
+The exact-byte gate and resource checks remain intact. Final CI remains required.
 
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive

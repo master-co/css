@@ -13,7 +13,7 @@
   },
   "target": {
     "ref": "latest-target-change",
-    "commit": "143958f349f8c4c3b0fc00df31d29eaa5c1ba59e",
+    "commit": "658f46c8fbeded44811c283fe1a463cf1d03654c",
     "cases": 2864
   },
   "evidence": {
@@ -60513,17 +60513,17 @@
       "id": "rc87-92bb09d46587b406",
       "package": "vite",
       "file": "packages/vite/tests/plugins/bug-hunt-sass-environment.test.ts",
-      "line": 11,
+      "line": 12,
       "title": "BH-0004 Sass updates invalidate SSR imports without sending browser CSS updates to the server channel",
       "runner": "vitest",
       "kind": "test",
-      "sourceDigest": "9969add0007e691152d0836af50c8179401331dee087f591b02d65b99135ac38"
+      "sourceDigest": "0ae8c19da929f2e4109d714ed6cc08f044fc0f092a7152c679c2398c40d6c7b4"
     },
     {
       "id": "rc87-982a9d1ff85ae68a",
       "package": "vite",
       "file": "packages/vite/tests/plugins/bug-hunt-sass-environment.test.ts",
-      "line": 36,
+      "line": 38,
       "title": "BH-0004 server restart discards stylesheet URLs served by the previous server",
       "runner": "vitest",
       "kind": "test",
@@ -60533,7 +60533,7 @@
       "id": "rc87-bbc6cb58e66cec7f",
       "package": "vite",
       "file": "packages/vite/tests/plugins/bug-hunt-sass-environment.test.ts",
-      "line": 71,
+      "line": 73,
       "title": "BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response",
       "runner": "vitest",
       "kind": "test",
