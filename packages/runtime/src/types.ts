@@ -33,7 +33,7 @@ export interface MasterCSSRuntimeClassSnapshot {
 }
 
 export interface MasterCSSRuntimeLayerSnapshot {
-  readonly name: typeof LAYER_ORDER[number] | 'keyframes'
+  readonly name: typeof LAYER_ORDER[number]
   readonly cssText: string
   readonly ruleCount: number
 }

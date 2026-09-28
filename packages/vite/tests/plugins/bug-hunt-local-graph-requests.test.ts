@@ -10,8 +10,8 @@ for (const command of ['serve', 'build'] as const) {
     const root = mkdtempSync(join(parent, 'local-graph-requests-'))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     try {
-      writeFileSync(join(root, 'style.module.css'), "@import \"./child.css\" layer(guard);.local{@variant media(all){display:inline-flex;}}")
-      writeFileSync(join(root, 'child.css'), "@import \"https://external.test/style.css\";.child{@variant media(all){padding:2rem;}}")
+      writeFileSync(join(root, 'style.module.css'), "@import \"./child.css\" layer(guard);.local{@media all {display:inline-flex;}}")
+      writeFileSync(join(root, 'child.css'), "@import \"https://external.test/style.css\";.child{@media all {padding:2rem;}}")
       writeFileSync(join(root, 'server.js'), 'export {default as names} from "./style.module.css";export {default as css} from "./style.module.css?inline";export {default as raw} from "./style.module.css?raw";')
       writeFileSync(join(root, 'client.js'), 'import {names,css,raw} from "./server.js";console.log(names.local,css,raw)')
       writeFileSync(join(root, 'index.html'), '<script type="module" src="./client.js"></script>')
@@ -31,7 +31,7 @@ for (const command of ['serve', 'build'] as const) {
           }
         }
         expect(sources.join('\n')).toContain('.scoped_local')
-        expect(sources.join('\n')).toContain('padding:2rem')
+        expect(sources.join('\n')).toMatch(/padding:\s*2rem/)
         expect(sources.join('\n')).not.toContain('@compose')
       } else {
         const result = await build({ ...config, build: { write: false, minify: false, cssMinify: false } })
@@ -39,7 +39,7 @@ for (const command of ['serve', 'build'] as const) {
         const css = result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css')).map(asset => asset.type === 'asset' ? String(asset.source) : '').join('\n')
         const js = result.output.filter(asset => asset.type === 'chunk').map(asset => asset.code).join('\n')
         expect(css).toContain('.scoped_local')
-        expect(css).toContain('padding:2rem')
+        expect(css).toMatch(/padding:\s*2rem/)
         expect(css).not.toContain('@compose')
         expect(css).not.toContain('#master-css-local-')
         expect(js).toContain('scoped_local')

@@ -5,7 +5,8 @@ import {
 } from '@master/css-compiler/stylesheet'
 import {
   composeStylesheetHostSync,
-  resolveStylesheetSync
+  resolveStylesheetSync,
+  inspectCSSSync
 } from '@master/css-compiler/node'
 import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import {
@@ -23,7 +24,7 @@ interface TransformStyleSourceOptions {
 }
 
 function hasMasterStyleManifestDirective(source: string) {
-  return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
+  return inspectCSSSync(source).directives.length > 0
 }
 
 export async function transformStyleSource(

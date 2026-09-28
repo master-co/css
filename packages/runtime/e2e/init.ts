@@ -29,95 +29,10 @@ type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest[
 }
 
 type RuntimeManifestVariableInput = MasterCSSManifestVariable
-type RuntimeManifestVariable = MasterCSSManifestVariable
 
 type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities' | 'variables'>> & {
   variables?: RuntimeManifestVariableInput[]
   utilities?: RuntimeProjectManifestUtilityInput[]
-}
-
-function getDefaultVariableName(key: string, namespace?: string) {
-  const negative = key.startsWith('-')
-  const positiveKey = negative ? key.slice(1) : key
-  const name = namespace
-    ? `${namespace}${positiveKey ? '-' + positiveKey : ''}`
-    : positiveKey
-  return negative ? '-' + name : name
-}
-
-function normalizeVariableValue(value: RuntimeManifestVariable['value'] | undefined) {
-  if (typeof value !== 'string') {
-    return { value, dependencies: undefined }
-  }
-  return {
-    value: value.replace(/\|/g, ' '),
-    dependencies: undefined
-  }
-}
-
-function inferVariableType(value: RuntimeManifestVariable['value'] | undefined, modes?: RuntimeManifestVariable['modes']) {
-  if (typeof value === 'number') return 'number'
-  const firstMode = modes && Object.values(modes)[0]
-  return firstMode?.type || 'string'
-}
-
-function normalizeVariable(variable: RuntimeManifestVariableInput): RuntimeManifestVariable {
-  const value = variable.value
-  const name = variable.name || getDefaultVariableName(variable.key, variable.namespace)
-  const normalizedValue = normalizeVariableValue(value)
-  return {
-    ...variable,
-    name,
-    type: variable.type || inferVariableType(value, variable.modes),
-    ...(normalizedValue.value !== undefined ? { value: normalizedValue.value } : {}),
-    ...(normalizedValue.dependencies?.length ? {
-      dependencies: [...new Set([...(variable.dependencies || []), ...normalizedValue.dependencies])]
-    } : variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
-  }
-}
-
-function createRuntimeVariables(defaultVariables: RuntimeManifestVariable[], inputVariables: RuntimeManifestVariableInput[] | undefined) {
-  const variables = new Map<string, RuntimeManifestVariable>()
-  for (const variable of defaultVariables) {
-    if (!variable.name) continue
-    variables.set(variable.name, {
-      ...variable,
-      ...(variable.modes ? { modes: { ...variable.modes } } : {}),
-      ...(variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
-    })
-  }
-
-  for (const inputVariable of inputVariables || []) {
-    const normalized = normalizeVariable(inputVariable)
-    const current = variables.get(normalized.name!) || {
-      name: normalized.name,
-      key: normalized.key,
-      ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
-      type: normalized.type
-    }
-    if (normalized.mode) {
-      current.modes = {
-        ...(current.modes || {}),
-        [normalized.mode]: {
-          type: normalized.type!,
-          value: normalized.value as string | number
-        }
-      }
-    } else {
-      Object.assign(current, {
-        key: normalized.key,
-        ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
-        type: normalized.type,
-        ...(normalized.value !== undefined ? { value: normalized.value } : {}),
-        ...(normalized.dependencies?.length ? { dependencies: normalized.dependencies } : {}),
-        ...(normalized.inline ? { inline: true } : {}),
-        ...(normalized.static ? { static: true } : {})
-      })
-    }
-    variables.set(normalized.name!, current)
-  }
-
-  return groupMasterCSSManifestVariables([...variables.values()])
 }
 
 function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
@@ -143,35 +58,38 @@ function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: nu
   }
 }
 
-export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
+export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput): MasterCSSManifest {
   const defaultUtilities = defaultManifest.utilities || []
-  const { modes, ...rest } = manifest
-  const variables = createRuntimeVariables(flattenMasterCSSManifestVariables(defaultManifest.variables), rest.variables)
-  const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
+  const custom = (manifest.variables || []).map(variable => ({
+    ...variable,
+    name: variable.name || (variable.namespace ? `${variable.namespace}-${variable.key}` : variable.key)
+  }))
+  const merged = new Map<string, MasterCSSManifestVariable>(flattenMasterCSSManifestVariables(defaultManifest.variables).map(variable => [variable.name!, variable]))
+  for (const variable of custom) {
+    const previous = merged.get(variable.name)
+    merged.set(variable.name, { ...variable, values: [...(previous?.values || []), ...variable.values], dependencies: [...new Set([...(previous?.dependencies || []), ...(variable.dependencies || [])])] })
+  }
+  const nodes: import('@master/css-schema/manifest').MasterCSSThemeNode[] = []
+  for (const variable of custom) for (const value of variable.values) {
+    let children = nodes
+    for (const prelude of value.path) {
+      const previous = children.at(-1)
+      if (previous?.type === 'rule' && previous.prelude === prelude) children = previous.children
+      else {
+        const node: import('@master/css-schema/manifest').MasterCSSThemeNode = { type: 'rule', prelude, children: [] }
+        children.push(node)
+        children = node.children
+      }
+    }
+    children.push({ type: 'declaration', name: variable.name, value: value.value })
+  }
   return {
-    ...defaultManifest,
-    ...rest,
-    version: 1,
-    settings: {
-      ...defaultManifest.settings,
-      ...rest.settings,
-
-    },
-    modes: [...(defaultManifest.modes || []).filter(mode => !modes?.some(custom => custom.name === mode.name)), ...(modes || [])],
-    variables,
-    animations: {
-      ...(defaultManifest.animations || {}),
-      ...(rest.animations || {})
-    },
-    variants: [
-      ...(defaultManifest.variants || []),
-      ...(rest.variants || [])
-    ],
-    utilities: [
-      ...defaultUtilities,
-      ...customUtilities
-    ]
-  } satisfies MasterCSSManifest
+    ...defaultManifest, ...manifest,
+    theme: [...(defaultManifest.theme || []), ...(manifest.theme || []), ...nodes],
+    variables: groupMasterCSSManifestVariables([...merged.values()]),
+    variants: [...new Map([...(defaultManifest.variants || []), ...(manifest.variants || [])].map(variant => [variant.token, variant])).values()],
+    utilities: [...defaultUtilities, ...(manifest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))]
+  }
 }
 
 async function createHydrationManifestForPage(page: Page, manifest: MasterCSSManifest) {

@@ -48,11 +48,11 @@ The RC column below is historical reference text, not executable new syntax. `br
 | `grid-cols:3` | Unchanged | Explicit Master parameter utility. |
 | RC `size:20px` | `width:20px height:20px` | The paired sizing family is removed; review cascade order. |
 
-The examples above show variable-backed tokens. A token declared with `@theme inline` substitutes its declared value instead of a `var()` reference.
+Token classes retain `var()` references. The removed `@theme inline` modifier has no compiler substitution replacement.
 
 CSS keywords keep native meaning. `color:red` and `fg:red` mean the CSS color `red`; `color-red` and `fg-red` select the project's color token. `font-family:mono` specifies a font named `mono` and does not resolve `--font-family-mono`.
 
-There is no implicit token lookup inside a colon value, including functions, fallbacks, and multi-value declarations. For example, use `border:1px|solid|var(--color-line-base)` and `transition:opacity|var(--duration-normal)|var(--easing-standard)` when those variables exist.
+There is no implicit token lookup inside a colon value, including functions, fallbacks, and multi-value declarations. For example, use `border:1px|solid|var(--color-line-divider)` and `transition:opacity|var(--duration-normal)|var(--easing-standard)` when those variables exist.
 
 ### Preserve selectors and conditions
 
@@ -66,7 +66,7 @@ font:mono:hover@sm!
 For this new example, define the project color token explicitly:
 
 ```css
-@theme { --color-brand: #4f46e5; }
+@theme { :root { --color-brand: #4f46e5; } }
 ```
 
 ```text name="New v2 syntax"
@@ -142,40 +142,28 @@ These changes reduce special language rules. They are not a claim that AI genera
 
 ## 5. Update directives, manifests, and custom hosts
 
-Separate token and raw parameter sources in managed patterns:
+Declare one utility per at-rule and distinguish token sources from raw parameters:
 
-```css name="New v2 utilities"
-@utilities {
-  font-<~font-family> {
-    font-family: --value();
-  }
-
-  size-<~container> {
-    width: --value();
-    height: --value();
-  }
-
-  size:<*> {
-    width: --value();
-    height: --value();
-  }
-}
+```css name="Current utilities"
+@utility font-* from(--font-family-*) { font-family: --master-value(); }
+@utility pair-* from(--container-*) { width: --master-value(); height: --master-value(); }
+@utility pair:* { width: --master-value(); height: --master-value(); }
+@utility align-left { text-align: left; }
+@utility align-right { text-align: right; }
 ```
 
-`prefix-<~namespace>` accepts token sources only. Use `key:<*>` for a complete raw CSS value and a hyphen enum for named options. The former `=namespace`, typed raw and colon enum forms are historical RC syntax; migrate them through the utility stage below. Full-value `--value()` substitution remains supported.
+The `@utilities` container, angle-bracket patterns and enum/valueMap definitions are removed. Expand named options to fixed definitions. `--master-value()` substitutes a complete CSS value once inside parameter utility declarations; it takes no arguments. Ordinary `--value()` calls are native CSS function values.
 
 A managed definition using a native property name must preserve that property's intent and value. Matching vendor-prefixed declarations may accompany it; changing to a subproperty or adding a separate style effect requires a distinct utility name. For example, migrate the old combined line-clamp definition to `clamp-lines`.
 
-Regenerate artifacts from their source definitions. Manifest and hydration envelopes remain v1, but the supported field contract changes:
+Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
-- Token matchers use `{ "type": "token", "prefix": "font-" }` with namespace references on their utility; the old `variable` matcher is rejected.
-- Directive IR has a `token` pattern distinct from `dynamic` raw parameters.
-- Add `languageVersion: 3` to regenerated manifest and hydration data; missing or unsupported language versions are rejected even though their envelope remains `version: 1`.
-- Replace global mode settings with ordered `modes` activation definitions, and remove `rootSize`, `defaultMode`, `modeTrigger`, and `settings.modes`.
-- Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
-- Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
-- Update native and Wasm providers together to **binding ABI 13**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
-- Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
+- Manifest **v2**, language **v4**, binding ABI **15**, hydration **v2** and engine transition **v2** reject incompatible data.
+- Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
+- Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use explicit theme scopes, `customMedia` and variants.
+- Remove animation resource counts and rule animation names from custom hosts and hydration data. Import native keyframes through CSS.
+- Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
+- Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
 See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
 
@@ -259,42 +247,20 @@ manual behavior decision, not an equivalence claim.
 
 ### Replace global mode settings
 
-`@theme ocean` assigns values; `@mode ocean` assigns activation. Remove
-`default-mode`, `mode-trigger`, and `settings.modes` after introducing explicit
-branches. For manual light/dark switching with system fallback, define both:
+Remove `@settings`, `@mode` and named theme preludes. Put explicit selectors and native queries inside `@theme`. Define an independent `@custom-variant` only if a markup suffix is needed:
 
 ```css
-@mode light {
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme]) { @slot; }
-  }
-  [data-theme="light"] { @slot; }
+@custom-variant manual-dark { &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; } }
+@theme {
+  :root, :host { --color-panel: white; }
+  [data-theme="dark"] { --color-panel: #111827; }
 }
-@mode dark {
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) { @slot; }
-  }
-  [data-theme="dark"] { @slot; }
-}
-@theme { --color-panel: white; }
-@theme dark { --color-panel: #111827; }
-:root { color-scheme: light dark; }
-[data-theme="light"] { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
 ```
 
-Base values come from unqualified `@theme`; copy the old default-mode values
-there when needed. The engine no longer adds `color-scheme`. The migration
-proposal makes old side effects explicit, but overlapping modes, nested themes,
-and formerly demand-driven resources still require review. Activation guards
-now cover the root element and descendants without adding utility specificity.
-For a shadow tree, define a `:host(...)` branch explicitly. Neither the old class
-strategy nor the new mode crosses native shadow boundaries automatically.
+Copy old default values into an explicit base selector. Review overlapping themes, inheritance and specificity against saved browser output. The compiler does not insert root selectors, descendant guards or `color-scheme` declarations. Move unconditional properties to native CSS and keyframes outside `@theme`. Use per-class `!` instead of global importance, and native selectors instead of global scope.
 
-Mode redefinition replaces the entire activation definition. Token value blocks
-still merge by token name. Breakpoints, variants, and modes cannot share names
-across categories. Mode activation rejects pseudo-elements, declarations,
-containers, layers, and recursive mode references.
+Define viewport aliases with `@custom-media --sm (width >= 52.125rem);`; `--breakpoint-sm` no longer registers `@sm`. Replace the removed `@master entry;` marker with `@import "@master/css";`, which loads the full preset. Every relative `@source` pattern is relative to its declaring stylesheet, including bare patterns.
 
 ### Keep native CSS and choose delivery deliberately
 
@@ -305,8 +271,8 @@ source that should opt in. This directive does not propagate through imports;
 `@preserve native;` excludes its own file. `preserveNativeCSS: false` still means
 explicitly omit native output and is not a pruning option.
 
-Qualified imports cannot contain global definitions. Move `@settings`, `@theme`,
-`@mode`, custom variants, and managed definitions to unqualified imports or
+Qualified imports cannot contain global definitions. Move `@theme`,
+custom media, custom variants, and utility definitions to unqualified imports or
 reference inputs. Pure native qualified imports and native `@variant` retain
 native conditions. Review imports whose old behavior hoisted definitions.
 
@@ -392,7 +358,7 @@ color: --alpha(var(--color-brand) / .5);
 color: color-mix(in oklab, var(--color-brand) 50%, transparent);
 ```
 
-The migration preserves the old `oklab` space and proportions. A project defining native `@function --alpha` requires manual review. Ordinary declarations preserve `--value()` as a native call; only managed patterns substitute it. Native custom-property streams such as `--pipe:a|b` and `--money:$100` keep their spelling. They receive structure checks and an unknown value-grammar status when their type is not known.
+The migration preserves the old `oklab` space and proportions. A project defining native `@function --alpha` requires manual review. Ordinary declarations preserve `--value()` as a native call; the removed RC patterns substituted it; current parameter utilities use `--master-value()`. Native custom-property streams such as `--pipe:a|b` and `--money:$100` keep their spelling. They receive structure checks and an unknown value-grammar status when their type is not known.
 
 ### Move complex class queries into CSS
 
@@ -465,10 +431,8 @@ The following is **historical RC syntax, for comparison only**:
 ```
 
 ```css name="Current utility definitions"
-@utilities {
-  size:<*> { width: --value(); height: --value(); }
-  font-<~font-family> { font-family: --value(); }
-}
+@utility size:* { width: --master-value(); height: --master-value(); }
+@utility font-* from(--font-family-*) { font-family: --master-value(); }
 ```
 
 A unique raw-any pattern can be simplified safely. Typed-only patterns, colon enums and overloads require review because `:<*>` accepts more values. Previously unmatched or ineffective input can start generating effective CSS. Do not silently turn `x:<number>` into `x:<*>` without auditing its uses.
@@ -526,4 +490,13 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 13), preset manifests and hydration alongside sources. Manifest/hydration envelope v1 and language version 3 remain unchanged; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 15), preset manifests and hydration alongside sources. Manifest and hydration envelopes are v2, and executable manifests require language version 4; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+
+
+## Native adaptive colors
+
+The preset now uses `light-dark()` for 45 semantic color tokens and the colors inside six shadows. General hue aliases retain their previous light values in both schemes; all 390 numbered palette colors are unchanged. Use `text-*` hue aliases for readable adaptive foregrounds. `data-theme="light"` / `data-theme="dark"` selects native `color-scheme` on roots, nested regions, and shadow hosts. Preset `@light` / `@dark` suffixes continue to mean system preference.
+
+Rename `surface-muted` to `surface-inset`, `surface-overlay` to `surface-floating`, `b-base` to `b-divider`, and `b-strong` to `b-control`, including their underlying custom properties. Removed `line-muted`, `text-subtle`, and `text-placeholder` need a contextual replacement; no old-name aliases remain. See the [color migration table and contrast limits](/guide/colors#contrast-and-migration). Chrome 123, Firefox 120, or Safari 17.5 is required for these native adaptive values.
+
+The preset no longer publishes `--breakpoint-*` custom properties. Replace layout references with native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role. Named viewport queries remain explicit `@custom-media` declarations.

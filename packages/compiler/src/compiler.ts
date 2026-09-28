@@ -63,13 +63,12 @@ function directiveSummary(result: CompileCSSResult) {
   const manifestInput = result.manifestInput as Record<string, unknown>
   const keys = Object.freeze(Object.keys(manifestInput))
   const countKeys = [
-    'settings',
-    'variables',
+    'theme',
+    'customMedia',
     'utilities',
     'variants',
     'conditions',
-    'selectors',
-    'animations'
+    'selectors'
   ] as const
   return Object.freeze({
     manifestInput: Object.freeze({

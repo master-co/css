@@ -9,11 +9,13 @@ Compare no fill with forwards fill after a one-second movement. The ordinary pos
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -21,7 +23,7 @@ Compare no fill with forwards fill after a one-second movement. The ordinary pos
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -41,7 +43,7 @@ Compare no fill with forwards fill after a one-second movement. The ordinary pos
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -70,11 +72,13 @@ Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe dur
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -82,7 +86,7 @@ Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe dur
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -102,7 +106,7 @@ Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe dur
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -126,11 +130,13 @@ Use none to return to ordinary styling during the 600ms delay and after the one-
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -138,7 +144,7 @@ Use none to return to ordinary styling during the 600ms delay and after the one-
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -162,11 +168,13 @@ Resize before replaying. Below `sm`, both retains the starting and ending states
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -174,7 +182,7 @@ Resize before replaying. Below `sm`, both retains the starting and ending states
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10

@@ -4,7 +4,7 @@ use mastercss_compiler::{CompileNativeCssOptions, compile_css_directives, compil
 fn preserves_native_bytes_around_consumed_theme() {
     let native = "/* audit */.shared{color:rgb(255, 0, 0);margin:0px 0px 0px 0px}.empty{}";
     let result = compile_css_directives(
-        &format!("@theme{{--color-unused:red}}{native}"),
+        &format!("@theme{{:root{{--color-unused:red}}}}{native}"),
         &CompileNativeCssOptions {
             preserve_native_source: true,
             ..Default::default()
@@ -18,7 +18,7 @@ fn preserves_native_bytes_around_consumed_theme() {
 fn preserves_unicode_comments_and_literal_directive_text() {
     let native = "/* 🧪 */.名{content:\"@theme{fake}\"}.empty{}";
     let result = compile_css_directives(
-        &format!("/* before */@theme{{--color-名:red}}{native}"),
+        &format!("/* before */@theme{{:root{{--color-名:red}}}}{native}"),
         &CompileNativeCssOptions {
             preserve_native_source: true,
             ..Default::default()
@@ -30,7 +30,7 @@ fn preserves_unicode_comments_and_literal_directive_text() {
 
 #[test]
 fn preserves_siblings_and_containers_around_lowered_slots() {
-    let source = r###"@theme{--color-x:red}@media screen{/* keep */.empty{} .composed{@variant media(all){padding:2rem;}} .other{color:rgb(0, 0, 255)}}"###;
+    let source = r###"@theme{:root, :host {--color-x:red}}@media screen{/* keep */.empty{} .composed{@variant always{padding:2rem;}} .other{color:rgb(0, 0, 255)}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -50,9 +50,9 @@ fn preserves_siblings_and_containers_around_lowered_slots() {
 
 #[test]
 fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
-    let source = r###"@theme{--color-x:red}
-@utilities{brand{color:red}}
-.button{@variant media(all){color:red;}}"###;
+    let source = r###"@theme{:root, :host {--color-x:red}}
+@utility brand {color:red}
+.button{@variant always{color:red;}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -67,7 +67,7 @@ fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
 
 #[test]
 fn source_preservation_is_opt_in_and_rejects_pruning() {
-    let source = "@theme{--color-x:red}/* retained */.empty{}";
+    let source = "@theme{:root, :host {--color-x:red}}/* retained */.empty{}";
     let legacy = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     assert!(legacy.native_css.is_empty());
     let error = compile_css_directives(
@@ -99,7 +99,7 @@ fn native_only_preservation_retains_source_and_validates_syntax() {
         source
     );
     assert!(
-        !compile_native_css(source, &Default::default())
+        !compile_native_css(source, &CompileNativeCssOptions::default())
             .unwrap()
             .native_css
             .contains(".empty{}")

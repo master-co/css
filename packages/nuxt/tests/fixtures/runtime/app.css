@@ -1,9 +1,10 @@
 @import '@master/css';
 @source './app.vue';
 
-@theme {
+@theme {:root, :host {
   --color-host: #123456;
-}
+}}
+
 
 @layer components {
   .box {

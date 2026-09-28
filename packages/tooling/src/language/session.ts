@@ -27,7 +27,7 @@ interface BindingLanguageSession {
   formatDirectives(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
-  inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): unknown
+  inspectClassName(className: string, nativeSupport?: boolean[]): unknown
   completionIndex(): unknown
   colorPresentation(colorToken: string): unknown
   colorTokens(candidates: unknown): unknown
@@ -39,7 +39,7 @@ export interface LanguageSession extends Disposable {
   analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications
-  inspectClassName(className: string, mode?: string): MasterCSSLanguageInspection
+  inspectClassName(className: string): MasterCSSLanguageInspection
   completionIndex(): MasterCSSLanguageCompletionIndex
   colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation
   colorTokens(candidates: readonly MasterCSSLanguageColorCandidate[]): MasterCSSLanguageColorTokens
@@ -104,10 +104,10 @@ export function bindLanguageSession(
         session.classifyClassNames(values)
       ))
     },
-    inspectClassName(className, mode) {
+    inspectClassName(className) {
       assertActive()
       const candidates = session.nativeDeclarationCandidates([className]) as MasterCSSNativeDeclarationCandidate[]
-      const result = parse<MasterCSSLanguageInspection>(session.inspectClassName(className, undefined, mode))
+      const result = parse<MasterCSSLanguageInspection>(session.inspectClassName(className))
       return validate(withCSSValueValidation({ ...result, diagnostics: [...(result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(className, candidates, nativeClasses) : [])] }))
     },
     completionIndex() {

@@ -19,7 +19,7 @@ for (const managed of [false, true]) for (const perEnvironment of [false, true])
       mkdirSync(join(root, 'node_modules'))
       symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
       for (const [file, color] of [['style', 'red'], ['later', 'green']]) {
-        writeFileSync(join(root, `${file}.scss`), (managed ? '@master entry;@preserve native;' : '') + `.example{color:${color}}`)
+        writeFileSync(join(root, `${file}.scss`), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + `.example{color:${color}}`)
         writeFileSync(join(root, `${file}.js`), `export {default as css} from './${file}.scss?inline'`)
       }
       server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: managed ? masterCSS({ mode: 'static', runtime: false }) : [],
@@ -39,7 +39,7 @@ for (const managed of [false, true]) for (const perEnvironment of [false, true])
       await server.environments.ssr.close()
       if (managed) expect(dispose).not.toHaveBeenCalled()
       expect((await replacement.runner.import('/later.js')).css).toContain('green')
-      writeFileSync(join(root, 'later.scss'), (managed ? '@master entry;@preserve native;' : '') + '.example{color:purple}')
+      writeFileSync(join(root, 'later.scss'), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + '.example{color:purple}')
       await vi.waitFor(async () => expect((await replacement.runner.import('/later.js')).css).toContain('purple'), { timeout: watchDeadline })
       await server.close()
       if (managed) expect(dispose).toHaveBeenCalledOnce()
@@ -52,7 +52,7 @@ test.each([false, true])('BH-0004 environment startup attaches HMR listeners onc
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   const on = vi.spyOn(MasterCSSScanner.prototype, 'on')
   try {
-    writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.example{color:red}')
+    writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@preserve native;.example{color:red}")
     writeFileSync(join(root, 'server.js'), "export {default as css} from './style.css?inline'")
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }),
       environments: { edge: { consumer: 'server', dev: { createEnvironment: (name, config) => createRunnableDevEnvironment(name, config) } } },
@@ -78,8 +78,8 @@ test.each([false, true])('BH-0004 late server environment startup preserves clie
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const partial = join(root, '_tokens.scss')
     writeFileSync(partial, '$tone:red;')
-    writeFileSync(join(root, 'style.scss'), '@use "./tokens";@master entry;@preserve native;.example{color:tokens.$tone}')
-    writeFileSync(join(root, 'edge.css'), '@master entry;@preserve native;.other{color:green}')
+    writeFileSync(join(root, 'style.scss'), "@use \"./tokens\";@import url(\"@master/css\");@preserve native;.example{color:tokens.$tone}")
+    writeFileSync(join(root, 'edge.css'), "@import url(\"@master/css\");@preserve native;.other{color:green}")
     writeFileSync(join(root, 'edge.js'), "export {default as css} from './edge.css?inline'")
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }),
       environments: { edge: { consumer: 'server', dev: { createEnvironment: (name, config) => createRunnableDevEnvironment(name, config) } } },

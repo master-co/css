@@ -10,9 +10,9 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`${binding} inline graph preserves qualified native compose and original output maps`, async () => {
     using compiler = await createCompiler({ binding })
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
-      const entry = `@import "./child.css"${qualifier};@utilities{paint{padding:2rem}}/* 😀 */\n.after{margin:1px}`
-      const child = '/* child */\n.card{@variant media(all){padding:2rem;}}\n.card{padding:3rem}'
-      const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] }, inlineImports: true }
+      const entry = `@import "./child.css"${qualifier};@utility paint {padding:2rem}/* 😀 */\n.after{margin:1px}`
+      const child = "/* child */\n.card{@variant all {padding:2rem;}}\n.card{padding:3rem}"
+      const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
       expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)
@@ -28,11 +28,11 @@ test('Node manifest files and references reject qualified global definitions', a
   const root = mkdtempSync(join(tmpdir(), 'master-inline-reference-'))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
-    writeFileSync(child, '@utilities{paint{padding:2rem}}')
+    writeFileSync(child, '@utility paint {padding:2rem}')
     for (const qualifier of [' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) screen']) {
       writeFileSync(entry, `@import "./child.css"${qualifier};`)
-      expect(() => compileManifestFileSync(entry, { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).toThrow(/Qualified import.*global @utilities/)
-      await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@variant media(all){padding:2rem;}}", { projectDir: root, baseManifest: { version: 1, languageVersion: 3, utilities: [] } })).rejects.toThrow(/Qualified import.*global @utilities/)
+      expect(() => compileManifestFileSync(entry, { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })).toThrow(/Qualified import.*global @utility/)
+      await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@variant all{padding:2rem;}}", { projectDir: root, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })).rejects.toThrow(/Qualified import.*global @utility/)
 
     }
   } finally { rmSync(root, { recursive: true, force: true }) }

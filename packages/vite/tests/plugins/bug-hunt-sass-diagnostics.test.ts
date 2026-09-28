@@ -35,11 +35,11 @@ async function failure(files: Record<string, string>, request: string, css?: Inl
 }
 
 const partial = '// removed Sass comment\n/* 😀 original */\n\n.example {\n  @compose unknown-utility;\n}\n'
-const entry = '@use "./nested/bad";\n@master entry;\n@preserve native;\n'
+const entry = "@use \"./nested/bad\";\n@import url(\"@master/css\");\n@preserve native;\n"
 
 for (const request of ['./style.scss', './style.scss?inline', './entry.css', './style.module.scss']) {
   test(`BH-0004 Sass diagnostic original partial and token: ${request}`, async () => {
-    const { error, root } = await failure({ 'nested/_bad.scss': partial, 'style.scss': entry, 'style.module.scss': entry, 'entry.css': '@import "./style.scss";@master entry;' }, request)
+    const { error, root } = await failure({ 'nested/_bad.scss': partial, 'style.scss': entry, 'style.module.scss': entry, 'entry.css': "@import \"./style.scss\";@import url(\"@master/css\");" }, request)
     expect(error.diagnostics[0]).toMatchObject({ code: 'removed-compose-directive', source: join(root, 'nested/_bad.scss'), range: { start: { line: 4, character: 2 }, end: { line: 4, character: 10 } } })
     expect(error.loc).toEqual({ file: join(root, 'nested/_bad.scss'), line: 5, column: 2 })
     expect(error.diagnostics[0].notes).toBeUndefined()
@@ -54,7 +54,7 @@ test('BH-0004 Sass diagnostic preserves original CRLF and UTF-16 positions', asy
 })
 
 test('BH-0004 Sass directive parse error points at the original directive', async () => {
-  const source = '// removed\n\n@utilities invalid { paint { color: red; } }\n'
+  const source = "// removed\n\n@utilities { paint { color: red; } }\n"
   const { error, root } = await failure({ 'nested/_bad.scss': source, 'style.scss': entry }, './style.scss')
   expect(error.diagnostics[0]).toMatchObject({ code: 'CSS_DIRECTIVE_ERROR', source: join(root, 'nested/_bad.scss'), range: { start: { line: 2, character: 0 }, end: { line: 2, character: 10 } } })
 })
@@ -67,31 +67,31 @@ test('BH-0004 Sass interpolation preserves the exact removed directive keyword s
 })
 
 test('BH-0004 plain CSS compiler diagnostics retain their original positions', async () => {
-  const { error, root } = await failure({ 'style.css': '@master entry;\n.example {\n  @compose unknown-utility;\n}\n' }, './style.css')
+  const { error, root } = await failure({ 'style.css': "@import url(\"@master/css\");\n.example {\n  @compose unknown-utility;\n}\n" }, './style.css')
   expect(error.diagnostics[0]).toMatchObject({ code: 'removed-compose-directive', source: join(root, 'style.css'), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } })
   expect(error.diagnostics[0].notes).toBeUndefined()
 })
 
 test('BH-0004 consumed directives before a Sass error do not shift its position', async () => {
-  const source = '@master entry;\n@preserve native;\n' + partial
+  const source = "@import url(\"@master/css\");\n@preserve native;\n" + partial
   const { error, root } = await failure({ 'nested/_bad.scss': source, 'style.scss': '@use "./nested/bad";' }, './style.scss')
   expect(error.diagnostics[0]).toMatchObject({ source: join(root, 'nested/_bad.scss'), range: { start: { line: 6, character: 2 }, end: { line: 6, character: 10 } } })
 })
 
 test('BH-0004 indented Sass maps original partial diagnostics', async () => {
   const source = '// removed\n.example\n  @compose unknown-utility\n'
-  const { error, root } = await failure({ '_bad.sass': source, 'style.sass': '@use "./bad"\n@master entry\n' }, './style.sass')
+  const { error, root } = await failure({ '_bad.sass': source, 'style.sass': "@use \"./bad\"\n@import url(\"@master/css\")\n" }, './style.sass')
   expect(error.diagnostics[0]).toMatchObject({ source: join(root, '_bad.sass'), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } })
 })
 
 test('BH-0004 string additionalData preserves authored root positions', async () => {
-  const { error, root } = await failure({ 'style.scss': partial + '@master entry;' }, './style.scss', { preprocessorOptions: { scss: { additionalData: '$paint: red;\n' } } })
+  const { error, root } = await failure({ 'style.scss': partial + "@import url(\"@master/css\");" }, './style.scss', { preprocessorOptions: { scss: { additionalData: '$paint: red;\n' } } })
   expect(error.diagnostics[0]).toMatchObject({ source: join(root, 'style.scss'), range: { start: { line: 4, character: 2 }, end: { line: 4, character: 10 } } })
 })
 
 for (const additionalData of ['.other { @compose generated-unknown; }\n', (source: string) => '$paint: red;\n' + source]) {
   test(`BH-0004 additionalData keeps an exact authored or explicit generated location: ${typeof additionalData}`, async () => {
-    const { error, root } = await failure({ 'style.scss': partial + '@master entry;' }, './style.scss', { preprocessorOptions: { scss: { additionalData } } })
+    const { error, root } = await failure({ 'style.scss': partial + "@import url(\"@master/css\");" }, './style.scss', { preprocessorOptions: { scss: { additionalData } } })
     const diagnostic = error.diagnostics[0]
     expect(diagnostic.code).toBe('removed-compose-directive')
     if (diagnostic.source === join(root, 'style.scss')) {
@@ -110,7 +110,7 @@ test('BH-0004 additionalData callbacks can supply original source maps', async (
     const text = new MagicString(source).prepend('$paint: red;\n')
     return { content: text.toString(), map: text.generateMap({ source: filename, includeContent: true, hires: true }) }
   }
-  const { error, root } = await failure({ 'style.scss': partial + '@master entry;' }, './style.scss', { preprocessorOptions: { scss: { additionalData } } })
+  const { error, root } = await failure({ 'style.scss': partial + "@import url(\"@master/css\");" }, './style.scss', { preprocessorOptions: { scss: { additionalData } } })
   expect(error.diagnostics[0]).toMatchObject({ source: join(root, 'style.scss'), range: { start: { line: 4, character: 2 }, end: { line: 4, character: 10 } } })
 })
 

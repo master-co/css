@@ -3,9 +3,8 @@ use super::{
     SourceRange, analyze_lexer_batch, byte_to_utf16_offset, collect_class_list_token_ranges,
     collect_css_declaration_ranges, collect_css_variable_references, css_escape, escape_regexp,
     extract_top_level_at_rule_blocks, find_css_directive_ranges, find_css_import_statements,
-    find_css_statement_end, find_master_directive_statements,
-    find_standalone_css_directive_statements, has_master_css_manifest_entrypoint,
-    parse_css_import_source, read_css_function, remove_master_directive_statements,
+    find_css_statement_end, find_standalone_css_directive_statements,
+    has_master_css_manifest_entrypoint, parse_css_import_source, read_css_function,
     remove_standalone_css_directives, skip_css_string_or_comment,
     transform_css_variable_references, utf16_len, utf16_to_byte_offset,
 };
@@ -231,29 +230,15 @@ fn executes_rc87_lexer_parity_corpus() {
                 );
             }
             "rc87-80cea11f6437844e" => {
-                assert!(has_master_css_manifest_entrypoint("@master entry;"));
+                assert!(!has_master_css_manifest_entrypoint("@master entry;"));
                 assert!(has_master_css_manifest_entrypoint(
                     "@import \"@master/css\";"
                 ));
                 assert!(!has_master_css_manifest_entrypoint("@master;"));
                 assert!(!has_master_css_manifest_entrypoint("@master global;"));
             }
-            "rc87-c338962e34e07c1c" => {
-                let source = &case.input;
-                assert!(has_master_css_manifest_entrypoint(source));
-                assert_eq!(find_master_directive_statements(source)[0].name, "entry");
-                assert_eq!(
-                    remove_master_directive_statements(source),
-                    (case.expected_canonical, true)
-                );
-            }
-            "rc87-85fe07eee3ea650e" => {
+            "rc87-c338962e34e07c1c" | "rc87-85fe07eee3ea650e" => {
                 assert!(!has_master_css_manifest_entrypoint(&case.input));
-                assert!(find_master_directive_statements(&case.input).is_empty());
-                assert_eq!(
-                    remove_master_directive_statements(&case.input),
-                    (case.input, false)
-                );
             }
             "rc87-a99556d32ad12a9b" => {
                 assert_eq!(
@@ -357,16 +342,8 @@ fn executes_rc87_lexer_parity_corpus() {
                 );
             }
             "rc87-0ecc38899002a5db" => {
-                let ranges = find_css_directive_ranges(&case.input);
-                assert_eq!(
-                    ranges
-                        .iter()
-                        .map(|range| range.name.as_str())
-                        .collect::<Vec<_>>(),
-                    ["variant", "variant"]
-                );
-                assert!(slice_utf16(&case.input, &ranges[0].range).starts_with("@dark"));
-                assert!(slice_utf16(&case.input, &ranges[1].range).starts_with("@light"));
+                // Frozen RC @dark/@light blocks are no longer directives.
+                assert!(find_css_directive_ranges(&case.input).is_empty());
             }
             "rc87-bf007c1edf054a11" => {
                 let ranges = find_css_directive_ranges(&case.input);
@@ -380,17 +357,17 @@ fn executes_rc87_lexer_parity_corpus() {
                 assert_eq!(slice_utf16(&case.input, &ranges[1].range), "@slot;");
             }
             "rc87-8b8911fa6dc3e148" => {
+                assert!(find_css_directive_ranges(&case.input).is_empty());
+            }
+            "rc87-2f3cc1f8149e5aac" => {
                 let ranges = find_css_directive_ranges(&case.input);
                 assert_eq!(
                     ranges
                         .iter()
                         .map(|range| range.name.as_str())
                         .collect::<Vec<_>>(),
-                    ["components"]
+                    ["utility"]
                 );
-            }
-            "rc87-2f3cc1f8149e5aac" => {
-                assert!(find_css_directive_ranges(&case.input).is_empty())
             }
             "rc87-0200c9f8cb24fb9e" => {
                 let start = utf16_len(&case.input[..case.input.find('{').unwrap() + 1]);
@@ -521,17 +498,15 @@ fn finds_top_level_imports_and_parses_quoted_semicolons() {
 }
 
 #[test]
-fn finds_removes_and_ranges_master_entry_directives_in_utf16() {
-    let source = "😀\n@master entry;\n@source \"./x.css\";\n.a{}";
-    let statements = find_master_directive_statements(source);
-    assert_eq!(statements.len(), 1);
-    assert_eq!(statements[0].start, 3);
-    assert_eq!(statements[0].end, 17);
+fn entry_imports_use_css_token_boundaries_and_utf16_offsets() {
+    let source = "/*😀*/\n@IMPORT \"@master/css\";";
+    let imports = find_css_import_statements(source);
+    assert_eq!(imports.len(), 1);
+    assert_eq!(imports[0].start, 7);
     assert!(has_master_css_manifest_entrypoint(source));
-    assert_eq!(
-        remove_master_directive_statements(source),
-        ("😀\n\n@source \"./x.css\";\n.a{}".into(), true)
-    );
+    assert!(has_master_css_manifest_entrypoint(
+        r#"@im\70ort "@master/css";"#
+    ));
 }
 
 #[test]
@@ -554,7 +529,6 @@ fn parses_and_removes_top_level_extraction_policy_directives() {
 #[test]
 fn ignores_non_entry_and_nested_master_syntax() {
     let source = "@master;\n@master global;\n.x{@master entry;}\n/* @master entry; */";
-    assert!(find_master_directive_statements(source).is_empty());
     assert!(!has_master_css_manifest_entrypoint(source));
 }
 
@@ -570,4 +544,26 @@ fn extracts_only_top_level_keyframe_blocks_without_losing_lines() {
     assert!(declarations.contains("--color: red;"));
     assert!(declarations.contains("--spacing: 1rem;"));
     assert!(!declarations.contains("@keyframes"));
+}
+
+#[test]
+fn extracts_many_singular_utilities_with_utf16_ranges_and_untouched_gaps() {
+    let mut source = String::from("/*😀*/\n");
+    let mut expected = Vec::new();
+    for index in 0..256 {
+        let block = format!("@utility item-{index} {{ content: '漢😀'; }}");
+        let start = super::utf16_len(&source);
+        source.push_str(&block);
+        expected.push((start, super::utf16_len(&source), block));
+        source.push_str("\n.native { content: '𐀀'; }\n");
+    }
+    let (remaining, blocks) = extract_top_level_at_rule_blocks(&source, &["utility"]);
+    assert_eq!(blocks.len(), expected.len());
+    for (block, (start, end, text)) in blocks.iter().zip(expected) {
+        assert_eq!((block.start, block.end), (start, end));
+        assert_eq!(block.source, text);
+    }
+    assert_eq!(remaining.matches(".native { content: '𐀀'; }").count(), 256);
+    assert_eq!(remaining.lines().count(), source.lines().count());
+    assert!(!remaining.contains("@utility"));
 }

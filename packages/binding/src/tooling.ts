@@ -117,11 +117,10 @@ export function loadNativeToolingBinding(
               [...classNames],
               nativeSupport ? [...nativeSupport] : undefined
             )),
-          inspectClassName: (className, nativeSupport, mode) =>
+          inspectClassName: (className, nativeSupport) =>
             parse(session.inspectClassName(
               className,
-              nativeSupport ? [...nativeSupport] : undefined,
-              mode
+              nativeSupport ? [...nativeSupport] : undefined
             )),
           completionIndex: () => parse(session.completionIndex()),
           colorPresentation: (colorToken) => parse(session.colorPresentation(colorToken)),

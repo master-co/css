@@ -1,9 +1,10 @@
-@theme {
+@theme { :root, :host {
   --demo-radius: var(--radius-md);
   --demo-grid-size: 1.25rem;
-}
+} }
 
-@theme light {
+
+@theme { .light {
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
@@ -15,9 +16,10 @@
   --color-demo-amber: var(--color-amber-60);
   --color-demo-neutral: var(--color-gray-50);
   --color-demo-on-solid: var(--color-white);
-}
+} }
 
-@theme dark {
+
+@theme { .dark {
   --color-demo-canvas: var(--color-surface-base);
   --color-demo-surface: var(--color-surface-raised);
   --color-demo-line: var(--color-line-subtle);
@@ -29,10 +31,11 @@
   --color-demo-amber: var(--color-amber-40);
   --color-demo-neutral: var(--color-gray-50);
   --color-demo-on-solid: var(--color-black);
-}
+} }
 
-@theme {
+
+@theme { :root, :host {
   --demo-asset-preview-size: 11rem;
   --color-demo-asset-light: var(--color-white);
   --color-demo-asset-dark: var(--color-gray-95);
-}
+} }

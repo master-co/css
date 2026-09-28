@@ -13,7 +13,7 @@ function fixture() {
   const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, 'nested/tokens.css')
-  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/nested/tokens.css";@utilities{card{@variant paint{padding:1rem;}}}')
+  writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/nested/tokens.css\";@utility card {@variant paint{padding:1rem;}}")
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";import manifest from "virtual:master-css-manifest";window.manifest=manifest;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div><script type="module" src="./entry.js"></script></body></html>')
   return { parent, root, dependency, write(value = '@custom-variant paint{@media (width>=7rem){@slot;}}') { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, value) } }
@@ -40,7 +40,7 @@ test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers wi
     const initial = await response(server)
     expect(initial.status).toBe(500);expect(initial.text).toContain('tokens.css');expect(initial.text).not.toContain('<style id="master-css"')
     const send = vi.spyOn(server.ws, 'send')
-    f.write('@utilities{paint{@compose definitely-missing-class;}}')
+    f.write('@utility paint {@compose definitely-missing-class;}')
     await vi.waitFor(() => expect(JSON.stringify(send.mock.calls)).toContain('@compose has been removed'), { timeout: watchDeadline })
     expect(hasReload(send.mock.calls)).toBe(false)
     const invalid = await response(server)
@@ -90,7 +90,7 @@ test.each(['pre-render', 'progressive'] as const)('BH-0004 invalid manifest afte
     const plugin = server.config.plugins.find(p => p.name === 'master-css:pre-render')!
     const hook = plugin.handleHotUpdate
     if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
-    f.write('@utilities{paint{@compose definitely-missing-class;}}')
+    f.write('@utility paint {@compose definitely-missing-class;}')
     await expect(hook.call({} as never, { file: f.dependency, server } as never)).rejects.toThrow('@compose has been removed')
     const failed = await response(server)
     expect(failed.status).toBe(500);expect(failed.text).not.toContain('@media (width>=7rem){.card{padding:1rem}}')

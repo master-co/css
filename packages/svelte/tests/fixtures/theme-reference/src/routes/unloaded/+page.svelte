@@ -1,3 +1,7 @@
+<script>
+  import "../animations.css"
+</script>
+
 <main class="probe">Project definitions without loading the entry</main>
 
 <style>

@@ -56,9 +56,10 @@ Move the reusable value into `@theme`, then use a class string where the button 
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-primary: #2563eb;
-}
+} }
+
 ```
 
 ```tsx name=Button.tsx
@@ -109,7 +110,7 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 
 ```tsx
 const toneClasses = {
-  neutral: 'bg:surface fg-body b:1px|solid|var(--color-line-base)',
+  neutral: 'bg:surface fg-body b:1px|solid|var(--color-line-divider)',
   primary: 'bg-blue-60 fg-white bg-blue-70:hover',
   danger: 'bg-red-60 fg-white bg-red-70:hover'
 }

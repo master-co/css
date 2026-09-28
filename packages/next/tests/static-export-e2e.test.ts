@@ -75,8 +75,8 @@ describe('static export e2e', () => {
       expect(pathname).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
       expect(existsSync(manifestFile), `${source} should exist in the static export`).toBe(true)
       const manifest = JSON.parse(readFileSync(manifestFile, 'utf-8'))
-      expect(manifest.version).toBe(1)
-      expect(manifest.languageVersion).toBe(3)
+      expect(manifest.version).toBe(2)
+      expect(manifest.languageVersion).toBe(4)
       expect(manifest.rules.length).toBeGreaterThan(0)
     }
     const requests: { path: string; raw: number; gzip: number; brotli: number }[] = []

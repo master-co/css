@@ -15,7 +15,7 @@ export type ColorPalette = Record<string, Partial<Record<ColorLevel, string>>>
 const colorLevelSet = new Set<number>(COLOR_LEVELS)
 
 const palette = flattenMasterCSSManifestVariables(defaultManifest.variables).reduce<ColorPalette>((palette, variable) => {
-  if (!variable.name || variable.namespace !== 'color' || variable.modes || typeof variable.value !== 'string') return palette
+  if (!variable.name || variable.namespace !== 'color' || variable.values.length !== 1 || typeof variable.values[0]?.value !== 'string') return palette
 
   const match = variable.name.match(/^color-(.+)-(\d+)$/)
   if (!match) return palette
@@ -25,7 +25,7 @@ const palette = flattenMasterCSSManifestVariables(defaultManifest.variables).red
   if (!colorLevelSet.has(level)) return palette
 
   palette[colorName] ??= {}
-  palette[colorName][level as ColorLevel] = variable.value
+  palette[colorName][level as ColorLevel] = variable.values[0].value
   return palette
 }, {})
 

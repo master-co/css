@@ -27,7 +27,7 @@ it('render <html>', () => {
     '</html>'
   ].join('')).html).toEqual([
     '<html class="bg-white">',
-    '<head><style id="master-css">@layer utilities{.text-center{text-align:center}.bg-white{background-color:oklch(100% 0 none)}}</style></head>',
+    '<head><style id="master-css">@layer theme{:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{.text-center{text-align:center}.bg-white{background-color:var(--color-white)}}</style></head>',
     '<body><div class="text-center"></div></body>',
     '</html>'
   ].join(''))
@@ -42,7 +42,7 @@ it('should not render the new style element', () => {
 
   expect(result.html).toEqual([
     '<html class="bg-white">',
-    '<head><style id="master-css">@layer utilities{.bg-white{background-color:oklch(100% 0 none)}}</style></head>',
+    '<head><style id="master-css">@layer theme{:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{.bg-white{background-color:var(--color-white)}}</style></head>',
     '</html>'
   ].join(''))
   expect(result.html.match(/id="master-css"/g)).toHaveLength(1)

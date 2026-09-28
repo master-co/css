@@ -8,12 +8,12 @@ for (const child of [false, true]) test(`Next build completion preserves entry r
   try {
     mkdirSync(join(root, 'app'))
     const entry = join(root, 'app/globals.css'), rules = join(root, 'app/rules.css'), token = join(root, 'app/tokens.css')
-    writeFileSync(token, '@utilities{audit-margin{margin:3rem}}')
-    const source = "@reference \"./tokens.css\";.card{@variant media(all){margin:3rem;}}"
-    writeFileSync(entry, '@master entry;' + (child ? '@import "./rules.css";' : source))
+    writeFileSync(token, '@utility audit-margin {margin:3rem}')
+    const source = "@reference \"./tokens.css\";.card{@media all {margin:3rem;}}"
+    writeFileSync(entry, "@import url(\"@master/css\");" + (child ? '@import "./rules.css";' : source))
     if (child) writeFileSync(rules, source)
     const result = await resolveMasterCSSBuildState(root, ['card'])
-    expect(result.nativeCSS).toContain('margin:3rem')
+    expect(result.nativeCSS).toMatch(/margin:\s*3rem/)
     expect(result.dependencies).toContain(token)
     expect(JSON.stringify(result.manifest)).not.toContain('audit-margin')
   } finally { rmSync(root, { recursive: true, force: true }) }

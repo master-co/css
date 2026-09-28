@@ -15,8 +15,8 @@ for (const command of ['serve', 'build'] as const) {
         try {
           writeFileSync(join(root, 'index.html'), '<!doctype html><div class="local child"></div><script type="module" src="./client.js"></script>')
           writeFileSync(join(root, 'client.js'), 'import "./local.css"')
-          writeFileSync(join(root, 'local.css'), `@import "./child.css" layer(guard) supports(display:grid) screen and (min-width:700px);.local{${rootCompose ? '@variant media(all){display:block;}' : 'display:block'}}`)
-          writeFileSync(join(root, 'child.css'), `@import "https://example.invalid/external.css";.child{${composeChild ? '@variant media(all){padding:2rem;}' : ''}color:red}`)
+          writeFileSync(join(root, 'local.css'), `@import "./child.css" layer(guard) supports(display:grid) screen and (min-width:700px);.local{${rootCompose ? "@media all {display:block;}" : 'display:block'}}`)
+          writeFileSync(join(root, 'child.css'), `@import "https://example.invalid/external.css";.child{${composeChild ? "@media all {padding:2rem;}" : ''}color:red}`)
           const config = { root, configFile: false as const, logLevel: 'silent' as const, plugins: masterCSS({ mode }) }
           const sources: string[] = []
           if (command === 'serve') {

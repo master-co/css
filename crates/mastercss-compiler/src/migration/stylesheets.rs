@@ -1,7 +1,4 @@
 use super::Migration;
-use crate::{
-    CompileManifestOptions, CompileNativeCssOptions, compile_css_directives, compile_manifest_input,
-};
 use mastercss_lexer::{
     CssSyntaxKind, byte_to_utf16_offset, collect_class_list_token_ranges,
     collect_css_syntax_statements, tokenize_css_syntax, utf16_to_byte_offset,
@@ -12,6 +9,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RcStylesheetMigration {
+    pub is_entry: bool,
     pub edits: Vec<RcMigrationEdit>,
     pub notes: Vec<String>,
 }
@@ -34,6 +32,7 @@ impl Migration {
         let tokens = tokenize_css_syntax(source);
         let statements = collect_css_syntax_statements(&tokens);
         let mut result = RcStylesheetMigration {
+            is_entry: mastercss_lexer::has_master_css_manifest_entrypoint(source),
             edits: Vec::new(),
             notes: Vec::new(),
         };
@@ -90,6 +89,66 @@ impl Migration {
                 .get(statement.tokens.end)
                 .map_or(source.len(), |token| token.bytes.start);
             let prelude = &source[first.bytes.start..end];
+            if statement.parent.is_none()
+                && matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("master"))
+                && statement.tokens.end == statement.tokens.start + 2
+                && matches!(&tokens[statement.tokens.start + 1].kind, CssSyntaxKind::Ident(name) if name.eq_ignore_ascii_case("entry"))
+                && !statement.has_block
+            {
+                result.is_entry = true;
+                let import_preamble = statements.iter().take_while(|prior| prior.tokens.start < statement.tokens.start).filter(|prior| prior.parent.is_none()).all(|prior| {
+                    matches!(&tokens[prior.tokens.start].kind, CssSyntaxKind::AtKeyword(name)
+                        if name.eq_ignore_ascii_case("charset") || name.eq_ignore_ascii_case("import")
+                            || name.eq_ignore_ascii_case("layer") && !prior.has_block)
+                });
+                if !import_preamble {
+                    result.notes.push("Move the replacement @import to the CSS import preamble; this @master entry follows other rules".into());
+                    continue;
+                }
+                let end = tokens
+                    .get(statement.tokens.end)
+                    .filter(|token| token.kind == CssSyntaxKind::Delim(';'))
+                    .map_or(end, |token| token.bytes.end);
+                add_edit(
+                    &mut result,
+                    source,
+                    first.bytes.start,
+                    end,
+                    "@import \"@master/css\";".into(),
+                );
+            } else if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("master"))
+            {
+                result.notes.push("Only a top-level @master entry can migrate automatically; replace this removed directive manually".into());
+            }
+            if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("dark") || name.eq_ignore_ascii_case("light"))
+                || matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("variant"))
+                    && !matches!(
+                        tokens
+                            .get(statement.tokens.start + 1)
+                            .map(|token| &token.kind),
+                        Some(CssSyntaxKind::Ident(_))
+                    )
+            {
+                result.notes.push("Replace removed mode/query directives with explicit native CSS conditions or a named @variant".into());
+            }
+            if let CssSyntaxKind::AtKeyword(name) = &first.kind
+                && (name.eq_ignore_ascii_case("mode") || name.eq_ignore_ascii_case("theme"))
+            {
+                let block_end = tokens
+                    .get(statement.tokens.end)
+                    .and_then(|token| token.close)
+                    .and_then(|close| tokens.get(close))
+                    .map_or(end, |token| token.bytes.end);
+                let valid = crate::compile_css_directives(
+                    &source[first.bytes.start..block_end],
+                    &Default::default(),
+                )
+                .is_ok();
+                if !valid {
+                    result.notes.push(format!("Review @{name} manually: use explicit native theme selectors and @custom-variant with @slot; inline/static and managed modes are removed"));
+                }
+            }
+
             let parent = statement
                 .parent
                 .and_then(|index| tokens.get(statements[index].tokens.start));
@@ -160,40 +219,6 @@ impl Migration {
                     ));
                 }
             }
-            if !self.native_profile()
-                && statement.has_block
-                && matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if matches!(name.as_ref(), "utilities"))
-            {
-                let Some((key, pattern)) = prelude.trim().split_once(":<") else {
-                    continue;
-                };
-                let Some(pattern) = pattern.strip_suffix('>') else {
-                    continue;
-                };
-                let Some(close) = tokens
-                    .get(statement.tokens.end)
-                    .and_then(|token| token.close)
-                    .and_then(|index| tokens.get(index))
-                else {
-                    continue;
-                };
-                let body = &source[end..close.bytes.end];
-                match migrate_pattern(key, pattern, body) {
-                    Ok(replacement)
-                        if replacement != source[first.bytes.start..close.bytes.end] =>
-                    {
-                        add_edit(
-                            &mut result,
-                            source,
-                            first.bytes.start,
-                            close.bytes.end,
-                            replacement,
-                        )
-                    }
-                    Ok(_) => {}
-                    Err(note) => result.notes.push(note),
-                }
-            }
             if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("compose"))
             {
                 result.notes.push(format!("UTF-16 {}: @compose has been removed; replace it with native CSS declarations/selectors or use utilities in markup", byte_to_utf16_offset(source, first.bytes.start).unwrap()));
@@ -235,7 +260,7 @@ impl Migration {
                             .count()
                             + 1;
                         if name == "safelist" || name == "blocklist" {
-                            result.notes.push(format!("line {line}, UTF-16 {}: @{name} references removed managed class `{managed}`; write native declarations/selectors, or explicitly extract shared behavior into @utilities after reviewing its layer and emission", byte_to_utf16_offset(source, body_start + start).unwrap()));
+                            result.notes.push(format!("line {line}, UTF-16 {}: @{name} references removed managed class `{managed}`; write native declarations/selectors, or explicitly extract shared behavior into @utility after reviewing its layer and emission", byte_to_utf16_offset(source, body_start + start).unwrap()));
                             continue;
                         }
                     }
@@ -271,8 +296,47 @@ impl Migration {
                 result.notes.push("Generated selector reference requires manual migration and browser verification".into());
             }
         }
-        if !self.native_profile() && source.contains("@settings") && !source.contains("@mode ") {
-            add_edit(&mut result, source, 0, 0, self.configuration_css.clone());
+        // Collapse fully migrated settings as one edit; never leave a removed empty at-rule.
+        for statement in &statements {
+            let first = &tokens[statement.tokens.start];
+            if !matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("settings"))
+            {
+                continue;
+            }
+            let Some(open) = tokens.get(statement.tokens.end) else {
+                continue;
+            };
+            let Some(close) = open.close.and_then(|index| tokens.get(index)) else {
+                continue;
+            };
+            let start = byte_to_utf16_offset(source, open.bytes.end).unwrap();
+            let end = byte_to_utf16_offset(source, close.bytes.start).unwrap();
+            let mut body = source[open.bytes.end..close.bytes.start].to_owned();
+            let mut edits = result
+                .edits
+                .iter()
+                .filter(|edit| edit.range.start >= start && edit.range.end <= end)
+                .collect::<Vec<_>>();
+            edits.sort_by_key(|edit| edit.range.start);
+            for edit in edits.into_iter().rev() {
+                let from = utf16_to_byte_offset(&body, edit.range.start - start).unwrap();
+                let to = utf16_to_byte_offset(&body, edit.range.end - start).unwrap();
+                body.replace_range(from..to, &edit.after);
+            }
+            if tokenize_css_syntax(&body).is_empty() {
+                result
+                    .edits
+                    .retain(|edit| edit.range.start < start || edit.range.end > end);
+                add_edit(
+                    &mut result,
+                    source,
+                    first.bytes.start,
+                    close.bytes.end,
+                    String::new(),
+                );
+            } else {
+                result.notes.push("Remaining @settings declarations require native CSS or per-class ! before removing the container".into());
+            }
         }
         self.managed_stylesheet(source, &mut result, file_index, previous);
         self.utility_stylesheet(source, &mut result);
@@ -307,91 +371,4 @@ pub(super) fn add_edit(
         before: source[start..end].into(),
         after,
     });
-}
-
-fn migrate_pattern(key: &str, pattern: &str, body: &str) -> Result<String, String> {
-    let members = pattern.split('|').map(str::trim).collect::<Vec<_>>();
-    let namespaces = members
-        .iter()
-        .copied()
-        .filter(|member| member.starts_with(['~', '=']))
-        .collect::<Vec<_>>();
-    // RC's raw color kind also admitted the color namespace implicitly.
-    // Splitting it without an explicit token branch would lose that behavior.
-    if members.contains(&"color")
-        && !namespaces
-            .iter()
-            .any(|member| matches!(*member, "~color" | "=color"))
-    {
-        return Err(format!(
-            "Custom utility {key}:<color> previously implied ~color; explicitly define {key}-<~color> and review native color behavior"
-        ));
-    }
-    let raw = members
-        .iter()
-        .copied()
-        .filter(|member| !member.starts_with(['~', '=']))
-        .collect::<Vec<_>>();
-    if namespaces.is_empty()
-        && !raw
-            .iter()
-            .all(|kind| matches!(*kind, "number" | "color" | "image" | "*"))
-    {
-        return Ok(format!("{key}:<{pattern}>{body}"));
-    }
-    let mut definitions = Vec::new();
-    if !namespaces.is_empty() {
-        definitions.push(format!(
-            "{key}-<{}>{body}",
-            namespaces
-                .iter()
-                .map(|namespace| format!("~{}", &namespace[1..]))
-                .collect::<Vec<_>>()
-                .join("|")
-        ));
-    }
-    if !raw.is_empty() {
-        let mut target = if key == "line-clamp" {
-            "clamp-lines"
-        } else {
-            key
-        }
-        .to_owned();
-        let property = mastercss_engine::builtin_key_aliases()
-            .iter()
-            .find_map(|(alias, property)| (*alias == key).then_some(*property))
-            .unwrap_or(key);
-        if mastercss_schema::is_native_css_property(property) {
-            // Inspect a neutral managed name using the real directive parser.
-            let neutral = format!("@utilities{{migration-raw:<*>{body}}}");
-            let parsed = compile_css_directives(&neutral, &CompileNativeCssOptions::default())
-                .map_err(|err| err.to_string())?;
-            let compiled =
-                compile_manifest_input(&parsed.manifest_input, &CompileManifestOptions::default())
-                    .map_err(|err| err.to_string())?;
-            let rules = compiled.manifest["utilities"][0]["emit"]["rules"]
-                .as_array()
-                .ok_or("Cannot identify managed declarations")?;
-            if rules.len() == 1
-                && let Some(declarations) = rules[0]["declarations"].as_object()
-                && declarations.len() == 1
-                && declarations.values().all(|value| value.is_null())
-            {
-                target = declarations.keys().next().unwrap().clone();
-            }
-        }
-        if !raw.contains(&"*") {
-            return Err(format!(
-                "Typed utility {key} requires review before widening its accepted values"
-            ));
-        }
-        definitions.push(format!("{target}:<*>{body}"));
-    }
-    let result = definitions.join("\n");
-    let source = format!("@utilities{{{result}}}");
-    let parsed = compile_css_directives(&source, &CompileNativeCssOptions::default())
-        .map_err(|err| err.to_string())?;
-    compile_manifest_input(&parsed.manifest_input, &CompileManifestOptions::default())
-        .map_err(|err| err.to_string())?;
-    Ok(result)
 }

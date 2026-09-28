@@ -57,8 +57,8 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 
 - `MutationObserver` diff logic.
 - `classCounts` increment/decrement behavior.
-- emittedGlobals variable/keyframe counts preventing duplicate global insertion without suppressing utility insertion.
-- Hydrating `CSSLayerBlockRule` and `CSSKeyframesRule`.
+- emittedGlobals variable counts preventing duplicate global insertion without suppressing utility insertion.
+- Hydrating generated `CSSLayerBlockRule` rules; keyframes stay in native stylesheets.
 - Matching generated rule text to native `CSSRule` text.
 - ShadowRoot versus Document behavior.
 - Native `CSSStyleSheet` insertion indexes.

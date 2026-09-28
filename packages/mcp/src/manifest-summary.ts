@@ -10,18 +10,16 @@ export function summarizeManifest(manifest: MasterCSSManifest) {
   const variables = flattenMasterCSSManifestVariables(manifest.variables)
   return {
     languageVersion: manifest.languageVersion,
-    modes: manifest.modes ?? [],
-    settings: manifest.settings ?? {},
+    theme: manifest.theme ?? [],
     counts: {
       variables: variables.length,
       variableNamespaces: Object.keys(manifest.variables || {}).length,
       utilities: manifest.utilities?.length ?? 0,
       variants: manifest.variants?.length ?? 0,
       conditions: Object.keys(manifest.conditions || {}).length,
-      breakpointConditions: Object.keys(manifest.breakpointConditions || {}).length,
+      customMedia: Object.keys(manifest.customMedia || {}).length,
       containerConditions: Object.keys(manifest.containerConditions || {}).length,
-      selectors: Object.keys(manifest.selectors || {}).length,
-      animations: Object.keys(manifest.animations || {}).length
+      selectors: Object.keys(manifest.selectors || {}).length
     }
   }
 }
@@ -34,11 +32,8 @@ export function compactVariable(variable: MasterCSSManifestVariableEntry) {
     key: variable.key,
     namespace: variable.namespace || '',
     type: variable.type,
-    value: variable.value,
-    ...(variable.numeric ? { numeric: variable.numeric } : {}),
-    ...(variable.modes ? { modes: variable.modes } : {}),
-    ...(variable.inline ? { inline: true } : {}),
-    ...(variable.static ? { static: true } : {})
+    values: variable.values,
+    ...(variable.numeric ? { numeric: variable.numeric } : {})
   }
 }
 

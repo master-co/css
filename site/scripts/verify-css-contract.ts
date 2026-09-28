@@ -3,7 +3,6 @@ import { readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
-import { collectCSSVariableReferences } from './css-variable-references'
 
 type JSONValue = null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue }
 
@@ -18,7 +17,6 @@ type HydrationRule = {
     nodes?: { text: string }[]
     selectorText?: string
     variableNames?: string[]
-    animationNames?: string[]
 }
 
 type HydrationManifest = {
@@ -42,7 +40,7 @@ type CSSContract = {
 
 type SiteCSSContractSnapshot = {
     version: 2
-    semanticBaseline: 'language-v3'
+    semanticBaseline: 'language-v4'
     publicBaseline: 'v2-utility-contract'
     approval?: {
         reference: string
@@ -117,8 +115,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
 
     const files = await listFiles(outDir)
     // Static delivery does not ship a runtime manifest asset. Use the same
-    // project compiler for inline-token checks, and inspect delivered CSS below.
-    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 1, languageVersion: 3 } }).manifest as unknown as JSONValue
+    // project compiler to capture the authored theme tree, and inspect delivered CSS below.
+    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 2, languageVersion: 4 } }).manifest as unknown as JSONValue
     const projectManifestText = JSON.stringify(projectManifest)
     const legacyManifestAssets = files.filter(file => /[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file))
     if (legacyManifestAssets.length) throw new Error('Site still contains legacy runtime manifest media assets; rebuild the output.')
@@ -128,7 +126,6 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         if (!stylesheetCache.has(file)) stylesheetCache.set(file, await readFile(file, 'utf8'))
         return stylesheetCache.get(file)!
     }
-    const inlineVariableNames = collectInlineVariableNames(projectManifest)
     const cssSegments: Record<string, string> = {}
     const rules: Record<string, HydrationRule> = {}
     const contracts: Record<string, CSSContract> = {}
@@ -151,22 +148,12 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         const css = deliveredCSS.join('\n')
         if (!css) { routes[route] = null; continue }
         assertRouteStylesheetBoundary(route, css)
-        assertNoInlineVariableReferences(route, 'delivered CSS', css, inlineVariableNames)
         const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
         const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
-        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 1, languageVersion: 3, rules: [], resourceOrder: [] }
-        if (hydration.version !== 1 || hydration.languageVersion !== 3 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder)) {
+        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 2, languageVersion: 4, rules: [], resourceOrder: [] }
+        if (hydration.version !== 2 || hydration.languageVersion !== 4 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder)) {
             throw new Error(`${route} references an invalid Master CSS hydration manifest.`)
         }
-        for (const rule of hydration.rules) {
-            assertNoInlineVariableReferences(
-                route,
-                `hydration rule ${rule.className}`,
-                rule.text,
-                inlineVariableNames
-            )
-        }
-
         let segments: string[]
         try {
             segments = splitCSSSegments(css)
@@ -196,7 +183,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
 
     return {
         version: 2,
-        semanticBaseline: 'language-v3',
+        semanticBaseline: 'language-v4',
         publicBaseline: 'v2-utility-contract',
         projectManifest: {
             bytes: Buffer.byteLength(projectManifestText),
@@ -241,7 +228,7 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
         throw new Error(`${route} is missing its page-local review styles.`)
     }
     const requiredVariables: Record<string, string[]> = {
-        '/': ['--color-text-subtle:', '--color-surface-muted:'],
+        '/': ['--color-text-muted:', '--color-surface-inset:'],
         '/guide': ['--leading-md:', '--shadow-lg:'],
         '/reference': ['--color-blue:', '--leading-md:'],
         '/design-system': ['--color-demo-line:', '--leading-lg:'],
@@ -252,45 +239,6 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
     for (const variable of requiredVariables[route] ?? []) {
         if (!css.includes(variable)) throw new Error(`${route} is missing the theme declaration ${variable}`)
     }
-}
-
-function collectInlineVariableNames(manifest: JSONValue) {
-    const names = new Set<string>()
-    if (!isJSONObject(manifest) || !isJSONObject(manifest.variables)) return names
-    for (const [namespace, definitions] of Object.entries(manifest.variables)) {
-        if (!Array.isArray(definitions)) continue
-        for (const definition of definitions) {
-            if (!isJSONObject(definition) || definition.inline !== true) continue
-            const key = typeof definition.key === 'string' ? definition.key : ''
-            const name = typeof definition.name === 'string'
-                ? definition.name
-                : namespace && key
-                    ? `${namespace}-${key}`
-                    : namespace || key
-            if (name) names.add(name)
-        }
-    }
-    return names
-}
-
-function assertNoInlineVariableReferences(
-    route: string,
-    sourceName: string,
-    source: string,
-    inlineVariableNames: Set<string>
-) {
-    const reference = collectCSSVariableReferences(source)
-        .find((name) => inlineVariableNames.has(name))
-    if (reference) {
-        throw new Error(
-            `${route} ${sourceName} references inline variable --${reference}; `
-            + 'inline variables must be resolved before CSS emission.'
-        )
-    }
-}
-
-function isJSONObject(value: JSONValue): value is { [key: string]: JSONValue } {
-    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
 }
 
 async function readExpectedSnapshot() {
@@ -451,7 +399,7 @@ function firstSnapshotDifference(
             'projectManifest.value'
         )
         return [
-            `Project Manifest v1 / language v3 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
+            `Project Manifest v2 / language v4 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
             valueDifference || 'Parsed Manifest JSON is equal; only exact serialization bytes changed.'
         ].join('\n')
     }

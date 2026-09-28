@@ -37,12 +37,11 @@ export function inspectClassNameSync(
   className: string,
   options: {
     readonly manifest: MasterCSSManifest
-    readonly mode?: string
   }
 ) {
   const session = createLanguageSessionSync(options)
   try {
-    return session.inspectClassName(className, options.mode)
+    return session.inspectClassName(className)
   } finally {
     session.dispose()
   }

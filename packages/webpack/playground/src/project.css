@@ -1,4 +1,4 @@
-@theme {
+@theme {:root, :host {
   --color-primary: #0061ff;
   --color-surface-base: #f6f8fb;
   --color-surface-raised: #ffffff;
@@ -9,10 +9,9 @@
   --radius-card: 18px;
   --radius-pill: 999px;
   --spacing-card: 24px;
-  --breakpoint-md: 3rem;
-}
+}}
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #8fb5ff;
   --color-surface-base: #182233;
   --color-surface-raised: #111827;
@@ -22,14 +21,16 @@
   --color-ring: #31415a;
 }
 
+} }
+
 @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
-@utilities {
-  content-auto {
+
+  @utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 28rem;
   }
-}
+
 
 /* Components */
 @layer components {
@@ -102,3 +103,5 @@
     opacity: .62;
   }
 }
+
+@custom-media --md (width >= 3rem);

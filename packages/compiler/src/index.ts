@@ -88,7 +88,6 @@ export type MasterCSSRenderStylesheetBundleRequest = import('@master/css-binding
 export type MasterCSSStylesheetAsset = import('@master/css-binding/compiler').MasterCSSStylesheetAsset
 
 export interface MasterCSSCompilerInspection {
-  readonly hasMasterEntryDirective: boolean
   readonly hasMasterCSSImport: boolean
   readonly hasMasterEntry: boolean
   readonly directives: readonly {

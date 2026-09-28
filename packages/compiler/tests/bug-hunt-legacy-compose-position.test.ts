@@ -5,12 +5,12 @@ import { join } from 'node:path'
 import { createCompiler } from '../src/index'
 import { compileManifestSync, compileManifestFileSync } from '../src/node'
 
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
-const definitions = '@utilities{paint{color:red}}'
+const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const definitions = '@utility paint {color:red}'
 const cases = [
-  { name: 'compose before native', body: '.example{@variant media(all){color:red;}}.example{color:blue}', order: ['red', 'blue'] },
-  { name: 'compose after native', body: '.example{color:blue}.example{@variant media(all){color:red;}}', order: ['blue', 'red'] },
-  { name: 'one anonymous layer', body: '@layer{.example{@variant media(all){color:red;}}.example{color:blue!important}}', order: ['red', 'blue'] }
+  { name: 'compose before native', body: ".example{@variant all {color:red;}}.example{color:blue}", order: ['red', 'blue'] },
+  { name: 'compose after native', body: ".example{color:blue}.example{@variant all {color:red;}}", order: ['blue', 'red'] },
+  { name: 'one anonymous layer', body: "@layer{.example{@variant all {color:red;}}.example{color:blue!important}}", order: ['red', 'blue'] }
 ]
 function check(css: string, entry: typeof cases[number]) {
   expect(css).not.toContain('@compose')

@@ -4,7 +4,7 @@ import Demo from '~/site/docs-shell/components/Demo'
 import DemoDark from '~/site/docs-shell/components/DemoDark'
 import DemoLight from '~/site/docs-shell/components/DemoLight'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
-import { getThemeModeVariables } from '~/site/utils/theme-variables'
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 type PresetThemeColorPreview = 'background' | 'line' | 'text'
 type PresetThemeColorGroup = 'surfaces' | 'lineRoles' | 'baseHue' | 'textRoles' | 'textHue'
@@ -28,7 +28,7 @@ function getModeRows(
   previewClassName: (key: string) => string,
   previewType: PresetThemeColorPreview
 ): PresetThemeColorRow[] {
-  return getThemeModeVariables(namespace, 'light').map((variable) => {
+  return getThemeVariables(namespace).filter(variable => namespace !== 'color' || /^[a-z]+$/.test(variable.key) && variable.value.startsWith('var(')).map((variable) => {
     const key = String(variable.key)
     const name = variable.name || tokenName(namespace, key)
 
@@ -45,19 +45,19 @@ function getModeRows(
 const colorRows = getModeRows(
   'color',
   (key) => [`bg-${key}`, `fg-${key}`],
-  (key) => `bg-${key}@light bg-${key}@dark`,
+  (key) => `bg-${key}`,
   'background'
 )
-const lineRows = getModeRows('color-line', (key) => [`b-${key}`], (key) => `outline-${key}@light outline-${key}@dark`, 'line')
+const lineRows = getModeRows('color-line', (key) => [`b-${key}`], (key) => `outline-${key}`, 'line')
 const baseHueRows = colorRows
 const surfaceRows = getModeRows(
   'color-surface',
   (key) => key === 'base' ? ['surface-base'] : [`surface-${key}`],
-  (key) => key === 'base' ? 'bg-surface-base@light bg-surface-base@dark' : `surface-${key}@light surface-${key}@dark`,
+  (key) => key === 'base' ? 'bg-surface-base' : `surface-${key}`,
   'background'
 )
-const textRows = getModeRows('color-text', (key) => [`text-${key}`], (key) => `text-${key}@light text-${key}@dark`, 'text')
-const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
+const textRows = getModeRows('color-text', (key) => [`text-${key}`], (key) => `text-${key}`, 'text')
+const textRoleKeys = new Set(['body', 'strong', 'muted', 'disabled', 'inverse', 'link', 'link-hover'])
 const textRoleRows = textRows.filter(({ key }) => textRoleKeys.has(key))
 const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
 const rowsByGroup = {
@@ -76,24 +76,21 @@ const columnTitleByGroup = {
 } satisfies Record<PresetThemeColorGroup, string>
 const surfaceDescriptions: Record<string, string> = {
   base: 'Root page or app background.',
-  muted: 'Subdued sections and low-emphasis blocks.',
+  inset: 'Recessed regions and inset sections.',
   raised: 'Raised cards, controls, and stacked surfaces.',
-  overlay: 'Floating layers such as dialogs, popovers, and menus.',
+  floating: 'Floating layers such as dialogs, popovers, and menus.',
   inverse: 'High-contrast inverse surfaces.'
 }
 const lineRoleDescriptions: Record<string, string> = {
-  base: 'Default borders, dividers, outlines, and strokes.',
-  strong: 'Emphasized boundaries and selected states.',
-  muted: 'Quiet separators in dense interfaces.',
+  divider: 'Decorative dividers; not required control boundaries.',
+  control: 'Required control boundaries on opaque preset surfaces.',
   subtle: 'Low-contrast hairlines and soft outlines.'
 }
 const textRoleDescriptions: Record<string, string> = {
   body: 'Default readable foreground text.',
   strong: 'Headings, labels, and emphasized foreground text.',
-  muted: 'Secondary copy, metadata, and quiet navigation.',
-  subtle: 'Low-emphasis helper text and placeholder-adjacent content.',
+  muted: 'Secondary text on base, inset, or raised; use text-body on floating.',
   disabled: 'Unavailable actions and disabled controls.',
-  placeholder: 'Input placeholders.',
   inverse: 'Text on inverse surfaces.',
   link: 'Default inline links.',
   'link-hover': 'Interactive link hover state.'
@@ -101,7 +98,7 @@ const textRoleDescriptions: Record<string, string> = {
 const rowDescriptionByGroup = {
   surfaces: (key) => surfaceDescriptions[key],
   lineRoles: (key) => lineRoleDescriptions[key],
-  baseHue: (key) => `Mode-aware ${key} for backgrounds and foregrounds.`,
+  baseHue: (key) => `Fixed ${key} swatch; no text contrast guarantee.`,
   textRoles: (key) => textRoleDescriptions[key],
   textHue: (key) => `Mode-aware ${key} foreground text.`
 } satisfies Record<PresetThemeColorGroup, (key: string) => string>
@@ -128,7 +125,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
   function renderPreview() {
     return (
-      <div className="width:6rem height:6rem b:1.25rem|solid|var(--color-line-base) r-sm"></div>
+      <div className="width:6rem height:6rem b:1.25rem|solid|var(--color-line-divider) r-sm"></div>
     )
   }
 
@@ -173,7 +170,7 @@ export function TextRolesDemo() {
         <div className="font-md font-semibold text-strong">Quarterly report</div>
         <p className="m:0 text-body">Revenue is on track for the current cycle.</p>
         <p className="m:0 text-sm text-muted">Updated 12 minutes ago</p>
-        <p className="m:0 text-sm text-disabled">Archived export unavailable</p>
+        <button className="text-sm text-disabled" disabled>Archived export unavailable</button>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a className="underline text-link text-link-hover:hover" href="#">Open report</a>
         <div className="w:fit-content mx:auto mt-sm px-sm py-xs r-sm surface-inverse text-inverse">Private note</div>

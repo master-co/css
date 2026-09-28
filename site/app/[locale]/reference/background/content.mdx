@@ -34,7 +34,7 @@ Hover or focus each surface. The first changes only the background color, preser
 <!-- Color longhand · keeps the image -->
 <div id="target" tabindex="0" role="img" aria-label="Change only the background color"
   class="h:160px w-xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|100px bg-surface-muted
+         background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg) bg-blue-20:hover@screen
          bg-blue-20:focus-visible@screen"
 ></div>
@@ -44,7 +44,7 @@ Hover or focus each surface. The first changes only the background color, preser
 <!-- Full shorthand · resets the image -->
 <div id="target" tabindex="0" role="img" aria-label="Reset the complete background"
   class="h:160px w-xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|100px bg-surface-muted
+         background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)
          background:var(--color-blue-20):hover@screen
          background:var(--color-blue-20):focus-visible@screen"
@@ -61,7 +61,7 @@ Widen the actual preview viewport to `sm` to apply the complete image shorthand.
 ```html
 <!-- Plain surface → image at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-surface-muted background:white@print
+  class="h:160px w-xs max-w:100% bg-surface-inset background:white@print
          bg:url(/demo/landscape.svg)|center/cover|no-repeat@screen@sm"
 ></div>
 ```

@@ -21,7 +21,7 @@ async function fixture(run: (root: string) => Promise<void>) {
 
 test('CSS preparation preserves source without loading Sass or requiring a manifest', async () => {
   await fixture(async root => {
-    const id = join(root, 'entry.css'), source = "@reference \"./master.css\"; .card { @variant media(all){padding:2rem;} }"
+    const id = join(root, 'entry.css'), source = "@reference \"./master.css\"; .card { @media all {padding:2rem;} }"
     const prepared = await stylesheets.prepareStylesheet(id + '?direct', source, { loadSass: () => { throw new Error('CSS must not load Sass') } })
     expect(prepared).toEqual({ id, baseFile: id, source, dependencies: [id] })
     expect(Object.isFrozen(prepared)).toBe(true)
@@ -35,8 +35,8 @@ for (const syntax of ['scss', 'sass']) test(`prepare ${syntax} before classifica
     const partialSource = '$space: 2rem; .imported { margin: $space; }'
     writeFileSync(partial, partialSource)
     const source = syntax === 'scss'
-      ? '@use "tokens"; @reference "./master.css"; .card { @variant media(all) { padding: #{tokens.$space}; } }'
-      : '@use "tokens"\n@reference "./master.css"\n.card\n  @variant media(all)\n    padding: #{tokens.$space}\n'
+      ? "@use \"tokens\"; @reference \"./master.css\"; .card { @media all { padding: #{tokens.$space}; } }"
+      : '@use "tokens"\n@reference "./master.css"\n.card\n  @media all\n    padding: #{tokens.$space}\n'
     writeFileSync(id, source)
     const observed: string[] = []
     const prepared = await stylesheets.prepareStylesheet(id, source, { projectDir: root, onDependency: file => observed.push(file) })
@@ -60,7 +60,7 @@ for (const syntax of ['scss', 'sass']) test(`prepare ${syntax} before classifica
 test('host Sass callback receives preparation options and keeps host importers', async () => {
   await fixture(async root => {
     const file = join(root, 'component.vue'), id = file + '?type=style&lang=scss', canonical = new URL('host:tokens')
-    const prepared = await stylesheets.prepareStylesheet(id, '@use "host:tokens"; .card { @variant media(all) { padding: #{tokens.$space}; } }', {
+    const prepared = await stylesheets.prepareStylesheet(id, "@use \"host:tokens\"; .card { @media all { padding: #{tokens.$space}; } }", {
       projectDir: root,
       loadSass(projectDir) {
         expect(projectDir).toBe(root)
@@ -113,12 +113,12 @@ test('prepared Sass maps resolve relative references from an imported partial', 
     mkdirSync(join(root, 'parts'))
     const file = join(root, 'entry.scss'), partial = join(root, 'parts/_rules.scss')
     const token = join(root, 'parts/tokens.css')
-    writeFileSync(partial, "@reference \"./tokens.css\"; .card { @variant media(all){padding:var(--paint-padding);} }")
-    writeFileSync(token, '@theme { --paint-padding: 2rem; }')
-    writeFileSync(join(root, 'tokens.css'), '@theme { --paint-padding: 99rem; }')
+    writeFileSync(partial, "@reference \"./tokens.css\"; .card { @media all {padding:var(--paint-padding);} }")
+    writeFileSync(token, "@theme {:root, :host { --paint-padding: 2rem; }}\n\n")
+    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host { --paint-padding: 99rem; }}\n\n")
     const prepared = await stylesheets.prepareStylesheet(file, '@use "parts/rules";', { projectDir: root })
     const result = await stylesheets.transformStylesheet('\0prepared:entry.css', prepared.source, {
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] }, projectDir: root,
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, projectDir: root,
       delivery: { baseFile: prepared.baseFile, sourceMap: prepared.sourceMap,
         entryURL: '/entry.css', stylesheetURL: id => '/' + Buffer.from(id).toString('hex') + '.css', resourceURL: id => id }
     })

@@ -85,6 +85,12 @@ pub(super) fn resolve_configured_branches(
                 }
                 let resolved = composition_rules(engine, &format!("display:block{token}"))?;
                 if resolved.is_empty() {
+                    if engine
+                        .has_named_condition(token.trim_start_matches('@'))
+                        .map_err(|error| directive_error(error.to_string()))?
+                    {
+                        return Ok(Vec::new());
+                    }
                     return Err(directive_error(format!("Unknown @variant token: {token}")));
                 }
                 branches = branches

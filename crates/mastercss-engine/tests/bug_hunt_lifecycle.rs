@@ -43,12 +43,6 @@ fn assert_snapshot(mirror: &Mirror, snapshot: &EngineSnapshotIr) {
             .or_default()
             .push(("theme:root".into(), text.clone()));
     }
-    for animation in &snapshot.resources.animations {
-        expected
-            .entry("\"keyframes\"".into())
-            .or_default()
-            .push((animation.name.clone(), animation.text.clone()));
-    }
     for rule in &snapshot.rules {
         expected
             .entry(serde_json::to_string(&rule.layer).unwrap())
@@ -129,7 +123,7 @@ fn audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable() {
     for invalid in [
         "{",
         r#"{"version":999}"#,
-        r#"{"version":1,"languageVersion":3,"utilities":null}"#,
+        r#"{"version":2,"languageVersion":4,"utilities":null}"#,
     ] {
         assert!(engine.refresh(invalid).is_err());
         assert_eq!(engine.snapshot().unwrap(), before);

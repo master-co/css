@@ -23,7 +23,6 @@ export default class HydratedGeneratedRule {
   readonly nodeCount: number
   readonly nodes?: HydratedGeneratedRuleNode[]
   readonly variableNames?: Set<string>
-  readonly animationNames?: Set<string>
   readonly selectorText?: string
 
   constructor(
@@ -43,8 +42,5 @@ export default class HydratedGeneratedRule {
       this.nodes = ir.nodes.map((node) => new HydratedGeneratedRuleNode(node.text))
     }
     if (ir.variableNames?.length) this.variableNames = new Set(ir.variableNames)
-    if (ir.animationNames?.length) {
-      this.animationNames = new Set(ir.animationNames)
-    }
   }
 }

@@ -11,7 +11,7 @@ Start from the Sass entry files your app already builds.
 2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
 3. Move shared design values into Master CSS `@theme`.
 4. Convert local visual rules to markup classes when the markup stays readable.
-5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@utilities` when they are reusable primitives.
+5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@utility` when they are reusable primitives.
 6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
 7. Remove Sass only after converted screens no longer depend on it.
 
@@ -27,7 +27,7 @@ Inspect the Sass surface before changing files.
 | Entry files | `.scss` and `.sass` entries, partials, `@use`, `@forward`, and app imports | Add Master CSS beside the current entry first. |
 | Variables and maps | Colors, spacing, radius, typography, shadows, breakpoints, and z-index scales | Move product-owned values into `@theme`. |
 | Mixins and functions | Responsive helpers, fluid calculations, color helpers, and repeated declarations | Replace with utilities, tokens, native CSS functions, or keep in CSS when clearer. |
-| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@utilities`. |
+| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@utility`. |
 | Nesting | Component states, descendant selectors, media queries, and structural selectors | Move simple states into classes; keep complex selectors as CSS. |
 | Generated CSS | Loops, maps, vendor output, icon fonts, and theme packages | Keep generated output until a deliberate replacement exists. |
 
@@ -60,16 +60,17 @@ $radius-card: .75rem;
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-primary: #2563eb;
   --color-body: #172033;
   --spacing-card: 1.5rem;
   --radius-card: .75rem;
-}
+} }
+
 ```
 
 ```html
-<article class="b:1px|solid|var(--color-line-base) r-card bg-white fg-body p-card">
+<article class="b:1px|solid|var(--color-line-divider) r-card bg-white fg-body p-card">
   ...
 </article>
 ```
@@ -119,7 +120,7 @@ Use `@layer components` for product roles:
     border-radius: var(--radius-card);
     gap: var(--spacing-md);
     padding: var(--spacing-card);
-    border: 1px solid var(--color-line-base);
+    border: 1px solid var(--color-line-divider);
     background-color: oklch(100% 0 none);
     box-shadow: var(--shadow-sm);
   }
@@ -143,15 +144,13 @@ Use `@layer components` for product roles:
 <button class="btn">Save</button>
 ```
 
-Use `@utilities` for reusable primitives:
+Use `@utility` for reusable primitives:
 
 ```css name=app.css
-@utilities {
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-}
 ```
 
 ```html
@@ -209,6 +208,6 @@ Project theme variables are available automatically after Sass preprocessing in 
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utilities`, and `@reference`.
+- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utility`, and `@reference`.
 - [Route-level styles](/guide/route-level-styles) for local CSS files that use project definitions and native declarations.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.

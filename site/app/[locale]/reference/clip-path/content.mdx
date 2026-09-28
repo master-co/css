@@ -9,7 +9,7 @@ A circular clip hides paint outside its boundary. The outer outline marks the un
 
 ```html
 <!-- No clip · complete square -->
-<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-subtle)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
@@ -21,7 +21,7 @@ A circular clip hides paint outside its boundary. The outer outline marks the un
 
 ```html
 <!-- Circle · 60px radius -->
-<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-subtle)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
@@ -49,7 +49,7 @@ Inset values cut inward from the reference box. This example removes 8px at top 
 <!-- Unclipped · original border -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|var(--color-line-muted) bg-surface-base">
+         outline:1px|solid|var(--color-line-subtle) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
            max-w:100% b:2px|solid|var(--color-blue-60) font-md
@@ -63,7 +63,7 @@ Inset values cut inward from the reference box. This example removes 8px at top 
 <!-- Inset · rounded paint boundary -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|var(--color-line-muted) bg-surface-base">
+         outline:1px|solid|var(--color-line-subtle) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
            max-w:100% b:2px|solid|var(--color-blue-60) font-md
@@ -83,7 +83,7 @@ Widen to `sm` to restore the complete image with `clip-none`. Print also shows t
 
 ```html
 <!-- Circle → full image at sm -->
-<div class="width:160px height:160px outline:1px|solid|var(--color-line-muted)
+<div class="width:160px height:160px outline:1px|solid|var(--color-line-subtle)
          bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
@@ -105,7 +105,7 @@ Widen the real preview viewport to `sm` to inset the panel. Print removes the cl
 <!-- Full panel → inset at sm -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|var(--color-line-muted) bg-surface-base">
+         outline:1px|solid|var(--color-line-subtle) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
            max-w:100% b:2px|solid|var(--color-blue-60) font-md

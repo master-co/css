@@ -64,12 +64,17 @@ pub(super) fn convert(original: &Value) -> Result<Configuration, CompilerError> 
         };
         definitions
             .push(json!({"name":name,"branches":[{"selector":selector,"conditions":conditions}]}));
-        let branch = format!("{selector}{{@slot;}}");
-        let branch = conditions
-            .iter()
-            .rev()
-            .fold(branch, |body, condition| format!("{condition}{{{body}}}"));
-        css.push_str(&format!("@mode {name}{{{branch}}}\n"));
+        let variant_branch = if trigger == "media" {
+            conditions
+                .iter()
+                .rev()
+                .fold("@slot;".to_owned(), |body, condition| {
+                    format!("{condition}{{{body}}}")
+                })
+        } else {
+            format!("&:where({selector},{selector} *){{@slot;}}")
+        };
+        css.push_str(&format!("@custom-variant {name}{{{variant_branch}}}\n"));
         if trigger != "media" && matches!(name.as_str(), "light" | "dark") {
             css.push_str(&format!(
                 "@layer theme{{{selector}{{color-scheme:{name}}}}}\n"
@@ -120,13 +125,10 @@ pub(super) fn convert(original: &Value) -> Result<Configuration, CompilerError> 
                 ));
             }
         }
-        if !base.is_empty() {
-            css.push_str(&format!("@theme{{{}}}\n", base.join("")));
-            if matches!(default_mode, "light" | "dark") {
-                css.push_str(&format!(
-                    "@layer theme{{:root,:host{{color-scheme:{default_mode}}}}}\n"
-                ));
-            }
+        if !base.is_empty() && matches!(default_mode, "light" | "dark") {
+            css.push_str(&format!(
+                "@layer theme{{:root,:host{{color-scheme:{default_mode}}}}}\n"
+            ));
         }
         notes.push("Review overlapping and nested modes, activation-element utilities, zero-specificity guards, and the formerly demand-driven color-scheme declarations".into());
     }
@@ -142,6 +144,8 @@ pub(super) fn convert(original: &Value) -> Result<Configuration, CompilerError> 
             settings.remove(key);
         }
     }
+    super::manifest::upgrade(&mut manifest);
+    css.push_str(&super::manifest::css(&manifest, original));
     Ok(Configuration {
         manifest,
         css,

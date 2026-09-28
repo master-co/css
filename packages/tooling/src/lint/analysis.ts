@@ -19,7 +19,7 @@ export interface MasterCSSLintPartialClassConflict {
 }
 
 export interface MasterCSSLintAnalysis {
-  readonly version: 2
+  readonly version: 3
   readonly sortedClassNames: readonly string[]
   readonly conflicts: readonly MasterCSSLintClassConflict[]
   readonly partialConflicts: readonly MasterCSSLintPartialClassConflict[]
@@ -47,7 +47,7 @@ export interface MasterCSSLintDiagnosticInput {
 }
 
 export interface MasterCSSLintClassListAnalysis {
-  readonly version: 2
+  readonly version: 3
   readonly analysis: MasterCSSLintAnalysis
   readonly diagnostics: readonly MasterCSSLintDiagnosticInput[]
   readonly sortEdit?: MasterCSSLintEdit

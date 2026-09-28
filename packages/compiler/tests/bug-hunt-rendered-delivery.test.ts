@@ -13,9 +13,9 @@ for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) scr
     try {
       mkdirSync(join(root, 'nested'))
       const entry = join(root, 'entry.css'), child = join(root, 'nested/child.css'), resource = join(root, 'nested/dot.svg')
-      const source = `@import "./nested/child.css"${qualifier};@import "https://remote.test/last.css";@utilities{paint{padding:2rem}}\n.after{margin:1px}`
-      const childSource = '/* child */\n.card{@variant media(all){padding:2rem;}}\n.card{background:url("./dot.svg")}';writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
-      const result = await compileRenderedStylesheet(entry, source, { projectDir: root, baseManifest: { version: 1, languageVersion: 3, utilities: [] }, delivery: { entryURL: '/built/main.css', stylesheetURL: file => `/built/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` } })
+      const source = `@import "./nested/child.css"${qualifier};@import "https://remote.test/last.css";@utility paint {padding:2rem}\n.after{margin:1px}`
+      const childSource = "/* child */\n.card{@variant all {padding:2rem;}}\n.card{background:url(\"./dot.svg\")}";writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
+      const result = await compileRenderedStylesheet(entry, source, { projectDir: root, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, delivery: { entryURL: '/built/main.css', stylesheetURL: file => `/built/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` } })
       expect(result.css.indexOf('/built/child.css')).toBeLessThan(result.css.indexOf('https://remote.test/last.css'))
       const asset = result.stylesheets!.find(asset => asset.id === child)!
       expect(asset.css).toContain('padding:2rem')
@@ -35,11 +35,11 @@ test('rendered delivery preserves host maps, supplied references, native pruning
   try {
     const entry = join(root, 'entry.css'), original = join(root, 'original.scss'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
     writeFileSync(child, '.used{color:red}.unused{color:blue}')
-    writeFileSync(tokens, '@utilities{paint{padding:2rem}}')
-    const source = "@import \"./child.css\";\n.card{@variant media(all){padding:2rem;}}"
+    writeFileSync(tokens, '@utility paint {padding:2rem}')
+    const source = "@import \"./child.css\";\n.card{@variant all {padding:2rem;}}"
     const dependencies: string[] = [], deliveryDependencies: string[] = []
     const result = await compileRenderedInternal(entry, source, { projectDir: root,
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] }, classes: ['used', 'card'], pruneNativeCSS: true,
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, classes: ['used', 'card'], pruneNativeCSS: true,
       references: [{ source: './tokens.css', file: entry }],
       sourceMap: JSON.stringify({ version: 3, sources: [pathToFileURL(original).href], sourcesContent: [source], names: [], mappings: 'AAAA;AACA' }),
       onDependency: file => dependencies.push(file),
@@ -65,7 +65,7 @@ test('rendered delivery retains real Sass dependencies and original output maps'
     const require = createRequire(new URL('../../vite/package.json', import.meta.url))
     const sass = createRequire(require.resolve('vite'))('sass')
     const result = await compileRenderedStylesheet(entry, source, { projectDir: root, loadSass: () => sass,
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] },
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })
     expect(result.dependencies).toContain(partial)
@@ -82,7 +82,7 @@ test('rendered delivery maps invalid composed tokens back to their Sass partial'
     const require = createRequire(new URL('../../vite/package.json', import.meta.url))
     const sass = createRequire(require.resolve('vite'))('sass')
     await expect(compileRenderedStylesheet(entry, '@use "./rules";', { projectDir: root, loadSass: () => sass,
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] },
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })] })
   } finally { rmSync(root, { recursive: true, force: true }) }
@@ -93,8 +93,8 @@ test('rendered delivery emits generated classes once in the entry and leaves the
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
     writeFileSync(child, '.paint{color:red}')
-    const result = await compileRenderedStylesheet(entry, '@import "./child.css";@utilities{paint{padding:2rem}}', { projectDir: root,
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] }, classes: ['paint'],
+    const result = await compileRenderedStylesheet(entry, '@import "./child.css";@utility paint {padding:2rem}', { projectDir: root,
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, classes: ['paint'],
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })
     expect(result.css).toContain('@layer utilities{.paint{padding:2rem}}')

@@ -130,10 +130,6 @@ export class ScannerCSSView {
     return this.scanner.manifest
   }
 
-  get settings() {
-    return this.manifest.settings
-  }
-
   get text() {
     return this.scanner.state.engine.text
   }

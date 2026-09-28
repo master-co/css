@@ -41,7 +41,7 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+    version: 2, languageVersion: 4,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -58,14 +58,14 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   expect(session.snapshot().text).toBe('@layer utilities{.block{display:block}}')
   session.dispose()
 
-  const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+  const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
+    version: 2, languageVersion: 4,
     variables: {
       '': [{
         name: 'stripe',
         key: 'stripe',
         type: 'string',
-        value: 'linear-gradient(red,blue)'
+        values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
       }]
     },
     utilities: []
@@ -84,10 +84,10 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     '../artifacts/mastercss_binding_wasm_engine_bg.wasm',
     import.meta.url
   )))
-  const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+  const session = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "color-red-60", value: '#d00' }] }],
+    version: 2, languageVersion: 4,
     variables: {
-      color: [{ key: 'red-60', value: '#d00' }]
+      color: [{ key: 'red-60', values: [{ path: [':root,:host'], value: '#d00' }] }]
     },
     utilities: []
   }), {
@@ -107,10 +107,10 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     '../artifacts/mastercss_binding_wasm_engine_bg.wasm',
     import.meta.url
   )))
-  const session = await createWasmEngineSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+  const session = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "color-red-60", value: '#d00' }] }],
+    version: 2, languageVersion: 4,
     variables: {
-      color: [{ key: 'red-60', value: '#d00' }]
+      color: [{ key: 'red-60', values: [{ path: [':root,:host'], value: '#d00' }] }]
     },
     utilities: []
   }), {}, { input })
@@ -135,7 +135,7 @@ it('preserves native declarations independently of browser CSS.supports', async 
     import.meta.url
   )))
   const session = await createWasmEngineSession(
-    JSON.stringify({ version: 1, languageVersion: 3, utilities: [] }),
+    JSON.stringify({ version: 2, languageVersion: 4, utilities: [] }),
     {},
     { input }
   )
@@ -148,7 +148,7 @@ it('preserves native declarations independently of browser CSS.supports', async 
   session.dispose()
 
   const renderSession = await createWasmRenderSession(
-    JSON.stringify({ version: 1, languageVersion: 3, utilities: [] }),
+    JSON.stringify({ version: 2, languageVersion: 4, utilities: [] }),
     {},
     { input }
   )

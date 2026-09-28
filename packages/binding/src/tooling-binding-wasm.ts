@@ -146,8 +146,8 @@ export async function createWasmToolingBinding(
           session.nativeDeclarationCandidates([...classNames]),
         classifyClassNames: (classNames, nativeSupport) =>
           session.classifyClassNames([...classNames], nativeSupport ? [...nativeSupport] : undefined),
-        inspectClassName: (className, nativeSupport, mode) =>
-          session.inspectClassName(className, nativeSupport ? [...nativeSupport] : undefined, mode),
+        inspectClassName: (className, nativeSupport) =>
+          session.inspectClassName(className, nativeSupport ? [...nativeSupport] : undefined),
         completionIndex: () => session.completionIndex(),
         colorPresentation: (colorToken) => session.colorPresentation(colorToken),
         colorTokens: (candidates) => session.colorTokens(candidates as never[])

@@ -8,20 +8,7 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{
-      "version":1,"languageVersion":3,
-      "variables":{
-        "spacing":[{"key":"md","type":"number","value":"1rem"}]
-      },
-      "utilities":[
-        {"id":"block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]},
-        {"id":"m","name":"m:","type":-1,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},
-        {"id":"physical-mx","name":"physical-mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["physical-mx"]}]},
-        {"id":"ml","name":"ml:","type":-1,"emit":{"type":"property","property":"margin-left"},"matchers":[{"type":"key","keys":["ml"]}]},
-        {"id":"mr","name":"mr:","type":-1,"emit":{"type":"property","property":"margin-right"},"matchers":[{"type":"key","keys":["mr"]}]},
-        {"id":"fg","name":"fg:","type":0,"emit":{"type":"property","property":"color"},"matchers":[{"type":"key","keys":["fg"]}]}
-      ]
-    }"#;
+const MANIFEST: &str = r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]},{"id":"m","name":"m:","type":-1,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},{"id":"physical-mx","name":"physical-mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["physical-mx"]}]},{"id":"ml","name":"ml:","type":-1,"emit":{"type":"property","property":"margin-left"},"matchers":[{"type":"key","keys":["ml"]}]},{"id":"mr","name":"mr:","type":-1,"emit":{"type":"property","property":"margin-right"},"matchers":[{"type":"key","keys":["mr"]}]},{"id":"fg","name":"fg:","type":0,"emit":{"type":"property","property":"color"},"matchers":[{"type":"key","keys":["fg"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#;
 
 #[test]
 fn classifies_host_rule_validation_results_in_rust() {
@@ -79,7 +66,7 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
             &HashSet::new(),
         )
         .unwrap();
-    assert_eq!(batch.version, 2);
+    assert_eq!(batch.version, 3);
     assert_eq!(
         batch.sorted_class_names,
         ["m:2px", "m:3px", "fg:white", "unknown"]

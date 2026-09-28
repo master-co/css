@@ -83,9 +83,10 @@ Spaces separate classes in HTML. For a literal family name, the CSS escape `\000
 ```
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --font-family-code: 'IBM Plex Mono', monospace;
-}
+} }
+
 ```
 
 ```html
@@ -124,10 +125,11 @@ Override the preset sans and mono stacks using `--font-sans` and `--font-mono`. 
 ```
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --font-sans: 'Geist';
   --font-mono: 'IBM Plex Mono';
-}
+} }
+
 ```
 
 ```html
@@ -178,9 +180,10 @@ Declare a face with `@font-face`, using the path of your own font file. The vari
 ```
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --font-family-interface: 'Geist', sans-serif;
-}
+} }
+
 ```
 
 ```html

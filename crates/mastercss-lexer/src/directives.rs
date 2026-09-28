@@ -1,131 +1,64 @@
-use super::{
-    CssDirectiveRange, CssQuotedStringRange, CssStatementEndReason, SourceRange,
-    byte_to_utf16_offset, find_css_block_end, find_css_statement_end,
-};
+use super::{CssDirectiveRange, CssQuotedStringRange, SourceRange, byte_to_utf16_offset};
 
 pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
-    const NAMES: [&str; 18] = [
-        "master",
-        "settings",
+    use super::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
+    const NAMES: &[&str] = &[
         "source",
         "safelist",
         "blocklist",
         "preserve",
         "prune",
-        "mode",
         "reference",
         "theme",
-        "defaults",
-        "components",
-        "utilities",
+        "utility",
+        "custom-media",
         "custom-variant",
         "variant",
         "slot",
-        "dark",
-        "light",
     ];
-
-    let mut ranges = Vec::new();
-    let mut index = 0;
-    let mut quote = None;
-    let mut comment = false;
-    while index < source.len() {
-        let Some(character) = source[index..].chars().next() else {
-            break;
-        };
-        let next_index = index + character.len_utf8();
-        let next = source[next_index..].chars().next();
-        if comment {
-            if character == '*' && next == Some('/') {
-                comment = false;
-                index = next_index + 1;
-            } else {
-                index = next_index;
+    let tokens = tokenize_css_syntax(source);
+    let units = |byte| byte_to_utf16_offset(source, byte).unwrap_or_default();
+    let mut ranges: Vec<_> = collect_css_syntax_statements(&tokens)
+        .into_iter()
+        .filter_map(|statement| {
+            let first = tokens.get(statement.tokens.start)?;
+            let Kind::AtKeyword(name) = &first.kind else {
+                return None;
+            };
+            let name = name.to_ascii_lowercase();
+            if !NAMES.contains(&name.as_str()) {
+                return None;
             }
-            continue;
-        }
-        if let Some(current_quote) = quote {
-            if character == '\\' {
-                index = next.map_or(next_index, |next| next_index + next.len_utf8());
-            } else {
-                if character == current_quote {
-                    quote = None;
-                }
-                index = next_index;
-            }
-            continue;
-        }
-        if character == '/' && next == Some('*') {
-            comment = true;
-            index = next_index + 1;
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            quote = Some(character);
-            index = next_index;
-            continue;
-        }
-        if character != '@' {
-            index = next_index;
-            continue;
-        }
-
-        let name_start = next_index;
-        let mut name_end = name_start;
-        for (offset, name_character) in source[name_start..].char_indices() {
-            if !(name_character.is_ascii_alphanumeric() || matches!(name_character, '-' | '_')) {
-                break;
-            }
-            name_end = name_start + offset + name_character.len_utf8();
-        }
-        let raw_name = &source[name_start..name_end];
-        if !NAMES.contains(&raw_name) {
-            index = next_index;
-            continue;
-        }
-
-        let statement_end = find_css_statement_end(source, name_end);
-        let prelude_end = match statement_end.reason {
-            CssStatementEndReason::Semicolon => statement_end.end.saturating_sub(1),
-            CssStatementEndReason::Block | CssStatementEndReason::Eof => statement_end.end,
-        };
-        if raw_name == "master" && source[name_end..prelude_end].trim() != "entry" {
-            index = next_index;
-            continue;
-        }
-        let end = if statement_end.reason == CssStatementEndReason::Block {
-            find_css_block_end(source, statement_end.end).unwrap_or(source.len())
-        } else {
-            statement_end.end
-        };
-        let block_range =
-            (statement_end.reason == CssStatementEndReason::Block).then(|| SourceRange {
-                start: byte_to_utf16_offset(source, statement_end.end).unwrap_or_default(),
-                end: byte_to_utf16_offset(source, end).unwrap_or_default(),
+            let delimiter = tokens.get(statement.tokens.end);
+            let prelude_end = delimiter.map_or(source.len(), |token| token.bytes.start);
+            let end = delimiter.map_or(source.len(), |token| {
+                token
+                    .close
+                    .map_or(token.bytes.end, |close| tokens[close].bytes.end)
             });
-        ranges.push(CssDirectiveRange {
-            range: SourceRange {
-                start: byte_to_utf16_offset(source, index).unwrap_or_default(),
-                end: byte_to_utf16_offset(source, end).unwrap_or_default(),
-            },
-            name: if matches!(raw_name, "dark" | "light") {
-                "variant".to_owned()
-            } else {
-                raw_name.to_owned()
-            },
-            prelude_range: SourceRange {
-                start: byte_to_utf16_offset(source, name_end).unwrap_or_default(),
-                end: byte_to_utf16_offset(source, prelude_end).unwrap_or_default(),
-            },
-            block_range,
-            quoted_string_ranges: find_css_quoted_string_ranges(source, name_end, prelude_end),
-        });
-        if statement_end.reason == CssStatementEndReason::Semicolon {
-            index = statement_end.end;
-        } else {
-            index = next_index;
-        }
-    }
+            Some(CssDirectiveRange {
+                name,
+                range: SourceRange {
+                    start: units(first.bytes.start),
+                    end: units(end),
+                },
+                prelude_range: SourceRange {
+                    start: units(first.bytes.end),
+                    end: units(prelude_end),
+                },
+                block_range: statement.has_block.then(|| SourceRange {
+                    start: units(prelude_end),
+                    end: units(end),
+                }),
+                quoted_string_ranges: find_css_quoted_string_ranges(
+                    source,
+                    first.bytes.end,
+                    prelude_end,
+                ),
+            })
+        })
+        .collect();
+    ranges.sort_by_key(|range| range.range.start);
     ranges
 }
 

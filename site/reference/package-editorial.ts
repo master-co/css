@@ -106,7 +106,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     usage: 'Import types from the narrow subpath that owns them. A type declaration describes a data shape; it does not validate arbitrary input or compile stylesheet directives. Preserve version fields when passing manifests and diagnostics between APIs.',
     entries: {
       '.': 'Common manifest, diagnostic and rendering-mode exports.',
-      './manifest': 'Manifest v1 types, variable helpers and serialization.',
+      './manifest': 'Manifest v2 types, variable helpers and serialization.',
       './hydration-manifest': 'Hydration rules, resource order and serialization helpers.',
       './css-directives': 'Directive results, source ranges and output mappings.',
       './css-syntax': 'Utility, selector and value representation types.',

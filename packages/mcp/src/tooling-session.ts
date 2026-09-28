@@ -14,11 +14,10 @@ export function createMCPToolingSession(manifest: MasterCSSManifest, nativeClass
 export function compactClassInspection(
   session: MasterCSSToolingSession,
   className: string,
-  mode?: string,
   includeRules = false,
   resolvedInspection?: MasterCSSLanguageInspection
 ) {
-  const inspection = resolvedInspection ?? session.inspectClassName(className, mode)
+  const inspection = resolvedInspection ?? session.inspectClassName(className)
   return {
     ...inspection,
     variables: inspection.variables.map(({ key, variable }) => ({

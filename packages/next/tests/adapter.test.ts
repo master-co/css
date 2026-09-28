@@ -226,11 +226,7 @@ describe('renderNextBuildOutputs', () => {
     const entryFile = join(projectDir, 'app/globals.css')
     mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryFile, [
-      '@master entry;',
-      '@theme { --color-primary: #123456; }',
-      '.host { color: var(--color-primary); }'
-    ].join('\n'))
+    writeFileSync(entryFile, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123456; }}\n\n.host { color: var(--color-primary); }")
     writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-primary">Hello</h1></body></html>')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
@@ -343,23 +339,7 @@ describe('renderNextBuildOutputs', () => {
       '    }',
       '}'
     ].join('\n'))
-    writeFileSync(join(projectDir, 'app.css'), [
-      '@master entry;',
-      '',
-      '.root-native {',
-      '    color: #789;',
-      '}',
-      '',
-      '.root-unused {',
-      '    color: #abc;',
-      '}',
-      '',
-      '@layer components {',
-      '    .btn {',
-      '        display: grid;',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(join(projectDir, 'app.css'), "@import url(\"@master/css\");\n\n.root-native {\n    color: #789;\n}\n\n.root-unused {\n    color: #abc;\n}\n\n@layer components {\n    .btn {\n        display: grid;\n    }\n}")
     writeFileSync(htmlFile, sourceHTML)
 
     const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
@@ -378,13 +358,7 @@ describe('renderNextBuildOutputs', () => {
     const distDir = join(projectDir, '.next')
     const htmlFile = join(distDir, 'server/app/index.html')
     mkdirSync(join(distDir, 'server/app'), { recursive: true })
-    writeFileSync(join(projectDir, 'app.css'), [
-      '@master entry;',
-      '',
-      '.root-native {',
-      '    color: #789;',
-      '}'
-    ].join('\n'))
+    writeFileSync(join(projectDir, 'app.css'), "@import url(\"@master/css\");\n\n.root-native {\n    color: #789;\n}")
     writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="root-native fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode: 'progressive' })

@@ -36,7 +36,7 @@ function getFreePort() {
 
 function createGlobalsCSS(display: string) {
   return [
-    '@import "@master/css";',
+    '@import url("@master/css");',
     '',
     '@layer components {',
     '    .probe {',
@@ -246,7 +246,7 @@ describe('Next dev HMR', () => {
     const fixture = mkdtempSync(join(workspace, 'module-globals-'))
     writeFixture(fixture)
     const tokens = join(fixture, 'app/tokens.css')
-    writeFileSync(tokens, '@theme { --color-module: red; }')
+    writeFileSync(tokens, "@theme {:root, :host { --color-module: red; }}\n")
     writeFileSync(join(fixture, 'app/Card.module.css'), '@reference "./tokens.css"; .card { color:var(--color-module); }')
     writeFileSync(join(fixture, 'app/page.jsx'), `import styles from './Card.module.css'; export default function Page(){ return <main className={styles.card}>Theme</main> }`)
     const port = await getFreePort(), url = `http://127.0.0.1:${port}`
@@ -260,7 +260,7 @@ describe('Next dev HMR', () => {
       await page.waitForFunction(() => getComputedStyle(document.querySelector('main')!).color === 'rgb(255, 0, 0)')
       await page.evaluate(() => document.body.style.setProperty('--color-module', 'rgb(1, 2, 3)'))
       expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
-      writeFileSync(tokens, '@theme { --color-module: blue; }')
+      writeFileSync(tokens, "@theme {:root, :host { --color-module: blue; }}\n")
       await page.waitForFunction(() => getComputedStyle(document.documentElement).getPropertyValue('--color-module').trim() === 'blue')
       expect(await page.locator('main').evaluate(element => getComputedStyle(element).color)).toBe('rgb(1, 2, 3)')
       await page.evaluate(() => document.body.style.removeProperty('--color-module'))

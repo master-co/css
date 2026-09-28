@@ -191,9 +191,9 @@ export class MasterCSSToolingSession implements Disposable {
     return freezeToolingResult(this.parts.language.classifyClassNames(classNames))
   }
 
-  inspectClassName(className: string, mode?: string): MasterCSSLanguageInspection {
+  inspectClassName(className: string): MasterCSSLanguageInspection {
     this.assertActive()
-    return freezeToolingResult(this.parts.language.inspectClassName(className, mode))
+    return freezeToolingResult(this.parts.language.inspectClassName(className))
   }
 
   completionIndex(): MasterCSSLanguageCompletionIndex {

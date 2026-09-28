@@ -15,9 +15,9 @@ function fixture(entrySource: string, childSource?: string) {
 /** Flattening cannot place an `@import` inside a qualifier's block, so it refuses
  *  shapes the delivery path compiles. Classification must not inherit that limit. */
 test.each([
-  ['named layer', '@master entry;@import "./child.css" layer(cards);'],
-  ['anonymous layer', '@master entry;@import "./child.css" layer;'],
-  ['supports and media', '@master entry;@import "./child.css" supports(display:grid) screen;']
+  ['named layer', "@import \"@master/css\";@import \"./child.css\" layer(cards);"],
+  ['anonymous layer', "@import \"@master/css\";@import \"./child.css\" layer;"],
+  ['supports and media', "@import \"@master/css\";@import \"./child.css\" supports(display:grid) screen;"]
 ])('BH-0004 a qualified parent of an unresolved external import classifies with %s', (_name, source) => {
   const f = fixture(source, '@import "https://external.invalid/style.css";.child{color:red}')
   try {
@@ -30,7 +30,7 @@ test.each([
 
 test('BH-0004 local directives declared by an imported file classify the root as local', () => {
   const source = '@import "./child.css";'
-  const f = fixture(source, ".child{@variant media(all){padding:2rem;}}")
+  const f = fixture(source, ".child{@variant all {padding:2rem;}}")
   try {
     expect(resolveStylesheetSync(f.entry, source, { projectDir: f.root })?.kind).toBe('plain')
     const resolution = resolveStylesheetSync(f.entry, source, { projectDir: f.root, preserveImports: true })
@@ -40,17 +40,17 @@ test('BH-0004 local directives declared by an imported file classify the root as
 })
 
 test.each([
-  ['a plain entry', '@master entry;\n.a{color:red}', undefined, 'entry', 1],
-  ['a local import', '@master entry;@import "./child.css";', '.b{color:red}', 'entry', 2],
-  ['a qualified import', '@master entry;@import "./child.css" layer(cards);', '.b{color:red}', 'entry', 2],
-  ['local directives', ".a{@variant media(all){padding:2rem;}}", undefined, 'local', 1],
+  ['a plain entry', "@import \"@master/css\";\n.a{color:red}", undefined, 'entry', 1],
+  ['a local import', "@import \"@master/css\";@import \"./child.css\";", '.b{color:red}', 'entry', 2],
+  ['a qualified import', "@import \"@master/css\";@import \"./child.css\" layer(cards);", '.b{color:red}', 'entry', 2],
+  ['local directives', ".a{@variant all {padding:2rem;}}", undefined, 'local', 1],
   ['plain css', '.a{color:red}', undefined, 'plain', 1]
 ])('BH-0004 %s classifies the same either way', (_name, source, child, kind, dependencies) => {
   const f = fixture(source, child)
   try {
     for (const preserveImports of [false, true]) {
       const resolution = resolveStylesheetSync(f.entry, source, { projectDir: f.root, preserveImports })
-      expect({ preserveImports, kind: resolution?.kind, dependencies: resolution?.dependencies.length })
+      expect({ preserveImports, kind: resolution?.kind, dependencies: resolution?.dependencies.filter(file => file.startsWith(f.root)).length })
         .toEqual({ preserveImports, kind, dependencies })
     }
   } finally { f.remove() }

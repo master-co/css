@@ -179,9 +179,6 @@ impl Migration {
             for variable in &mut resources.variables {
                 variable.ref_count = 1;
             }
-            for animation in &mut resources.animations {
-                animation.ref_count = 1;
-            }
             serde_json::to_value(resources).map_err(|e| e.to_string())
         };
         if resources(&source)? != resources(&candidate)? {

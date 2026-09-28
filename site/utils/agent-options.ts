@@ -38,7 +38,7 @@ export const agentOptions = {
       },
       {
         "name": "mastercss_manifest_query",
-        "description": "Query active manifest tokens, utilities, variants, modes, conditions, and aliases."
+        "description": "Query active manifest tokens, utilities, variants, conditions, and aliases."
       },
       {
         "name": "mastercss_css_compare",

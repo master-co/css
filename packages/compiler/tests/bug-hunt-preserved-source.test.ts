@@ -4,18 +4,18 @@ import { createCompiler } from '../src/index'
 import { compileStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
+const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
-const source = '@theme{--color-unused:red}' + native
+const source = "@theme {:root, :host {--color-unused:red}}\n\n" + native
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`${binding} source preservation allows class lists and rejects explicit pruning`, async () => {
     using compiler = await createCompiler({ binding })
     expect(compiler.compileCSS(source).nativeCSS).not.toContain('.empty{}')
     const options = { baseManifest, from: '/project/entry.css', preserveNativeSource: true }
-    expect(compiler.compileCSS(source, options).nativeCSS).toBe(native)
-    expect(compiler.compileManifest(source, options).css).toBe(native)
-    expect(compiler.compileCSS(source, { ...options, classes: [] }).nativeCSS).toBe(native)
+    expect(compiler.compileCSS(source, options).nativeCSS).toBe('\n\n' + native)
+    expect(compiler.compileManifest(source, options).css).toBe('\n\n' + native)
+    expect(compiler.compileCSS(source, { ...options, classes: [] }).nativeCSS).toBe('\n\n' + native)
     expect(() => compiler.compileCSS(source, { ...options, classes: [], pruneNativeCSS: true }))
       .toThrow('cannot be combined with class pruning')
     expect(compiler.compileCSS(source, { ...options, preserveNativeCSS: false }).nativeCSS).toBe('')
@@ -27,8 +27,8 @@ for (const binding of ['native', 'wasm'] as const) {
       urls: { entry: '/output/entry.css' }, baseManifest,
       options: { preserveNativeSource: true }
     }
-    expect(compiler.compileStylesheets(request).css).toBe(native)
-    expect(compiler.compileStylesheets({ ...request, classesByStylesheet: { entry: [] } }).css).toBe(native)
+    expect(compiler.compileStylesheets(request).css).toBe('\n\n' + native)
+    expect(compiler.compileStylesheets({ ...request, classesByStylesheet: { entry: [] } }).css).toBe('\n\n' + native)
     expect(() => compiler.compileStylesheets({ ...request, options: { ...request.options, pruneNativeCSS: true }, classesByStylesheet: { entry: [] } }))
       .toThrow('cannot be combined with class pruning')
   })
@@ -36,12 +36,12 @@ for (const binding of ['native', 'wasm'] as const) {
 
 test('Node stylesheet preparation preserves raw text and exact UTF-16 selector origins', async () => {
   const result = await compileStylesheet('/project/entry.css', source, { baseManifest, preserveNativeSource: true })
-  expect(result.css).toBe(native)
+  expect(result.css).toBe('\n\n' + native)
   const payload = JSON.parse(result.sourceMap!)
   const map = new SourceMap(payload)
   for (const selector of ['.empty', '.shared', '.sibling']) {
-    expect(map.findEntry(0, result.css.indexOf(selector))).toMatchObject({
-      originalSource: 'file:///project/entry.css', originalLine: 0, originalColumn: source.indexOf(selector)
+    expect(map.findEntry(2, native.indexOf(selector))).toMatchObject({
+      originalSource: 'file:///project/entry.css', originalLine: 2, originalColumn: native.indexOf(selector)
     })
   }
   expect(payload.sourcesContent).toContain(source)
@@ -49,6 +49,6 @@ test('Node stylesheet preparation preserves raw text and exact UTF-16 selector o
 
 test('Wasm stylesheet preparation retains untouched bytes', async () => {
   const result = await compileBrowserStylesheet(source, { baseManifest, preserveNativeSource: true })
-  expect(result.nativeCSS).toBe(native)
-  expect(result.css).toBe(native)
+  expect(result.nativeCSS).toBe('\n\n' + native)
+  expect(result.css).toBe('\n\n' + native)
 })

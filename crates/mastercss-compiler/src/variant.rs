@@ -3,7 +3,7 @@ use super::{
     ErrorCode, HashMap, ParserOptions, PrinterOptions, Selector, SourceLocation,
     SourceLocationRange, SourceRange, StyleSheet, ThemeAtRule, ToCss, UtilityLayerName, Value,
     byte_to_utf16_offset, collect_declarations, css_comment_end, css_quote_end, directive_error,
-    is_alias_character, minified_css, next_char_end, ranged_directive_diagnostic,
+    minified_css, next_char_end, ranged_directive_diagnostic,
 };
 
 pub(crate) fn custom_variant_branch(
@@ -428,140 +428,95 @@ pub(crate) fn combine_managed_selectors(parent: &[String], child: &[String]) -> 
 }
 
 pub(crate) fn rewrite_managed_variant_directives(source: &str) -> (String, HashMap<usize, String>) {
-    let mut rewritten = source.to_owned();
+    use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
+    let mut rewritten = source.as_bytes().to_vec();
     let mut variants = HashMap::new();
-    let mut index = 0;
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = css_quote_end(source, index, character);
-            continue;
-        }
-        if source[index..].starts_with("/*") {
-            index = css_comment_end(source, index);
-            continue;
-        }
-        if source[index..].starts_with("@light")
-            && source
-                .as_bytes()
-                .get(index + "@light".len())
-                .is_none_or(|byte| !is_alias_character(*byte))
+    for statement in collect_css_syntax_statements(&tokens) {
+        let prelude = &tokens[statement.tokens.clone()];
+        let [first, name] = prelude else { continue };
+        if !matches!(&first.kind, CssSyntaxKind::AtKeyword(value) if value.eq_ignore_ascii_case("variant"))
         {
-            variants.insert(index, "@light".into());
-            rewritten.replace_range(index..index + "@light".len(), "@media");
-            index += "@light".len();
             continue;
         }
-        if source[index..].starts_with("@dark")
-            && source
-                .as_bytes()
-                .get(index + "@dark".len())
-                .is_some_and(|byte| matches!(byte, b' ' | b'\t'))
-        {
-            variants.insert(index, "@dark".into());
-            rewritten.replace_range(index..index + "@dark".len() + 1, "@media");
-            index += "@dark".len() + 1;
+        let CssSyntaxKind::Ident(name) = &name.kind else {
             continue;
+        };
+        variants.insert(first.bytes.start, format!("@{name}"));
+        let end = prelude.last().expect("prelude").bytes.end;
+        for byte in &mut rewritten[first.bytes.start..end] {
+            if !matches!(*byte, b'\r' | b'\n') {
+                *byte = b' ';
+            }
         }
-        if source[index..].starts_with("@variant")
-            && source
-                .as_bytes()
-                .get(index + "@variant".len())
-                .is_none_or(|byte| !is_alias_character(*byte))
-        {
-            let mut token_start = index + "@variant".len();
-            while source
-                .as_bytes()
-                .get(token_start)
-                .is_some_and(u8::is_ascii_whitespace)
-            {
-                token_start += 1;
-            }
-            let mut token_end = token_start;
-            while source
-                .as_bytes()
-                .get(token_end)
-                .is_some_and(|byte| !byte.is_ascii_whitespace() && *byte != b'{')
-            {
-                token_end += 1;
-            }
-            if token_end > token_start {
-                variants.insert(index, format!("@{}", &source[token_start..token_end]));
-                rewritten.replace_range(index..index + "@variant".len(), "@media  ");
-                rewritten
-                    .replace_range(token_start..token_end, &"x".repeat(token_end - token_start));
-            }
-            index = token_end;
-            continue;
-        }
-        index = next_char_end(source, index);
+        rewritten[first.bytes.start..first.bytes.start + 6].copy_from_slice(b"@media");
+        // An empty @media is accepted by Lightning CSS as an unconditional
+        // wrapper; the source offset records the named variant to apply.
     }
-    (rewritten, variants)
+    (String::from_utf8(rewritten).expect("masked CSS"), variants)
 }
 
 pub(crate) fn validate_condition_variant_syntax(
     source: &str,
     filename: &str,
 ) -> Result<(), CompilerError> {
-    for (directive, message_for_at, message_for_selector) in [
-        (
-            "@custom-variant",
-            "@custom-variant uses bare condition variant names",
-            "@custom-variant only defines condition variants",
-        ),
-        (
-            "@variant",
-            "@variant only applies condition variants",
-            "@variant only applies condition variants",
-        ),
-    ] {
-        let mut start = 0;
-        while start < source.len() {
-            let character = source[start..].chars().next().unwrap_or_default();
-            if matches!(character, '\'' | '"') {
-                start = css_quote_end(source, start, character);
-                continue;
-            }
-            if source[start..].starts_with("/*") {
-                start = css_comment_end(source, start);
-                continue;
-            }
-            if !source[start..].starts_with(directive) {
-                start = next_char_end(source, start);
-                continue;
-            }
-            let after_directive = start + directive.len();
-            if source
-                .as_bytes()
-                .get(after_directive)
-                .is_some_and(|byte| is_alias_character(*byte))
-            {
-                start = after_directive;
-                continue;
-            }
-            let mut token_start = after_directive;
-            while source
-                .as_bytes()
-                .get(token_start)
-                .is_some_and(u8::is_ascii_whitespace)
-            {
-                token_start += 1;
-            }
-            match source.as_bytes().get(token_start) {
-                Some(b'@') => {
-                    return Err(directive_error(source, filename, start, message_for_at));
+    use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
+    let statements = collect_css_syntax_statements(&tokens);
+    for statement in &statements {
+        let prelude = &tokens[statement.tokens.clone()];
+        let Some(first) = prelude.first() else {
+            continue;
+        };
+        let CssSyntaxKind::AtKeyword(name) = &first.kind else {
+            continue;
+        };
+        if !name.eq_ignore_ascii_case("variant") && !name.eq_ignore_ascii_case("custom-variant") {
+            continue;
+        }
+        if !statement.has_block
+            || prelude.len() != 2
+            || !matches!(prelude[1].kind, CssSyntaxKind::Ident(_))
+        {
+            return Err(directive_error(
+                source,
+                filename,
+                first.bytes.start,
+                format!(
+                    "@{name} requires one named condition and a block; use native @media, @supports or @container for queries"
+                ),
+            ));
+        }
+        if name.eq_ignore_ascii_case("variant") {
+            let mut parent = statement.parent;
+            let mut style = false;
+            while let Some(index) = parent {
+                let ancestor = &statements[index];
+                match &tokens[ancestor.tokens.start].kind {
+                    CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("theme") => {
+                        return Err(directive_error(
+                            source,
+                            filename,
+                            first.bytes.start,
+                            "@theme requires native conditions; @variant is not supported inside @theme",
+                        ));
+                    }
+                    CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("utility") => {
+                        style = true
+                    }
+                    CssSyntaxKind::AtKeyword(_) => {}
+                    _ => style = true,
                 }
-                Some(b':') => {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        start,
-                        message_for_selector,
-                    ));
-                }
-                _ => {}
+                parent = ancestor.parent;
             }
-            start = after_directive;
+            if !style {
+                return Err(directive_error(
+                    source,
+                    filename,
+                    first.bytes.start,
+                    "@variant must be inside a style rule or @utility",
+                ));
+            }
         }
     }
     Ok(())
@@ -574,6 +529,36 @@ pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<
         let Some(token) = tokens.get(statement.tokens.start) else {
             continue;
         };
+        if let CssSyntaxKind::AtKeyword(name) = &token.kind {
+            let message = match name.to_ascii_lowercase().as_str() {
+                "master" => Some(
+                    "@master entry has been removed; use @import \"@master/css\" for a project entry",
+                ),
+                "settings" => Some(
+                    "@settings has been removed; use per-class ! for important and native selectors for scope",
+                ),
+                "mode" => Some(
+                    "@mode has been removed; author explicit native selectors and conditions in @theme and use @custom-variant for named conditions",
+                ),
+                "utilities" => Some(
+                    "@utilities has been removed; use one @utility name { ... } per definition",
+                ),
+                "dark" | "light" => Some(
+                    "@dark and @light blocks have been removed; use @variant dark or @variant light with a named custom variant",
+                ),
+                _ => None,
+            };
+            if let Some(message) = message {
+                return Err(ranged_directive_diagnostic(
+                    source,
+                    filename,
+                    token.bytes.start,
+                    token.bytes.end,
+                    ErrorCode::CssDirectiveError,
+                    message,
+                ));
+            }
+        }
         if matches!(&token.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("compose"))
         {
             return Err(ranged_directive_diagnostic(

@@ -15,7 +15,7 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
       writeFileSync(join(root, 'styles/views/view.html'), '<div class="block"></div>')
       await scanner.init()
       const stylesheetSources = new Map()
-      await registerStylesheetSource(scanner, stylesheetSources, join(root, 'entry.css'), `@import './styles/child.css' ${qualifier};@master entry;`, { baseManifest: scanner.css.manifest })
+      await registerStylesheetSource(scanner, stylesheetSources, join(root, 'entry.css'), `@import './styles/child.css' ${qualifier};@import "@master/css";`, { baseManifest: scanner.css.manifest })
       const css = await createExtractedCSS({ scanner, stylesheetSources, baseManifest: scanner.css.manifest, projectDir: root })
       expect(css).toContain('.block{display:block}')
       expect(css).toContain('.flex{display:flex}')
@@ -29,8 +29,8 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
     const root = mkdtempSync(join(tmpdir(), 'master-policy-graph-control-'))
     try {
       writeFileSync(join(root, 'child.css'), '@source "./views/*.html";@safelist "flex";.sentinel{display:grid}')
-      const result = await compileRenderedStylesheet(join(root, 'entry.css'), `@import './child.css' ${qualifier};@master entry;`, {
-        baseManifest: { version: 1, languageVersion: 3, utilities: [] }, projectDir: root
+      const result = await compileRenderedStylesheet(join(root, 'entry.css'), `@import './child.css' ${qualifier};@import "@master/css";`, {
+        baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)
       expect(result.css).toContain('.sentinel')

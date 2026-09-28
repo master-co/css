@@ -20,7 +20,7 @@ for (const base of ['/', '/nested/']) {
       writeFileSync(join(root, 'style.scss'), '$layout:inline-flex;@import "./bridge.css" layer(guard);.local{display:$layout}')
       writeFileSync(join(root, 'other.scss'), '$tone:red;.other{color:$tone}')
       writeFileSync(join(root, 'bridge.css'), '@import "./child.css";')
-      const child = (color: string) => `.child{@variant media(all){padding:2rem;}color:${color};background:url("./pixel.svg")}`
+      const child = (color: string) => `.child{@media all{padding:2rem;}color:${color};background:url("./pixel.svg")}`
       writeFileSync(join(root, 'child.css'), child('red'))
       writeFileSync(join(root, 'pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><title>red</title></svg>')
       server = await createServer({ root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0 } })

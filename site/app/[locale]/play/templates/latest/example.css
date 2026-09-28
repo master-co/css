@@ -1,14 +1,12 @@
-@mode light { .light { @slot; } }
-@mode dark { .dark { @slot; } }
-
 .light { color-scheme: light; }
 .dark { color-scheme: dark; }
 
-@theme {
+@theme { :root, :host {
   --color-master: var(--color-yellow-40);
   --color-master-hover: var(--color-yellow-50);
   --color-master-ink: var(--color-yellow-95);
-}
+} }
+
 
 @layer components {
   .btn {

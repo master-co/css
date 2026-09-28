@@ -12,6 +12,6 @@ export default {
     }
   ],
   variables: [
-    { namespace: 'color', key: 'foo', value: 'oklch(0% 0 none)' }
+    { namespace: 'color', key: 'foo', values: [{ path: [':root,:host'], value: 'oklch(0% 0 none)' }] }
   ]
 }

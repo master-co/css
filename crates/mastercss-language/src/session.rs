@@ -190,7 +190,7 @@ impl LanguageSession {
                 "class",
                 &["declaration", "component"],
             ),
-            ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
+            ClassSemanticKind::Semantic => {
                 push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
             }
             ClassSemanticKind::Token => {
@@ -339,12 +339,11 @@ impl LanguageSession {
         &self,
         class_name: &str,
         _native_support: Option<&[bool]>,
-        mode: Option<&str>,
     ) -> Result<LanguageInspectionIr, LanguageError> {
         let mut engine = EngineSession::create(&self.manifest_json)?;
         engine.ensure_class_rules([class_name])?;
-        let semantics = engine.inspect_class_semantics_with_mode(class_name, mode)?;
-        let inspection = engine.inspect_with_mode(class_name, mode)?;
+        let semantics = engine.inspect_class_semantics(class_name)?;
+        let inspection = engine.inspect(class_name)?;
         let (fallback_base, fallback_suffix, fallback_key, fallback_value) =
             inspect_class_name_parts(class_name);
         let (base, suffix, key, value) =
@@ -385,7 +384,11 @@ impl LanguageSession {
                 .unwrap_or_default();
             variables.retain(|entry| entry.key == token_key);
         }
-        let text = engine.render_class_name_isolated_with_mode(class_name, mode)?;
+        let text = engine
+            .render_class_names_isolated([class_name])?
+            .into_iter()
+            .next()
+            .unwrap_or_default();
         Ok(LanguageInspectionIr {
             version: LANGUAGE_BATCH_VERSION,
             class_name: class_name.to_owned(),

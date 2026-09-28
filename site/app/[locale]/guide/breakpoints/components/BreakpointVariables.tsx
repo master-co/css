@@ -1,19 +1,17 @@
-import ThemeNumberVariableTable from '~/site/components/ThemeNumberVariableTable'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
+import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
+import { descriptions } from './scale-data'
 
-const descriptions = {
-  '4xs': 'Small phone and compact embedded surfaces.',
-  '3xs': 'Large phone or narrow split-pane entry point.',
-  '2xs': 'Small tablet, large modal, and compact app shell width.',
-  'xs': 'Tablet portrait or roomy mobile layout.',
-  'sm': 'Tablet landscape and small desktop layout.',
-  'md': 'Default desktop shell threshold.',
-  'lg': 'Wide desktop layout with stronger horizontal composition.',
-  'xl': 'Large desktop or high-density canvas.',
-  '2xl': 'Expanded workstation viewport.',
-  '3xl': 'Very wide product or editorial canvas.',
-  '4xl': 'Maximum viewport-oriented layout threshold.'
-}
+const descriptionByKey: Record<string, string> = descriptions
 
-export default () => {
-  return <ThemeNumberVariableTable namespace="breakpoint" descriptions={descriptions} />
+export default function BreakpointVariables() {
+  return <figure className="doc-table"><table>
+    <thead><tr><th>Custom media</th><th>Minimum width</th><th>PX reference</th><th>Description</th></tr></thead>
+    <tbody>{getThemeNumericVariableEntries('breakpoint').map(entry => <tr key={entry.key}>
+      <th><InlineCode>{`--${entry.key}`}</InlineCode></th>
+      <td><InlineCode>{entry.value}</InlineCode></td>
+      <td>{entry.px}px</td>
+      <td>{descriptionByKey[entry.key]}</td>
+    </tr>)}</tbody>
+  </table></figure>
 }

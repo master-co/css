@@ -11,14 +11,7 @@ export function createTestCSS(manifest: MasterCSSManifest) {
         .join('')
     }
   })
-  const resource = (kind: 'theme' | 'animations') => ({
-    get text() {
-      const resources = engine.snapshot().resources
-      return kind === 'theme'
-        ? resources.themeText || ''
-        : resources.animations.map(({ text }) => text).join('')
-    }
-  })
+  const themeLayer = { get text() { return engine.snapshot().resources.themeText || '' } }
   const api = {
     createRule(className: string) {
       const inspection = engine.inspect(className)
@@ -41,11 +34,10 @@ export function createTestCSS(manifest: MasterCSSManifest) {
     get text() {
       return engine.snapshot().text
     },
-    themeLayer: resource('theme'),
+    themeLayer,
     defaultsLayer: layer('defaults'),
     componentsLayer: layer('components'),
     utilitiesLayer: layer('utilities'),
-    animationsNonLayer: resource('animations'),
     dispose() {
       engine.dispose()
     }

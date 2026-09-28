@@ -1,5 +1,5 @@
 export default {
   variables: [
-    { namespace: 'content', key: 'external', value: '" ↗"' }
+    { namespace: 'content', key: 'external', values: [{ path: [':root,:host'], value: '" ↗"' }] }
   ]
 }

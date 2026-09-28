@@ -62,23 +62,14 @@ export type MasterCSSManifestSelectorNode =
 
 export type MasterCSSManifestSelectors = Record<string, MasterCSSManifestSelectorNode[]>
 
-export interface MasterCSSManifestSettings {
-  scope?: string
-  important?: boolean
-}
-
 export interface MasterCSSManifestVariable {
   name?: string
   key: string
   namespace?: string
   type?: MasterCSSManifestVariableType
-  value?: MasterCSSManifestVariableValue
+  values: MasterCSSScopedThemeValue[]
   numeric?: MasterCSSManifestVariableNumericValue
-  modes?: Record<string, { type: MasterCSSManifestVariableType, value: number | string, numeric?: MasterCSSManifestVariableNumericValue }>
   dependencies?: string[]
-  mode?: string
-  inline?: boolean
-  static?: boolean
 }
 
 export type MasterCSSManifestVariables = Record<string, MasterCSSManifestVariable[]>
@@ -87,10 +78,6 @@ export type MasterCSSManifestVariableEntry = MasterCSSManifestVariable & {
   namespace?: string
   type: MasterCSSManifestVariableType
 }
-
-export type MasterCSSManifestKeyframes<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>
-export type MasterCSSManifestAnimations<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<string, MasterCSSManifestKeyframes<TDeclarations>>
-export type MasterCSSManifestAnimationOptions = Record<string, { static?: boolean }>
 
 export interface MasterCSSManifestVariantBranch {
   selector?: string
@@ -109,7 +96,6 @@ export type MasterCSSManifestVariants = MasterCSSManifestVariant[]
 
 export type MasterCSSManifestUtilityMatcher =
   | { type: 'static'; name: string }
-  | { type: 'pattern'; prefix: string; values: string[]; valueMap?: Record<string, string> }
   | { type: 'key'; keys: string[] }
   | { type: 'token'; prefix: string }
 
@@ -151,10 +137,21 @@ export interface MasterCSSManifestUtility {
 
 export type MasterCSSManifestUtilities = MasterCSSManifestUtility[]
 
-export interface MasterCSSManifestMode {
-  name: string
-  branches: { selector: string; conditions?: string[] }[]
+export interface MasterCSSScopedThemeValue {
+  path: string[]
+  value: string
 }
+
+export type MasterCSSThemeNode =
+  | { type: 'rule'; prelude: string; children: MasterCSSThemeNode[] }
+  | { type: 'declaration'; name: string; value: string }
+
+export type MasterCSSMediaQueryExpression =
+  | { type: 'true' | 'false' }
+  | { type: 'feature'; value: string }
+  | { type: 'media-type'; name: string }
+  | { type: 'not'; query: MasterCSSMediaQueryExpression }
+  | { type: 'and' | 'or'; queries: MasterCSSMediaQueryExpression[] }
 
 export interface MasterCSSManifest {
   /**
@@ -162,16 +159,13 @@ export interface MasterCSSManifest {
    * This is not a legacy Config compatibility marker; engines must reject
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
-  version: 1
-  languageVersion: 3
-  modes?: MasterCSSManifestMode[]
-  settings?: MasterCSSManifestSettings
+  version: 2
+  languageVersion: 4
+  theme?: MasterCSSThemeNode[]
+  customMedia?: Record<string, MasterCSSMediaQueryExpression>
   variables?: MasterCSSManifestVariables
-  animations?: MasterCSSManifestAnimations
-  animationOptions?: MasterCSSManifestAnimationOptions
   variants?: MasterCSSManifestVariants
   conditions?: MasterCSSManifestConditions
-  breakpointConditions?: MasterCSSManifestConditions
   containerConditions?: MasterCSSManifestConditions
   selectors?: MasterCSSManifestSelectors
   utilities?: MasterCSSManifestUtilities
@@ -188,7 +182,7 @@ export function flattenMasterCSSManifestVariables(
   const flattened: MasterCSSManifestVariableEntry[] = []
   for (const [namespace, definitions] of Object.entries(variables || {})) {
     for (const definition of definitions) {
-      const type = definition.type || (typeof definition.value === 'number' ? 'number' : 'string')
+      const type = definition.type || 'string'
       flattened.push({
         ...definition,
         name: getMasterCSSManifestVariableName(namespace, definition),

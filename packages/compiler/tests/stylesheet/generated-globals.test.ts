@@ -11,11 +11,7 @@ const baseManifest = preset as unknown as MasterCSSManifest
 test('separates generated globals at the compiler boundary without relocating mode selectors', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-global-css-'))
   const tokens = join(root, 'tokens.css')
-  writeFileSync(tokens, `
-    @mode ocean { [data-theme="ocean"] { @slot; } }
-    @theme { --color-probe: red; }
-    @theme ocean { --color-probe: blue; }
-  `)
+  writeFileSync(tokens, "\n    @custom-variant ocean { &:where([data-theme=\"ocean\"], [data-theme=\"ocean\"] *) { @slot; } }\n    @theme {:root, :host { --color-probe: red; }}\n\n    @theme { [data-theme=\"ocean\"] { --color-probe: blue; } }\n\n  ")
   const file = join(root, 'card.module.css')
   const source = '@reference "./tokens.css"; .card { color: var(--color-probe); }'
   const inline = await transformStylesheet(file, source, { baseManifest })
@@ -33,7 +29,7 @@ test('separates generated globals at the compiler boundary without relocating mo
 
 test('separation still rejects invalid local declarations atomically under strict validation', async () => {
   await expect(transformStylesheet('/project/card.module.css',
-    '@theme { --color-probe:red; } .card { color:var(--color-probe); width:calc(1px + 1s); }',
+    '@theme {:root, :host { --color-probe:red; }} .card { color:var(--color-probe); width:calc(1px + 1s); }',
     { baseManifest, generatedGlobals: 'separate', validation: 'error' }
   )).rejects.toThrow()
 })

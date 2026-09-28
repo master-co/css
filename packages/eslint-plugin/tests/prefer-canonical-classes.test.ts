@@ -4,24 +4,12 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 import { UtilityType } from '@master/css-schema/utility-type'
 
 const customManifest = createPresetManifest({
-    modes: [...(createPresetManifest().modes ?? []), { name: 'midnight', branches: [{ selector: '.midnight', conditions: [] }] }],
-    conditions: {
-        tablet: {
-            id: 'media',
-            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-        }
-    },
-    breakpointConditions: {
-        tablet: {
-            id: 'media',
-            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-        }
-    },
+    customMedia: { '--tablet': { type: 'feature', value: '(width >= 48rem)' } },
     variables: [
-        { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', value: '48rem', numeric: { value: 48, unit: 'rem' } },
-        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
     ],
     variants: [
+        { token: '@midnight', branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
         { token: '@wide', branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
     ],
     utilities: [
@@ -71,12 +59,10 @@ jsxTester.run('prefer canonical classes', rule, {
             options: [{ preferCompositionUtilities: false }]
         },
 {
-            code: `<div class="block@dark@sm">Condition order disabled</div>`,
-            options: [{ preferConditionOrder: false }]
+            code: `<div class="block@dark@sm">Authored condition order</div>`,
         },
 {
-            code: `<div class="font-size:16px@dark@sm">Condition order disabled preserves literals</div>`,
-            options: [{ preferConditionOrder: false }],
+            code: `<div class="font-size:16px@dark@sm">Authored condition order preserves literals</div>`,
         },
 {
             code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@print@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
@@ -97,8 +83,7 @@ code: `<div class="m:1rem|1.5rem p:.5rem|1rem r:.25rem|.375rem">Multi-value toke
 code: `<div class="m:var(--spacing-md) r:var(--radius-md) fg:var(--color-red-60)">Variable references</div>`
 },
 {
-code: `<div class="font-size:16px@dark@sm">Condition order disabled keeps theme token fix</div>`,
-options: [{ preferConditionOrder: false }]
+code: `<div class="font-size:16px@dark@sm">Authored condition order keeps theme token fix</div>`,
 },
 {
 code: `<div class="w-md h-md min-w-md min-h-md max-w-md max-h-md">Composition utilities</div>`

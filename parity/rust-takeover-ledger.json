@@ -25,9 +25,10 @@
         {
           "name": "emits static variables, dependencies, aliases, and keyframes without class references",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources",
+            "test:crates/mastercss-engine/tests/scoped_theme_lifecycle.rs#each_live_token_keeps_all_scopes_and_transitive_dependencies",
             "corpus:engine-inline-theme-variable-dependencies"
-          ]
+          ],
+          "contractChange": "Directive redesign removes inline/static token evaluation. Scoped values remain authored CSS; dependencies are explicit in direct manifests. Historical bytes remain in rust-semantic-corpus.json; successor coverage verifies token lifecycle and native value preservation."
         },
         {
           "name": "does not duplicate emittedGlobals static variables and keyframes",
@@ -415,8 +416,9 @@
         {
           "name": "preserves hsl strings in engine-owned Manifest records",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
-          ]
+            "test:crates/mastercss-engine/tests/scoped_theme_lifecycle.rs#direct_manifest_values_are_opaque_and_dependencies_are_explicit"
+          ],
+          "contractChange": "Directive redesign removes inline/static token evaluation. Scoped values remain authored CSS; dependencies are explicit in direct manifests. Historical bytes remain in rust-semantic-corpus.json; successor coverage verifies token lifecycle and native value preservation."
         },
         {
           "name": "keeps flat color key namespace metadata",
@@ -459,20 +461,23 @@
         {
           "name": "keeps compiled alpha aliases and color-mix values executable through explicit variable dependencies",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
-          ]
+            "test:crates/mastercss-engine/tests/scoped_theme_lifecycle.rs#each_live_token_keeps_all_scopes_and_transitive_dependencies"
+          ],
+          "contractChange": "Directive redesign removes inline/static token evaluation. Scoped values remain authored CSS; dependencies are explicit in direct manifests. Historical bytes remain in rust-semantic-corpus.json; successor coverage verifies token lifecycle and native value preservation."
         },
         {
           "name": "does not lower stylesheet --alpha() or infer dependencies from direct manifest variable values",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
-          ]
+            "test:crates/mastercss-engine/tests/scoped_theme_lifecycle.rs#direct_manifest_values_are_opaque_and_dependencies_are_explicit"
+          ],
+          "contractChange": "Directive redesign removes inline/static token evaluation. Scoped values remain authored CSS; dependencies are explicit in direct manifests. Historical bytes remain in rust-semantic-corpus.json; successor coverage verifies token lifecycle and native value preservation."
         },
         {
           "name": "does not validate stylesheet variable alias syntax in direct manifest variable values",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
-          ]
+            "test:crates/mastercss-engine/tests/scoped_theme_lifecycle.rs#direct_manifest_values_are_opaque_and_dependencies_are_explicit"
+          ],
+          "contractChange": "Directive redesign removes inline/static token evaluation. Scoped values remain authored CSS; dependencies are explicit in direct manifests. Historical bytes remain in rust-semantic-corpus.json; successor coverage verifies token lifecycle and native value preservation."
         },
         {
           "name": "issue #358: clamp arithmetic is wrapped and normalized without double wrapping",
@@ -770,9 +775,10 @@
           "name": "matches keyframe lifecycle and emitted animation suppression",
           "coverage": [
             "test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host",
-            "test:crates/mastercss-engine/src/tests/syntax.rs#tracks_keyframes_only_from_animation_declarations",
+            "test:crates/mastercss-engine/src/tests/syntax.rs#animation_declarations_do_not_register_native_keyframes",
             "corpus:engine-animation-resource-metadata"
-          ]
+          ],
+          "contractChange": "Keyframes are native stylesheet output; engine execution and emittedGlobals no longer register or suppress animations."
         }
       ]
     },

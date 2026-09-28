@@ -41,7 +41,7 @@ for (const nested of [false, true]) test(`static publication delivers resource o
     writeFileSync(image, red)
     const native = '.probe{background-image:url("./assets/pixel%20space.svg?audit=1#pixel")} '
     writeFileSync(join(owner, 'child.css'), native)
-    const source = '@master entry;@preserve native;' + (nested ? '@import "./nested/child.css" layer(card);' : native)
+    const source = "@import url(\"@master/css\");@preserve native;" + (nested ? '@import "./nested/child.css" layer(card);' : native)
     writeFileSync(entry, source)
     const state = (await prepareNextStatic({ mode: 'static' }, { projectDir: root }))!
     const original = readFileSync(state.outputPath, 'utf8')
@@ -73,7 +73,7 @@ test('static preparation rejects output failures and retries after the failure i
   const root = mkdtempSync(join(tmpdir(), 'next-static-write-failure-'))
   try {
     mkdirSync(join(root, 'app'))
-    writeFileSync(join(root, 'app/globals.css'), '@master entry;@preserve native;.probe{color:red}')
+    writeFileSync(join(root, 'app/globals.css'), "@import url(\"@master/css\");@preserve native;.probe{color:red}")
     mkdirSync(join(root, '.master/next.css'), { recursive: true })
     await expect(prepareNextStatic({ mode: 'static' }, { projectDir: root })).rejects.toThrow()
     rmSync(join(root, '.master/next.css'), { recursive: true })
@@ -94,9 +94,9 @@ test('static CSS loader reports newly discovered resource dependencies in the sa
   try {
     const app = join(root, 'app'), entry = join(app, 'globals.css'), image = join(app, 'new.svg')
     mkdirSync(app)
-    writeFileSync(entry, '@master entry;')
+    writeFileSync(entry, "@import url(\"@master/css\");")
     const state = (await prepareNextStatic({ mode: 'static' }, { projectDir: root }))!
-    const source = '@master entry;@preserve native;.probe{background-image:url("./new.svg")}'
+    const source = "@import url(\"@master/css\");@preserve native;.probe{background-image:url(\"./new.svg\")}"
     writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg"/>')
     writeFileSync(entry, source)
     const dependencies: string[] = []
@@ -115,7 +115,7 @@ test('a configuration change during composition rejects the older publisher', as
   const root = mkdtempSync(join(tmpdir(), 'next-static-config-race-'))
   try {
     mkdirSync(join(root, 'app'))
-    writeFileSync(join(root, 'app/globals.css'), '@master entry;')
+    writeFileSync(join(root, 'app/globals.css'), "@import url(\"@master/css\");")
     writeFileSync(join(root, 'app/page.tsx'), '<main className="p:19px" />')
     const state = (await prepareNextStatic({}, { projectDir: root }))!
     const previous = readFileSync(state.outputPath, 'utf8')

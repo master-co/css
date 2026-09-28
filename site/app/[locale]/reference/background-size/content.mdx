@@ -20,7 +20,7 @@
 <!-- Cover · fill and crop -->
 <div id="target" role="img" aria-label="Geometric landscape"
   class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
-         bg-surface-muted background-image:url(/demo/landscape.svg)"
+         bg-surface-inset background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -42,7 +42,7 @@ Use [position](/reference/background-position) to choose which part of the crop 
 <!-- Contain · whole image with free space -->
 <div id="target" role="img" aria-label="Geometric landscape"
   class="h:160px w-xs max-w:100% bg-center bg-contain bg-no-repeat
-         bg-surface-muted background-image:url(/demo/landscape.svg)"
+         bg-surface-inset background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -57,7 +57,7 @@ Use a width with `auto` to preserve the source ratio, or force both dimensions w
 <!-- 160px auto · preserved ratio -->
 <div id="target" role="img" aria-label="Geometric landscape"
   class="h:160px w-xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|auto bg-surface-muted
+         background-size:160px|auto bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
 ```
@@ -66,7 +66,7 @@ Use a width with `auto` to preserve the source ratio, or force both dimensions w
 <!-- 12x 12x · forced square -->
 <div id="target" role="img" aria-label="Geometric landscape"
   class="h:160px w-xs max-w:100% bg-center bg-no-repeat
-         background-size:3rem|3rem bg-surface-muted
+         background-size:3rem|3rem bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
 ```
@@ -82,7 +82,7 @@ Widen the actual preview viewport to `sm` to switch from contain to cover. The s
 <!-- Contain → cover at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
   class="h:160px w-xs max-w:100% bg-center bg-contain bg-no-repeat
-         bg-surface-muted background-image:url(/demo/landscape.svg) bg-contain@print
+         bg-surface-inset background-image:url(/demo/landscape.svg) bg-contain@print
          bg-cover@screen@sm"
 ></div>
 ```

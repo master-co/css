@@ -8,7 +8,7 @@ import { analyzeCSSDependencies } from '../src/node-compiler'
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-virtual-sources-'))
-  const scanner = { cwd: root, options: {}, css: { text: '', manifest: { version: 1, languageVersion: 3, utilities: [] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn(), removeOwner: vi.fn() } as any
+  const scanner = { cwd: root, options: {}, css: { text: '', manifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn(), removeOwner: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }
 }
@@ -18,10 +18,10 @@ test('BH-0004 virtual identities and supplied resource bases survive classificat
   try {
     writeFileSync(join(f.root, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
     const id = '\0virtual:entry.css?entry=2', child = '\0virtual:child.css?part=1'
-    const source = '@import "virtual:child.css" layer(shared) print;@utilities{paint{color:blue}}'
-    const resolveImport = vi.fn(async () => ({ id: child, source: "@master entry;@preserve native;.example{@variant media(all){color:#00f;}background:url(\"./image.svg?v=1#icon\")}", baseFile: join(f.root, 'owner.css') }))
+    const source = '@import "virtual:child.css" layer(shared) print;@utility paint {color:blue}'
+    const resolveImport = vi.fn(async () => ({ id: child, source: "@preserve native;.example{@variant all {color:#00f;}background:url(\"./image.svg?v=1#icon\")}", baseFile: join(f.root, 'owner.css') }))
     const resolution = await resolveStylesheet(id, source, { preserveImports: true, resolveImport })
-    expect(resolution).toMatchObject({ id, kind: 'entry', dependencies: [id, child] })
+    expect(resolution).toMatchObject({ id, kind: 'local', dependencies: [id, child] })
     using collection = createStylesheetCollection()
     await collection.register(f.scanner, id, source, { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })
     expect(collection.snapshot().sourceIds).toEqual([id])
@@ -46,7 +46,7 @@ test('BH-0004 virtual relative resources require an explicit source owner and do
   try {
     using collection = createStylesheetCollection()
     const resolveImport = async () => ({ id: '\0virtual:child.css', source: '.example{background:url(image.svg)}' })
-    await expect(collection.register(f.scanner, '\0virtual:entry.css', '@master entry;@import "child";', { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })).rejects.toThrow('Relative resource URL requires a source baseFile:')
+    await expect(collection.register(f.scanner, '\0virtual:entry.css', "@import \"@master/css\";@import \"child\";", { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })).rejects.toThrow('Relative resource URL requires a source baseFile:')
     expect(collection.size).toBe(0)
   } finally { f.remove() }
 })
@@ -57,7 +57,7 @@ test('BH-0004 malformed supplied source reports its virtual identity', async () 
     using collection = createStylesheetCollection()
     const child = '\0virtual:broken.css'
     const resolveImport = async () => ({ id: child, source: '{color:red}' })
-    await expect(collection.register(f.scanner, '\0virtual:entry.css', '@master entry;@import "child";', { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })).rejects.toThrowError(expect.objectContaining({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: child })]) }))
+    await expect(collection.register(f.scanner, '\0virtual:entry.css', "@import \"@master/css\";@import \"child\";", { baseManifest: f.scanner.css.manifest, delivery: { ...f.delivery, resolveImport } })).rejects.toThrowError(expect.objectContaining({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: child })]) }))
     expect(collection.size).toBe(0)
   } finally { f.remove() }
 })
@@ -68,7 +68,7 @@ test('BH-0004 a virtual entry baseFile supplies Node fallback and root resource 
     const owner = join(f.root, 'owner.scss'), child = join(f.root, 'child.css')
     writeFileSync(child, '.example{color:blue}')
     writeFileSync(join(f.root, 'image.svg'), '<svg/>')
-    const source = '@import "./child.css";@master entry;@preserve native;.example{background:url(image.svg)}'
+    const source = "@import \"@master/css\";@import \"./child.css\";@preserve native;.example{background:url(image.svg)}"
     const id = '\0prepared:entry.css'
     const resolveImport = async () => undefined
     const resolution = await resolveStylesheet(id, source, { baseFile: owner, preserveImports: true, resolveImport })

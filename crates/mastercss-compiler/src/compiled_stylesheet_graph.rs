@@ -531,6 +531,11 @@ pub fn compile_css_stylesheet_graph(
                 crate::output_edits::apply_output_edits(&asset.css, &mappings, edits, &asset.id)?;
             let (native_css, _) =
                 crate::output_edits::apply_output_edits(&asset.css, &[], empty_edits, &asset.id)?;
+            let registry = crate::custom_media::registry(Some(&resolution_manifest))?;
+            let (css, output_mappings) =
+                crate::custom_media::lower_css(&css, &output_mappings, &registry, &asset.id)?;
+            let (native_css, _) =
+                crate::custom_media::lower_css(&native_css, &[], &registry, &asset.id)?;
             Ok(CompiledCssStylesheet {
                 id: asset.id,
                 href: asset.href,

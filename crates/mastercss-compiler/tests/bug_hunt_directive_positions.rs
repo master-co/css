@@ -4,21 +4,21 @@ use serde_json::json;
 #[test]
 fn diagnostics_after_removed_directives_retain_original_utf16_offsets() {
     for prefix in [
-        "@master entry;\n",
-        "@reference './😀.css';\r\n@master entry;@preserve native;\n",
-        "@source './😀.html';\n/*😀*/@master entry;\n",
+        "@source './src/**';\n",
+        "@reference './😀.css';\r\n@source './src/**';@preserve native;\n",
+        "@source './😀.html';\n/*😀*/@source './src/**';\n",
     ] {
         for (body, token) in [
             (".example {\n  @compose unknown-utility;\n}", "@compose"),
             ("@utilities invalid {paint{color:red}}", "@utilities"),
-            ("@utilities {paint{@compose unknown-utility;}}", "@compose"),
+            ("@utility paint {@compose unknown-utility;}", "@compose"),
         ] {
             let source = format!("{prefix}{body}");
             let request = serde_json::from_value(json!({
                 "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
                 "urls":{"entry.css":"/entry.css"},
-                "baseManifest":{"version":1,"languageVersion":3,"utilities":[]},
-                "resolutionManifest":{"version":1,"languageVersion":3,"utilities":[]}
+                "baseManifest":{"version":2,"languageVersion":4,"utilities":[]},
+                "resolutionManifest":{"version":2,"languageVersion":4,"utilities":[]}
             }))
             .unwrap();
             let error = compile_css_stylesheet_graph(&request)

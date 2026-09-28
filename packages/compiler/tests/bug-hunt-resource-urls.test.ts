@@ -4,19 +4,19 @@ import { createCompilerBindingSession } from '../src/session'
 
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: 'entry', files: {
-    entry: "@import './child.css';.example{@variant media(all){background:var(--hero);}}",
-    child: '@theme{--hero:url(hero.svg?q=1#part)}.native{background:image-set("small.png" 1x,url(big.png) 2x)}'
+    entry: "@import './child.css';.example{@variant all {background:var(--hero);}}",
+    child: "@theme {:root, :host {--hero:url(hero.svg?q=1#part)}}\n\n.native{background:image-set(\"small.png\" 1x,url(big.png) 2x)}"
   }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
   urls: { entry: '/output/main.css', child: '/output/child.css' },
   resourceURLs: { child: { 'hero.svg?q=1#part': '/source/child/hero.svg?q=1#part', 'small.png': '/source/child/small.png', 'big.png': '/source/child/big.png' } },
-  baseManifest: { version: 1, languageVersion: 3, utilities: [] }
+  baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
 }
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding}: original-source resource discovery includes authoring and image-set`, async () => {
     const session = await createCompilerBindingSession({ binding })
     try {
-      const source = '/*😀*/@reference "ref.css";@namespace x url(uri);@utilities{paint{background:u\\72l("a.png")}}.x{background:image-set("b.png" 1x,url(c.png) 2x);filter:url(#local)}'
+      const source = '/*😀*/@reference "ref.css";@namespace x url(uri);@utility paint {background:u\\72l("a.png")}.x{background:image-set("b.png" 1x,url(c.png) 2x);filter:url(#local)}'
       const analysis = session.analyzeCSSDependencies(source)
       expect(analysis.resources.map(item => item.url)).toEqual(['a.png', 'b.png', 'c.png'])
       expect(analysis.resources.map(item => source.slice(item.start, item.end))).toEqual(['u\\72l("a.png")', 'image-set("b.png" 1x,url(c.png) 2x)', 'image-set("b.png" 1x,url(c.png) 2x)'])

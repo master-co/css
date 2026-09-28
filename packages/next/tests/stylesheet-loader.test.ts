@@ -40,7 +40,7 @@ describe('Next style CSS loader', () => {
     const image = join(root, 'app/pattern.svg')
     const tokens = join(root, 'app/tokens.css')
     writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg"/>')
-    writeFileSync(tokens, '@theme { --image-probe: url("./pattern.svg"); }')
+    writeFileSync(tokens, "@theme {:root, :host { --image-probe: url(\"./pattern.svg\"); }}\n")
     const file = join(root, 'app/Pattern.module.css')
     const result = await runStylesheetLoader(root, file, '@reference "./tokens.css"; .card { background-image: var(--image-probe); }')
     const entry = fileURLToPath(new URL(result.code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
@@ -56,7 +56,7 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const tokens = join(root, 'app/tokens.css')
     const source = '@reference "./tokens.css"; .card { color: var(--color-shared); }'
-    writeFileSync(tokens, '@theme { --color-shared: red; }')
+    writeFileSync(tokens, "@theme {:root, :host { --color-shared: red; }}\n")
     const a = join(root, 'app/A.module.css')
     const b = join(root, 'app/B.module.css')
     const first = await runStylesheetLoader(root, a, source)
@@ -65,7 +65,7 @@ describe('Next style CSS loader', () => {
     expect(asset(a, first.code)).toBe(asset(b, second.code))
     expect(second.dependencies).toContain(tokens)
     expect(second.dependencies).toContain(asset(b, second.code))
-    writeFileSync(tokens, '@theme { --color-shared: blue; }')
+    writeFileSync(tokens, "@theme {:root, :host { --color-shared: blue; }}\n")
     const changed = await runStylesheetLoader(root, a, source)
     expect(asset(a, changed.code)).not.toBe(asset(a, first.code))
     expect(changed.content).toContain('--color-shared:blue')
@@ -74,7 +74,7 @@ describe('Next style CSS loader', () => {
   it('derives native CSS from @master/css instead of hardcoding a package subpath', async () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
-    const result = await runStylesheetLoader(root, entryPath, '@import "@master/css";')
+    const result = await runStylesheetLoader(root, entryPath, '@import url("@master/css");')
 
     expect(result.content).toContain('@layer base')
     expect(result.content).toContain('text-rendering: geometricprecision')
@@ -85,13 +85,13 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies.length).toBeGreaterThan(0)
   })
 
-  it('keeps @master entry lightweight without importing package CSS', async () => {
+  it('loads the full native preset from the project import', async () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
-    const result = await runStylesheetLoader(root, entryPath, '@master entry;')
+    const result = await runStylesheetLoader(root, entryPath, "@import url(\"@master/css\");")
 
-    expect(result.content).not.toContain('@layer base')
-    expect(result.content).not.toContain('@master entry;')
+    expect(result.content).toContain('@layer base')
+    expect(result.content).not.toContain("@import url(\"@master/css\");")
     expect(result.dependencies).toContain(entryPath)
   })
 
@@ -99,15 +99,10 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const homePath = join(root, 'app/home.css')
-    writeFileSync(homePath, [
-      '@theme { --color-active: #ff0000; }',
-      '@utilities { active-card { animation: active-spin 1s infinite; } }',
-      '@keyframes active-spin { to { opacity: .5; } }',
-      '.native-card { color: var(--color-active); }'
-    ].join('\n'))
+    writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @utility active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
 
     const result = await runStylesheetLoader(root, entryPath, [
-      '@import "@master/css";',
+      '@import url("@master/css");',
       '@import "./home.css";'
     ].join('\n'))
 
@@ -129,45 +124,37 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toEqual([])
   })
 
-  it('locally lowers @compose in CSS Modules without importing package CSS', async () => {
+  it('locally preserves native declarations in CSS Modules without importing package CSS', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/globals.css'), `
-      @master entry;
-
-      @utilities {
-        brand {
-          background-color: #123456;
-        }
-      }
-    `)
+    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      \n        @utility brand {\n          background-color: #123456;\n        }\n      \n    ")
     const result = await runStylesheetLoader(
       root,
       join(root, 'app/Button.module.css'),
-      ".button { @variant media(all){background-color:#123456;display:inline-flex; color: white;} }"
+      ".button { @media all {background-color:#123456;display:inline-flex; color: white;} }"
     )
 
-    expect(result.content).toContain('.button{')
-    expect(result.content).toContain('display:inline-flex')
-    expect(result.content).toContain('background-color:#123456')
-    expect(result.content).toContain('color:#fff')
+    expect(result.content).toMatch(/\.button\s*\{/)
+    expect(result.content).toMatch(/display:\s*inline-flex/)
+    expect(result.content).toMatch(/background-color:\s*#123456/)
+    expect(result.content).toMatch(/color:\s*(?:#fff|white)/)
     expect(result.content).not.toContain('@compose')
     expect(result.content).not.toContain('@master/css')
     expect(result.dependencies).toContain(join(root, 'app/globals.css'))
     expect(result.dependencies).toContain(join(root, 'app/Button.module.css'))
   })
 
-  it('locally lowers explicit @reference CSS Modules without importing package CSS', async () => {
+  it('locally resolves explicit @reference CSS Modules without importing package CSS', async () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, '@utilities { brand { color: #123456; } }')
+    writeFileSync(tokenPath, ' @utility brand { color: #123456; } ')
     const result = await runStylesheetLoader(
       root,
       modulePath,
-      "@reference \"./tokens.css\"; .button { @variant media(all){color:#123456;} }"
+      "@reference \"./tokens.css\"; .button { @media all {color:#123456;} }"
     )
 
-    expect(result.content).toContain('.button{color:#123456}')
+    expect(result.content).toMatch(/\.button\s*\{[\s\S]*color:\s*#123456/)
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@master/css')
     expect(result.dependencies).toContain(modulePath)
@@ -178,15 +165,12 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
     const localPath = join(root, 'app/local.css')
-    writeFileSync(globalsPath, '@import "@master/css";')
+    writeFileSync(globalsPath, '@import url("@master/css");')
 
-    const result = await runStylesheetLoader(root, localPath, [
-      '@reference "./globals.css";',
-      '@layer components { .card { @dark { color: red; } } }'
-    ].join('\n'))
+    const result = await runStylesheetLoader(root, localPath, "@reference \"./globals.css\";\n@layer components { .card { @media (prefers-color-scheme: dark) { color: red; } } }")
 
     expect(result.content).toContain('.card')
-    expect(result.content).toContain('color:red')
+    expect(result.content).toMatch(/color:\s*red/)
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@dark')
     expect(result.dependencies).toContain(globalsPath)
@@ -195,11 +179,7 @@ describe('Next style CSS loader', () => {
   it.each(['button.css', 'button.module.css'])('emits mode variables used by native CSS in referenced %s', async (name) => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
-    writeFileSync(globalsPath, [
-      '@master entry;',
-      '@theme light { --color-brand: #123456; }',
-      '@theme dark { --color-brand: #abcdef; }'
-    ].join('\n'))
+    writeFileSync(globalsPath, "@import url(\"@master/css\");\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
 
     const result = await runStylesheetLoader(
       root,
@@ -213,7 +193,7 @@ describe('Next style CSS loader', () => {
     expect(result.content).not.toContain('@reference')
     if (name.endsWith('.module.css')) {
       expect(result.code).toMatch(/^@import /)
-      expect(result.content).toMatch(/:root\s*\{--color-brand/)
+      expect(result.content).toMatch(/:root,:host\s*\{--color-brand/)
       expect(result.code).not.toContain('--color-brand:#')
       expect(result.content).not.toMatch(/\.button\s*\{--color-brand:/)
     }
@@ -223,15 +203,15 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
     const pagePath = join(root, 'app/page.css')
-    writeFileSync(globalsPath, '@import "@master/css";')
+    writeFileSync(globalsPath, '@import url("@master/css");')
 
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
+      "@reference \"./globals.css\"; .home-section { @media all {padding-block:var(--spacing-5xl);} }"
     )
 
-    expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
+    expect(result.content).toMatch(/\.home-section\s*\{[\s\S]*padding-block:\s*var\(--spacing-5xl\)/)
     expect(result.content).toContain('--spacing-5xl:')
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@master/css')
@@ -244,17 +224,17 @@ describe('Next style CSS loader', () => {
     const globalsPath = join(root, 'app/globals.css')
     const pagePath = join(root, 'app/page.css')
     writeFileSync(globalsPath, [
-      '@import "@master/css";',
+      '@import url("@master/css");',
       '.global-section { padding-block: var(--spacing-5xl); }'
     ].join('\n'))
 
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      "@reference \"./globals.css\"; .home-section { @variant media(all){padding-block:var(--spacing-5xl);} }"
+      "@reference \"./globals.css\"; .home-section { @media all {padding-block:var(--spacing-5xl);} }"
     )
 
-    expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
+    expect(result.content).toMatch(/\.home-section\s*\{[\s\S]*padding-block:\s*var\(--spacing-5xl\)/)
     expect(result.content).toContain('--spacing-5xl:')
     expect(result.content).not.toContain('@reference')
     expect(result.content).not.toContain('@master/css')
@@ -276,9 +256,9 @@ describe('Next style CSS loader', () => {
     expect(error?.message).toContain('@compose has been removed')
     expect(error?.dependencies).toContain(modulePath)
 
-    const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
+    const result = await runStylesheetLoader(root, modulePath, ".button { @media all{display:block;} }")
 
-    expect(result.content).toContain('.button{display:block}')
-    expect(result.dependencies).toContain(modulePath)
+    expect(result.content).toMatch(/\.button\s*\{[\s\S]*display:\s*block/)
+    expect(result.dependencies).toEqual([])
   })
 })

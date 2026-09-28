@@ -99,16 +99,13 @@ describe('rc.87 Svelte server hook renderer', () => {
     expect(countManifestScripts(html)).toBe(0)
   })
 
-  test('does not duplicate emitted global variables and keyframes in streamed CSS', async () => {
+  test('does not duplicate emitted variables or synthesize native keyframes', async () => {
     const html = await renderWithHandle(createMasterCSSHandle({
       manifest: defaultManifest,
       emittedGlobals: {
         variables: {
           'animate-fade': 1,
           'color-red-60': 1
-        },
-        animations: {
-          fade: 1
         }
       }
     }), [

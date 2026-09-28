@@ -109,7 +109,7 @@ export interface NativeLanguageSession {
   formatDirectives(requestJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
-  inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): string
+  inspectClassName(className: string, nativeSupport?: boolean[]): string
   completionIndex(): string
   colorPresentation(colorToken: string): string
   colorTokens(candidatesJSON: string): string

@@ -8,7 +8,10 @@ fn request(classes: Vec<Vec<&str>>) -> RcMigrationRequest {
         "../../../packages/preset/src/default-manifest.json"
     ))
     .unwrap();
-    let mut original = target.clone();
+    let mut original: Value = serde_json::from_str(include_str!(
+        "fixtures/v2-rc-before-directives.manifest.json"
+    ))
+    .unwrap();
     for (key, w, h) in [
         ("size", "width", "height"),
         ("min-size", "min-width", "min-height"),

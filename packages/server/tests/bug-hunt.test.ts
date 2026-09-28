@@ -33,12 +33,12 @@ test('BH-0006: escaped class content cannot create executable HTML elements', ()
   expect(scripts).toHaveLength(0)
 })
 
-test('BH-0007: static resources render even when HTML has no class attributes', () => {
-  const staticManifest: MasterCSSManifest = {
-    version: 1, languageVersion: 3,
-    variables: { color: [{ key: 'brand', value: 'red', static: true }] },
+test('BH-0007: unused theme tokens are absent when HTML has no class attributes', () => {
+  const staticManifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "color-brand", value: 'red' }] }],
+    version: 2, languageVersion: 4,
+    variables: { color: [{ key: 'brand', values: [{ path: [':root,:host'], value: 'red' }] }] },
     utilities: []
   }
   const result = renderHTML('<p style="color:var(--color-brand)">text</p>', { manifest: staticManifest })
-  expect(result.cssText).toContain('--color-brand:red')
+  expect(result.cssText).toBe('')
 })

@@ -48,7 +48,14 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     cwd, absolute: true, onlyFiles: true, unique: true,
     ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**']
   }).sort()
-  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...discoverManifestEntriesSync({ root: cwd })]
+  // Only the explicit migrator recognizes retired entry syntax. Rust classifies
+  // candidate stylesheets; normal project discovery stays on the current contract.
+  const candidates = options.entry ? [] : fg.sync('**/*.css', { cwd, absolute: true, onlyFiles: true, ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/target/**', '**/.next/**', '**/out/**'] }).sort()
+  const classified = candidates.length ? migrateRCSync({ from: options.from, sourceVersion, manifest, targetManifest, targetIsPreset: !options.targetManifest,
+    classLists: [], stylesheets: candidates.map(file => fs.readFileSync(file, 'utf8')), documents: []
+  }).stylesheets : []
+  const migratedEntries = candidates.filter((_, index) => classified[index].isEntry)
+  const entries = options.entry ? [path.resolve(cwd, options.entry)] : [...new Set([...discoverManifestEntriesSync({ root: cwd }), ...migratedEntries])]
   if (entries.length === 1 && !paths.includes(entries[0])) paths.push(entries[0])
   const files = paths.map(filePath => ({
     filePath,
@@ -121,13 +128,10 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     report.edits.push(...stylesheet.edits.map(edit => ({ ...edit.range, before: edit.before, after: edit.after })))
     if (stylesheet.notes.length) report.review.push({ before: '(stylesheet)', notes: stylesheet.notes })
   }
-  if (result.configurationCSS && options.from === 'rc-native') {
+  if (result.configurationCSS && reports.some(report => report.edits.length)) {
     const entry = entries.length === 1 ? files.findIndex(file => file.filePath === entries[0]) : -1
     if (entry >= 0) reports[entry].edits.push({ start: files[entry].source.length, end: files[entry].source.length, before: '', after: `\n${result.configurationCSS}` })
-    else if (reports.length) reports[0].review.push({ before: '(entry)', notes: ['Select a unique Master CSS entry with --entry to write the proposed custom variants.'] })
-  }
-  if (options.from !== 'rc-native' && result.configurationCSS && !stylesheets.some(file => file.source.includes('@settings') || file.source.includes('@mode ')) && reports.length) {
-    reports[0].review.push({ before: '(configuration)', notes: ['Add the proposed configurationCSS to the project entry, regenerate --target-manifest, and review delivery mode and native pruning before applying this batch.'] })
+    else if (reports.length) reports[0].review.push({ before: '(entry)', notes: ['Select a unique Master CSS entry with --entry to write the proposed configuration.'] })
   }
   for (const report of reports) {
     report.edits.sort((a, b) => a.start - b.start)

@@ -1,8 +1,9 @@
-import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import preset from '../../../crates/mastercss-compiler/tests/fixtures/v2-rc-before-directives.manifest.json' with { type: 'json' }
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, expect, it, vi } from 'vitest'
+import { compileStylesheet } from '@master/css-compiler/stylesheet'
 import runMigrate, { type MigrateOptions } from '../src/migrate'
 
 const migrate = (paths: string[], options: MigrateOptions) => runMigrate([...paths, 'app.css'], { from: 'rc-legacy', sourceVersion: '2.0.0-rc.87', ...options })
@@ -21,7 +22,7 @@ afterEach(() => {
   for (const cwd of temporary.splice(0)) fs.rmSync(cwd, { recursive: true, force: true })
 })
 
-it('previews by default, writes safe files, and is idempotent', () => {
+it('previews by default, writes safe files, and is idempotent', async () => {
   const cwd = project()
   const source = '<div class="font:mono p:4x fg:red:hover"></div>'
   fs.writeFileSync(path.join(cwd, 'index.html'), source)
@@ -32,6 +33,9 @@ it('previews by default, writes safe files, and is idempotent', () => {
   expect(written.files.find(file => file.path === 'index.html')!.written).toBe(true)
   expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe('<div class="font-mono p:1rem fg-red:hover"></div>')
   expect(migrate(['index.html'], { cwd }).files.find(file => file.path === 'index.html')!.edits).toEqual([])
+  const entry = path.join(cwd, 'app.css')
+  const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: { version: 2, languageVersion: 4 } })
+  expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })
 
 it('does not write dynamic classes, cascade risks, or selector references', () => {
@@ -85,7 +89,7 @@ it('previews the named RC profile with the saved root size and blocks a mixed un
   fs.writeFileSync(path.join(cwd, 'unsafe.html'), unsafe)
   const result = runMigrate(['*.html'], { cwd, from: 'rc-named', write: true })
   expect(result).toMatchObject({ version: 2, from: 'rc-named', sourceVersion: saved.packageVersion })
-  expect(result.configurationCSS).toContain('@mode dark')
+  expect(result.configurationCSS).toContain('@custom-variant dark')
   expect(result.files.find(file => file.path === 'safe.html')?.edits).toEqual([
     expect.objectContaining({ before: 'p-md@>=800', after: 'p-md@media((width>=40rem))' })
   ])
@@ -139,7 +143,8 @@ it('native RC requires an entry choice for multiple entries and preserves a batc
   expect(invalid.files.every(file => !file.written)).toBe(true)
   const selected = runMigrate(['index.html', '*.css'], { ...options, entry: 'app.css' })
   expect(selected.files.find(file => file.path === 'app.css')?.written).toBe(true)
-  expect(selected.files.find(file => file.path === 'second.css')?.written).toBe(false)
+  expect(selected.files.find(file => file.path === 'second.css')?.written).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'second.css'), 'utf8')).toBe('@import "@master/css";')
 })
 
 it('reads imported native functions as context without writing unselected dependencies', () => {
@@ -186,7 +191,7 @@ it('previews rc-utilities and blocks every write when one typed definition needs
   fs.writeFileSync(path.join(cwd, 'app.css'), safe)
   const options = { cwd, from: 'rc-utilities' as const }
   const preview = runMigrate(['app.css'], options)
-  expect(preview.files[0].edits[0].after).toContain('pair:<*>')
+  expect(preview.files[0].edits.find(edit => edit.before.includes('@utilities'))!.after).toContain('@utility pair:*')
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(safe)
   fs.writeFileSync(path.join(cwd, 'unsafe.css'), '@utilities { limited:<number> { width:--value(); } }')
   const blocked = runMigrate(['*.css'], { ...options, write: true })

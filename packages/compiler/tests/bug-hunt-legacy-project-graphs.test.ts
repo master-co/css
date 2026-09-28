@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { compileProjectManifest } from '../src/node-compiler'
 
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
+const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {
     test(`Node project retains imported definitions: ${qualifier || 'unqualified'}, compose=${compose}`, () => {
@@ -12,10 +12,10 @@ for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'child.css')
         writeFileSync(entry, `@import "./child.css"${qualifier};.after{margin:1px}`)
-        writeFileSync(child, '@utilities{paint{padding:2rem}}\n' + (compose ? ".composed{@variant media(all){padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        writeFileSync(child, '@utility paint {padding:2rem}\n' + (compose ? ".composed{@variant all {padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         if (qualifier) {
-          expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @utilities/)
-          writeFileSync(entry, `@import "./child.css"${qualifier};@utilities{paint{padding:2rem}}.after{margin:1px}`)
+          expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @utility/)
+          writeFileSync(entry, `@import "./child.css"${qualifier};@utility paint {padding:2rem}.after{margin:1px}`)
           writeFileSync(child, (compose ? ".composed{padding:2rem;}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         }
         const result = compileProjectManifest([entry], { root, baseManifest, preserveNativeCSS: true, classes: ['composed', 'card', 'after'] })
@@ -36,10 +36,10 @@ test('Node project merges prior entries while resolving child-owned references a
   const root = mkdtempSync(join(tmpdir(), 'project-graph-reference-'))
   try {
     const first = join(root, 'first.css'), second = join(root, 'second.css'), child = join(root, 'child.css'), reference = join(root, 'tokens.css')
-    writeFileSync(first, '@utilities{paint{padding:2rem}}')
+    writeFileSync(first, '@utility paint {padding:2rem}')
     writeFileSync(second, '@import "./child.css" layer(cards);')
-    writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@variant media(all){color:red;padding:2rem;}}")
-    writeFileSync(reference, '@utilities{accent{color:red}}')
+    writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@variant all {color:red;padding:2rem;}}")
+    writeFileSync(reference, '@utility accent {color:red}')
     const result = compileProjectManifest([first, second], { root, baseManifest, preserveNativeCSS: true, classes: ['card'] })
     expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)
     expect(result.css).toMatch(/padding:\s*2rem/)

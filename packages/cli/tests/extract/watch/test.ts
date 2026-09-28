@@ -29,18 +29,7 @@ const originHTMLText = dedent`
   </html>
 `
 
-const originConfigText = `@master entry;
-
-@theme {
-  --color-primary: var(--color-blue);
-}
-
-@utilities {
-  btn {
-    background-color: oklch(63.7% 0.237 25.331);
-  }
-}
-`
+const originConfigText = "@import \"@master/css\";\n\n@theme {:root, :host {\n  --color-primary: var(--color-blue);\n}}\n\n\n\n  @utility btn {\n    background-color: oklch(63.7% 0.237 25.331);\n  }\n\n"
 
 let workspacePath: string
 let HTMLFilepath: string

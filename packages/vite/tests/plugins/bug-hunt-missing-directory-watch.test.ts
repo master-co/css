@@ -18,9 +18,9 @@ test.each(cases)('BH-0004 missing directory recovers $kind in $mode via $backend
   const resource = kind.startsWith('entry'), nested = kind.endsWith('one') ? 'one' : 'one/two/three'
   const dependency = join(external, nested, resource ? 'pixel.svg' : 'tokens.css')
   const reference = resource ? join(external, 'tokens.css') : dependency
-  const tokens = `@theme{--paint-padding:7rem;${resource ? `--paint-background-image:url("./${nested}/pixel.svg?v=1#icon")` : ''}}`
+  const tokens = `@theme{:root, :host {--paint-padding:7rem;${resource ? `--paint-background-image:url("./${nested}/pixel.svg?v=1#icon")` : ''}}}`
   if (resource) writeFileSync(reference, tokens)
-  writeFileSync(join(root, 'style.css'), `${resource ? '@master entry;@preserve native;' : ''}@reference "../external/${resource ? 'tokens.css' : `${nested}/tokens.css`}";.target{@variant media(all){padding:var(--paint-padding);background-image:var(--paint-background-image);}}`)
+  writeFileSync(join(root, 'style.css'), `${resource ? "@import url(\"@master/css\");@preserve native;" : ''}@reference "../external/${resource ? 'tokens.css' : `${nested}/tokens.css`}";.target{@media all{padding:var(--paint-padding);background-image:var(--paint-background-image);}}`)
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
   let server: Awaited<ReturnType<typeof createServer>> | undefined

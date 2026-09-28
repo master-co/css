@@ -11,18 +11,18 @@ pub fn is_native_css_property(property: &str) -> bool {
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use thiserror::Error;
 
-pub const MANIFEST_VERSION: u32 = 1;
-pub const LANGUAGE_VERSION: u32 = 3;
-pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
-pub const BINDING_ABI_VERSION: u32 = 14;
-pub const ENGINE_TRANSITION_VERSION: u32 = 1;
-pub const VALIDATOR_BATCH_VERSION: u32 = 3;
-pub const DIAGNOSTICS_REPORT_VERSION: u32 = 4;
-pub const LINT_BATCH_VERSION: u32 = 2;
-pub const LANGUAGE_BATCH_VERSION: u32 = 4;
+pub const MANIFEST_VERSION: u32 = 2;
+pub const LANGUAGE_VERSION: u32 = 4;
+pub const HYDRATION_MANIFEST_VERSION: u32 = 2;
+pub const BINDING_ABI_VERSION: u32 = 15;
+pub const ENGINE_TRANSITION_VERSION: u32 = 2;
+pub const VALIDATOR_BATCH_VERSION: u32 = 4;
+pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
+pub const LINT_BATCH_VERSION: u32 = 3;
+pub const LANGUAGE_BATCH_VERSION: u32 = 5;
 pub const LEXER_BATCH_VERSION: u32 = 1;
 pub const SOURCE_BATCH_VERSION: u32 = 2;
 
@@ -74,12 +74,10 @@ impl<'a> BindingInfo<'a> {
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EmittedGlobals {
     #[serde(default)]
     pub variables: BTreeMap<String, u32>,
-    #[serde(default)]
-    pub animations: BTreeMap<String, u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -110,10 +108,6 @@ impl EmittedGlobals {
     pub fn variable_count(&self, name: &str) -> u32 {
         self.variables.get(name).copied().unwrap_or_default()
     }
-
-    pub fn animation_count(&self, name: &str) -> u32 {
-        self.animations.get(name).copied().unwrap_or_default()
-    }
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -134,7 +128,6 @@ pub enum RuleTarget {
     Defaults,
     Components,
     Utilities,
-    Keyframes,
 }
 
 impl From<UtilityLayerName> for RuleTarget {

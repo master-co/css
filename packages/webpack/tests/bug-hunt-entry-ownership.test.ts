@@ -9,7 +9,7 @@ for (const lazy of [false, true]) test(`native CSS and resources remain owned by
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-webpack-owner-test-')))
   for (const name of ['a', 'b']) {
     writeFileSync(join(root, `${name}.js`), `import './${name}.css';${lazy && name === 'a' ? 'globalThis.loadLazy=()=>import("./b.js")' : ''}`)
-    writeFileSync(join(root, `${name}.css`), `@master entry;@preserve native;.card{--owner:${name};background-image:url("./${name}.svg")}`)
+    writeFileSync(join(root, `${name}.css`), `@import "@master/css";@preserve native;.card{--owner:${name};background-image:url("./${name}.svg")}`)
     writeFileSync(join(root, `${name}.svg`), `<svg xmlns="http://www.w3.org/2000/svg" id="${name}"/>`)
   }
   const compiler = webpack({ mode: 'production', context: root, entry: lazy ? { a: './a.js' } : { a: './a.js', b: './b.js' }, resolve: { tsconfig: false }, experiments: { css: true },

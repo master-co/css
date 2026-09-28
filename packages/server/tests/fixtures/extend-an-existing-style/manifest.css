@@ -1,9 +1,8 @@
-@utilities {
-  a {
+
+  @utility a {
     color: oklch(0% 0 none);
   }
-  b {
+  @utility b {
     text-decoration-line: underline;
     color: oklch(0% 0 none);
   }
-}

@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import CountUp from 'react-countup'
 import { useInView } from 'react-intersection-observer'
 
-export default function Bar({ className, width, animated, children, color = 'text-disabled', max, value, icon, suffix, prefix }: any) {
+export default function Bar({ className, width, animated, children, color = 'text-muted', max, value, icon, suffix, prefix }: any) {
   const [ref, inView] = useInView({ threshold: 0, triggerOnce: true })
   const resolvedWidth = `calc(${width} - (${max} - ${value}) / ${max} * ${width})`
 

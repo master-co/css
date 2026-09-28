@@ -18,7 +18,7 @@ test.each([false, true])('BH-0004 middleware restart serves HTML and styles (man
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     writeFileSync(join(root, 'index.html'), '<link rel="stylesheet" href="/style.scss"><div class="example">test</div>')
-    writeFileSync(join(root, 'style.scss'), (managed ? '@master entry;@preserve native;' : '') + '.example{color:red}')
+    writeFileSync(join(root, 'style.scss'), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + '.example{color:red}')
     writeFileSync(join(root, 'server.js'), 'export {default as css} from "./style.scss?inline"')
     const plugins = managed ? masterCSS({ mode: 'static', runtime: false }) : []
     const events: string[] = []
@@ -50,7 +50,7 @@ test.each([false, true])('BH-0004 middleware restart serves HTML and styles (man
       console.log(JSON.stringify({ managed, events, root: server.config.root, appType: server.config.appType, htmlStatus: page.status, html: await page.clone().text(), cssStatus: css.status, css: await css.text(), stack: server.middlewares.stack.map(layer => typeof layer.handle === 'function' ? layer.handle.name : 'httpServer'), ssr: await server.ssrLoadModule('/server.js').catch(error => String(error)) }))
     }
     expect(page.status).toBe(200)
-    writeFileSync(join(root, 'style.scss'), (managed ? '@master entry;@preserve native;' : '') + '.example{color:green}')
+    writeFileSync(join(root, 'style.scss'), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + '.example{color:green}')
     await vi.waitFor(async () => {
       const css = await fetch(`${origin}/style.scss?t=${Date.now()}`, { headers: { Accept: 'text/css' } })
       expect(css.status).toBe(200)

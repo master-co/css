@@ -31,8 +31,8 @@ test('general loader keeps global animation references unscoped and emits their 
     mkdirSync(join(root, 'app'))
     const file = join(root, 'app/card.module.css')
     const child = join(root, 'app/other.module.css')
-    writeFileSync(child, '.shared{border-top:7px solid red;animation:fade 1s linear infinite}')
-    const source = '@master entry;@preserve native;.direct{composes:shared from "./other.module.css";color:#123456;animation:fade 1s linear infinite}@keyframes local-spin{to{transform:rotate(1turn)}}.spin{animation:local-spin 1s}'
+    writeFileSync(child, '.shared{border-top:7px solid red;animation:global(fade) 1s linear infinite}')
+    const source = "@import url(\"@master/css\");@preserve native;.direct{composes:shared from \"./other.module.css\";color:#123456;animation:global(fade) 1s linear infinite}@keyframes local-spin{to{transform:rotate(1turn)}}.spin{animation:local-spin 1s}"
     writeFileSync(file, source)
     const exports = await transform(root, file, source)
     // The general loader publishes the delivered graph and returns Module composes over it.

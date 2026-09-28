@@ -42,9 +42,9 @@ export default function DocSidebar({ pageCategories, includeNestedPages = false 
       { 'hidden@media((width<64rem))': !opened }
     )}>
       <div className="top:20px z:1 flex items-center mx:-1rem mb:-1.875rem px-md pb:1.875rem pt:1.25rem untouchable sticky@md top@md background-image:linear-gradient(180deg,var(--color-surface-base)|0%,var(--color-surface-base)|calc(100%-2rem),transparent|100%)@md">
-        <SearchButton className="flex items-center w:100% font-sm leading:2.25rem text-left text-disabled pointer-events:auto" />
+        <SearchButton className="flex items-center w:100% font-sm leading:2.25rem text-left text-muted pointer-events:auto" />
       </div>
-      <div className="{flex;min-h:2rem;rel;align-items:center}_:is(h4,.app-nav)@default {pt:0;fg:var(--color-text-strong);mt:1.5rem;text:12px}_:is(h4)@default {fg:var(--color-text-muted);pl:1rem;bl:1px|solid|var(--color-line-muted)}_.app-nav@default bg-text-disabled_.app-nav:hover_svg@default {w:2px;h:calc(100%-0.75rem);abs;inset:0;my:auto;margin-left:-1px}_svg contain:content:is(.app-nav,h4)">
+      <div className="{flex;min-h:2rem;rel;align-items:center}_:is(h4,.app-nav)@default {pt:0;fg:var(--color-text-strong);mt:1.5rem;text:12px}_:is(h4)@default {fg:var(--color-text-muted);pl:1rem;bl:1px|solid|var(--color-line-subtle)}_.app-nav@default bg-text-muted_.app-nav:hover_svg@default {w:2px;h:calc(100%-0.75rem);abs;inset:0;my:auto;margin-left:-1px}_svg contain:content:is(.app-nav,h4)">
         {pageCategories
           .filter((eachPageCategory: any) => eachPageCategory.name !== 'Overview')
           .map((eachPageCategory: any) => {

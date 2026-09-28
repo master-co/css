@@ -1,8 +1,11 @@
 @import '@master/css';
-@theme light { --color-probe: #123456; }
-@theme dark { --color-probe: #abcdef; }
-
-@mode ocean { [data-theme="ocean"] { @slot; } }
-@theme ocean { --color-probe: #082f49; }
-
-@theme { @keyframes project-pulse { from { opacity: .5; } to { opacity: .5; } } }
+@theme {
+  :root, :host { --color-probe: #123456; --animate-project-pulse: project-pulse 1s linear infinite; }
+  @media (prefers-color-scheme: dark) {
+    :root, :host { --color-probe: #abcdef; }
+  }
+}
+@theme {
+  [data-theme="ocean"] { --color-probe: #082f49; }
+}
+@keyframes project-pulse { from { opacity: .5; } to { opacity: .5; } }

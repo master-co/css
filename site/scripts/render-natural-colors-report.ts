@@ -1,6 +1,6 @@
 import { auditNaturalColors, colorLevels, mapToSRGB, resolveColor } from './natural-colors-audit'
 
-const audit = auditNaturalColors()
+const audit = await auditNaturalColors()
 const escape = (value: unknown) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;')
 const neighbors = ['stone', 'gray', 'brown', 'orange', 'lime', 'green', 'teal', 'slate']
 function row(family: string) {
@@ -22,5 +22,5 @@ process.stdout.write(`<!doctype html><html lang="en"><meta charset="utf-8"><meta
 <div class="table-scroll"><table><caption>Mode-aware text on preset surfaces</caption><thead><tr><th>Family</th><th>Light text</th><th>Minimum contrast</th><th>Dark text</th><th>Minimum contrast</th></tr></thead><tbody>${audit.map(({ family, modes }) => `<tr><th>${family}</th>${modes.map(mode => `<td><code>${escape(mode.text)}</code></td><td>${Math.min(...Object.values(mode.contrast)).toFixed(2)}:1</td>`).join('')}</tr>`).join('')}</tbody></table></div>
 <h2>Reading this review</h2><p>The original and mapped palettes must both keep a descending lightness order. The 0–5 and 90–95 intervals are half the numbered distance of a ten-step interval. Color differences are reviewed per numbered unit, alongside the visible swatches.</p>
 <p>All new colors fit Display P3. Petrol 60 and 70 extend slightly beyond sRGB. The sRGB toggle uses Color.js CSS gamut mapping; it is a numerical preview, not proof that a monitor is displaying P3. Hover a swatch for its value.</p>
-<small>Contrast minima cover base, muted, raised and overlay in each mode, after sRGB mapping. Existing palette values are unchanged. Native CSS olive can still be expressed as #808000.</small></main>
+<small>Contrast minima cover base, inset, raised and floating in each mode, using browser computed colors after sRGB mapping. Existing palette values are unchanged. Native CSS olive can still be expressed as #808000.</small></main>
 <script>document.querySelector('#dark').onchange=e=>document.body.classList.toggle('dark',e.target.checked);document.querySelector('#srgb').onchange=e=>document.querySelectorAll('.swatch').forEach(s=>s.style.background=e.target.checked?s.dataset.srgb:s.dataset.authored);</script></html>`)

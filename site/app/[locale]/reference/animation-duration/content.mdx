@@ -9,11 +9,13 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -21,7 +23,7 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -41,7 +43,7 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -113,11 +115,13 @@ Compare a one-second animation with zero duration. Both use forwards fill; the z
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -125,7 +129,7 @@ Compare a one-second animation with zero duration. Both use forwards fill; the z
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -145,7 +149,7 @@ Compare a one-second animation with zero duration. Both use forwards fill; the z
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -169,11 +173,13 @@ Resize before replaying to switch from a 500ms cycle to one second at `sm`. The 
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -181,7 +187,7 @@ Resize before replaying to switch from a 500ms cycle to one second at `sm`. The 
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10

@@ -134,11 +134,11 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `text-body`, `text-muted`, `text-blue`, `surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border:1px|solid|var(--color-line-base)`.
+- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `text-body`, `text-muted`, `text-blue`, `surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border:1px|solid|var(--color-line-divider)`.
 - Use project semantic tokens such as `divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
 - Preserve typography semantics: use `font-size:<value>` for raw font-size-only replacements, and `text-<token>` or `text:<number>` only when the complete type treatment is intended.
 - Prefer scale tokens such as `p-sm`, `gap-md`, and `mt-lg` over routine raw spacing, color, shadow, or timing values.
-- Prefer contextual shorthand such as `border:1px|solid|var(--color-line-base)`, `border:1px|solid|var(--color-line-muted)`, `text-body`, and `transition:opacity|var(--duration-normal)|var(--easing-standard)` for explicit custom-property references in multi-value declarations.
+- Prefer contextual shorthand such as `border:1px|solid|var(--color-line-divider)`, `border:1px|solid|var(--color-line-subtle)`, `text-body`, and `transition:opacity|var(--duration-normal)|var(--easing-standard)` for explicit custom-property references in multi-value declarations.
 - Low-level values are acceptable when teaching syntax, no token exists, the value is local measured geometry, or the value is structural layout such as `w:50%`, `h:100dvh`, `m:0`, `m:1px`, `z:1`, or `opacity:.64`.
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.

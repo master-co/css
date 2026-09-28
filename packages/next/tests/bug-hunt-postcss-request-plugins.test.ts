@@ -26,8 +26,8 @@ interface Result {
 }
 interface Helpers { result: Result; postcss: typeof postcss }
 const phases = ['Once', 'Declaration', 'OnceExit'] as const
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
-const initialSource = '@theme{--color-old:#111111;--color-late:#abcdef}.card{color:var(--color-old);audit-trigger:1}'
+const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const initialSource = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old);audit-trigger:1}"
 
 async function runNative(plugins: unknown[], source: string, file = '/audit/entry.css', hook?: PostCSSResourceHook, sharedProcessor?: { plugins: unknown[] }) {
   const events: [string, ...unknown[]][] = []

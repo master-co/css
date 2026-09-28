@@ -8,8 +8,8 @@ import { SVGProps } from 'react'
 export default function CSSLogotype({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <>
-      <LogotypeAtDark {...props} className={clsx(className, 'hidden@light')} />
-      <LogotypeAtLight {...props} className={clsx(className, 'hidden@dark')} />
+      <LogotypeAtDark {...props} className={clsx(className, 'hidden@site-light')} />
+      <LogotypeAtLight {...props} className={clsx(className, 'hidden@site-dark')} />
     </>
   )
 }

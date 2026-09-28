@@ -35,14 +35,14 @@ pub enum DiagnosticSeverity {
 
 #[derive(Debug, Error)]
 pub enum SchemaError {
-    #[error("Unsupported MasterCSSManifest version. Expected version 1.")]
+    #[error("Unsupported MasterCSSManifest version. Expected version 2.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 3; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 4; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
-    #[error("settings.{0} was removed; migrate to explicit native queries and @mode definitions.")]
-    RemovedSetting(String),
+    #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
+    RemovedField(String),
     #[error(
         "Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables."
     )]
@@ -64,7 +64,7 @@ pub enum SchemaError {
     )]
     RemovedVariableMatcher,
     #[error(
-        "Typed raw utility matchers, kinds, segments and =namespace were removed; recompile using key:<*> and prefix-<~namespace>."
+        "Typed raw utility matchers, kinds, segments and =namespace were removed; recompile using @utility key:* and @utility prefix-* from(--namespace-*)."
     )]
     RemovedUtilityMatcher,
 }
@@ -79,7 +79,7 @@ impl SchemaError {
             | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
             | Self::InvalidManifest
-            | Self::RemovedSetting(_)
+            | Self::RemovedField(_)
             | Self::RemovedBaseUnit
             | Self::RemovedVariableMatcher
             | Self::RemovedUtilityMatcher => ErrorCode::InvalidManifest,
@@ -87,7 +87,7 @@ impl SchemaError {
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v1 wire format.
+/// Validated, order-preserving representation of the public Manifest v2 wire format.
 ///
 /// The domain crates deliberately keep the original JSON object intact while individual
 /// subsystems progressively replace `Value` access with strongly typed projections. This
@@ -109,10 +109,44 @@ impl MasterCssManifest {
         if object.get("languageVersion").and_then(Value::as_u64) != Some(LANGUAGE_VERSION.into()) {
             return Err(SchemaError::UnsupportedLanguageVersion);
         }
-        if let Some(settings) = object.get("settings").and_then(Value::as_object) {
-            for key in ["rootSize", "defaultMode", "modeTrigger", "modes"] {
-                if settings.contains_key(key) {
-                    return Err(SchemaError::RemovedSetting(key.into()));
+        for field in [
+            "settings",
+            "modes",
+            "animations",
+            "animationOptions",
+            "breakpointConditions",
+        ] {
+            if object.contains_key(field) {
+                return Err(SchemaError::RemovedField(field.into()));
+            }
+        }
+        if let Some(theme) = object.get("theme") {
+            serde_json::from_value::<Vec<ThemeNode>>(theme.clone())?;
+        }
+        if let Some(media) = object.get("customMedia") {
+            serde_json::from_value::<BTreeMap<String, MediaQueryExpr>>(media.clone())?;
+        }
+        if let Some(variables) = object.get("variables") {
+            let groups = variables
+                .as_object()
+                .ok_or(SchemaError::UnsupportedVariablesFormat)?;
+            for definitions in groups.values() {
+                for variable in definitions
+                    .as_array()
+                    .ok_or(SchemaError::UnsupportedVariablesFormat)?
+                {
+                    let fields = variable
+                        .as_object()
+                        .ok_or(SchemaError::UnsupportedVariablesFormat)?;
+                    for field in ["value", "modes", "mode", "inline", "static"] {
+                        if fields.contains_key(field) {
+                            return Err(SchemaError::RemovedField(format!("variables.*.{field}")));
+                        }
+                    }
+                    let values = fields
+                        .get("values")
+                        .ok_or(SchemaError::UnsupportedVariablesFormat)?;
+                    serde_json::from_value::<Vec<ScopedThemeValue>>(values.clone())?;
                 }
             }
         }
@@ -121,13 +155,6 @@ impl MasterCssManifest {
         }
         if object.contains_key("utilityBuckets") {
             return Err(SchemaError::UnsupportedUtilityBuckets);
-        }
-        if object
-            .get("settings")
-            .and_then(Value::as_object)
-            .is_some_and(|settings| settings.contains_key("baseUnit"))
-        {
-            return Err(SchemaError::RemovedBaseUnit);
         }
         if object
             .get("utilities")
@@ -171,11 +198,7 @@ impl MasterCssManifest {
                     .any(|matcher| {
                         matcher.get("type").and_then(Value::as_str) == Some("value")
                             || matcher.get("segments").is_some()
-                            || (matcher.get("type").and_then(Value::as_str) == Some("pattern")
-                                && matcher
-                                    .get("prefix")
-                                    .and_then(Value::as_str)
-                                    .is_some_and(|prefix| prefix.ends_with(':')))
+                            || matcher.get("type").and_then(Value::as_str) == Some("pattern")
                     })
             {
                 return Err(SchemaError::RemovedUtilityMatcher);
@@ -195,20 +218,4 @@ impl MasterCssManifest {
     pub fn to_json(&self) -> Result<String, SchemaError> {
         Ok(serde_json::to_string(&self.0)?)
     }
-}
-
-/// Source order is cascade order; replacing a mode moves it to the last definition.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ModeDefinition {
-    pub name: String,
-    pub branches: Vec<ModeBranch>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ModeBranch {
-    pub selector: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub conditions: Vec<String>,
 }

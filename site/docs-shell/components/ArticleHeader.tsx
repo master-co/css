@@ -62,7 +62,7 @@ export default async function ArticleHeader(props: any) {
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'max-w:var(--breakpoint-sm) mt:0 font-size:28px leading-xs tracking-tight text-wrap text-strong font-3xl@sm',
+            'max-w:52.125rem mt:0 font-size:28px leading-xs tracking-tight text-wrap text-strong font-3xl@sm',
             h1ClassName,
             {
               'font-4xl@md': metadata.type !== 'entity' && !toc
@@ -83,7 +83,7 @@ export default async function ArticleHeader(props: any) {
         </div>}
       </div >
       {metadata.package && <PackageBadges {...metadata.package} translate={$} />}
-      <p className={clsx('max-w:var(--breakpoint-xs) text-md text-pretty', {
+      <p className={clsx('max-w:48rem text-md text-pretty', {
         'text-lg@sm': metadata.type !== 'entity' && !toc,
       })}>{$(metadata.description)}</p>
       {

@@ -1,6 +1,6 @@
 use super::utilities::{compile_utilities, compile_variants};
 use super::variables::{
-    compile_variable_conditions, compile_variables, group_variables, manifest_error, object,
+    compile_container_conditions, compile_variables, group_variables, manifest_error, object,
 };
 use super::{
     CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
@@ -79,17 +79,7 @@ pub(super) fn flatten_variables(value: Option<&Value>) -> Vec<Value> {
                 definition.insert("namespace".into(), Value::String(namespace.clone()));
             }
             if !definition.contains_key("type") {
-                definition.insert(
-                    "type".into(),
-                    Value::String(
-                        if definition.get("value").is_some_and(Value::is_number) {
-                            "number"
-                        } else {
-                            "string"
-                        }
-                        .into(),
-                    ),
-                );
+                definition.insert("type".into(), Value::String("string".into()));
             }
             flattened.push(Value::Object(definition));
         }
@@ -98,21 +88,60 @@ pub(super) fn flatten_variables(value: Option<&Value>) -> Vec<Value> {
 }
 
 pub(super) fn merge_variables(base: Option<&Value>, next: Option<&Value>) -> Option<Value> {
-    let base = Value::Array(flatten_variables(base));
-    let next = Value::Array(flatten_variables(next));
-    let merged = merge_array_by(Some(&base), Some(&next), |variable| {
-        variable
+    let mut merged = flatten_variables(base);
+    let mut slots = merged
+        .iter()
+        .enumerate()
+        .filter_map(|(index, variable)| {
+            variable
+                .get("name")
+                .and_then(Value::as_str)
+                .map(|name| (name.to_owned(), index))
+        })
+        .collect::<HashMap<_, _>>();
+    for variable in flatten_variables(next) {
+        let name = variable
             .get("name")
             .and_then(Value::as_str)
-            .map(str::to_owned)
-    })?;
+            .unwrap_or_default()
+            .to_owned();
+        if let Some(index) = slots.get(&name) {
+            let previous = &mut merged[*index];
+            let values = previous
+                .get_mut("values")
+                .and_then(Value::as_array_mut)
+                .expect("scoped values");
+            values.extend(variable["values"].as_array().into_iter().flatten().cloned());
+            let dependencies = previous
+                .as_object_mut()
+                .expect("variable")
+                .entry("dependencies")
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .expect("dependencies");
+            for dependency in variable["dependencies"].as_array().into_iter().flatten() {
+                if !dependencies.contains(dependency) {
+                    dependencies.push(dependency.clone());
+                }
+            }
+            if previous.get("numeric") != variable.get("numeric") {
+                previous
+                    .as_object_mut()
+                    .expect("variable")
+                    .shift_remove("numeric");
+            }
+            if previous.get("type") != variable.get("type") {
+                previous["type"] = "string".into();
+            }
+        } else {
+            slots.insert(name, merged.len());
+            merged.push(variable);
+        }
+    }
     group_variables(
         merged
-            .as_array()
             .into_iter()
-            .flatten()
-            .filter_map(Value::as_object)
-            .cloned()
+            .filter_map(|variable| variable.as_object().cloned())
             .collect(),
     )
 }
@@ -124,36 +153,59 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     let fragment = fragment
         .as_object()
         .expect("manifest fragment is an object");
+    let mut base = base.clone();
+    for variant in fragment
+        .get("variants")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+    {
+        let Some(token) = variant.get("token").and_then(Value::as_str) else {
+            continue;
+        };
+        if base
+            .get("variants")
+            .and_then(Value::as_array)
+            .is_some_and(|variants| {
+                variants
+                    .iter()
+                    .any(|previous| previous.get("token").and_then(Value::as_str) == Some(token))
+            })
+        {
+            let (field, key) = if let Some(name) = token.strip_prefix('@') {
+                ("conditions", name)
+            } else {
+                ("selectors", token)
+            };
+            if let Some(index) = base.get_mut(field).and_then(Value::as_object_mut) {
+                index.shift_remove(key);
+            }
+        }
+    }
     let mut manifest = Map::new();
     manifest.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
     manifest.insert(
         "languageVersion".into(),
         Value::from(mastercss_schema::LANGUAGE_VERSION),
     );
-    let mut modes = base
-        .get("modes")
-        .and_then(Value::as_array)
-        .cloned()
-        .unwrap_or_default();
-    for mode in fragment
-        .get("modes")
+    let variables = merge_variables(base.get("variables"), fragment.get("variables"));
+    let theme = base
+        .get("theme")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-    {
-        modes.retain(|previous| previous.get("name") != mode.get("name"));
-        modes.push(mode.clone());
+        .chain(
+            fragment
+                .get("theme")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten(),
+        )
+        .cloned()
+        .collect::<Vec<_>>();
+    if !theme.is_empty() {
+        manifest.insert("theme".into(), Value::Array(theme));
     }
-    if !modes.is_empty() {
-        manifest.insert("modes".into(), Value::Array(modes));
-    }
-    let settings = merge_records(base.get("settings"), fragment.get("settings"));
-    let variables = merge_variables(base.get("variables"), fragment.get("variables"));
-    let animations = merge_records(base.get("animations"), fragment.get("animations"));
-    let animation_options = merge_records(
-        base.get("animationOptions"),
-        fragment.get("animationOptions"),
-    );
     let variants = merge_array_by(base.get("variants"), fragment.get("variants"), |variant| {
         variant
             .get("token")
@@ -177,21 +229,15 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     let utilities = (!all_utilities.is_empty())
         .then(|| Value::Array(mastercss_engine::effective_utilities(&all_utilities)));
     for (key, value) in [
-        ("settings", settings),
         ("variables", variables),
-        ("animations", animations),
-        ("animationOptions", animation_options),
+        (
+            "customMedia",
+            merge_records(base.get("customMedia"), fragment.get("customMedia")),
+        ),
         ("variants", variants),
         (
             "conditions",
             merge_records(base.get("conditions"), fragment.get("conditions")),
-        ),
-        (
-            "breakpointConditions",
-            merge_records(
-                base.get("breakpointConditions"),
-                fragment.get("breakpointConditions"),
-            ),
         ),
         (
             "containerConditions",
@@ -251,77 +297,44 @@ pub(crate) fn compile_manifest_fragment(
         MasterCssManifest::new(base_manifest.clone())
             .map_err(|error| manifest_error(error.to_string()))?;
     }
+    let registry = crate::custom_media::resolve(input, options.base_manifest.as_ref())?;
     let variables = compile_variables(input, options.base_manifest.as_ref())?;
-    let (mut conditions, breakpoint_conditions, container_conditions) =
-        compile_variable_conditions(&variables);
+    let container_conditions = compile_container_conditions(&variables);
     let grouped_variables = group_variables(variables);
-    let mut settings = Map::new();
-    for (key, value) in [
-        ("scope", input.scope.clone().map(Value::String)),
-        ("important", input.important.map(Value::Bool)),
-    ] {
-        if let Some(value) = value {
-            settings.insert(key.into(), value);
-        }
-    }
-    let (variants, selectors, variant_conditions) = compile_variants(input.variants.as_ref())?;
-    for variant in input.variants.iter().flatten() {
-        if let Some(name) = variant
-            .get("token")
-            .and_then(Value::as_str)
-            .and_then(|token| token.strip_prefix('@'))
-            && breakpoint_conditions.contains_key(name)
-        {
-            return Err(manifest_error(format!(
-                "Condition name {name} conflicts between breakpoint and custom variant"
-            )));
-        }
-    }
-    conditions.extend(variant_conditions);
-    let utilities = compile_utilities(input.utilities.as_ref())?;
+    let mut variant_definitions = input.variants.clone().map(Value::Array);
+    crate::custom_media::lower_records(&mut variant_definitions, "branches", &registry)?;
+    let (variants, selectors, variant_conditions) =
+        compile_variants(variant_definitions.as_ref().and_then(Value::as_array))?;
+    let conditions = variant_conditions;
+    let mut utilities = compile_utilities(input.utilities.as_ref())?;
+    crate::custom_media::lower_records(&mut utilities, "rules", &registry)?;
     let mut fragment = Map::new();
     fragment.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
     fragment.insert(
         "languageVersion".into(),
         Value::from(mastercss_schema::LANGUAGE_VERSION),
     );
-    if let Some(modes) = &input.modes {
-        let mut effective = Vec::<&mastercss_schema::ModeDefinition>::new();
-        for mode in modes {
-            effective.retain(|previous| previous.name != mode.name);
-            effective.push(mode);
-        }
+    if !registry.is_empty() {
         fragment.insert(
-            "modes".into(),
-            serde_json::to_value(effective).map_err(|error| manifest_error(error.to_string()))?,
+            "customMedia".into(),
+            serde_json::to_value(&registry).expect("custom media"),
         );
     }
-    if !settings.is_empty() {
-        fragment.insert("settings".into(), Value::Object(settings));
+    if let Some(theme) = &input.theme {
+        fragment.insert(
+            "theme".into(),
+            serde_json::to_value(crate::custom_media::lower_theme(theme, &registry)?)
+                .expect("theme"),
+        );
     }
     if let Some(variables) = grouped_variables {
         fragment.insert("variables".into(), variables);
-    }
-    if let Some(animations) = &input.animations {
-        fragment.insert("animations".into(), Value::Object(animations.clone()));
-    }
-    if let Some(animation_options) = &input.animation_options {
-        fragment.insert(
-            "animationOptions".into(),
-            Value::Object(animation_options.clone()),
-        );
     }
     if let Some(variants) = variants {
         fragment.insert("variants".into(), variants);
     }
     if !conditions.is_empty() {
         fragment.insert("conditions".into(), Value::Object(conditions));
-    }
-    if !breakpoint_conditions.is_empty() {
-        fragment.insert(
-            "breakpointConditions".into(),
-            Value::Object(breakpoint_conditions),
-        );
     }
     if !container_conditions.is_empty() {
         fragment.insert(
@@ -392,12 +405,7 @@ pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerEr
     Ok(Value::Object(manifest))
 }
 
-pub(super) fn is_default_setting(key: &str, value: &Value) -> bool {
-    key == "important" && value.as_bool() == Some(false)
-}
-
-/// Produces the public default-preset artifact shape. Engine registry data and
-/// settings that equal the engine defaults are intentionally excluded.
+/// Produces the public default-preset artifact shape.
 pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, CompilerError> {
     let manifest = object(manifest)?;
     let mut preset = Map::new();
@@ -406,20 +414,10 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         "languageVersion".into(),
         Value::from(mastercss_schema::LANGUAGE_VERSION),
     );
-    if let Some(settings) = manifest.get("settings").and_then(Value::as_object) {
-        let settings = settings
-            .iter()
-            .filter(|(key, value)| !is_default_setting(key, value))
-            .map(|(key, value)| (key.clone(), value.clone()))
-            .collect::<Map<_, _>>();
-        if !settings.is_empty() {
-            preset.insert("settings".into(), Value::Object(settings));
-        }
-    }
     for key in [
-        "modes",
+        "theme",
+        "customMedia",
         "variables",
-        "animations",
         "variants",
         "conditions",
         "breakpointConditions",

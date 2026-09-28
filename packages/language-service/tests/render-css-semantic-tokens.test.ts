@@ -49,108 +49,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 }
 
 test.concurrent('does not render semantic tokens for native CSS-only documents', () => {
-  const { tokens } = renderTokens(`
-    @charset "utf-8";
-    @import url("base.css") layer(theme) supports(display: grid);
-    @namespace svg url("http://www.w3.org/2000/svg");
-    /* @theme should remain a native comment */
-
-    @font-face {
-      font-family: "Inter";
-      src: url("/fonts/inter.woff2") format("woff2");
-      font-display: swap;
-    }
-
-    @property --angle {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
-    }
-
-    @counter-style bullets {
-      system: cyclic;
-      symbols: "*" "\\2022";
-      suffix: " ";
-    }
-
-    @font-feature-values Inter {
-      @styleset {
-        nice: 1;
-      }
-    }
-
-    @font-palette-values --brand {
-      font-family: "Bixa";
-      base-palette: 1;
-      override-colors: 0 #0f172a;
-    }
-
-    @page :first {
-      margin: 1cm;
-      @top-left {
-        content: "Chapter";
-      }
-    }
-
-    @position-try --bottom {
-      inset-area: bottom;
-      margin: 1rem;
-    }
-
-    @view-transition {
-      navigation: auto;
-    }
-
-    @scope (.card) to (.content) {
-      :scope {
-        color: red;
-      }
-    }
-
-    @starting-style {
-      .card {
-        opacity: 0;
-      }
-    }
-
-    @document url("https://example.com/") {
-      body {
-        color: red;
-      }
-    }
-
-    @keyframes fade {
-      from {
-        opacity: 0;
-        transform: translateX(0);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateX(var(--distance));
-      }
-    }
-
-    @layer reset, theme, components;
-
-    @media (width >= 48rem) {
-      .card:hover::before {
-        --distance: calc(100% - 1rem);
-        color: red;
-        content: "@utilities";
-      }
-    }
-
-    @supports (container-type: inline-size) {
-      @container card (width > 30rem) {
-        @layer utilities {
-          .card:is(.active, #featured) {
-            animation: fade 1s ease-in-out;
-          }
-        }
-      }
-    }
-  `, 'css')
+  const { tokens } = renderTokens("\n    @charset \"utf-8\";\n    @import url(\"base.css\") layer(theme) supports(display: grid);\n    @namespace svg url(\"http://www.w3.org/2000/svg\");\n    /* @theme { .should remain a native comment */\n\n    @font-face {\n      font-family: \"Inter\";\n      src: url(\"/fonts/inter.woff2\") format(\"woff2\");\n      font-display: swap;\n    } }\n\n\n    @property --angle {\n      syntax: \"<angle>\";\n      inherits: false;\n      initial-value: 0deg;\n    }\n\n    @counter-style bullets {\n      system: cyclic;\n      symbols: \"*\" \"\\2022\";\n      suffix: \" \";\n    }\n\n    @font-feature-values Inter {\n      @styleset {\n        nice: 1;\n      }\n    }\n\n    @font-palette-values --brand {\n      font-family: \"Bixa\";\n      base-palette: 1;\n      override-colors: 0 #0f172a;\n    }\n\n    @page :first {\n      margin: 1cm;\n      @top-left {\n        content: \"Chapter\";\n      }\n    }\n\n    @position-try --bottom {\n      inset-area: bottom;\n      margin: 1rem;\n    }\n\n    @view-transition {\n      navigation: auto;\n    }\n\n    @scope (.card) to (.content) {\n      :scope {\n        color: red;\n      }\n    }\n\n    @starting-style {\n      .card {\n        opacity: 0;\n      }\n    }\n\n    @document url(\"https://example.com/\") {\n      body {\n        color: red;\n      }\n    }\n\n    @keyframes fade {\n      from {\n        opacity: 0;\n        transform: translateX(0);\n      }\n\n      to {\n        opacity: 1;\n        transform: translateX(var(--distance));\n      }\n    }\n\n    @layer reset, theme, components;\n\n    @media (width >= 48rem) {\n      .card:hover::before {\n        --distance: calc(100% - 1rem);\n        color: red;\n        content: \"@utilities\";\n      }\n    }\n\n    @supports (container-type: inline-size) {\n      @container card (width > 30rem) {\n        @layer utilities {\n          .card:is(.active, #featured) {\n            animation: fade 1s ease-in-out;\n          }\n        }\n      }\n    }\n  ", 'css')
 
   expect(tokens).toEqual([])
 })
@@ -175,11 +74,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
     '}',
     '.card:hover::before { color: red; }'
   ].join('\n')
-  const themeDirective = [
-    '@theme {',
-    '    --color-primary: --alpha(var(--color-blue-60) / 80%);',
-    '}'
-  ].join('\n')
+  const themeDirective = "@theme { :root, :host {\n    --color-primary: --alpha(var(--color-blue-60) / 80%);\n} }\n"
   const nativeBetween = [
     '@layer reset, theme, components;',
     '@media (width >= 48rem) {',
@@ -193,14 +88,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
     '    }',
     '}'
   ].join('\n')
-  const utilitiesDirective = [
-    '@utilities {',
-    '    text-<left|right> {',
-    "        @safelist \"block fg-red\";",
-    '        text-align: --value();',
-    '    }',
-    '}'
-  ].join('\n')
+  const utilitiesDirective = "@utility text-left {\n        @safelist \"block fg-red\";\n        text-align: left;\n    }\n@utility text-right {\n        @safelist \"block fg-red\";\n        text-align: right;\n    }"
   const safelistDirective = '@safelist "hidden fg-blue";'
   const content = [
     nativeBefore,
@@ -213,9 +101,14 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokens(doc)
   const tokens = decodeSemanticTokenRanges(doc, semanticTokens?.data ?? [])
-  const classListRanges = ['hidden fg-blue', 'block fg-red'].map((classList) => {
-    const start = content.indexOf(classList)
-    return { start, end: start + classList.length }
+  const classListRanges = ['hidden fg-blue', 'block fg-red'].flatMap(classList => {
+    const ranges = []
+    let start = content.indexOf(classList)
+    while (start !== -1) {
+      ranges.push({ start, end: start + classList.length })
+      start = content.indexOf(classList, start + classList.length)
+    }
+    return ranges
   })
   const themeStart = content.indexOf(themeDirective)
   const themeEnd = themeStart + themeDirective.length
@@ -253,7 +146,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
 })
 
 test.concurrent('renders CSS directives in SCSS-like sources', () => {
-  const { tokens } = renderTokens("\n    $color: red;\n\n    @theme {\n      --color-primary: #123;\n    }\n\n    .btn {\n      @safelist \"block\";\n    }\n  ", 'scss')
+  const { tokens } = renderTokens("\n    $color: red;\n\n    @theme { :root, :host {\n      --color-primary: #123;\n    } }\n\n\n    .btn {\n      @safelist \"block\";\n    }\n  ", 'scss')
 
   expectToken(tokens, 'block', 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
@@ -262,7 +155,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
-  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"block fg-red:hover@md\";\n\n    @theme static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    }\n\n    @custom-variant headings { @media all { @slot; } }\n\n    @utilities {\n      btn {\n        @safelist \"inline-flex align-items:center fg-primary:hover@md\";\n\n        @variant h>=sm&h<lg {\n          @safelist \"block\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @dark {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n    }\n\n    @utilities {\n      text-decoration-<~color> {\n        text-decoration: --value();\n      }\n    }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
+  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"block fg-red:hover@md\";\n\n    @theme { .static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    } }\n\n\n    @custom-variant headings { @variant all { @slot; } }\n\n    @utility btn {\n        @safelist \"inline-flex align-items:center fg-primary:hover@md\";\n\n        @variant h>=sm&h<lg {\n          @safelist \"block\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @utility text-decoration-* from(--color-*) {\n        text-decoration: --master-value();\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -304,23 +197,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
 })
 
 test.concurrent('renders CSS directives in LESS-like sources', () => {
-  const { tokens } = renderTokens(`
-    @color: red;
-
-    @theme {
-      --color-primary: oklch(99% 0.0033 72);
-    }
-
-    @utilities {
-      font:<~font-size|number> {
-        font-size: --value();
-
-        @light {
-          color: var(--color-primary);
-        }
-      }
-    }
-  `, 'less')
+  const { tokens } = renderTokens("\n    @color: red;\n\n    @theme {:root, :host {\n      --color-primary: oklch(99% 0.0033 72);\n    }}\n\n\n    \n      @utility font:<~font-size|number> {\n        font-size: --master-value();\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-primary);\n        }\n      }\n    \n  ", 'less')
 
   expect(tokens).toEqual([])
 })
@@ -387,7 +264,7 @@ test.concurrent('skips full embedded semantic tokens in active mode', () => {
 })
 
 test.concurrent('does not render active semantic tokens for CSS directive syntax at a position', () => {
-  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n.btn { color: red; }'
+  const content = "@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n.btn { color: red; }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
@@ -397,7 +274,7 @@ test.concurrent('does not render active semantic tokens for CSS directive syntax
 })
 
 test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
-  const content = "@utilities { btn { @safelist \"fg-red block:hover\"; } }"
+  const content = "@utility btn { @safelist \"fg-red block:hover\"; }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
@@ -442,7 +319,7 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
-  const content = "@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @safelist \"block\"; } }"
+  const content = "@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@utility btn { @safelist \"block\"; }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)

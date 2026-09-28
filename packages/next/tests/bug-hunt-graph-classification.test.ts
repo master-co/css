@@ -31,7 +31,7 @@ test.each([
   ['an anonymous layer', 'layer'],
   ['supports and media', 'supports(display:grid) screen']
 ])('BH-0004 an entry importing an external-importing child through %s compiles', async (_name, qualifier) => {
-  const source = `@master entry;@import "./child.css" ${qualifier};`
+  const source = `@import url("@master/css");@import "./child.css" ${qualifier};`
   const f = fixture(source, '@import "https://external.invalid/style.css";.child{color:red}')
   try {
     const { code, dependencies } = await compile(f.root, f.entry, source)

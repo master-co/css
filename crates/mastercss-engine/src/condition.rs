@@ -1,6 +1,6 @@
 use super::{
-    ConditionFeature, EngineSettings, ManifestCondition, ManifestProjection, UtilityLayerName,
-    Value, natural_compare,
+    ConditionFeature, ManifestCondition, ManifestProjection, UtilityLayerName, Value,
+    natural_compare,
 };
 
 pub(crate) fn resolve_layer_condition(
@@ -367,7 +367,7 @@ pub(crate) fn render_condition_node(id: &str, node: &Value, operator: Option<&st
     value
 }
 
-pub(crate) fn normalize_dynamic_value(value: &str, _settings: &EngineSettings) -> String {
+pub(crate) fn normalize_dynamic_value(value: &str) -> String {
     // CSS owns dimensions, including the native resolution unit `x`.
     value.to_owned()
 }

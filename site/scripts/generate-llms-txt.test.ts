@@ -175,7 +175,7 @@ test('direct configured demo props export literal HTML and CSS without executing
   const root = await mkdtemp(path.join(os.tmpdir(), 'project-style-export-'))
   try {
     const file = path.join(root, 'content.mdx')
-    await writeFile(file, '<DemoConfiguredExample name="spacing" title="Padding" source="@theme { --spacing-card: 1.5rem; }" html={\'<article class="p-card">Collection</article>\'} caption="Shared padding." />')
+    await writeFile(file, '<DemoConfiguredExample name="spacing" title="Padding" source="@theme { :root { --spacing-card: 1.5rem; } }" html={\'<article class="p-card">Collection</article>\'} caption="Shared padding." />')
     const result = await extractReferenceMdx(file)
     assert.deepEqual(result.notes, [])
     assert.match(result.markdown, /<article class="p-card">Collection<\/article>/)
@@ -336,7 +336,7 @@ test('foundation exports include all native token values and their visible table
   }
   for (const role of getFontWeightRows().map(row => row.utilities[0].slice('font-'.length))) assert.ok(bodies.typography.includes(`font-${role}`), role)
   for (const [group, rows] of Object.entries(rowsByGroup)) for (const row of rows) {
-    for (const value of [row.token, row.light, row.dark, rowDescriptionByGroup[group as keyof typeof rowsByGroup](row.key)]) assert.ok(bodies.colors.includes(value), `colors: ${value}`)
+    for (const value of [row.token, row.value, rowDescriptionByGroup[group as keyof typeof rowsByGroup](row.key)]) assert.ok(bodies.colors.includes(value), `colors: ${value}`)
   }
   for (const variable of getThemeVariables('color').filter(variable => /^color-.+-\d+$/.test(variable.name ?? ''))) {
     assert.ok(bodies.colors.includes(`--${variable.name}`), variable.name)
@@ -344,7 +344,7 @@ test('foundation exports include all native token values and their visible table
   }
   for (const [slug, namespace] of [['spacing', 'spacing'], ['sizing', 'container'], ['containers', 'container'], ['breakpoints', 'breakpoint'], ['corner-radius', 'radius']]) {
     for (const entry of getThemeNumericVariableEntries(namespace)) {
-      assert.ok(bodies[slug].includes(`--${namespace}-${entry.key}`), `${slug}: ${entry.key}`)
+      assert.ok(bodies[slug].includes(namespace === 'breakpoint' ? `--${entry.key}` : `--${namespace}-${entry.key}`), `${slug}: ${entry.key}`)
       assert.ok(bodies[slug].includes(entry.value), `${slug}: ${entry.value}`)
     }
   }

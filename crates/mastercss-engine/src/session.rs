@@ -5,9 +5,8 @@ use super::{
     ManifestProjection, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
     canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
-    collect_stylesheet_animation_names, compare_stored_rules, compile_manifest, emit_declarations,
-    engine_variable_ir, layer_index, layer_name, normalize_dynamic_value, resolve_state_branches,
-    resolve_style_selector_aliases, stylesheet_resource_syntax,
+    compare_stored_rules, compile_manifest, emit_declarations, engine_variable_ir, layer_index,
+    layer_name, normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
 };
 
 impl EngineSession {
@@ -39,12 +38,9 @@ impl EngineSession {
             theme_text: None,
             theme_dirty: false,
             theme_batch_depth: 0,
-            animation_counts: HashMap::new(),
-            animation_names: Vec::new(),
             disposed: false,
         };
         session.initialize_variable_resources();
-        session.initialize_animation_resources();
         session.sync_theme_text();
         Ok(session)
     }
@@ -62,18 +58,6 @@ impl EngineSession {
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
-        self.ensure_class_rules_for_mode(class_names, None)
-    }
-
-    pub(crate) fn ensure_class_rules_for_mode<I, S>(
-        &mut self,
-        class_names: I,
-        mode: Option<&str>,
-    ) -> Result<EngineTransitionIr, EngineError>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
         self.with_theme_batch(|session| {
             let mut mutations = Vec::new();
             for class_name in class_names {
@@ -81,7 +65,7 @@ impl EngineSession {
                 if class_name.is_empty() || session.class_rules.contains_key(class_name) {
                     continue;
                 }
-                let generated = session.generate_class_rules_with_mode(class_name, mode);
+                let generated = session.generate_class_rules(class_name);
                 session.insert_generated_class_rules(class_name, generated, &mut mutations);
             }
             Ok(EngineTransitionIr::new(mutations))
@@ -121,8 +105,6 @@ impl EngineSession {
                 text: rule.ir.text.clone(),
                 rule: Some(Box::new(rule.ir)),
             });
-            let animation_names = layer_rules[index].ir.animation_names.clone();
-            self.register_rule_animations(&animation_names, mutations);
         }
         if !class_rule_keys.is_empty() {
             self.class_order.push(class_name.to_owned());
@@ -171,7 +153,6 @@ impl EngineSession {
                         key,
                     });
                     session.unregister_rule_variables(&rule.ir.variable_names);
-                    session.unregister_rule_animations(&rule.ir.animation_names, &mut mutations);
                 }
                 session
                     .class_order
@@ -205,29 +186,7 @@ impl EngineSession {
         native_css: &str,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.with_theme_batch(|session| {
-            let mut mutations = Vec::new();
-            let (native_animation_names, animation_declarations, stylesheet_variables) =
-                stylesheet_resource_syntax(native_css);
-            for name in &native_animation_names {
-                let count = session.emitted_globals.animation_count(name);
-                session
-                    .emitted_globals
-                    .animations
-                    .insert(name.clone(), count.saturating_add(1));
-                if let Some(index) = session
-                    .animation_names
-                    .iter()
-                    .position(|animation_name| animation_name == name)
-                {
-                    session.animation_names.remove(index);
-                    mutations.push(RuleMutationIr::Delete {
-                        target: RuleTarget::Keyframes,
-                        index: index as u32,
-                        key: name.clone(),
-                    });
-                }
-            }
-
+            let stylesheet_variables = mastercss_lexer::collect_css_variable_references(native_css);
             let variable_names = stylesheet_variables
                 .into_iter()
                 .filter(|name| session.compiled.compiled_variables.contains_key(name))
@@ -236,13 +195,7 @@ impl EngineSession {
                 session.register_variable(variable_name, &mut HashSet::new());
             }
 
-            let animation_names =
-                collect_stylesheet_animation_names(&animation_declarations, &session.compiled)
-                    .into_iter()
-                    .filter(|name| !native_animation_names.contains(name))
-                    .collect::<Vec<_>>();
-            session.register_rule_animations(&animation_names, &mut mutations);
-            Ok(EngineTransitionIr::new(mutations))
+            Ok(EngineTransitionIr::empty())
         })
     }
 
@@ -251,9 +204,6 @@ impl EngineSession {
         let mut emitted_globals = self.emitted_globals.clone();
         for name in &self.theme_variable_names {
             emitted_globals.variables.entry(name.clone()).or_insert(1);
-        }
-        for name in &self.animation_names {
-            emitted_globals.animations.entry(name.clone()).or_insert(1);
         }
         Ok(emitted_globals)
     }
@@ -275,17 +225,6 @@ impl EngineSession {
             let next = current.saturating_add(count);
             if next != current {
                 merged.variables.insert(name, next);
-                changed = true;
-            }
-        }
-        for (name, count) in emitted_globals.animations {
-            if count == 0 {
-                continue;
-            }
-            let current = merged.animation_count(&name);
-            let next = current.saturating_add(count);
-            if next != current {
-                merged.animations.insert(name, next);
                 changed = true;
             }
         }
@@ -322,19 +261,9 @@ impl EngineSession {
                     });
                 }
             }
-            for index in (0..session.animation_names.len()).rev() {
-                let name = session.animation_names[index].clone();
-                mutations.push(RuleMutationIr::Delete {
-                    target: RuleTarget::Keyframes,
-                    index: index as u32,
-                    key: name,
-                });
-            }
             session.theme_dirty = true;
             session.variable_counts.clear();
             session.theme_variable_names.clear();
-            session.animation_counts.clear();
-            session.animation_names.clear();
             session.compiled = compiled;
             session.manifest = manifest;
             session.emitted_globals = emitted_globals;
@@ -342,18 +271,6 @@ impl EngineSession {
             session.class_order.clear();
             session.rule_counts.clear();
             session.initialize_variable_resources();
-            session.initialize_animation_resources();
-            for (index, name) in session.animation_names.iter().enumerate() {
-                if let Some(text) = session.keyframe_text(name) {
-                    mutations.push(RuleMutationIr::Insert {
-                        target: RuleTarget::Keyframes,
-                        index: index as u32,
-                        key: name.clone(),
-                        text,
-                        rule: None,
-                    });
-                }
-            }
             mutations.extend(session.ensure_class_rules(connected_classes)?.mutations);
             Ok(EngineTransitionIr::new(mutations))
         })
@@ -367,7 +284,7 @@ impl EngineSession {
             .map(|rule| rule.ir.clone())
             .collect();
         Ok(EngineSnapshotIr {
-            version: 1,
+            version: 2,
             rules,
             resources: self.resource_snapshot(),
             text: self.css_text(),
@@ -414,10 +331,6 @@ impl EngineSession {
         subset.snapshot()
     }
 
-    pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
-        self.inspect_with_mode(class_name, None)
-    }
-
     /// Resolve registered definitions independently of emitted rule count.
     pub fn matched_utility_names(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
         self.ensure_active()?;
@@ -457,42 +370,36 @@ impl EngineSession {
         Ok(self.generate_composition_rules(class_name))
     }
 
+    /// Distinguish a known false condition from an unknown name during stylesheet lowering.
+    pub fn has_named_condition(&self, name: &str) -> Result<bool, EngineError> {
+        self.ensure_active()?;
+        Ok(self
+            .compiled
+            .custom_media
+            .contains_key(&format!("--{name}"))
+            || self.compiled.conditions.contains_key(name)
+            || self
+                .compiled
+                .variants
+                .iter()
+                .any(|variant| variant.token == format!("@{name}")))
+    }
+
     pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
         self.ensure_active()?;
         Ok(resolve_style_selector_aliases(selector, &self.compiled))
     }
 
-    pub fn inspect_with_mode(
-        &self,
-        class_name: &str,
-        mode: Option<&str>,
-    ) -> Result<EngineInspectionIr, EngineError> {
+    pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
         self.ensure_active()?;
         let rules = self
-            .generate_class_rules_with_mode(class_name, mode)
+            .generate_class_rules(class_name)
             .into_iter()
             .map(|rule| rule.ir)
             .collect::<Vec<_>>();
-        let mut diagnostics = super::named::diagnostics(class_name, &self.compiled);
-        if let Some(mode) = mode
-            && !self
-                .compiled
-                .modes
-                .iter()
-                .any(|definition| definition.name == mode)
-        {
-            diagnostics.push(mastercss_schema::Diagnostic {
-                code: mastercss_schema::ErrorCode::UndefinedMode,
-                phase: mastercss_schema::DiagnosticPhase::Match,
-                severity: mastercss_schema::DiagnosticSeverity::Error,
-                message: format!("Undefined mode {mode}; define @mode {mode}"),
-                source: None,
-                range: None,
-                notes: Vec::new(),
-            });
-        }
+        let diagnostics = super::named::diagnostics(class_name, &self.compiled);
         Ok(EngineInspectionIr {
-            version: 1,
+            version: 2,
             class_name: class_name.to_owned(),
             match_status: if diagnostics.is_empty()
                 && (!rules.is_empty() || !self.matched_utility_names(class_name)?.is_empty())
@@ -529,16 +436,8 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Result<ClassSemanticInspection, EngineError> {
-        self.inspect_class_semantics_with_mode(class_name, None)
-    }
-
-    pub fn inspect_class_semantics_with_mode(
-        &self,
-        class_name: &str,
-        mode: Option<&str>,
-    ) -> Result<ClassSemanticInspection, EngineError> {
         self.ensure_active()?;
-        let rules = self.generate_class_rules_with_mode(class_name, mode);
+        let rules = self.generate_class_rules(class_name);
         let canonical =
             canonicalize_class_name(class_name).unwrap_or_else(|| class_name.to_owned());
         let empty_matches = if rules.is_empty()
@@ -592,8 +491,6 @@ impl EngineSession {
             ClassSemanticKind::Component
         } else if first_type == Some(-2) {
             ClassSemanticKind::Semantic
-        } else if matcher_types.contains(&UtilityMatcherType::Pattern) {
-            ClassSemanticKind::Pattern
         } else if matcher_types.contains(&UtilityMatcherType::Token) {
             ClassSemanticKind::Token
         } else {
@@ -726,7 +623,7 @@ impl EngineSession {
                     if matched.value_normalized {
                         value.to_owned()
                     } else {
-                        normalize_dynamic_value(value, &self.compiled.settings)
+                        normalize_dynamic_value(value)
                     }
                 });
                 let mut emitted = false;
@@ -735,12 +632,8 @@ impl EngineSession {
                         .into_iter()
                         .enumerate()
                 {
-                    if emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important || self.compiled.settings.important,
-                    )
-                    .is_empty()
+                    if emit_declarations(utility, resolved_value.as_deref(), branch.important)
+                        .is_empty()
                     {
                         continue;
                     }
@@ -795,17 +688,6 @@ impl EngineSession {
         Ok(rendered)
     }
 
-    pub fn render_class_name_isolated_with_mode(
-        &self,
-        class_name: &str,
-        mode: Option<&str>,
-    ) -> Result<String, EngineError> {
-        self.ensure_active()?;
-        let mut isolated = self.fork_empty();
-        isolated.ensure_class_rules_for_mode([class_name], mode)?;
-        Ok(isolated.snapshot()?.text)
-    }
-
     pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {
         self.ensure_active()?;
         let generated = self.generate_class_rules(class_name);
@@ -835,11 +717,6 @@ impl EngineSession {
             }
             output.push('}');
         }
-        for name in &self.animation_names {
-            if let Some(keyframes) = self.keyframe_text(name) {
-                output.push_str(&keyframes);
-            }
-        }
         output
     }
 
@@ -850,8 +727,6 @@ impl EngineSession {
         self.rule_counts.clear();
         self.variable_counts.clear();
         self.theme_variable_names.clear();
-        self.animation_counts.clear();
-        self.animation_names.clear();
         self.theme_text = None;
         self.theme_dirty = false;
         self.disposed = true;
@@ -871,12 +746,9 @@ impl EngineSession {
             theme_text: None,
             theme_dirty: false,
             theme_batch_depth: 0,
-            animation_counts: HashMap::new(),
-            animation_names: Vec::new(),
             disposed: false,
         };
         session.initialize_variable_resources();
-        session.initialize_animation_resources();
         session.sync_theme_text();
         session
     }

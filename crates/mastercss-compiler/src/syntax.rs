@@ -1,30 +1,16 @@
 use super::{
-    CompilerError, CssDirectiveManifestInput, CssDirectiveVariableDefinition, DeclarationBlock,
-    ErrorCode, PrinterError, PrinterOptions, Property, SourceRange, ThemeAtRule, ToCss, Value,
-    byte_to_utf16_offset,
+    CompilerError, DeclarationBlock, ErrorCode, PrinterError, PrinterOptions, Property,
+    SourceRange, ToCss, Value, byte_to_utf16_offset,
 };
 
 pub(crate) fn directive_range(source: &str, byte_offset: usize) -> Option<SourceRange> {
-    let directives = [
-        "@theme",
-        "@settings",
-        "@defaults",
-        "@components",
-        "@utilities",
-        "@custom-variant",
-    ];
-    let (start, keyword) = directives
+    let token = mastercss_lexer::tokenize_css_syntax(source)
         .into_iter()
-        .flat_map(|keyword| {
-            source
-                .match_indices(keyword)
-                .map(move |(start, _)| (start, keyword))
-        })
-        .min_by_key(|(start, _)| start.abs_diff(byte_offset))?;
-    let end = (start + keyword.len()).min(source.len());
+        .filter(|token| matches!(token.kind, mastercss_lexer::CssSyntaxKind::AtKeyword(_)))
+        .min_by_key(|token| token.bytes.start.abs_diff(byte_offset))?;
     Some(SourceRange {
-        start: byte_to_utf16_offset(source, start)?,
-        end: byte_to_utf16_offset(source, end)?,
+        start: byte_to_utf16_offset(source, token.bytes.start)?,
+        end: byte_to_utf16_offset(source, token.bytes.end)?,
     })
 }
 
@@ -57,80 +43,6 @@ pub(crate) fn ranged_directive_diagnostic(
             byte_to_utf16_offset(source, end_byte).map(|end| SourceRange { start, end })
         }),
     }
-}
-
-pub(crate) fn parse_theme_prelude(
-    source: &str,
-    filename: &str,
-    rule: &ThemeAtRule,
-) -> Result<(Option<String>, bool, bool), CompilerError> {
-    let mut mode = None;
-    let mut inline = false;
-    let mut is_static = false;
-    for part in &rule.prelude.parts {
-        match part.as_str() {
-            "inline" => {
-                if inline {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "@theme inline modifier cannot be repeated",
-                    ));
-                }
-                inline = true;
-            }
-            "static" => {
-                if is_static {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "@theme static modifier cannot be repeated",
-                    ));
-                }
-                is_static = true;
-            }
-            _ => {
-                if mode.is_some() {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "@theme mode must be a single token",
-                    ));
-                }
-                mode = Some(part.clone());
-            }
-        }
-    }
-    if inline && is_static {
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme inline and static cannot be combined",
-        ));
-    }
-    if inline && mode.is_some() {
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme inline cannot be mode-specific",
-        ));
-    }
-    Ok((mode, inline, is_static))
-}
-
-#[allow(clippy::cmp_owned)] // Exact JSON number text is part of the JavaScript parity contract.
-pub(crate) fn theme_value(value: String) -> Value {
-    let value = value.trim().to_owned();
-    serde_json::from_str::<Value>(&value)
-        .ok()
-        .filter(Value::is_number)
-        .filter(|number| number.to_string() == value)
-        .unwrap_or(Value::String(value))
 }
 
 pub(crate) fn next_char_end(value: &str, index: usize) -> usize {
@@ -168,24 +80,6 @@ pub(crate) fn css_comment_end(value: &str, start: usize) -> usize {
         .find("*/")
         .map(|offset| start + 2 + offset + 2)
         .unwrap_or(value.len())
-}
-
-pub(crate) fn is_alias_character(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
-}
-
-pub(crate) fn define_theme_variable(
-    manifest_input: &mut CssDirectiveManifestInput,
-    definition: CssDirectiveVariableDefinition,
-) {
-    let variables = manifest_input.variables.get_or_insert_default();
-    if let Some(index) = variables
-        .iter()
-        .position(|existing| existing.name == definition.name && existing.mode == definition.mode)
-    {
-        variables.remove(index);
-    }
-    variables.push(definition);
 }
 
 pub(crate) fn declaration_name(declaration: &Property<'_>) -> Result<String, PrinterError> {

@@ -1,22 +1,26 @@
 
-@theme {
+@theme {:root, :host {
   --color-black: oklch(0% 0 none);
-}
+}}
 
-@theme {
+
+@theme {:root, :host {
   --color-white: oklch(100% 0 none);
-}
+}}
 
-@theme light {
+
+@theme { .light {
   --color-focus: var(--color-black);
-}
+} }
 
-@theme dark {
+
+@theme { .dark {
   --color-focus: var(--color-white);
-}
+} }
 
-@utilities {
-  btn {
+
+
+  @utility btn {
     &:focus {
     outline: 0.125rem var(--color-focus) solid;
     }
@@ -24,4 +28,3 @@
     outline-offset: 0.125rem;
     }
   }
-}

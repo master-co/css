@@ -6,7 +6,7 @@ import { createToolingSessionSync } from '../../src/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
-  version: 1, languageVersion: 3,
+  version: 2, languageVersion: 4,
   utilities: [{
     id: '.block',
     name: 'block',
@@ -40,8 +40,8 @@ for (const [name, create] of Object.entries(factories)) {
         const classes = ['block', 'display:flex', 'unknown']
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
-        expect(session.formatDirectives({ source: "@utilities { box { display:block; } }" })).toEqual(
-          full.formatDirectives({ source: "@utilities { box { display:block; } }" })
+        expect(session.formatDirectives({ source: " @utility box { display:block; } " })).toEqual(
+          full.formatDirectives({ source: " @utility box { display:block; } " })
         )
       } finally {
         session.dispose()
@@ -63,7 +63,7 @@ for (const [name, create] of Object.entries(factories)) {
 
 it('keeps native and Wasm v2 semantic token ranges identical', async () => {
   const tokenManifest = createPresetManifest({
-    variables: [{ namespace: 'color', key: 'brand', value: '#123456' }]
+    variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }]
   })
   const native = createLanguageSessionSync({ manifest: tokenManifest })
   const wasm = await createLanguageSession({ manifest: tokenManifest, binding: 'wasm' })

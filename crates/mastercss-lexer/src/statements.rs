@@ -1,6 +1,6 @@
 use super::{
-    CssImportStatement, CssReferenceStatement, CssStatementEndReason, MasterDirectiveStatement,
-    StandaloneCssDirectiveStatement, byte_to_utf16_offset, find_css_statement_end, read_quoted,
+    CssImportStatement, CssReferenceStatement, CssStatementEndReason,
+    StandaloneCssDirectiveStatement, byte_to_utf16_offset, find_css_statement_end,
     scan_top_level_at_rules, utf16_to_byte_offset,
 };
 
@@ -25,34 +25,28 @@ pub fn find_css_import_statements(source: &str) -> Vec<CssImportStatement> {
 }
 
 pub fn parse_css_import_source(statement: &str) -> Option<String> {
-    let statement = statement.trim();
-    let mut rest = statement.strip_prefix("@import")?;
-    if rest
-        .chars()
-        .next()
-        .is_none_or(|character| !character.is_whitespace())
+    use super::{CssSyntaxKind as Kind, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(statement);
+    if !matches!(&tokens.first()?.kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("import"))
     {
         return None;
     }
-    rest = rest.trim_start();
-    if let Some(url) = rest.strip_prefix("url(") {
-        rest = url.trim_start();
-        if let Some(quote) = rest
-            .chars()
-            .next()
-            .filter(|quote| matches!(quote, '\'' | '"'))
-        {
-            let body = &rest[quote.len_utf8()..];
-            return read_quoted(body, quote).map(str::to_owned);
+    match &tokens.get(1)?.kind {
+        Kind::String(_) => {
+            Some(statement[tokens[1].bytes.start + 1..tokens[1].bytes.end - 1].to_owned())
         }
-        let end = rest.find(|character: char| character == ')' || character.is_whitespace())?;
-        return Some(rest[..end].to_owned());
+        Kind::Function(name) if name.eq_ignore_ascii_case("url") => {
+            let close = tokens[1].close?;
+            if close == 3 && matches!(tokens[2].kind, Kind::String(_)) {
+                return Some(
+                    statement[tokens[2].bytes.start + 1..tokens[2].bytes.end - 1].to_owned(),
+                );
+            }
+            let value = statement[tokens[1].bytes.end..tokens[close].bytes.start].trim();
+            (!value.is_empty() && !value.chars().any(char::is_whitespace)).then(|| value.to_owned())
+        }
+        _ => None,
     }
-    let quote = rest
-        .chars()
-        .next()
-        .filter(|quote| matches!(quote, '\'' | '"'))?;
-    read_quoted(&rest[quote.len_utf8()..], quote).map(str::to_owned)
 }
 
 pub fn find_css_reference_statements(source: &str) -> Vec<CssReferenceStatement> {
@@ -66,31 +60,22 @@ pub fn find_css_reference_statements(source: &str) -> Vec<CssReferenceStatement>
             return None;
         }
         let statement = &source[start..statement_end.end];
-        let prelude = statement
-            .strip_prefix("@reference")
-            .and_then(|value| value.strip_suffix(';'))
-            .map(str::trim)
-            .unwrap_or_default();
-        let Some(quote) = prelude
-            .chars()
-            .next()
-            .filter(|quote| matches!(quote, '\'' | '"'))
-        else {
+        let tokens = super::tokenize_css_syntax(statement);
+        let [_, value, semicolon] = tokens.as_slice() else {
             return Some(statement_end.end);
         };
-        let body = &prelude[quote.len_utf8()..];
-        let Some(value) = read_quoted(body, quote) else {
+        let super::CssSyntaxKind::String(_) = &value.kind else {
             return Some(statement_end.end);
         };
-        let quoted_length = quote.len_utf8() + value.len() + quote.len_utf8();
-        if !prelude[quoted_length..].trim().is_empty() {
+        let value = &statement[value.bytes.start + 1..value.bytes.end - 1];
+        if semicolon.kind != super::CssSyntaxKind::Delim(';') {
             return Some(statement_end.end);
         }
         references.push(CssReferenceStatement {
             start: byte_to_utf16_offset(source, start).unwrap_or_default(),
             end: byte_to_utf16_offset(source, statement_end.end).unwrap_or_default(),
             statement: statement.to_owned(),
-            source: value.to_owned(),
+            source: value.to_string(),
         });
         Some(statement_end.end)
     });
@@ -116,33 +101,6 @@ pub fn remove_css_reference_statements(source: &str) -> (String, Vec<CssReferenc
     }
     output.push_str(&source[byte_index..]);
     (output, references)
-}
-
-pub fn find_master_directive_statements(source: &str) -> Vec<MasterDirectiveStatement> {
-    let mut statements = Vec::new();
-    scan_top_level_at_rules(source, |start, name| {
-        if name != "master" {
-            return None;
-        }
-        let statement_end = find_css_statement_end(source, start);
-        if statement_end.reason != CssStatementEndReason::Semicolon {
-            return None;
-        }
-        let statement = &source[start..statement_end.end];
-        let prelude = statement
-            .strip_prefix("@master")
-            .and_then(|value| value.strip_suffix(';'))
-            .map(str::trim);
-        if prelude == Some("entry") {
-            statements.push(MasterDirectiveStatement {
-                start: byte_to_utf16_offset(source, start).unwrap_or_default(),
-                end: byte_to_utf16_offset(source, statement_end.end).unwrap_or_default(),
-                name: "entry".into(),
-            });
-        }
-        Some(statement_end.end)
-    });
-    statements
 }
 
 pub(crate) fn parse_quoted_strings(source: &str) -> Vec<String> {
@@ -233,7 +191,7 @@ pub fn find_standalone_css_directive_statements(
     scan_top_level_at_rules(source, |start, name| {
         if !matches!(
             name,
-            "master" | "source" | "safelist" | "blocklist" | "preserve" | "prune"
+            "source" | "safelist" | "blocklist" | "preserve" | "prune"
         ) {
             return None;
         }
@@ -242,18 +200,13 @@ pub fn find_standalone_css_directive_statements(
             return None;
         }
         let statement = &source[start..statement_end.end];
-        let prelude = statement
-            .strip_prefix(&format!("@{name}"))
-            .and_then(|value| value.strip_suffix(';'))
-            .unwrap_or_default();
-        if name == "master" && prelude.trim() != "entry" {
-            return Some(statement_end.end);
-        }
+        let tokens = super::tokenize_css_syntax(statement);
+        let prelude = &statement[tokens[0].bytes.end..statement.len() - 1];
         statements.push(StandaloneCssDirectiveStatement {
             start: byte_to_utf16_offset(source, start).unwrap_or_default(),
             end: byte_to_utf16_offset(source, statement_end.end).unwrap_or_default(),
             at_rule_name: name.to_owned(),
-            name: if name == "master" { "entry" } else { name }.to_owned(),
+            name: name.to_owned(),
             statement: statement.to_owned(),
             args: parse_quoted_strings(prelude),
             modifiers: parse_unquoted_words(prelude),
@@ -287,29 +240,7 @@ pub fn remove_standalone_css_directives(
 }
 
 pub fn has_master_css_manifest_entrypoint(source: &str) -> bool {
-    !find_master_directive_statements(source).is_empty()
-        || find_css_import_statements(source).iter().any(|statement| {
-            parse_css_import_source(&statement.statement).as_deref() == Some("@master/css")
-        })
-}
-
-pub fn remove_master_directive_statements(source: &str) -> (String, bool) {
-    let statements = find_master_directive_statements(source);
-    if statements.is_empty() {
-        return (source.to_owned(), false);
-    }
-    let mut output = String::with_capacity(source.len());
-    let mut byte_index = 0;
-    for statement in statements {
-        let Some(start) = utf16_to_byte_offset(source, statement.start) else {
-            continue;
-        };
-        let Some(end) = utf16_to_byte_offset(source, statement.end) else {
-            continue;
-        };
-        output.push_str(&source[byte_index..start]);
-        byte_index = end;
-    }
-    output.push_str(&source[byte_index..]);
-    (output, true)
+    find_css_import_statements(source).iter().any(|statement| {
+        parse_css_import_source(&statement.statement).as_deref() == Some("@master/css")
+    })
 }

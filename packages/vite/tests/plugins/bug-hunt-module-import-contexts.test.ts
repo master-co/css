@@ -11,7 +11,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared i
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     mkdirSync(join(root, 'shared'))
-    const child = (padding: string) => `@import "./grand.css";.child{@variant media(all){padding:${padding};}background:url("./pixel.svg?v=1#part");animation:spin 1s}:global(.global){color:blue}@keyframes spin{to{opacity:.5}}`
+    const child = (padding: string) => `@import "./grand.css";.child{@media all{padding:${padding};}background:url("./pixel.svg?v=1#part");animation:spin 1s}:global(.global){color:blue}@keyframes spin{to{opacity:.5}}`
     writeFileSync(join(root, 'shared/child.css'), child('2rem'))
     writeFileSync(join(root, 'shared/grand.css'), '.grand{border-left:1px solid red}')
     writeFileSync(join(root, 'shared/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
@@ -39,7 +39,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared i
       expect(css).toContain(`.${prefix}child`)
       expect(css).toContain(`@keyframes ${prefix}spin`)
       expect(css).toContain('.global')
-      expect(css).toContain('padding:2rem')
+      expect(css).toMatch(/padding:\s*2rem/)
       expect(css).toContain('?v=1#part')
       expect(css).not.toContain(name === 'a' ? 'b_module_css_' : 'a_module_css_')
     }
@@ -47,8 +47,8 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared i
     writeFileSync(join(root, 'shared/child.css'), child('3rem'))
     await vi.waitFor(async () => {
       const updated = await server!.ssrLoadModule('/entry.js')
-      expect(await collect(updated.cssA)).toContain('padding:3rem')
-      expect(await collect(updated.cssB)).toContain('padding:3rem')
+      expect(await collect(updated.cssA)).toMatch(/padding:\s*3rem/)
+      expect(await collect(updated.cssB)).toMatch(/padding:\s*3rem/)
     }, { timeout: watchDeadline })
   } finally {
     await server?.environments.client.waitForRequestsIdle(); await server?.close()

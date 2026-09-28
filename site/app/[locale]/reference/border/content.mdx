@@ -13,7 +13,7 @@ Use `b:<size>|<style>|<color>` for the native border shorthand. This panel suppl
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         font-md bg-surface-muted text-body
+         font-md bg-surface-inset text-body
          box-border">
   Preview panel
 </div>
@@ -38,7 +38,7 @@ The shorthand resets omitted border width, style and color components. The all-s
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md bb:3px|solid|var(--color-blue)
-         font-md bg-surface-muted text-body
+         font-md bg-surface-inset text-body
          box-border">
   Bottom edge
 </div>
@@ -49,7 +49,7 @@ The shorthand resets omitted border width, style and color components. The all-s
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
-         font-md bg-surface-muted text-body
+         font-md bg-surface-inset text-body
          box-border">
   Left and right
 </div>
@@ -60,7 +60,7 @@ The shorthand resets omitted border width, style and color components. The all-s
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
-         font-md bg-surface-muted text-body
+         font-md bg-surface-inset text-body
          box-border writing-mode:vertical-rl">
   Top and bottom
 </div>
@@ -80,7 +80,7 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
          min-h:44px max-w:100% px-md py-sm
          b:2px|dashed|var(--color-blue) r-sm font-md
          bg-surface-base text-body box-border
-         bg-surface-muted:focus-visible
+         bg-surface-inset:focus-visible
          border-width:6px:hover@screen
          border-width:6px:focus-visible@screen">
   Preview details
@@ -94,7 +94,7 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
          min-h:44px max-w:100% px-md py-sm
          b:2px|dashed|var(--color-blue) r-sm font-md
          bg-surface-base text-body box-border
-         bg-surface-muted:focus-visible
+         bg-surface-inset:focus-visible
          b:solid:hover@screen
          b:solid:focus-visible@screen">
   Preview details
@@ -113,9 +113,9 @@ Hover or keyboard-focus the button to change its complete border from a subtle s
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm font-md
+         b:1px|solid|var(--color-line-divider) r-sm font-md
          bg-surface-base text-body box-border
-         bg-surface-muted:focus-visible border-width:0@print
+         bg-surface-inset:focus-visible border-width:0@print
          b:2px|dashed|var(--color-blue):hover@screen
          b:2px|dashed|var(--color-blue):focus-visible@screen">
   Preview details

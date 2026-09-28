@@ -1,3 +1,3 @@
-@theme {
+@theme {:root, :host {
   --app-blue: #4589ff;
-}
+}}

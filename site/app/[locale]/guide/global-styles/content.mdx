@@ -17,10 +17,10 @@ Use the app stylesheet for project-wide styling inputs:
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
-}
+} }
 
 @custom-variant motion-safe {
   @media (prefers-reduced-motion: no-preference) {
@@ -34,10 +34,10 @@ Load this stylesheet once from the app root, framework layout, or build entry. D
 Use the lightweight marker only when a stylesheet should be a generated CSS entry without loading the package defaults:
 
 ```css
-@master entry;
+@import "@master/css";
 ```
 
-Most apps should prefer `@import "@master/css";`. Use `@master entry;` for advanced split entries that already receive the package base and theme from somewhere else.
+`@import "@master/css";` is the only project entry form and loads the full preset. Use `@reference` when a local stylesheet needs definition context without native CSS delivery.
 
 ---
 
@@ -91,12 +91,13 @@ Treat the app typeface as global vocabulary. Put reusable font families and Open
 ```css name=globals.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --font-sans: "Geist", "Noto Sans TC";
   --font-mono: "IBM Plex Mono";
   --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
   --font-feature-mono: "cv01", "cv02", "cv29";
-}
+} }
+
 ```
 
 The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp`, and `pre`. Define `--font-feature-sans` and `--font-feature-mono` when those stacks need shared OpenType features; otherwise the base layer falls back to `normal`. Form controls inherit the surrounding font and feature settings.
@@ -130,10 +131,11 @@ Do not abstract just to shorten a class list. Abstract when the name improves pr
 When the repeated part is a value, make it a token instead of a class:
 
 ```css name=app.css
-@theme {
+@theme { :root, :host {
   --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
-}
+} }
+
 ```
 
 ```html
@@ -255,23 +257,19 @@ Use markup utilities for one-off variations at a specific call site.
 Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
 
 ```css name=app.css
-@utilities {
-  flow {
+@utility flow {
     display: grid;
     gap: var(--spacing-md);
   }
-
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-
-  print-hidden {
+@utility print-hidden {
     @variant print {
       display: none;
     }
   }
-}
 ```
 
 ```html

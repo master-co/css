@@ -18,7 +18,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
   Move layer
   <span aria-hidden="true"
     class="block h:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-muted)">
+           outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
@@ -45,7 +45,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
   Move layer
   <span aria-hidden="true"
     class="block h:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-muted)">
+           outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
@@ -85,7 +85,7 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
            outline-offset:3px:focus-visible">
   Move both layers
   <span aria-hidden="true"
-    class="block mt-md p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="block mt-md p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="first"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -115,9 +115,10 @@ Define a named duration when a delay is shared across related interactions. This
 <DemoExample page="transition-delay" section="use-duration-tokens" />
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --duration-short: 80ms;
-}
+} }
+
 ```
 
 ```html
@@ -131,7 +132,7 @@ Define a named duration when a delay is shared across related interactions. This
   Move layer
   <span aria-hidden="true"
     class="block h:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-muted)">
+           outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
@@ -163,7 +164,7 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
   Move layer
   <span aria-hidden="true"
     class="block h:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-muted)">
+           outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
@@ -198,7 +199,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
   Move layer
   <span aria-hidden="true"
     class="block h:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-muted)">
+           outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10

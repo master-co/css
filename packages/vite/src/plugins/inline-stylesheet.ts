@@ -9,7 +9,7 @@ import { getScanner } from '../utils/scanner-context'
 import { INLINE_URL_BASE, inlineDelivery, inlineDigest, inlineStylesheets, disposeInlineStylesheets, isInlineStylesheet, rewriteInlineURLs, inlineURLReferences, inlineBuiltURL } from '../utils/inline-stylesheet'
 
 // Vite normalizes relative SSR bases; carry the configured value through config resolution.
-const configuredBaseKey = Symbol('master-css:configured-inline-base')
+const configuredBaseKey = Symbol('master-css:configured-inline-divider')
 
 /** Export managed CSS as a string without registering an automatic stylesheet. */
 export default function InlineStylesheetPlugin(context: MasterCSSVitePluginContext): Plugin {
@@ -24,7 +24,7 @@ export default function InlineStylesheetPlugin(context: MasterCSSVitePluginConte
     transform(_code, id) {
       const entry = inlineStylesheets(context).get(id)
       if (!entry) return
-      entry.reference = this.emitFile({ type: 'asset', name: 'master-css-inline-base.css', source: '/* Master CSS inline asset base. */' })
+      entry.reference = this.emitFile({ type: 'asset', name: 'master-css-inline-divider.css', source: '/* Master CSS inline asset base. */' })
       if (this.environment.config.consumer === 'server') return { code: `export default ${JSON.stringify(entry.token)}`, map: null }
       return { code: `export default ${JSON.stringify(entry.token)}.replaceAll(${JSON.stringify(entry.token + '_URL')}, new URL('.', import.meta.ROLLUP_FILE_URL_${entry.reference}).href)`, map: null }
     },

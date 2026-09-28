@@ -18,7 +18,7 @@ test.each([false, true])('BH-0004 concurrent roots isolate styles when sharing p
     for (const [index, root] of roots.entries()) {
       mkdirSync(join(root, 'node_modules'))
       symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
-      writeFileSync(join(root, 'style.scss'), `@master entry;@preserve native;.example{color:${colors[index]}}`)
+      writeFileSync(join(root, 'style.scss'), `@import url("@master/css");@preserve native;.example{color:${colors[index]}}`)
       writeFileSync(join(root, 'index.html'), '<link rel="stylesheet" href="/style.scss"><div class="example">test</div>')
       writeFileSync(join(root, 'server.js'), "export {default as css} from './style.scss?inline'")
     }
@@ -37,7 +37,7 @@ test.each([false, true])('BH-0004 concurrent roots isolate styles when sharing p
       expect((await server.ssrLoadModule('/server.js')).css).toContain(colors[index])
     }
     await byRoot[0].close()
-    writeFileSync(join(roots[1], 'style.scss'), '@master entry;@preserve native;.example{color:purple}')
+    writeFileSync(join(roots[1], 'style.scss'), "@import url(\"@master/css\");@preserve native;.example{color:purple}")
     await vi.waitFor(async () => {
       const response = await fetch(new URL(`style.scss?t=${Date.now()}`, byRoot[1].resolvedUrls!.local[0]), { headers: { Accept: 'text/css' } })
       expect(response.status).toBe(200)

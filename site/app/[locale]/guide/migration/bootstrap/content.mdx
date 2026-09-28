@@ -60,12 +60,13 @@ $spacer: 1rem;
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-primary: #2563eb;
   --color-body: #172033;
   --radius-control: .5rem;
   --spacing-page: 1rem;
-}
+} }
+
 ```
 
 ```html
@@ -92,7 +93,7 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 ```html
 <section class="w:100% max-w-6xl mx:auto px-md py-2xl">
   <div class="grid gap-lg grid-cols:3@md">
-    <article class="p-lg b:1px|solid|var(--color-line-base) r-lg bg-white">
+    <article class="p-lg b:1px|solid|var(--color-line-divider) r-lg bg-white">
       ...
     </article>
   </div>
@@ -139,7 +140,7 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
   .panel {
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
-    border: 1px solid var(--color-line-base);
+    border: 1px solid var(--color-line-divider);
     background-color: oklch(100% 0 none);
     box-shadow: var(--shadow-sm);
     color: var(--color-text-body);

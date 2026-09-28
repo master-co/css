@@ -62,7 +62,6 @@ export interface CSSDependencyAnalysis {
 }
 
 export interface InspectCSSResult {
-  hasMasterEntryDirective: boolean
   hasMasterCSSImport: boolean
   hasMasterEntry: boolean
   directives: {
@@ -318,10 +317,6 @@ export interface StandaloneCSSDirectiveStatement {
   modifiers: string[]
 }
 
-export type StandaloneMasterDirectiveStatement = StandaloneCSSDirectiveStatement & {
-  atRuleName: 'master'
-}
-
 interface StandaloneDirectiveAnalysis {
   code: string
   statements: StandaloneCSSDirectiveStatement[]
@@ -340,26 +335,12 @@ export function findStandaloneCSSDirectiveStatements(source: string) {
   return analyzeStandaloneDirectives(source).statements
 }
 
-export function findStandaloneMasterDirectiveStatements(source: string) {
-  return findStandaloneCSSDirectiveStatements(source)
-    .filter((statement): statement is StandaloneMasterDirectiveStatement => statement.atRuleName === 'master')
-}
-
 export function collectStandaloneCSSDirectiveExtractionPolicy(source: string) {
   return analyzeStandaloneDirectives(source).extractionPolicy
 }
 
 export function removeStandaloneCSSDirectives(source: string) {
   return analyzeStandaloneDirectives(source).code
-}
-
-export function removeStandaloneMasterDirectives(source: string) {
-  const statements = findStandaloneMasterDirectiveStatements(source)
-  let output = source
-  for (const statement of statements.toReversed()) {
-    output = output.slice(0, statement.start) + output.slice(statement.end)
-  }
-  return output
 }
 
 function compileManifestInputWithBinding(

@@ -44,7 +44,7 @@ describe('root command', () => {
   it('generates CSS only through the explicit generate command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@theme { --color-brand: red; }')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n@theme {:root, :host { --color-brand: red; }}\n")
       fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg-brand"></div>')
       const output = runCLI(['generate', '--no-export'], { cwd })
       expect(output).toContain('.block{display:block}')
@@ -94,7 +94,7 @@ describe('inspect command', () => {
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(4)
+      expect(report.version).toBe(5)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -129,7 +129,7 @@ describe('inspect command', () => {
   it('can include generated CSS and stylesheet entry metadata without failing', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-css-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";")
       fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
       const output = runCLI([
         'inspect',
@@ -144,7 +144,7 @@ describe('inspect command', () => {
       expect(report.stylesheets.entries).toHaveLength(1)
       expect(report.stylesheets.entries[0]).toEqual(expect.objectContaining({
         filePath: fs.realpathSync(resolve(cwd, 'index.css')),
-        masterCSS: false,
+        masterCSS: true,
         pruneNativeCSS: false
       }))
       expect(report.stylesheets.entries[0].dependencies).toContain(fs.realpathSync(resolve(cwd, 'index.css')))
@@ -159,7 +159,7 @@ describe('inspect command', () => {
   it('reports entry errors without inspecting against a fallback manifest', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-entry-error-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n@import \"./missing.css\";")
       fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
       const error = runFailedCLI(['inspect', 'index.html'], { cwd })
       expect(error.status).toBe(1)
@@ -232,7 +232,7 @@ describe('lint command', () => {
   it('reports manifest preflight diagnostics', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-manifest-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n\n.btn { @compose "block"; }')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n\n.btn { @compose \"block\"; }")
       const error = runFailedCLI(['lint'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))

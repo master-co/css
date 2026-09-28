@@ -23,7 +23,7 @@ test('components', async ({ page }) => {
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.rules.find((rule) => rule.name === 'btn')?.native?.cssText))
     .toBe('.btn { background-color: var(--color-foo); }')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.rules.find((rule) => rule.name === 'btn@sm')?.text))
-    .toBe('@media (width>=52.125rem){.btn\\@sm{background-color:var(--color-foo)}}')
+    .toBe('@media (width >= 52.125rem){.btn\\@sm{background-color:var(--color-foo)}}')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.rules.find((rule) => rule.name === 'btn@sm')?.selectorText))
     .toBe('.btn\\@sm')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.rules.find((rule) => rule.name === 'btn@sm')?.native?.cssText))

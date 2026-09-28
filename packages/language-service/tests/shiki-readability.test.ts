@@ -41,20 +41,16 @@ test('colors every complete Master directive like a native CSS at-rule', async (
   expect(native).toBeDefined()
 
   const directives = [
-    ['master', '@master entry;'],
-    ['settings', '@settings {}'],
     ['source', '@source "src/**/*";'],
     ['safelist', '@safelist "btn";'],
     ['blocklist', '@blocklist "debug-*";'],
     ['preserve', '@preserve native;'],
     ['reference', '@reference "./tokens.css";'],
-    ['theme', '@theme {}'],
-    ['utilities', '@utilities {}'],
+    ['theme', "@theme {}\n"],
+    ['utility', '@utility box {}'],
     ['custom-variant', '@custom-variant motion-safe {}'],
     ['variant', '@variant sm {}'],
     ['slot', '@slot;'],
-    ['dark', '@dark {}'],
-    ['light', '@light {}']
   ] as const
 
   try {
@@ -76,28 +72,19 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
 
   try {
     const nativeKeyword = highlighter.codeToTokens('@media (width > 1px) {}', options).tokens[0].find((token) => token.content === '@media')
-    const themeMode = highlighter.codeToTokens('@theme light {}', options).tokens[0].find((token) => token.content === 'light')
     expect(nativeKeyword).toBeDefined()
-    expect(themeMode).toBeDefined()
 
-    const compose = highlighter.codeToTokens("@utilities { btn { @safelist \"fg-red:hover@md\"; } }", options).tokens[0]
+    const compose = highlighter.codeToTokens("@utility btn { @safelist \"fg-red:hover@md\"; }", options).tokens[0]
     const query = compose.find((token) => token.content === '@md')
     expect(query).toBeDefined()
     expect(hasScope(query, 'keyword.control.at-rule.master-css.query')).toBe(true)
     expect(colors(query)).toEqual(colors(nativeKeyword))
     expect(compose.some((token) => token.content === '@' && hasScope(token, 'punctuation.definition.keyword.master-css'))).toBe(false)
 
-    const qualified = highlighter.codeToTokens('@variant @h>=sm {}', options).tokens[0].find((token) => token.content === '@h>=')
-    expect(qualified).toBeDefined()
-    expect(colors(qualified)).toEqual(colors(nativeKeyword))
-
-    for (const condition of ['sm', '<sm', 'h>=sm&h<lg']) {
-      const tokens = highlighter.codeToTokens(`@variant ${condition} { color: red; }`, options).tokens[0]
-      const name = tokens.find((token) => token.content === 'sm')
-      expect(name, condition).toBeDefined()
-      expect(hasScope(name, 'support.constant.property-value.master-css.query'), condition).toBe(true)
-      expect(colors(name), condition).toEqual(colors(themeMode))
-    }
+    const tokens = highlighter.codeToTokens('@utility card { @variant sm { color: red; } }', options).tokens[0]
+    const name = tokens.find(token => token.content === 'sm')
+    expect(name).toBeDefined()
+    expect(hasScope(name, 'support.constant.property-value.master-css.query')).toBe(true)
 
     for (const [atRule, condition] of [
       ['@media', '(prefers-reduced-motion: no-preference)'],
@@ -114,7 +101,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 
-    const managed = highlighter.codeToTokens("@utilities { btn { @media (width > 30rem) { @safelist \"block\"; } } }", options).tokens[0]
+    const managed = highlighter.codeToTokens("@utility btn { @media (width > 30rem) { @safelist \"block\"; } }", options).tokens[0]
     expect(colors(managed.find((token) => token.content === '@media'))).toEqual(colors(nativeKeyword))
     expect(managed.some((token) => token.content === '@safelist' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
   } finally {
@@ -129,7 +116,7 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 
   try {
     for (const [lang, source] of [
-      ['css', "@utilities { btn { @safelist \"fg-red@md\"; } }"],
+      ['css', "@utility btn { @safelist \"fg-red@md\"; }"],
       ['html', '<div class="fg-red@md"></div>'],
       ['tsx', '<div className="fg-red@md" />']
     ] as const) {

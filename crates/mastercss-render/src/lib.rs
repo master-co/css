@@ -163,31 +163,54 @@ mod tests {
 
     fn manifest() -> String {
         serde_json::json!({
-            "version": 1,"languageVersion":3,
-            "utilities": [
+          "version": 2,
+          "languageVersion": 4,
+          "utilities": [
+            {
+              "id": ".block",
+              "name": "block",
+              "type": -2,
+              "order": 1,
+              "emit": {
+                "type": "static",
+                "rules": [
+                  {
+                    "declarations": {
+                      "display": "block"
+                    }
+                  }
+                ]
+              },
+              "matchers": [
                 {
-                    "id": ".block",
-                    "name": "block",
-                    "type": -2,
-                    "order": 1,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "display": "block" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "block" }]
-                },
-                {
-                    "id": ".red",
-                    "name": "red",
-                    "type": -2,
-                    "order": 0,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "color": "red" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "red" }]
+                  "type": "static",
+                  "name": "block"
                 }
-            ]
+              ]
+            },
+            {
+              "id": ".red",
+              "name": "red",
+              "type": -2,
+              "order": 0,
+              "emit": {
+                "type": "static",
+                "rules": [
+                  {
+                    "declarations": {
+                      "color": "red"
+                    }
+                  }
+                ]
+              },
+              "matchers": [
+                {
+                  "type": "static",
+                  "name": "red"
+                }
+              ]
+            }
+          ]
         })
         .to_string()
     }
@@ -200,7 +223,7 @@ mod tests {
             rendered.snapshot.text,
             "@layer utilities{.block{display:block}.red{color:red}}"
         );
-        assert_eq!(rendered.hydration_manifest.version, 1);
+        assert_eq!(rendered.hydration_manifest.version, 2);
         assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
         assert!(rendered.hydration_manifest.resource_order.is_empty());
     }
@@ -208,7 +231,7 @@ mod tests {
     #[test]
     fn repeated_classes_share_generated_rules() {
         let mut session =
-            RenderSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#, None)
+            RenderSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#, None)
                 .unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block"])
@@ -263,16 +286,39 @@ mod tests {
     #[test]
     fn cached_native_declarations_preserve_later_alias_matchers() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":3,
-            "variables": {
-                "": [{
-                    "name": "stripe",
-                    "key": "stripe",
-                    "type": "string",
+          "version": 2,
+          "languageVersion": 4,
+          "variables": {
+            "": [
+              {
+                "name": "stripe",
+                "key": "stripe",
+                "type": "string",
+                "values": [
+                  {
+                    "path": [
+                      ":root,:host"
+                    ],
                     "value": "linear-gradient(red,blue)"
-                }]
-            },
-            "utilities": []
+                  }
+                ]
+              }
+            ]
+          },
+          "utilities": [],
+          "theme": [
+            {
+              "type": "rule",
+              "prelude": ":root,:host",
+              "children": [
+                {
+                  "type": "declaration",
+                  "name": "stripe",
+                  "value": "linear-gradient(red,blue)"
+                }
+              ]
+            }
+          ]
         })
         .to_string();
         let mut cached = RenderSession::create(&manifest, None).unwrap();
@@ -291,40 +337,85 @@ mod tests {
     #[test]
     fn cached_subsets_preserve_page_resource_composition() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":3,
-            "variables": {
-                "color": [{ "key": "primary", "value": "red" }]
-            },
-            "animations": {
-                "fade": { "to": { "opacity": "1" } }
-            },
-            "utilities": [
-                {
-                    "id": ".brand",
-                    "name": "brand",
-                    "type": -2,
-                    "order": 0,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "color": "var(--color-primary)" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "brand" }]
-                },
-                {
-                    "id": ".animated",
-                    "name": "animated",
-                    "type": -2,
-                    "order": 1,
-                    "emit": {
-                        "type": "static",
-                        "rules": [{ "declarations": { "animation": "fade 1s" } }]
-                    },
-                    "matchers": [{ "type": "static", "name": "animated" }]
-                }
+          "version": 2,
+          "languageVersion": 4,
+          "variables": {
+            "color": [
+              {
+                "key": "primary",
+                "values": [
+                  {
+                    "path": [
+                      ":root,:host"
+                    ],
+                    "value": "red"
+                  }
+                ]
+              }
             ]
+          },
+          "utilities": [
+            {
+              "id": ".brand",
+              "name": "brand",
+              "type": -2,
+              "order": 0,
+              "emit": {
+                "type": "static",
+                "rules": [
+                  {
+                    "declarations": {
+                      "color": "var(--color-primary)"
+                    }
+                  }
+                ]
+              },
+              "matchers": [
+                {
+                  "type": "static",
+                  "name": "brand"
+                }
+              ]
+            },
+            {
+              "id": ".animated",
+              "name": "animated",
+              "type": -2,
+              "order": 1,
+              "emit": {
+                "type": "static",
+                "rules": [
+                  {
+                    "declarations": {
+                      "animation": "fade 1s"
+                    }
+                  }
+                ]
+              },
+              "matchers": [
+                {
+                  "type": "static",
+                  "name": "animated"
+                }
+              ]
+            }
+          ],
+          "theme": [
+            {
+              "type": "rule",
+              "prelude": ":root,:host",
+              "children": [
+                {
+                  "type": "declaration",
+                  "name": "color-primary",
+                  "value": "red"
+                }
+              ]
+            }
+          ]
         })
         .to_string();
-        let emitted_globals = r#"{"animations":{"fade":1}}"#;
+        let emitted_globals = r#"{"variables":{}}"#;
         let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
         cached.ensure_classes(["animated", "brand"]).unwrap();
 
@@ -339,15 +430,37 @@ mod tests {
     #[test]
     fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":3,
-            "variables": {
-                "color": [{ "key": "primary", "value": "red" }]
-            },
-            "animations": {
-                "fade": { "to": { "opacity": "1" } },
-                "native-spin": { "to": { "opacity": "0" } }
-            },
-            "utilities": []
+          "version": 2,
+          "languageVersion": 4,
+          "variables": {
+            "color": [
+              {
+                "key": "primary",
+                "values": [
+                  {
+                    "path": [
+                      ":root,:host"
+                    ],
+                    "value": "red"
+                  }
+                ]
+              }
+            ]
+          },
+          "utilities": [],
+          "theme": [
+            {
+              "type": "rule",
+              "prelude": ":root,:host",
+              "children": [
+                {
+                  "type": "declaration",
+                  "name": "color-primary",
+                  "value": "red"
+                }
+              ]
+            }
+          ]
         })
         .to_string();
         let mut session = RenderSession::create(&manifest, None).unwrap();
@@ -365,12 +478,10 @@ mod tests {
 
         let rendered = session.snapshot().unwrap();
         assert!(rendered.snapshot.text.contains("--color-primary:red"));
-        assert!(rendered.snapshot.text.contains("@keyframes fade"));
+        assert!(!rendered.snapshot.text.contains("@keyframes fade"));
         assert!(!rendered.snapshot.text.contains("@keyframes native-spin"));
         let emitted_globals = session.emitted_globals().unwrap();
         assert_eq!(emitted_globals.variable_count("color-primary"), 1);
-        assert_eq!(emitted_globals.animation_count("fade"), 1);
-        assert_eq!(emitted_globals.animation_count("native-spin"), 1);
         assert_eq!(emitted_globals.variable_count("color-ignored"), 0);
         assert_eq!(emitted_globals.variable_count("color-commented"), 0);
     }
@@ -378,21 +489,41 @@ mod tests {
     #[test]
     fn preserves_and_increments_host_resource_counts() {
         let manifest = serde_json::json!({
-            "version": 1,"languageVersion":3,
-            "variables": {
-                "color": [{ "key": "primary", "value": "red" }]
-            },
-            "animations": {
-                "native-spin": { "to": { "opacity": "0" } }
-            },
-            "utilities": []
+          "version": 2,
+          "languageVersion": 4,
+          "variables": {
+            "color": [
+              {
+                "key": "primary",
+                "values": [
+                  {
+                    "path": [
+                      ":root,:host"
+                    ],
+                    "value": "red"
+                  }
+                ]
+              }
+            ]
+          },
+          "utilities": [],
+          "theme": [
+            {
+              "type": "rule",
+              "prelude": ":root,:host",
+              "children": [
+                {
+                  "type": "declaration",
+                  "name": "color-primary",
+                  "value": "red"
+                }
+              ]
+            }
+          ]
         })
         .to_string();
-        let mut session = RenderSession::create(
-            &manifest,
-            Some(r#"{"variables":{"color-primary":2},"animations":{"native-spin":2}}"#),
-        )
-        .unwrap();
+        let mut session =
+            RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":2}}"#)).unwrap();
         session
             .ensure_stylesheet_resources(
                 ".native{color:var(--color-primary)}@keyframes native-spin{to{opacity:.5}}",
@@ -402,6 +533,5 @@ mod tests {
         assert_eq!(session.snapshot().unwrap().snapshot.text, "");
         let emitted_globals = session.emitted_globals().unwrap();
         assert_eq!(emitted_globals.variable_count("color-primary"), 2);
-        assert_eq!(emitted_globals.animation_count("native-spin"), 3);
     }
 }

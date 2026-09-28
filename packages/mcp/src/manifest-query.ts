@@ -11,9 +11,9 @@ import {
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 1
+const MANIFEST_QUERY_VERSION = 2
 
-export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'mode' | 'condition' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'custom-media' | 'condition' | 'alias'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -65,7 +65,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       variable.name,
       variable.key,
       variable.namespace,
-      variable.value
+      ...variable.values.flatMap(({ path, value }) => [...path, value])
     ], query))
     .map(compactVariable)
 
@@ -82,11 +82,10 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       layers: [...new Set(variant.branches.map((branch) => branch.layer).filter(Boolean))]
     }))
 
-  const modes = (activeManifest.modes ?? []).filter((mode) => includesQuery(mode.name, query))
+  const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
 
   const conditions = [
     ...compactConditions(activeManifest.conditions),
-    ...compactConditions(activeManifest.breakpointConditions),
     ...compactConditions(activeManifest.containerConditions)
   ].filter((rule) => matchesAny([rule.name, rule.id], query))
 
@@ -115,7 +114,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     tokens: kind === 'all' || kind === 'token' ? variables : [],
     utilities: kind === 'all' || kind === 'utility' ? utilities : [],
     variants: kind === 'all' || kind === 'variant' ? variants : [],
-    modes: kind === 'all' || kind === 'mode' ? modes : [],
+    customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
     conditions: kind === 'all' || kind === 'condition' ? conditions : [],
     aliases: kind === 'all' || kind === 'alias' ? aliases : []
   }
@@ -123,7 +122,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     tokens: limitResults(allResults.tokens, limit),
     utilities: limitResults(allResults.utilities, limit),
     variants: limitResults(allResults.variants, limit),
-    modes: limitResults(allResults.modes, limit),
+    customMedia: limitResults(allResults.customMedia, limit),
     conditions: limitResults(allResults.conditions, limit),
     aliases: limitResults(allResults.aliases, limit)
   }
@@ -152,7 +151,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       tokens: variables.length,
       utilities: utilities.length,
       variants: variants.length,
-      modes: modes.length,
+      customMedia: customMedia.length,
       conditions: conditions.length,
       aliases: aliases.length,
       status: 'ok'

@@ -51,7 +51,7 @@ describe('style CSS extraction helpers', () => {
       '@safelist "card";',
       '@blocklist "debug-*";',
       '@preserve native;',
-      '@master entry;',
+      "@import \"@master/css\";",
       '',
       '@media (min-width: 768px) {',
       '    @preserve native;',
@@ -60,7 +60,7 @@ describe('style CSS extraction helpers', () => {
       '.card { color: red; }'
     ].join('\n'))
 
-    expect(hasMasterStyleEntrypoint('@master entry;\n.card { color: red; }')).toBe(true)
+    expect(hasMasterStyleEntrypoint("@import \"@master/css\";\n.card { color: red; }")).toBe(true)
     expect(result.removed).toBe(true)
     expect(result.code).not.toContain('@source')
     expect(result.code).not.toContain('@safelist')
@@ -121,39 +121,7 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
-      @import "@master/css";
-
-      @theme {
-        --color-primary: #ff0000;
-        --animation-main: scale 1s;
-      }
-
-      @keyframes fade {
-        from {
-          opacity: 0;
-        }
-
-        to {
-          opacity: 1;
-        }
-      }
-
-      @layer components {
-        .btn {
-          display: grid;
-        }
-      }
-
-      .main {
-        color: var(--color-primary);
-        animation-name: fade;
-      }
-
-      .unused {
-        color: var(--color-primary);
-      }
-    `, { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n        --animation-main: scale 1s;\n      }}\n\n\n      @keyframes fade {\n        from {\n          opacity: 0;\n        }\n\n        to {\n          opacity: 1;\n        }\n      }\n\n      @layer components {\n        .btn {\n          display: grid;\n        }\n      }\n\n      .main {\n        color: var(--color-primary);\n        animation-name: fade;\n      }\n\n      .unused {\n        color: var(--color-primary);\n      }\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="btn block main fg-red"></main>')
 
     const css = await createExtractedCSS({
@@ -170,7 +138,7 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('--color-primary:red')
     expect(css).toContain('--color-red')
     expect(css).toContain('@keyframes fade')
-    expect(css.match(/@keyframes fade/g) || []).toHaveLength(1)
+    expect(css.match(/@keyframes fade/g) || []).toHaveLength(2)
     expect(css).toContain('.btn')
     expect(css).toContain('display: grid')
     expect(css).toContain('.block{display:block}')
@@ -208,49 +176,13 @@ describe('style CSS extraction helpers', () => {
     expect(css).not.toContain('@master/css')
   })
 
-  it('reports emittedGlobals variables and animations emitted by the Master CSS entry', async () => {
+  it('reports emitted variables while keyframes remain native CSS', async () => {
     const root = createFixture()
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
-      @theme {
-        --animation-main: scale 1s;
-        --color-primary: #ff0000;
-
-        @keyframes fade {
-          from {
-            opacity: 0;
-          }
-
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slide {
-          to {
-            transform: translateX(1rem);
-          }
-        }
-
-        @keyframes scale {
-          to {
-            transform: scale(1.1);
-          }
-        }
-      }
-
-      .main {
-        color: var(--color-primary);
-        animation-name: fade,slide;
-      }
-
-      .main-animated {
-        animation: var(--animation-main);
-      }
-    `, { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --animation-main: scale 1s;\n        --color-primary: #ff0000;\n\n        \n\n        \n\n        \n      } }\n@keyframes fade {\n          from {\n            opacity: 0;\n          }\n\n          to {\n            opacity: 1;\n          }\n        }\n@keyframes slide {\n          to {\n            transform: translateX(1rem);\n          }\n        }\n@keyframes scale {\n          to {\n            transform: scale(1.1);\n          }\n        }\n\n\n      .main {\n        color: var(--color-primary);\n        animation-name: fade,slide;\n      }\n\n      .main-animated {\n        animation: var(--animation-main);\n      }\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
     const result = await createExtractedCSSResult({
@@ -268,26 +200,17 @@ describe('style CSS extraction helpers', () => {
       variables: {
         'animation-main': 1,
         'color-primary': 1
-      },
-      animations: {
-        fade: 1,
-        scale: 1,
-        slide: 1
       }
     })
   })
 
-  it('does not preload inline theme tokens', async () => {
+  it('emits referenced theme tokens without substituting their values', async () => {
     const root = createFixture()
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
-      @theme inline {
-        --color-primary: #ff0000;
-      }
-    `, { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --color-primary: #ff0000;\n      } }\n\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg-primary"></main>')
 
     const result = await createExtractedCSSResult({
@@ -297,28 +220,18 @@ describe('style CSS extraction helpers', () => {
       projectDir: root
     })
 
-    expect(result.css).toContain('.fg-primary{color:red}')
-    expect(result.css).not.toContain('--color-primary')
-    expect(result.emittedGlobals.variables).toEqual({})
+    expect(result.css).toContain('.fg-primary{color:var(--color-primary)}')
+    expect(result.css).toContain('--color-primary:red')
+    expect(result.emittedGlobals.variables).toEqual({ 'color-primary': 1 })
   })
 
-  it('emits static theme tokens and keyframes without class references', async () => {
+  it('emits native theme declarations and keyframes without class references', async () => {
     const root = createFixture()
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
-      @theme static {
-        --color-primary: #ff0000;
-
-        @keyframes static-fade {
-          to {
-            opacity: 1;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @layer theme { :root, :host {\n        --color-primary: #ff0000;\n\n        \n      } }\n@keyframes static-fade {\n          to {\n            opacity: 1;\n          }\n        }\n\n    ", { baseManifest: defaultManifest })
 
     const result = await createExtractedCSSResult({
       scanner,
@@ -329,15 +242,10 @@ describe('style CSS extraction helpers', () => {
     })
 
     expect(result.css).toContain('@layer theme')
-    expect(result.css).toContain('--color-primary:red')
+    expect(result.css).toContain('--color-primary: red')
     expect(result.css).toContain('@keyframes static-fade')
     expect(result.emittedGlobals).toEqual({
-      variables: {
-        'color-primary': 1
-      },
-      animations: {
-        'static-fade': 1
-      }
+      variables: {}
     })
   })
 
@@ -465,13 +373,7 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
-      @master entry;
-
-      .card {
-        display: grid;
-      }
-    `, { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      .card {\n        display: grid;\n      }\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.html'), '<div class="card block"></div>')
 
     const css = await createExtractedCSS({
@@ -483,8 +385,8 @@ describe('style CSS extraction helpers', () => {
     })
 
     expect(css).toContain('.card')
-    expect(css).not.toContain('@layer base')
-    expect(css).not.toContain('text-rendering: geometricprecision')
+    expect(css).toContain('@layer base')
+    expect(css).toContain('text-rendering: geometricprecision')
     expect(css).not.toContain('.block{display:block}')
   })
 

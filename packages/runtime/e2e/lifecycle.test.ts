@@ -147,57 +147,12 @@ test('inserts functional pseudo-class selector aliases into native CSSOM', async
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
-test('refresh clears stale native keyframes', async ({ page }) => {
+test('refresh leaves native stylesheets and keyframes under browser ownership', async ({ page }) => {
+  await page.setContent('<style id="native">:root{--color-static:#123}@keyframes steady{to{opacity:1}}</style><div class="animation:steady|1s"></div>')
   await init(page)
-  await page.evaluate(() => {
-    document.body.classList.add('animation:fade|1s', 'animation:flash|1s')
-  })
-  await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style!.sheet!.cssRules)
-    .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
-    .map((cssRule) => (cssRule as CSSKeyframesRule).name)
-  )).toEqual(['fade', 'flash'])
-
-  await page.evaluate(() => {
-    globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh()
-  })
-  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style!.sheet!.cssRules)
-    .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
-    .map((cssRule) => (cssRule as CSSKeyframesRule).name)
-  )).toEqual(['fade', 'flash'])
-})
-
-test('observes static theme variables and keyframes without class references', async ({ page }) => {
-  await init(page, undefined, {
-    variables: [
-      {
-        name: 'color-static',
-        key: 'static',
-        namespace: 'color',
-        type: 'string',
-        value: '#123',
-        static: true
-      }
-    ],
-    animations: {
-      'static-fade': {
-        to: {
-          opacity: '1'
-        }
-      }
-    },
-    animationOptions: {
-      'static-fade': {
-        static: true
-      }
-    }
-  })
-
-  const cssRules = await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.style!.sheet!.cssRules)
-    .map((cssRule) => cssRule.cssText)
-  )
-  expect(cssRules.some((cssRule) => cssRule.includes('--color-static'))).toBe(true)
-  expect(cssRules.some((cssRule) => cssRule.includes('@keyframes static-fade'))).toBe(true)
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh())
+  expect(await page.locator('#native').textContent()).toBe(':root{--color-static:#123}@keyframes steady{to{opacity:1}}')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('@keyframes')
 })
 
 test('preserves native declarations independently of browser support', async ({ page }) => {
@@ -249,42 +204,12 @@ test('preserves native declarations independently of browser support', async ({ 
   expect(result.classUtilities).toContain('display:banana')
 })
 
-test('hydrates progressive static theme variables and keyframes', async ({ page }) => {
-  await page.evaluate(() => {
-    document.body.innerHTML = '<div class="block"></div>'
-  })
-  await init(page, [
-    '@layer theme{:root,:host{--color-static:#123}}',
-    '@layer utilities{.block{display:block}}',
-    '@keyframes static-fade{to{opacity:1}}'
-  ].join(''), {
-    variables: [
-      {
-        name: 'color-static',
-        key: 'static',
-        namespace: 'color',
-        type: 'string',
-        value: '#123',
-        static: true
-      }
-    ],
-    animations: {
-      'static-fade': {
-        to: {
-          opacity: '1'
-        }
-      }
-    },
-    animationOptions: {
-      'static-fade': {
-        static: true
-      }
-    }
-  }, 'auto')
-
+test('progressive hydration leaves unconditional native CSS in its own stylesheet', async ({ page }) => {
+  await page.setContent('<style id="native">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class="block"></div>')
+  await init(page, '@layer utilities{.block{display:block}}', {}, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.rules.map((rule) => rule.name))).toEqual(['color-static'])
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.animationsNonLayer.rules.map((rule) => rule.name))).toEqual(['static-fade'])
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('--color-static')
+  expect(await page.locator('#native').textContent()).toContain('@keyframes steady')
 })
 
 test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
@@ -299,8 +224,7 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
     const returned = await globalThis.MasterCSSRuntime.start({
       manifest,
       emittedGlobals: {
-        variables: { 'color-red-60': 1 },
-        animations: { fade: 1 }
+        variables: { 'color-red-60': 1 }
       }
     })
     const returnedAgain = await globalThis.MasterCSSRuntime.start({ manifest })
@@ -309,23 +233,19 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
       before,
       after: current.text,
       variables: current.emittedGlobals.variables,
-      animations: current.emittedGlobals.animations,
       variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),
-      animationCounts: Object.fromEntries(current.animationsNonLayer.tokenCounts)
     }
   }, defaultManifest)
 
   expect(result.same).toBe(true)
   expect(result.before).toContain('--color-red-60:')
-  expect(result.before).toContain('@keyframes fade{')
+  expect(result.before).not.toContain('@keyframes fade{')
   expect(result.after).toContain('.fg-red-60')
   expect(result.after).toContain('.animation\\:fade\\|1s')
   expect(result.after).not.toContain('--color-red-60:')
   expect(result.after).not.toContain('@keyframes fade{')
   expect(result.variables).toMatchObject({ 'color-red-60': 1 })
-  expect(result.animations).toMatchObject({ fade: 1 })
   expect(result.variableCounts).toMatchObject({ 'color-red-60': 1 })
-  expect(result.animationCounts).toMatchObject({ fade: 1 })
 })
 
 test('merges emittedGlobals from concurrent starts before resolving callers', async ({ page }) => {
@@ -340,16 +260,14 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
       manifest,
       root,
       emittedGlobals: {
-        variables: { 'color-red-60': 1 },
-        animations: { fade: 1 }
+        variables: { 'color-red-60': 1 }
       }
     })
     const third = globalThis.MasterCSSRuntime.start({
       manifest,
       root,
       emittedGlobals: {
-        variables: { 'color-red-60': 2 },
-        animations: { fade: 3 }
+        variables: { 'color-red-60': 2 }
       }
     })
     const [firstRuntime, secondRuntime, thirdRuntime] = await Promise.all([first, second, third])
@@ -358,7 +276,6 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     const internal = firstRuntime as unknown as {
       emittedGlobals: {
         variables: Record<string, number>
-        animations: Record<string, number>
       }
     }
     const emittedGlobals = structuredClone(internal.emittedGlobals)
@@ -377,8 +294,7 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     'fg-red-60': 1
   })
   expect(result.emittedGlobals).toEqual({
-    variables: { 'color-red-60': 3 },
-    animations: { fade: 4 }
+    variables: { 'color-red-60': 3 }
   })
   expect(result.text).toContain('.fg-red-60')
   expect(result.text).toContain('.animation\\:fade\\|1s')
@@ -396,22 +312,17 @@ test('registers emittedGlobals counts once on a new runtime', async ({ page }) =
       manifest,
       root,
       emittedGlobals: {
-        variables: { 'color-primary': 1 },
-        animations: { fade: 1 }
+        variables: { 'color-primary': 1 }
       }
     })
     const result = {
       variables: runtime.emittedGlobals.variables,
-      animations: runtime.emittedGlobals.animations,
       variableCounts: Object.fromEntries(runtime.themeLayer.tokenCounts),
-      animationCounts: Object.fromEntries(runtime.animationsNonLayer.tokenCounts)
     }
     runtime.dispose()
     return result
   }, defaultManifest)
 
   expect(result.variables).toMatchObject({ 'color-primary': 1 })
-  expect(result.animations).toMatchObject({ fade: 1 })
   expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })
-  expect(result.animationCounts).toMatchObject({ fade: 1 })
 })

@@ -12,7 +12,24 @@ pub(super) fn compile_variants(
     let mut variants = Vec::new();
     let mut selectors = Map::new();
     let mut conditions = Map::new();
-    for variant in input {
+    let last = input
+        .iter()
+        .enumerate()
+        .filter_map(|(index, variant)| {
+            variant
+                .get("token")
+                .and_then(Value::as_str)
+                .map(|token| (token, index))
+        })
+        .collect::<std::collections::HashMap<_, _>>();
+    for (index, variant) in input.iter().enumerate() {
+        if variant
+            .get("token")
+            .and_then(Value::as_str)
+            .is_some_and(|token| last.get(token) != Some(&index))
+        {
+            continue;
+        }
         let variant = object(variant)?;
         let token = variant
             .get("token")
@@ -89,18 +106,27 @@ pub(crate) fn value_placeholder_parts(value: &str) -> Result<Value, CompilerErro
     let tokens = mastercss_lexer::tokenize_css_syntax(value);
     let mut parts = Vec::new();
     let mut end = 0;
-    for token in &tokens {
+    let mut skip_until = 0;
+    for (index, token) in tokens.iter().enumerate() {
+        if index < skip_until {
+            continue;
+        }
+        if matches!(&token.kind, mastercss_lexer::CssSyntaxKind::Function(name) if name.eq_ignore_ascii_case("url"))
+        {
+            skip_until = token.close.map_or(index + 1, |close| close + 1);
+            continue;
+        }
         if let mastercss_lexer::CssSyntaxKind::Function(name) = &token.kind
-            && name == "--value"
+            && name == "--master-value"
         {
             let close = token
                 .close
                 .and_then(|close| tokens.get(close))
-                .ok_or_else(|| manifest_error("Unclosed --value() placeholder"))?;
+                .ok_or_else(|| manifest_error("Unclosed --master-value() placeholder"))?;
             if !mastercss_lexer::tokenize_css_syntax(&value[token.bytes.end..close.bytes.start])
                 .is_empty()
             {
-                return Err(manifest_error("--value() does not accept arguments"));
+                return Err(manifest_error("--master-value() does not accept arguments"));
             }
             if value[close.bytes.end..]
                 .chars()
@@ -108,7 +134,7 @@ pub(crate) fn value_placeholder_parts(value: &str) -> Result<Value, CompilerErro
                 .is_some_and(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '\\' | '('))
             {
                 return Err(manifest_error(
-                    "--value() is a complete CSS value; separate adjacent tokens instead of joining an identifier or function name",
+                    "--master-value() is a complete CSS value; separate adjacent tokens instead of joining an identifier or function name",
                 ));
             }
             if token.bytes.start > end {
@@ -278,7 +304,7 @@ fn validate_native_pattern(key: &str, rules: &[Value]) -> Result<(), CompilerErr
             });
     if !valid {
         return Err(manifest_error(format!(
-            "Native property {key}: must emit {key}: --value() without changing its intent; use a distinct utility name for subproperties or combined styles"
+            "Native property {key}: must emit {key}: --master-value() without changing its intent; use a distinct utility name for subproperties or combined styles"
         )));
     }
     Ok(())
@@ -294,6 +320,13 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
         .get("type")
         .and_then(Value::as_str)
         .unwrap_or("static");
+    if !matches!(definition_type, "static" | "dynamic" | "token")
+        || definition.contains_key("pattern")
+    {
+        return Err(manifest_error(
+            "Removed utility pattern; use fixed definitions, name:* or name-* from(--namespace-*)",
+        ));
+    }
     let layer = definition
         .get("layer")
         .and_then(Value::as_str)
@@ -321,68 +354,6 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
             "variableAliasRefs": references,
             "emit": { "type": "static", "rules": rules },
             "matchers": [{ "type": "token", "prefix": prefix }]
-        }));
-    }
-    if definition_type == "pattern" {
-        let pattern = definition
-            .get("pattern")
-            .and_then(Value::as_object)
-            .ok_or_else(|| {
-                manifest_error("Managed enum pattern definition is missing a pattern")
-            })?;
-        let rules = utility_rules(definition, true)?;
-        if let Some(key) = pattern
-            .get("prefix")
-            .and_then(Value::as_str)
-            .and_then(|prefix| prefix.strip_suffix(':'))
-        {
-            validate_native_pattern(key, &rules)?;
-            let property = mastercss_engine::builtin_key_aliases()
-                .iter()
-                .find_map(|(alias, property)| (*alias == key).then_some(*property))
-                .unwrap_or(key);
-            if mastercss_schema::is_native_css_property(property)
-                && pattern
-                    .get("valueMap")
-                    .and_then(Value::as_object)
-                    .is_some_and(|values| {
-                        values
-                            .iter()
-                            .any(|(key, value)| value.as_str() != Some(key))
-                    })
-            {
-                return Err(manifest_error(format!(
-                    "Native property {property}: cannot remap raw enum values"
-                )));
-            }
-        }
-        let mut matcher = Map::new();
-        matcher.insert("type".into(), Value::String("pattern".into()));
-        matcher.insert(
-            "prefix".into(),
-            pattern
-                .get("prefix")
-                .cloned()
-                .unwrap_or(Value::String(String::new())),
-        );
-        matcher.insert(
-            "values".into(),
-            pattern
-                .get("values")
-                .cloned()
-                .unwrap_or(Value::Array(Vec::new())),
-        );
-        if let Some(value_map) = pattern.get("valueMap") {
-            matcher.insert("valueMap".into(), value_map.clone());
-        }
-        return Ok(json!({
-            "id": source_name,
-            "name": source_name,
-            "type": -2,
-            "order": order,
-            "layer": layer,
-            "emit": { "type": "static", "rules": rules },
-            "matchers": [Value::Object(matcher)]
         }));
     }
     if definition_type == "dynamic" {

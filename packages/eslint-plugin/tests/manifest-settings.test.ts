@@ -82,15 +82,7 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
   try {
-    writeFileSync(join(cwd, 'index.css'), `
-      @master entry;
-
-      @utilities {
-        fixture-button {
-          display: inline-flex;
-        }
-      }
-    `)
+    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @utility fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
     writeFileSync(join(cwd, 'index.jsx'), `<div className="fixture-button zzz"></div>`)
 
     const eslint = new ESLint({
@@ -137,15 +129,7 @@ test('uses the project manifest for files that have not been written yet', async
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
   try {
-    writeFileSync(join(cwd, 'index.css'), `
-      @master entry;
-
-      @utilities {
-        fixture-button {
-          display: inline-flex;
-        }
-      }
-    `)
+    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @utility fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
 
     const eslint = createProjectESLint(cwd)
     const [result] = await eslint.lintText(
@@ -231,13 +215,6 @@ function createProjectESLint(cwd: string) {
 }
 
 function writeProjectUtility(filename: string, utility: string) {
-  writeFileSync(filename, `
-    @master entry;
-
-    @utilities {
-      ${utility} {
-        display: inline-flex;
-      }
-    }
-  `)
+  writeFileSync(filename, `@import "@master/css";
+@utility ${utility} { display: inline-flex; }`)
 }

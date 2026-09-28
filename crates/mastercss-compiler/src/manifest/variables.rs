@@ -54,11 +54,6 @@ pub(super) fn collect_namespaces(
             }
         }
     }
-    for variable in input.variables.as_deref().unwrap_or_default() {
-        if let Some(namespace) = &variable.namespace {
-            push_unique(&mut namespaces, namespace.clone());
-        }
-    }
     for utility in input.utilities.as_deref().unwrap_or_default() {
         let Some(utility) = utility.as_object() else {
             continue;
@@ -112,67 +107,8 @@ pub(super) fn resolved_variable_name(
     (explicit_name.to_owned(), key, namespace)
 }
 
-pub(super) fn skip_quoted_value(source: &str, start: usize, quote: char) -> usize {
-    let mut index = start + quote.len_utf8();
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        index += character.len_utf8();
-        if character == '\\' {
-            if let Some(escaped) = source[index..].chars().next() {
-                index += escaped.len_utf8();
-            }
-        } else if character == quote {
-            break;
-        }
-    }
-    index
-}
-
-pub(super) fn skip_value_comment(source: &str, start: usize) -> usize {
-    source[start + 2..]
-        .find("*/")
-        .map(|offset| start + 2 + offset + 2)
-        .unwrap_or(source.len())
-}
-
 pub(super) fn variable_dependencies(value: &str) -> Vec<String> {
-    let mut dependencies = Vec::new();
-    let mut index = 0;
-    while index < value.len() {
-        let character = value[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = skip_quoted_value(value, index, character);
-            continue;
-        }
-        if value[index..].starts_with("/*") {
-            index = skip_value_comment(value, index);
-            continue;
-        }
-        if !value[index..].starts_with("var(--") {
-            index += character.len_utf8();
-            continue;
-        }
-        let after = &value[index + "var(--".len()..];
-        let end = after
-            .find(|character: char| {
-                !(character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
-            })
-            .unwrap_or(after.len());
-        if end > 0 {
-            push_unique(&mut dependencies, after[..end].to_owned());
-        }
-        index += "var(--".len() + end;
-    }
-    dependencies
-}
-
-pub(super) fn normalize_variable_value(
-    value: &Value,
-) -> Result<(Value, Vec<String>), CompilerError> {
-    let Value::String(value) = value else {
-        return Ok((value.clone(), Vec::new()));
-    };
-    Ok((Value::String(value.clone()), variable_dependencies(value)))
+    mastercss_lexer::collect_css_variable_references(value)
 }
 
 pub(super) fn parse_numeric_value(
@@ -252,15 +188,6 @@ impl VariableTable {
         index
     }
 
-    pub(super) fn push(&mut self, variable: Map<String, Value>) {
-        match self.position(&variable_slot(&variable)) {
-            Some(index) => self.variables[index].extend(variable),
-            None => {
-                self.insert(variable);
-            }
-        }
-    }
-
     pub(super) fn into_variables(self) -> Vec<Map<String, Value>> {
         self.variables
     }
@@ -272,104 +199,88 @@ pub(super) fn compile_variables(
 ) -> Result<Vec<Map<String, Value>>, CompilerError> {
     let namespaces = collect_namespaces(input, base);
     let mut variables = VariableTable::default();
-    for definition in input.variables.as_deref().unwrap_or_default() {
-        let (name, key, namespace) = resolved_variable_name(
-            definition.name.as_deref(),
-            definition.namespace.as_deref(),
-            definition.key.as_deref(),
-            &namespaces,
+    fn visit(
+        nodes: &[mastercss_schema::ThemeNode],
+        path: &mut Vec<String>,
+        namespaces: &[String],
+        variables: &mut VariableTable,
+    ) -> Result<(), CompilerError> {
+        for node in nodes {
+            match node {
+                mastercss_schema::ThemeNode::Rule { prelude, children } => {
+                    path.push(prelude.clone());
+                    visit(children, path, namespaces, variables)?;
+                    path.pop();
+                }
+                mastercss_schema::ThemeNode::Declaration { name, value } => {
+                    let (_, key, namespace) =
+                        resolved_variable_name(Some(name), None, None, namespaces);
+                    let index = variables.position(name).unwrap_or_else(|| {
+                        let mut variable = Map::new();
+                        variable.insert("name".into(), name.clone().into());
+                        variable.insert("key".into(), key.into());
+                        if let Some(namespace) = namespace {
+                            variable.insert("namespace".into(), namespace.into());
+                        }
+                        variable.insert("values".into(), json!([]));
+                        variable.insert("dependencies".into(), json!([]));
+                        variables.insert(variable)
+                    });
+                    let variable = variables.get_mut(index);
+                    variable
+                        .get_mut("values")
+                        .and_then(Value::as_array_mut)
+                        .expect("values")
+                        .push(json!({ "path": path, "value": value }));
+                    let mut dependencies = string_array(variable.get("dependencies"));
+                    for dependency in variable_dependencies(value) {
+                        push_unique(&mut dependencies, dependency);
+                    }
+                    variable.insert("dependencies".into(), json!(dependencies));
+                }
+            }
+        }
+        Ok(())
+    }
+    visit(
+        input.theme.as_deref().unwrap_or_default(),
+        &mut Vec::new(),
+        &namespaces,
+        &mut variables,
+    )?;
+    let mut variables = variables.into_variables();
+    for variable in &mut variables {
+        let namespace = variable.get("namespace").and_then(Value::as_str);
+        let values = variable["values"].as_array().expect("scoped values");
+        let numeric = values
+            .iter()
+            .map(|entry| parse_numeric_value(&entry["value"], namespace))
+            .collect::<Option<Vec<_>>>();
+        let common = numeric
+            .as_ref()
+            .and_then(|values| {
+                values
+                    .first()
+                    .filter(|first| values.iter().all(|value| value == *first))
+            })
+            .cloned();
+        variable.insert(
+            "type".into(),
+            if numeric.is_some() {
+                "number"
+            } else {
+                "string"
+            }
+            .into(),
         );
-        if name.is_empty() {
-            continue;
-        }
-        let (value, dependencies) = normalize_variable_value(&definition.value)?;
-        let numeric = parse_numeric_value(&value, namespace.as_deref());
-        let variable_type = if numeric.is_some() || value.is_number() {
-            "number"
-        } else {
-            "string"
-        };
-        if let Some(mode) = &definition.mode {
-            // Every compiled variable carries its name, so the name is its slot.
-            let index = variables.position(&name).unwrap_or_else(|| {
-                let mut variable = Map::new();
-                variable.insert("name".into(), Value::String(name.clone()));
-                variable.insert("key".into(), Value::String(key.clone()));
-                if let Some(namespace) = &namespace {
-                    variable.insert("namespace".into(), Value::String(namespace.clone()));
-                }
-                variable.insert("type".into(), Value::String(variable_type.into()));
-                variable.insert("modes".into(), Value::Object(Map::new()));
-                if definition.r#static == Some(true) {
-                    variable.insert("static".into(), Value::Bool(true));
-                }
-                variables.insert(variable)
-            });
-            let target = variables.get_mut(index);
-            if definition.r#static == Some(true) {
-                target.insert("static".into(), Value::Bool(true));
-            }
-            let mut mode_value = Map::new();
-            mode_value.insert("type".into(), Value::String(variable_type.into()));
-            mode_value.insert("value".into(), value);
-            if let Some((number, unit)) = numeric {
-                let mut numeric = Map::new();
-                numeric.insert("value".into(), number_value(number));
-                if let Some(unit) = unit {
-                    numeric.insert("unit".into(), Value::String(unit));
-                }
-                mode_value.insert("numeric".into(), Value::Object(numeric));
-            }
-            target
-                .entry("modes")
-                .or_insert_with(|| Value::Object(Map::new()))
-                .as_object_mut()
-                .expect("modes are an object")
-                .insert(mode.clone(), Value::Object(mode_value));
-            if !dependencies.is_empty() {
-                let mut merged = string_array(target.get("dependencies"));
-                for dependency in dependencies {
-                    push_unique(&mut merged, dependency);
-                }
-                target.insert(
-                    "dependencies".into(),
-                    Value::Array(merged.into_iter().map(Value::String).collect()),
-                );
-            }
-            continue;
-        }
-
-        let mut variable = Map::new();
-        variable.insert("name".into(), Value::String(name));
-        variable.insert("key".into(), Value::String(key));
-        if let Some(namespace) = namespace {
-            variable.insert("namespace".into(), Value::String(namespace));
-        }
-        variable.insert("type".into(), Value::String(variable_type.into()));
-        variable.insert("value".into(), value);
-        if let Some((number, unit)) = numeric {
-            let mut numeric = Map::new();
-            numeric.insert("value".into(), number_value(number));
-            if let Some(unit) = unit {
-                numeric.insert("unit".into(), Value::String(unit));
-            }
-            variable.insert("numeric".into(), Value::Object(numeric));
-        }
-        if !dependencies.is_empty() {
+        if let Some((value, unit)) = common {
             variable.insert(
-                "dependencies".into(),
-                Value::Array(dependencies.into_iter().map(Value::String).collect()),
+                "numeric".into(),
+                json!({ "value": number_value(value), "unit": unit.unwrap_or_default() }),
             );
         }
-        if definition.inline == Some(true) {
-            variable.insert("inline".into(), Value::Bool(true));
-        }
-        if definition.r#static == Some(true) {
-            variable.insert("static".into(), Value::Bool(true));
-        }
-        variables.push(variable);
     }
-    Ok(variables.into_variables())
+    Ok(variables)
 }
 
 pub(super) fn group_variables(variables: Vec<Map<String, Value>>) -> Option<Value> {
@@ -411,11 +322,7 @@ pub(super) fn condition_for_variable(variable: &Map<String, Value>, id: &str) ->
     }))
 }
 
-pub(super) fn compile_variable_conditions(
-    variables: &[Map<String, Value>],
-) -> (Map<String, Value>, Map<String, Value>, Map<String, Value>) {
-    let mut conditions = Map::new();
-    let mut breakpoint_conditions = Map::new();
+pub(super) fn compile_container_conditions(variables: &[Map<String, Value>]) -> Map<String, Value> {
     let mut container_conditions = Map::new();
     for variable in variables {
         let namespace = variable.get("namespace").and_then(Value::as_str);
@@ -423,18 +330,13 @@ pub(super) fn compile_variable_conditions(
             .get("key")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        if namespace == Some("breakpoint") {
-            if let Some(condition) = condition_for_variable(variable, "media") {
-                conditions.insert(key.into(), condition.clone());
-                breakpoint_conditions.insert(key.into(), condition);
-            }
-        } else if namespace == Some("container")
+        if namespace == Some("container")
             && let Some(condition) = condition_for_variable(variable, "container")
         {
             container_conditions.insert(key.into(), condition);
         }
     }
-    (conditions, breakpoint_conditions, container_conditions)
+    container_conditions
 }
 
 pub(super) fn compile_condition(source: &str) -> Value {

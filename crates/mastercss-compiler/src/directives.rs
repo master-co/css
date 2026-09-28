@@ -4,9 +4,8 @@ use super::{
     HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
-    lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
-    reject_removed_directives, rewrite_managed_variant_directives,
-    validate_condition_variant_syntax,
+    lower_managed_rule_list, lower_theme_rule, reject_removed_directives,
+    rewrite_managed_variant_directives, validate_condition_variant_syntax,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -14,7 +13,7 @@ use mastercss_lexer::{
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_definition_rule(
-    source: &str,
+    source_index: &crate::source_index::SourceIndex<'_>,
     filename: &str,
     rule: ThemeAtRule,
     manifest_input: &mut CssDirectiveManifestInput,
@@ -23,25 +22,45 @@ pub(crate) fn lower_managed_definition_rule(
     style_order: &mut u32,
     stylesheet_variant_rule_offsets: &HashMap<usize, String>,
 ) -> Result<(), CompilerError> {
-    if !rule.prelude.parts.is_empty() {
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            format!("@{} does not accept a prelude", rule.name.as_str()),
-        ));
-    }
-    let body = rule.body.as_deref().ok_or_else(|| {
+    let source = source_index.text();
+    let prelude = rule
+        .prelude
+        .parts
+        .first()
+        .map(String::as_str)
+        .unwrap_or_default();
+    let pattern = crate::pattern::parse_managed_pattern(prelude)
+        .map_err(|message| directive_error(source, filename, rule.start_byte, message))?;
+    let body_text = rule.body.as_deref().ok_or_else(|| {
         directive_error(
             source,
             filename,
             rule.start_byte,
-            format!("@{} requires a style block", rule.name.as_str()),
+            "@utility requires a style block",
         )
     })?;
-    let body_start_byte = rule.body_start_byte.unwrap_or(rule.start_byte);
-    let (rewritten_body, pattern_rule_offsets) = mask_managed_pattern_names(body)
-        .map_err(|message| directive_error(source, filename, rule.start_byte, message))?;
+    let open = rule
+        .body_start_byte
+        .unwrap_or(rule.start_byte)
+        .saturating_sub(1);
+    let name_start = mastercss_lexer::tokenize_css_syntax(&source[rule.start_byte..open])
+        .get(1)
+        .map(|token| rule.start_byte + token.bytes.start)
+        .unwrap_or(open);
+    // Parse one synthetic style rule. Keep every byte and newline after its
+    // prelude in place, so authored nested rules retain their source ranges.
+    let body = &source[name_start..open + 1 + body_text.len() + 1];
+    let mut rewritten_body = body.as_bytes().to_vec();
+    for byte in &mut rewritten_body[..open - name_start] {
+        if !matches!(*byte, b'\r' | b'\n') {
+            *byte = b' ';
+        }
+    }
+    rewritten_body[0] = b'm';
+    let rewritten_body = String::from_utf8(rewritten_body).expect("masked prelude");
+    let (rewritten_body, _) = rewrite_managed_variant_directives(&rewritten_body);
+    let pattern_rule_offsets = HashMap::from([(0, pattern)]);
+    let body_start_byte = name_start;
     let variant_rule_offsets = stylesheet_variant_rule_offsets
         .iter()
         .filter_map(|(offset, token)| {
@@ -60,10 +79,9 @@ pub(crate) fn lower_managed_definition_rule(
     )
     .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
     let layer = rule.name.layer().expect("managed directives have a layer");
-    let source_index = crate::source_index::SourceIndex::new(source);
     let body_index = crate::source_index::SourceIndex::new(body);
     lower_managed_rule_list(
-        &source_index,
+        source_index,
         filename,
         &body_index,
         body_start_byte,
@@ -127,6 +145,8 @@ fn compile_css_directives_impl(
     });
     validate_condition_variant_syntax(source, &options.from)?;
     reject_removed_directives(source, &options.from)?;
+    crate::utility_definitions::validate_placeholders(source, &options.from)?;
+    let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
     let standalone_directives = find_standalone_css_directive_statements(source);
     // Parsing still addresses the original source. Blank consumed statements
@@ -148,6 +168,13 @@ fn compile_css_directives_impl(
                 if !matches!(*byte, b'\r' | b'\n') {
                     *byte = b' ';
                 }
+            }
+        }
+    }
+    for range in custom_media_ranges {
+        for byte in &mut masked[range] {
+            if !matches!(*byte, b'\r' | b'\n') {
+                *byte = b' ';
             }
         }
     }
@@ -208,7 +235,10 @@ fn compile_css_directives_impl(
         .visit(&mut native_class_collector)
         .unwrap_or_else(|error| match error {});
 
-    let mut manifest_input = CssDirectiveManifestInput::default();
+    let mut manifest_input = CssDirectiveManifestInput {
+        custom_media: (!custom_media.is_empty()).then_some(custom_media),
+        ..CssDirectiveManifestInput::default()
+    };
     let mut class_names = Vec::new();
     let mut style_definitions = Vec::new();
     let mut style_order = 0;
@@ -234,15 +264,6 @@ fn compile_css_directives_impl(
         }
         match rule {
             CssRule::Custom(directive) => match directive.name {
-                DirectiveName::Mode => crate::mode::lower_mode_rule(
-                    source,
-                    &options.from,
-                    directive,
-                    &mut manifest_input,
-                )?,
-                DirectiveName::Settings => {
-                    lower_settings_rule(source, &options.from, directive, &mut manifest_input)?
-                }
                 DirectiveName::Theme => {
                     lower_theme_rule(source, &options.from, directive, &mut manifest_input)?
                 }
@@ -269,8 +290,8 @@ fn compile_css_directives_impl(
                         ),
                     ));
                 }
-                DirectiveName::Utilities => lower_managed_definition_rule(
-                    source,
+                DirectiveName::Utility => lower_managed_definition_rule(
+                    &source_index,
                     &options.from,
                     directive,
                     &mut manifest_input,
@@ -338,7 +359,7 @@ fn compile_css_directives_impl(
     } else {
         None
     };
-    let native_output = if !external_slots
+    let mut native_output = if !external_slots
         && let Some(slots) = slots.as_deref_mut().filter(|slots| !slots.is_empty())
     {
         // Both views use the same parsed and lowered tree. The raw native view
@@ -412,6 +433,17 @@ fn compile_css_directives_impl(
             &native_css,
         )
     };
+    if !external_slots
+        && native_output.is_none()
+        && source.contains("--")
+        && source.contains("media")
+    {
+        native_output = Some(crate::NativeCssOutput {
+            css: native_css.clone(),
+            mappings: native_mappings.clone(),
+            slots: Vec::new(),
+        });
+    }
     Ok(CompileCssDirectivesResult {
         utility_sources: crate::utility_sources::collect(source, &options.from),
         native_output,

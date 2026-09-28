@@ -7,21 +7,24 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const manifest = compileManifestSync(`
-@mode light {
-  @media (prefers-color-scheme: light) { :root:not([data-theme]) { @slot; } }
-  [data-theme="light"] { @slot; }
+@custom-variant light {
+  @media (prefers-color-scheme: light) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @slot; } }
+  &:where([data-theme="light"], [data-theme="light"] *) { @slot; }
 }
-@mode dark {
-  @media (prefers-color-scheme: dark) { :root:not([data-theme]) { @slot; } }
-  [data-theme="dark"] { @slot; }
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @slot; } }
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
 }
-@mode ocean {
-  [data-theme="ocean"] { @slot; }
-  :host([data-theme="ocean"]) { @slot; }
+@custom-variant ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @slot; }
+  :host([data-theme="ocean"]) & { @slot; }
 }
-@theme { --color-probe: white; }
-@theme dark { --color-probe: black; }
-@theme ocean { --color-probe: blue; }
+@theme {
+  :root, :host { --color-probe: white; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme]) { --color-probe: black; } }
+  [data-theme="dark"] { --color-probe: black; }
+  [data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
+}
 `, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest }).manifest
 const classes = ['bg-probe', 'padding:11px@dark', 'color:red@ocean', 'padding:9px@media((width>=800px))@media((hover:hover))']
 const html = '<!doctype html><html class="bg-probe padding:11px@dark"><head><style>@layer theme,base,defaults,components,utilities;</style></head><body>'

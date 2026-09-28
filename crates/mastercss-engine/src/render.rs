@@ -7,18 +7,9 @@ pub(crate) fn create_selector_text(
     class_name: &str,
     declaration_selector: Option<&str>,
     branch: &StateBranch,
-    manifest: &ManifestProjection,
+    _manifest: &ManifestProjection,
 ) -> String {
-    let mut body = format!(".{}", css_escape(class_name));
-    let mut prefix = String::new();
-    if let Some(scope) = &manifest.settings.scope {
-        prefix.push_str(scope);
-        prefix.push(' ');
-    }
-    if let Some(guard) = &branch.mode_guard {
-        body.push_str(guard);
-    }
-    body.insert_str(0, &prefix);
+    let body = format!(".{}", css_escape(class_name));
     let mut selector = branch
         .selector_template
         .as_deref()
@@ -35,7 +26,7 @@ pub(crate) fn create_selector_text(
 }
 
 pub(crate) fn composition_selector(branch: &StateBranch, _manifest: &ManifestProjection) -> String {
-    let anchor = format!("&{}", branch.mode_guard.as_deref().unwrap_or_default());
+    let anchor = "&".to_owned();
     branch
         .selector_template
         .as_deref()

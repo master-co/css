@@ -6,13 +6,13 @@
       letter-spacing: var(--tracking-wide);
     }
 
-    @light {
+    @variant site-light {
       :is(p, li, table) code {
         background-color: var(--color-neutral-0);
       }
     }
 
-    @dark {
+    @variant site-dark {
       :is(blockquote) p {
         color: inherit;
       }
@@ -37,7 +37,7 @@
     }
 
     :is(p, li) {
-      max-width: var(--breakpoint-sm);
+      max-width: 52.125rem;
     }
 
     :is(h2)+*>h3:first-child {
@@ -140,7 +140,7 @@
 
     :is(p, li, table) code:not(.code-block) {
       border-radius: var(--radius-sm);
-      border: 1px solid var(--color-line-muted);
+      border: 1px solid var(--color-line-subtle);
       padding: var(--spacing-4xs) var(--spacing-3xs);
       font-size: small;
     }
@@ -217,7 +217,7 @@
     }
 
     ::marker {
-      color: var(--color-text-disabled);
+      color: var(--color-text-muted);
     }
 
     :is(summary) {
@@ -254,7 +254,7 @@
     }
 
     :is(td, th) {
-      border-bottom: 1px solid var(--color-line-muted);
+      border-bottom: 1px solid var(--color-line-subtle);
     }
 
     :is(tbody) :is(tr:last-child)> :is(td, th) {
@@ -262,12 +262,12 @@
     }
 
     :is(thead) th {
-      border-bottom: 1px solid var(--color-line-muted);
+      border-bottom: 1px solid var(--color-line-subtle);
     }
 
     :is(hr) {
       margin-block: var(--spacing-lg);
-      border-bottom: 1px solid var(--color-line-muted);
+      border-bottom: 1px solid var(--color-line-subtle);
     }
 
     @variant sm {

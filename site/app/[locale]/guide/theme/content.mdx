@@ -1,27 +1,29 @@
 ## Overview [sr-only]
-Theme tokens are the shared design values a Master CSS project reaches for every day: colors, spacing, typography, radius, shadows, motion, breakpoints, and container sizes.
+Theme tokens are the shared design values a Master CSS project reaches for every day: colors, spacing, typography, radius, shadows, motion, and container sizes. Define viewport conditions separately with `@custom-media`.
 
 Define tokens in the project CSS entry with `@theme`, then use short contextual classes in markup. Keep the page focused on values. Use [Global Styles](/guide/global-styles) for reusable components and utilities, [Conditional Queries](/reference/rules/conditions) for variants, and [Variables and Modes](/guide/variables-and-modes) for the underlying resolution model.
 
 ```css name=index.css
 @import '@master/css';
 
-@theme {
+@theme { :root, :host {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-lg: 1.5rem;
   --radius-lg: 1rem;
-  --breakpoint-md: 48rem;
+
   --container-md: 28rem;
-}
+} }
 
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-surface-card: #ffffff;
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-surface-card: #111827;
-}
+} } }
+
+@custom-media --md (width >= 48rem);
 ```
 
 ```html
@@ -32,7 +34,7 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
 </section>
 ```
 
-Master CSS resolves theme tokens before generating class rules. The generated CSS still uses normal CSS custom properties unless you intentionally define inline tokens.
+Master CSS resolves token names when generating class rules. Values stay as CSS custom properties; the browser computes the active value in each scope. A referenced token retains all authored selectors, native conditions, and transitive dependencies.
 
 ---
 
@@ -42,9 +44,10 @@ A project needs a CSS entry that marks the Master CSS graph. Put shared tokens i
 ```css name=index.css
 @import '@master/css';
 
-@theme {
+@theme { :root, :host {
   --color-brand: #4f46e5;
-}
+} }
+
 ```
 
 The important part is the graph, not a special file name. Theme tokens can live wherever the project CSS entry already reaches them.
@@ -52,29 +55,31 @@ The important part is the graph, not a special file name. Theme tokens can live 
 ---
 
 ## Define tokens
-Theme tokens are CSS custom property declarations inside `@theme` blocks. Write the full token name with the leading `--`. The prefix places the value in a namespace that Master CSS utilities already understand.
+Theme tokens are CSS custom property declarations inside explicit selectors in `@theme` blocks. Write the full token name with the leading `--`. The prefix places the value in a namespace that Master CSS utilities already understand.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --content-hash: " #";
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-lg: 1.5rem;
   --font-family-sans: Geist, ui-sans-serif, system-ui, sans-serif;
   --radius-lg: 1rem;
-  --breakpoint-md: 48rem;
-  --container-md: 28rem;
-}
 
-@theme light {
+  --container-md: 28rem;
+} }
+
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-surface-card: #ffffff;
   --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-surface-card: #111827;
   --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
-}
+} } }
+
+@custom-media --md (width >= 48rem);
 ```
 
 Use token names that describe the shared decision, not the first component that needed the value. A `brand` color, `lg` spacing step, or `card` shadow can be reused. A token named after one button or one modal usually belongs closer to that component.
@@ -82,7 +87,7 @@ Use token names that describe the shared decision, not the first component that 
 ---
 
 ## Use tokens
-Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p-lg`, radius in `r-lg`, a container width in `max-w-md`, or a breakpoint in `@md`.
+Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p-lg`, radius in `r-lg`, a container width in `max-w-md`, while `@md` names a separately declared custom media condition.
 
 ```html
 <!-- @MARK bg-surface-card --><!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK font-sans --><!-- @MARK shadow-card -->
@@ -100,19 +105,21 @@ For a deeper explanation of namespace resolution and contextual lookup, see [Var
 Use native CSS `var()` when a token should reference another token. This keeps semantic roles tied to a smaller set of foundation values.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
-}
+} }
+
 ```
 
-Define the same token key as a preset token when you want to override it. Later definitions in the project CSS graph win.
+Define the same token key as a preset token when you want to override it. Declarations retain author order, including duplicate fallbacks. Normal CSS specificity, conditions, and cascade order determine the winning value.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --color-blue: #4589ff;
   --spacing-lg: 1.625rem;
-}
+} }
+
 ```
 
 Use overrides intentionally. If the whole product should use a different `blue` or `lg`, override the preset token. If only one product role changes, create a semantic token such as `color-text-action` or `shadow-card`.
@@ -120,20 +127,21 @@ Use overrides intentionally. If the whole product should use a different `blue` 
 ---
 
 ## Add mode-aware values
-Use mode-specific `@theme` blocks when the same token should resolve differently in light, dark, or custom modes.
+Use native media queries or selectors inside `@theme` when the same token should change by system preference or by a local theme switch.
 
 ```css name=index.css
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-surface-card: #ffffff;
   --color-text-card: #111827;
   --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-surface-card: #111827;
   --color-text-card: #f9fafb;
   --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
-}
+} } }
+
 ```
 
 ```html
@@ -143,54 +151,45 @@ Use mode-specific `@theme` blocks when the same token should resolve differently
 
 Keep the token name mode-neutral. Markup should say `surface-card` or `text-card`, not `dark-card`.
 
-For explicit `@mode` definitions, manual switches, and local mode islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
+For manual switches and local theme islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
 
 ---
 
-## Use inline and static tokens
-Use `@theme inline` when a token is only a utility shorthand and should not emit a CSS custom property. Master CSS still matches the token, but generated utilities write the resolved value directly.
+<a id="use-inline-and-static-tokens" />
 
-```css name=index.css
-@theme inline {
-  --color-brand: #4f46e5;
-  --spacing-feature: 1.5rem;
-}
-```
+## Keep shared values dynamic
+Token utilities preserve `var()` references. `@theme inline` and `@theme static` are removed.
 
-```html
-<article class="bg-brand p-feature">...</article>
-```
+For a fixed utility, write a declaration in `@utility`:
 
 ```css
-.bg-brand { background-color: #4f46e5; }
-.p-feature { padding: 1.5rem; }
+@utility brand-fill { background-color: #4f46e5; }
 ```
 
-Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
+For custom properties that must always ship, use native CSS:
 
-Use `@theme static` when a token or managed keyframes definition should be emitted as an initial CSS resource instead of waiting for a matching class.
-
-```css name=index.css
-@theme static {
-  --color-brand: #4f46e5;
+```css
+@layer theme {
+  :root, :host { --integration-brand: #4f46e5; }
 }
 ```
 
 ---
 
 ## Define responsive tokens
-Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport condition suffixes, and define `container` variables for container query thresholds and width caps.
+Define viewport conditions with `@custom-media`. Container tokens remain available for container query thresholds and width caps. A `--breakpoint-*` custom property does not register a condition.
 
 ```css name=index.css
-@theme {
-  --breakpoint-sm: 40rem;
-  --breakpoint-md: 48rem;
-  --breakpoint-lg: 64rem;
+@theme { :root, :host {
 
   --container-sm: 24rem;
   --container-md: 28rem;
   --container-lg: 32rem;
-}
+} }
+
+@custom-media --sm (width >= 40rem);
+@custom-media --md (width >= 48rem);
+@custom-media --lg (width >= 64rem);
 ```
 
 ```html
@@ -206,24 +205,25 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 </aside>
 ```
 
-Keep breakpoint tokens broad and product-wide. Use container tokens when a reusable component should respond to the space it receives. See [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) for the responsive scales.
+Keep named viewport conditions broad and product-wide. Use container tokens when a reusable component should respond to the space it receives. See [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) for the responsive scales.
 
 ---
 
 ## Define motion tokens
-Motion values can be tokens too. Put reusable animation recipes, durations, easing curves, and managed keyframes in `@theme`.
+Motion values can be tokens too. Put reusable animation recipes, durations, and easing curves in `@theme`. Write keyframes as native top-level CSS and import their stylesheet wherever the animation is needed.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --duration-enter: 180ms;
   --easing-standard: cubic-bezier(.4, 0, .2, 1);
   --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-standard) both;
 
-  @keyframes dialog-in {
+} }
+@keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }
   }
-}
+
 ```
 
 ```html
@@ -231,7 +231,7 @@ Motion values can be tokens too. Put reusable animation recipes, durations, easi
 <dialog class="animate-dialog-in"></dialog>
 ```
 
-Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation](/reference/animation).
+Keyframes ship with the imported stylesheet, independently of class usage. `@reference` does not import them. Animation utilities generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation](/reference/animation).
 
 ---
 
@@ -246,3 +246,5 @@ Use this page when you need to define or override project tokens. Continue into 
 * [Motion](/guide/motion)
 * [Breakpoints](/guide/breakpoints)
 * [Containers](/guide/containers)
+
+The preset no longer publishes `--breakpoint-*` custom properties. Replace layout references with native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role. Named viewport queries remain explicit `@custom-media` declarations.

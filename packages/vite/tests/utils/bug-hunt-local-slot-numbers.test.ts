@@ -16,8 +16,8 @@ test('local entry survives CSS optimization when its hash begins with an exponen
       if (/^\d+e\d{3}/.test(createHash('sha256').update(join(root, candidate)).digest('hex'))) { filename = candidate; break }
     }
     expect(filename).not.toBe('')
-    writeFileSync(join(root, filename), ".exponent{@variant media(all){display:inline-flex;}}")
-    writeFileSync(join(root, 'control.css'), ".control{@variant media(all){display:block;}}")
+    writeFileSync(join(root, filename), ".exponent{@media all {display:inline-flex;}}")
+    writeFileSync(join(root, 'control.css'), ".control{@media all {display:block;}}")
     writeFileSync(join(root, 'client.js'), `import "./control.css";import "./${filename}";`)
     writeFileSync(join(root, 'index.html'), '<script type="module" src="./client.js"></script>')
     const result = await build({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }), build: { write: false } })

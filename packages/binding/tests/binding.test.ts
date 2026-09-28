@@ -8,7 +8,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest = Object.freeze({
-  version: 1, languageVersion: 3,
+  version: 2, languageVersion: 4,
   utilities: Object.freeze([Object.freeze({
     id: 'display-block',
     name: 'block',
@@ -45,14 +45,14 @@ describe('binding loader', () => {
     }))
 
     const nativeDeclarationSession = await createEngineBindingSession({
-      manifest: {
-        version: 1, languageVersion: 3,
+      manifest: { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
+        version: 2, languageVersion: 4,
         variables: {
           '': [{
             name: 'stripe',
             key: 'stripe',
             type: 'string',
-            value: 'linear-gradient(red,blue)'
+            values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
           }]
         },
         utilities: []
@@ -88,11 +88,11 @@ describe('binding loader', () => {
     const compiler = await createCompilerBindingSession({ binding: 'native' })
     try {
       expect(() => compiler.compileCSSDirectives(`
-        @utilities {
-          x-<> {
-            color: --value();
+
+          @utility x-<> {
+            color: --master-value();
           }
-        }
+
       `)).toThrowError(expect.objectContaining({
         domain: 'compiler',
         payload: expect.objectContaining({

@@ -3,8 +3,8 @@ import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
 test.each(['native', 'wasm'] as const)('preserves selector literals while lowering @compose through %s', async (binding) => {
-  const source = String.raw`@utilities{paint{display:block}}[data-state=":first"]:first{@variant media(all){display:block;}}.literal\:before:before{@variant media(all){display:block;}}:is(:first,[data-state=':last']){@variant media(all){display:block;}}`
-  const options = { baseManifest: { version: 1 as const, languageVersion: 3 as const }, preserveNativeCSS: true }
+  const source = String.raw`@utility paint {display:block}[data-state=":first"]:first{@variant all{display:block;}}.literal\:before:before{@variant all{display:block;}}:is(:first,[data-state=':last']){@variant all{display:block;}}`
+  const options = { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const }, preserveNativeCSS: true }
   const result = binding === 'native'
     ? await compileRenderedStylesheet('/tmp/selector-literals.css', source, options)
     : await compileBrowserStylesheet(source, options)

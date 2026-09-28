@@ -20,7 +20,7 @@
     "master-directive": {
       "patterns": [
         {
-          "begin": "(@)(source)\\b",
+          "begin": "(?i)(@)(source)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -39,7 +39,7 @@
           ]
         },
         {
-          "begin": "(@)(reference|blocklist)\\b",
+          "begin": "(?i)(@)(reference|blocklist)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -62,7 +62,7 @@
           ]
         },
         {
-          "begin": "(@)(preserve|prune)\\b",
+          "begin": "(?i)(@)(preserve|prune)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -81,7 +81,7 @@
           ]
         },
         {
-          "begin": "(@)(theme)\\b",
+          "begin": "(?i)(@)(theme)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -95,38 +95,12 @@
           },
           "patterns": [
             {
-              "include": "#master-theme-block"
-            },
-            {
-              "include": "#master-theme-prelude"
+              "include": "#master-block"
             }
           ]
         },
         {
-          "begin": "(@)(settings)\\b",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.control.at-rule.master-css"
-            }
-          },
-          "end": "(;)|(?<=\\})|$",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#master-settings-block"
-            },
-            {
-              "match": "[;{}]",
-              "name": "punctuation.section.master-css"
-            }
-          ]
-        },
-        {
-          "begin": "(@)(safelist)\\b",
+          "begin": "(?i)(@)(safelist)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -149,7 +123,7 @@
           ]
         },
         {
-          "begin": "(@)(utilities)\\b",
+          "begin": "(?i)(@)(utility)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -163,16 +137,15 @@
           },
           "patterns": [
             {
-              "include": "#master-managed-block"
+              "include": "#master-block"
             },
             {
-              "match": "[;{}]",
-              "name": "punctuation.section.master-css"
+              "include": "#master-utility-prelude"
             }
           ]
         },
         {
-          "begin": "(@)(custom-variant|mode)\\b",
+          "begin": "(?i)(@)(custom-variant)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -194,7 +167,7 @@
           ]
         },
         {
-          "begin": "(@)(variant|dark|light)\\b",
+          "begin": "(?i)(@)(variant)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -216,31 +189,7 @@
           ]
         },
         {
-          "begin": "(@)(master)\\b",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.control.at-rule.master-css"
-            }
-          },
-          "end": "(;)|(?<=\\})|$",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "match": "\\bentry\\b",
-              "name": "support.constant.property-value.master-css"
-            },
-            {
-              "match": "[;{}]",
-              "name": "punctuation.section.master-css"
-            }
-          ]
-        },
-        {
-          "begin": "(@)(slot)\\b",
+          "begin": "(?i)(@)(slot)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -267,9 +216,6 @@
     "master-custom-variant-prelude": {
       "patterns": [
         {
-          "include": "#master-query"
-        },
-        {
           "match": "(?<![:@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
           "name": "variable.parameter.master-css"
         },
@@ -281,9 +227,6 @@
     },
     "master-variant-prelude": {
       "patterns": [
-        {
-          "include": "#master-query"
-        },
         {
           "match": "(?<![@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
           "name": "support.constant.property-value.master-css.query"
@@ -356,55 +299,6 @@
         {
           "match": "[;{}]",
           "name": "punctuation.section.master-css"
-        }
-      ]
-    },
-    "master-theme-prelude": {
-      "patterns": [
-        {
-          "match": "\\b(?:inline|static)\\b(?!-)",
-          "name": "storage.modifier.master-css"
-        },
-        {
-          "match": "(?<![-_a-zA-Z0-9])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
-          "name": "support.constant.property-value.master-css"
-        },
-        {
-          "match": "[;{}]",
-          "name": "punctuation.section.master-css"
-        }
-      ]
-    },
-    "master-theme-value": {
-      "patterns": []
-    },
-    "master-theme-declaration": {
-      "patterns": [
-        {
-          "begin": "(--[_a-zA-Z-][_a-zA-Z0-9-]*)(\\s*)(:)",
-          "beginCaptures": {
-            "1": {
-              "name": "variable.css.custom-property.master-css"
-            },
-            "3": {
-              "name": "punctuation.separator.key-value.css"
-            }
-          },
-          "contentName": "meta.property-value.css",
-          "end": "\\s*(;)|\\s*(?=\\})",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.terminator.rule.css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#master-theme-value"
-            },
-            {
-              "include": "source.css#property-values"
-            }
-          ]
         }
       ]
     },
@@ -501,252 +395,6 @@
         }
       ]
     },
-    "master-managed-pattern": {
-      "patterns": [
-        {
-          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*(?::<(?!\\*>)[^>]*>|-<=[^>]*>))",
-          "captures": {
-            "3": {
-              "name": "invalid.deprecated.master-css"
-            }
-          }
-        },
-        {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(-)(<)(?=~)",
-          "beginCaptures": {
-            "3": {
-              "name": "support.type.property-name.master-css"
-            },
-            "4": {
-              "name": "keyword.operator.master-css"
-            },
-            "5": {
-              "name": "punctuation.definition.generic.begin.master-css"
-            }
-          },
-          "end": "(>)",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.generic.end.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "match": "[~|]",
-              "name": "keyword.operator.master-css"
-            },
-            {
-              "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
-              "name": "variable.parameter.master-css"
-            }
-          ]
-        },
-        {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)(?=\\*>)",
-          "beginCaptures": {
-            "3": {
-              "name": "support.type.property-name.master-css"
-            },
-            "4": {
-              "name": "keyword.operator.master-css"
-            },
-            "5": {
-              "name": "punctuation.definition.generic.begin.master-css"
-            }
-          },
-          "end": "(>)",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.generic.end.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "match": "\\*",
-              "name": "keyword.operator.master-css"
-            }
-          ]
-        },
-        {
-          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*-)(<)",
-          "beginCaptures": {
-            "3": {
-              "name": "entity.other.attribute-name.class.master-css"
-            },
-            "4": {
-              "name": "punctuation.definition.generic.begin.master-css"
-            }
-          },
-          "end": "(>)",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.generic.end.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "match": "\\|",
-              "name": "keyword.operator.master-css"
-            },
-            {
-              "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
-              "name": "support.constant.property-value.master-css"
-            }
-          ]
-        }
-      ]
-    },
-    "master-theme-block": {
-      "patterns": [
-        {
-          "begin": "\\{",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "end": "\\}",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "source.css#comment-block"
-            },
-            {
-              "include": "#master-theme-declaration"
-            },
-            {
-              "include": "#master-keyframes"
-            },
-            {
-              "include": "#master-directive"
-            },
-            {
-              "include": "#master-block"
-            }
-          ]
-        }
-      ]
-    },
-    "master-settings-block": {
-      "patterns": [
-        {
-          "begin": "\\{",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "end": "\\}",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "source.css#comment-block"
-            },
-            {
-              "include": "#master-native-declaration"
-            },
-            {
-              "include": "#master-directive"
-            },
-            {
-              "include": "#master-block"
-            }
-          ]
-        }
-      ]
-    },
-    "master-managed-block": {
-      "patterns": [
-        {
-          "begin": "\\{",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "end": "\\}",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#comment"
-            },
-            {
-              "include": "#master-string"
-            },
-            {
-              "include": "#master-directive"
-            },
-            {
-              "include": "#master-managed-pattern"
-            },
-            {
-              "include": "#master-managed-entry-selector"
-            },
-            {
-              "include": "#master-native-declaration"
-            },
-            {
-              "include": "source.css#at-rules"
-            },
-            {
-              "include": "#master-query"
-            },
-            {
-              "include": "#master-selector"
-            },
-            {
-              "include": "#master-value"
-            },
-            {
-              "include": "#master-managed-block"
-            }
-          ]
-        }
-      ]
-    },
-    "master-managed-entry-selector": {
-      "patterns": [
-        {
-          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=:{1,2}[_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
-          "captures": {
-            "3": {
-              "name": "entity.other.attribute-name.class.master-css"
-            }
-          }
-        },
-        {
-          "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)(?=\\s*\\{)",
-          "captures": {
-            "1": {
-              "name": "punctuation.definition.entity.master-css"
-            },
-            "2": {
-              "name": "entity.other.attribute-name.pseudo-class.master-css"
-            }
-          }
-        },
-        {
-          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=\\s*\\{)",
-          "captures": {
-            "3": {
-              "name": "entity.other.attribute-name.class.master-css"
-            }
-          }
-        }
-      ]
-    },
     "master-block": {
       "patterns": [
         {
@@ -771,12 +419,6 @@
             },
             {
               "include": "#master-directive"
-            },
-            {
-              "include": "#master-managed-pattern"
-            },
-            {
-              "include": "#master-managed-entry-selector"
             },
             {
               "include": "#master-native-declaration"
@@ -1086,12 +728,35 @@
     "master-value": {
       "patterns": [
         {
-          "match": "--value(?=\\()",
+          "match": "--master-value(?=\\()",
           "name": "support.function.misc.master-css"
         },
         {
           "match": "--[_a-zA-Z-][_a-zA-Z0-9-]*",
           "name": "variable.css.custom-property.master-css"
+        }
+      ]
+    },
+    "master-utility-prelude": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "\\bfrom(?=\\()",
+          "name": "support.function.misc.master-css"
+        },
+        {
+          "match": "--[_a-zA-Z-][_a-zA-Z0-9-]*",
+          "name": "variable.css.custom-property.master-css"
+        },
+        {
+          "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
+          "name": "entity.other.attribute-name.class.master-css"
+        },
+        {
+          "match": "[:*,()]",
+          "name": "keyword.operator.master-css"
         }
       ]
     }

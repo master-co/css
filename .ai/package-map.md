@@ -4,7 +4,7 @@
 
 | Package | Entry points | Responsibility |
 |---|---|---|
-| `@master/css` | `.`, `./node`, CSS subpaths | Manifest v1 execution, engine sessions, public schema types, and stable preset CSS proxies |
+| `@master/css` | `.`, `./node`, CSS subpaths | Manifest v2 execution, engine sessions, public schema types, and stable preset CSS proxies |
 | `@master/css-compiler` | `.`, `./node`, `./browser`, `./project*`, `./stylesheet*`, `./diagnostics` | CSS directive compilation, project loading, stylesheet composition, and inspection orchestration |
 | `@master/css-tooling` | `.`, `./node`, `./browser`, `./lexer*`, `./source*`, `./scanner*`, `./validator*`, `./lint*`, `./language*`, `./diagnostics` | Rust-backed extraction and developer-tooling sessions with platform adapters |
 
@@ -13,7 +13,7 @@
 | Package | Entry points | Responsibility |
 |---|---|---|
 | `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
-| `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v1 |
+| `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v2 |
 | `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation |
 | `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
 | `@master/css-binding-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |

@@ -15,13 +15,13 @@ test('workspace reload updates native class registrations used by inspection', a
   }
   const { server, clientConnection } = connect()
   try {
-    writeFileSync(entry, String.raw`@master entry; .size\:20px { color:red; }`)
+    writeFileSync(entry, "@import \"@master/css\"; .size\\:20px { color:red; }")
     await server.initWorkspaceLanguageService(workspace)
     const inspect = (name: string) => workspace.languageService!.session.inspectClassName(name)
     expect(inspect('size:20px').diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
     expect(inspect('size:30px').diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
     workspace.languageService?.dispose()
-    writeFileSync(entry, '@master entry;')
+    writeFileSync(entry, "@import \"@master/css\";")
     await server.initWorkspaceLanguageService(workspace)
     expect(inspect('size:20px').diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
   } finally {

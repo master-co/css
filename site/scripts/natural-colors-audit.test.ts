@@ -9,7 +9,7 @@ function channel(color: Color, name: 'l' | 'h') {
   return value
 }
 
-for (const { family, steps, modes } of auditNaturalColors()) {
+for (const { family, steps, modes } of await auditNaturalColors()) {
   test(`${family}: gamut, perceptual spacing and text contrast`, () => {
     assert.deepEqual(steps.map(step => step.level), colorLevels)
     const colors = steps.map(step => new Color(step.value))

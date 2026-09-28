@@ -14,7 +14,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid
-         border-color-blue font-md bg-surface-muted
+         border-color-blue font-md bg-surface-inset
          text-body box-border">
   Preview panel
 </div>
@@ -25,7 +25,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid
-         border-color-violet font-md bg-surface-muted
+         border-color-violet font-md bg-surface-inset
          text-body box-border">
   Preview panel
 </div>
@@ -48,7 +48,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:6px|solid|var(--color-blue)
-         font-md bg-surface-muted text-body
+         font-md bg-surface-inset text-body
          box-border">
   Preview panel
 </div>
@@ -59,7 +59,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:6px|solid|var(--color-blue)
-         border-top-color:transparent font-md bg-surface-muted
+         border-top-color:transparent font-md bg-surface-inset
          text-body box-border">
   Preview panel
 </div>
@@ -79,7 +79,7 @@ Transparent color differs from `border-top-width:0` or `bt-none`, which remove t
          min-h:44px max-w:100% px-md py-sm
          b:2px|solid border-color:currentColor r-sm
          font-md bg-surface-base text-blue box-border
-         bg-surface-muted:focus-visible
+         bg-surface-inset:focus-visible
          text-violet:hover@screen
          text-violet:focus-visible@screen">
   Current color
@@ -100,7 +100,7 @@ At `sm`, the blue border follows the violet foreground through `currentColor`. P
          min-h:44px max-w:100% px-md py-sm
          b:2px|solid border-color-blue r-sm font-md
          bg-surface-base text-violet box-border
-         bg-surface-muted:focus-visible
+         bg-surface-inset:focus-visible
          border-color:transparent@print
          border-color:currentColor@screen@sm">
   Preview details
@@ -118,15 +118,16 @@ Define a semantic line token in each theme, then compile the token declarations 
 <DemoExample page="border-color" section="customize-line-colors" />
 
 ```css name=index.css
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-line-divider:
     color-mix(in oklab, var(--color-slate-60) 40%, transparent);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-line-divider:
     color-mix(in oklab, var(--color-gray-30) 50%, transparent);
-}
+} } }
+
 ```
 
 ```html
@@ -134,7 +135,7 @@ Define a semantic line token in each theme, then compile the token declarations 
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid font-md
-         bg-surface-muted text-body box-border
+         bg-surface-inset text-body box-border
          border-color-divider">
   Project divider
 </div>

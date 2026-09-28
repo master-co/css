@@ -14,7 +14,7 @@ const run = (cwd: string, output: string) => spawnSync(process.execPath, ['--imp
 test('BH-0004 CLI records only assets it created and separates output ownership', () => {
   const cwd = fs.mkdtempSync(join(tmpdir(), 'master-css-asset-ownership-'))
   try {
-    fs.writeFileSync(join(cwd, 'entry.css'), '@master entry;.example{color:red;background:url(./image.svg)}')
+    fs.writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";.example{color:red;background:url(./image.svg)}")
     fs.writeFileSync(join(cwd, 'image.svg'), '<svg/>')
     fs.writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
     const first = run(cwd, 'dist/a.css'); expect(first.status, first.stderr).toBe(0)

@@ -12,7 +12,7 @@ pub(crate) fn matching_utilities(
 ) -> Vec<(usize, UtilityMatch)> {
     let native = is_native_declaration(source, manifest);
     if !native {
-        for entries in [&manifest.static_utilities, &manifest.enum_utilities] {
+        for entries in [&manifest.static_utilities] {
             for end in std::iter::once(source.len())
                 .chain(source.char_indices().map(|(index, _)| index).rev())
             {
@@ -26,13 +26,7 @@ pub(crate) fn matching_utilities(
                                 source,
                                 &manifest.utilities[*index],
                                 manifest,
-                                |matcher| {
-                                    matches!(
-                                        matcher,
-                                        UtilityMatcher::Static { .. }
-                                            | UtilityMatcher::Pattern { .. }
-                                    )
-                                },
+                                |matcher| matches!(matcher, UtilityMatcher::Static { .. }),
                             )
                             .map(|matched| (*index, matched))
                         })
@@ -155,7 +149,20 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             );
             return vec![diagnostic];
         }
-        if !manifest.modes.iter().any(|mode| mode.name == token)
+        if let Some(query) = mastercss_lexer::parse_native_query(&token)
+            && query.kind == "media"
+            && query.prelude.contains("--")
+            && let Err(message) = crate::parse_custom_media_query(&query.prelude, &mut |name| {
+                manifest
+                    .custom_media
+                    .get(name)
+                    .cloned()
+                    .ok_or_else(|| format!("Undefined custom media {name}"))
+            })
+        {
+            return vec![error(super::ErrorCode::UnknownCondition, message)];
+        }
+        if !manifest.custom_media.contains_key(&format!("--{token}"))
             && !manifest
                 .variants
                 .iter()

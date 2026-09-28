@@ -22,10 +22,10 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
     using collection = createStylesheetCollection()
     try {
       f.file('node_modules/@master/css/package.json', JSON.stringify({ name: '@master/css', style: './index.css' }))
-      f.file('node_modules/@master/css/index.css', '@import "./base.css" layer(master);.from-master{border-top-width:7px}@utilities{package-custom{color:orange}}')
+      f.file('node_modules/@master/css/index.css', '@import "./base.css" layer(master);.from-master{border-top-width:7px}@utility package-custom {color:orange}')
       f.file('node_modules/@master/css/base.css', '.from-master-child{border-bottom-width:8px}')
       f.file('child.css', '@safelist "nested";.nested{background-color:green}.unused{color:yellow}')
-      const entry = f.file('entry.css', "@import \"@master/css\";@import \"./child.css\" supports(display:grid) screen;@master entry;@utilities{custom{color:purple}}.project{color:red}.composed{@variant media(all){display:block;}}")
+      const entry = f.file('entry.css', "@import \"@master/css\";@import \"./child.css\" supports(display:grid) screen;@import \"@master/css\";@utility custom {color:purple}.project{color:red}.composed{@variant all {display:block;}}")
       await scanner.init()
       await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })
       expect(collection.snapshot().sources[0].isMasterCSS).toBe(true)
@@ -51,12 +51,12 @@ test('BH-0004 default graph composes separate entries with child-owned reference
   const f = fixture(), scanner = new MasterCSSScanner({}, f.root)
   using collection = createStylesheetCollection()
   try {
-    f.file('parts/tokens.css', '@theme{--paint-padding:2rem}.reference-never{color:pink}')
-    f.file('tokens.css', '@theme{--paint-padding:99rem}')
-    f.file('parts/child.css', "@reference \"./tokens.css\";@source \"./views/*.html\";.native{@variant media(all){padding:var(--paint-padding);}}")
+    f.file('parts/tokens.css', "@theme {:root, :host {--paint-padding:2rem}}\n\n.reference-never{color:pink}")
+    f.file('tokens.css', "@theme {:root, :host {--paint-padding:99rem}}\n\n")
+    f.file('parts/child.css', "@reference \"./tokens.css\";@source \"./views/*.html\";.native{@variant all {padding:var(--paint-padding);}}")
     f.file('parts/views/view.html', '<div class="native custom"></div>')
-    const first = f.file('first.css', '@import "./parts/child.css" layer(a) screen;@master entry;@utilities{custom{margin:3rem}}')
-    const second = f.file('second.css', '@master entry;@safelist "second-custom";@utilities{second-custom{border-width:4px}}')
+    const first = f.file('first.css', "@import \"./parts/child.css\" layer(a) screen;@import \"@master/css\";@utility custom {margin:3rem}")
+    const second = f.file('second.css', "@import \"@master/css\";@safelist \"second-custom\";@utility second-custom {border-width:4px}")
     await scanner.init()
     for (const entry of [first, second]) await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })
     const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: f.root })
@@ -70,7 +70,7 @@ test('BH-0004 default graph composes separate entries with child-owned reference
   } finally { await scanner.dispose(); f.dispose() }
 })
 
-for (const marker of ['', '@master entry;@preserve native;']) test(`BH-0004 default graph preserves unpruned native rules ${marker || 'plain stylesheet'}`, async () => {
+for (const marker of ['', "@import \"@master/css\";@preserve native;"]) test(`BH-0004 default graph preserves unpruned native rules ${marker || 'plain stylesheet'}`, async () => {
   const f = fixture(), scanner = new MasterCSSScanner({}, f.root)
   using collection = createStylesheetCollection()
   try {

@@ -36,8 +36,8 @@ export default function PageContentBlockMap() {
                 'transition:all|.15s': activeTransitionsReady,
                 'active': active,
                 'active-parent': activeParent,
-                'w:14px bg-line-base opacity:.6': item.level === 2,
-                'w:10px bg-line-muted opacity:.45': item.level === 3,
+                'w:14px bg-line-divider opacity:.6': item.level === 2,
+                'w:10px bg-line-subtle opacity:.45': item.level === 3,
               })} />
             </button>
           )

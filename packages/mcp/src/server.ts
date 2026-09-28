@@ -213,7 +213,6 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         className: z.string().min(1),
-        mode: z.string().optional()
       },
       outputSchema: toolOutputSchema('mastercss_inspect_class'),
       annotations: {
@@ -236,7 +235,6 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         className: z.string().min(1),
         patterns: z.array(z.string()).optional(),
         includeCss: z.boolean().optional(),
-        mode: z.string().optional()
       },
       outputSchema: toolOutputSchema('mastercss_trace_class'),
       annotations: {
@@ -425,11 +423,11 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_manifest_query',
     {
       title: 'Query Master CSS Manifest',
-      description: 'Query active manifest tokens, utilities, variants, modes, conditions, and aliases.',
+      description: 'Query active manifest tokens, utilities, variants, custom media, conditions, and aliases.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         query: z.string().optional(),
-        kind: z.enum(['all', 'token', 'utility', 'variant', 'mode', 'condition', 'alias']).optional(),
+        kind: z.enum(['all', 'token', 'utility', 'variant', 'custom-media', 'condition', 'alias']).optional(),
         namespace: z.string().optional(),
         limit: z.number().int().min(1).max(500).optional()
       },

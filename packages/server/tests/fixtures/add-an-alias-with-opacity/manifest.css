@@ -1,11 +1,13 @@
-@theme {
+@theme {:root, :host {
   --color-black: oklch(0% 0 none);
-}
+}}
 
-@theme {
+
+@theme {:root, :host {
   --color-primary: color-mix(in oklab, var(--color-black) 50%, transparent);
-}
+}}
 
-@theme {
+
+@theme {:root, :host {
   --color-secondary: color-mix(in oklab, var(--color-primary) 50%, transparent);
-}
+}}

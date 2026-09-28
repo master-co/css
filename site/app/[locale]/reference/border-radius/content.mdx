@@ -29,7 +29,7 @@ Radius curves the border and background without changing the box dimensions. Com
 ```html
 <!-- Radius only · child corners stay square -->
 <div id="target"
-  class="w:240px max-w:100% r-2xl bg-surface-muted
+  class="w:240px max-w:100% r-2xl bg-surface-inset
          box-border">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
@@ -42,7 +42,7 @@ Radius curves the border and background without changing the box dimensions. Com
 <!-- Radius + overflow hidden · child is clipped -->
 <div id="target"
   class="overflow:hidden w:240px max-w:100% r-2xl
-         bg-surface-muted box-border">
+         bg-surface-inset box-border">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
     width="320" height="200"
@@ -69,7 +69,7 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         rtl-xl rtr-xl font-md bg-surface-muted
+         rtl-xl rtr-xl font-md bg-surface-inset
          text-body box-border">
   Rounded top
 </div>
@@ -80,7 +80,7 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         rbl-xl rtr-xl font-md bg-surface-muted
+         rbl-xl rtr-xl font-md bg-surface-inset
          text-body box-border">
   Diagonal corners
 </div>
@@ -98,7 +98,7 @@ Widen to `sm` to increase the radius from `sm` to `xl`. Print restores square co
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         r-sm font-md bg-surface-muted text-body
+         r-sm font-md bg-surface-inset text-body
          box-border r:0@print r-xl@screen@sm">
   Preview panel
 </div>
@@ -115,9 +115,10 @@ Define project radius tokens in `@theme`, then use the same token key in the cla
 <DemoExample page="border-radius" section="use-custom-border-radius" />
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --radius-panel: 1.125rem;
-}
+} }
+
 ```
 
 ```html
@@ -125,7 +126,7 @@ Define project radius tokens in `@theme`, then use the same token key in the cla
 <div id="target"
   class="flex items-center justify-center h:96px
          w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         r-panel font-md bg-surface-muted text-body
+         r-panel font-md bg-surface-inset text-body
          box-border">
   Preview panel
 </div>

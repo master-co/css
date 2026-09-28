@@ -1,10 +1,10 @@
-@master entry;
+@import "@master/css";
 @import './styles/card.css';
 
-@theme {
+@theme {:root, :host {
   --foo: 123;
   --global: #ff00ff;
-}
+}}
 
 @layer components {
   .btn {

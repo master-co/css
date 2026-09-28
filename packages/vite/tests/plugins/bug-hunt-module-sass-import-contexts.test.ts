@@ -25,7 +25,7 @@ test.each(cases)('equal Sass outputs retain root scope and resource owners in $m
     for (const name of ['a', 'b']) {
       mkdirSync(join(root, name))
       const file = join(root, name, `child.${syntax}`)
-      const source = syntax === 'scss' ? `$${name}:2rem;.same{@variant media(all){padding:#{$${name}};background:url("./pixel.svg")}}` : `$${name}: 2rem\n.same\n  @variant media(all)\n    padding: #{$${name}}\n    background: url("./pixel.svg")\n`
+      const source = syntax === 'scss' ? `$${name}:2rem;.same{@media all{padding:#{$${name}};background:url("./pixel.svg")}}` : `$${name}: 2rem\n.same\n  @media all\n    padding: #{$${name}}\n    background: url("./pixel.svg")\n`
       original.set(file, source);writeFileSync(file, source)
       writeFileSync(join(root, name, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>${name}</title></svg>`)
     }

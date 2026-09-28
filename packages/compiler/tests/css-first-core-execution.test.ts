@@ -1,575 +1,112 @@
 import { describe, expect, test } from 'vitest'
-import { compileCSS, compileCSSManifest } from '../src/node-compiler'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
-import { UtilityType } from '@master/css-schema/utility-type'
+import { compileCSSManifest } from '../src/node-compiler'
+import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-function variablesOf(manifest: MasterCSSManifest) {
-  return flattenMasterCSSManifestVariables(manifest.variables)
-}
-
-function normalizeDeclarationOrder(css: string) {
-  return css.replace(/\{([^{}]*)\}/g, (_, body: string) => {
-    if (!body.includes(':')) return `{${body}}`
-    const declarations = body.split(';').filter(Boolean).sort()
-    return `{${declarations.join(';')}}`
-  })
-}
-
-describe.concurrent('CSS-first lowering for migrated core tests', () => {
-  test('keeps nested selectors aligned with native CSS descendant and compound behavior', () => {
-    const result = compileCSSManifest(`
-      @utilities {
-        card {
-          p {
-            color: red;
-          }
-
-          :is(p, li) {
-            color: blue;
-          }
-
-          & :is(code, kbd) {
-            color: green;
-          }
-
-          &:hover {
-            color: black;
-          }
-        }
+describe('CSS-first scoped execution', () => {
+  test('keeps all authored scopes, duplicate declarations and transitive dependencies live', () => {
+    const { manifest } = compile(`
+      @theme {
+        :root { --color-source: red; --color-brand: var(--color-source); --color-brand: color-mix(in oklab, var(--color-source), white); --unused: blue; }
+        .dark { --color-brand: black; }
+        @media (width >= 40rem) { .preview { --color-brand: green; } }
       }
-    `, { baseManifest: defaultManifest })
-
-    const css = createTestCSS(result.manifest)
+      @utility card { color: var(--color-brand); }
+    `)
+    const variable = flattenMasterCSSManifestVariables(manifest.variables).find(variable => variable.name === 'color-brand')!
+    expect(variable.values.map(value => value.path)).toEqual([
+      [':root'], [':root'], ['.dark'], ['@media (width>=40rem)', '.preview']
+    ])
+    expect(variable.dependencies).toEqual(['color-source'])
+    const css = createTestCSS(manifest)
+    expect(css.text).toBe('')
     css.ensureClassRules('card')
-    expect(css.utilitiesLayer.text).toContain('.card p{color:red}')
-    expect(css.utilitiesLayer.text).toContain('.card :is(p,li){color:#00f}')
-    expect(css.utilitiesLayer.text).toContain('.card :is(code,kbd){color:green}')
-    expect(css.utilitiesLayer.text).toContain('.card:hover{color:#000}')
-  })
-
-  test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
-    const first = compileCSSManifest(`
-      @utilities {
-        a { order: 1; }
-        b { order: 2; }
-      }
-    `, {
-      baseManifest: defaultManifest
-    })
-    const second = compileCSSManifest(`
-      @utilities {
-        b { order: 22; }
-        c { order: 3; }
-      }
-    `, {
-      baseManifest: first.manifest
-    })
-    const css = createTestCSS(second.manifest)
-
-    css.ensureClassRules('a', 'b', 'c')
-    expect(css.utilitiesLayer.text).toContain('.a{order:1}')
-    expect(css.utilitiesLayer.text).toContain('.b{order:22}')
-    expect(css.utilitiesLayer.text).toContain('.c{order:3}')
-    expect(css.utilitiesLayer.text).not.toContain('.b{order:2}')
-  })
-
-  test('lowers managed animations and removes them when no class references remain', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme {
-        --color-primary: #ff0;
-
-        @keyframes fade {
-          to {
-            background: var(--color-primary);
-          }
-        }
-      }
-
-      @utilities {
-        btn {
-          animation: fade 1s;
-        }
-      }
-    `, {
-      baseManifest: defaultManifest
-    })
-    const css = createTestCSS(manifest)
-
-    expect(manifest.animations?.fade).toEqual({
-      to: {
-        background: 'var(--color-primary)'
-      }
-    })
-    css.ensureClassRules('btn')
-    expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#ff0}')
-    expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
-    css.deleteClassRules('btn')
+    expect(css.themeLayer.text).toContain('--color-source:red')
+    expect(css.themeLayer.text).toContain('--color-brand:var(--color-source);--color-brand:')
+    expect(css.themeLayer.text).toContain('.dark{--color-brand:black}')
+    expect(css.themeLayer.text).toContain('.preview{--color-brand:green}')
+    expect(css.themeLayer.text).not.toContain('--unused:')
+    css.deleteClassRules('card')
     expect(css.themeLayer.text).toBe('')
-    expect(css.animationsNonLayer.text).toBe('')
+    css.dispose()
   })
 
-  test('uses explicit base values and mode activation without implicit defaults', () => {
-    const base = `
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-      @theme light { --color-emphasis: #000; }
-      @theme dark { --color-emphasis: #fff; }
-    `
-    const withBase = createTestCSS(compileCSSManifest(`
-      @theme { --color-emphasis: #000; }
-      ${base}
-    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
-    expect(withBase.themeLayer.text).toContain(':root,:host{--color-emphasis:#000}')
-    expect(withBase.themeLayer.text).toContain('.light{--color-emphasis:#000}')
-    expect(withBase.themeLayer.text).toContain('.dark{--color-emphasis:#fff}')
-    expect(withBase.themeLayer.text).not.toContain('color-scheme')
-
-    const withoutBase = createTestCSS(compileCSSManifest(base, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
-    expect(withoutBase.themeLayer.text).toContain('.light{--color-emphasis:#000}')
-    expect(withoutBase.themeLayer.text).not.toContain(':root,:host{--color-emphasis')
+  test('retains authored scopes when a base manifest is extended', () => {
+    const first = compile('@theme { :root { --color-brand: red; } }')
+    const second = compileCSSManifest('@theme { .dark { --color-brand: blue; } } @utility card { color: var(--color-brand); }', { baseManifest: first.manifest })
+    const css = createTestCSS(second.manifest).ensureClassRules('card')
+    expect(css.themeLayer.text).toContain(':root{--color-brand:red}')
+    expect(css.themeLayer.text).toContain('.dark{--color-brand:blue}')
+    css.dispose()
   })
 
-  test('lowers color variables, mode values, aliases, and alpha references', () => {
-    const { manifest } = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-      @mode chrisma { .chrisma { @slot; } }
-
-      @theme {
-        --color-black: #000000;
-        --color-primary: #000000;
-        --color-alias: var(--color-primary);
-      }
-
-      @theme light {
-        --color-primary: hsl(0 0% 58.82%);
-      }
-
-      @theme dark {
-        --color-primary: hsl(0 0% 100%);
-      }
-
-      @theme chrisma {
-        --color-primary: color-mix(in oklab,var(--color-black) 50%,transparent);
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest).ensureClassRules('bg-primary', 'bg-primary/.5', 'bg-alias')
-
-    expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
-    expect(css.themeLayer.text).toContain('.light{--color-primary:#969696}')
-    expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
-    expect(css.themeLayer.text).toContain('.chrisma{--color-primary:color-mix(in oklab,var(--color-black) 50%,transparent)}')
-    expect(css.utilitiesLayer.text).toContain('.bg-primary{background-color:var(--color-primary)}')
-    expect(css.utilitiesLayer.text).toContain('.bg-primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
-    expect(css.utilitiesLayer.text).toContain('.bg-alias{background-color:var(--color-alias)}')
-  })
-
-  test('preserves native --alpha() in theme, managed declarations, and native CSS', () => {
+  test('preserves native keyframes independently of utility lifecycle', () => {
     const result = compileCSSManifest(`
-      @theme {
-        --color-primary: #123456;
-        --color-muted: --alpha(var(--color-primary) / 50%);
-      }
-
-      @utilities {
-        btn {
-          background-color: --alpha(var(--color-primary) / .5);
-        }
-      }
-
-      .native {
-        color: --alpha(var(--color-muted) / var(--opacity-muted));
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(result.manifest)
-
-    css.ensureClassRules('btn', 'bg-muted')
-    expect(css.themeLayer.text).toContain('--color-muted:--alpha(var(--color-primary) / 50%)')
-    expect(css.utilitiesLayer.text).toContain('.btn{background-color:--alpha(var(--color-primary) / .5)}')
-    expect(result.nativeCSS).toContain('color: --alpha(var(--color-muted) / var(--opacity-muted));')
+      @theme { :root { --color-brand: red; } }
+      @keyframes fade { to { background: var(--color-brand); opacity: 1; } }
+      @utility card { animation: fade 1s; }
+    `, { baseManifest })
+    expect(result.nativeCSS).toContain('@keyframes fade')
+    expect(result.manifest).not.toHaveProperty('animations')
+    const css = createTestCSS(result.manifest).ensureClassRules('card')
+    expect(css.text).toContain('animation:1s fade')
+    expect(css.text).not.toContain('@keyframes')
+    css.deleteClassRules('card')
+    expect(css.text).toBe('')
+    expect(result.nativeCSS).toContain('@keyframes fade')
+    css.dispose()
   })
 
-  test('preserves arbitrary native function arguments and custom-property data', () => {
-    const result = compileCSSManifest('.native { --money: $100; --pipe: a|b; --data:{"color":"red"}; color:--alpha(red / foo); --ordinary:--value(); }', { baseManifest: defaultManifest })
-    expect(result.nativeCSS).toContain('$100')
-    expect(result.nativeCSS).toContain('a|b')
-    expect(result.nativeCSS).toContain('--alpha(red / foo)')
-    expect(result.nativeCSS).toContain('--value()')
-  })
-
-  test('ignores quoted variable references while collecting theme dependencies', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme {
-        --content-demo: "var(--color-blue-60)";
-        --color-blue-60: #3366ff;
+  test('keeps nested selectors, condition order and declaration fallbacks', () => {
+    const { manifest } = compile(`
+      @utility card {
+        color: red; color: future(red);
+        p { display: block; } &:hover { color: blue; }
+        @media (width >= 40rem) { @supports (display: grid) { display: grid; } }
+        display: flex;
       }
-    `, { baseManifest: defaultManifest })
-
-    const demo = variablesOf(manifest).find((variable) => variable.name === 'content-demo')
-    expect(demo?.dependencies).toBeUndefined()
-  })
-
-  test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
-    const { manifest } = compileCSSManifest("\n      @theme {\n        --content-stripe: 'stripe';\n        --box-shadow-panel: 0 1px 2px #000;\n        --shadow-panel: 0 1px 2px #000;\n        --spacing-card: 1.5rem;\n        --leading-body: 1.7;\n        --color-line-brand: #abcdef;\n        --color-brand: #123456;\n        --color-primary: #123456;\n      }\n\n      @utilities {\n        demo {\n          @variant media(all){content:var(--content-stripe);}\n        }\n      }\n    ", { baseManifest: defaultManifest })
-
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'content-stripe',
-      namespace: 'content',
-      key: 'stripe'
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'box-shadow-panel',
-      key: 'box-shadow-panel'
-    }))
-    expect(variablesOf(manifest)).not.toContainEqual(expect.objectContaining({
-      name: 'box-shadow-panel',
-      namespace: 'box-shadow'
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'shadow-panel',
-      namespace: 'shadow',
-      key: 'panel'
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'spacing-card',
-      namespace: 'spacing',
-      key: 'card'
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'leading-body',
-      namespace: 'leading',
-      key: 'body'
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'color-line-brand',
-      namespace: 'color-line',
-      key: 'brand'
-    }))
-
+    `)
     const css = createTestCSS(manifest)
-    expect(css.createRule('content-stripe')?.text).toBe('.content-stripe{content:var(--content-stripe)}')
-    expect(css.createRule('shadow-panel')?.text).toBe('.shadow-panel{box-shadow:var(--shadow-panel)}')
-    expect(css.createRule('p-card')?.text).toBe('.p-card{padding:var(--spacing-card)}')
-    expect(css.createRule('gap-card')?.text).toBe('.gap-card{gap:var(--spacing-card)}')
-    expect(css.createRule('m-card')?.text).toBe('.m-card{margin:var(--spacing-card)}')
-    expect(css.createRule('leading-body')?.text).toBe('.leading-body{line-height:var(--leading-body)}')
-    expect(css.createRule('line-height-body')?.text).toBe('.line-height-body{line-height:var(--leading-body)}')
-    expect(css.createRule('b-brand')?.text).toBe('.b-brand{border-color:var(--color-line-brand)}')
-    expect(css.createRule('bg-brand')?.text).toBe('.bg-brand{background-color:var(--color-brand)}')
-    expect(css.createRule('bg-primary')?.text).toBe('.bg-primary{background-color:var(--color-primary)}')
-    expect(css.createRule('shadow-sm')?.text).toBe('.shadow-sm{box-shadow:var(--shadow-sm)}')
-
-    css.ensureClassRules('demo')
-    expect(css.utilitiesLayer.text).toContain('.demo{content:var(--content-stripe)}')
-    expect(css.themeLayer.text).toContain('--content-stripe:"stripe"')
+    const text = css.createRule('card')!.text
+    expect(text.indexOf('color:red')).toBeLessThan(text.indexOf('color:future(red)'))
+    expect(text).toContain('.card p{display:block}')
+    expect(text).toContain('.card:hover{color:#00f}')
+    expect(text.indexOf('@media')).toBeLessThan(text.indexOf('@supports'))
+    expect(text.lastIndexOf('display:flex')).toBeGreaterThan(text.indexOf('display:grid'))
+    css.dispose()
   })
 
-  test('rejects quoted and grouped compose class lists', () => {
-    const expectComposeError = (source: string, code: string, syntax: string) => {
-      let error: unknown
-      try {
-        compileCSSManifest(source, { baseManifest: defaultManifest })
-      } catch (caught) {
-        error = caught
+  test('substitutes parameter tokens once and preserves strings and ordinary functions', () => {
+    const { manifest } = compile(`
+      @utility pair:* {
+        width: --master-value(); height: calc(--master-value() * 2);
+        --literal: "--master-value()"; --ordinary: --value(); --fragment: prefix--master-value();
       }
-      expect(error).toMatchObject({
-        code,
-        domain: 'compiler',
-        diagnostics: [
-          expect.objectContaining({
-            code,
-            domain: 'compiler',
-            severity: 'error'
-          })
-        ]
-      })
-      expect(error).not.toHaveProperty('range')
-      expect(source).toContain(syntax)
-    }
-
-    expectComposeError('.card { @compose "block"; }', 'removed-compose-directive', '"block"')
-    expect(compileCSSManifest(".card { content:'-'; }", { baseManifest: defaultManifest }).css).toContain("content:")
-    expectComposeError('.card { @compose {text-center;block}>li; }', 'removed-compose-directive', '{text-center;block}')
-  })
-
-  test('executes CSS-first number variables and native value functions through engine semantics', () => {
-    const { manifest } = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @theme {
-        --spacing-x1: 1rem;
-        --container-custom: 15rem;
-        --leading-x1: 1.5;
-      }
-
-      @theme light {
-        --spacing-x1: 3rem;
-        --leading-x1: 3;
-      }
-
-      @theme dark {
-        --spacing-x1: 2rem;
-        --leading-x1: 2;
-      }
-    `, { baseManifest: defaultManifest })
+    `)
     const css = createTestCSS(manifest)
-
-    expect(css.createRule('m-x1')?.text).toBe('.m-x1{margin:var(--spacing-x1)}')
-    expect(css.createRule('m:var(--spacing-x1)')?.text).toBe('.m\\:var\\(--spacing-x1\\){margin:var(--spacing-x1)}')
-    expect(css.createRule('m:$(spacing-x1)')).toBeUndefined()
-    expect(css.createRule('line-height-x1')?.text).toBe('.line-height-x1{line-height:var(--leading-x1)}')
-    expect(css.createRule('-w-custom')).toBeUndefined() // Width rejects negative tokens.
-    expect(css.createRule('w:calc(-2px+var(--spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+var\\(--spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
-    expect(css.createRule('w:calc(-2px+$(spacing-x1))')).toBeUndefined()
-
-    css.ensureClassRules('m-x1', '-m-x1', 'line-height-x1')
-    expect(css.themeLayer.text).toContain(':root,:host{')
-    expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
-    expect(css.themeLayer.text).not.toContain('---spacing-x1')
-    expect(css.themeLayer.text).toContain('--leading-x1:1.5')
-    expect(css.themeLayer.text).toContain('.light{--spacing-x1:3rem;--leading-x1:3}')
-    expect(css.themeLayer.text).toContain('.dark{--spacing-x1:2rem;--leading-x1:2}')
+    const text = css.createRule('pair:var(--size)')!.text
+    expect(text).toContain('width:var(--size)')
+    expect(text).toContain('calc(var(--size) * 2)')
+    expect(text).toContain('"--master-value()"')
+    expect(text).toContain('--ordinary:--value()')
+    expect(text).toContain('prefix--master-value()')
+    expect(css.createRule('pair:--master-value()')?.text).toContain('width:--master-value()')
+    css.dispose()
   })
 
-  test('executes CSS-first unitful numeric variables without double conversion', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme {
-        --spacing-card: 1.5rem;
-        --radius-card: 8px;
-        --breakpoint-card: 48rem;
-        --container-panel: 512px;
-        --shadow-card: 1rem;
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest)
-
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'spacing-card',
-      type: 'number',
-      value: '1.5rem',
-      numeric: { value: 1.5, unit: 'rem' }
-    }))
-    expect(variablesOf(manifest).find((variable) => variable.name === 'shadow-card')).toMatchObject({
-      type: 'string',
-      value: '1rem'
-    })
-    expect(manifest.breakpointConditions?.card).toMatchObject({
-      id: 'media',
-      nodes: [expect.objectContaining({ value: 48, unit: 'rem' })]
-    })
-    expect(manifest.containerConditions?.panel).toMatchObject({
-      id: 'container',
-      nodes: [expect.objectContaining({ value: 512, unit: 'px' })]
-    })
-    expect(css.createRule('m-card')?.text).toBe('.m-card{margin:var(--spacing-card)}')
-    expect(css.createRule('-m-card')?.text).toBe('.-m-card{margin:calc(var(--spacing-card) * -1)}')
-    expect(css.createRule('r-card')?.text).toBe('.r-card{border-radius:var(--radius-card)}')
-    expect(css.createRule('block@card')?.text).toContain('@media (width>=48rem)')
-  })
-
-  test('lowers inline theme variables without emitting their own theme rules', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme inline {
-        --color-primary: #123;
-        --spacing-card: 1rem;
-        --color-brand: var(--color-primary);
-      }
-
-      @theme {
-        --color-regular: #456;
-        --color-inline-regular: var(--color-regular);
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest)
-
-    css.ensureClassRules('bg-primary', 'fg-brand', 'm-card', 'fg-inline-regular')
-    expect(css.utilitiesLayer.text).toContain('.bg-primary{background-color:#123}')
-    expect(css.utilitiesLayer.text).toContain('.fg-brand{color:#123}')
-    expect(css.utilitiesLayer.text).toContain('.m-card{margin:1rem}')
-    expect(css.utilitiesLayer.text).toContain('.fg-inline-regular{color:var(--color-inline-regular)}')
-    expect(css.themeLayer.text).toContain(':root,:host{--color-inline-regular:var(--color-regular);--color-regular:#456}')
-    expect(css.themeLayer.text).not.toContain('--color-primary:#123')
-    expect(css.themeLayer.text).not.toContain('--spacing-card:1rem')
-  })
-
-  test('lowers static theme variables and keyframes into initial resources', () => {
-    const { manifest } = compileCSSManifest(`
-      @mode light { .light { @slot; } }
-      @mode dark { .dark { @slot; } }
-
-      @theme static {
-        --color-primary: #123;
-
-        @keyframes fade {
-          to {
-            opacity: 1;
-          }
-        }
-      }
-
-      @theme dark static {
-        --color-primary: #456;
-      }
-
-      @theme static light {
-        --color-secondary: #789;
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest)
-
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'color-primary',
-      static: true,
-      value: '#123',
-      modes: {
-        dark: {
-          type: 'string',
-          value: '#456'
-        }
-      }
-    }))
-    expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
-      name: 'color-secondary',
-      static: true,
-      modes: {
-        light: {
-          type: 'string',
-          value: '#789'
-        }
-      }
-    }))
-    expect(manifest.animationOptions?.fade).toEqual({ static: true })
-    expect(css.text).toContain('@layer theme{')
-    expect(css.text).toContain(':root,:host{--color-primary:#123}')
-    expect(css.text).toContain('.dark{--color-primary:#456}')
-    expect(css.text).toContain('.light{--color-secondary:#789}')
-    expect(css.text).toContain('@keyframes fade{to{opacity:1}}')
-  })
-
-  test('rejects invalid static theme modifier combinations', () => {
-    expect(() => compileCSSManifest(`
-      @theme inline static {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme inline and static cannot be combined')
-
-    expect(() => compileCSSManifest(`
-      @theme static inline {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme inline and static cannot be combined')
-
-    expect(() => compileCSSManifest(`
-      @theme static static {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme static modifier cannot be repeated')
-
-    expect(() => compileCSSManifest(`
-      @theme dark light static {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme mode must be a single token')
-
-    expect(() => compileCSSManifest(`
-      @theme static dark {
-        @keyframes fade {
-          to {
-            opacity: 1;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
-  })
-
-  test('rejects mode-specific inline theme variables in CSS source', () => {
-    expect(() => compileCSSManifest(`
-      @theme dark inline {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme inline cannot be mode-specific')
-
-    expect(() => compileCSSManifest(`
-      @theme inline dark {
-        --color-primary: #123;
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme inline cannot be mode-specific')
-  })
-
-  test('rejects mode-specific and inline managed keyframes in theme blocks', () => {
-    expect(() => compileCSSManifest(`
-      @theme dark {
-        @keyframes fade {
-          to {
-            opacity: 1;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
-
-    expect(() => compileCSSManifest(`
-      @theme inline {
-        @keyframes fade {
-          to {
-            opacity: 1;
-          }
-        }
-      }
-    `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
-  })
-
-  test('normalizes CSS color functions and preserves alpha alias dependencies through CSS-first lowering', () => {
-    const { manifest } = compileCSSManifest(`
-      @theme {
-        --color-rgb: rgb(0 128 255);
-        --color-hsl-modern: hsl(210 100% 50%);
-        --color-hsl-legacy: hsl(210, 100%, 50%);
-        --color-hwb: hwb(210 30% 20%);
-        --color-lab: lab(50% 40 -30);
-        --color-lch: lch(50% 60 200);
-        --color-oklab-demo: oklab(0.5 0.1 -0.05);
-        --color-oklch-primary: oklch(0.5 0.15 240);
-        --color-display-p3: color(display-p3 0.2 0.4 0.8);
-        --color-color-srgb: color(srgb 0.2 0.4 0.8);
-        --color-color-rec2020: color(rec2020 0.2 0.4 0.8);
-        --color-soft: color-mix(in oklab,var(--color-oklch-primary) 30%,transparent);
-        --color-mix-demo: color-mix(in oklch, red, blue);
-      }
-    `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest)
-
-    css.ensureClassRules(
-      'bg-rgb',
-      'bg-hsl-modern',
-      'bg-hsl-legacy',
-      'bg-hwb',
-      'bg-lab',
-      'bg-lch',
-      'bg-oklab-demo',
-      'bg-display-p3',
-      'bg-color-srgb',
-      'bg-color-rec2020',
-      'bg-soft',
-      'bg-mix-demo'
-    )
-    expect(css.themeLayer.text).toContain('--color-rgb:#0080ff')
-    expect(css.themeLayer.text).toContain('--color-hsl-modern:#0080ff')
-    expect(css.themeLayer.text).toContain('--color-hsl-legacy:#0080ff')
-    expect(css.themeLayer.text).toContain('--color-hwb:#4d8ccc')
-    expect(css.themeLayer.text).toContain('--color-lab:lab(50% 40 -30)')
-    expect(css.themeLayer.text).toContain('--color-lch:lch(50% 60 200)')
-    expect(css.themeLayer.text).toContain('--color-oklab-demo:oklab(50% .1 -.05)')
-    expect(css.themeLayer.text).toContain('--color-display-p3:color(display-p3 .2 .4 .8)')
-    expect(css.themeLayer.text).toContain('--color-color-srgb:color(srgb .2 .4 .8)')
-    expect(css.themeLayer.text).toContain('--color-color-rec2020:color(rec2020 .2 .4 .8)')
-    expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-oklch-primary) 30%,transparent)')
-    expect(css.themeLayer.text).toContain('--color-oklch-primary:oklch(50% .15 240)')
-    expect(css.themeLayer.text).toContain('--color-mix-demo:oklch(')
-    expect(css.utilitiesLayer.text).toContain('.bg-soft{background-color:var(--color-soft)}')
+  test('preserves CSS variable cycles and ignores quoted references', () => {
+    const { manifest } = compile(`
+      @theme { :root { --a: var(--b); --b: var(--a); --quoted: "var(--missing)"; } }
+      @utility card { --value: var(--a); content: var(--quoted); }
+    `)
+    const variables = flattenMasterCSSManifestVariables(manifest.variables)
+    expect(variables.find(variable => variable.name === 'quoted')?.dependencies).toEqual([])
+    const css = createTestCSS(manifest).ensureClassRules('card')
+    expect(css.themeLayer.text).toContain('--a:var(--b);--b:var(--a)')
+    expect(css.themeLayer.text).toContain('--quoted:"var(--missing)"')
+    css.dispose()
   })
 })

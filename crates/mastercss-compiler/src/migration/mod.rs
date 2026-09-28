@@ -2,7 +2,9 @@
 //! runtime engine only receives ordinary, current-contract helper utilities.
 mod conditions;
 mod configuration;
+mod directives;
 mod managed;
+mod manifest;
 mod native;
 mod sizing;
 mod stylesheets;
@@ -167,15 +169,16 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
         .collect();
     let mut definition_files = std::collections::HashMap::<String, usize>::new();
     for (index, source) in request.stylesheets.iter().enumerate() {
-        for definition in crate::utility_sources::collect(source, "migration.css") {
-            if let Some(previous) = definition_files.insert(definition.identity, index)
+        for (identity, name) in directives::legacy_definitions(source) {
+            if let Some(previous) = definition_files.insert(identity, index)
                 && previous != index
             {
                 let note = format!(
                     "Utility {} is defined across multiple sources; whole-definition replacement requires a saved-order review",
-                    definition.name
+                    name
                 );
                 for file in [previous, index] {
+                    stylesheets[file].edits.clear();
                     if !stylesheets[file].notes.contains(&note) {
                         stylesheets[file].notes.push(note.clone());
                     }
@@ -198,7 +201,7 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
                 .collect::<String>()
         ),
         notes: migration.notes.clone(),
-        behavior_changes: vec!["Native @layer defaults/components styles are emitted even when unused; pruning remains opt-in".into(), "Native styles in the same layer follow CSS source order, including shorthand/longhand and importance".into()],
+        behavior_changes: vec!["Native keyframes are owned by imported stylesheets; scoped theme values retain every authored branch".into(), "Native @layer defaults/components styles are emitted even when unused; pruning remains opt-in".into(), "Native styles in the same layer follow CSS source order, including shorthand/longhand and importance".into()],
         class_lists,
         stylesheets,
         documents: request
@@ -234,6 +237,19 @@ impl Migration {
         {
             return Err(error("Cannot read original RC manifest settings"));
         }
+        if request.manifest.get("settings").is_some_and(|settings| {
+            settings
+                .get("important")
+                .is_some_and(|value| value != false && !value.is_null())
+                || settings
+                    .get("scope")
+                    .and_then(Value::as_str)
+                    .is_some_and(|scope| !scope.is_empty())
+        }) {
+            return Err(error(
+                "Global important/scope require manual migration to per-class ! and native selectors before running RC equivalence checks",
+            ));
+        }
         let base_unit = setting("baseUnit", 4.0)?;
         let root_size = setting("rootSize", 16.0)?;
         if request.source_version.trim().is_empty() {
@@ -249,8 +265,16 @@ impl Migration {
                 | RcMigrationProfile::RcSizing
         ) {
             configuration::Configuration {
-                manifest: request.manifest.clone(),
-                css: String::new(),
+                manifest: {
+                    let mut manifest = request.manifest.clone();
+                    manifest::upgrade(&mut manifest);
+                    manifest
+                },
+                css: {
+                    let mut manifest = request.manifest.clone();
+                    manifest::upgrade(&mut manifest);
+                    manifest::css(&manifest, &request.manifest)
+                },
                 notes: Vec::new(),
                 modes: request.manifest["modes"]
                     .as_array()
@@ -389,9 +413,8 @@ impl Migration {
             "conditions",
             "selectors",
             "variants",
-            "animations",
-            "settings",
-            "modes",
+            "theme",
+            "customMedia",
         ] {
             if request.target_is_preset
                 && let Some(value) = helper_manifest.get(key)
@@ -402,13 +425,43 @@ impl Migration {
         if request.from == RcMigrationProfile::RcNative {
             native::restore_query_variants(&request.stylesheets, &mut target_manifest)?;
         }
+        // Remove stale preset indexes when a saved variant changes its category.
+        for variant in target_manifest["variants"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default()
+        {
+            if let Some(name) = variant["token"]
+                .as_str()
+                .and_then(|token| token.strip_prefix('@'))
+            {
+                if let Some(conditions) = target_manifest
+                    .get_mut("conditions")
+                    .and_then(Value::as_object_mut)
+                {
+                    conditions.remove(name);
+                }
+                if let Some(media) = target_manifest
+                    .get_mut("customMedia")
+                    .and_then(Value::as_object_mut)
+                {
+                    media.remove(&format!("--{name}"));
+                }
+            }
+        }
         let sizing_helpers = sizing::add_helpers(&request.manifest, &mut target_manifest);
         Ok(Self {
             profile: request.from,
             sizing_helpers,
             managed_names: managed::names(&request.stylesheets, &request.manifest),
             original: request.manifest.clone(),
-            configuration_css: configuration.css,
+            configuration_css: if request.stylesheets.iter().any(|source| {
+                !configuration.css.is_empty() && source.contains(configuration.css.trim())
+            }) {
+                String::new()
+            } else {
+                configuration.css
+            },
             notes: configuration.notes,
             modes: configuration.modes,
             unchanged_conditions: request
@@ -575,7 +628,6 @@ impl Migration {
                 matches!(
                     semantic.kind,
                     mastercss_engine::ClassSemanticKind::Semantic
-                        | mastercss_engine::ClassSemanticKind::Pattern
                         | mastercss_engine::ClassSemanticKind::Token
                         | mastercss_engine::ClassSemanticKind::Component
                 )
@@ -691,7 +743,16 @@ impl Migration {
                 a.declarations == b.declarations
                     && a.layer == b.layer
                     && a.selector == b.selector
-                    && a.conditions == b.conditions
+                    && a.conditions.len() == b.conditions.len()
+                    && a.conditions.iter().zip(&b.conditions).all(|(left, right)| {
+                        let tokens = |source: &str| {
+                            mastercss_lexer::tokenize_css_syntax(source)
+                                .iter()
+                                .map(|token| format!("{:?}", token.kind))
+                                .collect::<Vec<_>>()
+                        };
+                        tokens(left) == tokens(right)
+                    })
             })
         {
             return Ok(());
@@ -712,7 +773,16 @@ impl Migration {
             self.rules(&self.target, b).iter().any(|b| {
                 a.layer == b.layer
                     && a.selector == b.selector
-                    && a.conditions == b.conditions
+                    && a.conditions.len() == b.conditions.len()
+                    && a.conditions.iter().zip(&b.conditions).all(|(left, right)| {
+                        let tokens = |source: &str| {
+                            mastercss_lexer::tokenize_css_syntax(source)
+                                .iter()
+                                .map(|token| format!("{:?}", token.kind))
+                                .collect::<Vec<_>>()
+                        };
+                        tokens(left) == tokens(right)
+                    })
                     && a.declarations
                         .iter()
                         .map(|declaration| &declaration.property)

@@ -19,13 +19,11 @@ function reportBrowserErrors(page: import('@playwright/test').Page) {
 
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
-    '@master entry;',
-    '@utilities {',
-    '    probe {',
+    "@import url(\"@master/css\");",
+    '@utility probe {' ,
     `        display: ${displayClass === 'hidden' ? 'none' : displayClass};`,
     '        width: 4px;',
     '        height: 4px;',
-    '    }',
     '}'
   ].join('\n'))
 }
@@ -58,7 +56,7 @@ describe('Vite dev HMR', () => {
     ].join(''))
     writeFileSync(path.join(fixtureDir, 'src/main.ts'), 'import "./app.css"')
     writeFileSync(path.join(fixtureDir, 'src/app.css'), [
-      '@import "@master/css";',
+      '@import url("@master/css");',
       '@source "../index.html";',
       '',
       '@layer utilities {',

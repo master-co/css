@@ -22,7 +22,7 @@ afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: 
 
 test.each(['serve', 'build'])('scoped Vue styles keep project globals outside scoping in %s', async command => {
   const { root, context, plugin } = fixture(command)
-  writeFileSync(join(root, 'app.css'), '@master entry;@theme{--color-brand:red;@keyframes pop{to{opacity:.5}}}')
+  writeFileSync(join(root, 'app.css'), "@import url(\"@master/css\");@theme { :root, :host {--color-brand:red;} }\n@keyframes pop{to{opacity:.5}}\n")
   const id = join(root, 'src/Card.vue') + '?vue&type=style&index=0&scoped=abc&lang.css'
   const result = await plugin.transform.call({ addWatchFile: vi.fn() }, '.card{color:var(--color-brand);animation:pop 1s}', id)
   expect(result.code).toMatch(/\.card\s*\{/)
@@ -32,7 +32,7 @@ test.each(['serve', 'build'])('scoped Vue styles keep project globals outside sc
     ? [...devStylesheetState(context).stylesheets.values()].join('\n')
     : [...localStylesheets(context).values()].map(sheet => sheet.result.code).join('\n')
   expect(globals).toContain(':root,:host{--color-brand:red}')
-  expect(globals).toContain('@keyframes pop')
+  expect(globals).not.toContain('@keyframes pop')
   expect(result.code).toContain(command === 'serve' ? '@import ' : ':global(#master-css-local-')
 })
 
@@ -45,7 +45,7 @@ test('native no-ops are invalidated when project entries are added, changed and 
   const transform = () => plugin.transform.call({ addWatchFile: vi.fn() }, source, id)
   expect(await transform()).toBeUndefined()
   for (const [type, color] of [['create', 'red'], ['update', 'blue'], ['delete', '']] as const) {
-    if (color) writeFileSync(entry, `@master entry;@theme{--color-new:${color}}`)
+    if (color) writeFileSync(entry, `@import url("@master/css");@theme{:root, :host {--color-new:${color}}}`)
     else rmSync(entry)
     expect(await plugin.hotUpdate.call({ environment }, { type, file: entry, modules: [] })).toEqual([module])
     const output = await transform()
@@ -69,7 +69,7 @@ test('development server refreshes native consumers after a project entry is add
     expect(await read()).not.toContain('--color-future:')
     const send = vi.spyOn(server.ws, 'send')
     const entry = join(root, 'app.css')
-    writeFileSync(entry, '@master entry;@theme{--color-future:blue}')
+    writeFileSync(entry, "@import url(\"@master/css\");@theme{:root, :host {--color-future:blue}}")
     await vi.waitFor(async () => expect(await read()).toContain('--color-future:blue'), { timeout: watchDeadline })
     expect(send).toHaveBeenCalled()
     send.mockClear()

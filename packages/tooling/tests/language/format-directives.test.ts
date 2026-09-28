@@ -46,8 +46,8 @@ test('preserves safelist quote style', () => {
 })
 
 test('normalizes directive spacing without changing block contents', () => {
-  expect(format('@theme  dark{ .x { color: red; } @slot ; }'))
-    .toBe('@theme dark { .x { color: red; } @slot; }')
+  expect(format("@theme { .dark { .x { color: red; } @slot ; } }\n"))
+    .toBe("@theme { .dark { .x { color: red; } @slot; } }\n")
 })
 
 test('ignores directives inside comments and strings', () => {

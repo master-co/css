@@ -1,8 +1,7 @@
 use super::{
-    CanonicalCandidate, CanonicalClassNameOptions, CanonicalClassParts,
-    CanonicalRecommendationIndex, ClassSemanticInspection, EngineError, EngineSession,
-    GeneratedRuleIr, HashSet, UtilityLayerName, Value, builtin_key_aliases,
-    collect_rule_declarations, push_index_value, split_top_level,
+    CanonicalCandidate, CanonicalClassParts, CanonicalRecommendationIndex, ClassSemanticInspection,
+    EngineError, EngineSession, GeneratedRuleIr, UtilityLayerName, Value, builtin_key_aliases,
+    collect_rule_declarations, push_index_value,
 };
 
 pub(crate) fn build_canonical_recommendation_index(
@@ -40,28 +39,10 @@ pub(crate) fn build_canonical_recommendation_index(
                 continue;
             }
             let mut names = Vec::new();
-            match matcher_type {
-                Some("static") => {
-                    if let Some(name) = matcher.get("name").and_then(Value::as_str) {
-                        names.push(name.to_owned());
-                    }
-                }
-                Some("pattern") => {
-                    let prefix = matcher
-                        .get("prefix")
-                        .and_then(Value::as_str)
-                        .unwrap_or_default();
-                    names.extend(
-                        matcher
-                            .get("values")
-                            .and_then(Value::as_array)
-                            .into_iter()
-                            .flatten()
-                            .filter_map(Value::as_str)
-                            .map(|value| format!("{prefix}{value}")),
-                    );
-                }
-                _ => {}
+            if matcher_type == Some("static")
+                && let Some(name) = matcher.get("name").and_then(Value::as_str)
+            {
+                names.push(name.to_owned());
             }
             for name in names {
                 if name.contains(':') {
@@ -86,26 +67,6 @@ pub(crate) fn build_canonical_recommendation_index(
     for values in index.static_candidates_by_signature.values_mut() {
         values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
     }
-    index.modes.extend(
-        manifest
-            .get("settings")
-            .and_then(|settings| settings.get("modes"))
-            .and_then(Value::as_array)
-            .into_iter()
-            .flatten()
-            .filter_map(Value::as_str)
-            .map(str::to_owned),
-    );
-    if index.modes.is_empty() {
-        index.modes.extend(["light".into(), "dark".into()]);
-    }
-    index.breakpoints.extend(
-        manifest
-            .get("breakpointConditions")
-            .and_then(Value::as_object)
-            .into_iter()
-            .flat_map(|conditions| conditions.keys().cloned()),
-    );
     Ok(index)
 }
 
@@ -164,90 +125,6 @@ pub(crate) fn canonical_class_parts(
         key,
         value,
     }
-}
-
-pub(crate) fn safe_breakpoint_name<'a>(
-    token: &'a str,
-    breakpoints: &HashSet<String>,
-) -> Option<&'a str> {
-    let name = token
-        .strip_prefix(">=")
-        .or_else(|| token.strip_prefix("<="))
-        .or_else(|| token.strip_prefix('>'))
-        .or_else(|| token.strip_prefix('<'))
-        .unwrap_or(token);
-    (!name.is_empty()
-        && name
-            .chars()
-            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '_' | '-'))
-        && breakpoints.contains(name))
-    .then_some(name)
-}
-
-pub(crate) fn canonical_condition_suffix(
-    parts: &CanonicalClassParts,
-    semantics: &ClassSemanticInspection,
-    rules: &[GeneratedRuleIr],
-    index: &CanonicalRecommendationIndex,
-    options: &CanonicalClassNameOptions,
-) -> String {
-    if !options.prefer_condition_order
-        || rules
-            .iter()
-            .any(|rule| rule.layer != UtilityLayerName::Utilities)
-    {
-        return parts.suffix.clone();
-    }
-    let Some(state_token) = semantics.state_token.as_deref() else {
-        return parts.suffix.clone();
-    };
-    if !state_token.contains('@') {
-        return parts.suffix.clone();
-    }
-    let state_parts = split_top_level(state_token, '@');
-    if state_parts.len() <= 2 || state_parts.iter().skip(1).any(|part| part.is_empty()) {
-        return parts.suffix.clone();
-    }
-    let selector_prefix = state_parts[0];
-    let mut mode = None;
-    let mut breakpoints = Vec::new();
-    for condition in state_parts.into_iter().skip(1) {
-        let is_mode = index.modes.contains(condition);
-        let is_breakpoint = safe_breakpoint_name(condition, &index.breakpoints).is_some();
-        if is_mode && is_breakpoint {
-            return parts.suffix.clone();
-        }
-        if is_mode {
-            if mode.is_some() {
-                return parts.suffix.clone();
-            }
-            mode = Some(condition);
-        } else if is_breakpoint {
-            breakpoints.push(condition);
-        } else {
-            return parts.suffix.clone();
-        }
-    }
-    let Some(mode) = mode else {
-        return parts.suffix.clone();
-    };
-    if breakpoints.is_empty() {
-        return parts.suffix.clone();
-    }
-    let canonical_state = format!(
-        "{selector_prefix}{}@{mode}",
-        breakpoints
-            .iter()
-            .map(|condition| format!("@{condition}"))
-            .collect::<String>()
-    );
-    if canonical_state == state_token {
-        return parts.suffix.clone();
-    }
-    format!(
-        "{}{canonical_state}",
-        if semantics.important { "!" } else { "" }
-    )
 }
 
 pub(crate) fn push_canonical_candidate(

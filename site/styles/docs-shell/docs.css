@@ -7,7 +7,7 @@
   }
 
   .doc-table {
-    border-bottom: 1px solid var(--color-line-muted);
+    border-bottom: 1px solid var(--color-line-subtle);
     overflow-x: auto;
 
     :is(tbody tr:last-child th, tbody tr:last-child td) {

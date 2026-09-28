@@ -2,10 +2,10 @@ use mastercss_compiler::{RcMigrationRequest, migrate_rc};
 use serde_json::{Value, json};
 fn request(classes: Vec<Vec<&str>>, stylesheets: Vec<&str>) -> RcMigrationRequest {
     let manifest: Value = serde_json::from_str(include_str!(
-        "../../../packages/preset/src/default-manifest.json"
+        "fixtures/v2-rc-before-directives.manifest.json"
     ))
     .unwrap();
-    serde_json::from_value(json!({"from":"rc-native","sourceVersion":"2.0.0-rc.native","manifest":manifest,"targetManifest":manifest,"classLists":classes,"stylesheets":stylesheets})).unwrap()
+    serde_json::from_value(json!({"from":"rc-native","sourceVersion":"2.0.0-rc.native","manifest":manifest,"targetManifest":serde_json::from_str::<Value>(include_str!("../../../packages/preset/src/default-manifest.json")).unwrap(),"classLists":classes,"stylesheets":stylesheets})).unwrap()
 }
 #[test]
 fn native_profile_preserves_modes_and_moves_complex_queries_deterministically() {
@@ -18,7 +18,7 @@ fn native_profile_preserves_modes_and_moves_complex_queries_deterministically() 
     );
     let result = migrate_rc(&input).unwrap();
     assert!(!result.configuration_css.contains("@mode"));
-    assert!(!result.configuration_css.contains("color-scheme"));
+    assert!(result.configuration_css.contains("@custom-variant dark"));
     assert!(
         result
             .configuration_css
@@ -91,7 +91,7 @@ fn literal_pipe_and_invalid_old_queries_require_manual_review() {
             .iter()
             .all(|list| list[0].status == "review")
     );
-    assert!(result.configuration_css.is_empty());
+    assert!(result.configuration_css.contains("@keyframes fade"));
 }
 
 #[test]

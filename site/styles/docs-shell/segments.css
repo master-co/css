@@ -3,7 +3,7 @@
     display: flex;
     border-radius: var(--radius-lg);
     padding: 5px;
-    background-color: var(--color-surface-muted);
+    background-color: var(--color-surface-inset);
     width: fit-content;
   }
 

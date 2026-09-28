@@ -1,9 +1,9 @@
 @import '@master/css';
 
 
-@theme {
+@theme {:root, :host {
   --color-primary: var(--color-yellow);
-}
+}}
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

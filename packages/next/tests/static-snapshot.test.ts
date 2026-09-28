@@ -30,7 +30,7 @@ test('independent static workers publish the full current source set across edit
   const root = await mkdtemp(join(tmpdir(), 'next-complete-snapshot-'))
   const entry = join(root, 'app.css'), first = join(root, 'first.tsx'), second = join(root, 'second.mdx')
   try {
-    await writeFile(entry, '@master entry;')
+    await writeFile(entry, "@import url(\"@master/css\");")
     await writeFile(first, '<div className="p:19px"/>')
     await writeFile(second, '`p:98px`\n\n<div className="m:23px"/>')
     await mkdir(join(root, 'custom-output'))
@@ -81,7 +81,7 @@ test('a source edit during composition retries with a complete fresh snapshot', 
   const root = await mkdtemp(join(tmpdir(), 'next-snapshot-race-'))
   const source = join(root, 'page.tsx')
   try {
-    await writeFile(join(root, 'app.css'), '@master entry;')
+    await writeFile(join(root, 'app.css'), "@import url(\"@master/css\");")
     await writeFile(source, '<div className="p:11px"/>')
     const state = (await prepareNextStatic({}, { projectDir: root }))!
     const session = [...globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__!.entries()].find(([key]) => key.startsWith(root + '\0'))![1]

@@ -1,14 +1,14 @@
-@master entry;
+@import "@master/css";
 @import './styles/button.css';
 
-@theme {
+@theme {:root, :host {
   --color-primary: #123;
   --breakpoint-md: 48;
-}
+}}
 
-@utilities {
-  btn {
+
+
+  @utility btn {
     background-color:var(--color-primary);
     display: inline-flex;
   }
-}

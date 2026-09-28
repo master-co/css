@@ -27,7 +27,6 @@ export interface RenderCSSOptions {
 export interface InspectClassOptions {
   context?: SemanticContext
   className: string
-  mode?: string
 }
 
 export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns = DEFAULT_SOURCE_PATTERNS, ignore = DEFAULT_IGNORE_PATTERNS) {
@@ -85,7 +84,7 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
   })
   const tooling = createMCPToolingSession(requireWorkspaceManifest(manifest), manifest.nativeClassNames)
   let inspections: ReturnType<typeof compactClassInspection>[]
-  try { inspections = classes.map(className => compactClassInspection(tooling, className, undefined, true)) }
+  try { inspections = classes.map(className => compactClassInspection(tooling, className, true)) }
   finally { tooling.dispose() }
   return {
     manifest: manifestMetadata(manifest),
@@ -106,17 +105,15 @@ export async function inspectClass(context: MasterCSSMCPContext, options: Inspec
     requireWorkspaceManifest(manifest), manifest.nativeClassNames
   )
   try {
-    const inspection = session.inspectClassName(options.className, options.mode)
+    const inspection = session.inspectClassName(options.className)
     const compact = compactClassInspection(
       session,
       options.className,
-      options.mode,
       true,
       inspection
     )
     return {
       manifest: manifestMetadata(manifest),
-      mode: options.mode,
       ...compact,
       css: inspection.rules.map((rule) => rule.text).join('')
     }

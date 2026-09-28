@@ -14,7 +14,7 @@ test('shared plugin roots retain resource delivery as another root or SSR enviro
   const urls: URL[] = []
   try {
     for (const [index, root] of roots.entries()) {
-      writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.resource{background-image:url("./pixel%23%3F.svg")}')
+      writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@preserve native;.resource{background-image:url(\"./pixel%23%3F.svg\")}")
       writeFileSync(join(root, 'pixel#?.svg'), images[index])
       writeFileSync(join(root, 'server.js'), 'export { default as css } from "./style.css?inline"')
       const server = await createServer({ root, base: `/base-${index}/`, configFile: false, logLevel: 'silent', plugins, server: { host: '127.0.0.1', port: 0 } })
@@ -56,7 +56,7 @@ test('published CSS and resource versions remain readable after a new graph is c
   const root = mkdtempSync(join(parent, 'dev-resource-versions-'))
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    writeFileSync(join(root, 'style.css'), '@import "./child.css" layer(guard);@master entry;@preserve native;')
+    writeFileSync(join(root, 'style.css'), "@import \"./child.css\" layer(guard);@import url(\"@master/css\");@preserve native;")
     const writeVersion = (color: string) => {
       writeFileSync(join(root, 'child.css'), `@import "/base/external.css";.resource{color:${color};background-image:url("./pixel.svg")}`)
       writeFileSync(join(root, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>${color}</title></svg>`)

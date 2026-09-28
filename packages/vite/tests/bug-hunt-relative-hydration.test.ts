@@ -14,7 +14,7 @@ test('BH-0016 nested HTML resolves its hydration asset when base is relative', a
     writeFileSync(join(root, 'index.html'), html)
     writeFileSync(join(root, 'pages/nested.html'), html)
     writeFileSync(join(root, 'main.ts'), 'import "./master.css"')
-    writeFileSync(join(root, 'master.css'), '@import "@master/css";')
+    writeFileSync(join(root, 'master.css'), '@import url("@master/css");')
     await build({
       root, base: './', configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'progressive' }),
       build: { rollupOptions: { input: { main: join(root, 'index.html'), nested: join(root, 'pages/nested.html') } } }

@@ -1,9 +1,7 @@
 //! Frozen RC utility matching, exclusively for migration evidence. Runtime never
 //! decodes typed matchers or guesses intent from a current variable value.
-use super::stylesheets::{RcStylesheetMigration, add_edit};
 use super::{Migration, RcMigrationProfile};
 use mastercss_engine::EngineSession;
-use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
 use serde_json::{Value, json};
 
 pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
@@ -39,7 +37,7 @@ pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
 }
 
 pub(super) fn current_helper(manifest: &mut Value) {
-    manifest["languageVersion"] = json!(mastercss_schema::LANGUAGE_VERSION);
+    super::manifest::upgrade(manifest);
     for utility in manifest["utilities"].as_array_mut().into_iter().flatten() {
         if let Some(object) = utility.as_object_mut() {
             object.remove("kind");
@@ -118,7 +116,7 @@ impl Migration {
             if translated {
                 // The preceding profile stage proved these query translations.
                 // Apply them around the saved utility body for comparison.
-                for field in ["variants", "conditions", "modes"] {
+                for field in ["variants", "conditions", "customMedia"] {
                     if let Some(value) = self.target_manifest.borrow().get(field) {
                         manifest[field] = value.clone();
                     }
@@ -263,136 +261,5 @@ impl Migration {
             return Err("Saved token or animation resources differ from the target; review resource values, ordering and ownership before migrating".into());
         }
         Ok(())
-    }
-
-    pub(super) fn utility_stylesheet(&self, source: &str, result: &mut RcStylesheetMigration) {
-        let tokens = tokenize_css_syntax(source);
-        let statements = collect_css_syntax_statements(&tokens);
-        let mut definitions = Vec::new();
-        for statement in &statements {
-            if !statement.has_block {
-                continue;
-            }
-            let mut parent = statement.parent;
-            let mut managed = false;
-            while let Some(index) = parent {
-                match &tokens[statements[index].tokens.start].kind {
-                    CssSyntaxKind::AtKeyword(name) if name == "utilities" => {
-                        managed = true;
-                        break;
-                    }
-                    CssSyntaxKind::AtKeyword(_) => parent = statements[index].parent,
-                    _ => break,
-                }
-            }
-            if !managed {
-                continue;
-            }
-            let start = tokens[statement.tokens.start].bytes.start;
-            let Some(open) = tokens.get(statement.tokens.end) else {
-                continue;
-            };
-            let Some(close) = open.close.and_then(|index| tokens.get(index)) else {
-                continue;
-            };
-            let name = source[start..open.bytes.start].trim();
-            definitions.push((
-                name.to_owned(),
-                start,
-                open.bytes.start,
-                open.bytes.end,
-                close.bytes.start,
-                close.bytes.end,
-            ));
-        }
-        for (name, start, prelude_end, _, _, _) in &definitions {
-            let start_utf16 = source[..*start].encode_utf16().count() as u32;
-            if result
-                .edits
-                .iter()
-                .any(|edit| edit.range.start <= start_utf16 && start_utf16 < edit.range.end)
-            {
-                continue;
-            }
-            if let Some((prefix, members)) = name
-                .split_once('<')
-                .and_then(|(prefix, body)| body.strip_suffix('>').map(|members| (prefix, members)))
-            {
-                let entries = members.split('|').map(str::trim).collect::<Vec<_>>();
-                if prefix.ends_with(':') && entries != ["*"] {
-                    let overloads = definitions
-                        .iter()
-                        .filter(|(name, ..)| name.starts_with(&format!("{prefix}<")))
-                        .count();
-                    if entries.contains(&"*")
-                        && entries
-                            .iter()
-                            .all(|entry| matches!(*entry, "*" | "number" | "color" | "image"))
-                        && overloads == 1
-                    {
-                        add_edit(
-                            result,
-                            source,
-                            *start,
-                            *prelude_end,
-                            format!("{prefix}<*> "),
-                        );
-                    } else {
-                        result.notes.push(format!("Utility {name} has typed-only, enum or overloaded acceptance; converting it to {prefix}<*> expands its domain and requires review"));
-                    }
-                } else if prefix.ends_with('-')
-                    && entries.iter().all(|entry| entry.starts_with(['~', '=']))
-                    && entries.iter().any(|entry| entry.starts_with('='))
-                {
-                    let entries = entries
-                        .iter()
-                        .map(|entry| format!("~{}", &entry[1..]))
-                        .collect::<Vec<_>>();
-                    add_edit(
-                        result,
-                        source,
-                        *start,
-                        *prelude_end,
-                        format!("{prefix}<{}> ", entries.join("|")),
-                    );
-                }
-            }
-        }
-        // Adjacent static definitions with no intervening definitions can be
-        // combined without moving their ordered statements or nested rules.
-        for (index, (name, start, _, body_start, body_end, end)) in definitions.iter().enumerate() {
-            if name.contains('<') {
-                continue;
-            }
-            let previous = definitions[..index]
-                .iter()
-                .rposition(|(previous, ..)| previous == name);
-            if let Some(previous) = previous {
-                let (_, previous_start, _, previous_body_start, previous_body_end, previous_end) =
-                    &definitions[previous];
-                if previous + 1 == index
-                    && source[*previous_end..*start].trim().is_empty()
-                    && definitions
-                        .iter()
-                        .filter(|(other, ..)| other == name)
-                        .count()
-                        == 2
-                {
-                    add_edit(
-                        result,
-                        source,
-                        *previous_start,
-                        *end,
-                        format!(
-                            "{name}{{{}\n{}}}",
-                            &source[*previous_body_start..*previous_body_end],
-                            &source[*body_start..*body_end]
-                        ),
-                    );
-                } else {
-                    result.notes.push(format!("Repeated utility {name} now replaces its entire definition; preserve its RC statement order manually across definitions/imports"));
-                }
-            }
-        }
     }
 }

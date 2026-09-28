@@ -1,4 +1,4 @@
-//! Language v2 semantics. Historical RC syntax appears only in rejection cases.
+//! Language v4 semantics. Historical RC syntax appears only in rejection cases.
 use mastercss_compiler::{
     CompileManifestOptions, CompileNativeCssOptions, compile_css_directives, compile_manifest_input,
 };
@@ -22,7 +22,7 @@ fn css(engine: &mut EngineSession, classes: &[&str]) -> String {
 
 #[test]
 fn native_queries_preserve_dimensions_and_wrapper_nesting() {
-    let mut e = engine("@theme { --breakpoint-sm: 800px; } @custom-variant has-selector { @supports selector(:has(*)) { @slot; } }").unwrap();
+    let mut e = engine("@custom-media --sm (width>=800px); @custom-variant has-selector { @supports selector(:has(*)) { @slot; } }").unwrap();
     let output = css(
         &mut e,
         &[
@@ -72,15 +72,15 @@ fn legacy_conditions_and_unknown_names_do_not_generate() {
 }
 
 #[test]
-fn modes_own_activation_and_theme_values_use_the_same_branches() {
+fn scoped_theme_and_variant_activation_are_independent() {
     let mut e = engine(
         r#"
-        @mode ocean {
-            @supports (display: grid) { [data-theme="ocean"] { @slot; } }
-            :host([data-theme="ocean"]) { @slot; }
+        @custom-variant ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @slot; } }
+        @theme {
+            :root, :host { --color-surface: white; }
+            @supports (display: grid) { [data-theme="ocean"] { --color-surface: #082f49; } }
+            :host([data-theme="ocean"]) { --color-surface: #082f49; }
         }
-        @theme { --color-surface: white; }
-        @theme ocean { --color-surface: #082f49; }
     "#,
     )
     .unwrap();
@@ -94,23 +94,24 @@ fn modes_own_activation_and_theme_values_use_the_same_branches() {
         "{output}"
     );
     assert!(
-        output.contains(":where([data-theme=ocean],[data-theme=ocean] *)"),
+        output.contains(":host([data-theme=ocean]){--color-surface:#082f49}"),
         "{output}"
     );
     assert!(
-        output.contains(":where(:host([data-theme=ocean]),:host([data-theme=ocean]) *)"),
+        output.contains(":where([data-theme=ocean],[data-theme=ocean] *)"),
         "{output}"
     );
     assert!(!output.contains("color-scheme"), "{output}");
 }
 
 #[test]
-fn mode_redefinition_replaces_branches_and_moves_cascade_order() {
-    let mut e = engine("@mode a { .old { @slot; } } @mode b { .b { @slot; } } @mode a { .new { @slot; } } @theme a { --color-x: red; } @theme b { --color-x: blue; }").unwrap();
-    let output = css(&mut e, &["color-x"]);
+fn variant_redefinition_preserves_authored_theme_order() {
+    let mut e = engine("@custom-variant a { &.old { @slot; } } @custom-variant a { &.new { @slot; } } @theme { .b { --color-x: blue; } .a { --color-x: red; } }").unwrap();
+    let output = css(&mut e, &["color-x", "padding:1px@a"]);
     assert!(!output.contains(".old"));
+    assert!(output.contains(".new"), "{output}");
     assert!(
-        output.find(".b{").unwrap() < output.find(".new{").unwrap(),
+        output.find(".b{").unwrap() < output.find(".a{").unwrap(),
         "{output}"
     );
 }
@@ -124,7 +125,7 @@ fn invalid_modes_and_removed_settings_are_rejected() {
         "@mode a { @container (width>1px) { .a { @slot; } } }",
         "@mode a { @layer utilities { .a { @slot; } } }",
         "@theme missing { --color-x: red; }",
-        "@mode sm { .sm { @slot; } } @theme { --breakpoint-sm: 1rem; }",
+        "@mode sm { .sm { @slot; } } @theme {:root, :host { --breakpoint-sm: 1rem; }}",
         "@settings { root-size: 20; }",
         "@settings { default-mode: dark; }",
         "@settings { mode-trigger: class; }",
@@ -215,7 +216,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":1,"languageVersion":3,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":2,"languageVersion":4,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

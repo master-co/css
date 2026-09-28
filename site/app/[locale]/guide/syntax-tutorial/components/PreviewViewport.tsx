@@ -23,7 +23,7 @@ export default function PreviewViewport({ html, breakpoint, responsive }: { html
   }, [mode])
   useEffect(syncFrameThemeMode, [syncFrameThemeMode])
   const toggleClassName = (pressed: boolean) => clsx(
-    'btn btn-sm b:1px|solid|var(--color-line-base)',
+    'btn btn-sm b:1px|solid|var(--color-line-divider)',
     pressed ? 'outline:2px|solid|var(--color-accent) surface-raised' : 'surface-raised:hover'
   )
   return <div style={{ width: '100%', minWidth: 0 }}>

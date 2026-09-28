@@ -66,14 +66,14 @@ test('processed stylesheet inputs invalidate when their host dependencies change
   const directory = await mkdtemp(join(tmpdir(), 'master-next-input-deps-'))
   try {
     const file = join(directory, 'app.css'), dependency = join(directory, 'postcss.config.js'), output = join(directory, 'next.css')
-    await writeFile(file, '@master entry;')
+    await writeFile(file, "@import url(\"@master/css\");")
     await writeFile(dependency, 'first')
-    const input = await captureStaticStyleInput(file, '@master entry;.processed{color:red}', [dependency])
+    const input = await captureStaticStyleInput(file, "@import url(\"@master/css\");.processed{color:red}", [dependency])
     expect(Object.keys(await loadStaticStyleInputs(output, 'configuration', input))).toEqual([file])
     await writeFile(dependency, 'second')
     expect(await loadStaticStyleInputs(output, 'configuration')).toEqual({})
     await expect(loadStaticStyleInputs(output, 'configuration', input)).rejects.toThrow('changed during loader execution')
-    const updated = await captureStaticStyleInput(file, '@master entry;.processed{color:blue}', [dependency])
+    const updated = await captureStaticStyleInput(file, "@import url(\"@master/css\");.processed{color:blue}", [dependency])
     expect((await loadStaticStyleInputs(output, 'configuration', updated))[file].source).toContain('blue')
   } finally { await rm(directory, { recursive: true, force: true }) }
 })

@@ -2,10 +2,37 @@ use mastercss_render::RenderSession;
 
 fn render(css: &str) -> String {
     let manifest = serde_json::json!({
-        "version": 1,"languageVersion":3,
-        "variables": {"color": [{"key": "brand", "value": "red"}]},
-        "animations": {"fade": {"to": {"opacity": "1"}}},
-        "utilities": []
+      "version": 2,
+      "languageVersion": 4,
+      "variables": {
+        "color": [
+          {
+            "key": "brand",
+            "values": [
+              {
+                "path": [
+                  ":root,:host"
+                ],
+                "value": "red"
+              }
+            ]
+          }
+        ]
+      },
+      "utilities": [],
+      "theme": [
+        {
+          "type": "rule",
+          "prelude": ":root,:host",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "color-brand",
+              "value": "red"
+            }
+          ]
+        }
+      ]
     })
     .to_string();
     let mut session = RenderSession::create(&manifest, None).unwrap();
@@ -14,8 +41,8 @@ fn render(css: &str) -> String {
 }
 
 #[test]
-fn audit_actual_native_keyframes_suppress_duplicates() {
-    assert!(render(".x{animation:fade 1s}").contains("@keyframes fade"));
+fn native_keyframes_are_owned_entirely_by_the_stylesheet() {
+    assert!(!render(".x{animation:fade 1s}").contains("@keyframes fade"));
     assert!(
         !render(".x{animation:fade 1s}@keyframes fade{to{opacity:.5}}").contains("@keyframes fade")
     );

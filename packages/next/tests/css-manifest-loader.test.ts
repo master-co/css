@@ -44,7 +44,7 @@ describe('css manifest loader', () => {
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
@@ -52,8 +52,8 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":1')
-    expect(JSON.parse(source).version).toBe(1)
+    expect(source).toContain('"version":2')
+    expect(JSON.parse(source).version).toBe(2)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -62,14 +62,14 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       getOptions: () => ({ module: true })
     })
 
-    expect(source).toMatch(/^export default \{"version":1/)
+    expect(source).toMatch(/^export default \{"version":2/)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -77,14 +77,14 @@ describe('css manifest loader', () => {
   it('exports standard ESM data without writing bundler output assets', async () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       rootContext: projectDir,
       getOptions: () => ({ module: true })
     })
     const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
-    expect(manifest.languageVersion).toBe(3)
+    expect(manifest.languageVersion).toBe(4)
     expect(JSON.stringify(manifest)).toContain('#123')
     expect(source).not.toContain('fetch(')
     expect(source).not.toContain('/_next/')
@@ -97,7 +97,7 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
 
     try {
       env.NODE_ENV = 'development'
@@ -107,7 +107,7 @@ describe('css manifest loader', () => {
         getOptions: () => ({ module: true })
       })
 
-      expect(source).toMatch(/^export default \{"version":1/)
+      expect(source).toMatch(/^export default \{"version":2/)
       expect(source).toContain('#123')
       expect(source).not.toContain('loadMasterCSSManifestFromImport')
     } finally {
@@ -124,16 +124,7 @@ describe('css manifest loader', () => {
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, [
-      '@theme {',
-      '    --color-primary: #123;',
-      '}',
-      '@utilities {',
-      '    btn {',
-      '        color: var(--color-primary);',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(manifestPath, "@theme { :root, :host {\n    --color-primary: #123;\n} }\n\n@utility btn {\n        color: var(--color-primary);\n    }")
 
     const source = await runManifestLoader({
       resourcePath: `${manifestPath}?master-css-manifest`,
@@ -141,7 +132,7 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":1')
+    expect(source).toContain('"version":2')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"btn"')
@@ -154,21 +145,8 @@ describe('css manifest loader', () => {
     const entryPath = join(projectDir, 'app/globals.css')
     const preserveOnlyPath = join(projectDir, 'app/preserve.css')
     const dependencies: string[] = []
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@theme {',
-      '    --color-primary: #123;',
-      '}',
-      '@utilities {',
-      '    btn { color: var(--color-primary); }',
-      '}'
-    ].join('\n'))
-    writeFileSync(preserveOnlyPath, [
-      '@preserve native;',
-      '@theme {',
-      '    --color-ignored: #456;',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme { :root, :host {\n    --color-primary: #123;\n} }\n\n@utility btn { color: var(--color-primary); }")
+    writeFileSync(preserveOnlyPath, "@preserve native;\n@theme { :root, :host {\n    --color-ignored: #456;\n} }\n")
 
     const source = await runManifestLoader({
       resourcePath: join(projectDir, 'node_modules/.master-css/master-css-manifest.js'),
@@ -177,7 +155,7 @@ describe('css manifest loader', () => {
       addDependency: (dependency: string) => dependencies.push(dependency)
     })
 
-    expect(source).toContain('"version":1')
+    expect(source).toContain('"version":2')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"btn"')
@@ -191,12 +169,7 @@ describe('css manifest loader', () => {
     const entryPath = join(projectDir, 'app/globals.css')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, [
-      '@master entry;',
-      '@theme { --color-primary: #123; }',
-      '@keyframes fade { to { opacity: 0; } }',
-      '.host { color: var(--color-primary); animation: fade 1s; }'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123; }}\n\n@keyframes fade { to { opacity: 0; } }\n.host { color: var(--color-primary); animation: fade 1s; }")
 
     const source = await runManifestLoader({
       resourcePath: join(projectDir, 'node_modules/.master-css/master-css-emitted-globals.js'),
@@ -207,7 +180,7 @@ describe('css manifest loader', () => {
     const emittedGlobals = JSON.parse(source.replace(/^export default /, '').replace(/;$/, ''))
 
     expect(emittedGlobals.variables['color-primary']).toBe(1)
-    expect(emittedGlobals.animations.fade).toBe(1)
+    expect(emittedGlobals).not.toHaveProperty('animations')
     expect(dependencies).toContain(entryPath)
   })
 
@@ -217,14 +190,7 @@ describe('css manifest loader', () => {
     const virtualManifestPath = join(projectDir, 'node_modules/.master-css/master-css-manifest.js')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@utilities {',
-      '    card {',
-      '        @compose bg-missing-token;',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@utility card {\n        @compose bg-missing-token;\n    }")
 
     await expect(runManifestLoader({
       resourcePath: virtualManifestPath,
@@ -234,14 +200,7 @@ describe('css manifest loader', () => {
     })).rejects.toThrow('@compose has been removed')
     expect(dependencies).toContain(entryPath)
 
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@utilities {',
-      '    card {',
-      '        @variant media(all){display:block;}',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@utility card {\n        @media all{display:block;}\n    }")
 
     const source = await runManifestLoader({
       resourcePath: virtualManifestPath,
@@ -249,7 +208,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ virtual: true, module: true })
     })
 
-    expect(source).toContain('"version":1')
+    expect(source).toContain('"version":2')
     expect(source).toContain('"card"')
     expect(source).toContain('display')
   })

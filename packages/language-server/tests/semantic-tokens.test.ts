@@ -46,7 +46,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
-    const textDocument = context.createDocument("@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@safelist \"block fg-red\";", { lang: 'css' })
+    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"block fg-red\";", { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
@@ -184,7 +184,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens when highlighting is off', async ({ expect }) => {
-    const textDocument = context.createDocument("@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@safelist \"block\";", { lang: 'css' })
+    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"block\";", { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {

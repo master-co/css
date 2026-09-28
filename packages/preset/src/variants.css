@@ -75,3 +75,11 @@
     @slot;
   }
 }
+
+@custom-variant light {
+  @media (prefers-color-scheme: light) { @slot; }
+}
+
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) { @slot; }
+}

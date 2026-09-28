@@ -62,24 +62,19 @@ const selectorVariantRuleTexts = [
   `${selectorVariantSelector}{position:relative}`
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
-const inlineThemeManifest = {
-  version: 1, languageVersion: 3,
-  modes: [
-    { name: 'light', branches: [{ selector: '.light' }] },
-    { name: 'dark', branches: [{ selector: '.dark' }] }
-  ],
+const scopedThemeManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration', name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule', prelude: '.light', children: [{ type: 'declaration', name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule', prelude: '.dark', children: [{ type: 'declaration', name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
+  version: 2, languageVersion: 4,
   variables: {
     color: [
       {
         name: 'color-white',
         key: 'white',
-        value: 'oklch(100% 0 none)',
-        inline: true
+        values: [{ path: [':root,:host'], value: 'oklch(100% 0 none)' }]
       },
       {
         name: 'color-gray-90',
         key: 'gray-90',
-        value: 'oklch(23.5% 0 none)'
+        values: [{ path: [':root,:host'], value: 'oklch(23.5% 0 none)' }]
       }
     ],
     'color-surface': [
@@ -87,10 +82,7 @@ const inlineThemeManifest = {
         name: 'color-surface-raised',
         key: 'raised',
         dependencies: ['color-white', 'color-gray-90'],
-        modes: {
-          light: { value: 'var(--color-white)' },
-          dark: { value: 'var(--color-gray-90)' }
-        }
+        values: [{ path: ['.light'], value: 'var(--color-white)' }, { path: ['.dark'], value: 'var(--color-gray-90)' }]
       }
     ]
   },
@@ -102,17 +94,17 @@ const inlineThemeManifest = {
     matchers: [{ type: 'token', prefix: 'surface-' }]
   }]
 } as unknown as MasterCSSManifest
-const inlineThemeCSS = [
+const scopedThemeCSS = [
   '@layer theme{',
-  ':root,:host{--color-gray-90:oklch(23.5% 0 none)}',
-  '.light{--color-surface-raised:oklch(100% 0 none)}',
+  ':root,:host{--color-white:oklch(100% 0 none);--color-gray-90:oklch(23.5% 0 none)}',
+  '.light{--color-surface-raised:var(--color-white)}',
   '.dark{--color-surface-raised:var(--color-gray-90)}',
   '}',
   '@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}'
 ].join('')
 
 const manifest: MasterCSSManifest = {
-  version: 1, languageVersion: 3,
+  version: 2, languageVersion: 4,
   conditions: {
     sm: { id: 'media', nodes: [{ type: 'number', value: 52.125, unit: 'rem' }] }
   },
@@ -213,8 +205,7 @@ describe('Rust engine session', () => {
               expect(nativeSnapshot.text, parityCase.id).toBe(step.expectedCss)
               if (step.expectedResourceOrder) {
                 expect([
-                  ...nativeSnapshot.resources.variables.map(({ name }) => name),
-                  ...nativeSnapshot.resources.animations.map(({ name }) => name)
+                  ...nativeSnapshot.resources.variables.map(({ name }) => name)
                 ], `${parityCase.id}: resource order`).toEqual(step.expectedResourceOrder)
               }
               continue
@@ -254,10 +245,7 @@ describe('Rust engine session', () => {
               expect(nativeInspection.rules.map(({ variableNames }) => variableNames ?? []), parityCase.id)
                 .toEqual(step.expectedVariableNames)
             }
-            if (step.expectedAnimationNames?.length) {
-              expect(nativeInspection.rules.map(({ animationNames }) => animationNames ?? []), parityCase.id)
-                .toEqual(step.expectedAnimationNames)
-            }
+
           }
         } catch (cause) {
           throw new Error(`${parityCase.id} ${operation}: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -319,7 +307,7 @@ describe('Rust engine session', () => {
   it('inspects without mutating state and rejects use after disposal', () => {
     const engine = createEngineSync({ manifest })
     expect(engine.inspect('block:hover')).toMatchObject({
-      version: 1,
+      version: 2,
       className: 'block:hover',
       matchStatus: 'matched',
       cssValueStatus: 'not-checked',
@@ -352,7 +340,7 @@ describe('Rust engine session', () => {
     try {
       engine.ensureClassRules(['block'])
       expect(engine.refresh(manifest)).toMatchObject({
-        version: 1,
+        version: 2,
         mutations: [
           { op: 'delete', key: 'block' },
           { op: 'insert', key: 'block' }
@@ -373,11 +361,10 @@ describe('Rust engine session', () => {
       native.ensureClassRules(classNames)
       wasm.ensureClassRules(classNames)
       expect(wasm.snapshot()).toEqual(native.snapshot())
-      expect(native.snapshot().text).toContain('@keyframes fade{')
+      expect(native.snapshot().text).not.toContain('@keyframes fade{')
 
       const emittedGlobals = {
-        variables: { 'color-red-60': 1 },
-        animations: { fade: 1 }
+        variables: { 'color-red-60': 1 }
       }
       expect(wasm.registerEmittedGlobals(emittedGlobals))
         .toEqual(native.registerEmittedGlobals(emittedGlobals))
@@ -447,20 +434,21 @@ describe('Rust engine session', () => {
     }
   })
 
-  it('resolves inline dependencies in emitted mode variables in native and Wasm', async () => {
-    const native = createEngineSync({ manifest: inlineThemeManifest })
-    const wasm = await createEngine({ manifest: inlineThemeManifest, binding: 'wasm' })
+  it('retains dependencies in all authored variable scopes in native and Wasm', async () => {
+    const native = createEngineSync({ manifest: scopedThemeManifest })
+    const wasm = await createEngine({ manifest: scopedThemeManifest, binding: 'wasm' })
 
     try {
       const nativeTransition = native.ensureClassRules(['surface-raised'])
       const wasmTransition = wasm.ensureClassRules(['surface-raised'])
 
       expect(wasmTransition).toEqual(nativeTransition)
-      expect(native.snapshot().text).toBe(inlineThemeCSS)
+      expect(native.snapshot().text).toBe(scopedThemeCSS)
       expect(wasm.snapshot().text).toBe(native.snapshot().text)
       expect(wasm.snapshot()).toEqual(native.snapshot())
       expect(native.snapshot().resources.variables.map(({ name }) => name)).toEqual([
         'color-surface-raised',
+        'color-white',
         'color-gray-90'
       ])
     } finally {

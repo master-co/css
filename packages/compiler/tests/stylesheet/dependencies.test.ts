@@ -30,7 +30,7 @@ test('resolves immutable complete import edges without flattening qualified nati
 })
 
 test('dependency resolution honors cancellation', () => {
-  expect(() => resolveStylesheetDependenciesSync('/project/app.css', '@master entry;', { signal: AbortSignal.abort() })).toThrow()
+  expect(() => resolveStylesheetDependenciesSync('/project/app.css', "@import \"@master/css\";", { signal: AbortSignal.abort() })).toThrow()
 })
 
 

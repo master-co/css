@@ -62,8 +62,6 @@ pub struct GeneratedRuleIr {
     pub selector_text: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub variable_names: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub animation_names: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -91,13 +89,6 @@ impl HydrationManifest {
             .variables
             .iter()
             .map(|resource| resource.name.clone())
-            .chain(
-                snapshot
-                    .resources
-                    .animations
-                    .iter()
-                    .map(|resource| resource.name.clone()),
-            )
             .collect();
         Self::new(snapshot.rules.clone(), resource_order)
     }
@@ -161,17 +152,6 @@ pub struct EngineVariableResourceIr {
     pub ref_count: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dependencies: Vec<String>,
-    #[serde(rename = "static")]
-    pub static_resource: bool,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct EngineAnimationResourceIr {
-    pub name: String,
-    pub index: u32,
-    pub ref_count: u32,
-    pub text: String,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -180,7 +160,6 @@ pub struct EngineResourcesIr {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme_text: Option<String>,
     pub variables: Vec<EngineVariableResourceIr>,
-    pub animations: Vec<EngineAnimationResourceIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

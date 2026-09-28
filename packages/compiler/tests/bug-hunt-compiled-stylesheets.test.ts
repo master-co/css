@@ -11,9 +11,9 @@ const cases = JSON.parse(readFileSync(new URL('../../../crates/mastercss-compile
 for (const item of cases) {
   test(`BH-0004 compiled stylesheet boundaries: ${item.id}`, async () => {
     const request: MasterCSSCompileStylesheetsRequest = {
-      graph: { entry: 'entry', files: { entry: item.entry, local: item.local || ".example{@variant media(all){color:red}}" }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
+      graph: { entry: 'entry', files: { entry: item.entry, local: item.local || ".example{@variant all {color:red}}" }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
       urls: { entry: '/output/entry.css', local: '/output/local.css' },
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] }
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
     }
     using native = await createCompiler({ binding: 'native' })
     using wasm = await createCompiler({ binding: 'wasm' })
@@ -33,11 +33,11 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
     using compiler = await createCompiler({ binding })
     const result = compiler.compileStylesheets({
       graph: { entry: 'entry', files: {
-        entry: "@import './local.css' layer;@utilities{paint{color:red}}@blocklist 'unused*';",
-        local: ".example{@variant media(all){color:red;}}"
+        entry: "@import './local.css' layer;@utility paint {color:red}@blocklist 'unused*';",
+        local: ".example{@variant all {color:red;}}"
       }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
       urls: { entry: '/output/entry.css', local: '/output/local.css' },
-      baseManifest: { version: 1, languageVersion: 3, utilities: [] }
+      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
     expect(result.stylesheets[1].css).not.toContain('@compose')
@@ -61,14 +61,14 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   for (const binding of ['native', 'wasm'] as const) {
     using compiler = await createCompiler({ binding })
     const request: MasterCSSCompileStylesheetsRequest = {
-      graph: { entry: 'entry', files: { entry: "@reference 'reference.css';.example{@variant media(all){color:red;}}" }, edges: [] },
-      urls: { entry: '/entry.css' }, baseManifest: { version: 1, languageVersion: 3, utilities: [] }
+      graph: { entry: 'entry', files: { entry: "@reference 'reference.css';.example{@variant all {color:red;}}" }, edges: [] },
+      urls: { entry: '/entry.css' }, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
     }
     expect(() => compiler.compileStylesheets(request)).toThrowError(expect.objectContaining({ code: 'CSS_IMPORT_ERROR' }))
-    const reference = compiler.compileManifest('@utilities{paint{color:red}}', { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
+    const reference = compiler.compileManifest('@utility paint {color:red}', { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })
     const result = compiler.compileStylesheets({ ...request, resolutionManifest: reference.manifest })
     expect(result.css).toContain('color:red')
-    const empty = compiler.compileManifest('', { baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
+    const empty = compiler.compileManifest('', { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })
     expect(result.manifest).toEqual(empty.manifest)
   }
 })
@@ -77,12 +77,12 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
 test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery', async () => {
   const request: MasterCSSCompileStylesheetsRequest = {
     graph: { entry: 'entry', files: {
-      entry: "@import './child.css';.example{@variant media(all){background-image:var(--hero);}}",
-      child: '@theme{--hero:url(image.svg)}.unscanned{color:blue}'
+      entry: "@import './child.css';.example{@variant all {background-image:var(--hero);}}",
+      child: "@theme {:root, :host {--hero:url(image.svg)}}\n\n.unscanned{color:blue}"
     }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
     urls: { entry: './entry.css', child: './child.css' },
     resourceURLs: { child: { 'image.svg': './asset.svg?q=1#part' } },
-    relativeResourceURLs: true, options: { classes: ['example'] }, classesByStylesheet: { child: null }, baseManifest: { version: 1, languageVersion: 3, utilities: [] }
+    relativeResourceURLs: true, options: { classes: ['example'] }, classesByStylesheet: { child: null }, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
   }
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })

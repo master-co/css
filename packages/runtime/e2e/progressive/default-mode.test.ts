@@ -8,11 +8,10 @@ test('prerender', async ({ page }) => {
   })
   await init(page, text, {
     variables: [
-      { namespace: 'color', key: 'foo', value: 'rgb(0 0 0)' },
-      { namespace: 'color', key: 'foo', value: 'rgb(255 255 255)', mode: 'light' },
-      { namespace: 'color', key: 'foo', value: 'rgb(100 100 100)', mode: 'dark' }
+      { namespace: 'color', key: 'foo', values: [{ path: [':root,:host'], value: 'rgb(0 0 0)' }] },
+      { namespace: 'color', key: 'foo', values: [{ path: [".light"], value: 'rgb(255 255 255)' }] },
+      { namespace: 'color', key: 'foo', values: [{ path: [".dark"], value: 'rgb(100 100 100)' }] }
     ],
-    modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] }))
   }, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toEqual(text)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)

@@ -14,6 +14,6 @@ export interface MasterCSSClassValidation {
 }
 
 export interface MasterCSSClassValidationResult {
-  readonly version: 3
+  readonly version: 4
   readonly classes: readonly MasterCSSClassValidation[]
 }

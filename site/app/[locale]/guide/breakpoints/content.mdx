@@ -3,24 +3,22 @@ Breakpoints are viewport thresholds. They answer one question: when the availabl
 
 Use breakpoint variants for navigation modes, app shells, page grids, typography shifts, and density changes that should follow the viewport. Use [containers](/guide/containers) when a reusable component should respond to the size of its parent instead.
 
-Master CSS defines breakpoint tokens in the theme layer. The variant syntax is `@<name>`, so `@md` reads from `breakpoint-md`.
+The preset defines named queries with `@custom-media`. The suffix `@md` reads `@custom-media --md`; it is independent of theme variables. The preset has no `--breakpoint-*` custom properties; use native lengths or layout tokens for width caps.
 
 <BreakpointVariables />
 
 ---
 
-## Define breakpoint variables
-Breakpoint variables belong in your project CSS entry. Keep them product-wide and stable; they are part of the layout language shared by docs, components, designers, and tests.
+## Define named media queries
+Custom media definitions belong in your project CSS entry. Keep them product-wide and stable; they are part of the layout language shared by docs, components, designers, and tests.
 
 ```css name=index.css
-@theme {
-  --breakpoint-sm: 48rem;
-  --breakpoint-md: 64rem;
-  --breakpoint-lg: 80rem;
-}
+@custom-media --sm (width >= 48rem);
+@custom-media --md (width >= 64rem);
+@custom-media --lg (width >= 80rem);
 ```
 
-Use CSS length values for breakpoint tokens; `rem` keeps thresholds aligned with the root font size. Unitless numbers are still accepted and interpreted on the 16px scale for existing projects. The scale tables show px/rem pairs for readability, while generated queries use the normalized rem value from the manifest.
+Use native media query syntax and explicit units. The preset scale tables show px/rem equivalents using a 16px reference for readability; generated queries preserve the authored unit.
 
 ---
 
@@ -117,19 +115,23 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-  --breakpoint-iphone: 24.375rem;
-  --breakpoint-ipad: 51.25rem;
+
 }
+
+@custom-media --iphone (width >= 24.375rem);
+@custom-media --ipad (width >= 51.25rem);
 ```
 
 (o) Breakpoints are named after layout thresholds.
 
 ```css
 @theme {
-  --breakpoint-xs: 40rem;
-  --breakpoint-sm: 48rem;
-  --breakpoint-md: 64rem;
+
 }
+
+@custom-media --xs (width >= 40rem);
+@custom-media --sm (width >= 48rem);
+@custom-media --md (width >= 64rem);
 ```
 
 (x) A reusable card responds to the viewport, so it breaks when placed in a narrow sidebar.

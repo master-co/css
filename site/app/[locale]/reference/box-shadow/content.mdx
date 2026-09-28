@@ -117,9 +117,9 @@ Hover or keyboard-focus the button to move from a small to a large shadow token.
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm font-md
+         b:1px|solid|var(--color-line-divider) r-sm font-md
          bg-surface-base text-body shadow-sm
-         box-border bg-surface-muted:focus-visible
+         box-border bg-surface-inset:focus-visible
          shadow:none@print shadow-lg:hover@screen
          shadow-lg:focus-visible@screen">
   Open library
@@ -134,15 +134,16 @@ Override a shared shadow token separately in light and dark themes. The live pre
 <DemoExample page="box-shadow" section="customize-mode-specific-tokens" />
 
 ```css name=index.css
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(0% 0 none / .08),
     0 6px 12px -2px oklch(0% 0 none / .14);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(100% 0 none / .16),
     0 6px 12px -2px oklch(0% 0 none / .5);
-}
+} } }
+
 ```
 
 ```html

@@ -70,7 +70,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
       const example = { id: 'composition', title: 'Combine a state, breakpoint and color token', classes, css }
       doc.examples.unshift(example)
       doc.aliases = classes
-      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg-red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Custom project settings can change tokens, conditions and modes.\n\n### Complete generated CSS\n\n${fence('css', css)}\n\n${doc.markdown}`
+      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg-red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Project theme scopes and named conditions can override the preset.\n\n### Complete generated CSS\n\n${fence('css', css)}\n\n${doc.markdown}`
     }
     doc.headings = documentHeadings(doc.markdown)
     documents.push(doc)
@@ -80,21 +80,21 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const entries = variables.filter(variable => variable.namespace === namespace)
     const consumers = getVariableNamespacePublicKeys(namespace)
     const text = entries.map(variable => {
-      const values = [variable.value === undefined ? '' : `Default: ${String(variable.value)}`, ...Object.entries(variable.modes ?? {}).map(([mode, value]) => `${mode}: ${String(value.value)}`)].filter(Boolean)
+      const values = variable.values.map(({ path, value }) => `Scope: ${path.join(' → ')}\nValue: ${value}`)
       return `### ${variable.key}\n\nCSS variable: \`--${variable.name}\`.\n\n${values.map(value => fence('text', value)).join('\n\n')}`
     }).join('\n\n')
     const context = tokenEditorial[namespace]
-    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Mode-specific entries are labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}-\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
+    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Each authored selector and condition is labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}-\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
     const headings = documentHeadings(markdown)
     const anchors = new Map(headings.filter(heading => heading.depth === 3).map(heading => [heading.title, heading.id]))
     const identifierAnchors = Object.fromEntries(entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`].map(name => [name, anchors.get(variable.key)!])))
     documents.push({ id: `tokens/${namespace}`, kind: 'tokens', title: namespace, description: `Preset ${namespace} values and their consumers.`, category: 'Tokens & namespaces', url: `/reference/tokens/${namespace}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(entries)), language: 'en', aliases: entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`]), identifierAnchors, terms: [namespace, ...consumers], rows: [], examples: [], related: ['rules/modes', 'directives/theme'], markdown, headings, extractionNotes: [] })
   }
-  for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', preset.breakpointConditions], ['containers', 'Containers', preset.containerConditions] ] as const) {
+  for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', Object.fromEntries(Object.keys(preset.customMedia || {}).map(name => [name.slice(2), undefined]))], ['containers', 'Containers', preset.containerConditions] ] as const) {
     const usage = id === 'containers'
       ? 'Append a condition such as `@container((width>=28rem))` to a class. It measures an eligible ancestor query container; establish that container with `container` or a named container declaration.'
       : 'Append a condition such as `@md` to a class. It measures the viewport width, independently of a component’s available width.'
-    const markdown = `## Conditions\n\nThese thresholds come from the current preset. Breakpoints have named entrances; container thresholds use complete native queries. Project theme tokens can override the values.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name, condition]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${generateManifestCondition(condition).replace(/^@container /, '').replaceAll(' ', '|')})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
+    const markdown = `## Conditions\n\nThese thresholds come from the current preset. Breakpoints have named entrances; container thresholds use complete native queries. Project @custom-media definitions override breakpoint queries; container tokens retain their authored dimensions.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name, condition]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${generateManifestCondition(condition).replace(/^@container /, '').replaceAll(' ', '|')})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
     documents.push({ id: `tokens/${id}`, kind: 'tokens', title, description: `Named ${id} conditions in the current preset.`, category: 'Tokens & namespaces', url: `/reference/tokens/${id}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(conditions)), language: 'en', aliases: Object.entries(conditions ?? {}).map(([key, condition]) => id === 'containers' ? `@container(${generateManifestCondition(condition).replace(/^@container /, '').replaceAll(' ', '|')})` : `@${key}`), terms: [], rows: [], examples: [], related: ['rules/conditions'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
   }
   // Directive sections are maintained once, in the existing directive source during migration.
@@ -104,8 +104,8 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
-    'settings': 'Configure selector scope and generated importance; define mode activation with @mode.',
-    'theme': 'Declare tokens, mode values, managed keyframes and reusable conditions.',
+    'settings': 'Migrate removed global settings to native CSS and per-class importance.',
+    'theme': 'Declare scoped custom properties, custom media and reusable named variants.',
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',

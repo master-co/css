@@ -22,7 +22,6 @@ export interface TraceClassOptions {
   className: string
   patterns?: string[]
   includeCss?: boolean
-  mode?: string
 }
 
 async function createClassInspectionState(context: MasterCSSMCPContext, options: { context?: SemanticContext } = {}) {
@@ -63,7 +62,7 @@ function extractFromContent(
   if (extracted.diagnostics.length) throw Object.assign(new Error(extracted.diagnostics[0].message), { code: 'SOURCE_PARSE_ERROR', diagnostics: extracted.diagnostics })
   const classes = extracted.occurrences.filter(occurrence => occurrence.included).map(occurrence => {
     const position = { token: occurrence.candidate, range: occurrence.range, raw: content.slice(occurrence.range.start, occurrence.range.end), contextRange: occurrence.contextRange }
-    const inspection = compactClassInspection(session, position.token, undefined, includeRules)
+    const inspection = compactClassInspection(session, position.token, includeRules)
     return {
       raw: position.raw,
       token: position.token,
@@ -196,7 +195,7 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
     createClassInspectionState(context, options)
   ])
   try {
-    const inspection = compactClassInspection(state.session, options.className, options.mode, true)
+    const inspection = compactClassInspection(state.session, options.className, true)
     const missingResult = [...scan.missingCSS.present, ...scan.missingCSS.missing]
       .find((result) => result.className === options.className)
     const occurrences = findClassOccurrences(scan, options.className)
@@ -209,7 +208,6 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
       inputs: {
         className: options.className,
         patterns: options.patterns ?? scan.inputs.patterns,
-        mode: options.mode
       },
       className: options.className,
       status,

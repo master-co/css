@@ -13,8 +13,8 @@ interface Root {
   walkRules(selector: string, callback: (root: Root) => void): void
   toString(): string
 }
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
-const source = '@theme{--color-old:#111111;--color-late:#abcdef}.card{color:var(--color-old)}'
+const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const source = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old)}"
 function declarations(root: Root) {
   const values: [string, string][] = []
   root.walkDecls(declaration => values.push([declaration.prop, declaration.value]))

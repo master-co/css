@@ -271,11 +271,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, '@utilities { card { color: #123456; } }')
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@import "./theme.css";'
-      ].join('\n'))
+      writeFileSync(themePath, ' @utility card { color: #123456; } ')
+      writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
@@ -309,31 +306,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       mkdirSync(path.join(root, 'src'), { recursive: true })
       const entryPath = path.join(root, 'app.css')
-      const source = [
-        '@master entry;',
-        '',
-        '.root-native {',
-        '    color: #789;',
-        '}',
-        '',
-        '.root-unused {',
-        '    color: #abc;',
-        '}',
-        '',
-        '.native-used {',
-        '    color: var(--color-primary);',
-        '}',
-        '',
-        '@theme {',
-        '    --color-primary: #123456;',
-        '}',
-        '',
-        '@utilities {',
-        '    btn {',
-        '        display: grid;',
-        '    }',
-        '}'
-      ].join('\n')
+      const source = "@import \"@master/css\";\n\n.root-native {\n    color: #789;\n}\n\n.root-unused {\n    color: #abc;\n}\n\n.native-used {\n    color: var(--color-primary);\n}\n\n@theme { :root, :host {\n    --color-primary: #123456;\n} }\n\n\n@utility btn {\n        display: grid;\n    }"
       writeFileSync(entryPath, source)
 
       const plugin = await new MasterCSSWebpackPlugin({
@@ -387,12 +360,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      const source = [
-        '@master entry;',
-        '@utilities {',
-        '  card { @compose bg-missing-token; }',
-        '}'
-      ].join('\n')
+      const source = "@import \"@master/css\";\n@utility card { @compose bg-missing-token; }"
       writeFileSync(entryPath, source)
       const plugin = await new MasterCSSWebpackPlugin({
         scanner: { verbose: 0 }
@@ -403,12 +371,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 
-      const validSource = [
-        '@master entry;',
-        '@utilities {',
-        '  card { display: block; }',
-        '}'
-      ].join('\n')
+      const validSource = "@import \"@master/css\";\n@utility card { display: block; }"
       writeFileSync(entryPath, validSource)
       await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
       expect((plugin as any).stylesheets.snapshot().dependencies).toContain(entryPath)
@@ -446,8 +409,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const configPath = path.join(root, 'app.css')
     const tokenPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(tokenPath, '@utilities { card { color: #123456; } }')
-      writeFileSync(configPath, '@master entry;\n@import "./theme.css";')
+      writeFileSync(tokenPath, ' @utility card { color: #123456; } ')
+      writeFileSync(configPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)
       ;(plugin as any).stylesheets = makeStylesheetCollection([configPath, tokenPath])

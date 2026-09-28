@@ -19,7 +19,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
     const imported = join(cwd, 'child.css')
     const resource = join(cwd, 'image.svg')
     const initialCSS = ".example{color:red;background-image:url('./image.svg')}"
-    writeFileSync(entry, mode === 'initial-import' ? "@import './new/nested.css';@master entry;" : "@import './child.css';@master entry;")
+    writeFileSync(entry, mode === 'initial-import' ? "@import './new/nested.css';@import \"@master/css\";" : "@import './child.css';@import \"@master/css\";")
     writeFileSync(imported, initialCSS)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
     if (mode !== 'initial-resource') writeFileSync(resource, image('red'))

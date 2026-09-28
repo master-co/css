@@ -1,5 +1,4 @@
-@utilities {
-  btn {
+
+  @utility btn {
     font-size: 1rem;
   }
-}

@@ -16,7 +16,7 @@ test.each(cases)('development resource path mode=$mode name=$name', async ({ mod
   let publishedFiles: string[] = []
   try {
     writeFileSync(join(root, 'index.html'), '<!doctype html><div class="resource"></div>')
-    writeFileSync(join(root, 'style.css'), `@master entry;@preserve native;.resource{background-image:url("./${encodeURIComponent(name)}?variant=1#part")}`)
+    writeFileSync(join(root, 'style.css'), `@import url("@master/css");@preserve native;.resource{background-image:url("./${encodeURIComponent(name)}?variant=1#part")}`)
     const svg = '<svg xmlns="http://www.w3.org/2000/svg"><title>exact-resource</title></svg>'
     writeFileSync(join(root, name), svg)
     server = await createServer({ root, base: '/base/', configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, ...(denied ? { fs: { deny: ['**/private.svg'] } } : {}) } })

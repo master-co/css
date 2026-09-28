@@ -36,7 +36,7 @@ test('one immutable read supplies both extraction and fingerprint; later snapsho
 test('a stable edit keeps four verification snapshots but reads each TSX only once per snapshot', async () => {
   const root = await mkdtemp(join(tmpdir(), 'next-snapshot-read-count-'))
   try {
-    await writeFile(join(root, 'app.css'), '@master entry;')
+    await writeFile(join(root, 'app.css'), "@import url(\"@master/css\");")
     const files = Array.from({ length: 100 }, (_, index) => join(root, `page-${index}.tsx`))
     await Promise.all(files.map((file, index) => writeFile(file, `<div className="p:${index}px"/>`)))
     const state = (await prepareNextStatic({}, { projectDir: root }))!

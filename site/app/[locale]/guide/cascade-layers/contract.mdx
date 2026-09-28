@@ -21,7 +21,7 @@ Generated CSS emits rules into those layer blocks. Native style rules that use `
 
 ## The five layers \{#the-five-layers\}
 ### Theme \{#theme\}
-Use `theme` for generated CSS custom properties. Regular tokens defined in `@theme` are emitted here when a generated rule needs them. `@theme static` emits initial resources without a consuming class; `@theme inline` resolves values into declarations instead of emitting a variable for that token.
+Use `theme` for generated CSS custom properties. Regular tokens defined in `@theme` are emitted here when a generated rule needs them. Referenced theme tokens retain every authored scope and their transitive dependencies. Use native `@layer theme` for declarations that must always ship. Inline/static theme modifiers are removed.
 
 Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
 
@@ -45,20 +45,17 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utility`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
 
 ```css name=index.css
-@utilities {
-  flow {
+@utility flow {
     display: grid;
     gap: var(--spacing-md);
   }
-
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-}
 ```
 
 Utilities is the last layer in the base order. Its normal declarations can override normal component declarations when both rules match the element.
@@ -66,23 +63,7 @@ Utilities is the last layer in the base order. Its normal declarations can overr
 ## A complete flow \{#a-complete-flow\}
 Add this configuration to the project CSS entry that imports `@master/css`. It defines mode-aware variables and a component; the markup below also generates base, defaults and utility rules.
 
-<ConfiguredExample source={`@mode light { .light { @slot; } }
-@mode dark { .dark { @slot; } }
-
-@theme light {
-  --color-primary: #000000;
-}
-
-@theme dark {
-  --color-primary: #ffffff;
-}
-
-@layer components {
-  .btn {
-    display: inline-flex;
-    background-color: var(--color-primary);
-  }
-}`} html={require('./tests/overview/template.html?raw')} />
+<ConfiguredExample source={"\n\n@theme { .light {\n  --color-primary: #000000;\n} }\n\n\n@theme { .dark {\n  --color-primary: #ffffff;\n} }\n\n\n@layer components {\n  .btn {\n    display: inline-flex;\n    background-color: var(--color-primary);\n  }\n}"} html={require('./tests/overview/template.html?raw')} />
 
 Notice the shape of the output:
 
@@ -163,11 +144,9 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 Native `@layer` blocks remain ordinary stylesheet output; they do not define on-demand classes. For on-demand managed definitions, use the explicit directive forms:
 
 ```css name=index.css
-@utilities {
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
   }
-}
 
 @layer components {
   .card {
@@ -184,7 +163,7 @@ Write native declarations in the layer that owns the rule:
   display: block;
   padding: var(--spacing-md);
 
-  @dark {
+  @media (prefers-color-scheme: dark) {
     background-color: var(--color-neutral-90);
   }
 }

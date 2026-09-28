@@ -105,11 +105,12 @@ Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners. Use native property n
 Override radius variables when your product needs sharper controls, softer panels, or a named shape decision. Keep token names descriptive so markup reads as a design choice.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --radius-crisp: 0.25rem;
   --radius-card: 0.75rem;
   --radius-panel: 1.25rem;
-}
+} }
+
 ```
 
 ```html
@@ -145,17 +146,19 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 (x) Numeric token names are hard to distinguish from raw values.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --radius-1: 0.25rem;
   --radius-2: 0.5rem;
-}
+} }
+
 ```
 
 (o) Name tokens by scale or role.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --radius-sm: 0.25rem;
   --radius-card: 0.75rem;
-}
+} }
+
 ```

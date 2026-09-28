@@ -1,3 +1,4 @@
 @import '@master/css';
-@theme light { --color-probe: #123456; }
-@theme dark { --color-probe: #abcdef; }
+@theme { @media (prefers-color-scheme: light) { :root, :host { --color-probe: #123456; } } }
+
+@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-probe: #abcdef; } } }

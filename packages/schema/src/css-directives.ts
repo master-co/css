@@ -1,5 +1,5 @@
 import type {
-  MasterCSSManifestMode,
+  MasterCSSThemeNode,
   MasterCSSManifestUtilityLayerName,
   MasterCSSManifestVariant
 } from './manifest.js'
@@ -93,19 +93,11 @@ export function createCSSDirectiveSourceReference(
   }
 }
 
-export interface CSSDirectiveVariableDefinition {
-  name?: string
-  value: CSSDirectiveVariableValue
-  mode?: string
-  inline?: boolean
-  static?: boolean
-  namespace?: string
-  key?: string
+export interface CSSCustomMediaDefinition {
+  name: string
+  query: string
+  source?: CSSDirectiveSourceReference
 }
-
-export type CSSDirectiveAnimationDefinitions = Record<string, Record<string, CSSDirectiveDeclarations>>
-
-export type CSSDirectiveAnimationOptions = Record<string, { static?: boolean }>
 
 export type CSSDirectiveConditionPathEntry =
   | { type: 'condition'; value: string }
@@ -116,12 +108,6 @@ export interface CSSDirectiveUtilityRuleDefinition {
   conditions?: string[]
   conditionPath?: CSSDirectiveConditionPathEntry[]
   selector?: string
-}
-
-export interface CSSDirectiveUtilityPatternDefinition {
-  prefix: string
-  values: string[]
-  valueMap?: Record<string, string>
 }
 
 export interface CSSDirectiveUtilityDynamicDefinition {
@@ -138,9 +124,8 @@ export interface CSSDirectiveUtilityDefinition {
   /** Complete ordered authoring body; retained until whole-definition replacement. */
   body?: CSSDirectiveStyleDefinition[]
   source?: CSSDirectiveSourceReference
-  type?: 'static' | 'pattern' | 'dynamic' | 'token'
+  type?: 'static' | 'dynamic' | 'token'
   layer?: CSSDirectiveLayerName
-  pattern?: CSSDirectiveUtilityPatternDefinition
   dynamic?: CSSDirectiveUtilityDynamicDefinition
   token?: CSSDirectiveUtilityTokenDefinition
   declarations?: CSSDirectiveDeclarations
@@ -151,13 +136,9 @@ export interface CSSDirectiveUtilityDefinition {
 
 export interface CSSDirectiveManifestInput {
   variants?: CSSDirectiveVariantDefinitions
-  variables?: CSSDirectiveVariableDefinition[]
+  theme?: MasterCSSThemeNode[]
+  customMedia?: CSSCustomMediaDefinition[]
   utilities?: CSSDirectiveUtilityDefinition[]
-  scope?: string
-  important?: boolean
-  animations?: CSSDirectiveAnimationDefinitions
-  animationOptions?: CSSDirectiveAnimationOptions
-  modes?: MasterCSSManifestMode[]
 }
 
 export interface CSSDirectiveExtractionPolicy {

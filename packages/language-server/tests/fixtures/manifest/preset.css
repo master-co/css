@@ -1,5 +1,4 @@
-@utilities {
-  fixture-card {
+
+  @utility fixture-card {
     display: block;
   }
-}

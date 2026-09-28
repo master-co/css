@@ -1,10 +1,9 @@
 use super::{
-    EngineAnimationResourceIr, EngineError, EngineResourcesIr, EngineSession,
-    EngineVariableResourceIr, HashMap, HashSet, NativeDeclarationCandidate,
-    NativeDeclarationCandidateIr, RuleMutationIr, RuleTarget, UtilityDefinition, UtilityEmit,
-    UtilityLayerName, Value, builtin_key_alias, collect_css_variable_names, find_group_close,
-    is_valid_native_property, resolve_value_components, serialize_literal_value,
-    single_native_declaration, split_dynamic_value_state, split_top_level,
+    EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashMap, HashSet,
+    NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
+    UtilityLayerName, builtin_key_alias, find_group_close, is_valid_native_property,
+    resolve_value_components, single_native_declaration, split_dynamic_value_state,
+    split_top_level,
 };
 
 impl EngineSession {
@@ -17,39 +16,35 @@ impl EngineSession {
     }
 
     pub(crate) fn render_theme_rule_text(&self) -> Option<String> {
-        let declarations = |mode: Option<&str>| {
-            self.theme_variable_names
-                .iter()
-                .filter_map(|name| {
-                    let variable = self.compiled.compiled_variables.get(name)?;
-                    let value = match mode {
-                        None => variable.value.as_ref(),
-                        Some(mode) => variable
-                            .modes
-                            .iter()
-                            .find(|value| value.name == mode)
-                            .map(|value| &value.value),
-                    }?;
-                    Some(format!("--{name}:{value}"))
-                })
-                .collect::<Vec<_>>()
-                .join(";")
-        };
-        let mut text = String::new();
-        let base = declarations(None);
-        if !base.is_empty() {
-            text.push_str(&format!(":root,:host{{{base}}}"));
-        }
-        for mode in &self.compiled.modes {
-            let values = declarations(Some(&mode.name));
-            if values.is_empty() {
-                continue;
+        fn render(nodes: &[mastercss_schema::ThemeNode], active: &HashSet<&str>) -> String {
+            let mut text = String::new();
+            for node in nodes {
+                match node {
+                    mastercss_schema::ThemeNode::Declaration { name, value }
+                        if active.contains(name.as_str()) =>
+                    {
+                        text.push_str(&format!("--{name}:{value};"));
+                    }
+                    mastercss_schema::ThemeNode::Rule { prelude, children } => {
+                        let body = render(children, active);
+                        if !body.is_empty() {
+                            text.push_str(&format!("{prelude}{{{body}}}"));
+                        }
+                    }
+                    _ => {}
+                }
             }
-            for branch in &mode.branches {
-                let rule = format!("{}{{{values}}}", branch.selector);
-                text.push_str(&super::wrap_raw_conditions(rule, &branch.conditions));
+            if text.ends_with(';') {
+                text.pop();
             }
+            text
         }
+        let active = self
+            .theme_variable_names
+            .iter()
+            .map(String::as_str)
+            .collect();
+        let text = render(&self.compiled.theme, &active);
         (!text.is_empty()).then_some(text)
     }
 
@@ -63,27 +58,12 @@ impl EngineSession {
                     name: name.clone(),
                     ref_count: self.variable_counts.get(name).copied().unwrap_or_default(),
                     dependencies: variable.dependencies.clone(),
-                    static_resource: variable.static_resource,
-                })
-            })
-            .collect();
-        let animations = self
-            .animation_names
-            .iter()
-            .enumerate()
-            .filter_map(|(index, name)| {
-                Some(EngineAnimationResourceIr {
-                    name: name.clone(),
-                    index: index as u32,
-                    ref_count: self.animation_counts.get(name).copied().unwrap_or_default(),
-                    text: self.keyframe_text(name)?,
                 })
             })
             .collect();
         EngineResourcesIr {
             theme_text: self.theme_rule_text(),
             variables,
-            animations,
         }
     }
 
@@ -93,74 +73,6 @@ impl EngineSession {
                 self.variable_counts.insert(name.clone(), *count);
             }
         }
-        let static_variables = self
-            .compiled
-            .compiled_variable_order
-            .iter()
-            .filter(|name| {
-                self.compiled
-                    .compiled_variables
-                    .get(*name)
-                    .is_some_and(|variable| variable.static_resource && !variable.inline)
-            })
-            .cloned()
-            .collect::<Vec<_>>();
-        for variable_name in static_variables {
-            // A static root owns a permanent reference to its dependency graph,
-            // including when another stylesheet already supplies the root.
-            self.retain_variable_graph(&variable_name, &mut HashSet::new());
-        }
-    }
-
-    pub(crate) fn initialize_animation_resources(&mut self) {
-        for (name, count) in &self.emitted_globals.animations {
-            if *count > 0 {
-                self.animation_counts.insert(name.clone(), *count);
-            }
-        }
-        let static_animations = self
-            .compiled
-            .animations
-            .keys()
-            .filter(|name| {
-                self.compiled
-                    .animation_options
-                    .get(*name)
-                    .is_some_and(|options| options.static_resource)
-            })
-            .cloned()
-            .collect::<Vec<_>>();
-        for name in static_animations {
-            if self.emitted_globals.animation_count(&name) == 0 {
-                let count = self.animation_counts.entry(name.clone()).or_default();
-                *count = count.saturating_add(1);
-                self.animation_names.push(name.clone());
-            }
-            for variable_name in self.keyframe_variable_names(&name) {
-                self.register_variable(&variable_name, &mut HashSet::new());
-            }
-        }
-    }
-
-    pub(crate) fn keyframe_text(&self, name: &str) -> Option<String> {
-        let frames = self.compiled.animations.get(name)?.as_object()?;
-        let mut text = format!("@keyframes {name}{{");
-        for (selector, declarations) in frames {
-            let declarations = declarations.as_object()?;
-            text.push_str(selector);
-            text.push('{');
-            for (index, (property, value)) in declarations.iter().enumerate() {
-                if index > 0 {
-                    text.push(';');
-                }
-                text.push_str(property);
-                text.push(':');
-                text.push_str(&serialize_literal_value(value)?);
-            }
-            text.push('}');
-        }
-        text.push('}');
-        Some(text)
     }
 
     pub(crate) fn parse_native_declaration_candidate(
@@ -289,105 +201,6 @@ impl EngineSession {
             .collect()
     }
 
-    pub(crate) fn keyframe_variable_names(&self, name: &str) -> Vec<String> {
-        let Some(frames) = self
-            .compiled
-            .animations
-            .get(name)
-            .and_then(Value::as_object)
-        else {
-            return Vec::new();
-        };
-        let mut names = Vec::new();
-        for declarations in frames.values().filter_map(Value::as_object) {
-            for value in declarations.values().filter_map(serialize_literal_value) {
-                for variable_name in collect_css_variable_names(&value) {
-                    if self
-                        .compiled
-                        .compiled_variables
-                        .contains_key(&variable_name)
-                        && !names.contains(&variable_name)
-                    {
-                        names.push(variable_name);
-                    }
-                }
-            }
-        }
-        names
-    }
-
-    pub(crate) fn register_rule_animations(
-        &mut self,
-        animation_names: &[String],
-        mutations: &mut Vec<RuleMutationIr>,
-    ) {
-        for name in animation_names {
-            if !self.compiled.animations.contains_key(name) {
-                continue;
-            }
-            let count = self.animation_counts.entry(name.clone()).or_default();
-            *count = count.saturating_add(1);
-            if *count != 1 || self.emitted_globals.animation_count(name) > 0 {
-                continue;
-            }
-            let index = self.animation_names.len();
-            self.animation_names.push(name.clone());
-            if let Some(text) = self.keyframe_text(name) {
-                mutations.push(RuleMutationIr::Insert {
-                    target: RuleTarget::Keyframes,
-                    index: index as u32,
-                    key: name.clone(),
-                    text,
-                    rule: None,
-                });
-            }
-            for variable_name in self.keyframe_variable_names(name) {
-                self.register_variable(&variable_name, &mut HashSet::new());
-            }
-        }
-    }
-
-    pub(crate) fn unregister_rule_animations(
-        &mut self,
-        animation_names: &[String],
-        mutations: &mut Vec<RuleMutationIr>,
-    ) {
-        for name in animation_names {
-            let host_count = self.emitted_globals.animation_count(name);
-            let remove = match self.animation_counts.get_mut(name) {
-                Some(count) if *count > host_count => {
-                    if host_count == 0 && *count == 1 {
-                        true
-                    } else {
-                        *count -= 1;
-                        false
-                    }
-                }
-                Some(_) => false,
-                None => false,
-            };
-            if !remove {
-                continue;
-            }
-            self.animation_counts.remove(name);
-            if let Some(index) = self
-                .animation_names
-                .iter()
-                .position(|animation_name| animation_name == name)
-            {
-                self.animation_names.remove(index);
-                mutations.push(RuleMutationIr::Delete {
-                    target: RuleTarget::Keyframes,
-                    index: index as u32,
-                    key: name.clone(),
-                });
-                for variable_name in self.keyframe_variable_names(name) {
-                    self.unregister_variable(&variable_name, &mut HashSet::new());
-                }
-            }
-        }
-    }
-
     pub(crate) fn register_rule_variables(&mut self, variable_names: &[String]) {
         for variable_name in variable_names {
             self.register_variable(variable_name, &mut HashSet::new());
@@ -407,12 +220,7 @@ impl EngineSession {
             let Some(variable) = self.compiled.compiled_variables.get(&name) else {
                 continue;
             };
-            // Inline nodes do not emit declarations, but their substituted values
-            // can still reference non-inline resources.
             pending.extend(variable.dependencies.iter().rev().cloned());
-            if variable.inline {
-                continue;
-            }
             let count = self.variable_counts.entry(name.clone()).or_default();
             *count = count.saturating_add(1);
             if *count == 1 {
@@ -442,9 +250,6 @@ impl EngineSession {
                 continue;
             };
             pending.extend(variable.dependencies.iter().rev().cloned());
-            if variable.inline {
-                continue;
-            }
             let host_count = self.emitted_globals.variable_count(&name);
             let remove = match self.variable_counts.get_mut(&name) {
                 Some(count) if *count > host_count => {

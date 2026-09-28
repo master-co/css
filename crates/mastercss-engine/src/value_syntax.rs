@@ -1,4 +1,4 @@
-use super::{EngineSettings, normalize_dynamic_value, split_top_level};
+use super::{normalize_dynamic_value, split_top_level};
 
 pub(crate) fn is_native_shorthand_property(property: &str) -> bool {
     matches!(
@@ -106,7 +106,7 @@ pub(crate) fn is_valid_native_property(property: &str) -> bool {
             .all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
 }
 
-pub(crate) fn normalize_unmanaged_value(value: &str, settings: &EngineSettings) -> String {
+pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
     let mut output = String::with_capacity(value.len());
     let mut token = String::new();
     let mut quote = None;
@@ -115,7 +115,7 @@ pub(crate) fn normalize_unmanaged_value(value: &str, settings: &EngineSettings) 
         if token.is_empty() {
             return;
         }
-        output.push_str(&normalize_dynamic_value(token, settings));
+        output.push_str(&normalize_dynamic_value(token));
         token.clear();
     };
     for character in value.chars() {
@@ -162,7 +162,7 @@ pub(crate) fn normalize_unmanaged_value(value: &str, settings: &EngineSettings) 
     output
 }
 
-pub(crate) fn normalize_css_math_functions(source: &str, settings: &EngineSettings) -> String {
+pub(crate) fn normalize_css_math_functions(source: &str) -> String {
     let mut output = String::with_capacity(source.len());
     let mut index = 0;
     while index < source.len() {
@@ -179,9 +179,9 @@ pub(crate) fn normalize_css_math_functions(source: &str, settings: &EngineSettin
                 && source[name_end..].starts_with('(')
                 && let Some(close) = find_matching_parenthesis(source, name_end)
             {
-                let inner = normalize_css_math_functions(&source[name_end + 1..close], settings);
+                let inner = normalize_css_math_functions(&source[name_end + 1..close]);
                 let inner = match name {
-                    "calc" => normalize_math_expression(&inner, settings),
+                    "calc" => normalize_math_expression(&inner),
                     "clamp" => split_top_level(&inner, ',')
                         .into_iter()
                         .map(|argument| {
@@ -189,7 +189,7 @@ pub(crate) fn normalize_css_math_functions(source: &str, settings: &EngineSettin
                             if has_top_level_binary_math_operator(argument)
                                 && !argument.starts_with("calc(")
                             {
-                                format!("calc({})", normalize_math_expression(argument, settings))
+                                format!("calc({})", normalize_math_expression(argument))
                             } else {
                                 argument.to_owned()
                             }
@@ -245,7 +245,7 @@ pub(crate) fn find_matching_parenthesis(source: &str, open: usize) -> Option<usi
     None
 }
 
-pub(crate) fn normalize_math_expression(source: &str, settings: &EngineSettings) -> String {
+pub(crate) fn normalize_math_expression(source: &str) -> String {
     let characters = source.chars().collect::<Vec<_>>();
     let mut output = String::with_capacity(source.len() + 8);
     let mut index = 0;
@@ -320,7 +320,7 @@ pub(crate) fn normalize_math_expression(source: &str, settings: &EngineSettings)
         output.push(character);
         index += 1;
     }
-    normalize_unmanaged_value(&normalize_leading_decimal_sequences(&output), settings)
+    normalize_unmanaged_value(&normalize_leading_decimal_sequences(&output))
 }
 
 pub(crate) fn normalize_leading_decimal_sequences(source: &str) -> String {

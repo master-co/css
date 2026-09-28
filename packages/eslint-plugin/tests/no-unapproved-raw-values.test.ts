@@ -8,14 +8,14 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const customManifest = createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ]
 })
 
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
 const registryFieldManifest = createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   nativeValueNamespaces: [{
     properties: ['--space'],

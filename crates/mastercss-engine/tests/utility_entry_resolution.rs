@@ -3,8 +3,9 @@ use mastercss_schema::MatchStatus;
 use serde_json::{Value, json};
 
 fn engine(utilities: Value, variables: Value) -> EngineSession {
+    let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, variables)| variables.as_array().unwrap().iter().flat_map(move |variable| variable["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
     EngineSession::create(
-        &json!({"version":1,"languageVersion":3,"utilities":utilities,"variables":variables})
+        &json!({"version":2,"languageVersion":4,"utilities":utilities,"variables":variables,"theme":theme})
             .to_string(),
     )
     .unwrap()
@@ -40,7 +41,7 @@ fn static_alias_replacement_removes_nested_rules_and_resources() {
     let new = json!({"id":"new","type":-2,"matchers":[{"type":"static","name":"card"}],"emit":{"type":"static","rules":[]}});
     let mut session = engine(
         json!([old, new]),
-        json!({"color":[{"key":"old","value":"blue"}]}),
+        json!({"color":[{"key":"old","values":[{"path":[":root,:host"],"value":"blue"}]}]}),
     );
     assert_eq!(
         session.inspect("card").unwrap().match_status,
@@ -61,7 +62,7 @@ fn static_alias_replacement_removes_nested_rules_and_resources() {
 }
 
 #[test]
-fn token_ambiguity_is_independent_of_inline_values_and_layers() {
+fn token_ambiguity_is_independent_of_scoped_values_and_layers() {
     for value in ["red", "blue"] {
         for layer in ["utilities", "components"] {
             let session = engine(
@@ -69,7 +70,7 @@ fn token_ambiguity_is_independent_of_inline_values_and_layers() {
                     token("a", "~a", "utilities", "color"),
                     token("b", "~b", layer, "color")
                 ]),
-                json!({"a":[{"key":"brand","value":"red","inline":true}],"b":[{"key":"brand","value":value,"inline":true}]}),
+                json!({"a":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}],"b":[{"key":"brand","values":[{"path":[":root,:host"],"value":value}]}]}),
             );
             let result = session.inspect("paint-brand").unwrap();
             assert_eq!(result.match_status, MatchStatus::Ambiguous);
@@ -87,7 +88,7 @@ fn same_token_family_retains_each_layer_and_namespace_order() {
             token("a", "~color", "components", "color"),
             token("b", "~color", "utilities", "background-color")
         ]),
-        json!({"color":[{"key":"brand","value":"red"}]}),
+        json!({"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}]}),
     );
     let result = session.inspect("paint-brand").unwrap();
     assert_eq!(result.match_status, MatchStatus::Matched);

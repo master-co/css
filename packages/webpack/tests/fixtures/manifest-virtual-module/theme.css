@@ -1,7 +1,8 @@
-@theme {
+@theme {:root, :host {
   --color-accent: #456;
-}
+}}
 
-@theme dark {
+
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-accent: #789;
-}
+} } }

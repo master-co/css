@@ -148,8 +148,6 @@ pub struct CanonicalClassNameOptions {
     pub prefer_property_aliases: bool,
     #[serde(default = "default_true")]
     pub prefer_composition_utilities: bool,
-    #[serde(default = "default_true")]
-    pub prefer_condition_order: bool,
 }
 
 impl Default for CanonicalClassNameOptions {
@@ -158,7 +156,6 @@ impl Default for CanonicalClassNameOptions {
             prefer_static_utilities: true,
             prefer_property_aliases: true,
             prefer_composition_utilities: true,
-            prefer_condition_order: true,
         }
     }
 }
@@ -248,8 +245,6 @@ pub struct LintSession {
 struct CanonicalRecommendationIndex {
     static_candidates_by_signature: HashMap<String, Vec<String>>,
     preferred_aliases_by_property: HashMap<String, Vec<String>>,
-    modes: HashSet<String>,
-    breakpoints: HashSet<String>,
 }
 
 #[derive(Debug)]
@@ -361,8 +356,8 @@ pub(crate) use conflicts::{
 pub(crate) use order::{compare_condition_features, get_property_order};
 pub(crate) use partial_conflicts::{collect_manifest_variables, find_partial_conflicts};
 pub(crate) use recommendation::{
-    build_canonical_recommendation_index, canonical_class_parts, canonical_condition_suffix,
-    has_same_canonical_rule_shape, push_canonical_candidate, rules_declaration_signature,
+    build_canonical_recommendation_index, canonical_class_parts, has_same_canonical_rule_shape,
+    push_canonical_candidate, rules_declaration_signature,
 };
 
 #[cfg(test)]

@@ -52,7 +52,7 @@ fn reads_original_units_and_preserves_resolution_and_quoted_values() {
     request.manifest["settings"] = json!({"baseUnit":8,"rootSize":20});
     let result = migrate_rc(&request).unwrap();
     for (list, expected) in result.class_lists.iter().zip([
-        "m:-0.6rem@sm!",
+        "m:-0.6rem@media((width>=52.125rem))!",
         "w:calc(0.8rem+1px)",
         "background-image:image-set(url(a.png)|1x,url(b.png)|2x)",
         "content:'4x'",
@@ -143,8 +143,8 @@ fn migrates_directives_and_reports_selector_references() {
         );
     }
     assert!(!migrated.contains("base-unit"));
-    assert!(migrated.contains("font-<~font-size>"));
-    assert!(migrated.contains("font-size:<*>"));
+    assert!(migrated.contains("@utility font-* from(--font-size-*)"));
+    assert!(migrated.contains("@utility font-size:*"));
     assert!(migrated.contains("@compose p:md font:mono"));
     assert!(!result.stylesheets[1].notes.is_empty());
     input.stylesheets = vec![migrated];
@@ -165,7 +165,7 @@ fn respects_explicit_target_resources_in_equivalence_checks() {
         .unwrap()
         .iter_mut()
         .find(|variable| variable["key"] == "md")
-        .unwrap()["value"] = json!("99rem");
+        .unwrap()["values"][0]["value"] = json!("99rem");
     // The CSS variable identity remains the same. Its value is a deliberate
     // project change, not something the migrator may overwrite from RC.
     let result = migrate_rc(&input).unwrap();
@@ -220,7 +220,7 @@ fn custom_static_definitions_require_a_proven_target() {
         .push(custom);
     assert_eq!(
         migrate_rc(&input).unwrap().class_lists[0][0].status,
-        "unchanged"
+        "replace"
     );
 }
 
@@ -289,7 +289,7 @@ fn named_rc_profile_preserves_old_numeric_queries_and_native_dimensions() {
         result.class_lists[2][0]
     );
     assert_eq!(result.from, mastercss_compiler::RcMigrationProfile::RcNamed);
-    assert!(result.configuration_css.contains("@mode dark"));
+    assert!(result.configuration_css.contains("@custom-variant dark"));
     let encoded = serde_json::to_value(&result).unwrap();
     assert_eq!(encoded["configurationCSS"], result.configuration_css);
     assert!(encoded.get("configurationCss").is_none());
@@ -311,12 +311,12 @@ fn named_rc_settings_become_explicit_modes_base_values_and_scheme() {
     assert!(
         result
             .configuration_css
-            .contains("@mode dark{.dark{@slot;}}")
+            .contains("@custom-variant dark{&:where(.dark,.dark *){@slot;}}")
     );
     assert!(
         result
             .configuration_css
-            .contains("@theme{--color-surface:black;}")
+            .contains(":root,:host{--color-surface:black;}")
     );
     assert!(result.configuration_css.contains("color-scheme:dark"));
     assert!(
@@ -327,6 +327,53 @@ fn named_rc_settings_become_explicit_modes_base_values_and_scheme() {
         result.stylesheets[0]
             .edits
             .iter()
-            .any(|edit| edit.before == "root-size:20;" && edit.after.is_empty())
+            .any(|edit| edit.before.starts_with("@settings") && edit.after.is_empty())
+    );
+}
+
+#[test]
+fn legacy_entry_is_classified_and_replaced_only_by_the_explicit_migrator() {
+    let mut input = request(&[]);
+    input.stylesheets = vec![
+        "/*😀*/@master entry;".into(),
+        "@import \"@master/css\";".into(),
+        ".card{@master entry;}".into(),
+    ];
+    let result = migrate_rc(&input).unwrap();
+    assert!(result.stylesheets[0].is_entry);
+    assert!(result.stylesheets[1].is_entry);
+    assert!(!result.stylesheets[2].is_entry);
+    let edit = &result.stylesheets[0].edits[0];
+    assert_eq!(edit.range.start, 6);
+    assert_eq!(edit.after, "@import \"@master/css\";");
+    assert!(result.stylesheets[1].edits.is_empty());
+}
+
+#[test]
+fn misplaced_entry_and_removed_condition_blocks_require_manual_migration() {
+    let mut input = request(&[]);
+    input.stylesheets = vec![
+        ".x{color:red}@master entry;".into(),
+        ".x{@dark{color:white}@variant media((width>1px)){display:block}}".into(),
+        "@charset \"UTF-8\";@layer theme,utilities;@master entry;".into(),
+    ];
+    let result = migrate_rc(&input).unwrap();
+    assert!(result.stylesheets[0].is_entry);
+    assert!(result.stylesheets[0].edits.is_empty());
+    assert!(
+        result.stylesheets[0]
+            .notes
+            .iter()
+            .any(|note| note.contains("preamble"))
+    );
+    assert!(
+        result.stylesheets[1]
+            .notes
+            .iter()
+            .any(|note| note.contains("removed mode/query"))
+    );
+    assert_eq!(
+        result.stylesheets[2].edits[0].after,
+        "@import \"@master/css\";"
     );
 }

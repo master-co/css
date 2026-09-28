@@ -12,7 +12,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 
   try {
     writeFileSync(join(root, 'server.js'), 'export { default as css } from "./style.css?inline"')
     writeFileSync(join(root, 'index.html'), '<!doctype html><div class="conditional"></div>')
-    writeFileSync(join(root, 'style.css'), '@import "./child.css" layer(guard) supports(display:grid) screen and (min-width:700px);@master entry;@preserve native;')
+    writeFileSync(join(root, 'style.css'), "@import \"./child.css\" layer(guard) supports(display:grid) screen and (min-width:700px);@import url(\"@master/css\");@preserve native;")
     writeFileSync(join(root, 'child.css'), '@import "https://example.invalid/external.css";.conditional{color:red;background-image:url("./pixel.svg?q=1#part")}')
     writeFileSync(join(root, 'pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><title>dev-graph</title></svg>')
     server = await createServer({ root, base: '/base/', configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0 } })

@@ -20,7 +20,7 @@ for (const managed of [false, true]) {
       mkdirSync(join(root, 'node_modules'))
       symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
       for (const [file, color] of [['style', 'red'], ['later', 'green']]) {
-        writeFileSync(join(root, `${file}.scss`), (managed ? '@master entry;@preserve native;' : '') + `.example{color:${color}}`)
+        writeFileSync(join(root, `${file}.scss`), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + `.example{color:${color}}`)
         writeFileSync(join(root, `${file}.js`), `export {default as css} from './${file}.scss?inline'`)
       }
       server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: managed ? masterCSS({ mode: 'static', runtime: false }) : [],
@@ -44,7 +44,7 @@ for (const managed of [false, true]) {
       }
       if (closing !== 'ssr') expect((await server.ssrLoadModule('/later.js')).css).toContain('green')
       if (closing !== 'edge') expect((await edge.runner.import('/later.js')).css).toContain('green')
-      writeFileSync(join(root, 'later.scss'), (managed ? '@master entry;@preserve native;' : '') + '.example{color:purple}')
+      writeFileSync(join(root, 'later.scss'), (managed ? "@import url(\"@master/css\");@preserve native;" : '') + '.example{color:purple}')
       await vi.waitFor(async () => {
         if (closing !== 'client') {
           const css = await fetch(new URL(`later.scss?t=${Date.now()}`, origin), { headers: { Accept: 'text/css' } })

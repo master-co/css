@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStylesheet("\n      @utilities {\n        btn {\n          @variant media(all){display:flex;}\n          color: red;\n        }\n      }\n    ", {
+    const result = await compileBrowserStylesheet("\n      @utility btn {\n          @variant all {display:flex;}\n          color: red;\n        }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['btn']
     })
@@ -25,7 +25,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
       '../../../binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm',
       import.meta.url
     )))
-    const result = await compileBrowserStylesheet('@utilities { card { display: block; } }', {
+    const result = await compileBrowserStylesheet(' @utility card { display: block; } ', {
       baseManifest: defaultManifest,
       classNames: ['card'],
       binding: { input }
@@ -35,15 +35,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('preserves native CSS while rendering class names', async () => {
-    const result = await compileBrowserStylesheet(`
-      @theme {
-        --color-card: #ffffff;
-      }
-
-      .native {
-        color: var(--color-card);
-      }
-    `, {
+    const result = await compileBrowserStylesheet("\n      @theme {:root, :host {\n        --color-card: #ffffff;\n      }}\n\n\n      .native {\n        color: var(--color-card);\n      }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['block']
     })
@@ -54,15 +46,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('emits variables referenced by native CSS without class names', async () => {
-    const result = await compileBrowserStylesheet(`
-      @theme {
-        --color-card: #ffffff;
-      }
-
-      .native {
-        color: var(--color-card);
-      }
-    `, {
+    const result = await compileBrowserStylesheet("\n      @theme {:root, :host {\n        --color-card: #ffffff;\n      }}\n\n\n      .native {\n        color: var(--color-card);\n      }\n    ", {
       baseManifest: defaultManifest
     })
 
@@ -73,16 +57,13 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     })
   })
 
-  it('emits generated keyframes referenced by native CSS', async () => {
+  it('does not synthesize keyframes from animation names', async () => {
     const result = await compileBrowserStylesheet('.native { animation: fade 1s; }', {
       baseManifest: defaultManifest
     })
 
     expect(result.css).toMatch(/\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)
-    expect(result.css).toContain('@keyframes fade')
-    expect(result.emittedGlobals.animations).toEqual({
-      fade: 1
-    })
+    expect(result.css).not.toContain('@keyframes fade')
   })
 
   it('does not duplicate generated keyframes defined by native CSS', async () => {
@@ -102,7 +83,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     await expect(compileBrowserStylesheet('@theme custom { --color-warning-test: #ff0033; }', {
       baseManifest: defaultManifest
     })).rejects.toMatchObject({
-      diagnostics: expect.arrayContaining([expect.objectContaining({ severity: 'error', message: expect.stringContaining('undefined mode custom') })])
+      diagnostics: expect.arrayContaining([expect.objectContaining({ severity: 'error', message: expect.stringContaining('does not accept modes') })])
     })
   })
 })

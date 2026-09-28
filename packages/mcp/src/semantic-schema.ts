@@ -14,17 +14,15 @@ export const browserSupport = z.enum(['supported', 'unsupported', 'unknown', 'no
 const numeric = z.object({ value: z.number(), unit: z.string().optional() })
 export const variable = z.object({
   key: z.string(), name: z.string(), namespace: z.string().optional(), type: z.string(),
-  value: z.union([z.string(), z.number(), z.literal(false), z.array(z.union([z.string(), z.number()]))]).optional(),
-  numeric: numeric.optional(), dependencies: strings,
-  modes: z.record(z.string(), z.object({ type: z.enum(['string', 'number']), value: z.union([z.string(), z.number()]), numeric: numeric.optional() })).optional(),
-  inline: z.boolean().optional(), static: z.boolean().optional(), mode: z.string().optional()
+  values: z.array(z.object({ path: strings, value: z.string() })),
+  numeric: numeric.optional(), dependencies: strings
 })
 const bound = z.object({ value: z.number(), inclusive: z.boolean() }).nullable()
 export const rule = z.object({
   className: z.string(), key: z.string(), layer: z.enum(['base', 'defaults', 'components', 'utilities']),
   type: z.number(), sortTier: z.number(), text: z.string().optional(), selectorText: z.string().optional(),
   priority: z.object({ features: z.array(z.object({ domain: z.string(), feature: z.string(), unit: z.string(), lower: bound, upper: bound })), selector: z.number(), conditions: strings.optional(), sortKey: z.string().optional(), valuePriority: z.number().optional() }),
-  nodes: z.array(z.object({ text: z.string() })).optional(), variableNames: strings.optional(), animationNames: strings.optional()
+  nodes: z.array(z.object({ text: z.string() })).optional(), variableNames: strings.optional()
 })
 export const inspection = z.object({
   className: z.string(), matchStatus, cssSyntaxStatus: cssStatus, cssValueStatus: cssStatus, browserSupport,
@@ -40,7 +38,6 @@ const declarationValue = z.union([z.string(), z.number(), z.null()])
 const declarations = z.record(z.string(), z.union([declarationValue, z.array(declarationValue)]))
 const matcher = z.discriminatedUnion('type', [
   z.object({ type: z.literal('static'), name: z.string() }),
-  z.object({ type: z.literal('pattern'), prefix: z.string(), values: strings, valueMap: z.record(z.string(), z.string()).optional() }),
   z.object({ type: z.literal('key'), keys: strings }),
   z.object({ type: z.literal('token'), prefix: z.string() })
 ])
@@ -63,10 +60,17 @@ const conditionNode: z.ZodType = z.lazy(() => z.union([
   z.object({ type: z.enum(['string', 'logical', 'comparison']), value: z.string(), name: z.string().optional(), raw: z.string().optional() }),
   z.object({ type: z.literal('group').optional(), children: z.array(conditionNode), raw: z.string().optional() })
 ]))
+const mediaQuery: z.ZodType = z.lazy(() => z.union([
+  z.object({ type: z.enum(['true', 'false']) }),
+  z.object({ type: z.literal('feature'), value: z.string() }),
+  z.object({ type: z.literal('media-type'), name: z.string() }),
+  z.object({ type: z.literal('not'), query: mediaQuery }),
+  z.object({ type: z.enum(['and', 'or']), queries: z.array(mediaQuery) })
+]))
 export const manifestResults = z.object({
   tokens: z.array(variable), utilities: z.array(utility),
   variants: z.array(z.object({ token: z.string(), branches: z.number(), layers: strings })),
-  modes: z.array(z.object({ name: z.string(), branches: z.array(z.object({ selector: z.string(), conditions: strings.optional() })) })),
+  customMedia: z.array(z.object({ name: z.string(), expression: mediaQuery })),
   conditions: z.array(z.object({ name: z.string(), id: z.string(), nodes: z.array(conditionNode), nodeCount: z.number() })),
   aliases: z.array(z.discriminatedUnion('type', [
     z.object({ type: z.literal('variable-alias'), utility: z.string(), key: z.string(), name: z.string() }),

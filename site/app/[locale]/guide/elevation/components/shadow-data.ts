@@ -1,4 +1,4 @@
-import { getThemeModeVariables } from '~/site/utils/theme-variables'
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 const shadowRoles: Record<string, { utility: string, role: string, description: string }> = {
   xs: {
@@ -34,7 +34,7 @@ const shadowRoles: Record<string, { utility: string, role: string, description: 
 }
 
 export function getShadowRows() {
-  return getThemeModeVariables('shadow', 'light').flatMap(({ key }) => {
+  return getThemeVariables('shadow').flatMap(({ key }) => {
     const role = shadowRoles[key]
     if (!role) return []
 

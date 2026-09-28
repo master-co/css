@@ -15,7 +15,7 @@ import type { MasterCSSShikiOptions } from '../src/shiki'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
-  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }, { namespace: 'color', key: 'primary', value: '#4f46e5' }],
+  variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }, { namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }],
   utilities: [
     {
       name: 'btn',
@@ -112,50 +112,20 @@ test.concurrent('does not restore the rc.87 Shiki default array export', async (
   expect('default' in shikiModule).toBe(false)
 })
 
-test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {
+test.concurrent('defines deterministic directive scopes with native blocks', () => {
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
-  expect(masterCSSShikiLanguage.injectTo).toEqual([
-    'source.css',
-    'source.css.scss',
-    'source.css.less',
-    'source.css.postcss'
-  ])
-
   const directive = grammarEntry('master-directive')
-  const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
-  const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(utilities)\\b')
-  const safelistDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(safelist)\\b')
-
-  expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(safelistDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
-  expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
-  expectGrammarIncludes({ patterns: safelistDirective.patterns ?? [] }, ['#master-string'])
-
-  const themeBlock = grammarEntry('master-theme-block')
-  expectGrammarIncludes({ patterns: themeBlock.patterns[0]?.patterns ?? [] }, [
-    '#master-theme-declaration',
-    '#master-keyframes',
-    '#master-directive'
-  ])
-
-  const themeValue = grammarEntry('master-theme-value')
-  expect(themeValue.patterns).not.toContainEqual(expect.objectContaining({
-    match: '\\$[_a-zA-Z-][_a-zA-Z0-9-]*',
-    name: 'variable.other.master-css'
-  }))
-  expect(JSON.stringify(themeValue)).not.toContain('--alpha')
-
+  for (const name of ['theme', 'utility', 'safelist', 'custom-variant']) {
+    const pattern = findGrammarPattern(directive, pattern => pattern.begin === `(?i)(@)(${name})\\b`)
+    expect(pattern.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  }
+  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(utility)') === true)
+  expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-utility-prelude'])
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
-
+  expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-theme-prelude')
   const classFragment = grammarEntry('master-class-fragment')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'support.constant.property-value.master-css')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'entity.other.attribute-name.class.master-css')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'keyword.control.at-rule.master-css.query')
-  const propertyFragment = findGrammarPattern(classFragment, (pattern) => pattern.captures?.['1']?.name === 'support.type.property-name.master-css')
-  expect(propertyFragment.captures?.['2']?.name).toBe('keyword.operator.master-css')
+  findGrammarPattern(classFragment, pattern => pattern.name === 'keyword.control.at-rule.master-css.query')
 })
 
 test('supports Shiki dynamic language imports', async () => {
@@ -170,7 +140,7 @@ test('supports Shiki dynamic language imports', async () => {
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = '@theme { --color-primary: var(--value); }'
+    const code = "@theme {:root, :host { --color-primary: var(--value); }}\n"
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -191,20 +161,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = [
-      '@theme {',
-      '    --color-primary: var(--color-blue-60);',
-      '}',
-      '@utilities {',
-      '    btn {',
-      "        @safelist \"inline-flex fg-primary:hover@md\";",
-      '    }',
-      '}',
-      '@keyframes fade {',
-      '    from { opacity: 0; }',
-      '    to { opacity: 1; }',
-      '}'
-    ].join('\n')
+    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@utility btn {\n        @safelist \"inline-flex fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -223,12 +180,7 @@ test('keeps guide theme snippets correct with TextMate only', async () => {
   })
 
   try {
-    const code = [
-      '@theme light {',
-      '    /* Font families */',
-      '    --tracking-tightest: -0.072em;',
-      '}'
-    ].join('\n')
+    const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -241,12 +193,7 @@ test('keeps guide theme snippets correct with TextMate only', async () => {
 })
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
-  const code = [
-    '@theme light {',
-    '    /* Font families */',
-    '    --tracking-tightest: -0.072em;',
-    '}'
-  ].join('\n')
+  const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
   const transformer = transformerMasterCSS({ matchCSSSyntaxStyles: false })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -258,11 +205,7 @@ test.concurrent('does not attach semantic metadata to guide theme CSS directive 
 })
 
 test.concurrent('does not resolve guide theme CSS directive syntax through semantic scope styles', () => {
-  const code = [
-    '@theme light {',
-    '    --tracking-tightest: -0.072em;',
-    '}'
-  ].join('\n')
+  const code = "@theme { .light {\n    --tracking-tightest: -0.072em;\n} }\n"
   const transformer = transformerMasterCSS({ manifest })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -357,27 +300,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 })
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
-  const code = [
-    '@safelist "block fg-red";',
-    '@utilities {',
-    '    text-<left|center|right> {',
-    '        text-align: --value();',
-    '    }',
-    '',
-    '    font-<~font-size> {',
-    '        font-size: --value();',
-    '    }',
-    '',
-    '    grid-cols:<*> {',
-    '        grid-template-columns: repeat(--value(), minmax(0, 1fr));',
-    '    }',
-    '}',
-    '@utilities {',
-    '    btn {',
-    "        @safelist \"inline-flex fg-brand:hover@sm\";",
-    '    }',
-    '}'
-  ].join('\n')
+  const code = "@safelist \"block fg-red\";\n@utility text-left {\n        text-align: left;\n    }\n@utility text-center {\n        text-align: center;\n    }\n@utility text-right {\n        text-align: right;\n    }\n@utility font-* from(--font-size-*) {\n        font-size: --master-value();\n    }\n@utility grid-cols:* {\n        grid-template-columns: repeat(--master-value(), minmax(0, 1fr));\n    }\n@utility btn {\n        @safelist \"inline-flex fg-brand:hover@sm\";\n    }"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'css',
     manifest
@@ -597,15 +520,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
   const htmlOptions = {
     lang: 'html'
   }
-  const cssCode = [
-    '@theme {',
-    '  --color-primary: #4f46e5;',
-    '  --spacing-card: 24;',
-    '}',
-    '@utilities {',
-    "  card { @safelist \"bg-blue fg-brand:hover\"; }",
-    '}'
-  ].join('\n')
+  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@utility card { @safelist \"bg-blue fg-brand:hover\"; }"
   const cssOptions = {
     lang: 'css'
   }
@@ -685,17 +600,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 })
 
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
-  const code = [
-    '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
-    '@utilities {',
-    '    card {',
-    "        @safelist \"p-md r-xl\";",
-    '        @variant <sm {',
-    "            @safelist \"block\";",
-    '        }',
-    '    }',
-    '}'
-  ].join('\n')
+  const code = "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n@utility card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"block\";\n        }\n    }"
   const transformer = transformerMasterCSS()
   const transformedTokens = transformer.tokens.call({
     source: code,

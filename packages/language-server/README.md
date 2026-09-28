@@ -108,4 +108,4 @@ import { defaultLanguageServerSettings } from '@master/css-language-server'
 | `formatDirectives` | `boolean` | `true` | Enables LSP document and range formatting for Master CSS directives. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Inherited language-service semantic token mode. |
 
-With `workspaces: 'auto'`, the server creates workspaces from CSS files importing `@master/css`, CSS files containing the lightweight `@master entry;` marker, and `package.json` files that declare Master CSS package dependencies.
+With `workspaces: 'auto'`, the server creates workspaces from CSS files importing `@master/css`, and `package.json` files that declare Master CSS package dependencies.

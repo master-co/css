@@ -54,91 +54,50 @@ test('loads the isolated compiler Wasm surface', async () => {
     import.meta.url
   )))
   const compiler = await initCompilerWasm({ input })
-  expect(compiler.inspectCSS('@master entry;')).toEqual({
-    hasMasterEntryDirective: true,
-    hasMasterCSSImport: false,
-    hasMasterEntry: true,
-    directives: [{
-      name: 'master',
-      range: { start: 0, end: 14 },
-      preludeRange: { start: 7, end: 13 },
-      hasBlock: false,
-      quotedStrings: 0
-    }]
+  const entry = '@import "@master/css";'
+  expect(compiler.inspectCSS(entry)).toMatchObject({
+    hasMasterCSSImport: true,
+    hasMasterEntry: true
   })
-  expect(compiler.compileNativeCSS('@master entry;\n.card { color: red; }')).toMatchObject({
+  expect(compiler.compileNativeCSS('.card { color: red; }')).toMatchObject({
     css: '.card {\n  color: red;\n}',
     nativeCSS: '.card {\n  color: red;\n}'
   })
-  expect(compiler.compileCSSDirectives('@theme dark static { --color-brand: #fff; }')).toMatchObject({
-    manifestInput: {
-      variables: [{ name: 'color-brand', value: '#fff', mode: 'dark', static: true }]
-    },
-    nativeCSS: ''
+  const theme = [{ type: 'rule', prelude: '.dark', children: [
+    { type: 'declaration', name: 'color-brand', value: '#fff' }
+  ] }]
+  expect(compiler.compileCSSDirectives("@theme { .dark { --color-brand: #fff; } }\n")).toMatchObject({
+    manifestInput: { theme }, nativeCSS: ''
   })
   expect(toPlainValue(compiler.compileManifestInput({
-    variables: [{ name: 'color-brand', value: '#fff' }],
+    theme,
     utilities: [{ name: 'card', declarations: { color: 'red' } }]
-  }))).toEqual({
-    manifest: {
-      version: 1, languageVersion: 3,
-      variables: {
-        color: [{
-          name: 'color-brand',
-          key: 'brand',
-          type: 'string',
-          value: '#fff'
-        }]
-      },
-      utilities: [{
-        id: '.card',
-        name: 'card',
-        type: -2,
-        order: 0,
-        layer: 'utilities',
-        matchers: [{ type: 'static', name: 'card' }],
-        emit: {
-          type: 'static',
-          rules: [{ declarations: { color: 'red' } }]
-        }
-      }]
-    }
-  })
-  expect(toPlainValue(compiler.compileManifestInput({
-    utilities: [{
-      name: 'text-<size>',
-      type: 'pattern',
-      pattern: { prefix: 'text-', values: ['sm'] },
-      declarations: {
-        'font-size': '--value()',
-        'line-height': 'calc(--value() * 1.5)'
-      }
-    }]
   }))).toMatchObject({
     manifest: {
-      utilities: [{
-        emit: {
-          rules: [{
-            declarations: {
-              'font-size': null,
-              'line-height': ['calc(', null, ' * 1.5)']
-            }
-          }]
-        }
-      }]
+      version: 2, languageVersion: 4, theme,
+      variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: ['.dark'], value: '#fff' }] }] },
+      utilities: [{ name: 'card', emit: { rules: [{ declarations: { color: 'red' } }] } }]
     }
   })
+  expect(toPlainValue(compiler.compileManifestInput({
+    utilities: [{ name: 'text:*', type: 'dynamic', dynamic: { key: 'text' }, declarations: {
+      'font-size': '--master-value()',
+      'line-height': 'calc(--master-value() * 1.5)'
+    } }]
+  }))).toMatchObject({ manifest: { utilities: [{ emit: { rules: [{ declarations: {
+    'font-size': null, 'line-height': ['calc(', null, ' * 1.5)']
+  } }] } }] } })
   // Match rather than equal: the graph also carries sourceMappings, whose
   // contents are the compiler crate's contract, not this surface check's.
   expect(compiler.resolveCSSImportGraph({
     entry: '/entry.css',
     files: {
       '/entry.css': '@import "./theme.css";.entry{display:block}',
-      '/theme.css': '@theme{--color-brand:red}'
+      '/theme.css': "@theme {:root, :host {--color-brand:red}}\n"
     },
     edges: [{ from: '/entry.css', specifier: './theme.css', resolved: '/theme.css' }]
   })).toMatchObject({
-    source: '@theme{--color-brand:red}.entry{display:block}',
+    source: "@theme {:root, :host {--color-brand:red}}\n.entry{display:block}",
     dependencies: ['/entry.css', '/theme.css']
   })
   expect(compiler.filterCSSExtractionCandidates(

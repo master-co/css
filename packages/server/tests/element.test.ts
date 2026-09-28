@@ -10,7 +10,7 @@ it('render elements', () => {
     '<div class="text-center"></div>',
     '<div class="bg-white"></div>'
   ].join(''), { manifest: defaultManifest }).html).toEqual([
-    '<style id="master-css">@layer utilities{.text-center{text-align:center}.bg-white{background-color:oklch(100% 0 none)}}</style>',
+    '<style id="master-css">@layer theme{:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{.text-center{text-align:center}.bg-white{background-color:var(--color-white)}}</style>',
     '<div class="text-center"></div>',
     '<div class="bg-white"></div>'
   ].join(''))

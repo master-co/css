@@ -162,18 +162,19 @@ Treat reduced motion as a parallel state, not an afterthought. Keep essential fe
 Override motion tokens in the project CSS entry when your product needs a different rhythm. Keep duration and easing names distinct because both namespaces are shared by animation and transition utilities.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --duration-enter: 180ms;
   --duration-exit: 120ms;
   --easing-standard: cubic-bezier(.4, 0, .2, 1);
   --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
   --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
 
-  @keyframes dialog-in {
+} }
+@keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }
   }
-}
+
 ```
 
 ```html
@@ -201,17 +202,19 @@ Use named tokens for repeated motion decisions. Keep raw durations and raw curve
 (x) Duration and easing names overlap.
 
 ```css
-@theme {
+@theme { :root, :host {
   --duration-smooth: 200ms;
   --easing-fast: cubic-bezier(.4, 0, .2, 1);
-}
+} }
+
 ```
 
 (o) Names keep their namespace meaning clear.
 
 ```css
-@theme {
+@theme { :root, :host {
   --duration-fast: 150ms;
   --easing-smooth: cubic-bezier(.4, 0, .2, 1);
-}
+} }
+
 ```

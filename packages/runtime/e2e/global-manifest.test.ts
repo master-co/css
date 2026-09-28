@@ -58,7 +58,7 @@ test('uses split bundled preset manifest', async ({ page }) => {
     return globalThis.masterCSSRuntime!.snapshot()
   })
   expect(snapshot.cssText).toContain('--font-weight-bold:700')
-  expect(snapshot.cssText).toContain('.fg-white{color:oklch(100% 0 none)}')
+  expect(snapshot.cssText).toContain('.fg-white{color:var(--color-white)}')
   expect(snapshot.classRules['font-bold']?.rules).not.toHaveLength(0)
   expect(snapshot.classRules['fg-white']?.rules).not.toHaveLength(0)
 })
@@ -106,7 +106,7 @@ test('ignores global manifest override', async ({ page }) => {
   const manifest = {
     version: 1,
     variables: [
-      { name: 'primary', key: 'primary', type: 'string', value: '#000000' }
+      { name: 'primary', key: 'primary', type: 'string', values: [{ path: [':root,:host'], value: '#000000' }] }
     ]
   } as const
   await page.evaluate(({ manifest }) => {

@@ -320,7 +320,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
     this.hydrationFailureReason = undefined
     const manifest = this.hydrationManifest
-    if (manifest?.version !== 1 || !Array.isArray(manifest.rules)) {
+    if (manifest?.version !== 2 || !Array.isArray(manifest.rules)) {
       return this.failHydration('Missing or invalid hydration manifest.')
     }
     if (!manifest.rules.length) {
@@ -332,7 +332,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
-    const resourceOrder = [...snapshot.resources.variables, ...snapshot.resources.animations].map(resource => resource.name)
+    const resourceOrder = snapshot.resources.variables.map(resource => resource.name)
     if (JSON.stringify(resourceOrder) !== JSON.stringify(manifest.resourceOrder)) {
       return this.failHydration('Generated resources do not match the hydration manifest.', classNames)
     }
@@ -704,11 +704,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
           cssText: layer.text,
           ruleCount: layer.rules.length
         })
-      }),
-      Object.freeze({
-        name: 'keyframes' as const,
-        cssText: this.animationsNonLayer.rules.map(({ text }) => text).join(''),
-        ruleCount: this.animationsNonLayer.rules.length
       })
     ]
     return Object.freeze({

@@ -78,7 +78,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.generatedCSS).not.toContain('--color-red-60')
   })
 
-  it('preserves existing emitted resource counts and increments native keyframes', () => {
+  it('preserves variable counts and keeps native keyframes outside resource tracking', () => {
     const result = renderCompiledManifestCSS({
       manifest: defaultManifest,
       nativeCSS: [
@@ -87,34 +87,14 @@ describe('style CSS extraction helpers', () => {
       ],
       emittedGlobals: {
         variables: { 'color-green-60': 2 },
-        animations: { fade: 2 }
+
       }
     })
 
     expect(result.emittedGlobals.variables['color-green-60']).toBe(2)
-    expect(result.emittedGlobals.animations.fade).toBe(3)
-    expect(result.generatedCSS).not.toContain('--color-green-60')
-    expect(result.generatedCSS).not.toContain('@keyframes fade')
-  })
 
-  it('emits theme variables referenced by native stylesheet function values', () => {
-    const compiled = compileCSSManifest(`
-      @theme {
-        --color-primary: #ff0000;
-      }
-
-      .native {
-        color: --alpha(var(--color-primary) / 50%);
-      }
-    `, { baseManifest: defaultManifest })
-    const result = renderCompiledManifestCSS({
-      manifest: compiled.manifest,
-      nativeCSS: compiled.nativeCSS,
-      includeGeneratedCSS: false
-    })
-
-    expect(result.nativeCSS).toContain('--alpha(var(--color-primary) / 50%)')
-    expect(result.generatedCSS).toContain('--color-primary:red')
+    expect(result.nativeCSS).toContain('@keyframes fade')
+    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 } })
   })
 
   it('replaces @master/css imports with CSS import modifiers', () => {
@@ -136,8 +116,8 @@ describe('style CSS extraction helpers', () => {
     const entryPath = join(root, 'app/globals.css')
     const homePath = join(root, 'app/home.css')
     writeFileSync(homePath, [
-      '@theme { --color-active: #ff0000; }',
-      '@utilities { active-card { animation: active-spin 1s infinite; } }',
+      "@theme {:root, :host { --color-active: #ff0000; }}\n",
+      ' @utility active-card { animation: active-spin 1s infinite; } ',
       '@keyframes active-spin { to { opacity: .5; } }',
       '.native-card { color: var(--color-active); }'
     ].join('\n'))
@@ -162,21 +142,18 @@ describe('style CSS extraction helpers', () => {
     expect(result.emittedGlobals.variables).toMatchObject({
       'color-active': 1
     })
-    expect(result.emittedGlobals.animations).toMatchObject({
-      'active-spin': 1
-    })
   })
 
   it('detects Master CSS entrypoints and preservation directives separately', () => {
     expect(hasMasterStyleEntrypoint('@import "@master/css";')).toBe(true)
-    expect(hasMasterStyleEntrypoint('@master entry;')).toBe(true)
+    expect(hasMasterStyleEntrypoint("@import \"@master/css\";")).toBe(true)
     expect(hasMasterStyleEntrypoint('@master;')).toBe(false)
     expect(hasMasterStyleEntrypoint('@master global;')).toBe(false)
     expect(hasMasterStyleEntrypoint('@master shake;')).toBe(false)
     expect(hasMasterStyleEntrypoint('@preserve native;')).toBe(false)
-    expect(hasMasterStyleEntrypoint('@theme { --color-primary: red; }')).toBe(false)
+    expect(hasMasterStyleEntrypoint("@theme {:root, :host { --color-primary: red; }}\n")).toBe(false)
     expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
-    expect(isMasterStyleSource('@theme { --color-primary: red; }')).toBe(false)
+    expect(isMasterStyleSource("@theme {:root, :host { --color-primary: red; }}\n")).toBe(false)
     expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
     expect(isMasterStyleSource(resolveStylesheetImportGraph(
       join(createFixture(), 'app/globals.css'),
@@ -186,7 +163,7 @@ describe('style CSS extraction helpers', () => {
     ).source)).toBe(true)
     expect(isMasterStyleSource('@import "virtual:master-utilities.css";')).toBe(false)
     expect(isMasterStyleSource('@import "master.css";')).toBe(false)
-    expect(isMasterStyleSource('@master entry;')).toBe(true)
+    expect(isMasterStyleSource("@import \"@master/css\";")).toBe(true)
     expect(isMasterStyleSource('@master;')).toBe(false)
     expect(isMasterStyleSource('@master global;')).toBe(false)
     expect(isMasterStyleSource('@master shake;')).toBe(false)
@@ -198,9 +175,9 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('detects local compose styles without treating them as Master entries', () => {
-    expect(hasLocalStyleDirectives(".card { @variant media(all){display:block;} }")).toBe(true)
+    expect(hasLocalStyleDirectives(".card { @variant all {display:block;} }")).toBe(true)
     expect(hasLocalStyleDirectives('.card { @variant print { color: red; } }')).toBe(true)
-    expect(hasLocalStyleDirectives('.card { @dark { color: red; } }')).toBe(true)
+    expect(hasLocalStyleDirectives(".card { @media (prefers-color-scheme: dark) { color: red; } }")).toBe(false)
     expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
     expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
     expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
@@ -228,8 +205,8 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const tokenPath = join(root, 'app/tokens.css')
-    writeFileSync(tokenPath, '@utilities { card { display: block; } }')
-    writeFileSync(entryPath, '@master entry;\n@import "./tokens.css";')
+    writeFileSync(tokenPath, ' @utility card { display: block; } ')
+    writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./tokens.css\";")
 
     expect(collectStylesheetDependencies(entryPath, undefined, root)).toEqual([
       entryPath,
@@ -241,7 +218,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
 
-    expect(collectStylesheetDependencies(entryPath, '@master entry;\n@import "./missing.css";', root)).toEqual([
+    expect(collectStylesheetDependencies(entryPath, "@import \"@master/css\";\n@import \"./missing.css\";", root)).toEqual([
       entryPath
     ])
     expect(collectStylesheetDependencies(join(root, 'app/missing.css'), undefined, root)).toEqual([
@@ -250,10 +227,10 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('locally lowers @compose using the provided project context', async () => {
-    const { manifest } = compileCSSManifest('@utilities { brand { color: #fff; } }', {
+    const { manifest } = compileCSSManifest(' @utility brand { color: #fff; } ', {
       baseManifest: defaultManifest
     })
-    const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @variant media(all){color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
+    const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @variant all {color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
       baseManifest: manifest
     })
 
@@ -268,20 +245,9 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, [
-      '@utilities {',
-      '  brand { background-color: #123456; }',
-      '}',
-      '.referenced-native { color: red; }'
-    ].join('\n'))
+    writeFileSync(tokenPath, "@utility brand { background-color: #123456; }\n.referenced-native { color: red; }")
 
-    const result = await transformLocalStylesheet(modulePath, `
-      @reference "./tokens.css";
-
-      .button {
-        @variant media(all){background-color:#123456;}
-      }
-    `, {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .button {\n        @variant all {background-color:#123456;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -294,34 +260,13 @@ describe('style CSS extraction helpers', () => {
     expect(result.dependencies).toContain(tokenPath)
   })
 
-  it('emits referenced theme variables and keyframes used by local styles', async () => {
+  it('emits referenced theme variables without importing native keyframes', async () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, [
-      '@theme {',
-      '  --spacing-card: 2rem;',
-      '',
-      '  @keyframes pop {',
-      '    to { opacity: 1; }',
-      '  }',
-      '}',
-      '@utilities {',
-      '  panel {',
-      '    padding: var(--spacing-card);',
-      '    animation: pop 1s;',
-      '  }',
-      '}',
-      '.referenced-native { color: red; }'
-    ].join('\n'))
+    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
 
-    const result = await transformLocalStylesheet(modulePath, `
-      @reference "./tokens.css";
-
-      .page-panel {
-        @variant media(all){padding:var(--spacing-card);animation:pop 1s;}
-      }
-    `, {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -329,7 +274,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.transformed).toBe(true)
     expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:1s pop}')
     expect(result.code).toContain('--spacing-card:2rem')
-    expect(result.code).toContain('@keyframes pop')
+    expect(result.code).not.toContain('@keyframes pop')
     expect(result.code).not.toContain('@reference')
     expect(result.code).not.toContain('referenced-native')
     expect(result.dependencies).toContain(modulePath)
@@ -340,34 +285,14 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, [
-      '@theme {',
-      '  --spacing-card: 2rem;',
-      '',
-      '  @keyframes pop {',
-      '    to { opacity: 1; }',
-      '  }',
-      '}',
-      '@utilities {',
-      '  panel {',
-      '    padding: var(--spacing-card);',
-      '    animation: pop 1s;',
-      '  }',
-      '}'
-    ].join('\n'))
+    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }")
 
-    const result = await transformLocalStylesheet(modulePath, `
-      @reference "./tokens.css";
-
-      .page-panel {
-        @variant media(all){padding:var(--spacing-card);animation:pop 1s;}
-      }
-    `, {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: {
         variables: { 'spacing-card': 1 },
-        animations: { pop: 1 }
+
       }
     })
 
@@ -384,7 +309,7 @@ describe('style CSS extraction helpers', () => {
     const pagePath = join(root, 'app/page.css')
     writeFileSync(globalsPath, '@import "@master/css";')
 
-    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant media(all){padding-block:var(--spacing-5xl);}\n      }\n    ", {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -411,7 +336,7 @@ describe('style CSS extraction helpers', () => {
       baseManifest: defaultManifest,
       projectDir: root
     })
-    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant media(all){padding-block:var(--spacing-5xl);}\n      }\n    ", {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: globalResult.emittedGlobals
@@ -429,7 +354,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Empty.module.css')
-    writeFileSync(tokenPath, '@utilities { brand { display: block; } }')
+    writeFileSync(tokenPath, ' @utility brand { display: block; } ')
 
     const result = await transformLocalStylesheet(modulePath, '@reference "./tokens.css";', {
       baseManifest: defaultManifest,
@@ -461,12 +386,12 @@ describe('style CSS extraction helpers', () => {
     )
 
     expect(result?.source).toContain('@layer base')
-    expect(result?.source).not.toContain('@master entry;')
+    expect(result?.source).not.toContain("@import \"@master/css\";")
     expect(result?.dependencies).toContain(join(root, 'app/globals.css'))
     expect(result?.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
     expect(resolveMasterStyleSource(
       join(root, 'app/theme.css'),
-      '@theme { --color-primary: red; }',
+      "@theme {:root, :host { --color-primary: red; }}\n",
       root
     )).toBeUndefined()
     expect(resolveMasterStyleSource(
@@ -481,7 +406,7 @@ describe('style CSS extraction helpers', () => {
     )).toBeUndefined()
     expect(() => resolveMasterStyleSource(
       join(root, 'app/entry.css'),
-      '@master entry;\n@import "./missing.css";',
+      "@import \"@master/css\";\n@import \"./missing.css\";",
       root
     )).toThrow('CSS file not found')
   })

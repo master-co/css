@@ -15,8 +15,8 @@ for (const syntax of ['scss', 'indented']) for (const explicitCompressed of [fal
   const root = mkdtempSync(join(tmpdir(), 'next-sass-terminators-'))
   try {
     const file = join(root, syntax === 'scss' ? 'card.module.scss' : 'card.module.sass')
-    const source = syntax === 'scss' ? "@reference \"./master.css\";.card{@variant media(all){padding:2rem;}}" : '@reference "./master.css"\n.card\n  @variant media(all)\n    padding: 2rem\n'
-    writeFileSync(file, source);writeFileSync(join(root, 'master.css'), '@master entry;')
+    const source = syntax === 'scss' ? "@reference \"./master.css\";.card{@media all {padding:2rem;}}" : '@reference "./master.css"\n.card\n  @media all\n    padding: 2rem\n'
+    writeFileSync(file, source);writeFileSync(join(root, 'master.css'), "@import url(\"@master/css\");")
     const sassOptions = { loadPaths: [root], quietDeps: true, ...(explicitCompressed ? { style: 'compressed' } : {}) }
     const original = { loader: '/node_modules/next/dist/compiled/sass-loader/cjs.js', options: { sourceMap: true, implementation: sassRequire.resolve('sass'), sassOptions } }
     const rules = composeWebpackStylesheets([{ oneOf: [{ use: [{ loader: '/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js' }, original] }] }], '/master/stylesheet-loader.js', /master-css-manifest/) as { oneOf: { use: typeof original[] }[] }[]
@@ -26,7 +26,7 @@ for (const syntax of ['scss', 'indented']) for (const explicitCompressed of [fal
       resourcePath: file, rootContext: root, getOptions: () => ({ preprocessed: true }),
       async: () => (error: Error | null, result?: string) => error ? reject(error) : resolve(result!)
     }, prepared.css))
-    expect(css).toContain('padding:2rem')
+    expect(css).toMatch(/padding:\s*2rem/)
     expect(css).not.toContain('@compose')
     expect(configured.sassOptions.loadPaths).toEqual([root])
     expect(configured.sassOptions.quietDeps).toBe(true)

@@ -155,6 +155,11 @@ pub(crate) fn lower_managed_rule_list(
                         .as_str()
                         .expect("definition name")
                         .to_owned();
+                    if definition.get("type").and_then(Value::as_str) == Some("static")
+                        && !class_names.contains(&name)
+                    {
+                        class_names.push(name.clone());
+                    }
                     let mut fragments = Vec::new();
                     lower_managed_style(
                         source,

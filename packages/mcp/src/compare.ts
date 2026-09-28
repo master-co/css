@@ -107,8 +107,8 @@ export async function compareCSS(context: MasterCSSMCPContext, options: CompareC
     const before = renderClasses(activeManifest, beforeClasses)
     const after = renderClasses(activeManifest, afterClasses)
     const inspections = {
-      before: beforeClasses.map(name => compactClassInspection(session, name, undefined, true)),
-      after: afterClasses.map(name => compactClassInspection(session, name, undefined, true))
+      before: beforeClasses.map(name => compactClassInspection(session, name, true)),
+      after: afterClasses.map(name => compactClassInspection(session, name, true))
     }
     const classDiff = diffValues(beforeClasses, afterClasses)
     const beforeRules = splitRules(before.text)

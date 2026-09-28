@@ -1,106 +1,23 @@
+//! Native theme trees are preserved in author order. Token liveness filters
+//! declarations, never selector branches; CSS computes the active scoped value.
 use super::{
-    CompilerError, CssDirectiveManifestInput, CssDirectiveVariableDefinition, CssRule,
-    DeclarationBlock, KeyframesName, ParserOptions, PrinterOptions, Property, StyleSheet,
-    ThemeAtRule, ToCss, Value, collect_declarations, declaration_name, define_theme_variable,
-    directive_error, directive_range, extract_top_level_at_rule_blocks, parse_theme_prelude,
-    theme_value,
+    CompilerError, CssDirectiveManifestInput, CssRule, ParserOptions, StyleSheet, ThemeAtRule,
+    directive_error, minified_css,
 };
+use mastercss_schema::ThemeNode;
 
-pub(crate) fn lower_theme_keyframes(
-    source: &str,
-    filename: &str,
-    rule_start_byte: usize,
-    keyframes_source: &str,
-    is_static: bool,
-    manifest_input: &mut CssDirectiveManifestInput,
-) -> Result<(), CompilerError> {
-    let stylesheet = StyleSheet::parse(
-        keyframes_source,
-        ParserOptions {
-            filename: filename.to_owned(),
-            ..ParserOptions::default()
-        },
-    )
-    .map_err(|error| CompilerError::Parse {
-        message: error.to_string(),
-        filename: filename.to_owned(),
-        range: directive_range(source, rule_start_byte),
-    })?;
-    let mut found = false;
-    for css_rule in stylesheet.rules.0 {
-        let CssRule::Keyframes(keyframes) = css_rule else {
-            return Err(directive_error(
-                source,
-                filename,
-                rule_start_byte,
-                "@theme only accepts theme token declarations and @keyframes definitions",
-            ));
-        };
-        found = true;
-        let name = match keyframes.name {
-            KeyframesName::Ident(name) => name.0.to_string(),
-            KeyframesName::Custom(name) => name.to_string(),
-        };
-        if name.is_empty() {
-            return Err(directive_error(
-                source,
-                filename,
-                rule_start_byte,
-                "@keyframes requires a name",
-            ));
-        }
-        let mut frames = serde_json::Map::new();
-        for keyframe in keyframes.keyframes {
-            let declarations =
-                Value::Object(collect_declarations(&keyframe.declarations, filename)?);
-            for selector in keyframe.selectors {
-                let selector =
-                    selector
-                        .to_css_string(PrinterOptions::default())
-                        .map_err(|error| CompilerError::Print {
-                            message: error.to_string(),
-                            filename: filename.to_owned(),
-                        })?;
-                frames.insert(selector, declarations.clone());
-            }
-        }
-        manifest_input
-            .animations
-            .get_or_insert_default()
-            .insert(name.clone(), Value::Object(frames));
-        if is_static {
-            manifest_input
-                .animation_options
-                .get_or_insert_default()
-                .insert(name, serde_json::json!({ "static": true }));
-        }
-    }
-    if !found {
-        return Err(directive_error(
-            source,
-            filename,
-            rule_start_byte,
-            "@keyframes requires a name",
-        ));
-    }
-    Ok(())
-}
-
-pub(crate) fn lower_settings_rule(
+pub(crate) fn lower_theme_rule(
     source: &str,
     filename: &str,
     rule: ThemeAtRule,
-    manifest_input: &mut CssDirectiveManifestInput,
+    input: &mut CssDirectiveManifestInput,
 ) -> Result<(), CompilerError> {
     if !rule.prelude.parts.is_empty() {
         return Err(directive_error(
             source,
             filename,
             rule.start_byte,
-            format!(
-                "Unsupported @settings section: {}",
-                rule.prelude.parts.join(" ")
-            ),
+            "@theme does not accept modes, inline or static; use explicit native selectors and conditions",
         ));
     }
     let body = rule.body.as_deref().ok_or_else(|| {
@@ -108,180 +25,179 @@ pub(crate) fn lower_settings_rule(
             source,
             filename,
             rule.start_byte,
-            "@settings requires a style block",
+            "@theme requires a block with explicit selectors",
         )
     })?;
-    let declarations = DeclarationBlock::parse_string(
+    let sheet = StyleSheet::parse(
         body,
         ParserOptions {
-            filename: filename.to_owned(),
+            filename: filename.into(),
             ..ParserOptions::default()
         },
     )
-    .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
-    for declaration in declarations.declarations {
-        let property = declaration_name(&declaration).map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.to_owned(),
-        })?;
-        let value = declaration
-            .value_to_css_string(PrinterOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: filename.to_owned(),
-            })?;
-        match property.as_str() {
-            "root-size" | "base-unit" | "default-mode" | "mode-trigger" | "modes" => {
-                return Err(directive_error(
-                    source,
-                    filename,
-                    rule.start_byte,
-                    format!(
-                        "@settings {property} was removed; use native CSS units and explicit @mode definitions"
-                    ),
-                ));
-            }
-            "important" => {
-                manifest_input.important = Some(match value.as_str() {
-                    "on" => true,
-                    "off" => false,
-                    _ => {
-                        return Err(directive_error(
-                            source,
-                            filename,
-                            rule.start_byte,
-                            "important must be on or off",
-                        ));
-                    }
-                });
-            }
-            "scope" => manifest_input.scope = Some(value),
-            _ => {
-                return Err(directive_error(
-                    source,
-                    filename,
-                    rule.start_byte,
-                    format!("Unsupported @settings option: {property}"),
-                ));
-            }
-        }
-    }
-    if let Some(declaration) = declarations.important_declarations.first() {
-        let property = declaration_name(declaration).map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.to_owned(),
-        })?;
-        return Err(directive_error(
+    .map_err(|error| {
+        directive_error(
             source,
             filename,
             rule.start_byte,
-            format!("@settings does not accept !important declarations: {property}"),
-        ));
-    }
+            format!("@theme requires explicit selectors: {error}"),
+        )
+    })?;
+    let context = ThemeContext {
+        source,
+        filename,
+        body,
+        offset: rule.body_start_byte.unwrap_or(rule.start_byte),
+    };
+    input
+        .theme
+        .get_or_insert_default()
+        .extend(context.rules(sheet.rules.0, false)?);
     Ok(())
 }
 
-pub(crate) fn lower_theme_rule(
-    source: &str,
-    filename: &str,
-    rule: ThemeAtRule,
-    manifest_input: &mut CssDirectiveManifestInput,
-) -> Result<(), CompilerError> {
-    let (mode, inline, is_static) = parse_theme_prelude(source, filename, &rule)?;
-    let body = rule.body.as_deref().ok_or_else(|| {
-        directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme requires a style block",
-        )
-    })?;
+struct ThemeContext<'a> {
+    source: &'a str,
+    filename: &'a str,
+    body: &'a str,
+    offset: usize,
+}
 
-    let (declaration_source, keyframe_blocks) =
-        extract_top_level_at_rule_blocks(body, &["keyframes", "-webkit-keyframes"]);
-    if !keyframe_blocks.is_empty() && (mode.is_some() || inline) {
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme keyframes cannot be mode-specific or inline",
-        ));
-    }
-    for keyframes in keyframe_blocks {
-        lower_theme_keyframes(
-            source,
-            filename,
-            rule.start_byte,
-            &keyframes.source,
-            is_static,
-            manifest_input,
-        )?;
-    }
-
-    let declarations = DeclarationBlock::parse_string(
-        &declaration_source,
-        ParserOptions {
-            filename: filename.to_owned(),
-            ..ParserOptions::default()
-        },
-    )
-    .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
-
-    for declaration in declarations.declarations {
-        let value = declaration
-            .value_to_css_string(PrinterOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: filename.to_owned(),
-            })?;
-        let Property::Custom(custom) = declaration else {
-            return Err(directive_error(
-                source,
-                filename,
-                rule.start_byte,
-                format!(
-                    "@theme token declarations must be CSS custom properties: {}",
-                    declaration.property_id().name()
-                ),
-            ));
-        };
-        let property = custom.name.as_ref();
-        let name = property.strip_prefix("--").filter(|name| !name.is_empty());
-        let Some(name) = name else {
-            return Err(directive_error(
-                source,
-                filename,
-                rule.start_byte,
-                if property == "--" {
-                    "@theme token name cannot be empty".to_owned()
-                } else {
-                    format!("@theme token declarations must be CSS custom properties: {property}")
-                },
-            ));
-        };
-        define_theme_variable(
-            manifest_input,
-            CssDirectiveVariableDefinition {
-                name: Some(name.to_owned()),
-                value: theme_value(value),
-                mode: mode.clone(),
-                inline: inline.then_some(true),
-                r#static: is_static.then_some(true),
-                namespace: None,
-                key: None,
-            },
+impl ThemeContext<'_> {
+    fn declarations(
+        &self,
+        block: &lightningcss::declaration::DeclarationBlock<'_>,
+        start: usize,
+        has_selector: bool,
+    ) -> Result<Vec<ThemeNode>, CompilerError> {
+        let mut declarations = crate::collect_ordered_declarations(block, self.filename)?;
+        crate::declarations::preserve_ordered_declaration_sequence(
+            self.body,
+            start,
+            &mut declarations,
         );
+        if !has_selector && !declarations.is_empty() {
+            return Err(directive_error(
+                self.source,
+                self.filename,
+                self.offset + start,
+                "@theme declarations require an explicit selector",
+            ));
+        }
+        declarations
+            .into_iter()
+            .map(|declaration| {
+                let Some(name) = declaration
+                    .property
+                    .strip_prefix("--")
+                    .filter(|name| !name.is_empty())
+                else {
+                    return Err(directive_error(
+                        self.source,
+                        self.filename,
+                        self.offset + start,
+                        "@theme only accepts custom-property declarations",
+                    ));
+                };
+                let value = declaration.value.as_str().ok_or_else(|| {
+                    directive_error(
+                        self.source,
+                        self.filename,
+                        self.offset + start,
+                        "Invalid theme value",
+                    )
+                })?;
+                Ok(ThemeNode::Declaration {
+                    name: name.to_owned(),
+                    value: value.to_owned(),
+                })
+            })
+            .collect()
     }
 
-    if let Some(declaration) = declarations.important_declarations.first() {
-        let property_id = declaration.property_id();
-        let property = property_id.name().trim_start_matches("--");
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            format!("@theme token declarations cannot be !important: {property}"),
-        ));
+    fn rules(
+        &self,
+        rules: Vec<CssRule<'_>>,
+        has_selector: bool,
+    ) -> Result<Vec<ThemeNode>, CompilerError> {
+        if rules.is_empty() {
+            return Ok(Vec::new());
+        }
+        let index = crate::source_index::SourceIndex::new(self.body);
+        let mut output = Vec::new();
+        for rule in rules {
+            let (prelude, children) = match rule {
+                CssRule::Style(style) => {
+                    let start = index
+                        .byte_offset_for_location(style.loc.line, style.loc.column)
+                        .unwrap_or_default();
+                    let open =
+                        crate::pattern::css_statement_delimiter(self.body, start, self.body.len())
+                            .map(|(open, _)| open + 1)
+                            .unwrap_or(start);
+                    let mut children = self.declarations(&style.declarations, open, true)?;
+                    children.extend(self.rules(style.rules.0, true)?);
+                    (
+                        crate::printed_selectors(&style.selectors.0, self.filename)?.join(","),
+                        children,
+                    )
+                }
+                CssRule::NestedDeclarations(rule) => {
+                    let start = index
+                        .byte_offset_for_location(rule.loc.line, rule.loc.column)
+                        .unwrap_or_default();
+                    output.extend(self.declarations(&rule.declarations, start, has_selector)?);
+                    continue;
+                }
+                CssRule::Media(rule) => (
+                    format!("@media {}", minified_css(&rule.query, self.filename)?),
+                    self.rules(rule.rules.0, has_selector)?,
+                ),
+                CssRule::Supports(rule) => (
+                    format!(
+                        "@supports {}",
+                        minified_css(&rule.condition, self.filename)?
+                    ),
+                    self.rules(rule.rules.0, has_selector)?,
+                ),
+                CssRule::Container(rule) => {
+                    let mut parts = Vec::new();
+                    if let Some(name) = &rule.name {
+                        parts.push(minified_css(name, self.filename)?);
+                    }
+                    if let Some(condition) = &rule.condition {
+                        parts.push(minified_css(condition, self.filename)?);
+                    }
+                    (
+                        format!("@container {}", parts.join(" ")),
+                        self.rules(rule.rules.0, has_selector)?,
+                    )
+                }
+                CssRule::Scope(rule) => {
+                    let mut prelude = "@scope".to_owned();
+                    if let Some(start) = &rule.scope_start {
+                        prelude.push_str(&format!(" ({})", minified_css(start, self.filename)?));
+                    }
+                    if let Some(end) = &rule.scope_end {
+                        prelude.push_str(&format!(" to ({})", minified_css(end, self.filename)?));
+                    }
+                    (prelude, self.rules(rule.rules.0, has_selector)?)
+                }
+                CssRule::StartingStyle(rule) => (
+                    "@starting-style".into(),
+                    self.rules(rule.rules.0, has_selector)?,
+                ),
+                _ => {
+                    return Err(directive_error(
+                        self.source,
+                        self.filename,
+                        self.offset,
+                        "@theme only accepts native selectors, @media, @supports, @container, @scope and @starting-style; keyframes belong in ordinary CSS",
+                    ));
+                }
+            };
+            output.push(ThemeNode::Rule { prelude, children });
+        }
+        Ok(output)
     }
-    Ok(())
 }

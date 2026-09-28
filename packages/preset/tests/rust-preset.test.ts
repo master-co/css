@@ -33,7 +33,7 @@ describe('Rust-owned default preset', () => {
     const variables = flattenMasterCSSManifestVariables(defaultManifest.variables)
     expect(variables.some(({ name }) => name === 'color-blue-60')).toBe(true)
     expect(variables.some(({ name }) => name === 'spacing-md')).toBe(true)
-    expect(defaultManifest.animations?.fade).toBeDefined()
+    expect(readFileSync(resolve(import.meta.dirname, '../src/default-native.css'), 'utf8')).toContain('@keyframes fade')
     expect(defaultManifest.utilities?.some(({ name }) => name === 'block')).toBe(true)
   })
 

@@ -21,10 +21,10 @@ function fixture() {
     mkdirSync(directory)
     const owner = join(directory, 'owner.scss'), reference = join(directory, 'tokens #.css'), resource = join(directory, 'pixel.svg')
     writeFileSync(resource, `<svg data-owner="${side}"/>`)
-    writeFileSync(reference, `@theme{--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}.never-${side}{color:red}`)
-    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@variant media(all){padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
+    writeFileSync(reference, `@theme{:root, :host {--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}}.never-${side}{color:red}`)
+    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@variant all{padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
   })
-  writeFileSync(join(root, 'tokens #.css'), '@utilities{paint-a{padding:99rem}paint-b{padding:99rem}}')
+  writeFileSync(join(root, 'tokens #.css'), '@utility paint-a {padding:99rem}@utility paint-b {padding:99rem}')
   return { root, sources, scanner, delivery, dependencies, remove: () => rmSync(root, { recursive: true, force: true }) }
 }
 
@@ -34,7 +34,7 @@ test('BH-0004 missing virtual reference reports its attempted path and registrat
   try {
     const item = f.sources[0], id = '\0prepared:recovery.css'
     const options = { baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: item.owner } }
-    const source = '@master entry;@preserve native;' + item.source
+    const source = "@import \"@master/css\";@preserve native;" + item.source
     await collection.register(f.scanner, id, source, options)
     const before = collection.snapshot()
     unlinkSync(item.reference)
@@ -42,7 +42,7 @@ test('BH-0004 missing virtual reference reports its attempted path and registrat
     await expect(collection.register(f.scanner, id, source, options)).rejects.toThrow('ENOENT')
     expect(f.dependencies).toContain(item.reference)
     expect(collection.snapshot()).toEqual(before)
-    writeFileSync(item.reference, '@theme{--paint-a-padding:7rem}')
+    writeFileSync(item.reference, "@theme {:root, :host {--paint-a-padding:7rem}}\n\n")
     await collection.register(f.scanner, id, source, options)
     const output = await collection.compose({ ...options, scanner: f.scanner })
     expect(output.css).toContain('padding:7rem')
@@ -55,9 +55,9 @@ test.each(['self', 'indirect'])('BH-0004 virtual owner participates in %s refere
   const f = fixture()
   try {
     const owner = join(f.root, 'owner.css')
-    writeFileSync(owner, '@utilities{paint{color:red}}')
+    writeFileSync(owner, '@utility paint {color:red}')
     writeFileSync(join(f.root, 'other.css'), '@reference "./owner.css";')
-    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@variant media(all){color:red;}}`, {
+    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@variant all{color:red;}}`, {
       baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: owner }
     })).rejects.toThrow('Circular CSS reference:')
   } finally { f.remove() }
@@ -89,7 +89,7 @@ for (const location of ['physical', 'virtual-entry', 'virtual-child'] as const) 
           ...(location === 'virtual-child' ? { resolveImport: async () => ({ id: `\0child:${index}.css`, source: item.source, baseFile: item.owner }) } : {})
         }
         if (operation === 'collection') {
-          await collection.register(f.scanner, id, '@master entry;@preserve native;' + source, { baseManifest, projectDir: f.root, delivery })
+          await collection.register(f.scanner, id, "@import \"@master/css\";@preserve native;" + source, { baseManifest, projectDir: f.root, delivery })
         } else {
           const result = await transformStylesheet(id, source, { baseManifest, projectDir: f.root, delivery })
           css.push(result.code, ...result.stylesheets?.map(asset => asset.css) ?? [])

@@ -4,14 +4,13 @@ use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
 use mastercss_lexer::{
-    collect_css_variable_references as collect_css_variable_names, css_escape,
-    transform_css_variable_references, utf16_len,
+    collect_css_variable_references as collect_css_variable_names, css_escape, utf16_len,
 };
 use mastercss_schema::{
-    CssDeclaration, Diagnostic, EmittedGlobals, EngineAnimationResourceIr, EngineInspectionIr,
-    EngineResourcesIr, EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode,
-    GeneratedRuleIr, GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr,
-    RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
+    CssDeclaration, Diagnostic, EmittedGlobals, EngineInspectionIr, EngineResourcesIr,
+    EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
+    GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
+    RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 use serde::Deserialize;
 use serde::Serialize;
@@ -20,10 +19,6 @@ use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
 type ConditionFeature = mastercss_schema::ConditionRangeIr;
-
-fn is_false(value: &bool) -> bool {
-    !value
-}
 
 #[derive(Debug, Error)]
 pub enum EngineError {
@@ -61,10 +56,10 @@ impl EngineError {
 #[serde(rename_all = "camelCase")]
 struct ManifestProjection {
     #[serde(default)]
-    modes: Vec<mastercss_schema::ModeDefinition>,
-    version: u32,
+    theme: Vec<mastercss_schema::ThemeNode>,
     #[serde(default)]
-    settings: EngineSettings,
+    custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
+    version: u32,
     #[serde(default)]
     utilities: Vec<UtilityDefinition>,
     #[serde(default)]
@@ -75,10 +70,6 @@ struct ManifestProjection {
     selectors: HashMap<String, Vec<ManifestSelectorNode>>,
     #[serde(default)]
     variables: Map<String, Value>,
-    #[serde(default)]
-    animations: Map<String, Value>,
-    #[serde(default, rename = "animationOptions")]
-    animation_options: HashMap<String, AnimationOptions>,
     #[serde(skip)]
     compiled_variables: HashMap<String, CompiledVariable>,
     #[serde(skip)]
@@ -88,20 +79,9 @@ struct ManifestProjection {
     #[serde(skip)]
     static_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
-    enum_utilities: HashMap<String, Vec<usize>>,
-    #[serde(skip)]
     raw_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
     declaration_keys: HashSet<String>,
-}
-
-#[derive(Debug, Clone, Default, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct EngineSettings {
-    #[serde(default)]
-    scope: Option<String>,
-    #[serde(default)]
-    important: bool,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -127,12 +107,6 @@ struct ManifestVariant {
     token: String,
     #[serde(default)]
     branches: Vec<ManifestVariantBranch>,
-}
-
-#[derive(Debug, Clone, Default, Deserialize)]
-struct AnimationOptions {
-    #[serde(default, rename = "static")]
-    static_resource: bool,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -186,21 +160,9 @@ struct UtilityDefinition {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 enum UtilityMatcher {
-    Static {
-        name: String,
-    },
-    Pattern {
-        prefix: String,
-        values: Vec<String>,
-        #[serde(default, rename = "valueMap")]
-        value_map: HashMap<String, String>,
-    },
-    Key {
-        keys: Vec<String>,
-    },
-    Token {
-        prefix: String,
-    },
+    Static { name: String },
+    Key { keys: Vec<String> },
+    Token { prefix: String },
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -237,7 +199,6 @@ pub enum ClassSemanticKind {
     Unknown,
     Component,
     Semantic,
-    Pattern,
     Token,
     Declaration,
 }
@@ -246,7 +207,6 @@ pub enum ClassSemanticKind {
 #[serde(rename_all = "lowercase")]
 pub enum UtilityMatcherType {
     Static,
-    Pattern,
     Key,
     Token,
 }
@@ -271,21 +231,10 @@ struct CompiledVariable {
     name: String,
     key: String,
     namespace: String,
-    value: Option<String>,
-    source_value: Option<Value>,
+    values: Vec<mastercss_schema::ScopedThemeValue>,
     numeric: Option<Value>,
-    modes: Vec<CompiledVariableMode>,
-    source_modes: Map<String, Value>,
     variable_type: String,
     dependencies: Vec<String>,
-    inline: bool,
-    static_resource: bool,
-}
-
-#[derive(Debug, Clone)]
-struct CompiledVariableMode {
-    name: String,
-    value: String,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -294,8 +243,6 @@ struct StateBranch {
     selector_template: Option<String>,
     condition_wrappers: Vec<(String, String)>,
     layer: Option<UtilityLayerName>,
-    mode: Option<String>,
-    mode_guard: Option<String>,
     important: bool,
 }
 
@@ -346,18 +293,9 @@ pub struct EngineVariableIr {
     pub key: String,
     #[serde(rename = "type")]
     pub variable_type: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub value: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub numeric: Option<Value>,
-    #[serde(default, skip_serializing_if = "Map::is_empty")]
-    pub modes: Map<String, Value>,
+    pub values: Vec<mastercss_schema::ScopedThemeValue>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dependencies: Vec<String>,
-    #[serde(default, skip_serializing_if = "is_false")]
-    pub inline: bool,
-    #[serde(default, rename = "static", skip_serializing_if = "is_false")]
-    pub static_resource: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -407,8 +345,6 @@ pub struct EngineSession {
     theme_text: Option<String>,
     theme_dirty: bool,
     theme_batch_depth: usize,
-    animation_counts: HashMap<String, u32>,
-    animation_names: Vec<String>,
     disposed: bool,
 }
 
@@ -421,6 +357,8 @@ const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
 
 mod completion;
 mod condition;
+mod custom_media;
+pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod execution_state;
 mod generation;
 mod manifest;
@@ -444,23 +382,17 @@ pub(crate) use condition::{
 };
 pub(crate) use manifest::{
     BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
-    add_unique_string, compile_manifest, engine_variable_ir, layer_name, serialize_literal_value,
-    single_native_declaration,
+    add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
 };
 pub(crate) use state::{
-    apply_forced_mode, find_group_close, resolve_state_branches, resolve_style_selector_aliases,
+    find_group_close, resolve_state_branches, resolve_style_selector_aliases,
     selector_token_to_template, split_top_level,
 };
-mod stylesheet_animation;
-mod stylesheet_animation_value;
-pub(crate) use stylesheet_animation::stylesheet_resource_syntax;
-pub(crate) use stylesheet_resources::{
-    collect_animation_names, collect_stylesheet_animation_names, is_css_identifier_character,
-};
+pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
     append_builtin_native_declaration_utilities, append_builtin_token_utilities, builtin_key_alias,
     canonicalize_class_name, compare_stored_rules, compile_utility_variables, layer_index,

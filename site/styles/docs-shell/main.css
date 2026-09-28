@@ -1,7 +1,7 @@
 @layer components {
 .hr {
     margin-block: var(--spacing-2xl);
-    border-bottom: 1px solid var(--color-line-muted);
+    border-bottom: 1px solid var(--color-line-subtle);
   }
 
 
@@ -55,13 +55,13 @@
       filter: grayscale(1);
     }
 
-    @dark {
+    @variant site-dark {
       &:hover {
         background-color: var(--color-gray-80);
       }
     }
 
-    @light {
+    @variant site-light {
       &:hover {
         background-color: var(--color-neutral-5);
       }
@@ -94,7 +94,7 @@
     user-select: none;
 
     &:disabled {
-      color: var(--color-text-disabled);
+      color: var(--color-text-muted);
       cursor: not-allowed;
     }
 
@@ -110,7 +110,7 @@
     justify-content: center;
     border-radius: var(--radius-md);
     padding: var(--spacing-xs);
-    border: 1px solid var(--color-line-base);
+    border: 1px solid var(--color-line-divider);
     min-width: 3rem;
     min-height: 3rem;
     background-color: var(--color-surface-raised);

@@ -23,13 +23,13 @@ enum Shape {
 
 fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
     let prefix = match shape {
-        Shape::Variant => "@master entry;",
-        Shape::Theme => "@master entry;@theme{",
-        Shape::Components => "@master entry;@utilities{",
+        Shape::Variant => "@source './src/**';",
+        Shape::Theme => "@source './src/**';@theme{:root{",
+        Shape::Components => "@source './src/**';",
         Shape::Media | Shape::Resources => "",
     };
     let suffix = match shape {
-        Shape::Theme | Shape::Components => "}",
+        Shape::Theme => "}}",
         _ => "",
     };
     prefix.to_owned()
@@ -41,7 +41,7 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                 ),
                 Shape::Variant => {
                     format!(
-                        ".r{index}{{@variant media(all){{padding:{}px;}}content:\"ü😀\"}}",
+                        ".r{index}{{@variant always{{padding:{}px;}}content:\"ü😀\"}}",
                         index % 9
                     )
                 }
@@ -49,7 +49,9 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                     format!(".r{index}{{background:url(\"./ü😀{index}.svg\");color:red}}")
                 }
                 Shape::Theme => format!("--v{index}:{index}px"),
-                Shape::Components => format!("c{index}{{padding:{}px;color:red}}", index % 9),
+                Shape::Components => {
+                    format!("@utility c{index}{{padding:{}px;color:red}}", index % 9)
+                }
             })
             .collect::<Vec<_>>()
             .join(match (shape, multiline) {
@@ -85,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: None,
+                    base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})),
                 },
             )
             .unwrap();

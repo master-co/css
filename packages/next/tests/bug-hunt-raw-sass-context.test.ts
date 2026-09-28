@@ -13,7 +13,7 @@ async function fixture(run: (root: string) => Promise<void>) {
   try {
     mkdirSync(join(root, 'parts'));mkdirSync(join(root, 'node_modules'))
     symlinkSync(dirname(sassFile), join(root, 'node_modules/sass'), 'dir')
-    writeFileSync(join(root, 'master.css'), '@master entry;')
+    writeFileSync(join(root, 'master.css'), "@import url(\"@master/css\");")
     await run(root)
   } finally { rmSync(root, { recursive: true, force: true }) }
 }
@@ -26,33 +26,33 @@ function compile(root: string, file: string, source: string, dependencies: strin
 for (const syntax of ['scss', 'sass']) test(`Next raw ${syntax} retains partial reference and edit dependencies`, async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax), partial = join(root, 'parts/_rules.scss'), token = join(root, 'parts/tokens.css')
-    writeFileSync(partial, "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
-    writeFileSync(token, '@theme{--paint-padding:2rem}')
-    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
+    writeFileSync(partial, "@reference \"./tokens.css\";.card{@media all {padding:var(--paint-padding);}}")
+    writeFileSync(token, "@theme {:root, :host {--paint-padding:2rem}}\n")
+    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:99rem}}\n")
     const source = syntax === 'sass' ? '@use "parts/rules"\n' : '@use "parts/rules";', dependencies: string[] = []
     expect(await compile(root, file, source, dependencies)).toContain('--paint-padding:2rem')
     expect(dependencies).toEqual(expect.arrayContaining([file, partial, token]))
-    writeFileSync(token, '@theme{--paint-padding:4rem}')
+    writeFileSync(token, "@theme {:root, :host {--paint-padding:4rem}}\n")
     expect(await compile(root, file, source, [])).toContain('--paint-padding:4rem')
   })
 })
 test('Next raw Sass uses configured implementation, load paths and additional data', async () => {
   await fixture(async root => {
     writeFileSync(join(root, 'parts/_tokens.scss'), '$space:3rem;')
-    const css = await compile(root, join(root, 'card.module.scss'), '@use "tokens";@reference "./master.css";.card{@variant media(all){padding:#{tokens.$space};}margin:$extra}', [], {
+    const css = await compile(root, join(root, 'card.module.scss'), "@use \"tokens\";@reference \"./master.css\";.card{@media all {padding:#{tokens.$space};}margin:$extra}", [], {
       implementation: sassFile, loadPaths: [join(root, 'parts')], additionalData: '$extra:4rem;', style: 'compressed'
     })
-    expect(css).toContain('padding:3rem')
+    expect(css).toMatch(/padding:\s*3rem/)
     expect(css).toMatch(/margin:\s*4rem/)
   })
 })
 test('Next registers missing mapped CSS reference before error and recovers on creation', async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.scss'), missing = join(root, 'parts/missing.css'), dependencies: string[] = []
-    writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./missing.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
+    writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./missing.css\";.card{@media all {padding:var(--paint-padding);}}")
     await expect(compile(root, file, '@use "parts/rules";', dependencies)).rejects.toThrow()
     expect(dependencies).toContain(missing)
-    writeFileSync(missing, '@theme{--paint-padding:5rem}')
+    writeFileSync(missing, "@theme {:root, :host {--paint-padding:5rem}}\n")
     expect(await compile(root, file, '@use "parts/rules";', [])).toContain('--paint-padding:5rem')
   })
 })

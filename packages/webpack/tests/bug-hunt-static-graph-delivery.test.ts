@@ -34,7 +34,7 @@ function fixture() {
 test.each(['', ' layer(cards)', ' supports(display:grid) print'])('publishes external child imports with their boundaries: %s', async qualifier => {
   const root = fixture()
   try {
-    writeFileSync(join(root, 'entry.css'), `@import "./child.css"${qualifier};@master entry;@preserve native;.root{display:block}`)
+    writeFileSync(join(root, 'entry.css'), `@import "./child.css"${qualifier};@import "@master/css";@preserve native;.root{display:block}`)
     writeFileSync(join(root, 'child.css'), '@import "https://external.invalid/font.css";.card{color:red}')
     const result = await build(root)
     expect(result.contents[result.css]).toMatch(/^@import /)
@@ -56,7 +56,7 @@ test('nested CSS and resource edits change the real entry content hash and prese
   try {
     mkdirSync(join(root, 'images'))
     const resource = join(root, 'images/pixel.svg')
-    writeFileSync(join(root, 'entry.css'), '@master entry;@preserve native;@import "./child.css" layer(cards);')
+    writeFileSync(join(root, 'entry.css'), "@import \"@master/css\";@preserve native;@import \"./child.css\" layer(cards);")
     writeFileSync(join(root, 'child.css'), '@import "https://external.invalid/font.css";.card{color:red;background-image:url("./images/pixel.svg?q=1#mark")}')
     const svg = (color: string) => `<svg xmlns="http://www.w3.org/2000/svg"><rect fill="${color}"/></svg>`
     writeFileSync(resource, svg('red'))
@@ -84,8 +84,8 @@ test.each(['local.css', 'local.module.css'])('delivers project theme variables w
   const root = fixture()
   try {
     writeFileSync(join(root, 'entry.js'), `import "./entry.css"; import "./${localName}"`)
-    writeFileSync(join(root, 'entry.css'), '@master entry;@theme light{--color-brand:#123456}@theme dark{--color-brand:#abcdef}@theme{@keyframes pop{to{opacity:.5}}}')
-    writeFileSync(join(root, localName), '.button{color:var(--color-brand);--own:2rem;padding:var(--own);animation:pop 1s}.other{animation:own 1s}@keyframes own{to{opacity:1}}')
+    writeFileSync(join(root, 'entry.css'), "@import \"@master/css\";@theme { @media (prefers-color-scheme: light) { :root, :host {--color-brand:#123456} } }\n@theme { @media (prefers-color-scheme: dark) { :root, :host {--color-brand:#abcdef} } }\n@theme {}\n@keyframes pop{to{opacity:.5}}\n")
+    writeFileSync(join(root, localName), ('.button{color:var(--color-brand);--own:2rem;padding:var(--own);animation:pop 1s}.other{animation:own 1s}@keyframes own{to{opacity:1}}').replace('animation:pop', localName.endsWith('.module.css') ? 'animation: global(pop)' : 'animation:pop'))
     const result = await build(root)
     const css = Object.values(result.contents).join('\n')
     const variable = localName.endsWith('.module.css') ? css.match(/color:var\((--[\w-]+)\)/)?.[1] : '--color-brand'

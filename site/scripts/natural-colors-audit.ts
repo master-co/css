@@ -1,3 +1,5 @@
+import { chromium } from '@playwright/test'
+import { renderClassNamesSync } from '@master/css/node'
 import { resolve } from 'node:path'
 import Color from 'colorjs.io'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -7,27 +9,50 @@ export const naturalColorNames = ['sand', 'taupe', 'olive', 'sage', 'moss', 'pet
 export const colorLevels = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100] as const
 const variables = new Map(flattenMasterCSSManifestVariables((preset as unknown as MasterCSSManifest).variables).map(variable => [variable.name, variable]))
 
-export function resolveColor(name: string, mode: 'light' | 'dark' = 'light', seen = new Set<string>()): Color {
-  if (seen.has(name)) throw new Error(`Circular color reference: ${name}`)
-  seen.add(name)
+// Palette measurements use fixed authored colors; adaptive values are computed by the browser below.
+export function resolveColor(name: string): Color {
   const variable = variables.get(name)
-  const value = variable?.modes?.[mode]?.value ?? variable?.value
-  if (typeof value !== 'string') throw new Error(`Missing color: ${name} (${mode})`)
-  const dependency = value.match(/^var\(--(.+)\)$/)?.[1]
-  return dependency ? resolveColor(dependency, mode, seen) : new Color(value)
+  const value = variable?.values[0]?.value
+  if (variable?.values.length !== 1 || !value?.startsWith('oklch(')) throw new Error(`Expected a fixed palette color: ${name}`)
+  return new Color(value)
 }
 
 export function mapToSRGB(color: Color) {
   return color.clone().toGamut({ space: 'srgb', method: 'css' })
 }
 
-export function auditNaturalColors() {
+export async function auditNaturalColors() {
+  const browser = await chromium.launch()
+  const page = await browser.newPage()
+  const surfaces = ['base', 'inset', 'raised', 'floating']
+  let computed: Record<string, { text: string, base: string, surfaces: Record<string, string> }>
+  try {
+    const classes = [...naturalColorNames.flatMap(name => [`text-${name}`, `bg-${name}`]), ...surfaces.map(name => `surface-${name}`)]
+    const rendered = renderClassNamesSync(classes, { manifest: preset as unknown as MasterCSSManifest })
+    await page.setContent(`<style>${rendered.cssText}</style><div id="probe"></div>`)
+    computed = await page.evaluate(({ families, surfaces }) => {
+      const probe = document.querySelector<HTMLElement>('#probe')!
+      const values: Record<string, { text: string, base: string, surfaces: Record<string, string> }> = {}
+      for (const mode of ['light', 'dark']) for (const family of families) {
+        probe.style.colorScheme = mode
+        probe.className = `text-${family} bg-${family}`
+        const text = getComputedStyle(probe).color, base = getComputedStyle(probe).backgroundColor
+        const backgrounds: Record<string, string> = {}
+        for (const surface of surfaces) {
+          probe.className = `surface-${surface}`
+          backgrounds[surface] = getComputedStyle(probe).backgroundColor
+        }
+        values[`${family}:${mode}`] = { text, base, surfaces: backgrounds }
+      }
+      return values
+    }, { families: [...naturalColorNames], surfaces })
+  } finally { await browser.close() }
   return naturalColorNames.map(family => {
     const colors = colorLevels.map(level => resolveColor(`color-${family}-${level}`))
     const mapped = colors.map(mapToSRGB)
     const steps = colors.map((color, index) => ({
       level: colorLevels[index],
-      value: String(variables.get(`color-${family}-${colorLevels[index]}`)!.value),
+      value: String(variables.get(`color-${family}-${colorLevels[index]}`)!.values[0].value),
       srgb: mapped[index].to('srgb').toString({ format: 'hex' }),
       inP3: color.inGamut('p3', { epsilon: 0.000001 }),
       inSRGB: color.inGamut('srgb', { epsilon: 0.000001 }),
@@ -35,18 +60,17 @@ export function auditNaturalColors() {
       // Normalize by the numbered interval: endpoint intervals are five, not ten.
       deltaPerLevel: index ? color.deltaEOK(colors[index - 1]) / (colorLevels[index] - colorLevels[index - 1]) : null
     }))
-    const modes = (['light', 'dark'] as const).map(mode => ({
-      mode,
-      base: variables.get(`color-${family}`)!.modes![mode].value,
-      text: variables.get(`color-text-${family}`)!.modes![mode].value,
-      contrast: Object.fromEntries(['base', 'muted', 'raised', 'overlay'].map(surface => [surface,
-        Color.contrastWCAG21(mapToSRGB(resolveColor(`color-text-${family}`, mode)), mapToSRGB(resolveColor(`color-surface-${surface}`, mode)))
-      ]))
-    }))
+    const modes = (['light', 'dark'] as const).map(mode => {
+      const value = computed[`${family}:${mode}`]
+      return { mode, base: value.base, text: value.text,
+        contrast: Object.fromEntries(Object.entries(value.surfaces).map(([surface, background]) => [surface,
+          Color.contrastWCAG21(mapToSRGB(new Color(value.text)), mapToSRGB(new Color(background)))
+        ])) }
+    })
     return { family, steps, modes }
   })
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
-  process.stdout.write(`${JSON.stringify(auditNaturalColors(), null, 2)}\n`)
+  process.stdout.write(`${JSON.stringify(await auditNaturalColors(), null, 2)}\n`)
 }

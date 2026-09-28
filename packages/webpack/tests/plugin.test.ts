@@ -261,12 +261,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const themePath = path.join(root, 'theme.css')
     try {
       writeFileSync(themePath, '@layer utilities { .card { display: grid; } }')
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@import "./theme.css";',
-        '',
-        '.native { color: red; }'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./theme.css\";\n\n.native { color: red; }")
 
       const result = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
         projectDir: root,
@@ -287,16 +282,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const homePath = path.join(root, 'home.css')
     const pagePath = path.join(root, 'page.tsx')
     try {
-      writeFileSync(homePath, [
-        '@theme { --color-active: #ff0000; }',
-        '@utilities { active-card { animation: active-spin 1s infinite; } }',
-        '@keyframes active-spin { to { opacity: .5; } }',
-        '.native-card { color: var(--color-active); }'
-      ].join('\n'))
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@import "./home.css";'
-      ].join('\n'))
+      writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @utility active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./home.css\";")
 
       const transformed = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
         projectDir: root,
@@ -353,26 +340,23 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('locally lowers @compose in CSS Modules without rewriting to the virtual CSS import', async () => {
+  test('preserves native declarations in CSS Modules without rewriting to the virtual CSS import', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
     const entryPath = path.join(root, 'app.css')
     const modulePath = path.join(root, 'Button.module.css')
     try {
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@theme { --color-brand: #123456; }'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import \"@master/css\";\n@theme {:root, :host { --color-brand: #123456; }}\n")
 
-      const result = await transformStyleSource(modulePath, '.button { @variant media(all){display:inline-flex;background-color:var(--color-brand);color:white;} }', {
+      const result = await transformStyleSource(modulePath, ".button { @media all {display:inline-flex;background-color:var(--color-brand);color:white;} }", {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
-      expect(result.code).toContain('.button{')
+      expect(result.code).toMatch(/\.button\s*\{/)
       expect(result.code).toContain('display:inline-flex')
       expect(result.code).toContain('background-color:var(--color-brand)')
       expect(result.globalStylesheet?.css).toContain('--color-brand:#123456')
-      expect(result.code).toContain('color:#fff')
+      expect(result.code).toMatch(/color:\s*(?:#fff|white)/)
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-utilities.css')
       expect(result.dependencies).toContain(entryPath)
@@ -392,12 +376,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, ".home { @variant media(all){padding-block:var(--spacing-5xl);} }", {
+      const result = await transformStyleSource(modulePath, ".home { @media all {padding-block:var(--spacing-5xl);} }", {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
-      expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
+      expect(result.code).toMatch(/\.home\s*\{[\s\S]*padding-block:\s*var\(--spacing-5xl\)/)
       expect(result.code).not.toContain('--spacing-5xl:')
       expect(result.globalStylesheet?.css).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-utilities.css')
@@ -423,9 +407,9 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       expect(error?.message).toContain('@compose has been removed')
       expect(error?.dependencies).toContain(modulePath)
 
-      const result = await runStylesheetLoader(root, modulePath, ".button { @variant media(all){display:block;} }")
-      expect(result.content).toContain('.button{display:block}')
-      expect(result.dependencies).toContain(modulePath)
+      const result = await runStylesheetLoader(root, modulePath, ".button { @media all{display:block;} }")
+      expect(result.content).toMatch(/\.button\s*\{[\s\S]*display:\s*block/)
+      expect(result.dependencies).toEqual([])
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -436,31 +420,16 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const modulePath = path.join(root, 'Button.module.css')
     const tokenPath = path.join(root, 'tokens.css')
     try {
-      writeFileSync(tokenPath, [
-        '@theme {',
-        '  --spacing-card: 2rem;',
-        '',
-        '  @keyframes pop {',
-        '    to { opacity: 1; }',
-        '  }',
-        '}',
-        '@utilities {',
-        '  brand {',
-        '    padding: var(--spacing-card);',
-        '    animation: pop 1s;',
-        '  }',
-        '}',
-        '.referenced-native { color: red; }'
-      ].join('\n'))
+      writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
 
-      const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @variant media(all){padding:var(--spacing-card);animation:pop 1s;} }', {
+      const result = await transformStyleSource(modulePath, "@reference \"./tokens.css\"; .button { @media all {padding:var(--spacing-card);animation:pop 1s;} }", {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
 
-      expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
+      expect(result.code).toMatch(/padding:\s*var\(--spacing-card\);[\s\S]*animation:\s*1s pop/)
       expect(result.globalStylesheet?.css).toContain('--spacing-card:2rem')
-      expect(result.globalStylesheet?.css).toContain('@keyframes pop')
+      expect(result.globalStylesheet?.css).not.toContain('@keyframes pop')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-utilities.css')
@@ -476,11 +445,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const localPath = path.join(root, name)
     try {
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@theme light { --color-brand: #123456; }',
-        '@theme dark { --color-brand: #abcdef; }'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import \"@master/css\";\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
       const result = await transformStyleSource(localPath, '.button { color: var(--color-brand); }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
@@ -518,7 +483,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const themePath = path.resolve(__dirname, '../../core/src/theme.css')
     const result = await transformStyleSource(
       themePath,
-      '@theme { --color-primary: red; }\n:root { color: red; }',
+      "@theme {:root, :host { --color-primary: red; }}\n\n:root { color: red; }",
       {
         projectDir: path.resolve(__dirname, '../../../examples/webpack')
       }
@@ -553,7 +518,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('font-weight:bold')
     expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
-      .toContain('"version":1')
+      .toContain('"version":2')
   })
 
   test('adds resolve file dependencies to Set and array-like containers', () => {
@@ -588,7 +553,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":1/)
+      .toMatch(/^export default \{"version":2/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('loadMasterCSSManifestModule')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -598,12 +563,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-manifest-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@utilities {',
-        '  card { @compose bg-missing-token; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import \"@master/css\";\n@utility card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -621,12 +581,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@utilities {',
-        "  card { @variant media(all){display:block;} }",
-        '}'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import \"@master/css\";\n@utility card { @media all{display:block;} }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
@@ -655,7 +610,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
     expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toBe('export default {"variables":{},"animations":{}};')
+      .toBe('export default {"variables":{}};')
   })
 
   test('resolves ?master-css-manifest imports to per-file JS facades and external JSON assets', async () => {
@@ -710,7 +665,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":1/)
+      .toMatch(/^export default \{"version":2/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .toContain('#456')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -720,11 +675,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
     const manifestPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(manifestPath, [
-        '@utilities {',
-        '  card { @compose bg-missing-token; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(manifestPath, "@utility card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -742,11 +693,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
-      writeFileSync(manifestPath, [
-        '@utilities {',
-        "  card { display:block; }",
-        '}'
-      ].join('\n'))
+      writeFileSync(manifestPath, "@utility card { display:block; }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect(resolveData.request).toContain('.manifest.js')

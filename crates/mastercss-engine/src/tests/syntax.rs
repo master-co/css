@@ -132,61 +132,23 @@ fn resolves_legacy_pseudo_elements_without_rewriting_explicit_double_colons() {
 }
 
 #[test]
-fn tracks_keyframes_only_from_animation_declarations() {
+fn animation_declarations_do_not_register_native_keyframes() {
     let manifest = include_str!("../../../../packages/preset/src/default-manifest.json");
     let mut engine = EngineSession::create(manifest).unwrap();
-    engine
-        .ensure_class_rules(["float:left", "rotate:180deg"])
-        .unwrap();
+    engine.ensure_class_rules(["float:left", "animation:float|1s"]).unwrap();
     assert!(!engine.css_text().contains("@keyframes"));
-    assert!(
-        engine
-            .inspect("float:left")
-            .unwrap()
-            .rules
-            .iter()
-            .all(|rule| rule.animation_names.is_empty())
-    );
-
-    engine.ensure_class_rules(["animation:float|1s"]).unwrap();
-    assert!(engine.css_text().contains("@keyframes float{"));
-    assert_eq!(
-        engine.inspect("animation:float|1s").unwrap().rules[0].animation_names,
-        ["float"]
-    );
+    assert!(engine.css_text().contains("animation:float 1s"));
+    assert!(serde_json::to_value(engine.snapshot().unwrap()).unwrap()["resources"].get("animations").is_none());
 }
 
 #[test]
-fn tracks_theme_variables_referenced_by_keyframes() {
-    let manifest = r##"{
-          "version":1,"languageVersion":3,
-          "variables":{"color":[{"name":"color-primary","key":"primary","value":"#ff0"}]},
-          "animations":{"fade":{"to":{"background":"var(--color-primary)"}}},
-          "utilities":[{
-            "id":".btn",
-            "name":"btn",
-            "type":-2,
-            "layer":"components",
-            "emit":{"type":"static","rules":[{"declarations":{"animation":"1s fade"}}]},
-            "matchers":[{"type":"static","name":"btn"}]
-          }]
-        }"##;
+fn native_keyframe_values_retain_theme_dependencies_as_stylesheet_usage() {
+    let manifest = r##"{"version":2,"languageVersion":4,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"#ff0"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"#ff0"}]}]}"##;
     let mut engine = EngineSession::create(manifest).unwrap();
-
-    engine.ensure_class_rules(["btn"]).unwrap();
-    assert_eq!(
-        engine.resource_snapshot().theme_text.as_deref(),
-        Some(":root,:host{--color-primary:#ff0}")
-    );
-    assert!(
-        engine
-            .css_text()
-            .contains("@keyframes fade{to{background:var(--color-primary)}}")
-    );
-
-    engine.delete_class_rules(["btn"]).unwrap();
-    assert!(engine.resource_snapshot().theme_text.is_none());
-    assert!(!engine.css_text().contains("@keyframes fade"));
+    engine.ensure_stylesheet_resources("@keyframes fade{to{background:var(--color-primary)}}").unwrap();
+    assert!(engine.css_text().contains("--color-primary:#ff0"));
+    assert!(!engine.css_text().contains("@keyframes"));
+    assert_eq!(engine.emitted_globals_snapshot().unwrap().variable_count("color-primary"), 1);
 }
 
 #[test]
@@ -239,7 +201,7 @@ fn renders_the_compiled_condition_grammar() {
 
 #[test]
 fn separates_child_selectors_from_dynamic_values() {
-    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
     engine.ensure_class_rules(["mt:0>div"]).unwrap();
     assert_eq!(
         engine.css_text(),
@@ -258,15 +220,7 @@ fn separates_child_selectors_from_dynamic_values() {
 
 #[test]
 fn native_property_precedes_overlapping_enum_name_inside_groups() {
-    let manifest = r#"{
-          "version":1,"languageVersion":3,
-          "utilities":[{
-            "id":"text-<wrap|pretty>",
-            "type":-2,
-            "emit":{"type":"static","rules":[{"declarations":{"text-wrap":null}}]},
-            "matchers":[{"type":"pattern","prefix":"text-","values":["wrap","pretty"]}]
-          }]
-        }"#;
+    let manifest = r#"{"version":2,"languageVersion":4,"utilities":[{"id":"text-wrap","type":-2,"emit":{"type":"static","rules":[{"declarations":{"text-wrap":"wrap"}}]},"matchers":[{"type":"static","name":"text-wrap"}],"name":"text-wrap"},{"id":"text-pretty","type":-2,"emit":{"type":"static","rules":[{"declarations":{"text-wrap":"pretty"}}]},"matchers":[{"type":"static","name":"text-pretty"}],"name":"text-pretty"}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["{text-wrap:pretty}"])
@@ -291,30 +245,14 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 
 #[test]
 fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
-    let manifest = r#"{
-          "version":1,"languageVersion":3,
-          "utilities":[
-            {
-              "id":"text-<left|center>",
-              "type":-2,
-              "emit":{"type":"template","declarations":{"text-align":"$value"}},
-              "matchers":[{"type":"pattern","prefix":"text-","values":["left","center"]}]
-            },
-            {
-              "id":"text-center",
-              "type":-2,
-              "emit":{"type":"static","rules":[{"declarations":{"text-align":"start"}}]},
-              "matchers":[{"type":"static","name":"text-center"}]
-            }
-          ]
-        }"#;
+    let manifest = r#"{"version":2,"languageVersion":4,"utilities":[{"id":"text-left","type":-2,"emit":{"type":"template","declarations":{"text-align":"$value"}},"matchers":[{"type":"static","name":"text-left"}],"name":"text-left"},{"id":"text-center","type":-2,"emit":{"type":"template","declarations":{"text-align":"$value"}},"matchers":[{"type":"static","name":"text-center"}],"name":"text-center"},{"id":"text-center","type":-2,"emit":{"type":"static","rules":[{"declarations":{"text-align":"start"}}]},"matchers":[{"type":"static","name":"text-center"}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.inspect("text-center").unwrap().rules[0].text,
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
     assert!(engine.inspect("margin:$(spacing-x1)").unwrap().match_status != mastercss_schema::MatchStatus::Matched);
     assert!(
         engine
@@ -327,7 +265,7 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
 #[test]
 fn preserves_all_static_rules_for_the_same_class_across_layers() {
     let manifest = r#"{
-          "version":1,"languageVersion":3,
+          "version":2,"languageVersion":4,
           "utilities":[
             {
               "id":"demo-defaults",
@@ -355,26 +293,7 @@ fn preserves_all_static_rules_for_the_same_class_across_layers() {
 
 #[test]
 fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
-    let manifest = r#"{
-          "version":1,"languageVersion":3,
-          "variables":{"":[
-            {
-              "name":"stripe",
-              "key":"stripe",
-              "type":"string",
-              "value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
-            }
-          ]},
-          "utilities":[{
-            "id":"bg-<~color>",
-            "type":0,
-            "variableAliasRefs":["~color"],
-            "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
-            "matchers":[
-              {"type":"token","prefix":"bg-"}
-            ]
-          }]
-        }"#;
+    let manifest = r#"{"version":2,"languageVersion":4,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]},"utilities":[{"id":"bg-<~color>","type":0,"variableAliasRefs":["~color"],"emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},"matchers":[{"type":"token","prefix":"bg-"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.native_declaration_candidates(["bg:var(--stripe)"]).unwrap(),
@@ -395,18 +314,7 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
 
 #[test]
 fn preserves_native_alias_matchers_for_shared_declarations() {
-    let manifest = r#"{
-          "version":1,"languageVersion":3,
-          "variables":{"":[
-            {
-              "name":"stripe",
-              "key":"stripe",
-              "type":"string",
-              "value":"linear-gradient(red,blue)"
-            }
-          ]},
-          "utilities":[]
-        }"#;
+    let manifest = r#"{"version":2,"languageVersion":4,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"utilities":[],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["background:var(--stripe)"])
@@ -419,113 +327,5 @@ fn preserves_native_alias_matchers_for_shared_declarations() {
     assert_eq!(
         engine.css_text(),
         "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
-    );
-}
-
-#[test]
-fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
-    let manifest = r##"{
-          "version":1,"languageVersion":3,
-          "variables":{"color":[
-            {"name":"color-primary","key":"primary","value":"#123","inline":true},
-            {"name":"color-brand","key":"brand","value":"var(--color-primary)","inline":true}
-          ]},
-          "utilities":[{
-            "id":"foreground",
-            "type":0,
-            "variableAliasRefs":["color"],
-            "emit":{"type":"property","property":"color"},
-            "matchers":[{"type":"token","prefix":"fg-"}]
-          }]
-        }"##;
-    let mut engine = EngineSession::create(manifest).unwrap();
-    engine.ensure_class_rules(["fg-brand"]).unwrap();
-    assert_eq!(
-        engine.css_text(),
-        "@layer utilities{.fg-brand{color:#123}}"
-    );
-    assert!(
-        engine
-            .snapshot()
-            .unwrap()
-            .resources
-            .theme_text
-            .is_none_or(|text| text.is_empty())
-    );
-}
-
-#[test]
-fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
-    let manifest = r##"{
-          "version":1,"languageVersion":3,
-          "modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],
-          "variables":{
-            "color":[
-              {"name":"color-white","key":"white","value":"oklch(100% 0 none)","inline":true},
-              {"name":"color-brand","key":"brand","value":"var(--color-white)","dependencies":["color-white"],"inline":true},
-              {"name":"color-gray-90","key":"gray-90","value":"oklch(23.5% 0 none)"}
-            ],
-            "color-surface":[
-              {
-                "name":"color-surface-raised",
-                "key":"raised",
-                "dependencies":["color-brand","color-gray-90"],
-                "modes":{
-                  "light":{"value":"VAR( --color-brand, red)"},
-                  "dark":{"value":"var(--color-gray-90)"}
-                }
-              }
-            ]
-          },
-          "utilities":[{
-            "id":"surface",
-            "type":0,
-            "variableAliasRefs":["color-surface"],
-            "emit":{"type":"property","property":"background-color"},
-            "matchers":[{"type":"token","prefix":"surface-"}]
-          }]
-        }"##;
-    let mut engine = EngineSession::create(manifest).unwrap();
-    engine.ensure_class_rules(["surface-raised"]).unwrap();
-    assert_eq!(
-        engine.css_text(),
-        "@layer theme{:root,:host{--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:oklch(100% 0 none)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
-    );
-    assert_eq!(
-        engine
-            .snapshot()
-            .unwrap()
-            .resources
-            .variables
-            .iter()
-            .map(|resource| resource.name.as_str())
-            .collect::<Vec<_>>(),
-        ["color-surface-raised", "color-gray-90"]
-    );
-
-    let refreshed = manifest.replace("oklch(100% 0 none)", "#fff");
-    engine.refresh(&refreshed).unwrap();
-    assert!(engine.css_text().contains("--color-surface-raised:#fff"));
-    assert!(!engine.css_text().contains("--color-white:"));
-
-    engine.delete_class_rules(["surface-raised"]).unwrap();
-    assert_eq!(engine.css_text(), "");
-}
-
-#[test]
-fn rejects_circular_inline_variable_references() {
-    let error = EngineSession::create(
-        r##"{
-              "version":1,"languageVersion":3,
-              "variables":{"color":[
-                {"name":"color-a","key":"a","value":"var(--color-b)","inline":true},
-                {"name":"color-b","key":"b","value":"var(--color-a)","inline":true}
-              ]}
-            }"##,
-    )
-    .unwrap_err();
-    assert_eq!(
-        error.to_string(),
-        "Invalid MasterCSSManifest engine field: Circular inline variable reference: color-a -> color-b -> color-a"
     );
 }

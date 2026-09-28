@@ -4,8 +4,8 @@ use super::{
     CssImportProvider, HashSet, InspectCssDirective, InspectCssResult, MinifyOptions,
     ParserOptions, PreparedCssImportProvider, PrinterOptions, ResolvedCssImportGraph,
     StandaloneCssDirectiveStatement, StyleSheet, filter_native_css_rules,
-    find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
-    parse_css_import_source, remove_css_reference_statements, utf16_to_byte_offset,
+    find_css_directive_ranges, find_css_import_statements, parse_css_import_source,
+    remove_css_reference_statements, utf16_to_byte_offset,
 };
 use crate::source_spans::MappedSource;
 use lightningcss::{rules::CssRule, traits::ToCss};
@@ -42,10 +42,10 @@ pub(crate) fn imported_css_wrappers(
     }
     if import.layer.is_some() || import.supports.is_some() || !import.media.media_queries.is_empty()
     {
-        let (_, definitions) = mastercss_lexer::extract_top_level_at_rule_blocks(
-            source,
-            &IMPORTED_DEFINITION_DIRECTIVES,
-        );
+        let definitions = mastercss_lexer::find_css_directive_ranges(source)
+            .into_iter()
+            .filter(|directive| IMPORTED_DEFINITION_DIRECTIVES.contains(&directive.name.as_str()))
+            .collect::<Vec<_>>();
         if let Some(definition) = definitions.first() {
             return Err(CompilerError::Import {
                 message: format!(
@@ -161,15 +161,8 @@ fn import_layer_name(statement: &str) -> Option<String> {
 }
 
 /// Definition directives an imported stylesheet may declare at its top level.
-pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 7] = [
-    "settings",
-    "mode",
-    "theme",
-    "custom-variant",
-    "defaults",
-    "components",
-    "utilities",
-];
+pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 4] =
+    ["theme", "custom-variant", "utility", "custom-media"];
 
 pub(crate) fn default_filename() -> String {
     "master.css".into()
@@ -286,14 +279,12 @@ pub(crate) fn extraction_policy_from_statements(
 }
 
 pub fn inspect_css(source: &str) -> InspectCssResult {
-    let has_master_entry_directive = !find_master_directive_statements(source).is_empty();
     let has_master_css_import = find_css_import_statements(source).iter().any(|statement| {
         parse_css_import_source(&statement.statement).as_deref() == Some("@master/css")
     });
     InspectCssResult {
-        has_master_entry_directive,
         has_master_css_import,
-        has_master_entry: has_master_entry_directive || has_master_css_import,
+        has_master_entry: has_master_css_import,
         directives: find_css_directive_ranges(source)
             .into_iter()
             .map(|directive| InspectCssDirective {
@@ -489,6 +480,7 @@ pub fn compile_native_css(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileNativeCssResult, CompilerError> {
+    crate::reject_removed_directives(source, &options.from)?;
     let policy = crate::analyze_standalone_directives(source);
     let prune = !policy.extraction_policy.preserve_native
         && (options.prune_native_css || policy.extraction_policy.prune_native);
@@ -498,13 +490,27 @@ pub fn compile_native_css(
             message: "preserveNativeSource cannot be combined with class pruning".into(),
         });
     }
-    let had_master_entry_directive = !find_master_directive_statements(source).is_empty();
-    let source = policy.code;
+    let (custom_media, ranges) = crate::custom_media::collect(source, &options.from)?;
+    let input = crate::CssDirectiveManifestInput {
+        custom_media: Some(custom_media),
+        ..Default::default()
+    };
+    let registry = crate::custom_media::resolve(&input, None)?;
+    let mut masked = source.as_bytes().to_vec();
+    for range in ranges {
+        for byte in &mut masked[range] {
+            if !matches!(*byte, b'\r' | b'\n') {
+                *byte = b' ';
+            }
+        }
+    }
+    let masked = String::from_utf8(masked).expect("CSS token boundaries");
+    let (lowered, _) = crate::custom_media::lower_css(&masked, &[], &registry, &options.from)?;
+    let source = crate::analyze_standalone_directives(&lowered).code;
     if !options.preserve_native_css {
         return Ok(CompileNativeCssResult {
             native_css: String::new(),
             css: String::new(),
-            had_master_entry_directive,
         });
     }
 
@@ -525,7 +531,6 @@ pub fn compile_native_css(
         return Ok(CompileNativeCssResult {
             native_css: source.clone(),
             css: source,
-            had_master_entry_directive,
         });
     }
     if prune && let Some(classes) = &options.classes {
@@ -552,6 +557,5 @@ pub fn compile_native_css(
     Ok(CompileNativeCssResult {
         native_css: css.clone(),
         css,
-        had_master_entry_directive,
     })
 }

@@ -4,7 +4,7 @@ import { ShadowNamespaceTable } from './components/ShadowNamespace'
 ## Overview [sr-only]
 Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
 
-Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset scale is mode-aware: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
+Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
 
 <ShadowScaleDemo />
 
@@ -37,7 +37,7 @@ Use surface roles for the ground and shadows for separation. A strong shadow on 
 ---
 
 ## Use shadow tokens
-Use `shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; the active mode changes the variable value.
+Use `shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; native `light-dark()` colors follow the element's `color-scheme`.
 
 ```html
 <!-- @MARK shadow-sm -->
@@ -46,7 +46,7 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
 </article>
 
 <!-- @MARK shadow-lg -->
-<div class="r-lg surface-overlay shadow-lg">
+<div class="r-lg surface-floating shadow-lg">
   ...
 </div>
 ```
@@ -93,18 +93,19 @@ Keep state changes small. Moving from `shadow-sm` to `shadow-md` is usually enou
 ---
 
 ## Customize mode-aware shadows
-Override the same `shadow-*` keys in `@theme light` and `@theme dark` when your product needs softer depth, sharper enterprise surfaces, or stronger overlays. Keep the token names size-based and mode-neutral so the markup does not fork by theme.
+Override the same `shadow-*` keys with `light-dark()` colors for manual and nested schemes. Native media queries are useful when a custom recipe intentionally follows only the system preference, as below. Keep the token names size-based and mode-neutral so the markup does not fork by theme.
 
 ```css name=index.css
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
   --shadow-lg: 0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(100% 0 none / .05), 0 2px 8px -4px oklch(0% 0 none / .36);
   --shadow-lg: 0 0 0 1px oklch(100% 0 none / .07), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
-}
+} } }
+
 ```
 
 ```html
@@ -148,15 +149,18 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 (o) Repeated decisions override a shadow scale token.
 
 ```css name=index.css
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
-}
+} } }
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
-}
+} } }
+
 ```
 
 ```html
 <aside class="shadow-sm">...</aside>
 ```
+
+The default six shadows keep the same geometry in both schemes and switch only their colors. `data-theme` and direct `color-scheme` changes update them without recompilation; see [Colors](/guide/colors#native-color-scheme-and-manual-themes).

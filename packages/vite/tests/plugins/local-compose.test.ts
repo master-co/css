@@ -7,11 +7,7 @@ import LocalStylesPlugin from '../../src/plugins/local-styles'
 function createFixture() {
   const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-'))
   mkdirSync(path.join(root, 'src'), { recursive: true })
-  writeFileSync(path.join(root, 'app.css'), `
-    @master entry;
-
-    @theme { --color-brand: #123456; }
-  `)
+  writeFileSync(path.join(root, 'app.css'), "\n    @import url(\"@master/css\");\n\n    @theme {:root, :host { --color-brand: #123456; }}\n\n  ")
   return root
 }
 
@@ -29,7 +25,7 @@ function createContext(root: string) {
 }
 
 describe('LocalStylesPlugin', () => {
-  test('lowers @compose in CSS Modules without emitting a Master CSS slot', async () => {
+  test('preserves native declarations in CSS Modules without emitting a Master CSS slot', async () => {
     const root = createFixture()
     try {
       const context = createContext(root)
@@ -39,16 +35,16 @@ describe('LocalStylesPlugin', () => {
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '.button { @variant media(all){display:inline-flex;background-color:var(--color-brand);color:white;} }',
+        ".button { @media all {display:inline-flex;background-color:var(--color-brand);color:white;} }",
         path.join(root, 'src/Button.module.css')
       )
 
-      expect(result.code).toContain('.button{')
-      expect(result.code).toContain('display:inline-flex')
+      expect(result.code).toMatch(/\.button\s*\{/)
+      expect(result.code).toMatch(/display:\s*inline-flex/)
       expect(result.code).toContain('background-color:var(--color-brand)'
       )
       expect(result.code).toContain('--color-brand:#123456')
-      expect(result.code).toContain('color:#fff')
+      expect(result.code).toMatch(/color:\s*(?:#fff|white)/)
       expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-css-slot')
       expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
@@ -62,7 +58,7 @@ describe('LocalStylesPlugin', () => {
     const root = createFixture()
     try {
       writeFileSync(path.join(root, 'app.css'), [
-        '@import "@master/css";',
+        '@import url("@master/css");',
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
       const context = createContext(root)
@@ -71,11 +67,11 @@ describe('LocalStylesPlugin', () => {
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        ".home { @variant media(all){padding-block:var(--spacing-5xl);} }",
+        ".home { @media all {padding-block:var(--spacing-5xl);} }",
         path.join(root, 'src/Home.module.css')
       )
 
-      expect(result.code).toContain('.home{padding-block:var(--spacing-5xl)}')
+      expect(result.code).toMatch(/\.home\s*\{[\s\S]*padding-block:\s*var\(--spacing-5xl\)/)
       expect(result.code).toContain('--spacing-5xl:')
       expect(result.code).not.toContain('master-css-slot')
       expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'app.css'))
@@ -97,7 +93,7 @@ describe('LocalStylesPlugin', () => {
       )).toBeUndefined()
       expect(await (plugin as any).transform.call(
         {},
-        "@master entry; .button { @variant media(all){display:block;} }",
+        "@import url(\"@master/css\"); .button { @media all {display:block;} }",
         path.join(root, 'src/app.css')
       )).toBeUndefined()
     } finally {
@@ -105,7 +101,7 @@ describe('LocalStylesPlugin', () => {
     }
   })
 
-  test('lowers @compose in SFC style requests', async () => {
+  test('preserves native declarations in SFC style requests', async () => {
     const root = createFixture()
     try {
       const context = createContext(root)
@@ -113,49 +109,34 @@ describe('LocalStylesPlugin', () => {
 
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        ".button { @variant media(all){display:block;} }",
+        ".button { @media all {display:block;} }",
         path.join(root, 'src/Button.vue') + '?vue&type=style&index=0&lang.css'
       )
 
-      expect(result.code).toBe('@media all{.button{display:block}}')
+      expect(result).toBeUndefined()
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
   })
 
-  test('lowers explicit @reference styles and watches the reference file', async () => {
+  test('resolves explicit @reference styles and watches the reference file', async () => {
     const root = createFixture()
     try {
       const themePath = path.join(root, 'src/theme.css')
-      writeFileSync(themePath, [
-        '@theme {',
-        '  --spacing-card: 2rem;',
-        '',
-        '  @keyframes pop {',
-        '    to { opacity: 1; }',
-        '  }',
-        '}',
-        '@utilities {',
-        '  brand {',
-        '    padding: var(--spacing-card);',
-        '    animation: pop 1s;',
-        '  }',
-        '}',
-        '.referenced-native { color: red; }'
-      ].join('\n'))
+      writeFileSync(themePath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
       const context = createContext(root)
       const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '@reference "./theme.css"; .button { @variant media(all){padding:var(--spacing-card);animation:pop 1s;} }',
+        "@reference \"./theme.css\"; .button { @media all {padding:var(--spacing-card);animation:pop 1s;} }",
         path.join(root, 'src/Button.module.css')
       )
 
-      expect(result.code).toContain('.button{padding:var(--spacing-card);animation:1s pop}')
+      expect(result.code).toMatch(/padding:\s*var\(--spacing-card\)/)
       expect(result.code).toContain('--spacing-card:2rem')
-      expect(result.code).toContain('@keyframes pop')
+      expect(result.code).not.toContain('@keyframes pop')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-css-slot')
@@ -168,11 +149,7 @@ describe('LocalStylesPlugin', () => {
   test.each(['Button.css', 'Button.module.css'])('emits native token references in local %s without a utility class', async (name) => {
     const root = createFixture()
     try {
-      writeFileSync(path.join(root, 'app.css'), [
-        '@master entry;',
-        '@theme light { --color-brand: #123456; }',
-        '@theme dark { --color-brand: #abcdef; }'
-      ].join('\n'))
+      writeFileSync(path.join(root, 'app.css'), "@import url(\"@master/css\");\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
       const plugin = LocalStylesPlugin({} as any, createContext(root))
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
@@ -207,11 +184,11 @@ describe('LocalStylesPlugin', () => {
 
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        ".button { @variant media(all){display:block;} }",
+        ".button { @media all{display:block;} }",
         modulePath
       )
 
-      expect(result.code).toContain('.button{display:block}')
+      expect(result).toBeUndefined()
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -230,7 +207,7 @@ describe('LocalStylesPlugin', () => {
 
       await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '.button { @variant media(all){background-color:var(--color-brand);} }',
+        ".button { @media all {background-color:var(--color-brand);} }",
         modulePath
       )
       const result = await (plugin as any).hotUpdate.call({
@@ -260,7 +237,7 @@ describe('LocalStylesPlugin', () => {
       const send = vi.fn()
       await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
-        '.button { @variant media(all){background-color:var(--color-brand);} }',
+        ".button { @media all {background-color:var(--color-brand);} }",
         modulePath
       )
       rmSync(entry)

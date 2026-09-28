@@ -52,9 +52,10 @@ Name a repeated feature setting in `@theme`, then use the token through the same
 <DemoExample page="font-feature-settings" section="use-feature-tokens" />
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --font-feature-data: 'tnum';
-}
+} }
+
 ```
 ```html
 <!-- A project token for numeric data -->

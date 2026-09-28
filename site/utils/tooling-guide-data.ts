@@ -8,7 +8,7 @@ export const toolingOptions = {
       { name: 'sort-classes', defaultValue: 'warn · fixable', description: 'Order and deduplicate class tokens.' },
       { name: 'no-invalid-classes', defaultValue: 'error · no automatic fix', description: 'Report recognized classes that emit invalid CSS.' },
       { name: 'no-conflicting-classes', defaultValue: 'warn · fixable', description: 'Resolve full or partial declaration overlaps in the same scope.' },
-      { name: 'prefer-canonical-classes', defaultValue: 'warn · fixable', description: 'Prefer the active manifest’s utilities, tokens, aliases, and condition order.' }
+      { name: 'prefer-canonical-classes', defaultValue: 'warn · fixable', description: 'Prefer the active manifest’s utilities, tokens, and property aliases.' }
     ]
   },
   canonical: {
@@ -17,7 +17,6 @@ export const toolingOptions = {
       { name: 'preferStaticUtilities', defaultValue: 'true', description: 'Normalize named utilities only when their cascade identity is preserved.' },
       { name: 'preferPropertyAliases', defaultValue: 'true', description: 'Use shorter property keys: margin:1rem → m:1rem.' },
       { name: 'preferCompositionUtilities', defaultValue: 'true', description: 'Combine declarations only when value sources and cascade priorities are preserved.' },
-      { name: 'preferConditionOrder', defaultValue: 'true', description: 'Normalize safe condition combinations: @dark@sm → @sm@dark.' },
     ]
   },
   lintSources: {
@@ -32,9 +31,9 @@ export const toolingOptions = {
   completions: {
     label: 'Selected completion results for p-',
     options: [
-      { name: 'p-sm', description: '(token --spacing-sm) .75rem' },
-      { name: 'p-md', description: '(token --spacing-md) 1rem' },
-      { name: 'p-lg', description: '(token --spacing-lg) 1.5rem' }
+      { name: 'p-sm', description: '(token --spacing-sm) :root,:host: .75rem' },
+      { name: 'p-md', description: '(token --spacing-md) :root,:host: 1rem' },
+      { name: 'p-lg', description: '(token --spacing-lg) :root,:host: 1.5rem' }
     ]
   },
   languageSources: {
@@ -73,7 +72,7 @@ export const toolingExamples = {
   },
   canonical: {
     title: 'Use the project vocabulary', language: 'mcss', sourceLabel: 'Before canonicalization', resultLabel: 'After canonicalization',
-    source: 'margin:1rem fg-red@dark@sm', result: 'm:1rem fg-red@sm@dark'
+    source: 'margin:1rem fg-red@dark@sm', result: 'm:1rem fg-red@dark@sm'
   },
   conflict: {
     title: 'One intended margin', language: 'mcss', sourceLabel: 'Before fix', resultLabel: 'After fix',
@@ -87,7 +86,7 @@ export const toolingExamples = {
   hover: {
     title: 'CSS reported by hover', language: 'html', resultLanguage: 'css', resultLabel: 'Hover output',
     source: '<button class="fg-white bg-blue-60:hover@sm">\n  Save\n</button>',
-    result: '@layer theme {\n  :root,\n  :host {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width>=52.125rem) {\n    .bg-blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
+    result: '@layer theme {\n  :root,\n  :host {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width >=52.125rem) {\n    .bg-blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
   },
   format: {
     title: 'Keep the important marker with its class', language: 'css', sourceLabel: 'Before formatting', resultLabel: 'After formatting',

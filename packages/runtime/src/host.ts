@@ -18,21 +18,8 @@ import { isDocumentRoot } from './hydration'
 
 export const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 
-interface RuntimeKeyframeRule extends RuntimeResourceRule {
-  native?: CSSKeyframesRule
-}
-
-interface RuntimeNonLayer {
-  rules: RuntimeKeyframeRule[]
-  tokenCounts: Map<string, number>
-}
-
 export function isLayerBlockRule(rule: CSSRule): rule is CSSLayerBlockRule {
   return rule.constructor.name === 'CSSLayerBlockRule'
-}
-
-function isKeyframesRule(rule: CSSRule): rule is CSSKeyframesRule {
-  return rule.constructor.name === 'CSSKeyframesRule'
 }
 
 export function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
@@ -42,8 +29,7 @@ export function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
 
 function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
   return {
-    variables: { ...(emittedGlobals?.variables || {}) },
-    animations: { ...(emittedGlobals?.animations || {}) }
+    variables: { ...(emittedGlobals?.variables || {}) }
   }
 }
 
@@ -51,7 +37,7 @@ function addEmittedGlobals(
   target: Required<MasterCSSEmittedGlobals>,
   source: MasterCSSEmittedGlobals
 ) {
-  for (const kind of ['variables', 'animations'] as const) {
+  for (const kind of ['variables'] as const) {
     for (const [name, count] of Object.entries(source[kind] || {})) {
       if (count) {
         target[kind][name] = Math.min(
@@ -83,7 +69,6 @@ export default class RuntimeHost {
   protected readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
   protected readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
   private readonly ruleClasses = new Map<HydratedGeneratedRule, string | Set<string>>()
-  protected readonly animationsNonLayer: RuntimeNonLayer = { rules: [], tokenCounts: new Map() }
   protected readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
 
   protected manifest: MasterCSSManifest
@@ -95,7 +80,7 @@ export default class RuntimeHost {
     const layers = LAYER_ORDER
       .map((name) => this.getLayerByName(name))
       .filter((layer): layer is RuntimeLayer => Boolean(layer?.text))
-    return [...layers, ...this.animationsNonLayer.rules]
+    return layers
   }
 
   constructor(
@@ -154,7 +139,6 @@ export default class RuntimeHost {
     const rank = LAYER_ORDER.indexOf(name as typeof LAYER_ORDER[number])
     for (let index = 0; index < sheet.cssRules.length; index++) {
       const rule = sheet.cssRules.item(index)!
-      if (isKeyframesRule(rule)) return index
       if (isLayerBlockRule(rule)) {
         const ruleRank = LAYER_ORDER.indexOf(rule.name as typeof LAYER_ORDER[number])
         if (ruleRank > rank) return index
@@ -237,38 +221,6 @@ export default class RuntimeHost {
     }
   }
 
-  protected insertKeyframes(key: string, text: string, index: number) {
-    if (this.animationsNonLayer.rules.some((rule) => rule.key === key)) return
-    const rule: RuntimeKeyframeRule = { key, name: key, text }
-    const boundedIndex = Math.max(0, Math.min(index, this.animationsNonLayer.rules.length))
-    this.animationsNonLayer.rules.splice(boundedIndex, 0, rule)
-    const sheet = this.getStyleSheet()
-    if (!sheet) return
-    let keyframesStartIndex = sheet.cssRules.length
-    for (let topIndex = 0; topIndex < sheet.cssRules.length; topIndex++) {
-      if (isKeyframesRule(sheet.cssRules.item(topIndex)!)) {
-        keyframesStartIndex = topIndex
-        break
-      }
-    }
-    const topIndex = keyframesStartIndex + boundedIndex
-    const insertedIndex = sheet.insertRule(text, Math.min(topIndex, sheet.cssRules.length))
-    rule.native = sheet.cssRules.item(insertedIndex) as CSSKeyframesRule
-  }
-
-  protected deleteKeyframes(key: string, index?: number) {
-    const foundIndex = index !== undefined && this.animationsNonLayer.rules[index]?.key === key
-      ? index
-      : this.animationsNonLayer.rules.findIndex((rule) => rule.key === key)
-    if (foundIndex === -1) return
-    const [rule] = this.animationsNonLayer.rules.splice(foundIndex, 1)
-    if (rule.native) {
-      const sheet = this.getStyleSheet()
-      const topIndex = this.findTopLevelRuleIndex(rule.native)
-      if (sheet && topIndex !== -1) sheet.deleteRule(topIndex)
-    }
-  }
-
   protected resetHostRuleState() {
     this.clearClassReferences()
     this.baseLayer.reset()
@@ -276,18 +228,13 @@ export default class RuntimeHost {
     this.defaultsLayer.reset()
     this.componentsLayer.reset()
     this.utilitiesLayer.reset()
-    this.animationsNonLayer.rules.length = 0
     this.resetResourceCounts()
   }
 
   protected resetResourceCounts() {
     this.themeLayer.tokenCounts.clear()
-    this.animationsNonLayer.tokenCounts.clear()
     for (const [name, count] of Object.entries(this.emittedGlobals.variables)) {
       if (count) this.themeLayer.tokenCounts.set(name, count)
-    }
-    for (const [name, count] of Object.entries(this.emittedGlobals.animations)) {
-      if (count) this.animationsNonLayer.tokenCounts.set(name, count)
     }
   }
 
@@ -302,14 +249,6 @@ export default class RuntimeHost {
         this.themeLayer.tokenCounts.set(
           name,
           (this.themeLayer.tokenCounts.get(name) || 0) + refCount
-        )
-      }
-    }
-    for (const { name, refCount } of resources.animations) {
-      if (refCount) {
-        this.animationsNonLayer.tokenCounts.set(
-          name,
-          (this.animationsNonLayer.tokenCounts.get(name) || 0) + refCount
         )
       }
     }
@@ -375,11 +314,6 @@ export default class RuntimeHost {
         this.setThemeResource(mutation.op === 'insert' ? mutation.text : '')
         continue
       }
-      if (mutation.target === 'keyframes') {
-        if (mutation.op === 'insert') this.insertKeyframes(mutation.key, mutation.text, mutation.index)
-        else this.deleteKeyframes(mutation.key, mutation.index)
-        continue
-      }
       const layer = this.getUtilityLayerByName(mutation.target)
       if (mutation.op === 'insert') {
         if (!mutation.rule) {
@@ -409,10 +343,8 @@ export default class RuntimeHost {
     if (!sheet) return
 
     const nativeLayers = new Map<string, CSSLayerBlockRule>()
-    const nativeKeyframes: CSSKeyframesRule[] = []
     for (const rule of sheet.cssRules) {
       if (isLayerBlockRule(rule)) nativeLayers.set(rule.name, rule)
-      else if (isKeyframesRule(rule)) nativeKeyframes.push(rule)
     }
     this.themeLayer.native = nativeLayers.get('theme') || null
     this.themeLayer.resourceText = snapshot.resources.themeText || ''
@@ -436,16 +368,6 @@ export default class RuntimeHost {
       this.registerClassRule(rule)
     }
 
-    const nativeKeyframesByName = new Map(nativeKeyframes.map((native) => [native.name, native]))
-    for (const resource of snapshot.resources.animations) {
-      const native = nativeKeyframesByName.get(resource.name)
-      this.animationsNonLayer.rules.push({
-        key: resource.name,
-        name: resource.name,
-        text: resource.text,
-        native
-      })
-    }
     this.syncResourceSnapshot(snapshot.resources)
   }
 

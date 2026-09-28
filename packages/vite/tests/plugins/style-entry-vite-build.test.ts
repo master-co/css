@@ -75,7 +75,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
       ],
       prefix: 'master-css-vite-import-order-',
       stylesheet: [
-        '@import "@master/css";',
+        '@import url("@master/css");',
         '@import "fake-font/index.css";',
         '',
         ':root { --native-color: red; }'
@@ -102,7 +102,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
       appClass: 'block',
       plugins: [masterCSS({ mode: 'runtime' })],
       stylesheet: [
-        '@import "@master/css";',
+        '@import url("@master/css");',
         '',
         'body { margin: 0; }'
       ].join('\n')
@@ -122,7 +122,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
         masterCSS({ mode })
       ],
       stylesheet: [
-        '@import "@master/css";',
+        '@import url("@master/css");',
         '',
         'body { margin: 0; }'
       ].join('\n')
@@ -142,7 +142,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
         masterCSS({ mode: 'static' })
       ],
       stylesheet: [
-        '@import "@master/css";',
+        '@import url("@master/css");',
         '',
         'body { margin: 0; }'
       ].join('\n')

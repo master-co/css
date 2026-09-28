@@ -5,10 +5,10 @@
 ```txt
 class string
   -> Rust EngineSession.ensure_class_rules(batch)
-  -> match Manifest v1 utilities
-  -> parse values, variables, selectors, modes, and conditions
+  -> match Manifest v2 utilities
+  -> parse values, variables, selectors, and conditions
   -> calculate stable priority and layer indexes
-  -> insert referenced variables and animations
+  -> insert referenced tokens with all authored scopes and dependencies
   -> transition / snapshot / resource IR
   -> @master/css TypeScript host applies CSS text or CSSOM mutations
 ```
@@ -30,25 +30,23 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
-The envelope stays Manifest v1; executable manifests and hydration must carry
-`languageVersion: 3`. Reject missing or unsupported language versions before
+Manifest and hydration envelopes are v2; executable data must carry
+`languageVersion: 4`. Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
 
 Conditions retain their ordered native wrappers and authored units. Named
-conditions, variants, and modes share a collision-checked namespace. Mode
-activation branches are explicit manifest data; theme variables inherit through
-CSS, and the engine does not infer light/dark triggers or color-scheme.
+custom media and variants share a collision-checked namespace. Theme trees retain explicit native selectors, ordered declarations and scoped values. The browser computes variable values. Modes, inline/static variables and managed keyframes are removed. Preset adaptive colors and shadow colors use native light-dark(); both branches remain live, and color-scheme is ordinary CSS. General hue aliases are fixed swatches.
 
 ## CSS Authoring To Manifest
 
 ```txt
-project CSS containing @master entry; or @import "@master/css"
+project CSS containing @import "@master/css"
   -> Rust project policy discovers and merges entries
   -> @master/css-compiler/project supplies filesystem and package resolution
   -> Rust compiler parses directives and native CSS
-  -> Rust compiler lowers Manifest v1 plus native CSS results
+  -> Rust compiler lowers Manifest v2 plus native CSS results
   -> compiler / integrations / ESLint / language-server share that manifest
   -> Rust engine executes the manifest
 ```
@@ -65,7 +63,7 @@ Main files:
 
 Risks:
 
-- Only `@master entry;` and `@import "@master/css"` identify project entries.
+- Only `@import "@master/css"` identifies a project entry; it loads the full preset.
 - Package CSS entrypoints must not accidentally identify themselves as project roots.
 - Import-graph order and manifest merge order affect every consumer.
 - Static utility layers affect semantic class output and cascade behavior.
@@ -113,7 +111,7 @@ Risks:
 document or shadow root
   -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest })
   -> runtime.observe()
-  -> register emitted variable/keyframe counts
+  -> register emitted variable counts; keyframes remain native CSS
   -> find or create style#master-css
   -> hydrate pre-rendered rules or connect current classes
   -> MutationObserver detects class and subtree changes

@@ -7,8 +7,8 @@ test('native and Wasm retain ordered native output, resource references and migr
   const entry = '/entry.css'
   const definitions = '/utilities.css'
   const files = {
-    [entry]: "@import \"./utilities.css\";@layer components{.button{@variant media(all){color:var(--color-accent);animation:1s spin;display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;color:red;color:blue;}}}",
-    [definitions]: '@theme{--color-accent:red;@keyframes spin{to{opacity:1}}}@utilities{paint-<red|blue>{color:var(--color-accent);animation:spin 1s}paint-<small|large>{font-size:--value()}}'
+    [entry]: "@import \"./utilities.css\";@layer components{.button{@variant always {color:var(--color-accent);animation:1s spin;display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;color:red;color:blue;}}}",
+    [definitions]: "@custom-variant always { @media all { @slot; } }@theme { :root, :host {--color-accent:red;} }\n@keyframes spin{to{opacity:1}}\n@utility paint-red {color:var(--color-accent);animation:spin 1s}@utility paint-blue {color:var(--color-accent);animation:spin 1s}@utility paint-small {font-size:small}@utility paint-large {font-size:large}"
   }
   const request = { graph: { entry, files, edges: [{ from: entry, specifier: './utilities.css', resolved: definitions }] }, urls: { [entry]: entry, [definitions]: definitions } }
   const result = native.compileCSSStylesheetGraph(request)
@@ -25,7 +25,7 @@ test('native and Wasm retain ordered native output, resource references and migr
   const migration = {
     from: 'rc-managed' as const, sourceVersion: '2.0.0-rc.managed',
     manifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] },
-    targetManifest: { version: 1 as const, languageVersion: 3 as const },
+    targetManifest: { version: 2 as const, languageVersion: 4 as const },
     stylesheets: ['@components{button{display:block}}.a{@compose button;}'],
     classLists: [['button:hover']], documents: []
   }

@@ -30,7 +30,7 @@ export default function DocFn({ children }: any) {
                   ? <DocDefaultValue className="vertical-align:middle">
                     <InlineCode lang="ts">{arg.defaultValue}</InlineCode>
                   </DocDefaultValue>
-                  : <code className="text-disabled!">-</code>
+                  : <code className="text-muted!">-</code>
                 }
               </td>
             </tr>

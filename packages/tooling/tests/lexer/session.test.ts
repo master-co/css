@@ -13,11 +13,11 @@ test('batches class lists, CSS inspection, and identifier escaping in Rust', () 
   try {
     const result = lexer.analyzeClassList({
       classLists: [{ source: '😀 fg\\:red  block', unescape: [':'] }],
-      cssSources: ['@master entry; @theme dark { --x: 1 }'],
+      cssSources: ["@import \"@master/css\"; @theme { .dark { --x: 1 } }\n"],
       escapeIdentifiers: ['fg:red']
     })
     expect(result.classLists[0].map(({ token }) => token)).toEqual(['😀', 'fg:red', 'block'])
-    expect(result.cssSources[0].directives.map(({ name }) => name)).toEqual(['master', 'theme'])
+    expect(result.cssSources[0].directives.map(({ name }) => name)).toEqual(['theme'])
     expect(result.escapedIdentifiers).toEqual(['fg\\:red'])
   } finally {
     lexer.dispose()

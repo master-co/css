@@ -13,7 +13,7 @@ test.each(['write', 'delete', 'none'])('resource names and bytes share one snaps
   const digest = (contents: string) => createHash('sha256').update(contents).digest('hex').slice(0, 20)
   for (const name of ['a', 'b']) {
     writeFileSync(join(root, `${name}.js`), `import './${name}.css'`)
-    writeFileSync(join(root, `${name}.css`), `@master entry;@preserve native;.${name}{background-image:url("./shared.svg?q=1#mark")}`)
+    writeFileSync(join(root, `${name}.css`), `@import "@master/css";@preserve native;.${name}{background-image:url("./shared.svg?q=1#mark")}`)
   }
   writeFileSync(resource, svg('red'))
   const compiler = webpack({ mode: 'production', context: root, entry: { a: './a.js', b: './b.js' }, cache: { type: 'memory' },

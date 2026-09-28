@@ -1,8 +1,8 @@
 use super::{
-    CompiledVariable, CompiledVariableMode, EngineError, EngineVariableIr, HashMap,
-    ManifestProjection, Map, MasterCssManifest, UtilityLayerName, UtilityMatcher, Value,
+    CompiledVariable, EngineError, EngineVariableIr, HashMap, ManifestProjection, Map,
+    MasterCssManifest, UtilityLayerName, UtilityMatcher, Value,
     append_builtin_native_declaration_utilities, append_builtin_token_utilities,
-    compile_utility_variables, split_top_level, transform_css_variable_references,
+    compile_utility_variables, split_top_level,
 };
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
@@ -23,7 +23,7 @@ pub(crate) fn compile_manifest(
     }
     let mut projection: ManifestProjection = serde_json::from_value(value)
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
-    if projection.version != 1 {
+    if projection.version != mastercss_schema::MANIFEST_VERSION {
         return Err(EngineError::InvalidManifest(
             "unsupported projection version".into(),
         ));
@@ -42,14 +42,6 @@ pub(crate) fn compile_manifest(
                 UtilityMatcher::Token { prefix } => prefix
                     .strip_suffix('-')
                     .is_some_and(mastercss_lexer::valid_utility_name),
-                UtilityMatcher::Pattern { prefix, values, .. } => {
-                    prefix
-                        .strip_suffix('-')
-                        .is_some_and(mastercss_lexer::valid_utility_name)
-                        && values
-                            .iter()
-                            .all(|key| mastercss_lexer::valid_utility_name(key))
-                }
             };
             if !valid {
                 return Err(EngineError::InvalidManifest(format!(
@@ -65,6 +57,19 @@ pub(crate) fn compile_manifest(
     let mut names = HashMap::new();
     for name in projection.conditions.keys() {
         names.insert(name.as_str(), "condition");
+    }
+    for (name, query) in &projection.custom_media {
+        let Some(name) = name.strip_prefix("--").filter(|name| !name.is_empty()) else {
+            return Err(EngineError::InvalidManifest(
+                "Custom media names must begin with --".into(),
+            ));
+        };
+        if names.insert(name, "custom media").is_some() {
+            return Err(EngineError::InvalidManifest(format!(
+                "Condition name {name} is defined more than once"
+            )));
+        }
+        crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
     }
     for variant in &projection.variants {
         let Some(name) = variant.token.strip_prefix('@') else {
@@ -83,78 +88,14 @@ pub(crate) fn compile_manifest(
                     .is_some_and(|layer| indexed == format!("@layer {}", layer_name(layer)))
             })
         });
-        let is_breakpoint = projection
-            .compiled_variables
-            .values()
-            .any(|variable| variable.namespace == "breakpoint" && variable.key == name);
         if let Some(kind) = names.insert(name, "variant")
-            && (kind != "condition" || !is_projection || is_breakpoint)
+            && (kind != "condition" || !is_projection)
         {
             return Err(EngineError::InvalidManifest(format!(
                 "Condition name {name} is defined more than once"
             )));
         }
     }
-    for mode in &projection.modes {
-        if let Some(kind) = names.insert(&mode.name, "mode") {
-            return Err(EngineError::InvalidManifest(format!(
-                "Condition name {} conflicts with {kind}; use a distinct mode name",
-                mode.name
-            )));
-        }
-        if !mastercss_lexer::valid_mode_name(&mode.name)
-            || mode.branches.is_empty()
-            || mode.branches.iter().any(|branch| {
-                !mastercss_lexer::valid_mode_selector(&branch.selector)
-                    || mastercss_lexer::replace_nesting_selector(&branch.selector, "").is_some()
-                    || branch.conditions.iter().any(|condition| {
-                        let Some((kind, prelude)) = condition
-                            .strip_prefix('@')
-                            .and_then(|value| value.split_once(' '))
-                        else {
-                            return true;
-                        };
-                        !matches!(kind, "media" | "supports")
-                            || !mastercss_lexer::native_query_structure(prelude)
-                    })
-            })
-        {
-            return Err(EngineError::InvalidManifest(format!(
-                "Invalid activation branches for mode {}",
-                mode.name
-            )));
-        }
-    }
-    for mode in &mut projection.modes {
-        mode.branches = mode
-            .branches
-            .iter()
-            .flat_map(|branch| {
-                mastercss_lexer::split_selector_list(&branch.selector)
-                    .into_iter()
-                    .map(|selector| {
-                        let mut branch = branch.clone();
-                        branch.selector = selector.to_owned();
-                        branch
-                    })
-            })
-            .collect();
-    }
-    for variable in projection.compiled_variables.values() {
-        for value in &variable.modes {
-            if !projection.modes.iter().any(|mode| mode.name == value.name) {
-                return Err(EngineError::InvalidManifest(format!(
-                    "Token {} refers to undefined mode {}; define @mode {}",
-                    variable.name, value.name, value.name
-                )));
-            }
-        }
-    }
-
-    resolve_compiled_inline_variable_references(
-        &mut projection.compiled_variables,
-        &projection.compiled_variable_order,
-    )?;
     append_builtin_token_utilities(&mut projection.utilities);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
@@ -210,49 +151,10 @@ pub(crate) fn compile_manifest(
                         .or_default()
                         .push(index);
                 }
-                UtilityMatcher::Pattern { prefix, values, .. } => {
-                    let mut unique = std::collections::HashSet::new();
-                    if !prefix.ends_with('-') || values.len() < 2 {
-                        return Err(EngineError::InvalidManifest(
-                            "Enum patterns require prefix-<a|b> with at least two keys".into(),
-                        ));
-                    }
-                    for value in values {
-                        if !unique.insert(value) {
-                            return Err(EngineError::InvalidManifest(format!(
-                                "Duplicate enum key {value} in {}",
-                                utility.id
-                            )));
-                        }
-                        let name = format!("{prefix}{value}");
-                        let entries = projection.enum_utilities.entry(name.clone()).or_default();
-                        if let Some(previous) = entries
-                            .iter()
-                            .map(|index| &projection.utilities[*index])
-                            .find(|previous| {
-                                previous.layer == utility.layer || !previous.matchers.iter().any(|matcher| {
-                                    matches!(matcher, UtilityMatcher::Pattern { prefix: previous_prefix, values: previous_values, .. }
-                                        if previous_prefix == prefix && previous_values.len() == values.len()
-                                            && previous_values.iter().all(|value| values.contains(value)))
-                                })
-                            })
-                        {
-                            return Err(EngineError::InvalidManifest(format!(
-                                "Overlapping enum name {name}: {} and {}",
-                                previous.id, utility.id
-                            )));
-                        }
-                        entries.push(index);
-                    }
-                }
             }
         }
     }
-    for name in projection
-        .static_utilities
-        .keys()
-        .chain(projection.enum_utilities.keys())
-    {
+    for name in projection.static_utilities.keys() {
         if projection.raw_utilities.get(name).is_some_and(|indexes| {
             indexes
                 .iter()
@@ -280,22 +182,12 @@ fn validate_native_utility(utility: &super::UtilityDefinition) -> Result<(), Eng
         }
         let keys: Vec<&str> = match matcher {
             UtilityMatcher::Key { keys } => keys.iter().map(String::as_str).collect(),
-            UtilityMatcher::Pattern { prefix, .. } => {
-                prefix.strip_suffix(':').into_iter().collect()
-            }
             _ => Vec::new(),
         };
         for key in keys {
             let property = super::builtin_key_alias(key).unwrap_or(key);
             if !mastercss_schema::is_native_css_property(property) {
                 continue;
-            }
-            if let UtilityMatcher::Pattern { value_map, .. } = matcher
-                && value_map.iter().any(|(key, value)| key != value)
-            {
-                return Err(EngineError::InvalidManifest(format!(
-                    "Native property {property}: cannot remap raw enum values"
-                )));
             }
             let rules = super::emit_declarations(utility, Some("var(--migration-value)"), false);
             let valid = rules.is_empty()
@@ -369,42 +261,13 @@ pub(crate) fn compile_variables(
             if name.is_empty() {
                 continue;
             }
-            let value = object.get("value").and_then(normalize_variable_value);
-            let source_value = object
-                .get("value")
-                .and_then(normalize_variable_source_value);
-            let source_modes = object
-                .get("modes")
-                .and_then(Value::as_object)
-                .cloned()
-                .unwrap_or_default();
-            let modes = if source_modes.is_empty() {
-                Vec::new()
-            } else {
-                source_modes
-                    .iter()
-                    .filter_map(|(mode, value)| {
-                        let value = value
-                            .as_object()?
-                            .get("value")
-                            .and_then(normalize_variable_value)?;
-                        Some(CompiledVariableMode {
-                            name: mode.clone(),
-                            value,
-                        })
-                    })
-                    .collect()
-            };
+            let values: Vec<mastercss_schema::ScopedThemeValue> =
+                serde_json::from_value(object.get("values").cloned().unwrap_or_default())
+                    .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
             let variable_type = object
                 .get("type")
                 .and_then(Value::as_str)
-                .unwrap_or_else(|| {
-                    if object.get("value").is_some_and(Value::is_number) {
-                        "number"
-                    } else {
-                        "string"
-                    }
-                })
+                .unwrap_or("string")
                 .to_owned();
             let dependencies = object
                 .get("dependencies")
@@ -426,128 +289,15 @@ pub(crate) fn compile_variables(
                     name,
                     key,
                     namespace: namespace.clone(),
-                    value,
-                    source_value,
+                    values,
                     numeric: object.get("numeric").cloned(),
-                    modes,
-                    source_modes,
                     variable_type,
                     dependencies,
-                    inline: object.get("inline").and_then(Value::as_bool) == Some(true),
-                    static_resource: object.get("static").and_then(Value::as_bool) == Some(true),
                 },
             );
         }
     }
     Ok((variables, order))
-}
-
-pub(crate) fn normalize_variable_source_value(value: &Value) -> Option<Value> {
-    match value {
-        Value::String(_) | Value::Number(_) => Some(value.clone()),
-        Value::Array(values) => values
-            .iter()
-            .map(normalize_variable_value)
-            .collect::<Option<Vec<_>>>()
-            .map(|values| Value::String(values.join(","))),
-        _ => None,
-    }
-}
-
-pub(crate) fn normalize_variable_value(value: &Value) -> Option<String> {
-    match value {
-        Value::String(value) => Some(value.clone()),
-        Value::Number(value) => Some(value.to_string()),
-        Value::Array(values) => values
-            .iter()
-            .map(normalize_variable_value)
-            .collect::<Option<Vec<_>>>()
-            .map(|values| values.join(",")),
-        _ => None,
-    }
-}
-
-pub(crate) fn resolve_compiled_inline_variable_references(
-    variables: &mut HashMap<String, CompiledVariable>,
-    variable_order: &[String],
-) -> Result<(), EngineError> {
-    let inline_reference_needles = variables
-        .values()
-        .filter(|variable| variable.inline && variable.value.is_some())
-        .map(|variable| format!("--{}", variable.name))
-        .collect::<Vec<_>>();
-    let mut resolved_variables = Vec::new();
-    for name in variable_order {
-        let Some(variable) = variables.get(name) else {
-            continue;
-        };
-        let mut stack = vec![variable.name.clone()];
-        let value = variable
-            .value
-            .as_deref()
-            .filter(|value| contains_inline_variable_reference(value, &inline_reference_needles))
-            .map(|value| resolve_inline_references_in_value(value, variables, &mut stack))
-            .transpose()?;
-        let mut modes = Vec::new();
-        for (index, mode) in variable.modes.iter().enumerate() {
-            if contains_inline_variable_reference(&mode.value, &inline_reference_needles) {
-                modes.push((
-                    index,
-                    resolve_inline_references_in_value(&mode.value, variables, &mut stack)?,
-                ));
-            }
-        }
-        if value.is_some() || !modes.is_empty() {
-            resolved_variables.push((name.clone(), value, modes));
-        }
-    }
-    for (name, value, modes) in resolved_variables {
-        let Some(variable) = variables.get_mut(&name) else {
-            continue;
-        };
-        if let Some(value) = value {
-            variable.value = Some(value);
-        }
-        for (index, value) in modes {
-            variable.modes[index].value = value;
-        }
-    }
-    Ok(())
-}
-
-pub(crate) fn contains_inline_variable_reference(value: &str, needles: &[String]) -> bool {
-    needles.iter().any(|needle| value.contains(needle))
-}
-
-pub(crate) fn resolve_inline_references_in_value(
-    value: &str,
-    variables: &HashMap<String, CompiledVariable>,
-    stack: &mut Vec<String>,
-) -> Result<String, EngineError> {
-    transform_css_variable_references(value, |name, _text| {
-        let Some(variable) = variables
-            .get(name)
-            .filter(|variable| variable.inline && variable.value.is_some())
-        else {
-            return Ok(None);
-        };
-        if let Some(index) = stack.iter().position(|resolving| resolving == name) {
-            let mut cycle = stack[index..].to_vec();
-            cycle.push(name.to_owned());
-            return Err(EngineError::InvalidManifest(format!(
-                "Circular inline variable reference: {}",
-                cycle.join(" -> ")
-            )));
-        }
-        stack.push(name.to_owned());
-        let resolved = resolve_inline_references_in_value(
-            variable.value.as_deref().unwrap_or_default(),
-            variables,
-            stack,
-        );
-        stack.pop();
-        resolved.map(Some)
-    })
 }
 
 pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableIr {
@@ -556,26 +306,8 @@ pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableI
         name: variable.name.clone(),
         key: variable.key.clone(),
         variable_type: variable.variable_type.clone(),
-        value: variable.source_value.clone(),
-        numeric: variable.numeric.clone(),
-        modes: variable.source_modes.clone(),
+        values: variable.values.clone(),
         dependencies: variable.dependencies.clone(),
-        inline: variable.inline,
-        static_resource: variable.static_resource,
-    }
-}
-
-pub(crate) fn serialize_literal_value(value: &Value) -> Option<String> {
-    match value {
-        Value::String(value) => Some(value.clone()),
-        Value::Number(value) => Some(value.to_string()),
-        Value::Bool(value) => Some(value.to_string()),
-        Value::Array(values) => values
-            .iter()
-            .map(serialize_literal_value)
-            .collect::<Option<Vec<_>>>()
-            .map(|values| values.join("")),
-        _ => None,
     }
 }
 

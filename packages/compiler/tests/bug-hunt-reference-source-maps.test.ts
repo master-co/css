@@ -19,9 +19,9 @@ for (const mapKind of ['relative', 'source-root', 'file-url']) for (const child 
     for (const side of ['a', 'b']) mkdirSync(join(root, 'origins', side), { recursive: true })
     const owner = join(root, 'style.scss'), originals = ['a', 'b'].map(side => join(root, 'origins', side, '_rules.scss'))
     const tokens = ['a', 'b'].map(side => join(root, 'origins', side, 'tokens.css'))
-    writeFileSync(tokens[0], '@theme{--spacing-a:2rem}.never-a{color:red}')
-    writeFileSync(tokens[1], '@theme{--spacing-b:3rem}.never-b{color:red}')
-    writeFileSync(join(root, 'tokens.css'), '@theme{--spacing-a:99rem;--spacing-b:99rem}')
+    writeFileSync(tokens[0], "@theme {:root, :host {--spacing-a:2rem}}\n\n.never-a{color:red}")
+    writeFileSync(tokens[1], "@theme {:root, :host {--spacing-b:3rem}}\n\n.never-b{color:red}")
+    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--spacing-a:99rem;--spacing-b:99rem}}\n\n")
     const sourceMap = JSON.stringify({ version: 3, file: owner, names: [],
       sourceRoot: mapKind === 'source-root' ? 'origins/' : '',
       sources: mapKind === 'file-url' ? originals.map(file => pathToFileURL(file).href) : ['a', 'b'].map(side => (mapKind === 'source-root' ? '' : 'origins/') + side + '/_rules.scss'),

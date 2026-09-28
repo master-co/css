@@ -85,13 +85,13 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 }
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
-  const manifest: MasterCSSManifest = {
-    version: 1, languageVersion: 3,
+  const manifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'x', value: 'red' }, { type: 'declaration', name: 'y', value: 'blue' }, { type: 'declaration', name: 'a', value: 'linear-gradient(var(--x),var(--y))' }, { type: 'declaration', name: 'z', value: 'green' }] }],
+    version: 2, languageVersion: 4,
     variables: { '': [
-      { name: 'x', key: 'x', value: 'red' },
-      { name: 'y', key: 'y', value: 'blue' },
-      { name: 'a', key: 'a', value: 'linear-gradient(var(--x),var(--y))', dependencies: ['x', 'y'] },
-      { name: 'z', key: 'z', value: 'green' }
+      { name: 'x', key: 'x', values: [{ path: [':root,:host'], value: 'red' }] },
+      { name: 'y', key: 'y', values: [{ path: [':root,:host'], value: 'blue' }] },
+      { name: 'a', key: 'a', values: [{ path: [':root,:host'], value: 'linear-gradient(var(--x),var(--y))' }], dependencies: ['x', 'y'] },
+      { name: 'z', key: 'z', values: [{ path: [':root,:host'], value: 'green' }] }
     ] },
     utilities: [
       utility('a', { 'background-image': 'var(--a)' }),
@@ -112,9 +112,9 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 1, languageVersion: 3,
-    modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
-    variables: { '': [{ name: 'primary', key: 'primary', modes: { light: { value: '#000000' }, dark: { value: '#ffffff' } } }] },
+    version: 2, languageVersion: 4,
+    theme: ['light', 'dark'].map((name, index) => ({ type: 'rule', prelude: `.${name}`, children: [{ type: 'declaration', name: 'primary', value: index ? '#ffffff' : '#000000' }] })),
+    variables: { '': [{ name: 'primary', key: 'primary', values: [{ path: ['.light'], value: '#000000' }, { path: ['.dark'], value: '#ffffff' }] }] },
     utilities: [utility('theme-color', { color: 'var(--primary)' })]
   }
   using renderer = createServerRenderer({ manifest })
@@ -148,7 +148,7 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 1, languageVersion: 3,
+      version: 2, languageVersion: 4,
       utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
         ...utility(layer, { color: 'red' }),
         layer: layer as 'base' | 'defaults' | 'components' | 'utilities',

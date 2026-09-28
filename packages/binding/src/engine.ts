@@ -17,7 +17,6 @@ export type {
 } from './engine-contract'
 export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
-  type MasterCSSEngineAnimationResource,
   type MasterCSSEngineDeleteMutation,
   type MasterCSSEngineExecutionState,
   type MasterCSSEngineInspection,

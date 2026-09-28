@@ -289,10 +289,8 @@ fn resolve_source_pattern(project_dir: &Path, entry: &Path, pattern: &str) -> St
     let path = Path::new(&pattern);
     let resolved = if path.is_absolute() {
         path.to_path_buf()
-    } else if pattern.starts_with("./") || pattern.starts_with("../") {
-        entry.parent().unwrap_or(project_dir).join(path)
     } else {
-        project_dir.join(path)
+        entry.parent().unwrap_or(project_dir).join(path)
     };
     normalize_path(&normalize_lexical_path(&resolved))
 }

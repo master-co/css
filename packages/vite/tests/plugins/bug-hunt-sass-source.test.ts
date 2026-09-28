@@ -27,7 +27,7 @@ async function compile(files: Record<string, string>, entry: string, css?: Inlin
 }
 
 test('BH-0004 managed and plain Sass invoke additionalData once per source', async () => {
-  for (const prefix of ['', '@master entry;@preserve native;']) {
+  for (const prefix of ['', "@import url(\"@master/css\");@preserve native;"]) {
     const additionalData = vi.fn((source: string) => `$paint:blue;${source}`)
     const output = await compile({ 'entry.scss': `${prefix}.example{color:$paint}` }, 'import "./entry.scss"', { preprocessorOptions: { scss: { additionalData } } })
     expect(additionalData).toHaveBeenCalledTimes(1)
@@ -38,7 +38,7 @@ test('BH-0004 managed and plain Sass invoke additionalData once per source', asy
 
 test('BH-0004 Sass preserves qualified CSS imports and nested external import positions', async () => {
   const output = await compile({
-    'entry.scss': '@import "./child.css" layer(shared) print;@master entry;@preserve native;.example{color:red}',
+    'entry.scss': "@import \"./child.css\" layer(shared) print;@import url(\"@master/css\");@preserve native;.example{color:red}",
     'child.css': '@import "https://external.test/paint.css"; .example{color:blue}'
   }, 'import "./entry.scss"')
   expect(output).toMatch(/layer\(shared\)\s+print/)
@@ -54,7 +54,7 @@ test('BH-0004 raw Sass bypasses stylesheet parsing and preprocessing', async () 
 })
 
 test('BH-0004 managed Sass modules retain Vite scoped names and named/default exports', async () => {
-  const output = await compile({ 'entry.module.scss': '@master entry;@preserve native;.example{color:blue}.default{color:red}' }, 'import names, { example } from "./entry.module.scss"; console.log(names.example, names.default, example)', { modules: { generateScopedName: 'scoped_[local]' } })
+  const output = await compile({ 'entry.module.scss': "@import url(\"@master/css\");@preserve native;.example{color:blue}.default{color:red}" }, 'import names, { example } from "./entry.module.scss"; console.log(names.example, names.default, example)', { modules: { generateScopedName: 'scoped_[local]' } })
   expect(output).toContain('.scoped_example')
   expect(output).toContain('"scoped_example"')
   expect(output).not.toContain('@master entry')

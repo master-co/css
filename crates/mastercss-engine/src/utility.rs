@@ -289,35 +289,6 @@ pub(crate) fn match_utility_filtered(
                     matcher_type: UtilityMatcherType::Static,
                 });
             }
-            UtilityMatcher::Pattern {
-                prefix,
-                values,
-                value_map,
-            } => {
-                let Some(value) = class_name.strip_prefix(prefix) else {
-                    continue;
-                };
-                let Some(candidate) = values.iter().find(|candidate| {
-                    value
-                        .strip_prefix(candidate.as_str())
-                        .is_some_and(is_match_state_boundary)
-                }) else {
-                    continue;
-                };
-                let state_token = &value[candidate.len()..];
-                return Some(UtilityMatch {
-                    value: Some(
-                        value_map
-                            .get(candidate)
-                            .cloned()
-                            .unwrap_or_else(|| candidate.to_string()),
-                    ),
-                    value_normalized: false,
-                    state_token: state_token.to_owned(),
-                    variable_names: Vec::new(),
-                    matcher_type: UtilityMatcherType::Pattern,
-                });
-            }
             UtilityMatcher::Key { keys } => {
                 for key in keys {
                     let Some(raw_value) = class_name
@@ -405,10 +376,6 @@ pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
             })
 }
 
-pub(crate) fn resolve_inline_variable_value(variable: &CompiledVariable) -> Option<String> {
-    variable.value.clone()
-}
-
 pub(crate) fn resolve_utility_value(
     value: &str,
     utility: &UtilityDefinition,
@@ -424,21 +391,13 @@ pub(crate) fn resolve_utility_value(
         if !(0.0..=1.0).contains(&alpha) {
             return None;
         }
-        let color = if variable.inline {
-            resolve_inline_variable_value(variable)?
-        } else {
-            format!("var(--{})", variable.name)
-        };
+        let color = format!("var(--{})", variable.name);
         return Some((
             format!(
                 "color-mix(in oklab,{color} {}%,transparent)",
                 format_standard_number(alpha * 100.0)
             ),
-            if variable.inline {
-                Vec::new()
-            } else {
-                vec![variable.name.clone()]
-            },
+            vec![variable.name.clone()],
         ));
     }
     let (negative, key) = value
@@ -448,17 +407,6 @@ pub(crate) fn resolve_utility_value(
     let variable = manifest.compiled_variables.get(variable_name)?;
     if negative && variable.variable_type != "number" {
         return None;
-    }
-    if variable.inline {
-        let value = resolve_inline_variable_value(variable)?;
-        return Some((
-            if negative {
-                format!("calc({value} * -1)")
-            } else {
-                value
-            },
-            Vec::new(),
-        ));
     }
     let reference = format!("var(--{})", variable.name);
     Some((
@@ -554,10 +502,7 @@ pub(crate) fn resolve_value_components(
             variable_names.push(name);
         }
     }
-    (
-        normalize_css_math_functions(&output, &manifest.settings),
-        variable_names,
-    )
+    (normalize_css_math_functions(&output), variable_names)
 }
 
 pub(crate) fn is_match_state_boundary(rest: &str) -> bool {

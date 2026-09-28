@@ -8,7 +8,7 @@ import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tool
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest = createPresetManifest({
-  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }],
+  variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }],
   utilities: [
     {
       name: 'btn',
@@ -81,7 +81,7 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 })
 
 test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
-  const source = "\n    @safelist \"hidden fg-red\";\n\n    @theme {\n      --color-brand: var(--brand, #123);\n\n      @keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n    }\n\n    @utilities {\n      btn {\n        @safelist \"block fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n    }\n  "
+  const source = "\n    @safelist \"hidden fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @utility btn {\n        @safelist \"block fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -105,23 +105,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 })
 
 test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
-  const source = `
-    @custom-variant motion-safe {
-      @media (prefers-reduced-motion: no-preference) {
-        @slot;
-      }
-    }
-
-    @utilities {
-      font-<~font-size> {
-        font-size: --value();
-
-        @light {
-          color: var(--color-brand);
-        }
-      }
-    }
-  `
+  const source = "\n    @custom-variant motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @slot;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: --master-value();\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
 
   expect(tokens).toEqual([])

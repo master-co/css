@@ -2,16 +2,16 @@
 
 ## Responsibility
 
-Canonical Manifest v1 execution: class matching, values, selectors, conditions,
+Canonical Manifest v2 execution: class matching, values, selectors, conditions,
 priority, resources, rule generation, snapshots, and transitions.
 
 ## Module Routing
 
 - `session.rs`, `state.rs`: lifecycle, batch execution, snapshots, transition state.
 - `utility.rs`, `value_syntax.rs`: utility lookup and value/declaration matching.
-- `condition.rs`: modes, selectors, and conditional wrappers.
+- `condition.rs`: custom media, variants, selectors, and conditional wrappers.
 - `generation.rs`, `render.rs`: generated rule assembly and render IR.
-- `resources.rs`, `stylesheet_resources.rs`: variables, animations, and references.
+- `resources.rs`, `stylesheet_resources.rs`: scoped variables and references.
 - `manifest.rs`: manifest indexes and normalization.
 - `completion.rs`: completion-facing engine data.
 - `tests/`: lifecycle and syntax behavior; `tests.rs` owns broader unit coverage.

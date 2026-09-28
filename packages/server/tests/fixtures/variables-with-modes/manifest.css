@@ -1,8 +1,9 @@
 
-@theme light {
+@theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-primary: #000000;
-}
+} } }
 
-@theme dark {
+
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #ffffff;
-}
+} } }

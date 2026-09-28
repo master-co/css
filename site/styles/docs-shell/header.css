@@ -11,7 +11,7 @@
     margin-inline: var(--spacing-md);
 
     &:disabled {
-      color: var(--color-text-disabled);
+      color: var(--color-text-muted);
       cursor: not-allowed;
     }
 

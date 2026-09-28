@@ -15,7 +15,7 @@
   .benchmark-reading { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-2xs) var(--spacing-xs); }
   .benchmark-value { color: var(--color-text-strong); font-family: var(--font-family-mono); font-size: var(--font-size-sm); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .benchmark-detail { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-  .benchmark-track { height: .5rem; overflow: hidden; border-radius: var(--radius-xs); background: var(--color-surface-muted); }
+  .benchmark-track { height: .5rem; overflow: hidden; border-radius: var(--radius-xs); background: var(--color-surface-inset); }
   .benchmark-fill { height: 100%; border-radius: inherit; }
   .benchmark-stack { display: flex; height: .75rem; }
   .benchmark-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-xs) var(--spacing-md); }
@@ -30,7 +30,7 @@
   .benchmark-data { border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); min-width: 0; }
   .benchmark-data > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; cursor: pointer; list-style: none; }
   .benchmark-data > summary::-webkit-details-marker { display: none; }
-  .benchmark-data > summary:hover { background: var(--color-surface-muted); }
+  .benchmark-data > summary:hover { background: var(--color-surface-inset); }
   .benchmark-data-heading { display: grid; gap: .125rem; min-width: 0; }
   .benchmark-data-kicker { color: var(--color-text-muted); font: 600 .625rem/1.4 var(--font-family-mono); text-transform: uppercase; letter-spacing: .07em; }
   .benchmark-data-heading strong { color: var(--color-text-strong); font-size: .875rem; font-weight: 560; line-height: 1.3; }
@@ -43,7 +43,7 @@
   .benchmark-table-scroll table { width: max-content; min-width: 100%; margin: 0; font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
   .benchmark-table-scroll :is(th, td) { padding: var(--spacing-xs) var(--spacing-sm); white-space: nowrap; }
   .benchmark-table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--color-demo-canvas); }
-  .benchmark-table-scroll tbody tr:hover { background: var(--color-surface-muted); }
+  .benchmark-table-scroll tbody tr:hover { background: var(--color-surface-inset); }
   .benchmark-data > summary:focus-visible, .benchmark-table-scroll:focus-visible { outline: 2px solid var(--color-demo-blue); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .benchmark-data-chevron { transition: none; } }
   .benchmark-source { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1rem; margin-block: var(--spacing-md); padding-top: .75rem; border-top: 1px solid var(--color-line-subtle); font-size: .75rem; }

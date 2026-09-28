@@ -2,7 +2,7 @@ import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { getThemeNumericVariableEntries, getThemeVariables } from './theme-variables'
 import { filterNamespaceKeys } from './manifest-utilities'
-import { presetBreakpointConditions, presetContainerConditions } from '../common/preset-css'
+import { presetBreakpointQueries, presetContainerConditions } from '../common/preset-css'
 import generateManifestCondition from './generate-manifest-condition'
 import { groups as spacingGroups } from '../app/[locale]/guide/spacing/components/namespace-groups'
 import { groups as containerGroups } from '../app/[locale]/guide/containers/components/namespace-groups'
@@ -57,14 +57,13 @@ const length = (value: number, unit: string) => `${Number(value.toFixed(4))}${un
 function numericScale(namespace: string, descriptions: Record<string, string> = {}) {
   const entries = getThemeNumericVariableEntries(namespace)
   const referenceUnit = entries.every(entry => entry.unit === 'rem') ? 'px' : 'rem'
-  return entries.map(entry => `- ${code(`--${namespace}-${entry.key}`)}: ${code(entry.value)} (${length(entry[referenceUnit], referenceUnit)} reference).${descriptions[entry.key] ? ` ${descriptions[entry.key]}` : ''}`).join('\n')
+  return entries.map(entry => `- ${code(namespace === 'breakpoint' ? `--${entry.key}` : `--${namespace}-${entry.key}`)}: ${code(entry.value)} (${length(entry[referenceUnit], referenceUnit)} reference).${descriptions[entry.key] ? ` ${descriptions[entry.key]}` : ''}`).join('\n')
 }
 
 function queryScale(namespace: 'breakpoint' | 'container') {
-  const conditions = namespace === 'breakpoint' ? presetBreakpointConditions : presetContainerConditions
   return getThemeNumericVariableEntries(namespace).map(entry => {
     const variant = namespace === 'breakpoint' ? `@${entry.key}` : `@container(${entry.key})`
-    return `- ${code(variant)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; ${code(generateManifestCondition(conditions[entry.key]))}.`
+    return `- ${code(variant)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; ${code(namespace === 'breakpoint' ? presetBreakpointQueries[entry.key] : generateManifestCondition(presetContainerConditions[entry.key]))}.`
   }).join('\n')
 }
 
@@ -94,7 +93,7 @@ function foundationComponent(slug: string, name: string, attributes: Record<stri
   if (name === 'PresetThemeColors') {
     const group = attributes.group as PresetThemeColorGroup
     if (!Object.hasOwn(rowsByGroup, group)) throw new Error(`Unknown preset color group: ${group}`)
-    return rowsByGroup[group].map(row => `- ${code(row.token)} / ${row.utilities.map(code).join(', ')}: ${rowDescriptionByGroup[group](row.key)} Light: ${code(row.light)}. Dark: ${code(row.dark)}.`).join('\n')
+    return rowsByGroup[group].map(row => `- ${code(row.token)} / ${row.utilities.map(code).join(', ')}: ${rowDescriptionByGroup[group](row.key)} Native value: ${code(row.value)}.`).join('\n')
   }
   if (name === 'ShadowTokenTable') return getShadowRows().map(row => `- ${code(row.token)} / ${code(row.utility)} — ${row.role}. ${row.description}`).join('\n')
 }

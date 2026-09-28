@@ -9,7 +9,6 @@ export interface ToolEditorial {
 const context = 'Semantic context. Defaults to `project`; entry discovery or compilation failures are reported without falling back. Select `preset` explicitly for standalone preset queries.'
 const patterns = 'Source paths or glob patterns relative to the server root. Omit to use the tool’s default source scope. Absolute patterns and parent traversal are rejected.'
 const className = 'One complete Master CSS class, including any selector or condition suffix.'
-const mode = 'Mode passed to class inspection. Omit to use the active manifest’s default behavior.'
 const rules = 'Comma-separated native lint rule IDs, `recommended`, or `all`. These tools do not load an ESLint configuration.'
 const filePath = 'Virtual workspace-relative path used to infer the source language; the buffer does not need to exist on disk.'
 const ttlMs = 'Preview lifetime in milliseconds. Omit to use the server’s `--preview-ttl` setting, which defaults to 300000 (5 minutes).'
@@ -39,13 +38,13 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   },
   mastercss_inspect_class: {
     purpose: 'Check how one class is interpreted by the active manifest. Use `mastercss_trace_class` when the question is whether project scanning actually finds it.',
-    fields: { context, className, mode }, example: { className: 'p-md' }, exampleNote: 'Inspect a preset spacing class in the connected workspace.',
+    fields: { context, className }, example: { className: 'p-md' }, exampleNote: 'Inspect a preset spacing class in the connected workspace.',
     output: 'The result includes `className`, `matchStatus`, `cssSyntaxStatus`, `cssValueStatus`, `browserSupport`, `rules`, semantic inspection data, and the generated `css` string. Check `manifest.status` and entries before using custom tokens. A matched class alone does not establish that it appears in scanned source.',
     lifecycle: readOnly
   },
   mastercss_trace_class: {
     purpose: 'Trace a class through source discovery, scanner state, and generated CSS to explain why it is present or missing.',
-    fields: { context, className, patterns, includeCss: 'Include the full generated stylesheet text in `css.text`. Omitted by default.', mode },
+    fields: { context, className, patterns, includeCss: 'Include the full generated stylesheet text in `css.text`. Omitted by default.' },
     example: { className: 'p-md', patterns: ['src/button.html'], includeCss: true }, exampleNote: 'The file must exist under the server root and contain the class you want to trace.',
     output: 'Read `status`, `reason`, and `detected` together, then inspect `occurrences`, `inspection`, `scanner`, and `diagnostics`. `css` describes the scan output. A matched inspection and a detected source occurrence answer different questions.',
     lifecycle: readOnly
@@ -60,7 +59,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_inspect_directives: {
     purpose: 'Inspect directive structure and compilation effects from an entry stylesheet or a CSS buffer. Provide `entryPath` or `content`; an empty arguments object cannot be compiled.',
     fields: { context, content: 'CSS buffer to inspect when `entryPath` is absent.', filePath: 'Virtual path for the CSS buffer. Defaults to `master.css`.', entryPath: 'Existing stylesheet path inside the workspace. Takes precedence over `content`.', preserveNativeCSS: 'Forward the native-CSS preservation option to compilation.' },
-    example: { content: '@theme { --color-brand: blue; }', filePath: 'app.css' }, exampleNote: 'Inspect an isolated token definition without changing the project entry.',
+    example: { content: '@theme { :root { --color-brand: blue; } }', filePath: 'app.css' }, exampleNote: 'Inspect an isolated token definition without changing the project entry.',
     output: 'Read `status` and `diagnostics`, then `directiveEntries`, manifest and directive summaries, CSS sizes, dependencies, and warnings. Compilation failures return the error branch of the MCP envelope with diagnostics and `isError`.',
     lifecycle: readOnly
   },
@@ -79,10 +78,10 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     lifecycle: readOnly
   },
   mastercss_manifest_query: {
-    purpose: 'Look up registered tokens, utilities, variants, modes, conditions, and aliases in the active manifest.',
+    purpose: 'Look up registered tokens, utilities, variants, conditions, and aliases in the active manifest.',
     fields: { context, query: 'Case-insensitive substring query. Omit for all entries in the selected kinds.', kind: 'Category to return. Defaults to `all`.', namespace: 'Exact namespace filter for tokens and utilities. Other categories are not filtered by namespace.', limit: 'Maximum entries returned per category, not across the whole response. Defaults to 50.' },
     example: { kind: 'token', namespace: 'color', query: 'brand', limit: 10 }, exampleNote: 'This query returns a brand color only if the loaded manifest defines one.',
-    output: '`results` groups tokens, utilities, variants, modes, conditions, and aliases. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
+    output: '`results` groups tokens, utilities, variants, conditions, and aliases. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
     lifecycle: readOnly
   },
   mastercss_css_compare: {

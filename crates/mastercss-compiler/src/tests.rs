@@ -28,10 +28,9 @@ impl CssImportProvider for MemoryImportProvider {
 #[test]
 fn recognizes_only_explicit_project_entry_markers() {
     let inspection = inspect_css("@master entry;");
-    assert!(inspection.has_master_entry_directive);
     assert!(!inspection.has_master_css_import);
-    assert!(inspection.has_master_entry);
-    assert_eq!(inspection.directives.len(), 1);
+    assert!(!inspection.has_master_entry);
+    assert!(inspection.directives.is_empty());
     assert!(inspect_css("@import \"@master/css\";").has_master_entry);
     assert!(!inspect_css("@master;").has_master_entry);
     assert!(!inspect_css("@master global;").has_master_entry);
@@ -48,11 +47,11 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
                 ),
                 (
                     "/theme.css".into(),
-                    "@reference \"./tokens.css\";\n@import \"./utilities.css\";\n@theme{--color-brand:red}".into(),
+                    "@reference \"./tokens.css\";\n@import \"./utilities.css\";\n@theme{:root, :host {--color-brand:red}}".into(),
                 ),
                 (
                     "/utilities.css".into(),
-                    "@utilities{block{display:block}}".into(),
+                    "@utility block {display:block}".into(),
                 ),
             ]),
             resolutions: HashMap::from([
@@ -79,7 +78,7 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
             .source
             .starts_with("@import \"https://example.com/font.css\";\n")
     );
-    assert!(graph.source.contains("@utilities{block{display:block}}"));
+    assert!(graph.source.contains("@utility block {display:block}"));
     assert!(graph.source.ends_with(".entry{display:block}"));
 }
 
@@ -104,13 +103,18 @@ fn rejects_provider_import_cycles_deterministically() {
 }
 
 #[test]
-fn compiles_native_css_and_removes_entry_directive() {
+fn native_css_rejects_removed_entry_directive() {
+    let error = compile_native_css(
+        "@master entry;\n.card { color: red; }",
+        &CompileNativeCssOptions::default(),
+    )
+    .unwrap_err();
+    assert!(error.diagnostic().range.is_some());
     let result = compile_native_css(
-        "@master entry;\n.card { color: red; margin: 0px 1.0rem; }",
+        ".card { color: red; margin: 0px 1.0rem; }",
         &CompileNativeCssOptions::default(),
     )
     .unwrap();
-    assert!(result.had_master_entry_directive);
     assert_eq!(
         result.native_css,
         ".card {\n  color: red;\n  margin: 0 1rem;\n}"
@@ -148,51 +152,47 @@ fn filters_native_selectors_without_losing_discovered_classes() {
 #[test]
 fn lowers_theme_tokens_and_preserves_native_css() {
     let result = compile_css_directives(
-        "@theme { --color-brand: rgb(0 128 255); --leading-tight: 1.0; }\n.card { color: red; }",
+        "@theme { :root, :host { --color-brand: rgb(0 128 255); --leading-tight: 1.0; }}\n.card { color: red; }",
         &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
+    ).unwrap();
     assert_eq!(
         serde_json::to_value(result.manifest_input).unwrap(),
         serde_json::json!({
-            "variables": [
-                { "name": "color-brand", "value": "#0080ff" },
-                { "name": "leading-tight", "value": 1 }
-            ]
+            "theme": [{"type":"rule","prelude":":root,:host","children":[
+                {"type":"declaration","name":"color-brand","value":"#0080ff"},
+                {"type":"declaration","name":"leading-tight","value":"1"}
+            ]}]
         })
     );
     assert_eq!(result.native_css, ".card {\n  color: red;\n}");
 }
 
 #[test]
-fn lowers_theme_modifiers_and_replaces_duplicate_mode_tokens_in_order() {
+fn theme_preserves_all_scopes_and_repeated_declarations() {
     let result = compile_css_directives(
-        "@theme { --color-brand: #111; --color-accent: #222; }\n\
-             @theme dark static { --color-brand: #333; }\n\
-             @theme { --color-brand: #444; }",
+        "@theme{:root{--color-brand:#111;--color-accent:#222}[data-theme=dark]{--color-brand:#333}:root{--color-brand:#444}}",
         &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
-    assert_eq!(
-        serde_json::to_value(result.manifest_input).unwrap(),
-        serde_json::json!({
-            "variables": [
-                { "name": "color-accent", "value": "#222" },
-                { "name": "color-brand", "value": "#333", "mode": "dark", "static": true },
-                { "name": "color-brand", "value": "#444" }
-            ]
-        })
-    );
+    ).unwrap();
+    let theme = serde_json::to_value(result.manifest_input).unwrap()["theme"].clone();
+    assert_eq!(theme.as_array().unwrap().len(), 3);
+    assert_eq!(theme[0]["children"][0]["value"], "#111");
+    assert_eq!(theme[1]["prelude"], "[data-theme=dark]");
+    assert_eq!(theme[1]["children"][0]["value"], "#333");
+    assert_eq!(theme[2]["children"][0]["value"], "#444");
 }
 
 #[test]
-fn rejects_invalid_theme_modifier_combinations() {
+fn rejects_removed_theme_modifiers_with_original_ranges() {
     let error = compile_css_directives(
         "/*😀*/\n@theme dark inline { --color-brand: #fff; }",
         &CompileNativeCssOptions::default(),
     )
     .unwrap_err();
-    assert_eq!(error.to_string(), "@theme inline cannot be mode-specific");
+    assert!(
+        error
+            .to_string()
+            .contains("does not accept modes, inline or static")
+    );
     assert_eq!(
         error.diagnostic().range,
         Some(SourceRange { start: 7, end: 13 })
@@ -200,118 +200,89 @@ fn rejects_invalid_theme_modifier_combinations() {
 }
 
 #[test]
-fn lowers_static_theme_keyframes_outside_layers() {
+fn keyframes_require_native_stylesheet_ownership() {
     let result = compile_css_directives(
-        "@theme static {\n\
-               --color-brand: #123;\n\
-               @keyframes fade {\n\
-                 from, 50% { opacity: 0; transform: translateX(0px); }\n\
-                 to { opacity: 1 !important; }\n\
-               }\n\
-             }",
+        "@theme{:root{--color-brand:#123}}@keyframes fade{from,50%{opacity:0}to{opacity:1}}",
         &CompileNativeCssOptions::default(),
     )
     .unwrap();
-    assert_eq!(
-        serde_json::to_value(result.manifest_input).unwrap(),
-        serde_json::json!({
-            "variables": [{ "name": "color-brand", "value": "#123", "static": true }],
-            "animations": {
-                "fade": {
-                    "from": { "opacity": "0", "transform": "translateX(0)" },
-                    "50%": { "opacity": "0", "transform": "translateX(0)" },
-                    "to": { "opacity": "1 !important" }
-                }
-            },
-            "animationOptions": { "fade": { "static": true } }
-        })
+    assert!(result.native_css.contains("@keyframes fade"));
+    assert!(
+        serde_json::to_value(result.manifest_input)
+            .unwrap()
+            .get("animations")
+            .is_none()
+    );
+    assert!(
+        compile_css_directives(
+            "@theme{@keyframes fade{to{opacity:1}}}",
+            &CompileNativeCssOptions::default()
+        )
+        .is_err()
     );
 }
 
 #[test]
 fn preserves_native_theme_functions_dollars_and_pipes() {
     let result = compile_css_directives(
-        "@theme {\n\
-               --color-muted: --alpha(var(--color-primary) / .5);\n\
-               --content-quoted: \"a | b\";\n\
-               --content-piped: a | b;\n\
-             }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
-    assert_eq!(
-        serde_json::to_value(result.manifest_input).unwrap(),
-        serde_json::json!({
-            "variables": [
-                {
-                    "name": "color-muted",
-                    "value": "--alpha(var(--color-primary) / .5)"
-                },
-                { "name": "content-quoted", "value": "\"a | b\"" },
-                { "name": "content-piped", "value": "a | b" }
-            ]
-        })
-    );
-
-    let result = compile_css_directives(
-        "@theme { --money: $100; --pipe: a|b; } .data { --value: --value(); --money: $100; --pipe:a|b; }",
+        r#"@theme{:root{--color-muted:--alpha(var(--color-primary) / .5);--content-quoted:"a | b";--content-piped:a | b;--money:$100;--pipe:a|b}}.data{--value:--value();--money:$100;--pipe:a|b}"#,
         &CompileNativeCssOptions::default(),
     ).unwrap();
-    let variables = serde_json::to_value(result.manifest_input).unwrap();
-    assert_eq!(variables["variables"][0]["value"], "$100");
-    assert_eq!(variables["variables"][1]["value"], "a|b");
-    assert!(result.native_css.contains("--value()"));
-    assert!(result.native_css.contains("$100"));
-    assert!(result.native_css.contains("a|b"));
+    let theme = serde_json::to_value(result.manifest_input).unwrap();
+    let declarations = &theme["theme"][0]["children"];
+    assert_eq!(
+        declarations[0]["value"],
+        "--alpha(var(--color-primary) / .5)"
+    );
+    assert_eq!(declarations[1]["value"], "\"a | b\"");
+    assert_eq!(declarations[2]["value"], "a | b");
+    assert_eq!(declarations[3]["value"], "$100");
+    assert_eq!(declarations[4]["value"], "a|b");
+    for literal in ["--value()", "$100", "a|b"] {
+        assert!(result.native_css.contains(literal));
+    }
 }
 
 #[test]
-fn lowers_settings_into_the_canonical_manifest_input() {
-    let result = compile_css_directives(
+fn settings_are_removed_at_the_directive_boundary() {
+    let error = compile_css_directives(
         "@settings { important: on; scope: .app; }",
         &CompileNativeCssOptions::default(),
     )
-    .unwrap();
+    .unwrap_err();
+    assert!(error.to_string().contains("@settings has been removed"));
     assert_eq!(
-        serde_json::to_value(result.manifest_input).unwrap(),
-        serde_json::json!({ "scope": ".app", "important": true })
+        error.diagnostic().range,
+        Some(SourceRange { start: 0, end: 9 })
     );
 }
 
 #[test]
-fn lowers_static_managed_definitions_with_utf16_source_ranges() {
-    let result = compile_css_directives(
-            "/* 😀 */\n@utilities {\n  btn { display: inline-flex; color: red; }\n}\n@utilities { content-auto { content-visibility: auto; } }",
-            &CompileNativeCssOptions::default(),
-        )
-        .unwrap();
-    let definitions = serde_json::Value::Array(
-        result
-            .manifest_input
-            .utilities
-            .unwrap()
-            .into_iter()
-            .flat_map(|definition| definition["body"].as_array().cloned().unwrap())
-            .collect(),
-    );
-    assert_eq!(definitions[0]["layer"], "utilities");
-    assert_eq!(definitions[0]["declarations"][0]["property"], "display");
-    assert_eq!(definitions[0]["declarations"][0]["value"], "inline-flex");
-    assert_eq!(
-        definitions[0]["declarations"][0]["source"]["range"],
-        serde_json::json!({"start":30,"end":50})
-    );
-    assert_eq!(
-        definitions[0]["declarations"][1]["source"]["range"],
-        serde_json::json!({"start":52,"end":62})
-    );
-    assert_eq!(
-        definitions[0]["selectorSource"]["range"],
-        serde_json::json!({"start":24,"end":27})
-    );
-    assert_eq!(definitions[1]["name"], "content-auto");
-    assert_eq!(
-        definitions[1]["declarations"][0]["source"]["range"],
-        serde_json::json!({"start":96,"end":120})
-    );
+fn lowers_static_utilities_with_utf16_source_ranges() {
+    let source = "/* 😀 */\n@utility btn { display: inline-flex; color: red; }\n@utility content-auto { content-visibility: auto; }";
+    let result = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
+    let definitions = result.manifest_input.utilities.unwrap();
+    for (definition, name, property, value) in [
+        (&definitions[0], "btn", "display", "inline-flex"),
+        (
+            &definitions[1],
+            "content-auto",
+            "content-visibility",
+            "auto",
+        ),
+    ] {
+        let body = &definition["body"][0];
+        assert_eq!(body["name"], name);
+        assert_eq!(body["layer"], "utilities");
+        assert_eq!(body["declarations"][0]["property"], property);
+        assert_eq!(body["declarations"][0]["value"], value);
+        let declaration = format!("{property}: {value}");
+        let start = source[..source.find(&declaration).unwrap()]
+            .encode_utf16()
+            .count();
+        assert_eq!(
+            body["declarations"][0]["source"]["range"],
+            serde_json::json!({"start":start,"end":start+declaration.len()})
+        );
+    }
 }

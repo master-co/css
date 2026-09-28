@@ -72,7 +72,7 @@ fn css(manifest: &serde_json::Value, classes: &str) -> String {
 #[test]
 fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation() {
     let project = Project::new();
-    let entry_source = r###"@import './styles/child.css' layer(outer) supports(display:grid) screen;@master entry;@utilities{paint{color:red}}@utilities{button{color:red;}}"###;
+    let entry_source = r###"@import './styles/child.css' layer(outer) supports(display:grid) screen;@import '@master/css';@utility paint {color:red}@utility button {color:red;}"###;
     let child_source = "@import 'https://invalid.invalid/external.css';@source './views/*.html';.native{background:url('./missing.png')}";
     let entry = project.file("entry.css", entry_source);
     let child = project.file("styles/child.css", child_source);
@@ -84,7 +84,7 @@ fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation()
             &[(&entry, entry_source), (&child, child_source)],
             &[(&entry, "./styles/child.css", &child)],
         )],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap();
     assert!(css(&result.manifest, "button paint").contains(".button{color:red}"));
@@ -99,9 +99,8 @@ fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation()
 #[test]
 fn references_resolve_managed_definitions_without_importing_their_sources_or_classes() {
     let project = Project::new();
-    let entry_source =
-        "@master entry;@reference './tokens.css';@utilities{button{@variant paint{color:red;}}}";
-    let reference_source = "@import 'https://invalid.invalid/external.css';@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@utilities{paint{color:blue}}.reference-native{color:blue}";
+    let entry_source = "@import '@master/css';@reference './tokens.css';@utility button {@variant paint{color:red;}}";
+    let reference_source = "@import 'https://invalid.invalid/external.css';@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@utility paint {color:blue}.reference-native{color:blue}";
     let entry = project.file("entry.css", entry_source);
     let reference = project.file("tokens.css", reference_source);
     project.file("ignored/view.html", "ignored");
@@ -112,7 +111,7 @@ fn references_resolve_managed_definitions_without_importing_their_sources_or_cla
             &[(&entry, entry_source), (&reference, reference_source)],
             &[(&entry, "./tokens.css", &reference)],
         )],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap();
     let generated = css(&result.manifest, "button paint");
@@ -130,7 +129,7 @@ fn references_resolve_managed_definitions_without_importing_their_sources_or_cla
 #[test]
 fn prepared_reference_cycles_and_missing_edges_remain_errors() {
     let project = Project::new();
-    let source = "@master entry;@reference './tokens.css';";
+    let source = "@import '@master/css';@reference './tokens.css';";
     let referenced = "@reference './entry.css';";
     let entry = project.file("entry.css", source);
     let tokens = project.file("tokens.css", referenced);
@@ -145,7 +144,7 @@ fn prepared_reference_cycles_and_missing_edges_remain_errors() {
     let error = load_project_manifest_graphs_with_root(
         &project.0,
         vec![input],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap_err();
     assert!(
@@ -155,7 +154,7 @@ fn prepared_reference_cycles_and_missing_edges_remain_errors() {
     let error = load_project_manifest_graphs_with_root(
         &project.0,
         vec![graph(&entry, &[(&entry, source)], &[])],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap_err();
     assert!(
@@ -167,8 +166,8 @@ fn prepared_reference_cycles_and_missing_edges_remain_errors() {
 #[test]
 fn structured_project_entries_merge_in_order() {
     let project = Project::new();
-    let first = "@master entry;@utilities{choice{color:red}}";
-    let second = "@master entry;@utilities{choice{color:blue}}";
+    let first = "@import '@master/css';@utility choice {color:red}";
+    let second = "@import '@master/css';@utility choice {color:blue}";
     let a = project.file("a.css", first);
     let b = project.file("b.css", second);
     let result = load_project_manifest_graphs_with_root(
@@ -177,7 +176,7 @@ fn structured_project_entries_merge_in_order() {
             graph(&a, &[(&a, first)], &[]),
             graph(&b, &[(&b, second)], &[]),
         ],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap();
     let actual = css(&result.manifest, "choice");
@@ -193,7 +192,7 @@ fn structured_project_entries_merge_in_order() {
             graph(&b, &[(&b, second)], &[]),
             graph(&a, &[(&a, first)], &[]),
         ],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     )
     .unwrap();
     assert!(css(&reversed.manifest, "choice").contains(".choice{color:red}"));

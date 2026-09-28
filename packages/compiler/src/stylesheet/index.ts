@@ -53,7 +53,6 @@ export {
 } from './directives'
 
 const STYLESHEET_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
-const MASTER_CSS_ENTRY_DIRECTIVE_NAME = 'entry'
 const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
 const MASTER_CSS_MODULE_IDS = ['@master/css'] as const
 
@@ -322,10 +321,6 @@ export async function createMasterCSSPackageHostSource(
   }
 }
 
-export function hasMasterEntryDirective(source: string) {
-  return findStylesheetDirectiveStatements(source).some((statement) => statement.name === MASTER_CSS_ENTRY_DIRECTIVE_NAME)
-}
-
 export function hasPreserveNativeDirective(source: string) {
   return findStylesheetDirectiveStatements(source)
     .some((statement) => statement.atRuleName === 'preserve' && statement.modifiers.includes('native'))
@@ -411,15 +406,13 @@ export async function compileRenderedStylesheet(
 
 function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
   return {
-    variables: {},
-    animations: {}
+    variables: {}
   }
 }
 
 function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
   return Boolean(
     Object.keys(emittedGlobals?.variables || {}).length
-    || Object.keys(emittedGlobals?.animations || {}).length
   )
 }
 
@@ -643,8 +636,7 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
   return {
     css,
     emittedGlobals: {
-      variables: {},
-      animations: {}
+      variables: {}
     }
   }
 }

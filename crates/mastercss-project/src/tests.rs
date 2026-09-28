@@ -25,18 +25,18 @@ fn discovers_entries_and_compiles_local_imports() {
     let project = temp_project();
     fs::write(
         project.join("entry.css"),
-        "@master entry; @import './components.css';",
+        "@import '@master/css';@custom-media --always true; @import './components.css';",
     )
     .unwrap();
     fs::write(
         project.join("components.css"),
-        "@utilities { btn { display: block; } }",
+        " @utility btn { display: block; } ",
     )
     .unwrap();
     fs::create_dir_all(project.join("node_modules/ignored")).unwrap();
     fs::write(
         project.join("node_modules/ignored/entry.css"),
-        "@master entry;",
+        "@import '@master/css';@custom-media --always true;",
     )
     .unwrap();
 
@@ -44,7 +44,7 @@ fn discovers_entries_and_compiles_local_imports() {
     assert_eq!(entries.len(), 1);
     let result = load_project_manifest_entries(
         &entries,
-        serde_json::json!({ "version": 1,"languageVersion":3, "utilities": [] }),
+        serde_json::json!({ "version": 2,"languageVersion":4, "utilities": [] }),
     )
     .unwrap();
     let mut scanner = ScannerSession::create(&result.manifest.to_string()).unwrap();
@@ -68,8 +68,12 @@ fn excludes_generated_stylesheets_from_implicit_entries_only() {
     let entry = project.join("entry.css");
     let generated = project.join(".master/stylesheets/revision/entry.css");
     fs::create_dir_all(generated.parent().unwrap()).unwrap();
-    fs::write(&entry, "@master entry;").unwrap();
-    fs::write(&generated, "@master entry;").unwrap();
+    fs::write(&entry, "@import '@master/css';@custom-media --always true;").unwrap();
+    fs::write(
+        &generated,
+        "@import '@master/css';@custom-media --always true;",
+    )
+    .unwrap();
 
     assert_eq!(
         find_css_manifest_entries(&project),
@@ -78,7 +82,7 @@ fn excludes_generated_stylesheets_from_implicit_entries_only() {
 
     let explicit = load_project_manifest_entries(
         std::slice::from_ref(&generated),
-        serde_json::json!({ "version": 1,"languageVersion":3, "utilities": [] }),
+        serde_json::json!({ "version": 2,"languageVersion":4, "utilities": [] }),
     )
     .unwrap();
     assert_eq!(
@@ -98,7 +102,7 @@ fn lowers_native_variants_against_the_base_manifest() {
     let entry = project.join("entry.css");
     fs::write(
         &entry,
-        r###"@master entry; .hidden-card { @variant media(all) { display:none; } }"###,
+        r###"@import '@master/css';@custom-media --always true; .hidden-card { @variant always { display:none; } }"###,
     )
     .unwrap();
     let base_manifest = serde_json::from_str(include_str!(
@@ -129,7 +133,7 @@ fn resolves_entry_owned_source_plans_and_arbitrary_extensions() {
     fs::create_dir_all(&shared).unwrap();
     fs::write(
         styles.join("entry.css"),
-        r#"@master entry;
+        r#"@import '@master/css';@custom-media --always true;
 @source "../templates/**/*.{liquid,erb}";
 @source not "../templates/skip.*";
 @source "../../shared/*.cshtml";"#,
@@ -154,7 +158,7 @@ fn resolves_entry_owned_source_plans_and_arbitrary_extensions() {
 
     let result = load_project_manifest(
         &project,
-        serde_json::json!({ "version": 1,"languageVersion":3, "utilities": [] }),
+        serde_json::json!({ "version": 2,"languageVersion":4, "utilities": [] }),
     )
     .unwrap();
     let entry_plan = &result.source_plan.entries[0];
@@ -178,30 +182,33 @@ fn resolves_entry_owned_source_plans_and_arbitrary_extensions() {
 }
 
 #[test]
-fn resolves_bare_source_patterns_from_the_project_root() {
+fn resolves_bare_source_patterns_from_the_declaring_stylesheet() {
     let project = temp_project();
     fs::create_dir_all(project.join("styles")).unwrap();
-    fs::create_dir_all(project.join("views")).unwrap();
+    fs::create_dir_all(project.join("styles/views")).unwrap();
     fs::write(
         project.join("styles/entry.css"),
-        "@master entry; @source \"views/*.tmpl\";",
+        "@import '@master/css';@custom-media --always true; @source \"views/*.tmpl\";",
     )
     .unwrap();
     fs::write(
-        project.join("views/page.tmpl"),
+        project.join("styles/views/page.tmpl"),
         "<div class=\"block\"></div>",
     )
     .unwrap();
 
     let result = load_project_manifest(
         &project,
-        serde_json::json!({ "version": 1,"languageVersion":3, "utilities": [] }),
+        serde_json::json!({ "version": 2,"languageVersion":4, "utilities": [] }),
     )
     .unwrap();
     assert_eq!(
         result.source_plan.files,
         vec![normalize_path(
-            &project.join("views/page.tmpl").canonicalize().unwrap()
+            &project
+                .join("styles/views/page.tmpl")
+                .canonicalize()
+                .unwrap()
         )]
     );
 

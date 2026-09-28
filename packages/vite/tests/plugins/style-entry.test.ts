@@ -90,7 +90,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";\n.card{color:red}',
+      '@import url("@master/css");\n.card{color:red}',
       '/project/src/style.css'
     )
 
@@ -110,7 +110,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";\n@import "@fontsource/fira-mono";\n.card{color:red}',
+      '@import url("@master/css");\n@import "@fontsource/fira-mono";\n.card{color:red}',
       '/project/src/style.css'
     )
 
@@ -129,7 +129,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";\n.card{color:red}',
+      '@import url("@master/css");\n.card{color:red}',
       '/project/src/style.css'
     )
 
@@ -146,12 +146,7 @@ describe('StyleEntryPlugin', () => {
 
     await expect((plugin as any).transform.call(
       { addWatchFile },
-      [
-        '@master entry;',
-        '@utilities {',
-        '    card { @compose bg-missing-token; }',
-        '}'
-      ].join('\n'),
+      "@import url(\"@master/css\");\n@utility card { @compose bg-missing-token; }",
       '/project/src/style.css'
     )).rejects.toThrow('@compose has been removed')
 
@@ -164,7 +159,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";\n@import "@fontsource/fira-mono";\n.card{color:red}',
+      '@import url("@master/css");\n@import "@fontsource/fira-mono";\n.card{color:red}',
       '/project/src/style.css'
     )
 
@@ -186,7 +181,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";',
+      '@import url("@master/css");',
       '/project/src/style.css'
     )
 
@@ -208,7 +203,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@import "@master/css";\n@import "@fontsource/fira-mono";',
+      '@import url("@master/css");\n@import "@fontsource/fira-mono";',
       '/project/src/style.css'
     )
 
@@ -228,7 +223,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@master entry;\n.card{color:red}',
+      "@import url(\"@master/css\");\n.card{color:red}",
       '/project/src/style.css'
     )
 
@@ -237,7 +232,7 @@ describe('StyleEntryPlugin', () => {
       prunesNativeCSS: false,
       source: expect.stringContaining('.card')
     })
-    expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@master entry;')
+    expect(getStylesheet(context, '/project/src/style.css')?.source).toContain("@import url(\"@master/css\");")
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
@@ -260,7 +255,7 @@ describe('StyleEntryPlugin', () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
-    expect(await (plugin as any).transform.call({}, '@import "@master/css";', '/project/src/main.ts')).toBeUndefined()
+    expect(await (plugin as any).transform.call({}, '@import url("@master/css");', '/project/src/main.ts')).toBeUndefined()
     expect(await (plugin as any).transform.call({}, '@import "virtual:master-utilities.css";', '/project/src/style.css')).toBeUndefined()
     expect(await (plugin as any).transform.call({}, '@import "theme.css";', '/project/src/style.css')).toBeUndefined()
     expect(await (plugin as any).transform.call({}, '@import "./other.css";', '/project/src/style.css')).toBeUndefined()

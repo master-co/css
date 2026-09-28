@@ -43,7 +43,7 @@ export default function PageContent({ metadata }: any) {
           }
         </div>
       }
-      <ul className='pl-md bl:1px|solid|var(--color-line-muted)'>
+      <ul className='pl-md bl:1px|solid|var(--color-line-subtle)'>
         {
           pageContent.map((eachPageContentNav: any) => {
             return <li key={eachPageContentNav.id}>

@@ -375,11 +375,11 @@ interface ScopeStyleEntry {
 }
 
 const SEMANTIC_SCOPE_STYLE_PROBE = [
-  '@theme light inline {',
-  '  --token: var(--value);',
+  '@theme {',
+  '  :root { --token: var(--value); }',
   '}',
-  '@utilities {',
-  '  btn { display: block; &:hover { color: red; } }',
+  '@utility btn {',
+  '  display: block; &:hover { color: red; }',
   '}',
   '.x, div > li:hover::before {',
   '  color: red !important;',
@@ -765,7 +765,7 @@ function analyzeMasterCSSShikiDocument(
     const classNames = [...new Set(classPositions.map(({ token }) => token))]
     const semanticClasses = new Set(classNames.length
       ? session.classifyClassNames(classNames).classes
-        .filter(({ kind }) => kind === 'semantic' || kind === 'pattern' || kind === 'token')
+        .filter(({ kind }) => kind === 'semantic' || kind === 'token')
         .map(({ className }) => className)
       : [])
     const semanticUtilityStarts = new Set(classPositions

@@ -10,12 +10,8 @@ export interface ProjectStyleExample {
 export const projectStyleExamples = {
   tokens: {
     title: 'A small project vocabulary',
-    source: `@theme {
-  --color-brand: var(--color-text-link);
-  --spacing-card: 1.5rem;
-  --radius-card: .75rem;
-}`,
-    html: `<article class="p-card r-card b:1px|solid|var(--color-line-base) surface-raised text-body">
+    source: "@theme { :root, :host {\n  --color-brand: var(--color-text-link);\n  --spacing-card: 1.5rem;\n  --radius-card: .75rem;\n} }\n",
+    html: `<article class="p-card r-card b:1px|solid|var(--color-line-divider) surface-raised text-body">
   <p class="m:0 font-mono text-xs fg-brand">FIELD NOTES / 024</p>
   <h2 class="mt-sm mb-xs text-xl font-semibold text-strong">Room for the details</h2>
   <p class="m:0 text-sm">Color, spacing and radius come from three shared project tokens.</p>
@@ -25,15 +21,13 @@ export const projectStyleExamples = {
   },
   spacing: {
     title: 'One spacing token, two consumers',
-    source: `@theme {
-  --spacing-card: 1.5rem;
-}`,
+    source: "@theme { :root, :host {\n  --spacing-card: 1.5rem;\n} }\n",
     html: `<div class="grid gap-md">
-  <article class="p-card r-sm b:1px|solid|var(--color-line-base) surface-raised">
+  <article class="p-card r-sm b:1px|solid|var(--color-line-divider) surface-raised">
     <h2 class="m:0 text-lg font-semibold">Collection</h2>
     <p class="mt-xs mb:0 text-sm text-muted">The article uses p-card.</p>
   </article>
-  <aside class="p-card r-sm b:1px|solid|var(--color-line-base) surface-raised text-sm">
+  <aside class="p-card r-sm b:1px|solid|var(--color-line-divider) surface-raised text-sm">
     The note uses the same p-card class.
   </aside>
 </div>`,
@@ -42,19 +36,8 @@ export const projectStyleExamples = {
   },
   modes: {
     title: 'The same card in two modes',
-    source: `@mode light { .light { @slot; } }
-@mode dark { .dark { @slot; } }
-
-@theme light {
-  --color-surface-card: var(--color-white);
-  --color-text-card: var(--color-neutral-70);
-}
-
-@theme dark {
-  --color-surface-card: var(--color-gray-90);
-  --color-text-card: var(--color-gray-20);
-}`,
-    html: `<article class="p-lg r-lg b:1px|solid|var(--color-line-base) surface-card text-card">
+    source: "\n\n@theme { .light {\n  --color-surface-card: var(--color-white);\n  --color-text-card: var(--color-neutral-70);\n} }\n\n\n@theme { .dark {\n  --color-surface-card: var(--color-gray-90);\n  --color-text-card: var(--color-gray-20);\n} }\n",
+    html: `<article class="p-lg r-lg b:1px|solid|var(--color-line-divider) surface-card text-card">
   <h2 class="m:0 text-lg font-semibold">Collection details</h2>
   <p class="mt-sm mb:0 text-sm">The class list stays the same when the active mode changes.</p>
 </article>`,
@@ -98,7 +81,7 @@ export const projectStyleExamples = {
   .card {
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
-    border: 1px solid var(--color-line-base);
+    border: 1px solid var(--color-line-divider);
     background-color: var(--color-surface-raised);
     color: var(--color-text-body);
   }
@@ -122,7 +105,7 @@ export const projectStyleExamples = {
     html: `<label for="project-note" class="block mb-xs text-sm font-medium">Project note</label>
 <textarea id="project-note" rows="3"
   class="block field-sizing:content min-w:0 max-w:100% w:100%
-         min-h:6rem max-h:12rem p-sm b:1px|solid|var(--color-line-base) r-sm
+         min-h:6rem max-h:12rem p-sm b:1px|solid|var(--color-line-divider) r-sm
          surface-raised text-body font:inherit resize:vertical
          outline:2px|solid|var(--color-blue):focus-visible outline-offset:2px:focus-visible"
   aria-describedby="note-help">Keep the interaction close to its context.</textarea>
@@ -133,7 +116,7 @@ export const projectStyleExamples = {
   checkedSelector: {
     title: 'Selection with a native selector',
     source: '',
-    html: `<div class="p-md b:1px|solid|var(--color-line-base) r-sm surface-raised
+    html: `<div class="p-md b:1px|solid|var(--color-line-divider) r-sm surface-raised
             border-color-blue:has(:checked)">
   <label class="flex items-start gap-sm text-sm">
     <input type="checkbox" class="mt-3xs accent-color-blue

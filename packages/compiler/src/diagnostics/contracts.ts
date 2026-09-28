@@ -76,7 +76,7 @@ export interface MasterCSSStylesheetError {
 }
 
 export interface MasterCSSInspectionReport {
-  readonly version: 4
+  readonly version: 5
   readonly cwd: string
   readonly inputs: Readonly<{
     patterns: readonly string[]
@@ -116,7 +116,6 @@ export interface MasterCSSInspectionReport {
     text?: string
     emittedGlobals: Readonly<{
       variables: number
-      animations: number
     }>
   }>
   readonly missingCSS: Readonly<{

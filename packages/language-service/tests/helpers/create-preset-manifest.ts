@@ -21,11 +21,10 @@ type PresetManifestInput = Partial<Omit<MasterCSSManifest, 'variables' | 'utilit
 
 function normalizeVariable(variable: PlanVariableDraft): PlanVariableDraft {
   if (variable.name && variable.type) return variable
-  const value = variable.value
   return {
     ...variable,
     name: variable.name || (variable.namespace ? `${variable.namespace}-${variable.key}` : variable.key),
-    type: variable.type || (typeof value === 'number' ? 'number' : 'string')
+    type: variable.type || 'string'
   }
 }
 
@@ -59,28 +58,22 @@ function normalizeUtility(utility: ManifestUtilityDraft, order: number): NonNull
   }
 }
 
-export function createPresetManifest(
-  manifest: PresetManifestInput | MasterCSSManifest = {}
-): MasterCSSManifest {
-  if (manifest.version === 1) return manifest as MasterCSSManifest
+export function createPresetManifest(manifest: PresetManifestInput | MasterCSSManifest = {}): MasterCSSManifest {
+  if (manifest.version === 2) return manifest as MasterCSSManifest
   const defaultUtilities = defaultManifest.utilities || []
   const utilities = (manifest.utilities || []).map((utility, index) => normalizeUtility(utility as ManifestUtilityDraft, defaultUtilities.length + index))
-  const variables = (manifest.variables || []).map(normalizeVariable)
+  const variables = ((manifest as PresetManifestInput).variables || []).map(normalizeVariable)
   return {
     ...defaultManifest,
     ...manifest,
-    settings: {
-      ...defaultManifest.settings,
-      ...manifest.settings
-    },
+    theme: [
+      ...(defaultManifest.theme || []), ...(manifest.theme || []),
+      ...variables.flatMap(variable => variable.values.map(value => value.path.reduceRight<import('@master/css-schema/manifest').MasterCSSThemeNode>((children, prelude) => ({ type: 'rule', prelude, children: [children] }), { type: 'declaration', name: variable.name!, value: value.value })))
+    ],
     variables: groupMasterCSSManifestVariables([
       ...flattenMasterCSSManifestVariables(defaultManifest.variables),
       ...variables
     ]),
-    animations: {
-      ...(defaultManifest.animations || {}),
-      ...(manifest.animations || {})
-    },
     variants: [
       ...(defaultManifest.variants || []),
       ...(manifest.variants || [])

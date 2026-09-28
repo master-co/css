@@ -38,7 +38,7 @@
     overflow: auto;
     padding: 1rem 0;
     white-space: nowrap;
-    background-color: var(--color-surface-muted);
+    background-color: var(--color-surface-inset);
     line-height: 20px;
     counter-reset: line;
     hyphens: none;
@@ -85,7 +85,7 @@
 
   .code-bar {
     display: flex;
-    background-color: var(--color-surface-muted);
+    background-color: var(--color-surface-inset);
     font-size: var(--font-size-xs);
   }
 
@@ -103,11 +103,11 @@
       color: var(--color-text-success)!important;
     }
 
-    @light {
+    @variant site-light {
       background-color: var(--color-beryl-0);
     }
 
-    @dark {
+    @variant site-dark {
       background-color: color-mix(in oklab,var(--color-beryl-50) 10%,transparent);
     }
   }
@@ -126,11 +126,11 @@
       color: var(--color-text-danger)!important;
     }
 
-    @light {
+    @variant site-light {
       background-color: var(--color-crimson-0);
     }
 
-    @dark {
+    @variant site-dark {
       background-color: color-mix(in oklab,var(--color-crimson-50) 10%,transparent);
     }
   }
@@ -138,11 +138,11 @@
   .code-line-active {
     display: block;
 
-    @dark {
+    @variant site-dark {
       background-color: var(--color-gray-80);
     }
 
-    @light {
+    @variant site-light {
       background-color: var(--color-neutral-5);
     }
   }
@@ -154,7 +154,7 @@
     &:not(:only-child):before {
       display: inline-block;
       text-align: right;
-      color: var(--color-text-disabled);
+      color: var(--color-text-muted);
       padding-right: var(--spacing-md);
       font-size: 80%;
       margin-left: -5px;
@@ -181,11 +181,11 @@
       border-top-left-radius: 0px;
     }
 
-    @dark {
+    @variant site-dark {
       color: var(--shiki-dark);
     }
 
-    @light {
+    @variant site-light {
       background-color: var(--color-neutral-10);
       color: var(--shiki-light);
     }
@@ -252,22 +252,22 @@
   .code-copy { position: relative; display: inline-flex; align-items: center; min-width: 0; }
   .code-copy-button { display: inline-grid; flex: none; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; background: transparent; color: var(--color-text-muted); cursor: pointer; }
   .code-copy-button:hover { color: var(--color-text-strong); background: var(--color-surface-raised); }
-  .code-copy-corner { position: absolute; z-index: 1; top: .375rem; right: .375rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-muted); }
+  .code-copy-corner { position: absolute; z-index: 1; top: .375rem; right: .375rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-inset); }
   .code-copy-corner .code-copy-button { width: 2rem; height: 2rem; border-radius: inherit; }
   .code-copy-status:not([data-error]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-  .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-base); border-radius: var(--radius-md); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
+  .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-divider); border-radius: var(--radius-md); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: -2px; }
 }
 
 @layer defaults {
   .shiki {
-    @dark {
+    @variant site-dark {
       span {
         color: var(--shiki-dark);
       }
     }
 
-    @light {
+    @variant site-light {
       span {
         color: var(--shiki-light);
       }

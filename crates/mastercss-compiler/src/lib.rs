@@ -27,7 +27,6 @@ use lightningcss::error::{PrinterError, PrinterErrorKind};
 use lightningcss::printer::Printer;
 use lightningcss::properties::Property;
 use lightningcss::rules::CssRule;
-use lightningcss::rules::keyframes::KeyframesName;
 use lightningcss::rules::style::StyleRule;
 use lightningcss::selector::{Component, Selector};
 use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
@@ -35,17 +34,15 @@ use lightningcss::traits::{AtRuleParser, ToCss};
 use lightningcss::visit_types;
 use lightningcss::visitor::{Visit, VisitTypes, Visitor};
 use mastercss_lexer::{
-    StandaloneCssDirectiveStatement, byte_to_utf16_offset, extract_top_level_at_rule_blocks,
-    find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
-    parse_css_import_source, remove_css_reference_statements, remove_standalone_css_directives,
-    utf16_to_byte_offset,
+    StandaloneCssDirectiveStatement, byte_to_utf16_offset, find_css_directive_ranges,
+    find_css_import_statements, parse_css_import_source, remove_css_reference_statements,
+    remove_standalone_css_directives, utf16_to_byte_offset,
 };
 use mastercss_schema::{
     CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry,
     CssDirectiveExtractionPolicy, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
-    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssDirectiveVariableDefinition,
-    CssOutputMapping, Diagnostic, ErrorCode, SourceLocation, SourceLocationRange, SourceRange,
-    UtilityLayerName,
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, Diagnostic,
+    ErrorCode, SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -54,7 +51,6 @@ use thiserror::Error;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InspectCssResult {
-    pub has_master_entry_directive: bool,
     #[serde(rename = "hasMasterCSSImport")]
     pub has_master_css_import: bool,
     pub has_master_entry: bool,
@@ -105,7 +101,6 @@ pub struct CompileNativeCssResult {
     #[serde(rename = "nativeCSS")]
     pub native_css: String,
     pub css: String,
-    pub had_master_entry_directive: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -401,25 +396,21 @@ struct ThemePrelude {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DirectiveName {
-    Settings,
     Theme,
     Defaults,
     Components,
-    Utilities,
+    Utility,
     CustomVariant,
-    Mode,
 }
 
 impl DirectiveName {
     const fn as_str(self) -> &'static str {
         match self {
-            Self::Settings => "settings",
             Self::Theme => "theme",
             Self::Defaults => "defaults",
             Self::Components => "components",
-            Self::Utilities => "utilities",
+            Self::Utility => "utility",
             Self::CustomVariant => "custom-variant",
-            Self::Mode => "mode",
         }
     }
 
@@ -427,8 +418,8 @@ impl DirectiveName {
         match self {
             Self::Defaults => Some(UtilityLayerName::Defaults),
             Self::Components => Some(UtilityLayerName::Components),
-            Self::Utilities => Some(UtilityLayerName::Utilities),
-            Self::Settings | Self::Theme | Self::CustomVariant | Self::Mode => None,
+            Self::Utility => Some(UtilityLayerName::Utilities),
+            Self::Theme | Self::CustomVariant => None,
         }
     }
 }
@@ -459,18 +450,22 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
         _options: &ParserOptions<'i>,
     ) -> Result<Self::Prelude, ParseError<'i, Self::Error>> {
         let directive_name = match name.as_ref() {
-            name if name.eq_ignore_ascii_case("mode") => DirectiveName::Mode,
             name if name.eq_ignore_ascii_case("theme") => DirectiveName::Theme,
-            name if name.eq_ignore_ascii_case("settings") => DirectiveName::Settings,
             name if name.eq_ignore_ascii_case("defaults") => DirectiveName::Defaults,
             name if name.eq_ignore_ascii_case("components") => DirectiveName::Components,
-            name if name.eq_ignore_ascii_case("utilities") => DirectiveName::Utilities,
+            name if name.eq_ignore_ascii_case("utility") => DirectiveName::Utility,
             name if name.eq_ignore_ascii_case("custom-variant") => DirectiveName::CustomVariant,
             _ => return Err(input.new_error(BasicParseErrorKind::AtRuleInvalid(name))),
         };
         let mut parts = Vec::new();
-        while !input.is_exhausted() {
-            parts.push(input.expect_ident_cloned()?.to_string());
+        if directive_name == DirectiveName::Utility {
+            let start = input.position();
+            while input.next_including_whitespace_and_comments().is_ok() {}
+            parts.push(input.slice_from(start).trim().to_owned());
+        } else {
+            while !input.is_exhausted() {
+                parts.push(input.expect_ident_cloned()?.to_string());
+            }
         }
         parts.insert(0, directive_name.as_str().to_owned());
         Ok(ThemePrelude { parts })
@@ -528,11 +523,9 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
 
 fn directive_name_from_prelude(prelude: &ThemePrelude) -> DirectiveName {
     match prelude.parts.first().map(String::as_str) {
-        Some("mode") => DirectiveName::Mode,
-        Some("settings") => DirectiveName::Settings,
         Some("defaults") => DirectiveName::Defaults,
         Some("components") => DirectiveName::Components,
-        Some("utilities") => DirectiveName::Utilities,
+        Some("utility") => DirectiveName::Utility,
         Some("custom-variant") => DirectiveName::CustomVariant,
         _ => DirectiveName::Theme,
     }
@@ -649,6 +642,7 @@ fn filter_native_css_rules<'i, R>(
 }
 
 mod compiled_stylesheet_graph;
+mod custom_media;
 mod directives;
 mod imports;
 mod managed;
@@ -672,7 +666,6 @@ mod stylesheet_graph;
 mod stylesheet_inline;
 mod stylesheet_resources;
 pub use stylesheet_resources::{CssResourceReference, analyze_css_resources};
-mod mode;
 mod syntax;
 mod theme;
 mod variant;
@@ -687,14 +680,13 @@ pub(crate) use native_style::{
 };
 pub(crate) use pattern::{
     ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
-    mask_managed_pattern_names, minified_css,
+    minified_css,
 };
 pub(crate) use syntax::{
-    collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
-    directive_error, directive_range, is_alias_character, next_char_end, parse_theme_prelude,
-    ranged_directive_diagnostic, theme_value,
+    collect_declarations, css_comment_end, css_quote_end, declaration_name, directive_error,
+    next_char_end, ranged_directive_diagnostic,
 };
-pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
+pub(crate) use theme::lower_theme_rule;
 pub(crate) use variant::{
     combine_managed_selectors, lower_custom_variant_rule, managed_selector_definition,
     printed_selectors, reject_removed_directives, rewrite_managed_variant_directives,

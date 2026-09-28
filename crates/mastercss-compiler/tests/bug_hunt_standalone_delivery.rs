@@ -5,12 +5,12 @@ use serde_json::json;
 fn relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_ownership() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './child.css';.example{@variant media(all){background-image:var(--hero);}}",
-            "child":"@theme{--hero:url(image.svg)}"
+            "entry":"@import './child.css';.example{@variant always{background-image:var(--hero);}}",
+            "child":"@theme{:root, :host {--hero:url(image.svg)}}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"./main.css","child":"./child.css"},
         "resourceURLs":{"child":{"image.svg":"./asset.svg?q=1#part"}},
-        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
+        "baseManifest":{"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]}
     });
     let error =
         compile_css_stylesheet_graph(&serde_json::from_value(base.clone()).unwrap()).unwrap_err();

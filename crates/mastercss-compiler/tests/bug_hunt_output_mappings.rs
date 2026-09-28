@@ -3,7 +3,7 @@ use serde_json::Value;
 
 #[test]
 fn native_output_retains_original_rule_locations_after_consumed_directives() {
-    let source = "/* 😀 */\n@master entry;\n@theme { --gap: 2rem; }\n.card { padding: 1rem; }";
+    let source = "/* 😀 */\n@source './src/**';\n@theme {:root, :host { --gap: 2rem; }}\n.card { padding: 1rem; }";
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -71,8 +71,8 @@ fn native_output_maps_nested_rules_to_their_own_origins() {
 fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
     for source in [
         "@reference \"./😀.css\";.card { padding: 1rem; }",
-        "/* 😀 */\r\n@master entry;\r\n.card { padding: 1rem; }",
-        r###"@utilities { paint { color: red } } .managed { @variant dark { @variant media(all){color:red;} } } .card { padding: 1rem; }"###,
+        "/* 😀 */\r\n@source './src/**';\r\n.card { padding: 1rem; }",
+        r###" @utility paint { color: red }  .managed { @variant dark { @variant always{color:red;} } } .card { padding: 1rem; }"###,
         ".empty {} .card { padding: 1rem; } .after { color: blue; }",
         "@layer base { @supports (display:grid) { .card { padding: 1rem; } } }",
     ] {
@@ -104,9 +104,9 @@ fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
 
 #[test]
 fn lower_output_retains_compose_and_native_declaration_origins() {
-    let source = r###"@utilities { paint { padding: 2rem; } }
+    let source = r###" @utility paint { padding: 2rem; }
 .card {
- @variant media(all) { padding:2rem; color: red; }
+ @variant always { padding:2rem; color: red; }
 }"###;
     let parsed = compile_css_directives(
         source,
@@ -120,7 +120,7 @@ fn lower_output_retains_compose_and_native_declaration_origins() {
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &Default::default(),
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
     )
     .unwrap();
     let value = serde_json::to_value(&result).unwrap();
@@ -217,19 +217,19 @@ fn expanded_import_graph_retains_copied_spans_through_references_wrappers_and_ho
 
 #[test]
 fn composed_declaration_mappings_preserve_the_important_and_fallback_declarations() {
-    let source = r###"@utilities{low{padding:2rem}high{padding:3rem!important}}
-.card{@variant media(all){padding:3rem !important;padding:2rem;}padding:4rem}"###;
+    let source = r###"@utility low {padding:2rem}@utility high {padding:3rem!important}
+.card{@variant always{padding:3rem !important;padding:2rem;}padding:4rem}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &Default::default(),
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
     )
     .unwrap();
     assert_eq!(
         lowered.generated_css,
-        "@media all{.card{padding:3rem !important;padding:2rem}}.card{padding:4rem}"
+        ".card{padding:3rem !important;padding:2rem;padding:4rem}"
     );
     let mapping = lowered
         .generated_mappings
@@ -250,16 +250,16 @@ fn composed_declaration_mappings_preserve_the_important_and_fallback_declaration
 
 #[test]
 fn wrapped_lowered_selectors_map_after_generated_condition_prefixes() {
-    let source = r###"@utilities{paint{padding:2rem}}
+    let source = r###"@utility paint {padding:2rem}
 @media (min-width:10px){
-.card{@variant media(all){padding:2rem;}}
+.card{@variant always{padding:2rem;}}
 }"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &Default::default(),
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
     )
     .unwrap();
     let generated = lowered

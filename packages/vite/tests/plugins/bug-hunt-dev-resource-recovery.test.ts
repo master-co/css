@@ -14,7 +14,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('resource
   const copies = new Set<string>()
   try {
     writeFileSync(join(root, 'index.html'), '<!doctype html><div class="resource"></div>')
-    writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.resource{background-image:url("./pixel.svg?q=1#part")}')
+    writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@preserve native;.resource{background-image:url(\"./pixel.svg?q=1#part\")}")
     writeFileSync(file, svg('red'))
     server = await createServer({ root, base: '/base/', configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0 } })
     await server.listen()

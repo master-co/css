@@ -25,7 +25,7 @@ Inspect the Tailwind surface before changing files.
 | --- | --- | --- |
 | CSS entry | `@import "tailwindcss"` and any imported theme files | Add `@import "@master/css"` beside it during migration. |
 | Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
-| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utilities`. |
+| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utility`. |
 | Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
 | Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
 | Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
@@ -83,12 +83,14 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-brand: oklch(0.62 0.2 265);
   --spacing-card: 1.5rem;
   --radius-card: 1rem;
-  --breakpoint-dashboard: 72rem;
-}
+
+} }
+
+@custom-media --dashboard (width >= 72rem);
 ```
 
 ```html
@@ -106,27 +108,28 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 | `--radius-*` | `--radius-*` | Use with `r:*` and border-radius utilities. |
 | `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
 | `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
-| `--breakpoint-*` | `--breakpoint-*` | Creates viewport suffixes such as `@md` or `@dashboard`. |
-| `@theme inline` | `@theme inline` | Use when a token is only a utility shorthand and should be written into generated declarations. |
-| `@theme static` | `@theme static` | Use when a token or managed keyframes should be emitted up front. |
+| `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | Defines viewport suffixes such as `@md`; custom properties do not register conditions. |
+| `@theme inline` | Scoped `@theme` or a fixed `@utility` | Tokens retain `var()` references. Use a fixed utility for a literal declaration. |
+| `@theme static` | Native `@layer theme` | Native custom properties and top-level keyframes ship with their stylesheet. |
 
-Use `@theme light` and `@theme dark` when token values should change by mode.
+Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme switch. Define custom variants separately when markup uses `@manual-light` or `@manual-dark` suffixes.
 
 ```css name=app.css
 @import "@master/css";
 
-@mode light { .light { @slot; } }
-@mode dark { .dark { @slot; } }
+@custom-variant manual-light { &:where(.light, .light *) { @slot; } }
+@custom-variant manual-dark { &:where(.dark, .dark *) { @slot; } }
 
-@theme light {
+@theme { .light {
   --color-panel: #fff;
   --color-text-body: #111827;
-}
+} }
 
-@theme dark {
+@theme { .dark {
   --color-panel: #111827;
   --color-text-body: #f9fafb;
-}
+} }
+
 ```
 
 ```html
@@ -188,7 +191,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `focus-visible:outline-2` | `outline-width:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
 | `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols:3@md` | Breakpoint and condition suffixes use `@`. |
-| `dark:bg-slate-950` | `bg-slate-95@dark` | Output follows the explicit `@mode dark` activation. |
+| `dark:bg-slate-950` | `bg-slate-95@manual-dark` | Output follows the `@custom-variant manual-dark` selector or query. |
 | `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
 | `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports(backdrop-filter(0px))` | Use raw `@supports()` for local conditions. |
 | `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |
@@ -287,7 +290,7 @@ Keep quoted strings, complex content values, and unusual selectors as ordinary C
 ---
 
 ## Migrate custom utilities and components
-Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utilities` for reusable primitives and `@layer components` for product roles.
+Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utility` for reusable primitives and `@layer components` for product roles.
 
 ```css name=tailwind.css
 @utility content-auto {
@@ -299,12 +302,10 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 ```css name=app.css
 @import "@master/css";
 
-@utilities {
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-}
 ```
 
 ```html
@@ -451,9 +452,9 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind capability | Master CSS status | Migration path |
 | --- | --- | --- |
 | Tailwind class syntax and drop-in compatibility | Master CSS does not read Tailwind class syntax. | Rewrite classes to Master CSS syntax or keep Tailwind loaded until each area is migrated. |
-| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utilities`, or `@layer components`; keep plugin CSS temporarily when needed. |
+| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utility`, or `@layer components`; keep plugin CSS temporarily when needed. |
 | Tailwind CSS-first theme resolver behavior | Master CSS has its own token namespaces and utility matching. | Move shared values into Master CSS `@theme` directives and review generated class names. |
-| Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use `@settings scope` only when generated selectors should be scoped to an app root. |
+| Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use native selectors to scope styles to an app root. |
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |

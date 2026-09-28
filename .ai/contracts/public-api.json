@@ -156,7 +156,6 @@
           "MasterCSSLintBindingSession",
           "MasterCSSLintCanonicalClassGroupSuggestions",
           "MasterCSSLintCanonicalClassSuggestions",
-          "MasterCSSLintCanonicalComposeDirective",
           "MasterCSSLintRawValueCandidates",
           "MasterCSSMatchStatus",
           "MasterCSSNativeBindingLoadOptions",
@@ -194,7 +193,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "8e819e88c71a3fd1"
+      "surface": "d77d0faee6b98cb6"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -511,7 +510,6 @@
       "entrypoints": {
         ".": [
           "MasterCSSEngine",
-          "MasterCSSEngineAnimationResource",
           "MasterCSSEngineBinding",
           "MasterCSSEngineBindingOptions",
           "MasterCSSEngineDeleteMutation",
@@ -547,7 +545,7 @@
         ],
         "./client": []
       },
-      "surface": "d9ffc7463bc37565"
+      "surface": "c83b9b161883951a"
     },
     "@master/css-svelte-addon": {
       "directory": "css-sv",
@@ -816,8 +814,6 @@
         ],
         "./manifest": [
           "MasterCSSManifest",
-          "MasterCSSManifestAnimationOptions",
-          "MasterCSSManifestAnimations",
           "MasterCSSManifestCSSDeclarationPrimitive",
           "MasterCSSManifestCSSDeclarations",
           "MasterCSSManifestCondition",
@@ -832,14 +828,11 @@
           "MasterCSSManifestConditionStringNode",
           "MasterCSSManifestConditionValueNode",
           "MasterCSSManifestConditions",
-          "MasterCSSManifestKeyframes",
-          "MasterCSSManifestMode",
           "MasterCSSManifestSelectorCombinatorNode",
           "MasterCSSManifestSelectorLiteralNode",
           "MasterCSSManifestSelectorNode",
           "MasterCSSManifestSelectorSeparatorNode",
           "MasterCSSManifestSelectors",
-          "MasterCSSManifestSettings",
           "MasterCSSManifestUtilities",
           "MasterCSSManifestUtility",
           "MasterCSSManifestUtilityEmit",
@@ -858,6 +851,9 @@
           "MasterCSSManifestVariantBranch",
           "MasterCSSManifestVariantToken",
           "MasterCSSManifestVariants",
+          "MasterCSSMediaQueryExpression",
+          "MasterCSSScopedThemeValue",
+          "MasterCSSThemeNode",
           "flattenMasterCSSManifestVariables",
           "getMasterCSSManifestVariableName",
           "groupMasterCSSManifestVariables",
@@ -878,9 +874,7 @@
           "serializeMasterCSSHydrationManifest"
         ],
         "./css-directives": [
-          "CSSCompositionTrace",
-          "CSSDirectiveAnimationDefinitions",
-          "CSSDirectiveAnimationOptions",
+          "CSSCustomMediaDefinition",
           "CSSDirectiveConditionPathEntry",
           "CSSDirectiveDeclarations",
           "CSSDirectiveError",
@@ -893,15 +887,12 @@
           "CSSDirectiveSourceLocation",
           "CSSDirectiveSourceRange",
           "CSSDirectiveSourceReference",
-          "CSSDirectiveStyleComposeDefinition",
           "CSSDirectiveStyleDefinition",
           "CSSDirectiveStyleNativeDefinition",
           "CSSDirectiveUtilityDefinition",
           "CSSDirectiveUtilityDynamicDefinition",
-          "CSSDirectiveUtilityPatternDefinition",
           "CSSDirectiveUtilityRuleDefinition",
           "CSSDirectiveUtilityTokenDefinition",
-          "CSSDirectiveVariableDefinition",
           "CSSDirectiveVariableValue",
           "CSSDirectiveVariantDefinitions",
           "CSSNativeOutput",
@@ -960,7 +951,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "ac5522612740ed9c"
+      "surface": "4ac49e0924a33638"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1110,8 +1101,6 @@
         ],
         "./lint": [
           "CanonicalClassNameOptions",
-          "CanonicalComposeDirectiveResult",
-          "CanonicalComposeDirectiveSuggestion",
           "MasterCSSCanonicalClassesReportOptions",
           "MasterCSSClassListEditOptions",
           "MasterCSSClassListLintReportOptions",
@@ -1227,7 +1216,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "0024cc5ce0fdb6ea"
+      "surface": "d425486d425e92f7"
     },
     "@master/css-vite": {
       "directory": "vite",

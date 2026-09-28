@@ -1,3 +1,4 @@
+import { inspectCSSSync } from '@master/css-compiler/node'
 import type { CSSOptions } from 'vite'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createSassSourceMarkers } from './sass-source-markers'
@@ -42,6 +43,11 @@ export function createModuleSourceProjection(file: string): { plugin: HostPlugin
     postcssPlugin: 'master-css:module-source-projection',
     prepare({ root }) {
       if (root.type === 'root') originals.set(file, root.clone())
+      // Keep the project preset outside the host's CSS Modules import/scoping
+      // pass. Rust resolves it from the preserved original import below.
+      root.walkAtRules('import', rule => {
+        if (inspectCSSSync(`${rule.toString()};`).hasMasterCSSImport) rule.name = '--master-css-preserved-import'
+      })
       return {}
     },
     Once(root, { postcss }) {
@@ -72,7 +78,12 @@ export function createModuleSourceProjection(file: string): { plugin: HostPlugin
         if (id === file) {
           // Modules prepends linked composes content without source metadata.
           // Keep the existing host output; do not invent its original location.
-          original.prepend(root.nodes.filter(node => !node.source?.input.file).map(node => node.clone()))
+          // Native imports must still precede the composed declarations.
+          const firstRule = original.nodes.find(node => node.type !== 'comment' && !(node.type === 'atrule' && (node.name === 'import' || node.name === 'charset' || (node.name === 'layer' && !node.nodes))))
+          for (const node of root.nodes.filter(node => !node.source?.input.file)) {
+            if (firstRule) original.insertBefore(firstRule, node.clone())
+            else original.append(node.clone())
+          }
         }
         const css = original.toString()
         sources.set(id, css)

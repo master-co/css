@@ -18,7 +18,7 @@ test.each(['child', 'resource'])('watch reports a missing %s as compilation erro
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-webpack-watch-test-')))
   const child = join(root, 'child.css'), resource = join(root, 'pixel.svg')
   writeFileSync(join(root, 'entry.js'), 'import "./entry.css"')
-  writeFileSync(join(root, 'entry.css'), '@import "./child.css" layer(cards);@master entry;@preserve native;')
+  writeFileSync(join(root, 'entry.css'), "@import \"./child.css\" layer(cards);@import \"@master/css\";@preserve native;")
   const childCSS = '@import "https://external.invalid/font.css";.card{color:red;background-image:url("./pixel.svg")} '
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="7"/>'
   writeFileSync(child, childCSS);writeFileSync(resource, svg)

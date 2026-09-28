@@ -181,13 +181,6 @@ pub(crate) fn validate_semantic_parity_corpus(
                             .variables
                             .into_iter()
                             .map(|resource| resource.name)
-                            .chain(
-                                snapshot
-                                    .resources
-                                    .animations
-                                    .into_iter()
-                                    .map(|resource| resource.name),
-                            )
                             .collect::<Vec<_>>();
                         if resource_order != *expected_resource_order {
                             return Err(format!(
@@ -225,7 +218,6 @@ pub(crate) fn validate_semantic_parity_corpus(
                     expected_layers,
                     expected_priorities,
                     expected_variable_names,
-                    expected_animation_names,
                 } => {
                     let inspection = engine.inspect(class_name).map_err(|error| {
                         format!(
@@ -305,19 +297,6 @@ pub(crate) fn validate_semantic_parity_corpus(
                     {
                         return Err(format!(
                             "Parity case {} step {} variable metadata mismatch for {class_name}.",
-                            case.id, step_index
-                        ));
-                    }
-                    let animation_names = inspection
-                        .rules
-                        .iter()
-                        .map(|rule| rule.animation_names.clone())
-                        .collect::<Vec<_>>();
-                    if !expected_animation_names.is_empty()
-                        && animation_names != *expected_animation_names
-                    {
-                        return Err(format!(
-                            "Parity case {} step {} animation metadata mismatch for {class_name}.",
                             case.id, step_index
                         ));
                     }

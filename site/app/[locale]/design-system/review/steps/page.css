@@ -17,10 +17,10 @@
 .review-steps-optionPreview .doc-steps { margin-block: 0; }
 .review-steps-optionPreview h3 { color: var(--color-text-strong); }
 .review-steps-optionPreview p { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
-.review-steps-code { max-width: 100%; margin: 0; padding: .85rem 1rem; overflow-x: auto; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-muted); color: var(--color-text-body); font: .75rem/1.55 var(--font-family-mono); }
+.review-steps-code { max-width: 100%; margin: 0; padding: .85rem 1rem; overflow-x: auto; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-inset); color: var(--color-text-body); font: .75rem/1.55 var(--font-family-mono); }
 .review-steps-optionNote { margin: .7rem .25rem 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
-.review-steps-current .doc-step { margin-inline-start: 0; padding: var(--spacing-lg) 0; border-inline-start: 0; border-block-start: 1px solid var(--color-line-base); }
-.review-steps-current .doc-step:last-child { padding-bottom: var(--spacing-lg); border-block-end: 1px solid var(--color-line-base); }
+.review-steps-current .doc-step { margin-inline-start: 0; padding: var(--spacing-lg) 0; border-inline-start: 0; border-block-start: 1px solid var(--color-line-divider); }
+.review-steps-current .doc-step:last-child { padding-bottom: var(--spacing-lg); border-block-end: 1px solid var(--color-line-divider); }
 .review-steps-current .doc-step :is(h2, h3, h4) { margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); line-height: var(--leading-lg); }
 .review-steps-current .doc-step :is(h2, h3, h4):has(.doc-step-number) { padding-inline-start: calc(1.5rem + var(--spacing-sm)); }
 .review-steps-current .doc-step-number { inset-inline-start: 0; background: var(--color-surface-raised); color: var(--color-text-muted); font-weight: normal; }

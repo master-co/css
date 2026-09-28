@@ -14,7 +14,7 @@ Compare `touch-action:none` with `auto` on identical scrollable regions. A touch
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
 class="overflow:auto h:160px w:240px max-w:100%
-       b:1px|solid|var(--color-line-base) r-sm touch-action:none">
+       b:1px|solid|var(--color-line-divider) r-sm touch-action:none">
   <div
 
   class="flex flex-col justify-between h:360px
@@ -30,7 +30,7 @@ class="overflow:auto h:160px w:240px max-w:100%
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
 class="overflow:auto h:160px w:240px max-w:100%
-       b:1px|solid|var(--color-line-base) r-sm touch-action:auto">
+       b:1px|solid|var(--color-line-divider) r-sm touch-action:auto">
   <div
 
   class="flex flex-col justify-between h:360px
@@ -58,7 +58,7 @@ Use `touch-action:pan-y` to allow vertical native panning while excluding horizo
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
 class="overflow:auto h:160px w:240px max-w:100%
-       b:1px|solid|var(--color-line-base) r-sm touch-action:pan-y">
+       b:1px|solid|var(--color-line-divider) r-sm touch-action:pan-y">
   <div
 
   class="flex flex-col justify-between h:360px
@@ -80,7 +80,7 @@ Use `touch-action:manipulation` on a real tap target. This native checkbox toggl
 <label id="target"
 
 class="inline-flex items-center gap-sm p-md
-       b:1px|solid|var(--color-line-base) r-sm
+       b:1px|solid|var(--color-line-divider) r-sm
        touch-action:manipulation">
   <input type="checkbox"> Show grid
 </label>
@@ -98,7 +98,7 @@ Resize before starting a new gesture. Below `sm`, the region allows automatic ge
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
 class="overflow:auto h:160px w:240px max-w:100%
-       b:1px|solid|var(--color-line-base) r-sm touch-action:auto
+       b:1px|solid|var(--color-line-divider) r-sm touch-action:auto
        touch-action:pan-y|pinch-zoom@screen@sm">
   <div
 

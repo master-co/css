@@ -101,9 +101,6 @@ describe('Svelte server hook renderer', () => {
         variables: {
           'animate-fade': 1,
           'color-red-60': 1
-        },
-        animations: {
-          fade: 1
         }
       }
     })

@@ -83,7 +83,7 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
 test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
   const source = [
     '<main class="bg-surface-base text-body">',
-    '  <section class="b:1px|solid|var(--color-line-base) surface-raised">',
+    '  <section class="b:1px|solid|var(--color-line-divider) surface-raised">',
     '    <h2 class="text-strong">Project updates</h2>',
     '    <p class="text-muted">Three milestones changed this week.</p>',
     '    <a class="text-link" href="#">Continue</a>',

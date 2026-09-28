@@ -19,7 +19,7 @@ afterEach(async () => {
     await rm(root, { recursive: true, force: true })
   }
 })
-async function fixture(css = '@master entry;') {
+async function fixture(css = "@import url(\"@master/css\");") {
   const root = await mkdtemp(join(tmpdir(), 'master-next-cache-'))
   roots.push(root)
   const entry = join(root, 'app.css'), source = join(root, 'page.tsx')
@@ -54,7 +54,7 @@ test('class edits reuse the stylesheet collection, while CSS and processed input
   expect(register).not.toHaveBeenCalled()
   expect(await text(state.outputPath)).toContain('padding:29px')
   await writeFile(join(root, 'child.css'), '.probe{color:red}')
-  await writeFile(entry, '@master entry;@import "./child.css";')
+  await writeFile(entry, "@import url(\"@master/css\");@import \"./child.css\";")
   await scanStaticModule(state.statePath, source, '')
   expect(register).toHaveBeenCalled()
   expect(await text(state.outputPath)).toMatch(/color:\s*red/)
@@ -64,14 +64,14 @@ test('class edits reuse the stylesheet collection, while CSS and processed input
   expect(register).toHaveBeenCalled()
   expect(await text(state.outputPath)).toMatch(/color:\s*#00f/)
   register.mockClear()
-  await transformStaticStyleSource(state.statePath, entry, '@master entry;.processed{color:green}')
+  await transformStaticStyleSource(state.statePath, entry, "@import url(\"@master/css\");.processed{color:green}")
   expect(register).toHaveBeenCalled()
   expect(await text(state.outputPath)).toMatch(/color:\s*green/)
 })
 
 test('new CSS entries invalidate publication reuse even with unchanged markup', async () => {
   const { root, source, state } = await fixture()
-  await writeFile(join(root, 'extra.css'), '@master entry;.new-entry{color:red}')
+  await writeFile(join(root, 'extra.css'), "@import url(\"@master/css\");.new-entry{color:red}")
   await scanStaticModule(state.statePath, source, '')
   expect(await text(state.outputPath)).toContain('.new-entry')
   await rm(join(root, 'extra.css'))
@@ -81,7 +81,7 @@ test('new CSS entries invalidate publication reuse even with unchanged markup', 
 
 for (const failure of ['missing-record', 'broken-json', 'wrong-version', 'wrong-fingerprint', 'missing-entry', 'missing-asset', 'corrupt-asset'] as const) {
   test(`rebuilds a disposable publication cache: ${failure}`, async () => {
-    const { state, source, session } = await fixture('@master entry;.probe{color:red}')
+    const { state, source, session } = await fixture("@import url(\"@master/css\");.probe{color:red}")
     const expected = await text(state.outputPath)
     const path = staticPublicationPath(state.outputPath)
     const record = (await readStaticPublication(state.outputPath, staticProducerFingerprint()))!
@@ -156,7 +156,7 @@ test('same-mtime ignore changes invalidate the scanner policy as well as publica
 })
 
 test('explicit source globs conservatively rebuild to discover new ignored inputs', async () => {
-  const { root, state, source } = await fixture('@master entry;@source "./hidden/*.tsx";')
+  const { root, state, source } = await fixture("@import url(\"@master/css\");@source \"./hidden/*.tsx\";")
   const { mkdir } = await import('node:fs/promises')
   await mkdir(join(root, 'hidden'))
   await writeFile(join(root, '.gitignore'), 'hidden/\n')
@@ -236,7 +236,7 @@ test('package CSS entry changes invalidate cached resolution even when old files
   await writeFile(join(packageRoot, 'blue.css'), '.package-probe{color:blue}')
   const packageJSON = join(packageRoot, 'package.json')
   await writeFile(packageJSON, JSON.stringify({ name: '@master/css', style: './red.css' }))
-  await writeFile(entry, '@import "@master/css";')
+  await writeFile(entry, '@import url("@master/css");')
   await scanStaticModule(state.statePath, source, '')
   expect(await text(state.outputPath)).toMatch(/color:\s*red/)
   await writeFile(packageJSON, JSON.stringify({ name: '@master/css', style: './blue.css' }))

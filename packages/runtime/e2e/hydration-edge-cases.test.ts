@@ -119,8 +119,8 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
     document.body.innerHTML = '<p class="block"></p>'
   })
   await init(page, '@layer utilities{.block{display:block}}', undefined, {
-    version: 1,
-    languageVersion: 3,
+    version: 2,
+    languageVersion: 4,
     rules: [],
     resourceOrder: []
   })
@@ -650,10 +650,9 @@ test('progressive hydration rejects reordered theme variable buckets', async ({ 
     '@layer theme{.dark{--color-primary:#ffffff}.light{--color-primary:#000000}}@layer utilities{.fg-primary{color:var(--color-primary)}}',
     {
       variables: [
-        { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
-        { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' }
+        { namespace: 'color', key: 'primary', values: [{ path: [".light"], value: '#000000' }] },
+        { namespace: 'color', key: 'primary', values: [{ path: [".dark"], value: '#ffffff' }] }
       ],
-      modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
 
     },
     'auto'
@@ -679,8 +678,8 @@ test('progressive hydration rejects reordered theme variable buckets', async ({ 
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {
   await init(page, '', {
     variables: [
-      { key: 'surface', value: '#ffffff' },
-      { key: 'brand', value: 'var(--surface)', dependencies: ['surface'] }
+      { key: 'surface', values: [{ path: [':root,:host'], value: '#ffffff' }] },
+      { key: 'brand', values: [{ path: [':root,:host'], value: 'var(--surface)' }], dependencies: ['surface'] }
     ]
   })
 
@@ -695,7 +694,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.tokenCounts)
   }))
   expect(initial).toEqual({
-    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--surface:#ffffff;--brand:var(--surface)}}',
     counts: {
       brand: 2,
       surface: 2
@@ -712,7 +711,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames]
   }))
   expect(afterOneRemoval).toEqual({
-    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--surface:#ffffff;--brand:var(--surface)}}',
     counts: {
       brand: 2,
       surface: 2
@@ -731,7 +730,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     nativeAttached: !!globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.native?.parentStyleSheet
   }))
   expect(afterAllRemoved).toEqual({
-    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--surface:#ffffff;--brand:var(--surface)}}',
     counts: {
       brand: 2,
       surface: 2
@@ -756,10 +755,10 @@ test('removes shared alias variable dependencies when classes disappear', async 
   })
 })
 
-test('inlines variables without runtime theme counts', async ({ page }) => {
+test('retains scoped variables with runtime theme counts', async ({ page }) => {
   await init(page, '', {
     variables: [
-      { namespace: 'color', key: 'brand', value: '#123456', inline: true }
+      { namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }
     ]
   })
 
@@ -777,7 +776,7 @@ test('inlines variables without runtime theme counts', async ({ page }) => {
   })
 
   expect(result).toEqual({
-    text: '@layer utilities{.fg-brand{color:#123456}}',
-    counts: {}
+    text: '@layer theme{:root,:host{--color-brand:#123456}}@layer utilities{.fg-brand{color:var(--color-brand)}}',
+    counts: { 'color-brand': 1 }
   })
 })

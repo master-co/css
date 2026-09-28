@@ -32,11 +32,7 @@ function buildPackage() {
 function createFixture(root: string) {
   const baseCSS = readFileSync(require.resolve('@master/css/base.css'), 'utf-8')
   writeFileSync(join(root, 'entry.js'), 'console.log("webpack runtime fixture")\n')
-  writeFileSync(join(root, 'app.css'), [
-    '@master entry;',
-    '@import "@master/css";',
-    ''
-  ].join('\n'))
+  writeFileSync(join(root, 'app.css'), "@import \"@master/css\";\n@import \"@master/css\";\n")
   return {
     html: '<!doctype html><html><head><link rel="stylesheet" href="./global.css"></head><body><main id="probe" class="box block">Probe</main></body></html>',
     css: [

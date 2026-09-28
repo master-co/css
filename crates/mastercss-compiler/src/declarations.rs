@@ -119,29 +119,34 @@ fn preserve_raw_declarations(source: &str, declarations: &mut [CssDeclaration]) 
             let end = if important { tokens[statement.tokens.end - 2].bytes.start } else { last.bytes.end };
             Some((property.as_ref(), source[start..end].trim(), important))
         }).collect::<Vec<_>>();
-    let mut used = std::collections::HashSet::new();
+    let property_key = |property: &str| {
+        if property.starts_with("--") {
+            property.to_owned()
+        } else {
+            property.to_ascii_lowercase()
+        }
+    };
+    let mut positions =
+        std::collections::HashMap::<(String, bool), std::collections::VecDeque<usize>>::new();
+    for (index, (property, _, important)) in raw.iter().enumerate() {
+        positions
+            .entry((property_key(property), *important))
+            .or_default()
+            .push_back(index);
+    }
     let mut ranks = Vec::new();
     for declaration in declarations.iter_mut() {
         let important = declaration
             .value
             .as_str()
             .is_some_and(|value| value.ends_with("!important"));
-        let Some((index, (_, value, _))) =
-            raw.iter()
-                .enumerate()
-                .find(|(index, (property, _, raw_important))| {
-                    !used.contains(index)
-                        && (if property.starts_with("--") {
-                            *property == declaration.property
-                        } else {
-                            property.eq_ignore_ascii_case(&declaration.property)
-                        })
-                        && *raw_important == important
-                })
+        let Some(index) = positions
+            .get_mut(&(property_key(&declaration.property), important))
+            .and_then(|positions| positions.pop_front())
         else {
             return;
         };
-        used.insert(index);
+        let (_, value, _) = raw[index];
         ranks.push(index);
         if crate::syntax::simple_ratio_literal(value)
             || crate::syntax::scientific_dimension_literal(value)

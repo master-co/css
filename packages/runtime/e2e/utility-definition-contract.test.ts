@@ -4,19 +4,30 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const compiled = compileManifestSync("\n@theme { --color-obsolete: red; }\n@utilities {\n  panel:<*> { @variant media(all){padding:5px;display:block;} width:--value(); height:--value(); }\n  cleared { color:var(--color-obsolete); &:hover { padding:100px; } }\n  cleared { }\n  aligned-<start=left|end=right> { text-align:--value(); }\n  aligned-<end=center|start=justify> { text-align:--value(); }\n  aligned-end { text-align:left; }\n}\n@layer base { .stroke { color:blue; -webkit-text-stroke:3px red; } }\n", {})
+const compiled = compileManifestSync(`
+@theme { :root, :host { --color-obsolete: red; } }
+@utility panel:* { @media all { padding:5px; display:block; } width:--master-value(); height:--master-value(); }
+@utility cleared { color:var(--color-obsolete); &:hover { padding:100px; } }
+@utility cleared { }
+@utility aligned-start { text-align:left; }
+@utility aligned-end { text-align:right; }
+@utility aligned-end { text-align:center; }
+@utility aligned-start { text-align:justify; }
+@utility aligned-end { text-align:left; }
+@layer base { .stroke { color:blue; -webkit-text-stroke:3px red; } }
+`, {})
 const classes = ['panel:var(--dimension)', 'cleared', 'aligned-start', 'aligned-end', 'text-stroke:1px', 'text-stroke-width:1px']
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: fixed utility intent, replacement and vendor reset semantics`, async ({ page }) => {
     const html = `<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;${compiled.css}</style></head><body>
     <span id="panel" style="--dimension:24px" class="panel:var(--dimension)">Panel</span>
-    <span id="empty" class="cleared">Empty</span><div id="enum" class="aligned-start"></div><div id="static" class="aligned-end"></div>
+    <span id="empty" class="cleared">Empty</span><div id="replaced" class="aligned-start"></div><div id="static" class="aligned-end"></div>
     <span id="shorthand" class="stroke text-stroke:1px">A</span><span id="longhand" class="stroke text-stroke-width:1px">B</span></body></html>`
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
     expect(rendered.cssText).not.toContain('--color-obsolete')
     expect(rendered.cssText).not.toContain('padding:100px')
-    expect(rendered.hydrationManifest.languageVersion).toBe(3)
+    expect(rendered.hydrationManifest.languageVersion).toBe(4)
     if (mode === 'static') await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {
@@ -31,7 +42,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
     await expect(page.locator('#panel')).toHaveCSS('width', '24px')
     await expect(page.locator('#panel')).toHaveCSS('padding', '5px')
     await expect(page.locator('#empty')).toHaveCSS('padding', '0px')
-    await expect(page.locator('#enum')).toHaveCSS('text-align', 'justify')
+    await expect(page.locator('#replaced')).toHaveCSS('text-align', 'justify')
     await expect(page.locator('#static')).toHaveCSS('text-align', 'left')
     await expect(page.locator('#shorthand')).toHaveCSS('-webkit-text-stroke-color', 'rgb(0, 0, 255)')
     await expect(page.locator('#longhand')).toHaveCSS('-webkit-text-stroke-color', 'rgb(255, 0, 0)')

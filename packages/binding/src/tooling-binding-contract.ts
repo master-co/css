@@ -87,8 +87,7 @@ export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBinding
   ): MasterCSSLanguageClassifications
   inspectClassName(
     className: string,
-    nativeSupport?: readonly boolean[],
-    mode?: string
+    nativeSupport?: readonly boolean[]
   ): MasterCSSLanguageInspection
   completionIndex(): MasterCSSLanguageCompletionIndex
   colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation

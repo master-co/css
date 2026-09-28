@@ -12,7 +12,7 @@ for (const format of ['es', 'cjs'] as const) {
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-ssr-inline-')))
     try {
       writeFileSync(join(root, 'entry.js'), 'import css from "./style.css?inline";export {css}')
-      writeFileSync(join(root, 'style.css'), '@master entry;@preserve native;.example{color:blue;background:url(pixel.svg?q=1#part)}')
+      writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@preserve native;.example{color:blue;background:url(pixel.svg?q=1#part)}")
       writeFileSync(join(root, 'pixel.svg'), '<svg/>')
       const result = await build({ root, configFile: false, logLevel: 'silent', base: '/deployed/', plugins: [masterCSS({ mode: 'static', runtime: false })], build: { ssr: join(root, 'entry.js'), ssrEmitAssets: emitAssets, minify: false, rolldownOptions: { output: { format, entryFileNames: `entry.${format === 'es' ? 'mjs' : 'cjs'}`, assetFileNames: 'styles/[name]-[hash][extname]' } } } })
       if (Array.isArray(result) || 'on' in result) throw new Error('Expected one output')

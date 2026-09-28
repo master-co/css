@@ -3,7 +3,7 @@ import DemoLight from '~/site/docs-shell/components/DemoLight'
 import Demo from '~/site/docs-shell/components/Demo'
 import DemoLabel from '~/site/docs-shell/components/DemoLabel'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
-import { getThemeModeVariables } from '~/site/utils/theme-variables'
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 const shadowRoles: Record<string, { utility: string, role: string, description: string }> = {
   xs: {
@@ -39,7 +39,7 @@ const shadowRoles: Record<string, { utility: string, role: string, description: 
 }
 
 function getShadowRows() {
-  return getThemeModeVariables('shadow', 'light').flatMap(({ key }) => {
+  return getThemeVariables('shadow').flatMap(({ key }) => {
     const role = shadowRoles[key]
     if (!role) return []
 

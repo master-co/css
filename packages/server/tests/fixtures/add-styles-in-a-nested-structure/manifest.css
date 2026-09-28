@@ -1,14 +1,13 @@
-@utilities {
-  card {
+
+  @utility card {
     border-radius: 0.5rem;
   }
-  card-header {
+  @utility card-header {
     border-bottom: 0.0625rem solid oklch(0% 0 none);
   }
-  card-content {
+  @utility card-content {
     padding: 1.25rem;
   }
-  card-footer {
+  @utility card-footer {
     border-top: 0.0625rem solid oklch(0% 0 none);
   }
-}

@@ -9,11 +9,13 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -21,7 +23,7 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -41,7 +43,7 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -61,7 +63,7 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -133,11 +135,13 @@ For a deliberately stepped movement, place a timing function on the starting key
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); animation-timing-function:steps(4,end); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -145,7 +149,7 @@ For a deliberately stepped movement, place a timing function on the starting key
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -169,11 +173,13 @@ Resize before replaying to switch from ease-out to linear at `sm`. The one-secon
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -181,7 +187,7 @@ Resize before replaying to switch from ease-out to linear at `sm`. The one-secon
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10

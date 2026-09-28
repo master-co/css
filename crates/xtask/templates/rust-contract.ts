@@ -41,6 +41,7 @@ export interface MasterCSSRCMigrationResult {
   readonly notes: readonly string[]
   readonly classLists: readonly (readonly MasterCSSRCClassMigration[])[]
   readonly stylesheets: readonly {
+    readonly isEntry: boolean
     readonly edits: readonly { readonly range: { readonly start: number, readonly end: number }, readonly before: string, readonly after: string }[]
     readonly notes: readonly string[]
   }[]
@@ -87,7 +88,6 @@ export type MasterCSSRuleTarget =
   | 'defaults'
   | 'components'
   | 'utilities'
-  | 'keyframes'
 
 export interface MasterCSSSourceRange {
   start: number
@@ -131,7 +131,7 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  version: 1
+  version: 2
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   resources: MasterCSSEngineResources
   text: string
@@ -141,20 +141,11 @@ export interface MasterCSSEngineVariableResource {
   name: string
   refCount: number
   dependencies: string[]
-  static: boolean
-}
-
-export interface MasterCSSEngineAnimationResource {
-  name: string
-  index: number
-  refCount: number
-  text: string
 }
 
 export interface MasterCSSEngineResources {
   themeText?: string
   variables: MasterCSSEngineVariableResource[]
-  animations: MasterCSSEngineAnimationResource[]
 }
 
 export type MasterCSSMatchStatus = 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
@@ -163,7 +154,7 @@ export type MasterCSSValueStatus = 'valid' | 'invalid' | 'unknown' | 'not-checke
 export type MasterCSSBrowserSupport = 'supported' | 'unsupported' | 'unknown' | 'not-checked'
 
 export interface MasterCSSEngineInspection {
-  version: 1
+  version: 2
   className: string
   matchStatus: MasterCSSMatchStatus
   cssSyntaxStatus: MasterCSSSyntaxStatus
@@ -407,7 +398,6 @@ export interface MasterCSSDiagnosticsReportInput {
     text?: string
     included?: boolean
     variables?: readonly string[]
-    animations?: readonly string[]
   }
   firstSourceByClass?: Record<string, string>
   fatalError?: string
@@ -454,7 +444,6 @@ export interface MasterCSSInspectionReport {
     text?: string
     emittedGlobals: {
       variables: number
-      animations: number
     }
   }
   missingCSS: {
@@ -525,7 +514,6 @@ export interface MasterCSSLintCanonicalClassNameOptions {
   preferStaticUtilities: boolean
   preferPropertyAliases: boolean
   preferCompositionUtilities: boolean
-  preferConditionOrder: boolean
 }
 
 export interface MasterCSSLintCanonicalClassSuggestion {
@@ -665,14 +653,13 @@ export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
-  | 'pattern'
   | 'declaration'
   | 'token'
 
 export interface MasterCSSLanguageClass {
   className: string
   kind: MasterCSSLanguageClassKind
-  matcherTypes: ('static' | 'pattern' | 'key' | 'token')[]
+  matcherTypes: ('static' | 'key' | 'token')[]
   keyToken?: string
   valueToken?: string
   stateToken?: string
@@ -690,12 +677,8 @@ export interface MasterCSSLanguageVariable {
   name: string
   key: string
   type: string
-  value?: string | number
-  numeric?: import('@master/css-schema/manifest').MasterCSSManifestVariableNumericValue
-  modes?: import('@master/css-schema/manifest').MasterCSSManifestVariable['modes']
+  values: import('@master/css-schema/manifest').MasterCSSScopedThemeValue[]
   dependencies?: string[]
-  inline?: boolean
-  static?: boolean
 }
 
 export interface MasterCSSLanguageClassVariable {
@@ -719,7 +702,7 @@ export interface MasterCSSLanguageInspection {
   valueToken?: string
   stateToken?: string
   important: boolean
-  matcherTypes: ('static' | 'pattern' | 'key' | 'token')[]
+  matcherTypes: ('static' | 'key' | 'token')[]
   variables: MasterCSSLanguageClassVariable[]
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   text: string
@@ -787,9 +770,6 @@ export interface MasterCSSLanguageColorTokens {
 export type MasterCSSDirectiveManifestInput =
   import('@master/css-schema/css-directives').CSSDirectiveManifestInput
 
-export type MasterCSSDirectiveVariableDefinition =
-  import('@master/css-schema/css-directives').CSSDirectiveVariableDefinition
-
 export interface MasterCSSRegex {
   source: string
   flags: string
@@ -824,7 +804,6 @@ export interface MasterCSSDirectiveCompilation {
 }
 
 export interface MasterCSSCompilerInspection {
-  hasMasterEntryDirective: boolean
   hasMasterCSSImport: boolean
   hasMasterEntry: boolean
   directives: MasterCSSLexerCSSDirective[]
@@ -995,6 +974,7 @@ export interface MasterCSSStylesheetBundle {
     readonly entry: string
     readonly references: Readonly<NonNullable<MasterCSSDirectiveCompilation['references']>>
     readonly stylesheets: readonly {
+    readonly isEntry: boolean
       readonly id: string
       readonly source: string
       readonly imports: readonly {

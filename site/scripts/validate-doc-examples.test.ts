@@ -743,7 +743,7 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
   if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
   if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedVariant(candidate, eachCandidate.context)) return true
-  if (usesLocallyDefinedBreakpoint(candidate, eachCandidate.context)) return true
+  if (usesLocallyDefinedCustomMedia(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedToken(candidate, eachCandidate.context)) return true
   if (usesSiteThemeRoleToken(candidate)) return true
   return false
@@ -796,22 +796,22 @@ function usesLocallyDefinedToken(candidate: string, context: string): boolean {
   const declarations = [...context.replaceAll('\\n', '\n').matchAll(/(?<=^|[;{])\s*(--[a-z][\w-]*\s*:\s*[^;{}]+;)/gm)].map(match => match[1])
   if (!declarations.length) return false
   try {
-    configuredExampleCSS(`@theme { ${declarations.join(' ')} }`, [candidate])
+    configuredExampleCSS(`@theme { :root { ${declarations.join(' ')} } }`, [candidate])
     return true
   } catch { return false }
 }
 
-function usesLocallyDefinedBreakpoint(candidate: string, context: string): boolean {
+function usesLocallyDefinedCustomMedia(candidate: string, context: string): boolean {
   const variants = candidate.match(/@[a-z][\w-]*/g) ?? []
   if (!variants.length) return false
   const declarations: string[] = []
   for (const variant of variants) {
-    const declaration = context.match(new RegExp(`--breakpoint-${escapeRegExp(variant.slice(1))}\\s*:\\s*([^;{}]+);`))?.[0]
+    const declaration = context.match(new RegExp(`@custom-media\\s+--${escapeRegExp(variant.slice(1))}\\s+([^;{}]+);`))?.[0]
     if (!declaration) return false
     declarations.push(declaration)
   }
   try {
-    configuredExampleCSS(`@theme { ${declarations.join(' ')} }`, [candidate])
+    configuredExampleCSS(declarations.join(' '), [candidate])
     return true
   } catch { return false }
 }

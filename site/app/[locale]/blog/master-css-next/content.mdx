@@ -194,9 +194,10 @@ Static mode uses the same Master CSS stylesheet import model as the other build 
   background-color: var(--color-primary);
 }
 
-@theme {
+@theme { :root, :host {
   --color-primary: #ff0000;
-}
+} }
+
 ```
 
 Then enable static mode in `next.config.js`:

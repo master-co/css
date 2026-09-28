@@ -1,4 +1,4 @@
-@master entry;
+@import "@master/css";
 
 .btn {
   @compose "block";

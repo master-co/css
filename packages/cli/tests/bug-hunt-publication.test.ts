@@ -12,7 +12,7 @@ const cli = fileURLToPath(new URL('../src/bin/index.ts', import.meta.url))
 const tsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 const run = (cwd: string) => spawnSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], { cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
 function prepare(cwd: string, color: string) {
-  writeFileSync(join(cwd, 'entry.css'), `@master entry;.example{color:${color};background-image:url('./image.svg')}`)
+  writeFileSync(join(cwd, 'entry.css'), `@import "@master/css";.example{color:${color};background-image:url('./image.svg')}`)
   writeFileSync(join(cwd, 'image.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><path fill="${color}"/></svg>`)
   writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
 }

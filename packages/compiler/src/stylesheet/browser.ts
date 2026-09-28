@@ -111,8 +111,7 @@ export async function compileBrowserStylesheet(
     manifest: result.manifest,
     diagnostics: Object.freeze([...result.diagnostics, ...validateCompiledCSS([{ css: renderedCSS.generatedCSS, source: from }], options)]),
     emittedGlobals: Object.freeze({
-      variables: Object.freeze({ ...renderedCSS.emittedGlobals.variables }),
-      animations: Object.freeze({ ...renderedCSS.emittedGlobals.animations })
+      variables: Object.freeze({ ...renderedCSS.emittedGlobals.variables })
     }),
     result
   })

@@ -115,12 +115,11 @@ function createHydrationFixture(classNames) {
     return {
       bodyMarkup: createClassMarkup(classNames),
       hydrationManifest: {
-        version: 1,
+        version: 2,
         languageVersion: defaultManifest.languageVersion,
         rules: snapshot.rules,
         resourceOrder: [
-          ...snapshot.resources.variables.map(({ name }) => name),
-          ...snapshot.resources.animations.map(({ name }) => name)
+          ...snapshot.resources.variables.map(({ name }) => name)
         ]
       },
       styleText: snapshot.text
@@ -438,8 +437,7 @@ try {
         await globalThis.MasterCSSRuntime.start({
           manifest,
           emittedGlobals: {
-            variables: { 'color-red-60': 1 },
-            animations: { fade: 1 }
+            variables: { 'color-red-60': 1 }
           }
         })
         return performance.now() - startedAt

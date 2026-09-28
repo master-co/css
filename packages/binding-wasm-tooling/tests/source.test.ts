@@ -52,7 +52,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   )).toEqual(['grid', 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+    version: 2, languageVersion: 4,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -77,7 +77,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   scanner.free()
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+    version: 2, languageVersion: 4,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -90,7 +90,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
-    version: 3,
+    version: 4,
     classes: [
       { className: 'block', matchStatus: 'matched', rules: [{ text: '.block{display:block}' }] },
       { className: 'unknown', matchStatus: 'unmatched', rules: [] }
@@ -99,10 +99,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
   validator.dispose()
   validator.free()
 
-  const lint = new tooling.ToolingLintSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+  const lint = new tooling.ToolingLintSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "spacing-md", value: '1rem' }] }],
+    version: 2, languageVersion: 4,
     variables: {
-      spacing: [{ key: 'md', type: 'number', value: '1rem' }]
+      spacing: [{ key: 'md', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }] }]
     },
     utilities: [
       {
@@ -150,39 +150,39 @@ test('loads the isolated source tooling Wasm surface', async () => {
     ]
   }))
   expect(lint.analyze(['block', 'm:2px', 'm:3px', 'unknown'], undefined, [])).toEqual({
-    version: 1,
+    version: 3,
     sortedClassNames: ['block', 'm:2px', 'm:3px', 'unknown'],
     conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }],
     partialConflicts: []
   })
   expect(lint.analyze(['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 1,
+    version: 3,
     sortedClassNames: ['mx:2px', 'mxs:3px'],
     conflicts: [],
     partialConflicts: []
   })
   expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
-    version: 1,
+    version: 3,
     suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
   })
   expect(lint.canonicalClassGroups(['mxs-md', 'mxe-md'], undefined, undefined)).toEqual({
-    version: 1,
+    version: 3,
     suggestions: []
   })
   expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-    version: 1,
+    version: 3,
     candidates: [
       { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
     ]
   })
   // Decomposing a shorthand would change its cascade tier, so no partial autofix.
   expect(lint.analyzeClassList('mx:2px  mxs:3px', ['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 1,
-    analysis: { version: 1, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
+    version: 3,
+    analysis: { version: 3, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
     diagnostics: []
   })
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 1,
+    version: 3,
     classList: 'block unknown',
     classNames: ['block', 'unknown'],
     validationErrors: [
@@ -204,7 +204,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     })
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 1,
+    version: 3,
     classList: '😀 m:var(--spacing-md)|17px',
     classNames: ['😀', 'm:var(--spacing-md)|17px'],
     rawValuePolicy: {
@@ -227,7 +227,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   lint.free()
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
-    version: 1, languageVersion: 3,
+    version: 2, languageVersion: 4,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -237,33 +237,33 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 4,
+    version: 5,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 4,
+    version: 5,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 4,
+    version: 5,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 4,
+    version: 5,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
     sourceFormat: { syntax: 'rgb' }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 4,
+    version: 5,
     tokens: [{
       range: { start: 8, end: 12 },
       expression: { kind: 'literal', value: '#123' }
@@ -273,7 +273,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   language.free()
 
   expect(tooling.createInspectionReport({
-    version: 3,
+    version: 5,
     cwd: '/project',
     patterns: ['index.html'],
     files: [],
@@ -282,7 +282,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     stylesheets: {},
     css: { text: '😀' }
   })).toMatchObject({
-    version: 3,
+    version: 5,
     // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
     // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
     css: { bytes: 4, included: false },

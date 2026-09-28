@@ -14,7 +14,7 @@ test('BH-0004 Sass updates invalidate SSR imports without sending browser CSS up
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
-    const file = join(root, 'style.scss'), source = (color: string) => `@master entry;@preserve native;$tone:${color};.example{color:$tone}`
+    const file = join(root, 'style.scss'), source = (color: string) => `@import url("@master/css");@preserve native;$tone:${color};.example{color:$tone}`
     writeFileSync(file, source('red'))
     writeFileSync(join(root, 'server.js'), 'export {default as css} from "./style.scss?inline"')
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }), server: { host: '127.0.0.1', port: 0 } })
@@ -39,7 +39,7 @@ test('BH-0004 server restart discards stylesheet URLs served by the previous ser
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
-    const file = join(root, 'style.scss'), source = (color: string) => `@master entry;@preserve native;.example{color:${color}}`
+    const file = join(root, 'style.scss'), source = (color: string) => `@import url("@master/css");@preserve native;.example{color:${color}}`
     writeFileSync(file, source('red'))
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: [...masterCSS({ mode: 'static', runtime: false }), { name: 'test:sass-route', resolveId(id) { const clean = id.replace(/[?#].*$/, '');if (clean === '/old.scss' || clean === '/new.scss') return file + id.slice(clean.length) } }], server: { host: '127.0.0.1', port: 0 } })
     await server.listen()
@@ -77,7 +77,7 @@ test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP r
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const file = join(root, 'style.scss')
-    writeFileSync(file, '@master entry;@preserve native;.example{color:red}')
+    writeFileSync(file, "@import url(\"@master/css\");@preserve native;.example{color:red}")
     const plugins = masterCSS({ mode: 'static', runtime: false })
     const sass = plugins.find(plugin => plugin.name === 'master-css:sass-source')!
     const hotUpdate = sass.hotUpdate
@@ -101,7 +101,7 @@ test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP r
     expect(response.status).toBe(200)
     expect(await response.text()).toContain('red')
     const send = vi.spyOn(server.environments.client.hot, 'send')
-    writeFileSync(file, '@master entry;@preserve native;.example{color:green}')
+    writeFileSync(file, "@import url(\"@master/css\");@preserve native;.example{color:green}")
     await updating
     release()
     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([

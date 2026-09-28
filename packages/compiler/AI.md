@@ -6,7 +6,7 @@
 
 ## Owns
 
-- CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, `@utilities` and rule-local `@variant`.
+- CSS directive parsing and lowering for `@theme`, `@custom-media`, `@custom-variant`, `@utility` and rule-local `@variant`.
 - Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
@@ -49,11 +49,11 @@
 
 ## Risk Areas
 
-- `@master entry;` and `@import "@master/css"` are equivalent user project entry markers; package CSS files must not contain `@master entry;`.
-- Native defaults/components use CSS layers and ship by default. Defining utilities, variables, variants, or animations does not emit CSS by itself; classes still need use or extraction.
+- `@import "@master/css"` is the only project entry form and loads the full native preset; `@master entry` is rejected.
+- Native defaults/components use CSS layers and ship by default. Utilities require use or extraction; theme variables follow transitive references and retain all authored scopes. Native keyframes ship with their imported stylesheet.
 - Directive syntax changes may require language token updates and docs updates.
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.
-- Top-level native `@keyframes` remain native CSS unless placed inside an appropriate `@theme` block.
+- `@keyframes` are always native CSS; reject them inside `@theme`.
 
 ## Safe Changes
 
@@ -81,4 +81,4 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-`@utilities` uses first-level bare names. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. `@compose` is removed in every context: retain only the ranged removal diagnostic, not parsing, execution or compatibility IR. Use native declarations and nested selectors; `@variant` remains supported. Raw patterns use only `key:<*>`; token patterns use only `prefix-<~namespace>`. Later definitions replace the complete matching identity. Preserve declaration order and duplicates. Directive changes require updating `site/app/[locale]/guide/directives/contract.mdx`.
+`@utility name { ... }` declares one top-level definition. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. `@compose` is removed in every context: retain only the ranged removal diagnostic, not parsing, execution or compatibility IR. Use native declarations and nested selectors; `@variant` remains supported. Raw parameters use `key:*`; token parameters use `prefix-* from(--namespace-*, ...)`. Only `--master-value()` inside parameter declaration values substitutes a value. Enum/valueMap definitions are removed. Later definitions replace the complete matching identity. Preserve declaration order and duplicates. Directive changes require updating `site/app/[locale]/guide/directives/contract.mdx`.

@@ -15,7 +15,7 @@ for (const extension of ['css', 'scss']) test(`BH-0004 development ${extension} 
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
-    writeFileSync(join(root, `style.module.${extension}`), '@master entry;.example{composes:shared from "./shared.module.css";background:blue}')
+    writeFileSync(join(root, `style.module.${extension}`), "@import url(\"@master/css\");.example{composes:shared from \"./shared.module.css\";background:blue}")
     writeFileSync(join(root, 'shared.module.css'), '.shared{color:red}')
     server = await createServer({ root, configFile: false, logLevel: 'silent', css: { modules: { generateScopedName: 'scope_[local]' } }, plugins: masterCSS({ mode: 'static', runtime: false }), server: { host: '127.0.0.1', port: 0 } })
     await server.listen()

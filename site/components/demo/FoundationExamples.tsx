@@ -91,8 +91,8 @@ export function FoundationRadius() {
 export function FoundationShapes() {
   return <Demo title="Content-sized pill and width-led circle" data-foundation="shapes" caption="These links share a destination. Their shape is independent of their native navigation behavior.">
     <div className="flex flex-wrap items-end gap-lg">
-      <div><DemoLabel>rounded</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="inline-flex items-center justify-center min-h:44px px-md py-sm rounded b:1px|solid|var(--color-line-base) text-sm text-decoration:none bg-demo-surface text-body">Shape shortcuts</a></div></div>
-      <div><DemoLabel>w:48px round</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Shape shortcuts" className="inline-flex items-center justify-center w:48px round b:1px|solid|var(--color-line-base) bg-demo-surface text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
+      <div><DemoLabel>rounded</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="inline-flex items-center justify-center min-h:44px px-md py-sm rounded b:1px|solid|var(--color-line-divider) text-sm text-decoration:none bg-demo-surface text-body">Shape shortcuts</a></div></div>
+      <div><DemoLabel>w:48px round</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Shape shortcuts" className="inline-flex items-center justify-center w:48px round b:1px|solid|var(--color-line-divider) bg-demo-surface text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
     </div>
   </Demo>
 }

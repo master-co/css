@@ -28,7 +28,7 @@ async function compile(extension: string, source: string, script: string, module
 }
 
 test('BH-0004 managed CSS Modules preserve named/default exports and global selectors', async () => {
-  const output = await compile('css', '@master entry;@preserve native;.example{color:blue}:global(.global){background-color:red}', 'import names, {example} from "./style.module.css";console.log(names.example,example)')
+  const output = await compile('css', "@import url(\"@master/css\");@preserve native;.example{color:blue}:global(.global){background-color:red}", 'import names, {example} from "./style.module.css";console.log(names.example,example)')
   expect(output.js).toContain('scoped_example')
   expect(output.css).toContain('.scoped_example')
   expect(output.css).toContain('.global')
@@ -36,45 +36,45 @@ test('BH-0004 managed CSS Modules preserve named/default exports and global sele
 })
 
 test('BH-0004 managed CSS Modules keep cross-file composed exports and CSS', async () => {
-  const output = await compile('css', '@master entry;@preserve native;.example{composes:shared from "./shared.module.css";background-color:red}', 'import names, {example} from "./style.module.css";console.log(names.example,example)')
+  const output = await compile('css', "@import url(\"@master/css\");@preserve native;.example{composes:shared from \"./shared.module.css\";background-color:red}", 'import names, {example} from "./style.module.css";console.log(names.example,example)')
   expect(output.js).toContain('scoped_example scoped_shared')
   expect(output.css).toContain('.scoped_shared')
   expect(output.css).not.toContain('composes:')
 })
 
 for (const extension of ['css', 'scss']) test(`BH-0004 ${extension} Modules retain referenced scoped CSS under default pruning`, async () => {
-  const output = await compile(extension, '@master entry;.example{composes:shared from "./shared.module.css";background-color:red}', `import names from "./style.module.${extension}";document.body.className=names.example`)
+  const output = await compile(extension, "@import url(\"@master/css\");.example{composes:shared from \"./shared.module.css\";background-color:red}", `import names from "./style.module.${extension}";document.body.className=names.example`)
   expect(output.css).toContain('.scoped_example')
   expect(output.css).toContain('.scoped_shared')
 })
 
 test('BH-0004 CSS Modules localsConvention applies to exported names', async () => {
-  const output = await compile('css', '@master entry;@preserve native;.dash-name{color:blue}', 'import names, {dashName} from "./style.module.css";console.log(names.dashName,dashName)', { generateScopedName: 'scoped_[local]', localsConvention: 'camelCaseOnly' })
+  const output = await compile('css', "@import url(\"@master/css\");@preserve native;.dash-name{color:blue}", 'import names, {dashName} from "./style.module.css";console.log(names.dashName,dashName)', { generateScopedName: 'scoped_[local]', localsConvention: 'camelCaseOnly' })
   expect(output.js).toContain('scoped_dash-name')
   expect(output.css).toContain('.scoped_dash-name')
 })
 
 test('BH-0004 disabling CSS Modules keeps the native CSS entry path', async () => {
-  const output = await compile('css', '@master entry;.example{color:blue}', 'import "./style.module.css"', false)
+  const output = await compile('css', "@import url(\"@master/css\");.example{color:blue}", 'import "./style.module.css"', false)
   expect(output.css).toContain('.example')
   expect(output.css).not.toContain('scoped_')
 })
 
 test('BH-0004 managed CSS Modules inline requests keep the scoped stylesheet string', async () => {
-  const output = await compile('css', '@master entry;@preserve native;.example{color:blue}', 'import css from "./style.module.css?inline";console.log(css)')
+  const output = await compile('css', "@import url(\"@master/css\");@preserve native;.example{color:blue}", 'import css from "./style.module.css?inline";console.log(css)')
   expect(output.js).toContain('.scoped_example')
   expect(output.js).toMatch(/color:\s*(?:blue|#00f)/)
   expect(output.js).not.toContain('#master-css-slot')
 })
 
 test('BH-0004 CSS Modules compiler errors retain authored directive locations', async () => {
-  await expect(compile('css', '@master entry;\n.example {\n  @compose unknown-utility;\n}', 'import names from "./style.module.css";console.log(names)')).rejects.toMatchObject({
+  await expect(compile('css', "@import url(\"@master/css\");\n.example {\n  @compose unknown-utility;\n}", 'import names from "./style.module.css";console.log(names)')).rejects.toMatchObject({
     errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/\/style\.module\.css$/), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }] }]
   })
 })
 
 test('BH-0004 unattributed composed Module content does not invent an original filename', async () => {
-  await expect(compile('css', '@master entry;.example{composes:shared from "./shared.module.css"}', 'import names from "./style.module.css";console.log(names)', undefined, '.shared{@compose unknown-utility;}')).rejects.toMatchObject({
+  await expect(compile('css', "@import url(\"@master/css\");.example{composes:shared from \"./shared.module.css\"}", 'import names from "./style.module.css";console.log(names)', undefined, '.shared{@compose unknown-utility;}')).rejects.toMatchObject({
     errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/\/style\.module\.css\.master-css-sass\.css$/), notes: ['Original CSS Modules location is unavailable; this range refers to preprocessed CSS.'] }] }]
   })
 })

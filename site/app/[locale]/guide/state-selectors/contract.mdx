@@ -221,15 +221,15 @@ Use `:focus-visible` when the browser should decide whether to show a focus ring
 Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
 ```html
 <ul>
-  <li class="surface-muted:even">Draft</li>
-  <li class="surface-muted:even">In review</li>
-  <li class="surface-muted:even">Published</li>
+  <li class="surface-inset:even">Draft</li>
+  <li class="surface-inset:even">In review</li>
+  <li class="surface-inset:even">Published</li>
 </ul>
 ```
 
 `:odd` maps to `:nth-child(odd)`; `:even` maps to `:nth-child(2n)`. Positions count all element siblings, not only siblings that carry the same class.
 
-<Class2CSS>{['surface-muted:even', 'mt-sm:odd']}</Class2CSS>
+<Class2CSS>{['surface-inset:even', 'mt-sm:odd']}</Class2CSS>
 
 ### `:valid`, `:invalid`, `:required` \{#valid--invalid--required\}
 Use form validation pseudo-classes to reflect native validity without writing JavaScript state.

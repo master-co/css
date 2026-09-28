@@ -1,17 +1,13 @@
 use super::{
     EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet,
-    RulePriorityIr, StoredRule, apply_forced_mode, canonicalize_class_name,
-    collect_animation_names, collect_css_variable_names, composition_conditions,
-    composition_selector, create_selector_text, emit_declarations, find_group_close,
-    normalize_dynamic_value, parse_serialized_declarations, resolve_state_branches,
-    selector_priority, split_top_level, wrap_raw_conditions, wrap_state_conditions,
+    RulePriorityIr, StoredRule, canonicalize_class_name, collect_css_variable_names,
+    composition_conditions, composition_selector, create_selector_text, emit_declarations,
+    find_group_close, normalize_dynamic_value, parse_serialized_declarations,
+    resolve_state_branches, selector_priority, split_top_level, wrap_raw_conditions,
+    wrap_state_conditions,
 };
 
 impl EngineSession {
-    pub(crate) fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
-        self.generate_class_rules_with_mode(class_name, None)
-    }
-
     pub(crate) fn generate_composition_rules(
         &self,
         class_name: &str,
@@ -68,7 +64,7 @@ impl EngineSession {
                     if matched.value_normalized {
                         value.to_owned()
                     } else {
-                        normalize_dynamic_value(value, &self.compiled.settings)
+                        normalize_dynamic_value(value)
                     }
                 });
                 for (branch_index, branch) in
@@ -76,11 +72,8 @@ impl EngineSession {
                         .into_iter()
                         .enumerate()
                 {
-                    let emitted_rules = emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important || self.compiled.settings.important,
-                    );
+                    let emitted_rules =
+                        emit_declarations(utility, resolved_value.as_deref(), branch.important);
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -95,8 +88,6 @@ impl EngineSession {
                     }
                     let sort_tier = if !branch.condition_wrappers.is_empty() {
                         3
-                    } else if branch.mode.is_some() {
-                        2
                     } else if branch.selector_template.is_some() {
                         1
                     } else {
@@ -151,12 +142,8 @@ impl EngineSession {
         generated
     }
 
-    pub(crate) fn generate_class_rules_with_mode(
-        &self,
-        class_name: &str,
-        mode: Option<&str>,
-    ) -> Vec<StoredRule> {
-        if let Some(rules) = self.generate_group_rules(class_name, mode) {
+    pub(crate) fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
+        if let Some(rules) = self.generate_group_rules(class_name) {
             return rules;
         }
         if mastercss_lexer::decode_native_content(class_name).is_none() {
@@ -188,22 +175,18 @@ impl EngineSession {
                 if utility.native_fallback && generated.len() > generated_before_candidate {
                     break;
                 }
-                let mut state_branches =
+                let state_branches =
                     resolve_state_branches(&matched.state_token, important, &self.compiled);
-                apply_forced_mode(&mut state_branches, mode, &self.compiled);
                 let resolved_value = matched.value.as_deref().map(|value| {
                     if matched.value_normalized {
                         value.to_owned()
                     } else {
-                        normalize_dynamic_value(value, &self.compiled.settings)
+                        normalize_dynamic_value(value)
                     }
                 });
                 for (branch_index, branch) in state_branches.into_iter().enumerate() {
-                    let emitted_rules = emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important || self.compiled.settings.important,
-                    );
+                    let emitted_rules =
+                        emit_declarations(utility, resolved_value.as_deref(), branch.important);
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -245,15 +228,11 @@ impl EngineSession {
                     }
                     let sort_tier = if !branch.condition_wrappers.is_empty() {
                         3
-                    } else if branch.mode.is_some() {
-                        2
                     } else if branch.selector_template.is_some() {
                         1
                     } else {
                         0
                     };
-                    let animation_names =
-                        collect_animation_names(&declarations, &variable_names, &self.compiled);
                     generated.push(StoredRule {
                         ir: GeneratedRuleIr {
                             class_name: class_name.to_owned(),
@@ -292,7 +271,6 @@ impl EngineSession {
                             },
                             selector_text: Some(selector_text),
                             variable_names,
-                            animation_names,
                         },
                         manifest_order: utility.order.unwrap_or_default(),
                         declarations,
@@ -309,11 +287,7 @@ impl EngineSession {
         generated
     }
 
-    pub(crate) fn generate_group_rules(
-        &self,
-        class_name: &str,
-        mode: Option<&str>,
-    ) -> Option<Vec<StoredRule>> {
+    pub(crate) fn generate_group_rules(&self, class_name: &str) -> Option<Vec<StoredRule>> {
         let (items, state) = group_items(class_name)?;
         if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
             return Some(Vec::new());
@@ -323,7 +297,7 @@ impl EngineSession {
         for (index, item) in items.iter().enumerate() {
             let nested = format!("{item}{state}");
             let nested_selector = format!(".{}", super::css_escape(&nested));
-            for mut rule in self.generate_class_rules_with_mode(&nested, mode) {
+            for mut rule in self.generate_class_rules(&nested) {
                 rule.ir.class_name = class_name.into();
                 rule.ir.key = format!("{class_name}\0group:{index}\0{}", rule.ir.key);
                 rule.ir.text = mastercss_lexer::replace_rule_class_selector(

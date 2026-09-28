@@ -48,9 +48,10 @@ Define a semantic name in `color-text`, then compile the theme with the class th
 <DemoExample page="color" section="use-custom-text-colors" />
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --color-text-primary: var(--color-text-blue);
-}
+} }
+
 ```
 
 ```html

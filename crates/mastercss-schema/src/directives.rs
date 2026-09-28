@@ -121,7 +121,6 @@ pub enum ErrorCode {
     UnknownCondition,
     MasterQueryRequiresCss,
     RemovedPresetUtility,
-    UndefinedMode,
     UtilityNameConflict,
     AmbiguousToken,
     UnknownToken,
@@ -129,7 +128,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 27] = [
+    pub const ALL: [Self; 26] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -152,7 +151,6 @@ impl ErrorCode {
         Self::UnknownCondition,
         Self::MasterQueryRequiresCss,
         Self::RemovedPresetUtility,
-        Self::UndefinedMode,
         Self::UtilityNameConflict,
         Self::AmbiguousToken,
         Self::UnknownToken,
@@ -183,7 +181,6 @@ impl ErrorCode {
             Self::UnknownCondition => "UNKNOWN_CONDITION",
             Self::RemovedPresetUtility => "REMOVED_PRESET_UTILITY",
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
-            Self::UndefinedMode => "UNDEFINED_MODE",
             Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",
             Self::AmbiguousToken => "AMBIGUOUS_TOKEN",
             Self::UnknownToken => "UNKNOWN_TOKEN",
@@ -203,37 +200,42 @@ pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub variants: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub variables: Option<Vec<CssDirectiveVariableDefinition>>,
+    pub theme: Option<Vec<ThemeNode>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub utilities: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub scope: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub important: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub animations: Option<Map<String, Value>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub animation_options: Option<Map<String, Value>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub modes: Option<Vec<ModeDefinition>>,
+    pub custom_media: Option<Vec<CustomMediaDefinition>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CssDirectiveVariableDefinition {
+/// Ordered native CSS inside @theme. Declaration nodes occur only inside an
+/// explicit selector, including native conditional/nesting descendants.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase", deny_unknown_fields)]
+pub enum ThemeNode {
+    Rule {
+        prelude: String,
+        children: Vec<ThemeNode>,
+    },
+    Declaration {
+        name: String,
+        value: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ScopedThemeValue {
+    pub path: Vec<String>,
+    pub value: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CustomMediaDefinition {
+    pub name: String,
+    pub query: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    pub value: Value,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mode: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub inline: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub r#static: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub namespace: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub key: Option<String>,
+    pub source: Option<CssDirectiveSourceReference>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -421,4 +423,17 @@ pub struct CssUtilitySource {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub replaced_by: Option<CssDirectiveSourceReference>,
     pub source: CssDirectiveSourceReference,
+}
+
+/// Resolved declarative custom media expression, with no runtime alias lookup.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "kebab-case", deny_unknown_fields)]
+pub enum MediaQueryExpr {
+    True,
+    False,
+    Feature { value: String },
+    MediaType { name: String },
+    Not { query: Box<MediaQueryExpr> },
+    And { queries: Vec<MediaQueryExpr> },
+    Or { queries: Vec<MediaQueryExpr> },
 }

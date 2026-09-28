@@ -38,7 +38,7 @@ function makeRoot() {
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'dev-graph-environments-'))
   for (const [name, color] of [['initial', 'red'], ['later', 'green']]) {
-    writeFileSync(join(root, `${name}.css`), `@import "./${name}-child.css" layer(guard);@master entry;@preserve native;`)
+    writeFileSync(join(root, `${name}.css`), `@import "./${name}-child.css" layer(guard);@import url("@master/css");@preserve native;`)
     writeFileSync(join(root, `${name}-child.css`), `@import "/base/external.css";.${name}{color:${color};background-image:url("./${name}%23%3F.svg?q=1#part")}`)
     writeFileSync(join(root, `${name}#?.svg`), `<svg xmlns="http://www.w3.org/2000/svg"><title>${color}</title></svg>`)
     writeFileSync(join(root, `${name}.js`), `export { default as css } from './${name}.css?inline'`)

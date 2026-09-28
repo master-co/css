@@ -8,12 +8,10 @@ export interface CanonicalClassNameOptions {
   preferStaticUtilities?: boolean
   preferPropertyAliases?: boolean
   preferCompositionUtilities?: boolean
-  preferConditionOrder?: boolean
 }
 
 export const defaultCanonicalClassNameOptions: Readonly<Required<CanonicalClassNameOptions>> = Object.freeze({
   preferStaticUtilities: true,
   preferPropertyAliases: true,
   preferCompositionUtilities: true,
-  preferConditionOrder: true,
 })

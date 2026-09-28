@@ -60,12 +60,11 @@ function normalizePath(source: string) {
 }
 
 function normalizeSourcePattern(pattern: string, file?: string, cwd = process.cwd()) {
-  if (pattern.startsWith('./') || pattern.startsWith('../')) {
-    const absolutePattern = resolve(file ? dirname(file) : cwd, pattern)
-    return normalizePath(relative(cwd, absolutePattern) || '.')
-  }
   if (isAbsolute(pattern)) return normalizePath(relative(cwd, pattern) || '.')
-  return normalizePath(pattern)
+  if (!file || file.includes('\0') || /^[a-z][a-z\d+.-]*:/i.test(file) && !/^[a-z]:[\\/]/i.test(file)) {
+    throw new Error('Resolving @source requires the declaring stylesheet file or baseFile')
+  }
+  return normalizePath(relative(cwd, resolve(cwd, dirname(file), pattern)) || '.')
 }
 
 export function mergeStylesheetDirectives(...directives: (Partial<StylesheetDirectives> | undefined)[]) {
@@ -101,6 +100,7 @@ export function collectStylesheetDirectives(
   cwd = process.cwd()
 ): StylesheetDirectives {
   const directives = collectStandaloneCSSDirectiveExtractionPolicy(source)
+  if (!file) return directives
   directives.include = directives.include.map((pattern) => normalizeSourcePattern(pattern, file, cwd))
   directives.exclude = directives.exclude.map((pattern) => normalizeSourcePattern(pattern, file, cwd))
   return directives

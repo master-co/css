@@ -29,24 +29,13 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const css = createCSSWithNativeDeclarations(createPresetManifest())
 const customManifest = createPresetManifest({
-  modes: ['light', 'dark', 'midnight'].map(name => ({ name, branches: [{ selector: `.${name}` }] })),
-  conditions: {
-    tablet: {
-      id: 'media',
-      nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-    }
-  },
-  breakpointConditions: {
-    tablet: {
-      id: 'media',
-      nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-    }
-  },
+  customMedia: { '--tablet': { type: 'feature', value: '(width>=48rem)' } },
   variables: [
-    { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', value: '48rem', numeric: { value: 48, unit: 'rem' } },
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', values: [{ path: [':root,:host'], value: '48rem' }], numeric: { value: 48, unit: 'rem' } },
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   variants: [
+    { token: '@midnight', branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
     { token: '@wide', branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
   ],
   utilities: [
@@ -69,7 +58,7 @@ const customCSS = createCSSWithNativeDeclarations(customManifest)
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
 const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   keyAliases: { space: 'margin' },
   nativeValueNamespaces: [{
@@ -574,14 +563,14 @@ describe('canonical class suggestions', () => {
   test('combines condition order independently with canonical suggestion options', () => {
     expect(suggestCanonicalClassName('font-size:16px@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
-      preferConditionOrder: false
+
     })).toBeUndefined()
     expect(suggestCanonicalClassName('font-size:16px@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
     expect(suggestCanonicalClassName('font-size:16px@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
-      preferConditionOrder: false,
+
     })).toBeUndefined()
     expect(suggestCanonicalClassName('margin-md@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
@@ -647,7 +636,7 @@ describe('canonical class suggestions', () => {
     })).toBeUndefined()
     expect(suggestCanonicalClassName('block@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
-      preferConditionOrder: false
+
     })).toBeUndefined()
   })
 

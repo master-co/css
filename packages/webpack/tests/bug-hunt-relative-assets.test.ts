@@ -13,7 +13,7 @@ it('resolves relative runtime assets from each emitted HTML directory', async ()
     const Plugin = (await import(pathToFileURL(join(packageDir, 'dist/index.js')).href)).default
     try {
         writeFileSync(join(root, 'entry.js'), 'console.log("fixture")')
-        writeFileSync(join(root, 'app.css'), '@master entry;\n@import "@master/css";')
+        writeFileSync(join(root, 'app.css'), "@import \"@master/css\";\n@import \"@master/css\";")
         await new Promise<void>((resolveBuild, reject) => {
             webpack({
                 mode: 'production', context: root, entry: './entry.js',

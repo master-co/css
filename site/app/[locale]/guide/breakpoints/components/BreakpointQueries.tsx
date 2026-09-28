@@ -1,7 +1,6 @@
-import { presetBreakpointConditions } from '~/site/common/preset-css'
+import { presetBreakpointQueries } from '~/site/common/preset-css'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
-import generateManifestCondition from '~/site/utils/generate-manifest-condition'
 
 const breakpointVariableEntries = getThemeNumericVariableEntries('breakpoint')
 const formatValue = (entry: ThemeNumericVariableEntry) => entry.value
@@ -23,7 +22,7 @@ export default () => {
               <tr key={entry.key}>
                 <th className="white-space:nowrap"><InlineCode>{`@${entry.key}`}</InlineCode></th>
                 <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
-                <td><InlineCode lang="css">{generateManifestCondition(presetBreakpointConditions[entry.key])}</InlineCode></td>
+                <td><InlineCode lang="css">{presetBreakpointQueries[entry.key]}</InlineCode></td>
               </tr>
             ))
           }

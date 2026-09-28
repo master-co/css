@@ -32,7 +32,7 @@ test('the portable guide preserves the upgrade workflow and labels historical sy
   assert.match(markdown, /Do not initialize the old and new Master runtimes/)
   assert.match(markdown, /root-size/)
   assert.match(markdown, /image-set/)
-  assert.match(markdown, /binding ABI 13/)
+  assert.match(markdown, /binding ABI 15/)
   assert.match(markdown, /--from rc-sizing/)
   for (const profile of ['rc-legacy', 'rc-named', 'rc-native', 'rc-managed', 'rc-utilities']) assert.ok(markdown.includes(profile))
   assert.match(markdown, /MASTER_QUERY_REQUIRES_CSS/)
@@ -41,7 +41,7 @@ test('the portable guide preserves the upgrade workflow and labels historical sy
 })
 
 test('new guide examples follow the native and named-token contract', () => {
-  const source = '@theme { --color-brand: #4f46e5; }'
+  const source = '@theme { :root { --color-brand: #4f46e5; } }'
   const cases = [
     ['font-mono', 'font-family:var(--font-family-mono)'],
     ['font-bold', 'font-weight:var(--font-weight-bold)'],

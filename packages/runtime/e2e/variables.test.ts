@@ -7,26 +7,25 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const variables = [
-  { namespace: 'color', key: 'first', value: '#111111' },
-  { namespace: 'color', key: 'third', value: '#666666' },
-  { namespace: 'color', key: 'fourth', value: '#888888' },
-  { namespace: 'color', key: 'first', value: '#333333', mode: 'light' },
-  { namespace: 'color', key: 'second', value: '#555555', mode: 'light' },
-  { namespace: 'color', key: 'third', value: '#777777', mode: 'light' },
-  { namespace: 'color', key: 'fourth', value: '#000000', mode: 'light' },
-  { namespace: 'color', key: 'fifth', value: '#033333', mode: 'light' },
-  { namespace: 'color', key: 'sixth', value: '#666666', mode: 'light' },
-  { namespace: 'color', key: 'first', value: '#222222', mode: 'dark' },
-  { namespace: 'color', key: 'second', value: '#444444', mode: 'dark' },
-  { namespace: 'color', key: 'third', value: '#666666', mode: 'dark' },
-  { namespace: 'color', key: 'fourth', value: '#999999', mode: 'dark' },
-  { namespace: 'color', key: 'fifth', value: '#022222', mode: 'dark' }
+  { namespace: 'color', key: 'first', values: [{ path: [':root,:host'], value: '#111111' }] },
+  { namespace: 'color', key: 'third', values: [{ path: [':root,:host'], value: '#666666' }] },
+  { namespace: 'color', key: 'fourth', values: [{ path: [':root,:host'], value: '#888888' }] },
+  { namespace: 'color', key: 'first', values: [{ path: [".light"], value: '#333333' }] },
+  { namespace: 'color', key: 'second', values: [{ path: [".light"], value: '#555555' }] },
+  { namespace: 'color', key: 'third', values: [{ path: [".light"], value: '#777777' }] },
+  { namespace: 'color', key: 'fourth', values: [{ path: [".light"], value: '#000000' }] },
+  { namespace: 'color', key: 'fifth', values: [{ path: [".light"], value: '#033333' }] },
+  { namespace: 'color', key: 'sixth', values: [{ path: [".light"], value: '#666666' }] },
+  { namespace: 'color', key: 'first', values: [{ path: [".dark"], value: '#222222' }] },
+  { namespace: 'color', key: 'second', values: [{ path: [".dark"], value: '#444444' }] },
+  { namespace: 'color', key: 'third', values: [{ path: [".dark"], value: '#666666' }] },
+  { namespace: 'color', key: 'fourth', values: [{ path: [".dark"], value: '#999999' }] },
+  { namespace: 'color', key: 'fifth', values: [{ path: [".dark"], value: '#022222' }] }
 ]
 
-const modes = ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] }))
 
 test.beforeEach(async ({ page }) => {
-  await init(page, '', { variables, modes })
+  await init(page, '', { variables })
 })
 
 async function waitForRuntimeRemovalFlush(page: Page) {

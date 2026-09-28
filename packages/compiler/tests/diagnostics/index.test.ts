@@ -16,7 +16,7 @@ describe('@master/css-compiler/diagnostics', () => {
   it('does not diagnose a registered native sizing class as a removed utility', async () => {
     const cwd = createTempDir('master-css-diagnostics-native-sizing-')
     try {
-      writeFileSync(join(cwd, 'index.css'), '@master entry; .size\\:20px { color: red; }')
+      writeFileSync(join(cwd, 'index.css'), '@import \"@master/css\"; .size\\:20px { color: red; }')
       writeFileSync(join(cwd, 'index.html'), '<div class="size:20px"></div>')
       const report = await createMasterCSSInspectionReport({ manifest: defaultManifest, cwd, patterns: ['index.html'] })
       expect(report.diagnostics.some(item => item.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
@@ -34,7 +34,7 @@ describe('@master/css-compiler/diagnostics', () => {
         classes: ['block', 'never-generated-class']
       })
 
-      expect(report.version).toBe(4)
+      expect(report.version).toBe(5)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
       expect(report.scanner.classes.invalid).toContain('p-missing')
@@ -88,7 +88,7 @@ describe('@master/css-compiler/diagnostics', () => {
   it('includes generated CSS and stylesheet entry metadata', async () => {
     const cwd = createTempDir('master-css-diagnostics-css-')
     try {
-      writeFileSync(join(cwd, 'index.css'), '@master entry;')
+      writeFileSync(join(cwd, 'index.css'), "@import \"@master/css\";")
       writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifest,
@@ -101,7 +101,7 @@ describe('@master/css-compiler/diagnostics', () => {
       expect(report.stylesheets.entries).toHaveLength(1)
       expect(report.stylesheets.entries[0]).toEqual(expect.objectContaining({
         filePath: resolve(cwd, 'index.css'),
-        masterCSS: false,
+        masterCSS: true,
         pruneNativeCSS: false
       }))
       expect(report.stylesheets.entries[0].dependencies).toContain(resolve(cwd, 'index.css'))
@@ -116,7 +116,7 @@ describe('@master/css-compiler/diagnostics', () => {
   it('reports entry errors without inspecting against a fallback manifest', async () => {
     const cwd = createTempDir('master-css-diagnostics-entry-error-')
     try {
-      writeFileSync(join(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
+      writeFileSync(join(cwd, 'index.css'), "@import \"@master/css\";\n@import \"./missing.css\";")
       writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifest,

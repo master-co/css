@@ -1,6 +1,6 @@
 @import '@master/css';
 
 
-@theme {
+@theme {:root, :host {
   --color-primary: var(--color-yellow);
-}
+}}

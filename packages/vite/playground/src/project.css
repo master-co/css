@@ -1,4 +1,4 @@
-@theme {
+@theme {:root, :host {
   --color-primary: #0061ff;
   --color-surface-base: #f6f8fb;
   --color-surface-raised: #fff;
@@ -9,10 +9,9 @@
   --radius-card: 18px;
   --radius-pill: 999px;
   --spacing-card: 24px;
-  --breakpoint-md: 48rem;
-}
+}}
 
-@theme dark {
+@theme { @media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #8fb5ff;
   --color-surface-base: #182233;
   --color-surface-raised: #111827;
@@ -20,16 +19,17 @@
   --color-muted: #aab6c7;
   --color-panel: #182233;
   --color-ring: #31415a;
-}
+} } }
 
+@custom-media --md (width >= 48rem);
 @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
-@utilities {
-  content-auto {
+
+  @utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 28rem;
   }
-}
+
 
 /* Components */
 @layer components {
@@ -61,7 +61,7 @@
   .title {
     @layer components{margin:0;color:var(--color-ink);font-size:2.5rem;line-height:1;}
     @variant md {
-      @layer components{@media (width>=48rem){font:3.5rem;}}
+      @layer components{@media (width>=48rem){font-size:3.5rem;}}
     }
     max-width: 12ch;
   }

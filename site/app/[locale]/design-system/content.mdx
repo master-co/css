@@ -619,7 +619,7 @@ This static wrapper keeps native table headers and does not add demo geometry.
 | --- | --- |
 | `border-radius: .75rem` | `r:.75rem` preserves the same length. |
 | `width: var(--progress)` | `w:var(--progress)` reads the same runtime property. |
-| `@media (width >= 72rem)` | Define `--breakpoint-dashboard: 72rem`, then use `@dashboard`. |
+| `@media (width >= 72rem)` | Define `@custom-media --dashboard (width >= 72rem);`, then use `@dashboard`. |
 
 </DocumentComparison>
 
@@ -818,35 +818,34 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <div data-stylesheet-gallery>
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  background-color: var(--color-brand);\n}"}
+  source={"@theme { :root, :host {\n  --color-brand: #4f46e5;\n} }\n\n\n.card {\n  background-color: var(--color-brand);\n}"}
 />
 
 <StylesheetExample
-  title="An inline token"
-  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n@safelist \"bg-brand\";"}
+  title="A safelisted token"
+  source={"@theme { :root, :host {\n  --color-brand: #4f46e5;\n} }\n\n\n@safelist \"bg-brand\";"}
 />
 
 <StylesheetExample
   title="A resource without a matching class"
-  source={"@theme static {\n  --color-brand: #4f46e5;\n\n  @keyframes fade-in {\n    to { opacity: 1; }\n  }\n}"}
+  source={"@layer theme { :root, :host {\n  --color-brand: #4f46e5;\n\n  \n} }\n@keyframes fade-in {\n    to { opacity: 1; }\n  }\n"}
 />
 
 <DocumentOptions label="Example settings" options={[
-  { name: 'scope', description: <>An optional root selector. See <a href="/reference/directives/settings">Project settings</a> for the defaults.</> }
+  { name: 'selector', description: <>An explicit native selector inside <a href="/reference/directives/theme">Theme declarations</a>.</> }
 ]} />
 </div>
 
 ```tsx
 <StylesheetExample
-  title="An inline color token"
-  source={`@theme inline { --color-brand: #4f46e5; }
-@safelist "bg-brand";`}
+  title="A safelisted color token"
+  source={"@theme { :root, :host { --color-brand: #4f46e5; } }\n\n@safelist \"bg-brand\";"}
 />
 ```
 
 The component accepts a title and standalone CSS source. Use a fixture-backed example for imports, references or assets that need multiple files. Keep the compiler on the server, retain every source and result line in portable Markdown, and allow code to scroll within its own block. A build error must surface during documentation checks.
 
-The default, inline and static examples above share one presentation. `DocumentOptions` also accepts inline code and links in its description; its name and optional default stay separate. Both components belong outside measured demo layouts.
+The token, safelist and native resource examples above share one presentation. `DocumentOptions` also accepts inline code and links in its description; its name and optional default stay separate. Both components belong outside measured demo layouts.
 
 See [Theme and variants](/reference/directives/theme), [Managed definitions](/reference/directives/definitions) and [Conditional blocks](/reference/directives/variant) for working uses.
 
@@ -940,12 +939,12 @@ For a new lesson, supply its actual configuration and complete HTML:
 
 ```jsx
 <DemoConfiguredExample name="project-spacing" title="A project spacing token"
-  source="@theme { --spacing-card: 1.5rem; }"
+  source="@theme { :root { --spacing-card: 1.5rem; } }"
   html={'<article class="p-card">Collection details</article>'}
   caption="p-card references --spacing-card." />
 ```
 
-`theme` adds a real document-class switch; define explicit `.light` and `.dark` branches with `@mode` in the
+`theme` adds a real document-class switch; define explicit `.light` and `.dark` selectors inside `@theme` in the
 configuration when teaching that behavior. The default has no controls. `code={false}`
 is for a gallery specimen whose usage link leads to the complete source. These are
 server components; only the existing iframe controls hydrate. Use trusted site-authored

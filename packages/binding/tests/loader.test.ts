@@ -58,8 +58,8 @@ describe('native target resolution', () => {
     expect(assertNativeCLIInfo(executable)).toMatchObject({
       bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
       packageVersion: '0.0.0',
-      manifestVersion: 1,
-      hydrationManifestVersion: 1
+      manifestVersion: 2,
+      hydrationManifestVersion: 2
     })
   })
 
@@ -88,7 +88,7 @@ describe('native target resolution', () => {
 
   it('rejects unsupported lint request versions with a structured error', () => {
     const lint = loadNativeToolingBinding({ required: true })!
-      .createLintSession({ version: 1, languageVersion: 3, utilities: [] } as never)
+      .createLintSession({ version: 2, languageVersion: 4, utilities: [] } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
         version: 0,
@@ -101,10 +101,10 @@ describe('native target resolution', () => {
   })
 
   it('loads raw value policy candidates and diagnostics', () => {
-    const lint = loadNativeToolingBinding({ required: true })!.createLintSession({
-      version: 1, languageVersion: 3,
+    const lint = loadNativeToolingBinding({ required: true })!.createLintSession({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "spacing-md", value: '1rem' }] }],
+      version: 2, languageVersion: 4,
       variables: {
-        spacing: [{ key: 'md', type: 'number', value: '1rem' }]
+        spacing: [{ key: 'md', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }] }]
       },
       utilities: [{
         id: 'margin',
@@ -117,17 +117,17 @@ describe('native target resolution', () => {
     } as never)
     try {
       expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
-        version: 2,
+        version: 3,
         suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
       })
       expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-        version: 2,
+        version: 3,
         candidates: [
           { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
         ]
       })
       const result = lint.analyzeClassListPolicy({
-        version: 2,
+        version: 3,
         classList: 'm:var(--spacing-md)|17px',
         classNames: ['m:var(--spacing-md)|17px'],
         rawValuePolicy: { allowedPatterns: [] }
@@ -144,7 +144,7 @@ describe('native target resolution', () => {
 
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
-      version: 1, languageVersion: 3,
+      version: 2, languageVersion: 4,
       utilities: [{
         id: 'display-block',
         name: 'block',
@@ -155,27 +155,27 @@ describe('native target resolution', () => {
     } as never)
     try {
       expect(language.classifyClassNames(['block:hover', 'unknown'])).toMatchObject({
-        version: 4,
+        version: 5,
         classes: [
           { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
           { className: 'unknown', kind: 'unknown' }
         ]
       })
       expect(language.inspectClassName('block:hover')).toMatchObject({
-        version: 4,
+        version: 5,
         className: 'block:hover',
         kind: 'semantic',
         text: '@layer utilities{.block\\:hover:hover{display:block}}'
       })
       expect(language.completionIndex()).toMatchObject({
-        version: 4,
+        version: 5,
         classEntries: expect.arrayContaining([
           expect.objectContaining({ label: 'block', kind: 'value' }),
           expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
         ])
       })
       expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-        version: 4,
+        version: 5,
         colorToken: 'rgba(0|0|0/.5)',
         editable: true,
         sourceFormat: { syntax: 'rgb' }
@@ -184,7 +184,7 @@ describe('native target resolution', () => {
         className: 'color:#123',
         start: 2
       }])).toEqual({
-        version: 4,
+        version: 5,
         tokens: [{
           range: { start: 8, end: 12 },
           expression: { kind: 'literal', value: '#123' }

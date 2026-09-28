@@ -20,7 +20,7 @@ function stylesheetRules(file: string, source: string) {
   return rules.filter(rule => rule.loaders?.some(loader => String(typeof loader === 'string' ? loader : (loader as { loader: string }).loader).endsWith('stylesheet-loader.js')) && matches(rule.condition, file, source))
 }
 for (const extension of ['css', 'scss', 'sass']) test(`Turbopack preserves CSS Module type for .module.${extension}`, () => {
-  const rules = stylesheetRules(`card.module.${extension}`, ".card{@variant media(all){padding:2rem;}}")
+  const rules = stylesheetRules(`card.module.${extension}`, ".card{@media all {padding:2rem;}}")
   expect(rules).toHaveLength(1)
   expect(rules[0].type).toBeUndefined()
   expect(rules[0].as).toBeUndefined() // Preserve Next’s inferred module type and original filename.

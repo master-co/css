@@ -15,8 +15,8 @@ test('BH-0004 CLI emits a referenced resource and native declarations without em
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-reference-'))
   try {
     mkdirSync(join(cwd, 'tokens'))
-    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@master entry;.example{@variant media(all){color:red;background-image:var(--image-icon);}}")
-    writeFileSync(join(cwd, 'tokens/theme.css'), "@theme{--image-icon:url('./icon%23one.svg?q=1#mark')}.reference-only{color:blue}")
+    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@import \"@master/css\";.example{@variant all {color:red;background-image:var(--image-icon);}}")
+    writeFileSync(join(cwd, 'tokens/theme.css'), "@theme {:root, :host {--image-icon:url('./icon%23one.svg?q=1#mark')}}\n.reference-only{color:blue}")
     const bytes = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
     writeFileSync(join(cwd, 'tokens/icon#one.svg'), bytes)
     writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
@@ -40,8 +40,8 @@ test('BH-0004 CLI emits a referenced resource and native declarations without em
 test('BH-0004 CLI preserves shared native imports by default', () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-pruning-'))
   try {
-    writeFileSync(join(cwd, 'a.css'), "@import './shared.css' print;@master entry;@preserve native;")
-    writeFileSync(join(cwd, 'b.css'), "@import './shared.css' screen;@master entry;")
+    writeFileSync(join(cwd, 'a.css'), "@import './shared.css' print;@import \"@master/css\";@preserve native;")
+    writeFileSync(join(cwd, 'b.css'), "@import './shared.css' screen;@import \"@master/css\";")
     writeFileSync(join(cwd, 'shared.css'), '.unscanned{color:red}')
     writeFileSync(join(cwd, 'index.html'), '<div class="block">test</div>')
     execFileSync(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
@@ -56,7 +56,7 @@ test('BH-0004 CLI preserves shared native imports by default', () => {
 
 test('BH-0004 CLI watch republishes changed resources and ignores its output files', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-watch-'))
-  writeFileSync(join(cwd, 'entry.css'), "@master entry;.example{background-image:url('./image.svg')}")
+  writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";.example{background-image:url('./image.svg')}")
   writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
   writeFileSync(join(cwd, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><path fill="red"/></svg>')
   const child = spawn(process.execPath, ['--import', require.resolve('tsx'), cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], {

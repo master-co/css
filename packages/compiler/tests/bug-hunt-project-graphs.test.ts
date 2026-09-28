@@ -17,15 +17,15 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
       const child = join(cwd, 'styles/child.css')
       const tokens = join(cwd, 'tokens.css')
       const template = join(cwd, 'styles/templates/view.html')
-      writeFileSync(entry, `@import './styles/child.css' ${condition};@master entry;@reference './tokens.css';@utilities{widget{@variant media(all){color:red;}}button{color:red;}}`)
+      writeFileSync(entry, `@import './styles/child.css' ${condition};@import "@master/css";@reference './tokens.css';@utility widget {@variant all{color:red;}}@utility button {color:red;}`)
       writeFileSync(child, `@import 'https://remote.test/external.css';@reference '../tokens.css';@source './templates/*.html';.native{color:blue}`)
-      writeFileSync(tokens, '@utilities{paint{color:red}}.reference-native{color:green}')
+      writeFileSync(tokens, '@utility paint {color:red}.reference-native{color:green}')
       writeFileSync(template, '<div class="widget button"></div>')
-      const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
+      const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
       const options = { root: cwd, entries: [entry], baseManifest }
       const results = [await compileProjectManifest(options), await loadProjectManifest(options), compileProjectManifestSync(options)]
       for (const result of results) {
-        expect([...result.dependencies].sort()).toEqual([entry, child, tokens].sort())
+        expect(result.dependencies.filter(file => file.startsWith(cwd)).sort()).toEqual([entry, child, tokens].sort())
         const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
         try {
           engine.ensureClassRules(['button', 'widget', 'paint'])
@@ -52,10 +52,10 @@ test('BH-0004 project graph preserves explicit entry order', async () => {
   try {
     const a = join(root, 'a.css')
     const b = join(root, 'b.css')
-    writeFileSync(a, '@master entry;@utilities{choice{color:red}}')
-    writeFileSync(b, '@master entry;@utilities{choice{color:blue}}')
+    writeFileSync(a, "@import \"@master/css\";@utility choice {color:red}")
+    writeFileSync(b, "@import \"@master/css\";@utility choice {color:blue}")
     for (const [entries, expected] of [[[a, b], '#00f'], [[b, a], 'red']] as const) {
-      const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: { version: 1, languageVersion: 3, utilities: [] } })
+      const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })
       const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
       try {
         engine.ensureClassRules(['choice'])
@@ -71,8 +71,8 @@ test('BH-0004 project graph rejects missing and circular references', async () =
   try {
     const entry = join(root, 'entry.css')
     const reference = join(root, 'tokens.css')
-    writeFileSync(entry, "@master entry;@reference './tokens.css';")
-    const options = { root, entries: [entry], baseManifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] } }
+    writeFileSync(entry, "@import \"@master/css\";@reference './tokens.css';")
+    const options = { root, entries: [entry], baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] } }
     await expect(compileProjectManifest(options)).rejects.toThrow(/tokens\.css/)
     writeFileSync(reference, "@reference './entry.css';")
     await expect(compileProjectManifest(options)).rejects.toThrow(/Circular CSS reference/)

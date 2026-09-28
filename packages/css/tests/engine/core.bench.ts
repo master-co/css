@@ -29,32 +29,25 @@ const runtimeClassNames = [
 const benchOptions = { time: 500, warmupTime: 100, iterations: 1, warmupIterations: 1 }
 let sink = 0
 
-function createPatternBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
+function createFixedBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
   return {
-    version: 1,
-    settings: { modes: [] },
-    utilities: Array.from({ length: 100 }, (_, index) => ({
-      id: `icon-${index}<left|right>`,
-      name: `icon-${index}<left|right>`,
+    version: 2,
+    languageVersion: 4,
+    utilities: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
+      id: `icon-${index}${separator}${value}`,
+      name: `icon-${index}${separator}${value}`,
       type: UtilityType.Semantic,
       order: index,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { 'grid-area': null } }]
-      },
-      matchers: [{
-        type: 'pattern',
-        prefix: `icon-${index}${separator}`,
-        values: ['left', 'right']
-      }]
-    }))
+      emit: { type: 'static' as const, rules: [{ declarations: { 'grid-area': value } }] },
+      matchers: [{ type: 'static' as const, name: `icon-${index}${separator}${value}` }]
+    }))).flat()
   }
 }
 
 describe('Rust engine session hot paths', () => {
   const engine = createEngineSync({ manifest: defaultManifest })
-  const indexed = createEngineSync({ manifest: createPatternBenchmarkManifest('-') })
-  const fallback = createEngineSync({ manifest: createPatternBenchmarkManifest('_') })
+  const indexed = createEngineSync({ manifest: createFixedBenchmarkManifest('-') })
+  const fallback = createEngineSync({ manifest: createFixedBenchmarkManifest('_') })
   const indexedClassNames = Array.from({ length: 100 }, (_, index) => `icon-${index}-left`)
   const fallbackClassNames = Array.from({ length: 100 }, (_, index) => `icon-${index}_left`)
 
@@ -94,15 +87,15 @@ describe('Rust engine session hot paths', () => {
     }).run(benchOptions)
   })
 
-  test('match indexed pattern utilities in one FFI batch', async ({ bench }) => {
-    await bench('match indexed pattern utilities in one FFI batch', () => {
+  test('match hyphenated fixed utilities in one FFI batch', async ({ bench }) => {
+    await bench('match hyphenated fixed utilities in one FFI batch', () => {
       sink = indexed.ensureClassRules(indexedClassNames).mutations.length
       indexed.deleteClassRules(indexedClassNames)
     }).run(benchOptions)
   })
 
-  test('match fallback pattern utilities in one FFI batch', async ({ bench }) => {
-    await bench('match fallback pattern utilities in one FFI batch', () => {
+  test('match underscore fixed utilities in one FFI batch', async ({ bench }) => {
+    await bench('match underscore fixed utilities in one FFI batch', () => {
       sink = fallback.ensureClassRules(fallbackClassNames).mutations.length
       fallback.deleteClassRules(fallbackClassNames)
     }).run(benchOptions)

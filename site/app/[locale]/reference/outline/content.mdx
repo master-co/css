@@ -13,10 +13,10 @@ Combine width, style and color in one outline shorthand. Compare an explicit 4px
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm outline:4px|solid|var(--color-blue)
+         b:1px|solid|var(--color-line-divider) r-sm outline:4px|solid|var(--color-blue)
          outline-offset-3xs font-md bg-surface-base
          text-body box-border
-         bg-surface-muted:focus-visible">
+         bg-surface-inset:focus-visible">
   Preview details
 </button>
 ```
@@ -26,10 +26,10 @@ Combine width, style and color in one outline shorthand. Compare an explicit 4px
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm outline:solid
+         b:1px|solid|var(--color-line-divider) r-sm outline:solid
          outline-offset-3xs font-md bg-surface-base
          text-body box-border
-         bg-surface-muted:focus-visible">
+         bg-surface-inset:focus-visible">
   Preview details
 </button>
 ```
@@ -53,12 +53,12 @@ Use Tab to focus this button. Its transparent resting outline becomes blue on ke
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm
+         b:1px|solid|var(--color-line-divider) r-sm
          outline:2px|solid|transparent
          outline-offset-3xs font-md bg-surface-base
          text-body box-border
          outline-blue:focus-visible
-         bg-surface-muted:focus-visible">
+         bg-surface-inset:focus-visible">
   Save changes
 </button>
 ```
@@ -75,10 +75,10 @@ Keyboard focus draws a 3px blue outline on screen. Print removes its width. The 
 <button id="target" type="button"
   class="inline-flex items-center justify-center
          min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-base) r-sm outline:0|solid|var(--color-blue)
+         b:1px|solid|var(--color-line-divider) r-sm outline:0|solid|var(--color-blue)
          outline-offset-3xs font-md bg-surface-base
          text-body box-border
-         bg-surface-muted:focus-visible
+         bg-surface-inset:focus-visible
          outline-width:0@print
          outline:3px|solid|var(--color-blue):focus-visible@screen">
   Preview details

@@ -105,7 +105,6 @@ The language server creates a root workspace, then `masterCSS.workspaces` contro
 With the default `auto` mode, it detects:
 
 - CSS files importing `@master/css`
-- CSS files containing the lightweight `@master entry;` marker
 - `package.json` files that declare Master CSS package dependencies
 
 Each detected workspace gets its own language service and manifest. In a monorepo, this keeps completions, hover previews, colors, directive diagnostics, and component names aligned with the nearest Master CSS project.

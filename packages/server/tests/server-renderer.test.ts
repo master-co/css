@@ -29,14 +29,14 @@ test('reuses a renderer without leaking rules between documents', () => {
 })
 
 test('preserves native aliases that share a declaration across cached pages', () => {
-  const manifest = {
-    version: 1, languageVersion: 3,
+  const manifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
+    version: 2, languageVersion: 4,
     variables: {
       '': [{
         name: 'stripe',
         key: 'stripe',
         type: 'string',
-        value: 'linear-gradient(red,blue)'
+        values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
       }]
     },
     utilities: []

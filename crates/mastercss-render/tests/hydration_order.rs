@@ -5,13 +5,14 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version": 1,"languageVersion":3,
+        "version": 2,"languageVersion":4,
         "variables": { "": [
-            { "name": "x", "key": "x", "value": "red" },
-            { "name": "y", "key": "y", "value": "blue" },
-            { "name": "a", "key": "a", "value": "linear-gradient(var(--x),var(--y))", "dependencies": ["x", "y"] },
-            { "name": "z", "key": "z", "value": "green" }
+            { "name": "x", "key": "x", "values":[{"path":[":root,:host"],"value":"red"}] },
+            { "name": "y", "key": "y", "values":[{"path":[":root,:host"],"value":"blue"}] },
+            { "name": "a", "key": "a", "values":[{"path":[":root,:host"],"value":"linear-gradient(var(--x),var(--y))"}], "dependencies": ["x", "y"] },
+            { "name": "z", "key": "z", "values":[{"path":[":root,:host"],"value":"green"}] }
         ]},
+        "theme": [{"type":"rule","prelude":":root,:host","children":([("x","red"),("y","blue"),("a","linear-gradient(var(--x),var(--y))"),("z","green")].map(|(name,value)|json!({"type":"declaration","name":name,"value":value})))}],
         "utilities": ([
             ("a", json!({"background-image":"var(--a)"})),
             ("b", json!({"color":"var(--x)", "border-color":"var(--z)"})),
@@ -53,7 +54,7 @@ fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
 }
 
 #[test]
-fn warmed_subsets_restore_theme_and_animation_order_with_host_globals() {
+fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let classes = [
         "animation:rotate|1s",
@@ -61,10 +62,7 @@ fn warmed_subsets_restore_theme_and_animation_order_with_host_globals() {
         "animation:fade|1s",
         "fg:red-60",
     ];
-    for emitted in [
-        None,
-        Some(r#"{"variables":{"color-red-60":1},"animations":{"fade":1}}"#),
-    ] {
+    for emitted in [None, Some(r#"{"variables":{"color-red-60":1}}"#)] {
         let mut renderer = RenderSession::create(manifest, emitted).unwrap();
         renderer.ensure_classes(["fg:green-60", "hidden"]).unwrap();
         for class_name in classes.iter().rev() {

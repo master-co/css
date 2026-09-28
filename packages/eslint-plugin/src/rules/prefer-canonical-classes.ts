@@ -28,7 +28,6 @@ export default createRule({
         preferStaticUtilities: { type: 'boolean' },
         preferPropertyAliases: { type: 'boolean' },
         preferCompositionUtilities: { type: 'boolean' },
-        preferConditionOrder: { type: 'boolean' },
       },
       additionalProperties: false
     }]

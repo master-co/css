@@ -17,9 +17,9 @@ export default function Page() {
         <DemoLabel>September 2026</DemoLabel>
       </header>
       <nav aria-label="Workspace sections" className="flex flex-wrap grid-col-span:4 gap-xs grid-col-span:8@2xs">
-        <a className="px-sm py-xs b:1px|solid|var(--color-line-base) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#metrics">Metrics</a>
-        <a className="px-sm py-xs b:1px|solid|var(--color-line-base) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#demand">Demand</a>
-        <a className="px-sm py-xs b:1px|solid|var(--color-line-base) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#launch-tasks">Tasks</a>
+        <a className="px-sm py-xs b:1px|solid|var(--color-line-divider) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#metrics">Metrics</a>
+        <a className="px-sm py-xs b:1px|solid|var(--color-line-divider) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#demand">Demand</a>
+        <a className="px-sm py-xs b:1px|solid|var(--color-line-divider) r-sm text-xs text-decoration:none bg-surface-raised text-body outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible" href="#launch-tasks">Tasks</a>
       </nav>
       <DemoSurface id="metrics" className="grid-col-span:4 p-md grid-col-span:2@4xs grid-col-span:4@2xs">
         <DemoLabel>Revenue</DemoLabel>
@@ -48,7 +48,7 @@ export default function Page() {
         <h2 className="m:0 text-sm font-semibold">Launch tasks</h2>
         <p className="mx:0 mb:0 mt-2xs text-xs text-muted">Check off a task to try the controls.</p>
         <div className="mt-sm">
-          {tasks.map(([task, date]) => <label key={task} className="flex items-start gap-xs py-sm bt:1px|solid|var(--color-line-base):not(:first-child)">
+          {tasks.map(([task, date]) => <label key={task} className="flex items-start gap-xs py-sm bt:1px|solid|var(--color-line-divider):not(:first-child)">
             <input type="checkbox" className="flex-shrink:0 mt-3xs accent-color-blue" />
             <span className="flex:1 min-w:0 text-sm">{task}<span className="block mt-2xs text-xs text-muted">{date}</span></span>
           </label>)}

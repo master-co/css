@@ -10,8 +10,9 @@ import masterCSS from '../../src/core'
 async function fixture(run: (root: string) => Promise<void>) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-built-urls-')))
   try {
+    writeFileSync(join(root, 'app.css'), '@import "@master/css";')
     writeFileSync(join(root, 'entry.js'), 'import css from "./style.css?inline";export {css}')
-    writeFileSync(join(root, 'style.css'), '@import "./child.css" layer(shared);@master entry;@preserve native;.example{background:url("pixel.svg?q=one/../two&encoded=%20#part")}')
+    writeFileSync(join(root, 'style.css'), "@import \"./child.css\" layer(shared);@reference \"./app.css\";@preserve native;.example{background:url(\"pixel.svg?q=one/../two&encoded=%20#part\")}")
     writeFileSync(join(root, 'child.css'), '@import "https://external.test/style.css";.child{background:url(pixel.svg)}')
     writeFileSync(join(root, 'pixel.svg'), '<svg/>')
     await run(root)

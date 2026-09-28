@@ -41,13 +41,13 @@ describe('named token completion', () => {
     expect(labels('-m-')).toEqual(expect.arrayContaining(['-m-sm', '-m-md']))
   })
   test('keeps custom colors out of native value completion', () => {
-    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', value: '#123456' }] }) }
+    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
     expect(labels('bg-', settings)).toEqual(expect.arrayContaining(['bg-accent', 'bg-blue', 'bg-cover']))
     expect(labels('bg:', settings)).not.toContain('accent')
     expect(labels('bg:', settings)).toContain('cover')
   })
   test('offers named colors inside safelist', () => {
-    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', value: '#123456' }] }) }
+    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
     const prefix = '@safelist "bg-'
     const doc = createDoc('css', prefix + '";')
     const service = new CSSLanguageService(settings)
@@ -88,14 +88,14 @@ describe('token ordering', () => {
   })
   test('limits surface tokens to the registered namespace', () => {
     const values = labels('surface-')
-    expect(values).toEqual(expect.arrayContaining(['surface-base', 'surface-muted', 'surface-raised', 'surface-overlay', 'surface-inverse']))
+    expect(values).toEqual(expect.arrayContaining(['surface-base', 'surface-inset', 'surface-raised', 'surface-floating', 'surface-inverse']))
     expect(values).not.toContain('surface-blue')
   })
   test('compares unitful values for suggestions without rewriting declarations', () => {
     const settings = { manifest: createPresetManifest({ variables: [
-      { namespace: 'container', key: 'test-medium', type: 'number', value: '2rem', numeric: { value: 2, unit: 'rem' } },
-      { namespace: 'container', key: 'test-tiny', type: 'number', value: '8px', numeric: { value: 8, unit: 'px' } },
-      { namespace: 'container', key: 'test-small', type: 'number', value: '1rem', numeric: { value: 1, unit: 'rem' } }
+      { namespace: 'container', key: 'test-medium', type: 'number', values: [{ path: [':root,:host'], value: '2rem' }], numeric: { value: 2, unit: 'rem' } },
+      { namespace: 'container', key: 'test-tiny', type: 'number', values: [{ path: [':root,:host'], value: '8px' }], numeric: { value: 8, unit: 'px' } },
+      { namespace: 'container', key: 'test-small', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }], numeric: { value: 1, unit: 'rem' } }
     ] }) }
     expect(labels('w-', settings).filter(label => label.startsWith('w-test-'))).toEqual(['w-test-tiny', 'w-test-small', 'w-test-medium'])
   })

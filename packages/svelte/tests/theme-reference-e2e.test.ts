@@ -105,7 +105,7 @@ it('hot-updates added and edited entries, then reloads after an entry is deleted
     expect(await color()).toBe('rgb(255, 0, 255)')
     expect(loads).toBe(1)
     for (const [value, expected] of [['blue', 'rgb(0, 0, 255)'], ['red', 'rgb(255, 0, 0)'], [null, 'rgb(255, 0, 255)']] as const) {
-      if (value) writeFileSync(entry, `@master entry;@theme{--color-probe:${value}}`)
+      if (value) writeFileSync(entry, `@import "@master/css";@theme{:root, :host {--color-probe:${value}}}`)
       else rmSync(entry)
       await expect.poll(color, { timeout: 15_000 }).toBe(expected)
       if (value) expect(loads).toBe(1)

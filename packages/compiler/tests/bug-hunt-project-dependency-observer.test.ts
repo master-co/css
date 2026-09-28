@@ -11,15 +11,15 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-dependency-')))
     const entry = join(root, 'app.css'), child = join(root, 'child.css'), missing = join(root, 'nested/tokens.css')
     try {
-      writeFileSync(entry, '@master entry;@import "./child.css";@utilities{card{padding:var(--space);}}')
+      writeFileSync(entry, "@import \"@master/css\";@import \"./child.css\";@utility card {padding:var(--space);}")
       writeFileSync(child, `@${directive} "./nested/tokens.css";`)
       const dependencies: string[] = []
       await expect(Promise.resolve().then(() => load({ root, entries: [entry], baseManifest: defaultBuildManifest, onDependency: file => dependencies.push(file) }))).rejects.toThrow('tokens.css')
-      expect(dependencies).toEqual([entry, child, missing])
-      mkdirSync(join(root, 'nested'));writeFileSync(missing, '@theme{--space:7rem}')
+      expect(dependencies.filter(file => file.startsWith(root))).toEqual([entry, child, missing])
+      mkdirSync(join(root, 'nested'));writeFileSync(missing, "@theme {:root, :host {--space:7rem}}\n\n")
       const observed: string[] = []
       const result = await load({ root, entries: [entry], baseManifest: defaultBuildManifest, onDependency: file => observed.push(file) })
-      expect(observed).toEqual([entry, child, missing]);expect(new Set(result.dependencies)).toEqual(new Set(observed))
+      expect(observed.filter(file => file.startsWith(root))).toEqual([entry, child, missing]);expect(new Set(result.dependencies)).toEqual(new Set(observed))
       expect(JSON.stringify(result.manifest)).toContain(directive === 'import' ? '7rem' : 'var(--space)')
     } finally { rmSync(root, { recursive: true, force: true }) }
   })
@@ -28,12 +28,12 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-before-read-')))
     const entries = [join(root, 'first.css'), join(root, 'second.css')], target = join(root, 'tokens.css'), observed: string[] = []
     try {
-      for (const entry of entries) writeFileSync(entry, "@master entry;@reference \"./tokens.css\";@utilities{card{@variant media(all){padding:7rem;}}}")
+      for (const entry of entries) writeFileSync(entry, "@import \"@master/css\";@reference \"./tokens.css\";@utility card {@variant all {padding:7rem;}}")
       const result = await load({ root, entries, baseManifest: defaultBuildManifest, onDependency(file) {
         observed.push(file)
-        if (file === target) writeFileSync(target, '@theme{--space:7rem}')
+        if (file === target) writeFileSync(target, "@theme {:root, :host {--space:7rem}}\n\n")
       } })
-      expect(observed).toEqual([entries[0], target, entries[1]])
+      expect(observed.filter(file => file.startsWith(root))).toEqual([entries[0], target, entries[1]])
       expect(JSON.stringify(result.manifest)).toContain('7rem')
     } finally { rmSync(root, { recursive: true, force: true }) }
   })

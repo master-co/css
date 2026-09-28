@@ -15,7 +15,7 @@ for (const base of ['/', '/nested/']) test(`BH-0004 Sass direct CSS HMR uses the
   try {
     mkdirSync(join(root, 'node_modules'))
     symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
-    const file = join(root, 'style.scss'), source = (color: string) => `@master entry;@preserve native;$tone:${color};.example{color:$tone}`
+    const file = join(root, 'style.scss'), source = (color: string) => `@import url("@master/css");@preserve native;$tone:${color};.example{color:$tone}`
     writeFileSync(file, source('red'))
     server = await createServer({ root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }), server: { host: '127.0.0.1', port: 0 } })
     await server.listen()

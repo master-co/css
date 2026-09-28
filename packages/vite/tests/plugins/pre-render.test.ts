@@ -50,8 +50,8 @@ describe('PreRenderPlugin', () => {
     expect(viteConfig.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'app.css'))
     expect(html).toContain('<style id="master-css"')
     if (mode === 'progressive') expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
-    expect(html).toContain('@layer utilities{.card{background-color:var(--color-brand)}@media (width>=48rem){.card{font-size:1.125rem}}.card{border-color:#456}')
-    expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
+    expect(html).toContain('@layer utilities{.card{background-color:var(--color-brand)}@media (width >= 48rem){.card{font-size:1.125rem}}.card{border-color:#456}')
+    expect(html).toContain('@media (width >= 48rem){.card{font-size:1.125rem}}')
     expect(html).toContain('.p\\:0\\.125rem{padding:0.125rem}}')
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
@@ -117,19 +117,8 @@ describe('PreRenderPlugin', () => {
     const themePath = path.join(root, 'theme.css')
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
-      writeFileSync(themePath, [
-        '@utilities {',
-        '    card { color: #123456; }',
-        '}'
-      ].join('\n'))
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@import "./theme.css";',
-        '',
-        '@theme {',
-        '    --color-brand: #123;',
-        '}'
-      ].join('\n'))
+      writeFileSync(themePath, "@utility card { color: #123456; }")
+      writeFileSync(entryPath, "@import url(\"@master/css\");\n@import \"./theme.css\";\n\n@theme { :root, :host {\n    --color-brand: #123;\n} }\n")
 
       const plugins = masterCSS({
         mode: 'pre-render'
@@ -155,11 +144,7 @@ describe('PreRenderPlugin', () => {
       let html = typeof result === 'string' ? result : result.html
       expect(html).toContain('.card{color:#123456}')
 
-      writeFileSync(themePath, [
-        '@utilities {',
-        '    card { color: #abcdef; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(themePath, "@utility card { color: #abcdef; }")
       const send = vi.fn()
       await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
       expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
@@ -181,11 +166,7 @@ describe('PreRenderPlugin', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-globals-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@theme { --color-primary: #123456; }',
-        '.host { color: var(--color-primary); }'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123456; }}\n\n.host { color: var(--color-primary); }")
       const plugins = masterCSS({ mode: 'pre-render' })
       const viteConfig = {
         root,

@@ -16,11 +16,12 @@ Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use conta
 Container tokens belong in the theme layer and use the `container-*` namespace.
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --container-sm: 24rem;
   --container-md: 28rem;
   --container-7xl: 80rem;
-}
+} }
+
 ```
 
 Use complete query values with explicit units. Container query preludes do not resolve theme tokens or `var()` references; use a named `@custom-variant` when a query is shared. The tables show the current token values as complete query examples, preserving their authored units.

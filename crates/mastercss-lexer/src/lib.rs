@@ -41,13 +41,6 @@ pub struct CssReferenceStatement {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MasterDirectiveStatement {
-    pub start: u32,
-    pub end: u32,
-    pub name: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StandaloneCssDirectiveStatement {
     pub start: u32,
     pub end: u32,
@@ -271,9 +264,7 @@ mod functions;
 mod statements;
 mod variables;
 
-pub(crate) use at_rules::{
-    find_css_block_end, find_css_statement_end, read_quoted, scan_top_level_at_rules,
-};
+pub(crate) use at_rules::{find_css_statement_end, scan_top_level_at_rules};
 pub(crate) use variables::skip_css_string_or_comment;
 
 pub use at_rules::extract_top_level_at_rule_blocks;
@@ -286,10 +277,9 @@ pub use directives::find_css_directive_ranges;
 pub use escape::{css_escape, escape_regexp};
 pub use functions::{collect_css_declaration_ranges, read_css_function};
 pub use statements::{
-    find_css_import_statements, find_css_reference_statements, find_master_directive_statements,
+    find_css_import_statements, find_css_reference_statements,
     find_standalone_css_directive_statements, has_master_css_manifest_entrypoint,
-    parse_css_import_source, remove_css_reference_statements, remove_master_directive_statements,
-    remove_standalone_css_directives,
+    parse_css_import_source, remove_css_reference_statements, remove_standalone_css_directives,
 };
 pub use variables::{collect_css_variable_references, transform_css_variable_references};
 

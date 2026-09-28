@@ -29,7 +29,7 @@ for (const kind of ['nested-resource', 'external-import'] as const) test(`genera
     const childSource = '/* original child */\n.probe { background-image:url("./pixel%20space.svg?audit=1#pixel"); }'
     const red = '<svg xmlns="http://www.w3.org/2000/svg" id="red"/>'
     writeFileSync(image, red);writeFileSync(child, childSource)
-    const source = '@master entry;@preserve native;\n' + (kind === 'nested-resource'
+    const source = "@import url(\"@master/css\");@preserve native;\n" + (kind === 'nested-resource'
       ? '@import "./nested/child.css" layer(card) supports(display:grid) screen;'
       : '@import "https://example.invalid/remote.css" layer(remote) screen;.probe{color:red}')
     writeFileSync(file, source)
@@ -66,7 +66,7 @@ for (const kind of ['nested-resource', 'external-import'] as const) test(`genera
 test('general Next delivered entry retains original native declaration source maps', async () => {
   const root = mkdtempSync(join(tmpdir(), 'next-loader-entry-map-'))
   try {
-    const file = join(root, 'entry.css'), source = "@master entry;@theme{--paint-padding:2rem}\n.card{@variant media(all){padding:var(--paint-padding);}}"
+    const file = join(root, 'entry.css'), source = "@import url(\"@master/css\");@theme {:root, :host {--paint-padding:2rem}}\n\n.card{@media all {padding:var(--paint-padding);}}"
     writeFileSync(file, source)
     const result = await transform(root, file, source, []), sheets = graph(file, result.code)
     const owner = [...sheets].find(([, css]) => css.includes('.card'))!
@@ -75,7 +75,7 @@ test('general Next delivered entry retains original native declaration source ma
     const map = encoded ? JSON.parse(Buffer.from(encoded, 'base64').toString()) : result.map
     expect(map).toBeDefined()
     const position = owner[1].slice(0, owner[1].indexOf('.card')).split('\n')
-    expect(new SourceMap(map).findEntry(position.length - 1, position.at(-1)!.length)).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 1, originalColumn: 0 })
+    expect(new SourceMap(map).findEntry(position.length - 1, position.at(-1)!.length)).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: 0 })
     expect(map.sourcesContent).toContain(source)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
@@ -87,10 +87,10 @@ for (const syntax of ['scss', 'sass']) test(`general Next ${syntax} delivered en
     const sass = createRequire(requireVite.resolve('vite')).resolve('sass')
     const file = join(root, 'entry.' + syntax), partial = join(root, 'parts/_entry.scss')
     mkdirSync(dirname(partial))
-    writeFileSync(partial, "@reference \"./tokens.css\";.card{@variant media(all){padding:var(--paint-padding);}}")
-    writeFileSync(join(root, 'parts/tokens.css'), '@theme{--paint-padding:2rem}')
-    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-padding:99rem}')
-    const source = syntax === 'sass' ? '@use "parts/entry"\n@master entry\n' : '@use "parts/entry";@master entry;'
+    writeFileSync(partial, "@reference \"./tokens.css\";.card{@media all {padding:var(--paint-padding);}}")
+    writeFileSync(join(root, 'parts/tokens.css'), "@theme {:root, :host {--paint-padding:2rem}}\n")
+    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:99rem}}\n")
+    const source = syntax === 'sass' ? "@use \"parts/entry\"\n@import url(\"@master/css\")\n" : "@use \"parts/entry\";@import url(\"@master/css\");"
     writeFileSync(file, source)
     const dependencies: string[] = [], result = await transform(root, file, source, dependencies, { sassOptions: { implementation: sass } })
     const sheets = graph(file, result.code), css = [...sheets.values()].join('\n')

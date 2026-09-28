@@ -5,21 +5,33 @@ use super::CssVariableReference;
 /// References inside strings and comments are ignored. Nested fallback references
 /// are collected independently from their containing `var()` function.
 pub fn collect_css_variable_references(source: &str) -> Vec<String> {
-    let mut references = Vec::new();
+    let tokens = crate::tokenize_css_syntax(source);
+    use crate::CssSyntaxKind as Kind;
+    let mut names = Vec::new();
     let mut index = 0;
-    while index < source.len() {
-        if let Some(end) = skip_css_string_or_comment(source, index) {
-            index = end;
+    while index < tokens.len() {
+        let token = &tokens[index];
+        let end = token.close.unwrap_or(tokens.len());
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("url")) {
+            // Unquoted URL content is not a nested CSS component-value stream.
+            index = (end + 1).min(tokens.len());
             continue;
         }
-        if let Some(reference) = read_css_variable_reference(source, index)
-            && !references.iter().any(|existing| existing == reference.name)
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("var"))
+            && let Some(Kind::Ident(name)) = tokens.get(index + 1).map(|token| &token.kind)
+            && let Some(name) = name.strip_prefix("--").filter(|name| !name.is_empty())
+            && (index + 2 == end
+                || tokens
+                    .get(index + 2)
+                    .is_some_and(|token| token.kind == Kind::Delim(',')))
+            && !names.iter().any(|existing| existing == name)
         {
-            references.push(reference.name.to_owned());
+            names.push(name.to_owned());
         }
-        index += source[index..].chars().next().map_or(1, char::len_utf8);
+        // Visit nested fallback functions too; strings/comments stay opaque.
+        index += 1;
     }
-    references
+    names
 }
 
 /// Replaces syntactically active CSS custom-property references.

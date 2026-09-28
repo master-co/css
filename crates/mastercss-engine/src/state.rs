@@ -45,12 +45,46 @@ pub(crate) fn resolve_state_branches(
     }
 
     for condition_token in condition_tokens {
-        if let Some(mode) = manifest
-            .modes
-            .iter()
-            .find(|mode| mode.name == condition_token)
+        let media = if let Some(query) = manifest.custom_media.get(&format!("--{condition_token}"))
         {
-            branches = expand_mode_branches(branches, mode);
+            Some(Ok(query.clone()))
+        } else {
+            mastercss_lexer::parse_native_query(&condition_token)
+                .filter(|query| query.kind == "media" && query.prelude.contains("--"))
+                .map(|query| {
+                    crate::parse_custom_media_query(&query.prelude, &mut |name| {
+                        manifest
+                            .custom_media
+                            .get(name)
+                            .cloned()
+                            .ok_or_else(|| format!("Undefined custom media {name}"))
+                    })
+                })
+        };
+        if let Some(media) = media {
+            let Ok(media) = media else { return Vec::new() };
+            let Ok(paths) = crate::custom_media_branches(&media) else {
+                return Vec::new();
+            };
+            branches = branches
+                .into_iter()
+                .flat_map(|branch| {
+                    paths
+                        .iter()
+                        .enumerate()
+                        .map(|(index, path)| {
+                            let mut branch = branch.clone();
+                            branch.key.push_str(&format!("@{condition_token}#{index}"));
+                            for query in path {
+                                branch
+                                    .condition_wrappers
+                                    .push(("media".into(), format!("@media {query}")));
+                            }
+                            branch
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect();
             continue;
         }
 
@@ -88,57 +122,6 @@ pub(crate) fn resolve_state_branches(
         }
     }
     branches
-}
-
-pub(crate) fn expand_mode_branches(
-    current: Vec<StateBranch>,
-    mode: &mastercss_schema::ModeDefinition,
-) -> Vec<StateBranch> {
-    current
-        .into_iter()
-        .flat_map(|base| {
-            mode.branches
-                .iter()
-                .enumerate()
-                .map(move |(index, activation)| {
-                    let mut branch = base.clone();
-                    branch.key.push_str(&format!("@{}#{index}", mode.name));
-                    branch.mode = Some(mode.name.clone());
-                    let guard = format!(":where({0},{0} *)", activation.selector);
-                    branch.mode_guard =
-                        Some(format!("{}{guard}", branch.mode_guard.unwrap_or_default()));
-                    for raw in &activation.conditions {
-                        if let Some((id, wrapper)) = parse_raw_condition_wrapper(raw) {
-                            add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper);
-                        }
-                    }
-                    branch
-                })
-        })
-        .collect()
-}
-
-pub(crate) fn apply_forced_mode(
-    branches: &mut Vec<StateBranch>,
-    mode: Option<&str>,
-    manifest: &ManifestProjection,
-) {
-    let Some(name) = mode else { return };
-    let Some(mode) = manifest.modes.iter().find(|mode| mode.name == name) else {
-        branches.clear();
-        return;
-    };
-    let current = std::mem::take(branches);
-    *branches = current
-        .into_iter()
-        .flat_map(|branch| {
-            if branch.mode.is_some() {
-                vec![branch]
-            } else {
-                expand_mode_branches(vec![branch], mode)
-            }
-        })
-        .collect();
 }
 
 pub(crate) fn split_state_token(state_token: &str) -> (String, Vec<String>) {

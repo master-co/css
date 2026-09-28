@@ -107,7 +107,6 @@ export {
   type MasterCSSDirectiveCompilation,
   type MasterCSSDirectiveExtractionPolicy,
   type MasterCSSDirectiveManifestInput,
-  type MasterCSSDirectiveVariableDefinition,
   type MasterCSSDiscoveredClasses,
   type MasterCSSImportGraphEdge,
   type MasterCSSImportGraphRequest,

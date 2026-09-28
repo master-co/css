@@ -7,10 +7,10 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { createCompiler } from '../src/index'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
+const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
 const inputs = [
   { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
-  { source: '/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}', token: '@utilities', code: 'CSS_DIRECTIVE_ERROR' },
+  { source: "/*😀*/.image{background:url(a.png)} @utilities {paint {color:red}}", token: '@utilities', code: 'CSS_DIRECTIVE_ERROR' },
   { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
   { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' }
 ]
@@ -48,13 +48,13 @@ test('collection reports removed directives using the original owner', async () 
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-graph-diagnostic-'))
   const child = join(cwd, 'child.css'), entry = join(cwd, 'entry.css')
   const source = '/*😀*/.x{@compose known;}'
-  writeFileSync(entry, '@import "./child.css";@master entry;')
+  writeFileSync(entry, '@import "./child.css";@import \"@master/css\";')
   writeFileSync(child, source)
   const scanner = new MasterCSSScanner({ manifest: baseManifest, verbose: 0 }, cwd)
   const collection = createStylesheetCollection()
   try {
     await scanner.init()
-    await expect(collection.register(scanner, entry, '@import "./child.css";@master entry;', { baseManifest, projectDir: cwd }))
+    await expect(collection.register(scanner, entry, '@import "./child.css";@import \"@master/css\";', { baseManifest, projectDir: cwd }))
       .rejects.toMatchObject({ code: 'removed-compose-directive', diagnostics: [expect.objectContaining({ source: child, range: rangeFor(source, '@compose') })] })
   } finally { await scanner.dispose(); collection.dispose(); rmSync(cwd, { recursive: true, force: true }) }
 })

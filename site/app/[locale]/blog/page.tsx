@@ -53,12 +53,12 @@ export default async function Page(props: any) {
   return <>
     <main className='px:1.25rem pt-2xl pt:3.75rem@sm'>
       <div className="prose max-w-5xl mx:auto my:4.5rem my:7.5rem@sm">
-        <div className='grid-cols:1 bl:1px|solid|var(--color-line-muted) bt:1px|solid|var(--color-line-muted) grid-cols:2@sm grid-cols:3@md'>
+        <div className='grid-cols:1 bl:1px|solid|var(--color-line-subtle) bt:1px|solid|var(--color-line-subtle) grid-cols:2@sm grid-cols:3@md'>
           {pages
             .map((page: any, index: number) => {
               const formattedDate = dayjs(page.date).format('ddd, MMMM D')
               return (
-                <div key={page.pathname + index} className={clsx('bb:1px|dotted|var(--color-line-muted) br:1px|dotted|var(--color-line-muted)')}>
+                <div key={page.pathname + index} className={clsx('bb:1px|dotted|var(--color-line-subtle) br:1px|dotted|var(--color-line-subtle)')}>
                   <Link href={page.pathname} className={clsx('flex flex-col gap:1.25rem h:100% p-lg transition:background-color|.2s surface-raised:hover p-2xl@sm')}>
                     <div className="flex justify-between mb:-0.25rem">
                       <div className='text-xs fg-accent'>{formattedDate}</div>

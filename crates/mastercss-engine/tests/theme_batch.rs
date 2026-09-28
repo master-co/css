@@ -19,7 +19,6 @@ fn assert_replay(
         RuleTarget::Defaults,
         RuleTarget::Components,
         RuleTarget::Utilities,
-        RuleTarget::Keyframes,
     ];
     let mut rules = layers.map(|layer| (layer, Vec::<(String, String)>::new()));
     if let Some(text) = &before.resources.theme_text {
@@ -32,11 +31,6 @@ fn assert_replay(
             .unwrap()
             .1
             .push((rule.key.clone(), rule.text.clone()));
-    }
-    for animation in &before.resources.animations {
-        rules[5]
-            .1
-            .push((animation.name.clone(), animation.text.clone()));
     }
     let themes = transition
         .mutations
@@ -69,9 +63,6 @@ fn assert_replay(
         .filter(|(_, rules)| !rules.is_empty())
         .map(|(layer, rules)| {
             let content = rules.into_iter().map(|(_, text)| text).collect::<String>();
-            if layer == RuleTarget::Keyframes {
-                return content;
-            }
             let name = serde_json::to_value(layer).unwrap();
             format!("@layer {}{{{content}}}", name.as_str().unwrap())
         })
@@ -82,8 +73,9 @@ fn assert_replay(
 #[test]
 fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals() {
     let manifest = json!({
-        "version": 1,"languageVersion":3,
-        "variables": {"": (0..200).map(|i| json!({"name":format!("v{i}"),"key":format!("v{i}"),"value":"red"})).collect::<Vec<_>>()},
+        "version": 2,"languageVersion":4,
+        "variables": {"": (0..200).map(|i| json!({"name":format!("v{i}"),"key":format!("v{i}"),"values":[{"path":[":root,:host"],"value":"red"}]})).collect::<Vec<_>>()},
+        "theme": [{"type":"rule","prelude":":root,:host","children":(0..200).map(|i|json!({"type":"declaration","name":format!("v{i}"),"value":"red"})).collect::<Vec<_>>() }],
         "utilities": (0..200).map(|i| json!({
             "id":format!("c{i}"),"name":format!("c{i}"),"type":0,
             "matchers":[{"type":"static","name":format!("c{i}")}],
@@ -148,23 +140,225 @@ fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals()
 }
 
 #[test]
-fn batches_static_dynamic_inline_cyclic_dependencies_modes_and_keyframes() {
+fn batches_scoped_tokens_cyclic_dependencies_and_native_animation_properties() {
     let manifest = json!({
-        "version":1,"languageVersion":3,
-        "modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],
-        "variables":{"": [
-            {"name":"a","key":"a","value":"var(--b)","dependencies":["b"]},
-            {"name":"b","key":"b","value":"var(--a)","dependencies":["a"]},
-            {"name":"stable","key":"stable","value":"black","static":true},
-            {"name":"inline","key":"inline","value":"var(--dynamic)","inline":true,"dependencies":["dynamic"]},
-            {"name":"dynamic","key":"dynamic","modes":{"light":{"value":"red"},"dark":{"value":"blue"}}}
-        ]},
-        "animations":{"pulse":{"to":{"color":"var(--dynamic)"}}},
-        "utilities":[
-            {"id":"one","name":"one","type":0,"matchers":[{"type":"static","name":"one"}],"emit":{"type":"static","rules":[{"declarations":{"color":"var(--a)","background":"var(--inline)","animation":"pulse 1s"}}]}},
-            {"id":"two","name":"two","type":0,"layer":"base","matchers":[{"type":"static","name":"two"}],"emit":{"type":"static","rules":[{"declarations":{"color":"var(--b)","animation":"pulse 1s"}}]}}
+      "version": 2,
+      "languageVersion": 4,
+      "variables": {
+        "": [
+          {
+            "name": "a",
+            "key": "a",
+            "dependencies": [
+              "b"
+            ],
+            "values": [
+              {
+                "path": [
+                  ":root,:host"
+                ],
+                "value": "var(--b)"
+              }
+            ]
+          },
+          {
+            "name": "b",
+            "key": "b",
+            "dependencies": [
+              "a"
+            ],
+            "values": [
+              {
+                "path": [
+                  ":root,:host"
+                ],
+                "value": "var(--a)"
+              }
+            ]
+          },
+          {
+            "name": "stable",
+            "key": "stable",
+            "values": [
+              {
+                "path": [
+                  ":root,:host"
+                ],
+                "value": "black"
+              }
+            ]
+          },
+          {
+            "name": "inline",
+            "key": "inline",
+            "dependencies": [
+              "dynamic"
+            ],
+            "values": [
+              {
+                "path": [
+                  ":root,:host"
+                ],
+                "value": "var(--dynamic)"
+              }
+            ]
+          },
+          {
+            "name": "dynamic",
+            "key": "dynamic",
+            "values": [
+              {
+                "path": [
+                  ".light"
+                ],
+                "value": "red"
+              },
+              {
+                "path": [
+                  ".dark"
+                ],
+                "value": "blue"
+              }
+            ]
+          }
         ]
-    }).to_string();
+      },
+      "utilities": [
+        {
+          "id": "one",
+          "name": "one",
+          "type": 0,
+          "matchers": [
+            {
+              "type": "static",
+              "name": "one"
+            }
+          ],
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "color": "var(--a)",
+                  "background": "var(--inline)",
+                  "animation": "pulse 1s"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "two",
+          "name": "two",
+          "type": 0,
+          "layer": "base",
+          "matchers": [
+            {
+              "type": "static",
+              "name": "two"
+            }
+          ],
+          "emit": {
+            "type": "static",
+            "rules": [
+              {
+                "declarations": {
+                  "color": "var(--b)",
+                  "animation": "pulse 1s"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "variants": [
+        {
+          "token": "@light",
+          "branches": [
+            {
+              "selector": "&:where(.light,.light *)"
+            }
+          ]
+        },
+        {
+          "token": "@dark",
+          "branches": [
+            {
+              "selector": "&:where(.dark,.dark *)"
+            }
+          ]
+        }
+      ],
+      "theme": [
+        {
+          "type": "rule",
+          "prelude": ":root,:host",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "a",
+              "value": "var(--b)"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "prelude": ":root,:host",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "b",
+              "value": "var(--a)"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "prelude": ":root,:host",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "stable",
+              "value": "black"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "prelude": ":root,:host",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "inline",
+              "value": "var(--dynamic)"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "prelude": ".light",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "dynamic",
+              "value": "red"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "prelude": ".dark",
+          "children": [
+            {
+              "type": "declaration",
+              "name": "dynamic",
+              "value": "blue"
+            }
+          ]
+        }
+      ]
+    })
+    .to_string();
     let mut engine = EngineSession::create(&manifest).unwrap();
     for (insert, classes) in [
         (true, vec!["one", "two"]),
@@ -181,13 +375,12 @@ fn batches_static_dynamic_inline_cyclic_dependencies_modes_and_keyframes() {
         .unwrap();
         let after = engine.snapshot().unwrap();
         assert_replay(&before, &transition, &after);
-        assert!(
-            !after
-                .resources
-                .variables
-                .iter()
-                .any(|variable| variable.name == "inline")
-        );
+        assert!(!after.text.contains("@keyframes"));
+        if after.rules.iter().any(|rule| rule.class_name == "one") {
+            assert!(after.text.contains("--inline:var(--dynamic)"));
+            assert!(after.text.contains(".light{--dynamic:red}"));
+            assert!(after.text.contains(".dark{--dynamic:blue}"));
+        }
     }
     let before = engine.snapshot().unwrap();
     let transition = engine

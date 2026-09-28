@@ -46,7 +46,7 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
               aria-valuemax={itemMax}
               aria-valuemin={0}
               aria-valuenow={item.value}
-              className="overflow:hidden h:10px r-xs bg-surface-muted"
+              className="overflow:hidden h:10px r-xs bg-surface-inset"
               role="meter">
               <div
                 className={clsx('h:100% r-xs', colorClasses.background)}

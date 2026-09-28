@@ -359,7 +359,7 @@ fn applies_document_context_settings_in_rust() {
 fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
     let session = LanguageSession::create(
         r#"{
-              "version":1,"languageVersion":3,
+              "version":2,"languageVersion":4,
               "utilities":[
                 {
                   "id":"block",
@@ -445,27 +445,7 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{
-              "version":1,"languageVersion":3,
-              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
-              "utilities":[
-                {
-                  "id":"card",
-                  "name":"card",
-                  "type":-2,
-                  "layer":"components",
-                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
-                  "matchers":[{"type":"static","name":"card"}]
-                },
-                {
-                  "id":"width",
-                  "type":0,
-                  "variableAliasRefs":["~spacing"],
-                  "emit":{"type":"property","property":"width"},
-                  "matchers":[{"type":"key","keys":["w"]}]
-                }
-              ]
-            }"#,
+            r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"card","name":"card","type":-2,"layer":"components","emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"card"}]},{"id":"width","type":0,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"width"},"matchers":[{"type":"key","keys":["w"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let batch = session
@@ -489,19 +469,7 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{
-              "version":1,"languageVersion":3,
-              "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
-              "utilities":[
-                {
-                  "id":"width",
-                  "type":0,
-                  "variableAliasRefs":["~spacing"],
-                  "emit":{"type":"property","property":"width"},
-                  "matchers":[{"type":"key","keys":["w"]}]
-                }
-              ]
-            }"#,
+            r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"width","type":0,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"width"},"matchers":[{"type":"key","keys":["w"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
@@ -520,11 +488,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_modes_variants_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{
-        "version":1,"languageVersion":3,
-        "modes":[{"name":"ocean","branches":[{"selector":".ocean","conditions":[]}]}],
-        "variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]}]
-    }"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":2,"languageVersion":4,"variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]},{"token":"@ocean","branches":[{"selector":"&:where(.ocean,.ocean *)"}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@ocean",
@@ -545,7 +509,7 @@ fn completion_owns_modes_variants_and_native_query_templates() {
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
     let mut session =
-        LanguageSession::create(r#"{"version":1,"languageVersion":3,"utilities":[]}"#).unwrap();
+        LanguageSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -562,14 +526,14 @@ fn classifies_native_structure_independently_of_host_support() {
     );
     assert_eq!(
         session
-            .inspect_class_name("display:block", None, None)
+            .inspect_class_name("display:block", None)
             .unwrap()
             .kind,
         ClassSemanticKind::Declaration
     );
     assert_eq!(
         session
-            .inspect_class_name("made-up:nope", None, None)
+            .inspect_class_name("made-up:nope", None)
             .unwrap()
             .kind,
         ClassSemanticKind::Declaration
@@ -579,33 +543,10 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{
-              "version":1,"languageVersion":3,
-              "modes":[{"name":"dark","branches":[{"selector":".dark"}]}],
-              "variables":{"color":[{"key":"brand","value":"oklch(50% .1 20)"}]},
-              "utilities":[
-                {
-                  "id":"card",
-                  "name":"card",
-                  "type":-2,
-                  "layer":"components",
-                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
-                  "matchers":[{"type":"static","name":"card"}]
-                },
-                {
-                  "id":"foreground-color",
-                  "type":0,
-                  "variableAliases":[["brand","color-brand"]],
-                  "emit":{"type":"property","property":"color"},
-                  "matchers":[{"type":"token","prefix":"fg-"}]
-                }
-              ]
-            }"#,
+        r#"{"version":2,"languageVersion":4,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"utilities":[{"id":"card","name":"card","type":-2,"layer":"components","emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"card"}]},{"id":"foreground-color","type":0,"variableAliases":[["brand","color-brand"]],"emit":{"type":"property","property":"color"},"matchers":[{"type":"token","prefix":"fg-"}]}],"variants":[{"token":"@dark","branches":[{"selector":"&:where(.dark,.dark *)"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}]}"#,
     )
     .unwrap();
-    let inspection = session
-        .inspect_class_name("card:hover", None, None)
-        .unwrap();
+    let inspection = session.inspect_class_name("card:hover", None).unwrap();
     assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
     assert!(inspection.match_status == mastercss_schema::MatchStatus::Matched);
     assert_eq!(inspection.kind, ClassSemanticKind::Component);
@@ -617,16 +558,12 @@ fn renders_isolated_hover_inspection_css() {
         inspection.text,
         "@layer components{.card\\:hover:hover{display:block}}"
     );
-    let forced_mode = session
-        .inspect_class_name("card", None, Some("dark"))
-        .unwrap();
+    let named_variant = session.inspect_class_name("card@dark", None).unwrap();
     assert_eq!(
-        forced_mode.text,
-        "@layer components{.card:where(.dark,.dark *){display:block}}"
+        named_variant.text,
+        "@layer components{.card\\@dark:where(.dark,.dark *){display:block}}"
     );
-    let variable = session
-        .inspect_class_name("fg-brand:hover", None, None)
-        .unwrap();
+    let variable = session.inspect_class_name("fg-brand:hover", None).unwrap();
     assert_eq!(variable.base, "fg-brand");
     assert_eq!(variable.suffix, ":hover");
     assert_eq!(variable.key.as_deref(), Some("fg"));
@@ -635,8 +572,8 @@ fn renders_isolated_hover_inspection_css() {
     assert_eq!(variable.variables[0].key, "brand");
     assert_eq!(variable.variables[0].variable.name, "color-brand");
     assert_eq!(
-        variable.variables[0].variable.value,
-        Some(serde_json::Value::String("oklch(50% .1 20)".into()))
+        variable.variables[0].variable.values[0].value,
+        "oklch(50% .1 20)"
     );
     let completion_index = session.completion_index().unwrap();
     assert_eq!(completion_index.version, LANGUAGE_BATCH_VERSION);

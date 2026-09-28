@@ -18,9 +18,7 @@ pub(crate) fn utility_completion_metadata(
                     add_unique_string(&mut keys, key);
                 }
             }
-            UtilityMatcher::Static { .. }
-            | UtilityMatcher::Pattern { .. }
-            | UtilityMatcher::Token { .. } => {}
+            UtilityMatcher::Static { .. } | UtilityMatcher::Token { .. } => {}
         }
     }
     (keys, alias_groups)
@@ -142,7 +140,6 @@ pub(crate) fn push_utility_value_completion_candidates(
     labels: &mut HashSet<String>,
     manifest: &ManifestProjection,
     utility: &UtilityDefinition,
-    keys: &[String],
 ) {
     let prefixes = utility
         .matchers
@@ -175,7 +172,12 @@ pub(crate) fn push_utility_value_completion_candidates(
                         detail: Some(format!(
                             "(token --{}) {}",
                             variable.name,
-                            variable.value.as_deref().unwrap_or(variable.name.as_str())
+                            variable
+                                .values
+                                .iter()
+                                .map(|entry| format!("{}: {}", entry.path.join(" → "), entry.value))
+                                .collect::<Vec<_>>()
+                                .join("; ")
                         )),
                         documentation_class_name: Some(label),
                         // Keep static names and property entrypoints discoverable
@@ -184,41 +186,6 @@ pub(crate) fn push_utility_value_completion_candidates(
                             "zzzz-token-{}",
                             variable_completion_sort_text(variable, value_key,)
                         )),
-                        trigger_suggest: false,
-                    },
-                );
-            }
-        }
-    }
-    let animation_property = match &utility.emit {
-        UtilityEmit::Property { property } => {
-            matches!(property.as_str(), "animation" | "animation-name")
-        }
-        UtilityEmit::Declarations { declarations } => declarations
-            .iter()
-            .any(|property| matches!(property.as_str(), "animation" | "animation-name")),
-        UtilityEmit::Template { declarations } => declarations
-            .keys()
-            .any(|property| matches!(property.as_str(), "animation" | "animation-name")),
-        UtilityEmit::Static { rules } => rules.iter().any(|rule| {
-            rule.declarations
-                .keys()
-                .any(|property| matches!(property.as_str(), "animation" | "animation-name"))
-        }),
-    };
-    if animation_property {
-        for animation_name in manifest.animations.keys() {
-            for key in keys {
-                let label = format!("{key}:{animation_name}");
-                push_class_completion_candidate(
-                    candidates,
-                    labels,
-                    EngineClassCompletionCandidate {
-                        label: label.clone(),
-                        kind: EngineClassCompletionKind::Value,
-                        detail: Some(format!("{key}: {animation_name}")),
-                        documentation_class_name: Some(label),
-                        sort_text: None,
                         trigger_suggest: false,
                     },
                 );
@@ -260,33 +227,10 @@ pub(crate) fn collect_class_completion_candidates(
                             );
                         }
                     }
-                    UtilityMatcher::Pattern { prefix, values, .. } => {
-                        for value in values {
-                            push_value_completion_candidate(
-                                &mut candidates,
-                                &mut labels,
-                                format!("{prefix}{value}"),
-                                is_component.then(|| "component".into()),
-                            );
-                        }
-                    }
                     UtilityMatcher::Key { .. } | UtilityMatcher::Token { .. } => {}
                 }
             }
             continue;
-        }
-
-        for matcher in &utility.matchers {
-            if let UtilityMatcher::Pattern { prefix, values, .. } = matcher {
-                for value in values {
-                    push_value_completion_candidate(
-                        &mut candidates,
-                        &mut labels,
-                        format!("{prefix}{value}"),
-                        None,
-                    );
-                }
-            }
         }
 
         let (keys, alias_groups) = utility_completion_metadata(utility);
@@ -294,13 +238,7 @@ pub(crate) fn collect_class_completion_candidates(
         for alias_group in &alias_groups {
             add_unique_string(&mut value_keys, alias_group);
         }
-        push_utility_value_completion_candidates(
-            &mut candidates,
-            &mut labels,
-            manifest,
-            utility,
-            &value_keys,
-        );
+        push_utility_value_completion_candidates(&mut candidates, &mut labels, manifest, utility);
         for key in keys {
             ambiguous_keys.retain(|ambiguous| ambiguous != &key);
             push_property_completion_candidate(&mut candidates, &mut labels, &key, None);
@@ -384,7 +322,12 @@ pub(crate) fn collect_class_completion_candidates(
         .conditions
         .keys()
         .map(String::as_str)
-        .chain(manifest.modes.iter().map(|mode| mode.name.as_str()))
+        .chain(
+            manifest
+                .custom_media
+                .keys()
+                .filter_map(|name| name.strip_prefix("--")),
+        )
         .chain(
             manifest
                 .variants
@@ -400,33 +343,10 @@ pub(crate) fn collect_class_completion_candidates(
                 kind: EngineClassCompletionKind::Value,
                 detail: None,
                 documentation_class_name: None,
-                sort_text: manifest
-                    .compiled_variables
-                    .get(&format!("breakpoint-{token}"))
-                    .map(|variable| {
-                        format!("0000-{}", variable_completion_sort_text(variable, token))
-                    })
-                    .or_else(|| Some(format!("1000-{token}"))),
+                sort_text: Some(format!("1000-{token}")),
                 trigger_suggest: false,
             },
         );
-    }
-    for animation_name in manifest.animations.keys() {
-        for key in ["animation", "animation-name"] {
-            let label = format!("{key}:{animation_name}");
-            push_class_completion_candidate(
-                &mut candidates,
-                &mut labels,
-                EngineClassCompletionCandidate {
-                    label: label.clone(),
-                    kind: EngineClassCompletionKind::Value,
-                    detail: Some(format!("{key}: {animation_name}")),
-                    documentation_class_name: Some(label),
-                    sort_text: None,
-                    trigger_suggest: false,
-                },
-            );
-        }
     }
     candidates
 }
@@ -517,7 +437,10 @@ fn resolved_color_variable(name: &str, manifest: &ManifestProjection) -> Option<
         return None;
     }
     for _ in 0..8 {
-        let value = variable.value.as_deref()?;
+        let value = &variable.values.first()?.value;
+        if variable.values.iter().any(|entry| &entry.value != value) {
+            return None;
+        }
         let alias = value
             .strip_prefix("var(--")
             .and_then(|value| value.strip_suffix(')'));

@@ -14,11 +14,11 @@ describe('@master/css-compiler/stylesheet public contract', () => {
   test('returns immutable high-level resolution and compilation values', async () => {
     const resolution = await resolveStylesheet(
       '/project/app.css',
-      '@master entry;\n.card { color: red; }'
+      "@import \"@master/css\";\n.card { color: red; }"
     )
     const compilation = await compileStylesheet(
       '/project/app.css',
-      '@master entry;\n.card { color: red; }',
+      "@import \"@master/css\";\n.card { color: red; }",
       { baseManifest: defaultManifest }
     )
 
@@ -38,7 +38,7 @@ describe('@master/css-compiler/stylesheet public contract', () => {
       await stylesheets.register(
         scanner,
         '/project/app.css',
-        '@master entry;\n.card { color: red; }',
+        "@import \"@master/css\";\n.card { color: red; }",
         { baseManifest: defaultManifest }
       )
       const snapshot = stylesheets.snapshot()

@@ -92,7 +92,7 @@ export default function ResourceWaterfall() {
           <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
             <div className="grid-cols:1 gap-md">
               {scenarios.map((scenario) => (
-                <section key={scenario.title} className="p-md b:1px|solid|var(--color-line-base) r-lg surface-raised">
+                <section key={scenario.title} className="p-md b:1px|solid|var(--color-line-divider) r-lg surface-raised">
                   <header className="mb-sm">
                     <h3 className="m:0 font-semibold font-sm text-neutral">{scenario.title}</h3>
                     <p className="mx:0 mb:0 mt-3xs font-2xs text-gray">{scenario.summary}</p>
@@ -103,7 +103,7 @@ export default function ResourceWaterfall() {
                       <span className="abs left:0 top:0">Earlier</span>
                       <span className="abs right:0 top:0">Later</span>
                       <MetricLine metric={scenario.metric} />
-                      <span className="abs bottom:0 left:0 right:0 h:1px bg-line-muted" />
+                      <span className="abs bottom:0 left:0 right:0 h:1px bg-line-subtle" />
                     </div>
                     {scenario.rows.map((row) => (
                       <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
@@ -130,7 +130,7 @@ function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallSce
   return (
     <>
       <div className="flex items-center min-w:0 font-2xs font-medium text-neutral">{row.resource}</div>
-      <div className="rel overflow:hidden surface-muted" style={{ height: '2rem' }}>
+      <div className="rel overflow:hidden surface-inset" style={{ height: '2rem' }}>
         <TimelineTicks />
         <MetricLine metric={metric} />
         {row.bars.map((bar) => (
@@ -186,7 +186,7 @@ function TimelineTicks() {
         <span
           key={tick}
           aria-hidden="true"
-          className="abs bottom:0 top:0 w:1px bg-line-muted"
+          className="abs bottom:0 top:0 w:1px bg-line-subtle"
           style={{ left: `${tick}%` }}
         />
       ))}

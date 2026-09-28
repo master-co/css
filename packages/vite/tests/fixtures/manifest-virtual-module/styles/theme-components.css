@@ -1,5 +1,4 @@
-@utilities {
-  badge {
+
+  @utility badge {
     display: inline-flex;
   }
-}

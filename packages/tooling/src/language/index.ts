@@ -101,12 +101,11 @@ export async function inspectClassName(
   options: {
     readonly manifest: MasterCSSManifest
     readonly binding?: MasterCSSBinding
-    readonly mode?: string
   }
 ) {
   const session = await createLanguageSession(options)
   try {
-    return session.inspectClassName(className, options.mode)
+    return session.inspectClassName(className)
   } finally {
     session.dispose()
   }

@@ -12,7 +12,6 @@ export type MasterCSSRuleTarget =
   | 'defaults'
   | 'components'
   | 'utilities'
-  | 'keyframes'
 
 export interface MasterCSSEngineInsertMutation {
   readonly op: 'insert'
@@ -35,7 +34,7 @@ export type MasterCSSEngineMutation =
   | MasterCSSEngineDeleteMutation
 
 export interface MasterCSSEngineTransition {
-  readonly version: 1
+  readonly version: 2
   readonly mutations: readonly MasterCSSEngineMutation[]
 }
 
@@ -43,20 +42,11 @@ export interface MasterCSSEngineVariableResource {
   readonly name: string
   readonly refCount: number
   readonly dependencies: readonly string[]
-  readonly static: boolean
-}
-
-export interface MasterCSSEngineAnimationResource {
-  readonly name: string
-  readonly index: number
-  readonly refCount: number
-  readonly text: string
 }
 
 export interface MasterCSSEngineResources {
   readonly themeText?: string
   readonly variables: readonly MasterCSSEngineVariableResource[]
-  readonly animations: readonly MasterCSSEngineAnimationResource[]
 }
 
 export interface MasterCSSEngineExecutionState {
@@ -71,14 +61,14 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  readonly version: 1
+  readonly version: 2
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resources: MasterCSSEngineResources
   readonly text: string
 }
 
 export interface MasterCSSEngineInspection {
-  readonly version: 1
+  readonly version: 2
   readonly className: string
   readonly matchStatus: 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
   readonly cssValueStatus: 'valid' | 'invalid' | 'unknown' | 'not-checked'
@@ -106,7 +96,7 @@ export interface MasterCSSEngine extends Disposable {
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   /**
-   * Adds host-owned variable and animation counts to the active engine session.
+   * Adds host-owned variable counts to the active engine session.
    * Counts are cumulative for the lifetime of the session and cannot be unregistered.
    */
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition

@@ -20,11 +20,11 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
 ```css name=app.css
 @import '@master/css';
 
-@theme {
+@theme { :root, :host {
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
   --radius-card: 0.75rem;
-}
+} }
 
 @layer components {
   .btn {
@@ -63,7 +63,7 @@ Good context includes:
 - The official documentation URL: `https://rc.css.master.co`
 - The framework, build tool, package manager, and rendering mode.
 - The CSS entry that imports `@master/css`.
-- Existing `@theme`, `@layer components`, `@utilities`, and `@custom-variant` definitions.
+- Existing `@theme`, `@layer components`, `@utility`, and `@custom-variant` definitions.
 - Existing component, template, and design-system patterns near the target UI.
 - The formatter, lint, type-check, test, build, and visual review commands.
 
@@ -123,7 +123,7 @@ When editing Master CSS:
 - Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
 - Put resets and normalization in @layer base, broad project visual defaults in @layer defaults, and named UI classes in @layer components.
 - For example, put button font inheritance in base, the page text color in defaults, and a .btn design in components; defaults does not mean browser defaults.
-- Prefer existing @theme tokens. Use @utilities for on-demand primitives.
+- Prefer existing @theme tokens. Use @utility for on-demand primitives.
 - Write native declarations and selectors in CSS; use utilities directly in markup. Native component classes do not derive Master suffixes.
 - Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
 - Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.

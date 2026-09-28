@@ -20,7 +20,7 @@ async function watchScenario(cache: boolean, run: (state: {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-webpack-active-test-')))
   const app = join(root, 'app'), styles = join(root, 'styles')
   mkdirSync(app);mkdirSync(styles)
-  writeFileSync(join(app, 'global.css'), '@master entry;@preserve native;.global{--global:kept}')
+  writeFileSync(join(app, 'global.css'), "@import \"@master/css\";@preserve native;.global{--global:kept}")
   const manifestImport = 'import manifest from "virtual:master-css-manifest";globalThis.auditManifest=manifest;'
   writeFileSync(join(app, 'entry.js'), `${manifestImport}globalThis.auditStage="initial"`)
   const plugin = new Plugin({ mode: 'static', runtime: false }, app)
@@ -77,7 +77,7 @@ for (const cache of [false, true]) test(`removed stylesheet releases dependencie
   await watchScenario(cache, async ({ styles, plugin, step }) => {
     const sheet = join(styles, 'entry.css'), image = join(styles, 'pixel.svg')
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" id="owned"/>'
-    writeFileSync(sheet, '@master entry;@preserve native;.owned{color:red;background-image:url("./pixel.svg")}')
+    writeFileSync(sheet, "@import \"@master/css\";@preserve native;.owned{color:red;background-image:url(\"./pixel.svg\")}")
     writeFileSync(image, svg)
     const attached = await step('attached', ['../styles/entry.css'])
     expect(Object.values(attached.assets)).toContain(svg)
@@ -103,7 +103,7 @@ test.each(Array.from({ length: Number(process.env.BH_TRACE_REPEAT || 1) }, (_, i
   await watchScenario(true, async ({ styles, plugin, step }) => {
     const image = join(styles, 'shared.svg')
     writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg" id="shared"/>')
-    for (const name of ['a', 'b']) writeFileSync(join(styles, `${name}.css`), `@master entry;@preserve native;.${name}{background-image:url("./shared.svg")}`)
+    for (const name of ['a', 'b']) writeFileSync(join(styles, `${name}.css`), `@import "@master/css";@preserve native;.${name}{background-image:url("./shared.svg")}`)
     writeFileSync(join(styles, 'usage.js'), `globalThis.ownedMarkup=${JSON.stringify('<div class="fg-red">owned</div>')}`)
     const both = await step('both', ['../styles/a.css', '../styles/b.css', '../styles/usage.js'])
     expect(plugin.validClasses.has('fg-red')).toBe(true)

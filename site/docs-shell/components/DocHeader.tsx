@@ -56,7 +56,7 @@ export default function DocHeader(props: any) {
             {Icon && <Icon width="22" height="22" strokeWidth="1.2" />}
           </Link>
         ))}
-        {app.communityNavs?.length ? <div className='h:1em w:1px mx-md bg-line-base hidden@media((width<64rem))'></div> : null}
+        {app.communityNavs?.length ? <div className='h:1em w:1px mx-md bg-line-divider hidden@media((width<64rem))'></div> : null}
         <LanguageButton className="mr:-0.188rem hidden@media((width<64rem)) app-header-icon" />
         <SearchButton id="sidebar-toggle" className="mr:-1.25rem hidden@md app-header-icon">
           <IconListSearch width="22" height="22" strokeWidth="1.2" />

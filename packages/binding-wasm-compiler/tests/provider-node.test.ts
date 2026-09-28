@@ -14,7 +14,7 @@ test('loads an explicit compiler artifact file URL in Node', async () => {
   }
   const compiler = await provider.createSession()
 
-  expect(compiler.inspectCSS('@master entry;')).toMatchObject({
+  expect(compiler.inspectCSS('@import "@master/css";')).toMatchObject({
     hasMasterEntry: true
   })
 })

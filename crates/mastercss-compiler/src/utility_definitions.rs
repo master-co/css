@@ -20,14 +20,6 @@ pub(crate) fn identity(definition: &Value) -> String {
             definition["token"]["prefix"],
             definition["token"]["variableAliasRefs"]
         ]),
-        "pattern" => {
-            let mut keys = definition["pattern"]["values"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            keys.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
-            json!([kind, definition["pattern"]["prefix"], keys])
-        }
         _ => json!(["static", definition["name"]]),
     };
     format!("{layer}:{key}")
@@ -76,7 +68,7 @@ pub(crate) fn body(
                 })
             {
                 return Err(crate::manifest::definition_error(
-                    "--value() is only allowed in parameterized declaration values",
+                    "--master-value() is only allowed in parameterized declaration values",
                 ));
             }
             match fragment {
@@ -84,7 +76,7 @@ pub(crate) fn body(
                     for declaration in declarations {
                         if placeholder(&declaration.property) {
                             return Err(crate::manifest::definition_error(
-                                "--value() cannot be used in a property name",
+                                "--master-value() cannot be used in a property name",
                             ));
                         }
                         if let Some(value) = declaration.value.as_str() {
@@ -99,7 +91,7 @@ pub(crate) fn body(
 }
 
 fn placeholder(source: &str) -> bool {
-    mastercss_lexer::tokenize_css_syntax(source).iter().any(|token| matches!(&token.kind, mastercss_lexer::CssSyntaxKind::Function(name) if name == "--value"))
+    mastercss_lexer::tokenize_css_syntax(source).iter().any(|token| matches!(&token.kind, mastercss_lexer::CssSyntaxKind::Function(name) if name == "--master-value"))
 }
 
 pub(crate) fn seed_rules(definition: &Map<String, Value>) -> Result<Vec<Value>, CompilerError> {
@@ -149,7 +141,6 @@ pub(crate) fn layer(definition: &Value) -> UtilityLayerName {
 }
 
 pub(crate) fn validate_names(definitions: &[Value]) -> Result<(), CompilerError> {
-    let mut enums = std::collections::HashMap::new();
     let mut fixed = std::collections::HashMap::new();
     let mut raw = std::collections::HashMap::new();
     for definition in definitions {
@@ -157,28 +148,6 @@ pub(crate) fn validate_names(definitions: &[Value]) -> Result<(), CompilerError>
             "dynamic" => {
                 if let Some(key) = definition["dynamic"]["key"].as_str() {
                     raw.insert(key.to_owned(), definition);
-                }
-            }
-            "pattern" => {
-                let prefix = definition["pattern"]["prefix"].as_str().unwrap_or_default();
-                for key in definition["pattern"]["values"]
-                    .as_array()
-                    .into_iter()
-                    .flatten()
-                    .filter_map(Value::as_str)
-                {
-                    let name = format!("{prefix}{key}");
-                    if let Some(previous) = enums.insert(name.clone(), definition) {
-                        let previous_identity = identity(previous);
-                        let current_identity = identity(definition);
-                        if layer(previous) == layer(definition)
-                            || previous_identity.split_once(':').map(|(_, key)| key)
-                                != current_identity.split_once(':').map(|(_, key)| key)
-                        {
-                            return Err(name_conflict(&name, previous, definition));
-                        }
-                    }
-                    fixed.insert(name, definition);
                 }
             }
             "static" => {
@@ -235,4 +204,68 @@ fn name_conflict(name: &str, previous: &Value, definition: &Value) -> CompilerEr
             .unwrap_or_else(|| "manifest.css".into()),
         range: current.map(|source| source.range),
     }
+}
+
+/// The reserved parameter function is a value token, never textual interpolation.
+pub(crate) fn validate_placeholders(source: &str, filename: &str) -> Result<(), CompilerError> {
+    use mastercss_lexer::{
+        CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax,
+    };
+    let tokens = tokenize_css_syntax(source);
+    let statements = collect_css_syntax_statements(&tokens);
+    let mut index = 0;
+    while index < tokens.len() {
+        let token = &tokens[index];
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("url")) {
+            index = token.close.map_or(tokens.len(), |close| close + 1);
+            continue;
+        }
+        if matches!(&token.kind, Kind::Function(name) if name == "--master-value") {
+            let fail = |message: &str| {
+                crate::ranged_directive_diagnostic(
+                    source,
+                    filename,
+                    token.bytes.start,
+                    token.bytes.end,
+                    mastercss_schema::ErrorCode::CssDirectiveError,
+                    message,
+                )
+            };
+            if token.close != Some(index + 1) {
+                return Err(fail("--master-value() takes no arguments"));
+            }
+            let statement = statements
+                .iter()
+                .find(|statement| statement.tokens.contains(&index));
+            if statement.is_none_or(|statement| {
+                !statement.declaration || index <= statement.tokens.start + 1
+            }) {
+                return Err(fail(
+                    "--master-value() is only allowed in parameterized declaration values",
+                ));
+            }
+            let mut parent = statement.and_then(|statement| statement.parent);
+            let mut parameterized = false;
+            while let Some(ancestor) = parent {
+                let statement = &statements[ancestor];
+                if matches!(&tokens[statement.tokens.start].kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("utility"))
+                {
+                    let start = tokens[statement.tokens.start].bytes.end;
+                    let end = tokens[statement.tokens.end].bytes.start;
+                    parameterized = matches!(
+                        crate::pattern::parse_managed_pattern(&source[start..end]),
+                        Ok(crate::ParsedManagedPattern::Dynamic { .. }
+                            | crate::ParsedManagedPattern::Token { .. })
+                    );
+                    break;
+                }
+                parent = statement.parent;
+            }
+            if !parameterized {
+                return Err(fail("--master-value() requires a parameterized @utility"));
+            }
+        }
+        index += 1;
+    }
+    Ok(())
 }

@@ -9,11 +9,13 @@ Play each cycle from 24px to 96px. The one-second linear path repeats with the s
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -21,7 +23,7 @@ Play each cycle from 24px to 96px. The one-second linear path repeats with the s
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -51,11 +53,13 @@ Play each cycle from 96px back to 24px by reversing the same keyframes.
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -63,7 +67,7 @@ Play each cycle from 96px back to 24px by reversing the same keyframes.
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -88,11 +92,13 @@ Play the first cycle forward, then the second backward. The direction changes at
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -100,7 +106,7 @@ Play the first cycle forward, then the second backward. The direction changes at
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -125,11 +131,13 @@ Start at 96px and play backward first, then forward on the next cycle.
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -137,7 +145,7 @@ Start at 96px and play backward first, then forward on the next cycle.
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
@@ -186,11 +194,13 @@ Resize before replaying. The path runs backward below `sm` and forward at `sm`, 
 
 ```css name=index.css
 @theme {
-  @keyframes layer-slide {
+
+}
+@keyframes layer-slide {
     from { transform: translateX(24px); }
     to { transform: translateX(96px); }
   }
-}
+
 ```
 
 ```html
@@ -198,7 +208,7 @@ Resize before replaying. The path runs backward below `sm` and forward at `sm`, 
 <div class="w:240px max-w:100%">
   <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10

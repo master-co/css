@@ -48,7 +48,7 @@ describe('Rust-backed language service', () => {
       'file:///index.css',
       'css',
       1,
-      '@theme static { --color-primary: #123; }'
+      "@layer theme { :root, :host { --color-primary: #123; } }\n"
     )
 
     expect(service.renderSemanticTokens(document)).toBeUndefined()
@@ -84,7 +84,7 @@ describe('Rust-backed language service', () => {
 
   test('uses the injected runtime variables for document colors', async () => {
     const service = createService(createPresetManifest({
-      variables: [{ namespace: 'color', key: 'runtime-brand', value: '#123456' }]
+      variables: [{ namespace: 'color', key: 'runtime-brand', values: [{ path: [':root,:host'], value: '#123456' }] }]
     }))
     const document = TextDocument.create(
       'file:///index.html',

@@ -5,6 +5,8 @@ import { describe, expect, test } from 'vitest'
 import { compileCSSManifestFile, compileProjectManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
+const baseManifest = { version: 2 as const, languageVersion: 4 as const, variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }] }
+
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-reference-'))
   mkdirSync(join(root, 'src'), { recursive: true })
@@ -17,30 +19,10 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, `
-        @theme {
-          --color-brand: #123456;
-        }
+      writeFileSync(tokensPath, "\n        @theme {:root, :host {\n          --color-brand: #123456;\n        }}\n\n\n        @custom-variant wide {\n          @media (width >= 640px) {\n            @slot;\n          }\n        }\n\n        \n          @utility brand {\n            color: var(--color-brand);\n          }\n        \n\n        .referenced-native {\n          color: red;\n        }\n      ")
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @variant all {color:var(--color-brand);}\n\n          @variant wide {\n            @variant all {color:var(--color-brand);}\n          }\n        }\n      ")
 
-        @custom-variant wide {
-          @media (width >= 640px) {
-            @slot;
-          }
-        }
-
-        @utilities {
-          brand {
-            color: var(--color-brand);
-          }
-        }
-
-        .referenced-native {
-          color: red;
-        }
-      `)
-      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @variant media(all){color:var(--color-brand);}\n\n          @variant wide {\n            @variant media(all){color:var(--color-brand);}\n          }\n        }\n      ")
-
-      const result = compileCSSManifestFile(entryPath)
+      const result = compileCSSManifestFile(entryPath, { baseManifest })
 
       expect(result.css).toContain('.button{color:var(--color-brand)}')
       expect(result.css).toContain('@media (width>=640px)')
@@ -59,10 +41,10 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, '@utilities { brand { color: red; } }')
-      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @utilities {\n          brand {\n            color: blue;\n          }\n        }\n\n        .button {\n          @variant media(all){color:#00f;}\n        }\n      ")
+      writeFileSync(tokensPath, ' @utility brand { color: red; } ')
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @utility brand {\n            color: blue;\n          }\n\n        .button {\n          @variant all {color:#00f;}\n        }\n      ")
 
-      const result = compileCSSManifestFile(entryPath)
+      const result = compileCSSManifestFile(entryPath, { baseManifest })
 
       expect(result.css).toContain('.button{color:#00f}')
       expect(result.css).not.toContain('color:red')
@@ -77,11 +59,11 @@ describe('CSS @reference', () => {
       const aPath = join(root, 'a.css')
       const bPath = join(root, 'b.css')
       writeFileSync(aPath, [
-        '@master entry;',
+        '@import "@master/css";',
         '@reference "./b.css";',
-        ".a { @variant media(all){display:block;} }"
+        ".a { @variant all{display:block;} }"
       ].join('\n'))
-      writeFileSync(bPath, '@utilities { b { display: block; } }')
+      writeFileSync(bPath, ' @utility b { display: block; } ')
 
       const result = compileProjectManifest([aPath])
       expect(result.css).toContain('.a{display:block}')
@@ -103,9 +85,9 @@ describe('CSS @reference', () => {
         '@import "@master/css";',
         '@import "fake-font/index.css";',
         '',
-        '@theme {',
+        '@theme { :root, :host {',
         '    --color-primary: #123456;',
-        '}'
+        '} }'
       ].join('\n'))
 
       const result = compileProjectManifest([entryPath])
@@ -115,7 +97,7 @@ describe('CSS @reference', () => {
       expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toEqual(expect.arrayContaining([
         expect.objectContaining({
           name: 'color-primary',
-          value: '#123456'
+          values: [{ path: [':root,:host'], value: '#123456' }]
         })
       ]))
     } finally {
@@ -131,10 +113,10 @@ test('references exported CSS authoring packages with compiler-only definition l
     const packageDir = join(root, 'node_modules', '@acme', 'theme')
     mkdirSync(packageDir, { recursive: true })
     writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/theme', exports: { '.': './master.css' } }))
-    writeFileSync(join(packageDir, 'master.css'), '@utilities{paint{color:red}}@layer components{.button{display:flex}}')
+    writeFileSync(join(packageDir, 'master.css'), '@utility paint {color:red}@layer components{.button{display:flex}}')
     const file = join(root, 'src', 'local.css')
-    writeFileSync(file, "@reference \"@acme/theme\";.local{@variant media(all){color:red;}}")
-    const result = compileCSSManifestFile(file)
+    writeFileSync(file, "@reference \"@acme/theme\";.local{@variant all {color:red;}}")
+    const result = compileCSSManifestFile(file, { baseManifest })
     expect(result.css).toContain('.local{color:red}')
     expect(result.css).not.toContain('.button')
   } finally { rmSync(root, { recursive: true, force: true }) }

@@ -111,8 +111,6 @@ enum EngineParityStep {
         expected_priorities: Vec<Value>,
         #[serde(default)]
         expected_variable_names: Vec<Vec<String>>,
-        #[serde(default)]
-        expected_animation_names: Vec<Vec<String>>,
     },
     InspectContains {
         class_name: String,

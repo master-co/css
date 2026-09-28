@@ -36,7 +36,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                 {item.detail && <span className="font-xs text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
-            <div className="flex overflow:hidden h:12px r-xs bg-surface-muted" role="img" aria-labelledby={`${labelId} ${valueId}`}>
+            <div className="flex overflow:hidden h:12px r-xs bg-surface-inset" role="img" aria-labelledby={`${labelId} ${valueId}`}>
               {item.segments.map((segment, index) => {
                 const percent = clampPercent(segment.value, total)
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]

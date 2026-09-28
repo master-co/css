@@ -3,7 +3,7 @@ import { BaseHueDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } 
 
 ## Overview [sr-only]
 
-Master CSS color tokens cover fixed palette steps, preset UI roles, and mode-aware hue aliases. Use palette steps when you need an exact swatch. Use preset roles for the repeated color decisions that define application structure, text hierarchy, and light or dark mode behavior.
+Master CSS color tokens cover fixed palette steps, preset UI roles, and fixed hue aliases and adaptive text aliases. Use palette steps when you need an exact swatch. Use preset roles for the repeated color decisions that define application structure, text hierarchy, and light or dark mode behavior.
 
 ---
 
@@ -47,9 +47,9 @@ The lightest steps retain a tint; the darkest retain the material's hue. Step nu
 
 All eight families fit within Display P3. Petrol's `60` and `70` steps use a small extension beyond sRGB; other new steps fit sRGB. Browsers map colors to the display's available gamut. Copy the OKLCH value or CSS variable to preserve the authored color; a hex representation is an sRGB approximation.
 
-The new `text:<family>` aliases meet at least 4.5:1 against the matching preset `base`, `muted`, `raised`, and `overlay` surfaces in both modes, measured after sRGB gamut mapping. Check contrast again when changing the surface, adding transparency, or choosing a fixed step or base hue alias. See [WCAG's text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+The new `text-<family>` aliases meet at least 4.5:1 against the matching preset `base`, `inset`, `raised`, and `floating` surfaces in both modes, measured after sRGB gamut mapping. Check contrast again when changing the surface, adding transparency, or choosing a fixed step or base hue alias. See [WCAG's text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
 
-(!) `olive` now resolves to the mode-aware preset family, just as `red` and `blue` do. Existing classes such as `fg-olive` and `bg-olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `fg:#808000` or `background-color:#808000`.
+(!) `olive` resolves to the fixed preset alias, just as `red` and `blue` do. Existing classes such as `fg-olive` and `bg-olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `fg:#808000` or `background-color:#808000`.
 
 ---
 
@@ -59,16 +59,17 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | Decision | Use | Examples |
 | --- | --- | --- |
 | Fixed swatch | Palette steps | `bg-blue-5`, `fg-blue-60` |
-| App structure and hierarchy | Preset roles | `bg-surface-base`, `surface-raised`, `b-base`, `text-body` |
-| Mode-aware hue choice | Hue aliases | `bg-blue`, `fg-blue`, `text-blue` |
+| App structure and hierarchy | Preset roles | `bg-surface-base`, `surface-raised`, `b-divider`, `text-body` |
+| Fixed hue swatch | Hue aliases | `bg-blue`, `fg-blue` |
+| Adaptive readable foreground | Text hue aliases | `text-blue`, `text-petrol` |
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-base) --><!-- @MARK text-strong --><!-- @MARK text-muted --><!-- @MARK text-link -->
+<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-divider) --><!-- @MARK text-strong --><!-- @MARK text-muted --><!-- @MARK text-link -->
 <main class="bg-surface-base text-body">
-  <section class="b:1px|solid|var(--color-line-base) surface-raised">
+  <section class="b:1px|solid|var(--color-line-divider) surface-raised">
     <h2 class="text-strong">Project updates</h2>
     <p class="text-muted">Three milestones changed this week.</p>
-    <a class="text-link" href="#">Continue</a>
+    <a class="text-link underline" href="#">Continue</a>
   </section>
 </main>
 ```
@@ -76,7 +77,7 @@ Start with the kind of decision you are making. Most app chrome should use roles
 ---
 
 ## Namespaces for color
-Color utilities use focused namespaces so role names stay short in markup. A key such as `muted` can mean a line role in `b-muted`, a surface role in `surface-muted`, or a text role in `text-muted`.
+Color utilities use focused namespaces so role names stay short in markup. Use `b-divider` for decorative dividers, `b-control` for required control boundaries, `surface-inset` for recessed areas, and `text-muted` for secondary text.
 
 <ColorNamespaceTable />
 
@@ -85,10 +86,10 @@ Use the narrow role namespace first when the color describes structure, line wor
 ---
 
 ## Preset color roles
-Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg-surface-base`, `surface-raised`, `b-base`, and `text-body` can stay stable while light and dark modes choose different underlying colors.
+Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg-surface-base`, `surface-raised`, `b-divider`, and `text-body` can stay stable while light and dark modes choose different underlying colors.
 
 ### Surfaces
-Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg-surface-base` for the root canvas and the dedicated `surface:*` shorthand for surface roles.
+Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg-surface-base` for the root canvas and the dedicated `surface-*` shorthand for surface roles.
 
 <PresetThemeColors group="surfaces" />
 <SurfacesDemo />
@@ -99,14 +100,14 @@ Surface tokens are for the page background, raised panels, floating layers, and 
 ```
 
 ### Line roles
-Line tokens are for borders, dividers, outlines, and strokes. `base` is the default line role. Border, outline, and stroke utilities search line roles before the general color palette.
+Line tokens are for borders, dividers, outlines, and strokes. `divider` and `subtle` are decorative; use `control` when a boundary is necessary to identify a control. Border, outline, and stroke utilities search line roles before the general color palette.
 
 <PresetThemeColors group="lineRoles" />
 <LineRolesDemo />
 
 ```html
-<!-- @MARK b:1.25rem|solid|var(--color-line-base) -->
-<div class="b:1.25rem|solid|var(--color-line-base)"></div>
+<!-- @MARK b:1.25rem|solid|var(--color-line-divider) -->
+<div class="b:1.25rem|solid|var(--color-line-divider)"></div>
 ```
 
 ### Text roles
@@ -121,18 +122,18 @@ Text roles are for foreground hierarchy and interaction states. Prefer these rol
   <h2 class="text-strong">Quarterly report</h2>
   <p class="text-muted">Updated 12 minutes ago</p>
   <button class="text-disabled" disabled>Archive</button>
-  <a class="text-link text-link-hover:hover" href="#">Open report</a>
+  <a class="text-link text-link-hover:hover underline" href="#">Open report</a>
   <span class="surface-inverse text-inverse">Private</span>
 </article>
 ```
 
 ---
 
-## Mode-aware hue aliases
-Hue aliases are shortcuts for choosing a color family while still letting the preset select a light or dark value. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
+## Fixed and adaptive hue aliases \{#mode-aware-hue-aliases\}
+The 30 general hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
 
 ### Base hue aliases
-Base hue aliases work for backgrounds and foregrounds when you want a named hue that adapts across modes. Use palette steps when you need a fixed swatch instead.
+Base hue aliases retain their former light value in every scheme. They are accents and swatches, with no text contrast guarantee.
 
 <PresetThemeColors group="baseHue" />
 <BaseHueDemo />
@@ -141,7 +142,7 @@ Base hue aliases work for backgrounds and foregrounds when you want a named hue 
 <!-- @MARK bg-yellow -->
 <div class="bg-yellow"></div>
 ```
-Use base hue aliases for foreground when you want a mode-aware color choice.
+Use `text-yellow` for readable adaptive text; `fg-yellow` deliberately uses the fixed swatch.
 ```html
 <!-- @MARK fg-yellow -->
 <div class="fg-yellow">Aa</div>
@@ -164,30 +165,67 @@ Text hue aliases choose foreground-oriented palette steps for light and dark mod
 Override preset role tokens when a repeated UI decision needs product-specific colors. Keep markup semantic so components do not need separate light and dark color classes.
 
 ```css name=index.css
-@theme light {
-  --color-surface-base: var(--color-white);
-  --color-surface-raised: var(--color-white);
-  --color-line-base: oklch(0% 0 none / 0.12);
-  --color-text-body: var(--color-neutral-70);
-  --color-text-muted: var(--color-neutral-60);
-}
-
-@theme dark {
-  --color-surface-base: var(--color-gray-95);
-  --color-surface-raised: var(--color-gray-90);
-  --color-line-base: oklch(100% 0 none / 0.12);
-  --color-text-body: var(--color-gray-30);
-  --color-text-muted: var(--color-gray-40);
+@theme {
+  :root, :host {
+    --color-surface-base: light-dark(var(--color-white), var(--color-gray-95));
+    --color-text-body: light-dark(var(--color-neutral-70), var(--color-gray-30));
+  }
 }
 ```
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-base) --><!-- @MARK text-muted -->
+<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-divider) --><!-- @MARK text-muted -->
 <main class="bg-surface-base text-body">
-  <section class="b:1px|solid|var(--color-line-base) surface-raised">
+  <section class="b:1px|solid|var(--color-line-divider) surface-raised">
     <p class="text-muted">The classes stay the same in every mode.</p>
   </section>
 </main>
 ```
 
-Use `@theme {}` when a preset role should keep the same value in every mode. Use `@theme light` and `@theme dark` when the same role needs mode-specific values.
+Use `light-dark()` for color pairs. Both token dependencies stay in generated CSS; the browser selects the color on the consuming element. A local override of a referenced primitive does not retroactively recompute a custom-property alias inherited from an ancestor: redeclare the role in that local scope when needed.
+
+
+## Native color scheme and manual themes
+
+The preset sets `:root { color-scheme: light dark; }`. Its 45 adaptive semantic colors and six shadows use native [`light-dark()`](https://www.w3.org/TR/css-color-5/#light-dark). The browser follows the system preference until an element selects a scheme. Native controls follow [`color-scheme`](https://www.w3.org/TR/css-color-adjust-1/#color-scheme-prop) too.
+
+```html
+<html data-theme="dark">
+  <body class="surface-base text-body">
+    <section data-theme="light" class="surface-raised text-body">A light region</section>
+  </body>
+</html>
+```
+
+`data-theme="light"` and `data-theme="dark"` work on the root, nested regions, and shadow hosts. Direct `color-scheme: light` or `color-scheme: dark` works too. A shadow host inherits its ancestor's scheme unless it makes an explicit choice; load the preset native CSS and generated CSS inside the shadow tree. Changing the scheme needs no recompilation.
+
+The preset `@light` and `@dark` class suffixes still mean **system preference media queries**. A manual theme changes tokens and native controls but does not activate these suffixes. If an application needs a selector variant, declare a separate name:
+
+```css
+@custom-variant manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
+}
+```
+
+This selector also matches inside nested light regions; it is an explicit application selector, not a test of the browser's used color scheme. Prefer adaptive tokens for nested themes.
+
+Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset does not ship a parallel media-query fallback for older browsers. See [Chrome 123](https://developer.chrome.com/blog/new-in-chrome-123), [Firefox 120](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/120), and [Safari 17.5](https://webkit.org/blog/15383/webkit-features-in-safari-17-5/).
+
+## Contrast and migration
+
+- `text-body`, `text-strong`, links, and all 30 `text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
+- `text-muted` is for base, inset, and raised surfaces. Use `text-body` on floating surfaces. `text-disabled` is reserved for genuinely disabled controls.
+- `line-control` uses neutral-50 / gray-40 for necessary boundaries, targeting at least 3:1. `line-divider` and `line-subtle` are decorative.
+- Pair `surface-inverse` with `text-inverse`. Keep link underlines or another non-color cue; `text-link-hover` needs `:hover` explicitly.
+- Recheck transparency, gradients, and custom backgrounds in their actual context; the opaque preset contrast matrix does not cover them.
+
+| Previous name | Replacement |
+| --- | --- |
+| `surface-muted` | `surface-inset` |
+| `surface-overlay` | `surface-floating` |
+| `line-base`, `b-base` | `line-divider`, `b-divider` |
+| `line-strong`, `b-strong` | `line-control`, `b-control` with stronger values |
+| `line-muted` | Choose subtle, divider, or control by purpose |
+| `text-subtle`, `text-placeholder` | Use text-muted on approved surfaces, or text-body |
+
+The old names are removed without compatibility aliases. Inputs still need a visible label independent of placeholder text. General hue aliases now stay fixed; explicit numbered palette steps and all 390 underlying colors retain their values.

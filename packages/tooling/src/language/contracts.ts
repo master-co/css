@@ -1,16 +1,12 @@
 import type { MasterCSSLanguageInspection as BindingInspection } from '@master/css-binding/tooling'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
-import type {
-  MasterCSSManifestVariable,
-  MasterCSSManifestVariableNumericValue
-} from '@master/css-schema/manifest'
+import type { MasterCSSScopedThemeValue } from '@master/css-schema/manifest'
 import type { SemanticTokenItem } from './semantic/types'
 
 export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
-  | 'pattern'
   | 'declaration'
   | 'token'
 
@@ -39,7 +35,7 @@ export interface MasterCSSDocumentAnalysisRequest {
 }
 
 export interface MasterCSSDocumentAnalysis {
-  readonly version: 4
+  readonly version: 5
   readonly classPositions: readonly MasterCSSLanguageClassPosition[]
   readonly diagnostics: readonly import('@master/css-binding/tooling').MasterCSSDiagnostic[]
   readonly semanticTokens: readonly SemanticTokenItem[]
@@ -53,7 +49,7 @@ export interface MasterCSSFormatDirectivesRequest {
 }
 
 export interface MasterCSSFormatDirectivesResult {
-  readonly version: 4
+  readonly version: 5
   readonly edits: readonly Readonly<{
     range: Readonly<{ start: number, end: number }>
     text: string
@@ -63,7 +59,7 @@ export interface MasterCSSFormatDirectivesResult {
 export interface MasterCSSLanguageClass {
   readonly className: string
   readonly kind: MasterCSSLanguageClassKind
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token')[]
+  readonly matcherTypes: readonly ('static' | 'key' | 'token')[]
   readonly keyToken?: string
   readonly valueToken?: string
   readonly stateToken?: string
@@ -71,7 +67,7 @@ export interface MasterCSSLanguageClass {
 }
 
 export interface MasterCSSLanguageClassifications {
-  readonly version: 4
+  readonly version: 5
   readonly variableNames: readonly string[]
   readonly classes: readonly MasterCSSLanguageClass[]
 }
@@ -81,12 +77,8 @@ export interface MasterCSSLanguageVariable {
   readonly name: string
   readonly key: string
   readonly type: string
-  readonly value?: string | number
-  readonly numeric?: MasterCSSManifestVariableNumericValue
-  readonly modes?: MasterCSSManifestVariable['modes']
+  readonly values: readonly MasterCSSScopedThemeValue[]
   readonly dependencies?: readonly string[]
-  readonly inline?: boolean
-  readonly static?: boolean
 }
 
 export interface MasterCSSLanguageClassVariable {
@@ -95,7 +87,7 @@ export interface MasterCSSLanguageClassVariable {
 }
 
 export interface MasterCSSLanguageInspection {
-  readonly version: 4
+  readonly version: 5
   readonly className: string
   readonly matchStatus: BindingInspection['matchStatus']
   readonly declarations: readonly import('../value-validation').DeclarationValidation[]
@@ -112,7 +104,7 @@ export interface MasterCSSLanguageInspection {
   readonly valueToken?: string
   readonly stateToken?: string
   readonly important: boolean
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token')[]
+  readonly matcherTypes: readonly ('static' | 'key' | 'token')[]
   readonly variables: readonly MasterCSSLanguageClassVariable[]
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly diagnostics?: BindingInspection['diagnostics']
@@ -131,12 +123,12 @@ export interface MasterCSSLanguageCompletionEntry {
 }
 
 export interface MasterCSSLanguageCompletionIndex {
-  readonly version: 4
+  readonly version: 5
   readonly classEntries: readonly MasterCSSLanguageCompletionEntry[]
 }
 
 export interface MasterCSSLanguageColorPresentation {
-  readonly version: 4
+  readonly version: 5
   readonly editable: boolean
   readonly replacementPrefix?: string
   readonly colorToken: string
@@ -175,6 +167,6 @@ export type MasterCSSLanguageColorExpression =
     }>
 
 export interface MasterCSSLanguageColorTokens {
-  readonly version: 4
+  readonly version: 5
   readonly tokens: readonly MasterCSSLanguageColorToken[]
 }

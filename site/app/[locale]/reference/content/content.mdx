@@ -31,9 +31,10 @@ HTML whitespace separates class names. Inside a quoted `content` string, `\00a0`
 A theme token can hold a quoted string with ordinary whitespace. Keep its declaration in your stylesheet:
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --content-external: " ↗";
-}
+} }
+
 ```
 
 ```html

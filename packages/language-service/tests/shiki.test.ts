@@ -13,7 +13,7 @@ import type { MasterCSSShikiOptions } from '../src/shiki'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
-  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }, { namespace: 'color', key: 'primary', value: '#4f46e5' }],
+  variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }, { namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }],
   utilities: [
     {
       name: 'btn',
@@ -105,12 +105,7 @@ function collectHastElementsByClass(node: any, className: string) {
 }
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
-  const code = [
-    '@theme light {',
-    '    /* Font families */',
-    '    --tracking-tightest: -0.072em;',
-    '}'
-  ].join('\n')
+  const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
   const transformer = transformerMasterCSS({ matchCSSSyntaxStyles: false })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -122,11 +117,7 @@ test.concurrent('does not attach semantic metadata to guide theme CSS directive 
 })
 
 test.concurrent('does not resolve guide theme CSS directive syntax through semantic scope styles', () => {
-  const code = [
-    '@theme light {',
-    '    --tracking-tightest: -0.072em;',
-    '}'
-  ].join('\n')
+  const code = "@theme { .light {\n    --tracking-tightest: -0.072em;\n} }\n"
   const transformer = transformerMasterCSS({ manifest })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -223,7 +214,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 test('keeps v2 named classes whole in the colors guide example across both themes', async () => {
   const code = [
     '<main class="bg-surface-base text-body">',
-    '  <section class="b:1px|solid|var(--color-line-base) surface-raised">',
+    '  <section class="b:1px|solid|var(--color-line-divider) surface-raised">',
     '    <h2 class="text-strong">Project updates</h2>',
     '    <p class="text-muted">Three milestones changed this week.</p>',
     '    <a class="text-link" href="#">Continue</a>',
@@ -274,7 +265,7 @@ test.concurrent('separates named opacity and native values without coloring unre
   const samples = [
     { lang: 'html', code: '<!-- fg-red -->\n<div class="fg-red/0.5! block:hover@sm unknown-widget"></div>' },
     { lang: 'tsx', code: 'const label = "fg-blue";\n<div className="-m-sm fg-red/0.5" />' },
-    { lang: 'css', code: "@utilities { card { @safelist \"fg-red/0.5 b:1px|solid|var(--color-line-base) unknown-widget\"; } }" },
+    { lang: 'css', code: "@utility card { @safelist \"fg-red/0.5 b:1px|solid|var(--color-line-divider) unknown-widget\"; }" },
     { lang: 'mcss', code: 'fg-red/0.5 block:hover@sm color:red unknown-widget' }
   ]
   for (const { lang, code } of samples) {
@@ -315,7 +306,7 @@ test.concurrent('keeps UTF-16 offsets aligned after Unicode and raw escaped clas
 })
 
 test.concurrent('assigns distinct highlight roles to native declaration value parts', () => {
-  const code = 'content:"hello" w:calc(100%-1px) b:1px|solid|var(--color-line-base)'
+  const code = 'content:"hello" w:calc(100%-1px) b:1px|solid|var(--color-line-divider)'
   const tokens = createMasterCSSShikiDecorations(code, { lang: 'mcss' })
     .map(({ start, end, role }) => ({ text: code.slice(start, end), role }))
 
@@ -327,7 +318,7 @@ test.concurrent('assigns distinct highlight roles to native declaration value pa
     { text: 'px', role: 'value.unit' },
     { text: '|', role: 'value.separator' },
     { text: 'solid', role: 'value.keyword' },
-    { text: '--color-line-base', role: 'value.variable' }
+    { text: '--color-line-divider', role: 'value.variable' }
   ] as const) {
     expect(tokens).toContainEqual(token)
   }
@@ -335,27 +326,7 @@ test.concurrent('assigns distinct highlight roles to native declaration value pa
 })
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
-  const code = [
-    '@safelist "block fg-red";',
-    '@utilities {',
-    '    text-<left|center|right> {',
-    '        text-align: --value();',
-    '    }',
-    '',
-    '    font-<~font-size> {',
-    '        font-size: --value();',
-    '    }',
-    '',
-    '    grid-cols:<*> {',
-    '        grid-template-columns: repeat(--value(), minmax(0, 1fr));',
-    '    }',
-    '}',
-    '@utilities {',
-    '    btn {',
-    "        @safelist \"inline-flex fg-brand:hover@sm\";",
-    '    }',
-    '}'
-  ].join('\n')
+  const code = "@safelist \"block fg-red\";\n@utility text-left {\n        text-align: left;\n    }\n@utility text-center {\n        text-align: center;\n    }\n@utility text-right {\n        text-align: right;\n    }\n@utility font-* from(--font-size-*) {\n        font-size: --master-value();\n    }\n@utility grid-cols:* {\n        grid-template-columns: repeat(--master-value(), minmax(0, 1fr));\n    }\n@utility btn {\n        @safelist \"inline-flex fg-brand:hover@sm\";\n    }"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'css',
     manifest
@@ -805,15 +776,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
   const htmlOptions = {
     lang: 'html'
   }
-  const cssCode = [
-    '@theme {',
-    '  --color-primary: #4f46e5;',
-    '  --spacing-card: 24;',
-    '}',
-    '@utilities {',
-    "  card { @safelist \"bg-blue fg-brand:hover\"; }",
-    '}'
-  ].join('\n')
+  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@utility card { @safelist \"bg-blue fg-brand:hover\"; }"
   const cssOptions = {
     lang: 'css'
   }
@@ -893,17 +856,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 })
 
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
-  const code = [
-    '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
-    '@utilities {',
-    '    card {',
-    "        @safelist \"p-md r-xl\";",
-    '        @variant <sm {',
-    "            @safelist \"block\";",
-    '        }',
-    '    }',
-    '}'
-  ].join('\n')
+  const code = "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n@utility card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"block\";\n        }\n    }"
   const transformer = transformerMasterCSS()
   const transformedTokens = transformer.tokens.call({
     source: code,

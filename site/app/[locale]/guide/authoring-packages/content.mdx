@@ -40,12 +40,12 @@ No bundler, TypeScript build, manifest generation, or compiled CSS output is req
 Use `master.css` for shared vocabulary that should be available to consuming projects.
 
 ```css name=master.css
-@theme {
+@theme { :root, :host {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-action-x: 1rem;
   --radius-action: 0.5rem;
-}
+} }
 
 @custom-variant motion-safe {
   @media (prefers-reduced-motion: no-preference) {
@@ -53,12 +53,10 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
   }
 }
 
-@utilities {
-  content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-}
 
 @layer components {
   .btn {
@@ -84,7 +82,7 @@ Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
 - Use `@custom-variant` for shared condition names.
-- Use `@utilities` for low-level primitives that are useful across apps.
+- Use `@utility` for low-level primitives that are useful across apps.
 - Use native `@layer components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 
 For token namespace behavior, see [Variables and Modes](/guide/variables-and-modes). For creating tokens, see [Theme Tokens](/guide/theme). For directive syntax, see [CSS directives](/reference#directives). For abstraction decisions, see [Global Styles](/guide/global-styles#shared-vocabulary).

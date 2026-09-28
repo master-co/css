@@ -12,7 +12,7 @@ export async function verifyToolContractExamples() {
   const file = join(root, 'src/button.html')
   const source = '<button class="bg-blue-60 p-md flex gap-sm">Save</button>'
   writeFileSync(file, source)
-  writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@theme { --color-brand: blue; }')
+  writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@theme { :root { --color-brand: blue; } }')
   const connection = await connect(root)
   const reports: Record<string, any> = {}
   try {

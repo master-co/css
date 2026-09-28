@@ -5,10 +5,11 @@ These forms have different identities. `fg:red` uses CSS red, while `fg-red` sel
 Define project tokens in CSS:
 
 ```css name=index.css
-@theme {
+@theme { :root, :host {
   --spacing-card: 0.625rem;
   --color-primary: #000000;
-}
+} }
+
 ```
 
 Then use their names:

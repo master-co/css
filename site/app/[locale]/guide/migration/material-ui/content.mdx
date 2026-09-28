@@ -65,16 +65,17 @@ export const theme = createTheme({
 ```css name=app.css
 @import "@master/css";
 
-@theme {
+@theme { :root, :host {
   --color-primary: #2563eb;
   --color-surface: #ffffff;
   --color-body: #172033;
   --radius-control: .5rem;
-}
+} }
+
 ```
 
 ```html
-<section class="b:1px|solid|var(--color-line-base) fg-body bg-surface r-control">
+<section class="b:1px|solid|var(--color-line-divider) fg-body bg-surface r-control">
   ...
 </section>
 ```
@@ -136,7 +137,7 @@ When many `sx` blocks encode the same product role, move that role into a Master
   .panel {
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
-    border: 1px solid var(--color-line-base);
+    border: 1px solid var(--color-line-divider);
     background-color: var(--color-surface);
     box-shadow: var(--shadow-sm);
     color: var(--color-text-body);

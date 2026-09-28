@@ -7,9 +7,9 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
-@mode ocean { .ocean,.blue { @slot; } }
-@theme { --color-probe: white; }
-@theme ocean { --color-probe: blue; }
+@custom-variant ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @slot; } }
+@theme {:root, :host { --color-probe: white; }}
+@theme { .ocean, .blue { --color-probe: blue; } }
 @custom-variant amp { &[data-label="&"] { @slot; } }
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })

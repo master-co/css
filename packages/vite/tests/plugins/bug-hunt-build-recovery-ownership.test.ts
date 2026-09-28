@@ -65,7 +65,7 @@ test('independent plugin configurations sharing a cache directory release only t
   try {
     for (const root of roots) {
       mkdirSync(root)
-      writeFileSync(join(root, 'style.css'), '@reference "./missing.css";.target{@variant media(all){padding:var(--paint-padding);background-image:var(--paint-background-image);}}')
+      writeFileSync(join(root, 'style.css'), "@reference \"./missing.css\";.target{@media all {padding:var(--paint-padding);background-image:var(--paint-background-image);}}")
       writeFileSync(join(root, 'entry.js'), 'import "./style.css"')
       const watcher = await build({ root, cacheDir: f.cacheDir, configFile: false, logLevel: 'silent', plugins, build: { watch: {}, rolldownOptions: { input: join(root, 'entry.js') } } })
       if (!('on' in watcher)) throw new Error('Expected watcher')

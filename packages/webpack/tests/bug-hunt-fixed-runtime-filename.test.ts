@@ -16,7 +16,7 @@ test.each([
   const root = mkdtempSync(join(tmpdir(), 'master-css-webpack-filename-'))
   try {
     writeFileSync(join(root, 'entry.js'), 'globalThis.__APP_FILENAME_PROBE__ = true')
-    writeFileSync(join(root, 'app.css'), '@master entry;\n@import "@master/css";')
+    writeFileSync(join(root, 'app.css'), "@import \"@master/css\";\n@import \"@master/css\";")
     const stats = await new Promise<webpack.Stats>((resolve, reject) => webpack({
       mode: 'production', context: root, entry: './entry.js', resolve: { tsconfig: false },
       output: { path: join(root, 'dist'), filename, chunkFilename: '[name].js', publicPath: 'auto' },

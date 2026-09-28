@@ -1,5 +1,5 @@
-@master entry;
+@import "@master/css";
 
-@theme {
+@theme {:root, :host {
   --custom: #ff0000;
-}
+}}

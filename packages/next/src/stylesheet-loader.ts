@@ -17,7 +17,8 @@ import {
 } from '@master/css-compiler/project'
 import {
   collectStylesheetDependenciesSync,
-  resolveStylesheetSync
+  resolveStylesheetSync,
+  inspectCSSSync
 } from '@master/css-compiler/node'
 import { defaultBuildManifest } from '@master/css-internal/project'
 
@@ -31,7 +32,7 @@ interface LoaderContext extends ModuleContext {
 }
 
 function hasMasterStyleDirective(source: string) {
-  return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
+  return inspectCSSSync(source).directives.length > 0
 }
 
 function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {

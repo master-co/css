@@ -6,21 +6,14 @@ import { afterEach, expect, test } from 'vitest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
 
-const baseManifest: MasterCSSManifest = { version: 1, languageVersion: 3 }
+const baseManifest: MasterCSSManifest = { version: 2, languageVersion: 4 }
 const roots: string[] = []
 function fixture() {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-project-context-')))
   roots.push(root)
   mkdirSync(join(root, 'theme'))
   const entry = join(root, 'theme', 'tokens #.css')
-  writeFileSync(entry, `
-    @mode night { [data-theme="night"] { @slot; } }
-    @theme { --color-brand: red; --color-action: var(--color-brand); @keyframes pop { to { opacity: .5; } } }
-    @theme night { --color-brand: blue; }
-    @utilities { action { color: var(--color-action); } }
-    @source "./never.html";
-    .never { color: lime; }
-  `)
+  writeFileSync(entry, "\n    @custom-variant night { &:where([data-theme=\"night\"], [data-theme=\"night\"] *) { @slot; } }\n    @theme { :root, :host { --color-brand: red; --color-action: var(--color-brand);  } }\n@keyframes pop { to { opacity: .5; } }\n\n    @theme { [data-theme=\"night\"] { --color-brand: blue; } }\n\n     @utility action { color: var(--color-action); } \n    @source \"./never.html\";\n    .never { color: lime; }\n  ")
   return { root, entry, file: join(root, 'card.css'), options: { baseManifest, projectDir: root, referenceFiles: [entry], transformNativeStylesheets: true } }
 }
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
@@ -34,7 +27,7 @@ test('native styles receive project tokens, modes, fallbacks and managed animati
   expect(result.code).toContain('--color-brand:red')
   expect(result.code).toContain('--color-action:var(--color-brand)')
   expect(result.code).toContain('[data-theme=night]{--color-brand:blue}')
-  expect(result.code).toContain('@keyframes pop')
+  expect(result.code).not.toContain('@keyframes pop')
   expect(result.code).not.toMatch(/\.never|@source|@master|\.action\{/)
   expect(result.dependencies).toContain(f.entry)
   expect(result.dependencies).not.toContain(join(f.root, 'theme', 'never.html'))
@@ -42,11 +35,11 @@ test('native styles receive project tokens, modes, fallbacks and managed animati
 
 test('host references precede authored references and local definitions, without leaking between calls', async () => {
   const f = fixture(), override = join(f.root, 'override.css')
-  writeFileSync(override, '@theme { --color-brand: green; }')
+  writeFileSync(override, "@theme {:root, :host { --color-brand: green; }}\n")
   const source = '@reference "./override.css";.card{color:var(--color-action);}'
   const explicit = await transformStylesheet(f.file, source, f.options)
   expect(explicit.code).toContain('--color-brand:green')
-  const local = await transformStylesheet(f.file, source + '@theme { --color-brand: purple; }', f.options)
+  const local = await transformStylesheet(f.file, source + "@theme {:root, :host { --color-brand: purple; }}\n", f.options)
   expect(local.code).toContain('--color-brand:purple')
   const next = await transformStylesheet(f.file, '.card{color:var(--color-action);}', f.options)
   expect(next.code).toContain('--color-brand:red')
@@ -56,7 +49,7 @@ test('host references precede authored references and local definitions, without
 test('standalone transformation remains opt-in and keeps unrelated CSS byte-for-byte', async () => {
   const f = fixture()
   const source = '/* var(--color-brand) */\r\n.empty { } .x { --label: "var(--color-brand)"; color: var(--external, red); }'
-  writeFileSync(f.entry, '@theme static { --color-brand: red; }')
+  writeFileSync(f.entry, "@layer theme { :root, :host { --color-brand: red; } }\n")
   const result = await transformStylesheet(f.file, source, f.options)
   expect(result.code).toBe(source)
   expect(result.transformed).toBe(false)
@@ -64,7 +57,7 @@ test('standalone transformation remains opt-in and keeps unrelated CSS byte-for-
   const disabled = await transformStylesheet(f.file, '.x{color:var(--color-brand)}', { ...f.options, transformNativeStylesheets: false })
   expect(disabled.transformed).toBe(false)
   const used = await transformStylesheet(f.file, '.x{color:var(--color-brand)}', f.options)
-  expect(used.code).toContain('--color-brand:red')
+  expect(used.code).not.toContain('--color-brand:red')
 })
 
 test('separate globals preserve global mode selectors and external emission remains an explicit host assertion', async () => {
@@ -81,7 +74,7 @@ test('separate globals preserve global mode selectors and external emission rema
 test.each([false, true])('definition files retain resource owners and dependencies with delivery=%s', async delivery => {
   const f = fixture(), image = join(f.root, 'theme', 'pixel.svg')
   writeFileSync(image, '<svg/>')
-  writeFileSync(f.entry, '@theme { --image-card: url("./pixel.svg?v=1#icon"); }')
+  writeFileSync(f.entry, "@theme {:root, :host { --image-card: url(\"./pixel.svg?v=1#icon\"); }}\n")
   const result = await transformStylesheet(f.file, '.card{background:var(--image-card);}', { ...f.options,
     ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
   })
@@ -114,18 +107,18 @@ test('direct compilation shares definition files and reports missing inputs befo
 test('reused compilation observes nested edits, deletion and dependency callbacks', async () => {
   const f = fixture(), nested = join(f.root, 'theme', 'nested.css')
   writeFileSync(f.entry, '@import "./nested.css";')
-  writeFileSync(nested, '@theme { --color-brand: red; }')
+  writeFileSync(nested, "@theme {:root, :host { --color-brand: red; }}\n")
   const run = (dependencies: string[]) => transformStylesheet(f.file, '.card{color:var(--color-brand)}', {
     ...f.options, onDependency: file => dependencies.push(file)
   })
   const first = await run([]), watched: string[] = []
   expect((await run(watched)).code).toBe(first.code)
   expect(watched).toContain(nested)
-  writeFileSync(nested, '@theme { --color-brand: blue; }')
+  writeFileSync(nested, "@theme {:root, :host { --color-brand: blue; }}\n")
   expect((await run([])).code).toContain('--color-brand:blue')
   rmSync(nested)
   await expect(run([])).rejects.toThrow()
-  writeFileSync(nested, '@theme { --color-brand: green; }')
+  writeFileSync(nested, "@theme {:root, :host { --color-brand: green; }}\n")
   expect((await run([])).code).toContain('--color-brand:green')
 })
 
@@ -136,7 +129,7 @@ test.each([false, true])('rendered outputs include explicitly referenced resourc
     ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
   })
   expect(result.generatedCSS).toContain('--color-action:var(--color-brand)')
-  expect(result.generatedCSS).toContain('@keyframes pop')
+  expect(result.generatedCSS).not.toContain('@keyframes pop')
   expect(result.css).not.toContain('.never')
   expect(JSON.stringify(result.manifest)).not.toContain('color-brand')
 })

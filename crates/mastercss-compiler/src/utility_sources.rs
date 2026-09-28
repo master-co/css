@@ -6,58 +6,20 @@ pub(crate) fn collect(source: &str, filename: &str) -> Vec<CssUtilitySource> {
     let index = SourceIndex::new(source);
     let tokens = tokenize_css_syntax(source);
     let statements = collect_css_syntax_statements(&tokens);
-    let mut definitions = statements
-        .iter()
-        .filter_map(|statement| {
-            if !statement.has_block || statement.tokens.is_empty() {
-                return None;
-            }
-            let first = &tokens[statement.tokens.start];
-            if matches!(first.kind, CssSyntaxKind::AtKeyword(_)) {
-                return None;
-            }
-            let mut parent = statement.parent;
-            while let Some(p) = parent {
-                match &tokens[statements[p].tokens.start].kind {
-                    CssSyntaxKind::AtKeyword(name) if name == "utilities" => {
-                        let end = tokens[statement.tokens.end - 1].bytes.end;
-                        let name = if statement.tokens.len() == 1 {
-                            if let CssSyntaxKind::Ident(name) = &first.kind {
-                                name.to_string()
-                            } else {
-                                return None;
-                            }
-                        } else {
-                            source[first.bytes.start..end].to_owned()
-                        };
-                        let mut ancestor = statement.parent;
-                        let mut layer = mastercss_schema::UtilityLayerName::Utilities;
-                        while let Some(a) = ancestor {
-                            let ancestor_statement = &statements[a];
-                            if matches!(&tokens[ancestor_statement.tokens.start].kind, CssSyntaxKind::AtKeyword(name) if name == "layer") {
-                                let layer_token = tokens[ancestor_statement.tokens.clone()].iter().find_map(|token| if let CssSyntaxKind::Ident(name) = &token.kind { Some(name.as_ref()) } else { None });
-                                if let Some(name) = layer_token { layer = serde_json::from_value(serde_json::json!(name)).unwrap_or(layer); }
-                            }
-                            ancestor = ancestor_statement.parent;
-                        }
-                        let definition = crate::pattern::parse_managed_pattern(&name).ok()
-                            .map(|pattern| serde_json::Value::Object(pattern.definition(layer)))
-                            .unwrap_or_else(|| serde_json::json!({"type":"static", "name":name, "layer":layer}));
-                        let canonical_name = definition["name"].as_str().unwrap_or(&name).to_owned();
-                        return Some(CssUtilitySource {
-                            name: canonical_name,
-                            identity: crate::utility_definitions::identity(&definition),
-                            replaced_by: None,
-                            source: index.reference(filename, first.bytes.start, end)?,
-                        });
-                    }
-                    CssSyntaxKind::AtKeyword(_) => parent = statements[p].parent,
-                    _ => return None,
-                }
-            }
-            None
+    let mut definitions = statements.iter().filter_map(|statement| {
+        let prelude = &tokens[statement.tokens.clone()];
+        let first = prelude.first()?;
+        if !statement.has_block || !matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("utility")) { return None; }
+        let start = prelude.get(1)?.bytes.start;
+        let end = prelude.last()?.bytes.end;
+        let definition = serde_json::Value::Object(crate::pattern::parse_managed_pattern(&source[start..end]).ok()?.definition(mastercss_schema::UtilityLayerName::Utilities));
+        Some(CssUtilitySource {
+            name: definition["name"].as_str()?.to_owned(),
+            identity: crate::utility_definitions::identity(&definition),
+            replaced_by: None,
+            source: index.reference(filename, start, end)?,
         })
-        .collect::<Vec<_>>();
+    }).collect::<Vec<_>>();
     resolve(&mut definitions);
     definitions
 }

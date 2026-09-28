@@ -18,14 +18,14 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
     const imports: string[] = []
     for (const [index, side] of ['a', 'b'].entries()) {
       mkdirSync(join(root, side))
-      writeFileSync(join(root, side, 'tokens.css'), `@theme{--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?v=${side}#icon")}.never-${side}{color:red}`)
+      writeFileSync(join(root, side, 'tokens.css'), `@theme{:root, :host {--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?v=${side}#icon")}}.never-${side}{color:red}`)
       writeFileSync(join(root, side, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg" data-owner="${side}"/>`)
       writeFileSync(join(root, side, `child.${syntax}`), syntax === 'scss'
-        ? `@reference "./tokens.css"; .${side}{@variant media(all){background:var(--paint-${side}-background);padding:var(--paint-${side}-padding);}}`
-        : `@reference "./tokens.css"\n.${side}\n  @variant media(all)\n    background: var(--paint-${side}-background)\n    padding: var(--paint-${side}-padding)\n`)
+        ? `@reference "./tokens.css"; .${side}{@media all{background:var(--paint-${side}-background);padding:var(--paint-${side}-padding);}}`
+        : `@reference "./tokens.css"\n.${side}\n  @media all\n    background: var(--paint-${side}-background)\n    padding: var(--paint-${side}-padding)\n`)
       imports.push(`@import "./${side}/child.${syntax}" layer(owner-${side});`)
     }
-    writeFileSync(join(root, 'tokens.css'), '@theme{--paint-a-padding:99rem;--paint-b-padding:99rem}')
+    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-a-padding:99rem;--paint-b-padding:99rem}}\n")
     writeFileSync(join(root, 'style.module.css'), imports.join('\n'))
     writeFileSync(join(root, 'entry.js'), 'import styles from "./style.module.css"; globalThis.referenceClasses = styles; export default styles; if(import.meta.hot) import.meta.hot.accept("./style.module.css", next => { globalThis.referenceClasses = next.default });')
     writeFileSync(join(root, 'index.html'), '<script type="module" src="./entry.js"></script>')
@@ -83,7 +83,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
     }
     if (server && collect) {
       const send = vi.spyOn(server.ws, 'send')
-      writeFileSync(join(root, 'a/tokens.css'), '@theme{--paint-a-padding:7rem;--paint-a-background:url("./pixel.svg?v=a#icon")}.never-a{color:red}')
+      writeFileSync(join(root, 'a/tokens.css'), "@theme {:root, :host {--paint-a-padding:7rem;--paint-a-background:url(\"./pixel.svg?v=a#icon\")}}\n.never-a{color:red}")
       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'update' })), { timeout: watchDeadline })
       await vi.waitFor(async () => expect((await collect!()).join('\n')).toMatch(/padding:\s*7rem/), { timeout: watchDeadline })
       send.mockClear()

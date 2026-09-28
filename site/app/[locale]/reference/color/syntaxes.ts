@@ -1,8 +1,8 @@
 import colors from '~/site/docs-shell/data/colors'
 import baseColors from '~/site/docs-shell/data/base-colors'
-import { getThemeModeVariables } from '~/site/utils/theme-variables'
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
-const textColors = getThemeModeVariables('color-text', 'light').map(({ key }) => key)
+const textColors = getThemeVariables('color-text').map(({ key }) => key)
 
 const syntaxes = [
   ...baseColors.map(color => color === 'transparent' ? 'fg:transparent' : `fg-${color}`),

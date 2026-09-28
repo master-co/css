@@ -24,7 +24,7 @@ function readStaticCSS(file: string, seen = new Set<string>()): string {
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-next-static-'))
   mkdirSync(join(root, 'app'), { recursive: true })
-  writeFileSync(join(root, 'app/globals.css'), '@import "@master/css";')
+  writeFileSync(join(root, 'app/globals.css'), '@import url("@master/css");')
   return root
 }
 
@@ -198,7 +198,7 @@ describe('Next static mode', () => {
       expect(readStaticCSS(state.outputPath)).toBe(initial)
       writeFileSync(document, '<section className="grid-cols:4">Documentation</section>')
       const result = await runStaticCSSLoaderWithDependencies(state.statePath,
-        join(root, 'app/globals.css'), '@import "@master/css";')
+        join(root, 'app/globals.css'), '@import url("@master/css");')
       expect(result.dependencies).toContain(document)
       expect(result.dependencies).toContain(page)
       expect(readStaticCSS(state.outputPath)).toContain('repeat(4, minmax(0, 1fr))')
@@ -212,13 +212,7 @@ describe('Next static mode', () => {
 
   it('replaces @master/css imports for dev CSS chunks and preserves ordinary CSS', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/globals.css'), `
-      @import "@master/css";
-
-      @theme {
-        --color-primary: #ff0000;
-      }
-    `)
+    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n      }}\n\n    ")
     const pagePath = join(root, 'app/page.tsx')
     writeFileSync(pagePath, `
       export default function Page() {
@@ -232,17 +226,7 @@ describe('Next static mode', () => {
     await prepareNextStatic({ mode: 'static' }, { projectDir: root })
     await scanStaticFixtureModule(statePath, pagePath)
 
-    const source = `
-      @import "@master/css";
-
-      .main {
-        color: var(--color-primary);
-      }
-
-      @theme {
-        --color-primary: #ff0000;
-      }
-    `
+    const source = "\n      @import url(\"@master/css\");\n\n      .main {\n        color: var(--color-primary);\n      }\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n      }}\n\n    "
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), source)
     expect(replaced).toBe('@import "../.master/next.css";')
     expect(replaced).not.toContain('.main')
@@ -268,7 +252,7 @@ describe('Next static mode', () => {
     await scanStaticFixtureModule(statePath, pagePath)
 
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), `
-      @import "@master/css";
+      @import url("@master/css");
 
       .main {
         color: red;
@@ -290,9 +274,9 @@ describe('Next static mode', () => {
 
   it('tracks original inputs without adding generated outputs as watcher dependencies', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'theme.css'), '@theme { --color-primary: #00f; }')
+    writeFileSync(join(root, 'theme.css'), "@theme {:root, :host { --color-primary: #00f; }}\n")
     writeFileSync(join(root, 'app/globals.css'), `
-      @import "@master/css";
+      @import url("@master/css");
       @import "../theme.css";
     `)
 
@@ -304,7 +288,7 @@ describe('Next static mode', () => {
     const result = await runStaticCSSLoaderWithDependencies(
       statePath,
       join(root, 'app/globals.css'),
-      '@import "@master/css";'
+      '@import url("@master/css");'
     )
 
     expect(result.dependencies).not.toContain(outputPath)
@@ -319,11 +303,7 @@ describe('Next static mode', () => {
 
     await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
-    const source = `
-      @theme {
-        --color-primary: #00f;
-      }
-    `
+    const source = "\n      @theme {:root, :host {\n        --color-primary: #00f;\n      }}\n\n    "
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/theme.css'), source)
 
     expect(replaced).toBe(source)
@@ -414,7 +394,7 @@ describe('Next static mode', () => {
     const globalsPath = join(root, 'app/globals.css')
     const pagePath = join(root, 'app/page.tsx')
     writeFileSync(globalsPath, `
-      @import "@master/css";
+      @import url("@master/css");
 
       .card {
         color: red;
@@ -435,7 +415,7 @@ describe('Next static mode', () => {
     expect(readStaticCSS(outputPath)).toContain('color: red')
 
     writeFileSync(globalsPath, `
-      @import "@master/css";
+      @import url("@master/css");
 
       .card {
         color: blue;

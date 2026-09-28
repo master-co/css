@@ -130,7 +130,7 @@ test.concurrent('custom variable', async () => {
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
-      variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
+      variables: [{ namespace: 'color', key: 'custom', values: [{ path: [':root,:host'], value: '#333333' }] }]
     })
   })
   expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
@@ -145,7 +145,7 @@ test.concurrent('custom variable/alpha', async () => {
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
-      variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
+      variables: [{ namespace: 'color', key: 'custom', values: [{ path: [':root,:host'], value: '#333333' }] }]
     })
   })
   expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
@@ -231,7 +231,7 @@ test('CSS color-mix() function', async () => {
   const aliasDoc = createDoc('tsx', `<div class='fg:${aliasTarget}'></div>`)
   const [aliasResult] = await createLanguageService({
     manifest: createPresetManifest({
-      variables: [{ namespace: 'color', key: 'brand', value: '#f00' }]
+      variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#f00' }] }]
     })
   }).renderSyntaxColors(aliasDoc) ?? []
   expect(aliasResult).toBeDefined()
@@ -294,7 +294,7 @@ test.concurrent('maps out-of-gamut colors into the LSP channel range', async () 
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
-      variables: [{ namespace: 'color', key: target, value: 'oklch(70% .4 20)' }]
+      variables: [{ namespace: 'color', key: target, values: [{ path: [':root,:host'], value: 'oklch(70% .4 20)' }] }]
     })
   })
   const [result] = await languageService.renderSyntaxColors(doc) ?? []

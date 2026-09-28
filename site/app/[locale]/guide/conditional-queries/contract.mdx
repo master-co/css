@@ -12,7 +12,7 @@ Append a named condition or a simple native query to a class. The outer parenthe
 Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
 
 ## Named conditions \{#common-condition-variants\}
-`@sm` resolves a breakpoint token. Modes such as `@dark` resolve an explicit `@mode` definition. Custom variants resolve `@custom-variant` definitions. These names share one namespace: a collision is an error, and an unknown name never becomes a container query.
+`@sm` resolves the explicit `@custom-media --sm` definition. Names such as `@dark` resolve a `@custom-variant` definition. Custom variants resolve `@custom-variant` definitions. These names share one namespace: a collision is an error, and an unknown name never becomes a container query.
 
 The preset provides these named variants:
 
@@ -35,7 +35,7 @@ These names come from preset definitions. A project can define its own descripti
 ```
 
 ### Breakpoints \{#sm--md--lg--and-more\}
-A breakpoint token means “at or above this viewport width.” The original unit is preserved: a token defined as `800px` generates a query using `800px`, not `50rem`.
+The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions.
 
 ```html
 <h2 class="font-lg font-2xl@sm font-3xl@md">Responsive heading</h2>
@@ -50,7 +50,7 @@ Selectors work with every condition:
 See [breakpoints](/guide/breakpoints) and [responsive design](/guide/responsive-design).
 
 ### Modes \{#light--dark--and-custom-modes\}
-`@light` and `@dark` use the preset's explicit system-preference definitions. A project's `@mode` can replace either definition with manual activation or combined system and manual branches. `@theme` supplies the token values; it does not choose how a mode activates.
+`@light` and `@dark` use the preset's explicit system-preference definitions. A project's `@custom-variant` can replace either definition with manual activation or combined system and manual branches. `@theme` supplies the token values; it does not choose how a mode activates.
 
 See [modes and activation](/reference/rules/modes#mode-triggers).
 

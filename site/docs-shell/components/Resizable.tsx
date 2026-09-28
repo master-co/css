@@ -13,9 +13,9 @@ import Portal from './Portal'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const variables = flattenMasterCSSManifestVariables(defaultManifest.variables)
 
-const screenVariableValues = Object.fromEntries(variables.flatMap(({ namespace, key, value }) =>
-  namespace === 'screen' && typeof value === 'number'
-    ? [[key, value] as const]
+const screenVariableValues = Object.fromEntries(variables.flatMap(({ namespace, key, numeric }) =>
+  namespace === 'screen' && numeric
+    ? [[key, numeric.value] as const]
     : []
 )) as Record<string, number>
 
@@ -142,7 +142,7 @@ export default function Resizable({
                 <div key={eachBreakpoint.name} className={clsx('abs bottom top flex items-center h:100% m:auto bx:1px|solid|var(--color-line-subtle)',
                   (eachBreakpoint.value - 0.02 >= width && (last || width >= sortedBreakpoints[i + 1]?.value))
                     ? 'bg-surface-base'
-                    : 'text-disabled'
+                    : 'text-muted'
                 )} style={{ width: eachBreakpoint.value }}>
                   <div className="abs left-xs">{eachBreakpoint.name}</div>
                   <div className="abs right-xs">{eachBreakpoint.name}</div>

@@ -15,11 +15,11 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
     for (const [index, id] of ids.entries()) {
       const name = index ? 'b' : 'a'
       writeFileSync(join(root, `${name}.svg`), `<svg xmlns="http://www.w3.org/2000/svg" id="${name}"/>`)
-      writeFileSync(id, `@master entry;@preserve native;.owner-${name}{color:${index ? 'blue' : 'red'};background-image:url("./${name}.svg")}`)
+      writeFileSync(id, `@import "@master/css";@preserve native;.owner-${name}{color:${index ? 'blue' : 'red'};background-image:url("./${name}.svg")}`)
       await collection.register(scanner, id, readFileSync(id, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: root })
     }
     const options = { scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['block'],
-      ...(deliver ? { delivery: { relativeResourceURLs: true, entryURL: './entry.css', stylesheetURL: (file: string) => `./${file.split('/').at(-1)}`, resourceURL: (file: string) => `./${file.split('/').at(-1)}` } } : {}) }
+      ...(deliver ? { delivery: { relativeResourceURLs: true, entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: (file: string) => `./${file.split('/').at(-1)}` } } : {}) }
     const text = (result: Awaited<ReturnType<typeof collection.compose>>) => [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     const selected = await collection.compose({ ...options, sourceIds: [ids[0] + '?owner'] })
     expect(text(selected)).toContain('.owner-a')
@@ -46,9 +46,9 @@ test('strict registration failure retains both the successful stylesheet and nat
     await scanner.init()
     const id = join(root, 'app.css')
     const options = { baseManifest: scanner.css.manifest, projectDir: root, validation: 'error' as const }
-    await collection.register(scanner, id, '@master entry;.previous{padding:1px}', options)
+    await collection.register(scanner, id, "@import \"@master/css\";.previous{padding:1px}", options)
     expect(scanner.nativeClassNames.has('previous')).toBe(true)
-    await expect(collection.register(scanner, id, '@master entry;.failed{font:16px}', options)).rejects.toThrow('Strict CSS validation failed')
+    await expect(collection.register(scanner, id, "@import \"@master/css\";.failed{font:16px}", options)).rejects.toThrow('Strict CSS validation failed')
     expect(scanner.nativeClassNames.has('previous')).toBe(true)
     expect(scanner.nativeClassNames.has('failed')).toBe(false)
     const result = await collection.compose({ ...options, scanner })
@@ -63,16 +63,16 @@ test('collection emits referenced native resources once without exposing referen
   using collection = createStylesheetCollection()
   try {
     await scanner.init()
-    writeFileSync(join(root, 'tokens.css'), '@theme{--color-accent:#123456;@keyframes pop{to{opacity:1}}}@utilities{reference-only{color:blue}}.reference-native{color:red}')
-    const source = '@master entry;@reference "./tokens.css";@keyframes local{to{opacity:0}}.card{color:var(--color-accent);animation:pop 1s,local 2s}'
+    writeFileSync(join(root, 'tokens.css'), "@theme { :root, :host {--color-accent:#123456;} }\n\n@keyframes pop{to{opacity:1}}\n@utility reference-only {color:blue}.reference-native{color:red}")
+    const source = "@import \"@master/css\";@reference \"./tokens.css\";@keyframes local{to{opacity:0}}.card{color:var(--color-accent);animation:pop 1s,local 2s}"
     const id = join(root, 'entry.css')
     await collection.register(scanner, id, source, { baseManifest: scanner.css.manifest, projectDir: root })
     const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['reference-only', 'block'] })
     const css = [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     expect(css).toContain('--color-accent:#123456')
-    expect(css.match(/@keyframes pop/g)).toHaveLength(1)
+    expect(css).not.toContain("@keyframes pop")
     expect(css.match(/@keyframes local/g)).toHaveLength(1)
-    expect(result.emittedGlobals).toEqual({ variables: { 'color-accent': 1 }, animations: { pop: 1, local: 1 } })
+    expect(result.emittedGlobals.variables).toMatchObject({ 'color-accent': 1 })
     expect(css).toContain('.block{display:block}')
     expect(css).not.toMatch(/reference-only|reference-native/)
   } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }

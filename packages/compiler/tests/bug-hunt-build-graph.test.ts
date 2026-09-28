@@ -11,7 +11,7 @@ test('BH-0004 graph classification preserves a qualified external import and its
   const root = mkdtempSync(join(tmpdir(), 'master-css-build-classification-'))
   try {
     const file = join(root, 'entry.css'), child = join(root, 'child.css')
-    const source = "@import './child.css' layer(shared);@master entry;"
+    const source = "@import './child.css' layer(shared);@import \"@master/css\";"
     writeFileSync(child, "@import 'https://remote.test/style.css';.example{color:red}")
     expect(() => resolveStylesheetSync(file, source)).toThrow()
     const result = resolveStylesheetSync(file, source, { preserveImports: true })

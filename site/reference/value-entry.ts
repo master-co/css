@@ -14,7 +14,7 @@ export function tokenValueEntry(nodes: any[], start: number) {
   }
   const values: DocumentValueRow['values'] = []
   while (nodes[end]?.type === 'code' && nodes[end].lang === 'text') {
-    const match = nodes[end].value.match(/^([^:\n]+): ([\s\S]*)$/)
+    const match = nodes[end].value.match(/^Scope: ([^\n]+)\nValue: ([\s\S]*)$/)
     if (!match) return
     values.push({ label: match[1], value: match[2] })
     end++

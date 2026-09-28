@@ -70,13 +70,7 @@ describe('stylesheet CSS directives', () => {
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
-      @master entry;
-      @source './**/*.tsx';
-      @source not './**/*.test.tsx';
-      @safelist 'font-semibold legacy-token';
-      @blocklist 'legacy-*';
-    `, { baseManifest: scanner.css.manifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), "\n      @import \"@master/css\";\n      @source './**/*.tsx';\n      @source not './**/*.test.tsx';\n      @safelist 'font-semibold legacy-token';\n      @blocklist 'legacy-*';\n    ", { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
       stylesheetSources,
@@ -101,10 +95,7 @@ describe('stylesheet CSS directives', () => {
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
-      @master entry;
-      @source './templates/**/*.{liquid,cshtml,erb}';
-    `, { baseManifest: scanner.css.manifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), "\n      @import \"@master/css\";\n      @source './templates/**/*.{liquid,cshtml,erb}';\n    ", { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
       stylesheetSources,
@@ -127,13 +118,7 @@ describe('stylesheet CSS directives', () => {
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
-      @master entry;
-      @source './a/*.tsx';
-      @source './b/*.tsx';
-      @source not './a/skip.tsx';
-      @source not './b/skip.tsx';
-    `, { baseManifest: scanner.css.manifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), "\n      @import \"@master/css\";\n      @source './a/*.tsx';\n      @source './b/*.tsx';\n      @source not './a/skip.tsx';\n      @source not './b/skip.tsx';\n    ", { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
       stylesheetSources,
@@ -218,4 +203,16 @@ describe('stylesheet CSS directives', () => {
     expect(css).not.toContain('.legacy-card')
     expect(css).not.toContain('@safelist')
   })
+})
+
+
+it('resolves every relative source against its declaring file and preserves source-only metadata', () => {
+  const source = '@source "views/*.html"; @source not "../generated/*.html";'
+  expect(collectStylesheetDirectives(source).include).toEqual(['views/*.html'])
+  const resolved = collectStylesheetDirectives(source, 'styles/entry.css', '/workspace')
+  expect(resolved.include).toEqual(['styles/views/*.html'])
+  expect(resolved.exclude).toEqual(['generated/*.html'])
+  for (const id of ['\0virtual:entry.css', 'virtual:entry.css', 'https://example.test/entry.css']) {
+    expect(() => collectStylesheetDirectives(source, id, '/workspace')).toThrow('file or baseFile')
+  }
 })

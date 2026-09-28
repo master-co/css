@@ -9,7 +9,7 @@ beforeAll(() => {
 })
 
 const manifest = {
-  version: 1, languageVersion: 3,
+  version: 2, languageVersion: 4,
   utilities: [
     {
       id: 'display-block',
@@ -46,7 +46,7 @@ describe('Rust scanner state session', () => {
       candidates: ['block', 'unknown', 'fg-red'],
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
-      transition: { version: 1 }
+      transition: { version: 2 }
     })
     expect(scanner.scan('App.tsx', source)).toEqual({
       changed: false,
@@ -56,7 +56,7 @@ describe('Rust scanner state session', () => {
       usedNativeClasses: [],
       validClasses: [],
       invalidClasses: [],
-      transition: { version: 1, mutations: [] }
+      transition: { version: 2, mutations: [] }
     })
 
     expect(scanner.snapshot()).toMatchObject({
@@ -64,7 +64,7 @@ describe('Rust scanner state session', () => {
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       cachedSources: 1,
-      engine: { version: 1 }
+      engine: { version: 2 }
     })
 
     scanner.reset()

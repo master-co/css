@@ -9,7 +9,7 @@ fn request(entry: &str, child: &str) -> CompileCssStylesheetGraphRequest {
         "graph": {"entry":"entry", "files":{"entry":entry, "child":child},
             "edges":[{"from":"entry", "specifier":"./child.css", "resolved":"child"}]},
         "urls":{"entry":"/output/entry.css", "child":"/output/child.css"},
-        "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}
+        "baseManifest":{"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]}
     }))
     .unwrap()
 }
@@ -17,8 +17,8 @@ fn request(entry: &str, child: &str) -> CompileCssStylesheetGraphRequest {
 #[test]
 fn child_native_compose_resolves_managed_definitions_declared_by_parent() {
     let request = request(
-        "@import './child.css' layer(shared);@utilities{paint{color:red}}",
-        ".example{@variant media(all){color:red;}}",
+        "@import './child.css' layer(shared);@utility paint {color:red}",
+        ".example{@variant always{color:red;}}",
     );
     let output = compile_css_stylesheet_graph(&request).unwrap();
     assert!(output.stylesheets[0].css.contains("layer(shared)"));
@@ -31,8 +31,10 @@ fn child_native_compose_resolves_managed_definitions_declared_by_parent() {
 
 #[test]
 fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
-    let entry = "@import './child.css';@theme{--tone:blue;}@utilities{second{color:red}}";
-    let child = r###"@theme{--tone:red;}@utilities{first{@variant media(all){color:red;}}}"###;
+    let entry =
+        "@import './child.css';@theme{:root, :host {--tone:blue;}}@utility second {color:red}";
+    let child =
+        r###"@theme{:root, :host {--tone:red;}}@utility first {@variant always{color:red;}}"###;
     let output = compile_css_stylesheet_graph(&request(entry, child)).unwrap();
     let flat = format!("{child}{}", entry.replace("@import './child.css';", ""));
     let parsed = compile_css_directives(&flat, &CompileNativeCssOptions::default()).unwrap();
@@ -41,7 +43,7 @@ fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
         parsed.style_definitions.as_deref().unwrap_or_default(),
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({"version":1,"languageVersion":3,"utilities":[]})),
+            base_manifest: Some(json!({"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]})),
             resolution_manifest: None,
         },
     )
@@ -52,13 +54,13 @@ fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
 #[test]
 fn repeated_imports_use_occurrence_order_for_manifest_overrides() {
     let mut request = request(
-        "@import './child.css';@import './other.css';@import './child.css';.example{@variant media(all){color:red;}}",
-        "@utilities{paint{color:red}}",
+        "@import './child.css';@import './other.css';@import './child.css';.example{@variant always{color:red;}}",
+        "@utility paint {color:red}",
     );
     request
         .graph
         .files
-        .insert("other".into(), "@utilities{paint{color:blue}}".into());
+        .insert("other".into(), "@utility paint {color:blue}".into());
     request.graph.edges.push(
         serde_json::from_value(
             json!({"from":"entry", "specifier":"./other.css", "resolved":"other"}),
@@ -87,8 +89,8 @@ fn repeated_imports_use_occurrence_order_for_manifest_overrides() {
 #[test]
 fn native_filtering_does_not_remove_import_topology_or_manifest_definitions() {
     let mut request = request(
-        "@import './child.css' print;@utilities{paint{color:green}}.unused{color:blue}",
-        r###".example{@variant media(all){color:red;}}.unused{color:blue}"###,
+        "@import './child.css' print;@utility paint {color:green}.unused{color:blue}",
+        r###".example{@variant always{color:red;}}.unused{color:blue}"###,
     );
     request.options.classes = Some(vec!["example".into()]);
     request.options.prune_native_css = true;
@@ -107,8 +109,8 @@ fn native_filtering_does_not_remove_import_topology_or_manifest_definitions() {
 #[test]
 fn generated_child_css_keeps_import_conditions_when_native_preservation_is_disabled() {
     let mut request = request(
-        "@import './child.css' print;@utilities{paint{color:red}}",
-        ".native{color:blue}.example{@variant media(all){color:red;}}",
+        "@import './child.css' print;@utility paint {color:red}",
+        ".native{color:blue}.example{@variant always{color:red;}}",
     );
     request.options.preserve_native_css = false;
     let output = compile_css_stylesheet_graph(&request).unwrap();
@@ -126,7 +128,7 @@ fn compiled_browser_corpus_assets() {
             "graph":{"entry":"entry", "files":{"entry":case["entry"], "local":case["local"].as_str().unwrap_or(".example{color:red}")},
                 "edges":[{"from":"entry", "specifier":"./local.css", "resolved":"local"}]},
             "urls":{"entry":"/delivered/entry.css", "local":"/delivered/local.css"},
-            "baseManifest":{"version":1,"languageVersion":3,"utilities":[]}, "options":{"classes":["example"]}
+            "baseManifest":{"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]}, "options":{"classes":["example"]}
         })).unwrap();
         let output = compile_css_stylesheet_graph(&request).unwrap();
         assert_eq!(output.stylesheets.len(), 2);
@@ -140,8 +142,8 @@ fn compiled_browser_corpus_assets() {
 #[test]
 fn native_compose_keeps_its_position_before_later_native_rules() {
     let output = compile_css_stylesheet_graph(&request(
-        "@import './child.css';@utilities{paint{color:red}}",
-        ".example{@variant media(all){color:red;}}.example{color:blue}",
+        "@import './child.css';@utility paint {color:red}",
+        ".example{@variant always{color:red;}}.example{color:blue}",
     ))
     .unwrap();
     let css = output.stylesheets[1]
@@ -161,8 +163,8 @@ fn native_compose_keeps_its_position_before_later_native_rules() {
 #[test]
 fn authored_unknown_at_rules_cannot_collide_with_private_compose_slots() {
     let output = compile_css_stylesheet_graph(&request(
-        "@import './child.css';@utilities{paint{color:red}}",
-        "@--master-css-style-slot-0;@--master-css-style-slot-\\31;.example{@variant media(all){color:red;}}",
+        "@import './child.css';@utility paint {color:red}",
+        "@--master-css-style-slot-0;@--master-css-style-slot-\\31;.example{@variant always{color:red;}}",
     ))
     .unwrap();
     let css = &output.stylesheets[1].css;

@@ -110,9 +110,9 @@ test('pilot examples reproduce full CSS and the prose states the correct breakpo
     }
   }
   const conditions = catalog.documents.find(doc => doc.id === 'rules/conditions')!
-  assert.match(conditions.markdown, /@sm` applies `\(width>=52\.125rem\)`/)
-  assert.match(conditions.examples[0].css, /prefers-color-scheme:light/)
-  assert.match(conditions.examples[0].css, /prefers-color-scheme:dark/)
+  assert.match(conditions.markdown, /@sm` applies `\(width\s*>=\s*52\.125rem\)`/)
+  assert.match(conditions.examples[0].css, /--color-red:var\(--color-red-60\)/)
+  assert.doesNotMatch(conditions.examples[0].css, /prefers-color-scheme/)
   assert.match(conditions.examples[0].css, /@layer utilities/)
   const padding = catalog.documents.find(doc => doc.id === 'padding')!
   assert.equal(padding.rows.length, 16)
@@ -136,7 +136,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
     const doc = catalog.documents.find(doc => doc.id === id)!
     assert.equal(new Set(doc.headings.map(heading => heading.id)).size, doc.headings.length, id)
     const configured = doc.examples.filter(example => example.configuration !== undefined)
-    assert.equal(configured.length, id === 'rules/layers' ? 6 : 3, id)
+    assert.equal(configured.length, id === 'rules/layers' ? 6 : 1, id)
     for (const example of configured) {
       assert.equal(example.css, configuredExampleCSS(example.configuration!, example.classes))
       assert.ok(doc.markdown.includes(example.css))
@@ -181,11 +181,8 @@ test('compact token lists preserve every native value, heading and identifier in
       assert.equal(row.title, variable.key)
       assert.equal(row.identifier, `--${variable.name}`)
       assert.equal(doc.identifierAnchors?.[row.identifier], doc.headings.find(heading => heading.title === row.title && heading.depth === 3)?.id)
-      assert.deepEqual(row.values, [
-        ...(variable.value === undefined ? [] : [{ label: 'Default', value: String(variable.value) }]),
-        ...Object.entries(variable.modes ?? {}).map(([mode, value]) => ({ label: mode, value: String(value.value) }))
-      ])
-      for (const value of row.values) assert.ok(renderDocumentMarkdown(doc, catalog).includes(`${value.label}: ${value.value}`))
+      assert.deepEqual(row.values, variable.values.map(({ path, value }) => ({ label: path.join(' → '), value })))
+      for (const value of row.values) assert.ok(renderDocumentMarkdown(doc, catalog).includes(`Scope: ${value.label}\nValue: ${value.value}`))
     }
   }
 })
@@ -279,7 +276,7 @@ test('Syntax Tutorial exports its complete configured button, CSS, headings and 
   assert.match(example.css, /--spacing-action:1rem/)
   assert.match(example.css, /:hover\{color:var\(--color-blue-60\)/)
   assert.match(example.css, /:focus-visible\{color:var\(--color-blue-60\)/)
-  assert.match(example.css, /@media \(width>=52\.125rem\)/)
+  assert.match(example.css, /@media \(width\s*>=\s*52\.125rem\)/)
   assert.match(configuredExampleCSS(example.configuration!.replace('1rem', '1.25rem'), example.classes), /--spacing-action:1.25rem/)
   for (const locale of ['en', 'tw']) {
     const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
@@ -306,7 +303,7 @@ test('changing a configured token updates class output, extracted Markdown and s
   const directory = await mkdtemp(path.join(tmpdir(), 'reference-example-'))
   try {
     for (const value of ['1.5rem', '2rem']) {
-      const source = `@theme { --spacing-card: ${value}; }`
+      const source = `@theme { :root { --spacing-card: ${value}; } }`
       const file = path.join(directory, 'content.mdx')
       await writeFile(file, `<ConfiguredExample source={${JSON.stringify(source)}} classes={['p-card']} />`)
       const extracted = await extractReferenceMdx(file)
@@ -316,7 +313,7 @@ test('changing a configured token updates class output, extracted Markdown and s
       assert.ok(extractSearchNodesFromMdx(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
     }
   } finally { await rm(directory, { recursive: true, force: true }) }
-  assert.throws(() => configuredExampleCSS('@theme { --spacing-card: 1.5rem; }', ['p:missing-reference-token']), /Invalid configured documentation class/)
+  assert.throws(() => configuredExampleCSS('@theme { :root { --spacing-card: 1.5rem; } }', ['p:missing-reference-token']), /Invalid configured documentation class/)
 })
 
 test('tool references preserve every public input, complete raw contracts and stable headings', async () => {
@@ -384,9 +381,9 @@ test('directive contracts preserve stable entrances and complete compiled styles
     assert.ok(matching[0].markdown.includes(await stylesheetExampleMarkdown(example.title, example.source)))
   }
   const settings = docs.find(doc => doc.id === 'directives/settings')!
-  assert.match(settings.markdown, /Setting \| Default \| Effect/)
-  assert.match(settings.markdown, /`root-size`.*removed/)
-  assert.match(settings.markdown, /`scope` \| `not set`/)
+  assert.match(settings.markdown, /entire directive and manifest `settings` field are removed/)
+  assert.match(settings.markdown, /native selectors/)
+  assert.match(settings.markdown, /global important/)
 })
 
 

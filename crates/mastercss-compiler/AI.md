@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Canonical CSS directive parsing, import/native-style handling, Manifest v1 lowering,
+Canonical CSS directive parsing, import/native-style handling, Manifest v2 lowering,
 and compiler report IR.
 
 ## Module Routing

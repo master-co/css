@@ -114,7 +114,7 @@ test('disposes an engine that resolves before hydration startup times out', asyn
     await new Promise(resolve => setTimeout(resolve, 150))
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ version: 1, rules: [], resourceOrder: [] })
+      body: JSON.stringify({ version: 2, rules: [], resourceOrder: [] })
     })
   })
   await gotoRuntimeOrigin(page, loaderURL)
@@ -128,15 +128,15 @@ test('disposes an engine that resolves before hydration startup times out', asyn
     let disposals = 0
     const engine = {
       binding: 'wasm' as const,
-      ensureClassRules: () => ({ version: 1, mutations: [] }),
-      deleteClassRules: () => ({ version: 1, mutations: [] }),
-      registerEmittedGlobals: () => ({ version: 1, mutations: [] }),
-      refresh: () => ({ version: 1, mutations: [] }),
-      inspect: (className: string) => ({ version: 1, className, valid: false, rules: [] }),
+      ensureClassRules: () => ({ version: 2, mutations: [] }),
+      deleteClassRules: () => ({ version: 2, mutations: [] }),
+      registerEmittedGlobals: () => ({ version: 2, mutations: [] }),
+      refresh: () => ({ version: 2, mutations: [] }),
+      inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
-        version: 1,
+        version: 2,
         rules: [],
-        resources: { variables: [], animations: [] },
+        resources: { variables: [] },
         text: ''
       }),
       dispose: () => { disposals++ },
@@ -179,17 +179,17 @@ test('rejects every pending caller and disposes when emitted globals registratio
     let disposals = 0
     const engine = {
       binding: 'wasm' as const,
-      ensureClassRules: () => ({ version: 1, mutations: [] }),
-      deleteClassRules: () => ({ version: 1, mutations: [] }),
+      ensureClassRules: () => ({ version: 2, mutations: [] }),
+      deleteClassRules: () => ({ version: 2, mutations: [] }),
       registerEmittedGlobals: () => {
         throw new Error('invalid emitted globals')
       },
-      refresh: () => ({ version: 1, mutations: [] }),
-      inspect: (className: string) => ({ version: 1, className, valid: false, rules: [] }),
+      refresh: () => ({ version: 2, mutations: [] }),
+      inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
-        version: 1,
+        version: 2,
         rules: [],
-        resources: { variables: [], animations: [] },
+        resources: { variables: [] },
         text: ''
       }),
       dispose: () => { disposals++ },

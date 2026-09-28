@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Canonical project entry/import graph policy and Manifest v1 merge orchestration.
+Canonical project entry/import graph policy and Manifest v2 merge orchestration.
 TypeScript hosts supply filesystem and package resolution callbacks.
 
 Read `src/lib.rs` with `src/tests.rs` and `packages/compiler/src/project/**`. Entry

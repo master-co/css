@@ -52,7 +52,7 @@ describe('Astro server middleware', () => {
     const manifest = structuredClone(defaultManifest)
     manifest.variables ||= {}
     manifest.variables.color ||= []
-    manifest.variables.color.push({ key: 'host', value: '#123456' })
+    manifest.variables.color.push({ key: 'host', values: [{ path: [':root,:host'], value: '#123456' }] })
     const middleware = createMasterCSSMiddleware(manifest, {
       variables: { 'color-host': 1 }
     })

@@ -224,7 +224,7 @@ describe('@master/css-preset defaultManifest', () => {
     const manifest = getCompiledDefaultManifest()
     const utilities = manifest.utilities || []
 
-    expect(utilities).toHaveLength(164)
+    expect(utilities).toHaveLength(325)
     expect(utilities.some((utility) => 'order' in utility)).toBe(false)
     expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
     expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
@@ -232,7 +232,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'group')).toBe(false)
     expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'group'))).toBe(false)
     expect(utilities.some((utility) => utility.id === 'animation')).toBe(false)
-    expect(utilities.some((utility) => utility.id === 'animate-<~animate>')).toBe(true)
+    expect(utilities.some((utility) => utility.id === 'animate-* from(--animate-*)')).toBe(true)
     expect(utilities.some((utility) => utility.id === 'font:<~font-family|=font|~font-weight|~font-size|*>')).toBe(false)
     expect(utilities.some((utility) => 'transform' in utility)).toBe(false)
     expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'pair')).toBe(false)
@@ -263,10 +263,10 @@ describe('@master/css-preset defaultManifest', () => {
   it('matches the CSS-authored preset manifest facets', () => {
     const compiledManifest = getCompiledDefaultManifest()
     expect(variablesOf(compiledManifest)).toEqual(variablesOf(defaultManifest))
-    expect(compiledManifest.animations).toEqual(defaultManifest.animations)
+    expect(compiledManifest.theme).toEqual(defaultManifest.theme)
     expect(stripRaw(compiledManifest.variants)).toEqual(stripRaw(defaultManifest.variants))
     expect(compiledManifest.conditions).toEqual(defaultManifest.conditions)
-    expect(compiledManifest.breakpointConditions).toEqual(defaultManifest.breakpointConditions)
+    expect(compiledManifest.customMedia).toEqual(defaultManifest.customMedia)
     expect(compiledManifest.containerConditions).toEqual(defaultManifest.containerConditions)
     expect(compiledManifest.selectors).toEqual(defaultManifest.selectors)
     expect(defaultManifest.selectors).toBeUndefined()
@@ -300,10 +300,10 @@ describe('@master/css-preset defaultManifest', () => {
   it('uses explicit preset mode branches without global engine mode settings', () => {
     const css = createTestCSS(defaultManifest)
 
-    expect(defaultManifest.settings).toBeUndefined()
+    expect(defaultManifest).not.toHaveProperty('settings')
     expect(css.createRule('m:0.25rem')?.text).toBe('.m\\:0\\.25rem{margin:0.25rem}')
     expect(css.createRule('fg-blue-60@dark')?.text).toBe(
-      '@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:root,:root *){color:var(--color-blue-60)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:host,:host *){color:var(--color-blue-60)}}'
+      "@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}"
     )
   })
 
@@ -390,43 +390,11 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect((defaultManifest.utilities || [])
-      .filter((utility) => utility.matchers.some((matcher) => matcher.type === 'pattern')))
-      .toHaveLength(35)
-    expect(defaultManifest.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
-      .toMatchObject({
-        type: UtilityType.Semantic,
-        matchers: [{
-          type: 'pattern',
-          prefix: 'text-',
-          values: ['left', 'center', 'right', 'start', 'end', 'justify']
-        }]
+    for (const name of ['text-center', 'items-center', 'bg-origin-border']) {
+      expect(defaultManifest.utilities?.find(utility => utility.name === name)).toMatchObject({
+        type: UtilityType.Semantic, matchers: [{ type: 'static', name }]
       })
-    expect(defaultManifest.utilities?.some((utility) => utility.id === '.items-center')).toBe(false)
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'items-<baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch>'))
-      .toMatchObject({
-        type: UtilityType.Semantic,
-        matchers: [{
-          type: 'pattern',
-          prefix: 'items-',
-          values: ['baseline', 'center', 'end', 'flex-end', 'flex-start', 'normal', 'self-end', 'self-start', 'start', 'stretch']
-        }]
-      })
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'bg-origin-<border=border-box|content=content-box|padding=padding-box>'))
-      .toMatchObject({
-        type: UtilityType.Semantic,
-        matchers: [{
-          type: 'pattern',
-          prefix: 'bg-origin-',
-          values: ['border', 'content', 'padding'],
-          valueMap: {
-            border: 'border-box',
-            content: 'content-box',
-            padding: 'padding-box'
-          }
-        }]
-      })
+    }
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'text-fill-color:<~color-text|~color|color>')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'text-decoration-color:<~color-text|~color|color>')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'text-stroke-color:<~color|color>')).toBe(false)
@@ -436,7 +404,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'border-image-source')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'list-style-image')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'stroke:<number>')).toBe(false)
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-underline-<~spacing>')).toMatchObject({
+    expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-underline-* from(--spacing-*)')).toMatchObject({
       variableAliasRefs: ['~spacing'],
       emit: {
         type: 'static',
@@ -476,7 +444,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('border-width:1px')?.text).toBe('.border-width\\:1px{border-width:1px}')
     expect(css.createRule('b:line')?.text).toBe('.b\\:line{border:line}')
-    expect(css.createRule('b-base')?.text).toBe('.b-base{border-color:var(--color-line-base)}')
+    expect(css.createRule('b-divider')?.text).toBe('.b-divider{border-color:var(--color-line-divider)}')
     expect(css.createRule('border-top-width:1px')?.text).toBe('.border-top-width\\:1px{border-top-width:1px}')
     expect(css.createRule('bl:line')?.text).toBe('.bl\\:line{border-left:line}')
     expect(css.createRule('border-inline-width:1px')?.text).toBe('.border-inline-width\\:1px{border-inline-width:1px}')
@@ -484,9 +452,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid line}')
     expect(css.createRule('bt:1px|solid|line')?.text).toBe('.bt\\:1px\\|solid\\|line{border-top:1px solid line}')
     expect(css.createRule('b:1px|line')?.text).toBe('.b\\:1px\\|line{border:1px line}')
-    expect(css.createRule('b:1px|solid|var(--color-line-base)')?.text).toBe('.b\\:1px\\|solid\\|var\\(--color-line-base\\){border:1px solid var(--color-line-base)}')
-    expect(css.createRule('bt:1px|solid|var(--color-line-base)')?.text).toBe('.bt\\:1px\\|solid\\|var\\(--color-line-base\\){border-top:1px solid var(--color-line-base)}')
-    expect(css.createRule('b:1px|var(--color-line-base)')?.text).toBe('.b\\:1px\\|var\\(--color-line-base\\){border:1px var(--color-line-base)}')
+    expect(css.createRule('b:1px|solid|var(--color-line-divider)')?.text).toBe('.b\\:1px\\|solid\\|var\\(--color-line-divider\\){border:1px solid var(--color-line-divider)}')
+    expect(css.createRule('bt:1px|solid|var(--color-line-divider)')?.text).toBe('.bt\\:1px\\|solid\\|var\\(--color-line-divider\\){border-top:1px solid var(--color-line-divider)}')
+    expect(css.createRule('b:1px|var(--color-line-divider)')?.text).toBe('.b\\:1px\\|var\\(--color-line-divider\\){border:1px var(--color-line-divider)}')
     expect(css.createRule('b-gray-20')?.text).toBe('.b-gray-20{border-color:var(--color-gray-20)}')
     expect(css.createRule('bl-gray-20')?.text).toBe('.bl-gray-20{border-left-color:var(--color-gray-20)}')
     expect(css.createRule('by-gray-20')?.text).toBe('.by-gray-20{border-block-color:var(--color-gray-20)}')
@@ -528,7 +496,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(declarationsCSS.createRule('bg:canvas')?.text).toContain('background:canvas')
     expect(declarationsCSS.createRule('bg:surface')?.text).toContain('background:surface')
     expect(css.createRule('surface-base')?.text).toBe('.surface-base{background-color:var(--color-surface-base)}')
-    expect(css.createRule('surface-overlay/.9')?.text).toBe('.surface-overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
+    expect(css.createRule('surface-floating/.9')?.text).toBe('.surface-floating\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-floating) 90%,transparent)}')
     expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
     expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
     expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
@@ -694,6 +662,6 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect(utilities).toHaveLength(164)
+    expect(utilities).toHaveLength(325)
   })
 })

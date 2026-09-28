@@ -44,7 +44,7 @@ test.concurrent('documentation CSS generation does not mutate language service s
   const before = snapshotLanguageCSS(languageService)
 
   expect(before.font.text).toContain('.font-bold')
-  expect(before.animation.text).toContain('@keyframes fade')
+  expect(before.animation.text).not.toContain('@keyframes fade')
   expect(suggest(languageService, '')?.find(({ label }) => label === 'block')?.documentation).toBeTruthy()
   expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
 

@@ -249,13 +249,7 @@ describe('@master/css-mcp', () => {
         build: 'master-css src/index.html -o master.css'
       }
     })
-    writeFileSync(join(root, 'master.css'), [
-      '@master entry;',
-      '@mode ocean { [data-theme=ocean] { @slot; } }',
-      '@theme {',
-      '  --color-brand: #123456;',
-      '}'
-    ].join('\n'))
+    writeFileSync(join(root, 'master.css'), "@import \"@master/css\";\n@custom-variant ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @slot; } }\n@theme { :root, :host {\n  --color-brand: #123456;\n} }\n")
 
     const connection = await connect(root)
     try {
@@ -302,7 +296,7 @@ describe('@master/css-mcp', () => {
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
-        expect.objectContaining({ name: 'mode' })
+        expect.objectContaining({ name: 'custom-variant' })
       ]))
       expect(directives.manifest.counts.variables).toBeGreaterThan(0)
     } finally {
@@ -334,20 +328,18 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_inspect_class',
         arguments: {
           context: 'preset',
-          className: 'block',
-          mode: 'dark'
+          className: 'block@dark'
         }
       }))
       expect(inspected).toMatchObject({
-        className: 'block',
-        mode: 'dark',
+        className: 'block@dark',
         matchStatus: 'matched',
         base: 'block',
-        suffix: '',
+        suffix: '@dark',
         matcherTypes: ['static']
       })
-      expect(inspected.rules).toHaveLength(2)
-      expect(inspected.rules[0].text).toContain('@media (prefers-color-scheme:dark)')
+      expect(inspected.rules).toHaveLength(1)
+      expect(inspected.rules[0].text).toMatch(/@media \(prefers-color-scheme:\s*dark\)/)
       expect(inspected.css).toBe(inspected.rules.map((rule: { text: string }) => rule.text).join(''))
 
       const extracted = parseToolJSON(await connection.client.callTool({
@@ -376,7 +368,7 @@ describe('@master/css-mcp', () => {
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(1)
+      expect(manifest.version).toBe(2)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({
@@ -854,7 +846,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(4)
+      expect(report.version).toBe(5)
       expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
       expect(report.files[0].discovered.invalid).toContain('p-missing')

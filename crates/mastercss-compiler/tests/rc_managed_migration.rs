@@ -2,10 +2,10 @@ use mastercss_compiler::{RcMigrationRequest, migrate_rc};
 use serde_json::{Value, json};
 fn request(classes: Vec<Vec<&str>>, stylesheets: Vec<&str>) -> RcMigrationRequest {
     let manifest: Value = serde_json::from_str(include_str!(
-        "../../../packages/preset/src/default-manifest.json"
+        "fixtures/v2-rc-before-directives.manifest.json"
     ))
     .unwrap();
-    serde_json::from_value(json!({"from":"rc-managed","sourceVersion":"2.0.0-rc.managed","manifest":manifest,"targetManifest":manifest,"classLists":classes,"stylesheets":stylesheets})).unwrap()
+    serde_json::from_value(json!({"from":"rc-managed","sourceVersion":"2.0.0-rc.managed","manifest":manifest,"targetManifest":serde_json::from_str::<Value>(include_str!("../../../packages/preset/src/default-manifest.json")).unwrap(),"classLists":classes,"stylesheets":stylesheets})).unwrap()
 }
 #[test]
 fn migrates_static_names_without_rewriting_native_values_or_nested_rules() {
@@ -33,7 +33,7 @@ fn migrates_static_names_without_rewriting_native_values_or_nested_rules() {
     assert!(second.stylesheets[0].edits.is_empty());
     assert!(second.stylesheets[0].notes.is_empty());
     assert_eq!(second.class_lists[0][0].status, "unchanged");
-    assert_eq!(result.behavior_changes.len(), 2);
+    assert_eq!(result.behavior_changes.len(), 3);
 }
 #[test]
 fn reports_cross_file_compose_derived_classes_patterns_and_cascade_conflicts() {
@@ -85,7 +85,7 @@ fn preserves_rc_managed_queries_functions_and_numeric_values() {
             .iter()
             .all(|item| item.status == "unchanged")
     );
-    assert!(result.configuration_css.is_empty());
+    assert!(result.configuration_css.contains("@keyframes fade"));
 }
 
 #[test]

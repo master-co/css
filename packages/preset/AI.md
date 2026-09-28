@@ -6,7 +6,7 @@
 
 ## Owns
 
-- Default token, utility, managed keyframe, variant, and layer-statement source.
+- Default token, utility, native keyframe, variant, and layer-statement source.
 - `src/default-manifest.json`.
 - `src/default-native.css`.
 - Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.

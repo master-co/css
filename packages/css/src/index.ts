@@ -2,7 +2,6 @@ export { default as createEngine } from './engine/create-engine'
 export { renderClassNames } from './render-class-names'
 export type {
   MasterCSSEngine,
-  MasterCSSEngineAnimationResource,
   MasterCSSEngineBinding,
   MasterCSSEngineBindingOptions,
   MasterCSSEngineDeleteMutation,

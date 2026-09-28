@@ -17,11 +17,11 @@
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background-color: var(--color-line-muted);
+      background-color: var(--color-line-subtle);
     }
 
     &::-webkit-scrollbar-thumb:active {
-      background-color: var(--color-line-base);
+      background-color: var(--color-line-divider);
     }
 
     @supports (-moz-appearance: none) {

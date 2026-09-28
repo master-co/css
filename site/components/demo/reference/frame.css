@@ -3,6 +3,8 @@
 
 @layer defaults {
   html { color-scheme: light dark; }
+  html.light { color-scheme: light; }
+  html.dark { color-scheme: dark; }
   body { margin: 0; padding: 24px; font-family: Geist, system-ui, sans-serif; font-size: 13px; line-height: 1.6; color: var(--color-demo-text); }
   *, ::before, ::after { box-sizing: border-box; }
   p { margin: 0 0 12px; }

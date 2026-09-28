@@ -17,13 +17,13 @@ const families = {
 
 describe('natural material colors', () => {
   for (const [family, aliases] of Object.entries(families)) {
-    test(`${family} has thirteen fixed colors and both mode-aware aliases`, () => {
+    test(`${family} has thirteen fixed colors and a fixed alias and a native adaptive text alias`, () => {
       const shades = variables.filter(variable => new RegExp(`^color-${family}-\\d+$`).test(variable.name ?? ''))
       expect(shades.map(variable => Number(variable.key.split('-').at(-1))).sort((a, b) => a - b)).toEqual(levels)
       for (const variable of shades) {
         expect(variable.namespace).toBe('color')
-        expect(variable.modes).toBeUndefined()
-        expect(variable.value).toMatch(/^oklch\(/)
+        expect(variable.values).toHaveLength(1)
+        expect(variable.values[0].value).toMatch(/^oklch\(/)
       }
       for (const [index, prefix] of ['color', 'color-text'].entries()) {
         const light = `${family}-${aliases[index * 2]}`
@@ -31,11 +31,8 @@ describe('natural material colors', () => {
         expect(variables.find(variable => variable.name === `${prefix}-${family}`)).toMatchObject({
           namespace: prefix,
           key: family,
-          modes: {
-            light: { value: `var(--color-${light})` },
-            dark: { value: `var(--color-${dark})` }
-          },
-          dependencies: [`color-${light}`, `color-${dark}`]
+          values: [{ path: [':root,:host'], value: index === 0 ? `var(--color-${light})` : `light-dark(var(--color-${light}), var(--color-${dark}))` }],
+          dependencies: index === 0 ? [`color-${light}`] : [`color-${light}`, `color-${dark}`]
         })
       }
     })
@@ -49,16 +46,15 @@ describe('natural material colors', () => {
   test('fixed colors, text aliases, borders, gradients and alpha use the Rust engine', () => {
     const css = createTestCSS(manifest).ensureClassRules(
       'bg-sand-5', 'fg-taupe-70', 'text-terracotta', 'b:1px|solid|var(--color-moss-30)',
-      'bg-petrol-60/.5', 'background-image:linear-gradient(var(--color-sand-5),var(--color-copper-30))'
+      'bg-petrol-60/.5', 'background-image:linear-gradient(var(--color-sand-5), var(--color-copper-30))'
     )
     expect(css.text).toContain('background-color:var(--color-sand-5)')
     expect(css.text).toContain('color:var(--color-taupe-70)')
     expect(css.text).toContain('color:var(--color-text-terracotta)')
-    expect(css.text).toContain('--color-text-terracotta:var(--color-terracotta-70)')
-    expect(css.text).toContain('--color-text-terracotta:var(--color-terracotta-30)')
+    expect(css.text).toContain('--color-text-terracotta:light-dark(var(--color-terracotta-70), var(--color-terracotta-30))')
     expect(css.text).toContain('border:1px solid var(--color-moss-30)')
     expect(css.text).toContain('color-mix(in oklab,var(--color-petrol-60) 50%,transparent)')
-    expect(css.text).toContain('linear-gradient(var(--color-sand-5),var(--color-copper-30))')
+    expect(css.text).toContain('linear-gradient(var(--color-sand-5), var(--color-copper-30))')
     expect(css.text).not.toContain('--color-olive')
     expect(css.text).not.toContain('--color-sand-100')
     expect(css.text).not.toContain('@layer theme,')
@@ -69,7 +65,7 @@ describe('natural material colors', () => {
       for (const level of levels) {
         const css = createTestCSS(manifest).ensureClassRules(`fg-${family}-${level}`)
         const name = `color-${family}-${level}`
-        expect(css.text).toContain(`--${name}:${variables.find(variable => variable.name === name)!.value}`)
+        expect(css.text).toContain(`--${name}:${variables.find(variable => variable.name === name)!.values[0].value}`)
         expect(css.text).toContain(`color:var(--${name})`)
         expect([...css.text.matchAll(/--color-[a-z]+-\d+:/g)]).toHaveLength(1)
       }
@@ -81,7 +77,7 @@ describe('natural material colors', () => {
     expect(css.text).toContain('color:var(--color-olive)')
     expect(css.text).toContain('background-color:var(--color-olive)')
     expect(css.text).toContain('--color-olive:var(--color-olive-50)')
-    expect(css.text).toContain('--color-olive:var(--color-olive-40)')
+    expect(css.text).not.toContain('--color-olive-40:')
     expect(css.text).toContain('color:#808000')
     expect(css.text).toContain('.fg\\:olive{color:olive}')
   })

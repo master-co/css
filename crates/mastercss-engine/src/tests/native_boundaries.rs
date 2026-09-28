@@ -51,10 +51,11 @@ fn priority_intersects_media_but_preserves_container_domains_and_exclusive_bound
 }
 
 #[test]
-fn mode_selector_lists_cover_every_root_and_descendant() {
-    let manifest = MANIFEST.replace("\"selector\":\":root\"", "\"selector\":\".a,.b\"");
-    let engine = EngineSession::create(&manifest).unwrap();
-    let inspection = engine.inspect("block@dark").unwrap();
+fn explicit_variant_selector_lists_cover_every_authored_branch() {
+    let mut manifest: serde_json::Value = serde_json::from_str(MANIFEST).unwrap();
+    manifest["variants"].as_array_mut().unwrap().push(serde_json::json!({"token":"@night","branches":[{"selector":"&:where(.a,.a *)"},{"selector":"&:where(.b,.b *)"}]}));
+    let engine = EngineSession::create(&manifest.to_string()).unwrap();
+    let inspection = engine.inspect("block@night").unwrap();
     assert_eq!(inspection.rules.len(), 2);
     assert!(inspection.rules[0].text.contains(":where(.a,.a *)"));
     assert!(inspection.rules[1].text.contains(":where(.b,.b *)"));

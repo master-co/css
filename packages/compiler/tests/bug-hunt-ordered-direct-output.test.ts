@@ -8,8 +8,8 @@ import { createCompiler } from '../src/index'
 import { createCompilerBindingSession } from '../src/session'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, languageVersion: 3 as const, utilities: [] }
-const source = "@utilities{paint{padding:2rem}}@layer{.card{@variant media(all){padding:2rem;}}.card{padding:3rem!important}}"
+const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const source = "@utility paint {padding:2rem}@layer{.card{@variant all {padding:2rem;}}.card{padding:3rem!important}}"
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0057 ${binding} universal direct output preserves a single anonymous layer and order`, async () => {
@@ -41,10 +41,10 @@ test('BH-0004 qualified imports reject global child definitions before publishin
   const root = mkdtempSync(join(tmpdir(), 'master-ordered-map-'))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
-    const childSource = "@utilities{paint{padding:2rem}}\n.card{@variant media(all){padding:2rem;}}\n.card{padding:3rem}"
+    const childSource = "@utility paint {padding:2rem}\n.card{@variant all{padding:2rem;}}\n.card{padding:3rem}"
     writeFileSync(child, childSource)
     const text = '@import "./child.css" layer;\n.after{margin:1px}'
-    await expect(compileRenderedStylesheet(entry, text, { baseManifest, projectDir: root, preserveNativeCSS: true })).rejects.toThrow(/Qualified import.*global @utilities/)
+    await expect(compileRenderedStylesheet(entry, text, { baseManifest, projectDir: root, preserveNativeCSS: true })).rejects.toThrow(/Qualified import.*global @utility/)
 
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
@@ -53,9 +53,9 @@ test('ordered native-only imported layers retain child and later root mappings',
   const root = mkdtempSync(join(tmpdir(), 'master-ordered-map-'))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
-    const childSource = "/* child */\n.card{@variant media(all){padding:2rem;}}\n.card{padding:3rem}"
+    const childSource = "/* child */\n.card{@variant all {padding:2rem;}}\n.card{padding:3rem}"
     writeFileSync(child, childSource)
-    const text = '@import "./child.css" layer;@utilities{paint{padding:2rem}}\n.after{margin:1px}'
+    const text = '@import "./child.css" layer;@utility paint {padding:2rem}\n.after{margin:1px}'
     const result = await compileRenderedStylesheet(entry, text, { baseManifest, projectDir: root, preserveNativeCSS: true })
     expect(result.css.match(/@layer/g)).toHaveLength(1)
     const map = new SourceMap(JSON.parse(result.sourceMap!))
@@ -67,7 +67,7 @@ test('ordered native-only imported layers retain child and later root mappings',
 })
 
 test('disabling raw native CSS retains composed container context and accurate output maps', async () => {
-  const source = "@utilities{paint{padding:2rem}}.plain{color:red}@supports(display:grid){.card{@variant media(all){padding:2rem;}}}"
+  const source = "@utility paint {padding:2rem}.plain{color:red}@supports(display:grid){.card{@variant all {padding:2rem;}}}"
   const result = await compileRenderedStylesheet('/entry.css', source, { baseManifest, preserveNativeCSS: false })
   expect(result.css).not.toContain('.plain')
   expect(result.css).toContain('@supports')

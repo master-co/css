@@ -120,8 +120,6 @@ pub struct CssInspectionInput {
     pub included: bool,
     #[serde(default)]
     pub variables: Vec<String>,
-    #[serde(default)]
-    pub animations: Vec<String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -324,7 +322,6 @@ pub struct StylesheetInspectionReport {
 #[serde(rename_all = "camelCase")]
 pub struct CssEmittedGlobalsReport {
     pub variables: usize,
-    pub animations: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -579,7 +576,6 @@ pub fn create_inspection_report(
         text: input.css.included.then_some(input.css.text),
         emitted_globals: CssEmittedGlobalsReport {
             variables: value_set(&input.css.variables).len(),
-            animations: value_set(&input.css.animations).len(),
         },
     };
 

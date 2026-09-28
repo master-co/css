@@ -1,10 +1,9 @@
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalGroupEntry,
     CompositionRecipe, EngineError, HashSet, LintSession, RawValueCandidateIr, UtilityLayerName,
-    canonical_class_parts, canonical_condition_suffix, collect_rule_declarations,
-    has_same_canonical_rule_shape, matching_composition_recipe, merge_group_declarations,
-    normalize_composition_declarations, push_canonical_candidate, rules_declaration_signature,
-    split_top_level,
+    canonical_class_parts, collect_rule_declarations, has_same_canonical_rule_shape,
+    matching_composition_recipe, merge_group_declarations, normalize_composition_declarations,
+    push_canonical_candidate, rules_declaration_signature, split_top_level,
 };
 
 impl LintSession {
@@ -133,13 +132,7 @@ impl LintSession {
         }
         let semantics = self.engine.inspect_class_semantics(class_name)?;
         let parts = canonical_class_parts(class_name, &semantics);
-        let canonical_suffix = canonical_condition_suffix(
-            &parts,
-            &semantics,
-            &source.rules,
-            &self.canonical_index,
-            options,
-        );
+        let canonical_suffix = parts.suffix.clone();
         let mut candidates = Vec::new();
 
         if options.prefer_static_utilities {

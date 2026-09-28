@@ -775,7 +775,7 @@
             "{color-black!;bb:2px|solid}",
             "{pt:calc(2.5em+3.75rem);mt:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
           ],
-          "expectedCss": "@layer utilities{.\\{color-black\\!\\;bb\\:2px\\|solid\\}{border-bottom:2px solid}.\\{color-black\\!\\;bb\\:2px\\|solid\\}{color:oklch(0% 0 none)!important}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){margin-top:-3.75rem}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-black:oklch(0% 0 none)}}@layer utilities{.\\{color-black\\!\\;bb\\:2px\\|solid\\}{border-bottom:2px solid}.\\{color-black\\!\\;bb\\:2px\\|solid\\}{color:var(--color-black)!important}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){margin-top:-3.75rem}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem)}}"
         }
       ]
     },
@@ -829,14 +829,14 @@
             "bg-red-60",
             "m-md"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
           "classes": [
             "fg-red-60"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
@@ -857,28 +857,47 @@
     {
       "id": "engine-inline-theme-variable-dependencies",
       "manifest": {
-        "version": 1,
+        "version": 2,
         "variables": {
           "color": [
             {
               "name": "color-white",
               "key": "white",
-              "value": "oklch(100% 0 none)",
-              "inline": true
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "oklch(100% 0 none)"
+                }
+              ]
             },
             {
               "name": "color-brand",
               "key": "brand",
-              "value": "var(--color-white)",
               "dependencies": [
                 "color-white"
               ],
-              "inline": true
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "var(--color-white)"
+                }
+              ]
             },
             {
               "name": "color-gray-90",
               "key": "gray-90",
-              "value": "oklch(23.5% 0 none)"
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "oklch(23.5% 0 none)"
+                }
+              ]
             }
           ],
           "color-surface": [
@@ -889,14 +908,20 @@
                 "color-brand",
                 "color-gray-90"
               ],
-              "modes": {
-                "light": {
+              "values": [
+                {
+                  "path": [
+                    ".light"
+                  ],
                   "value": "var(--color-brand)"
                 },
-                "dark": {
+                {
+                  "path": [
+                    ".dark"
+                  ],
                   "value": "var(--color-gray-90)"
                 }
-              }
+              ]
             }
           ]
         },
@@ -919,23 +944,48 @@
             ]
           }
         ],
-        "languageVersion": 3,
-        "modes": [
+        "languageVersion": 4,
+        "theme": [
           {
-            "name": "light",
-            "branches": [
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
               {
-                "selector": ".light",
-                "conditions": []
+                "type": "declaration",
+                "name": "color-white",
+                "value": "oklch(100% 0 none)"
+              },
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "var(--color-white)"
+              },
+              {
+                "type": "declaration",
+                "name": "color-gray-90",
+                "value": "oklch(23.5% 0 none)"
               }
             ]
           },
           {
-            "name": "dark",
-            "branches": [
+            "type": "rule",
+            "prelude": ".light",
+            "children": [
               {
-                "selector": ".dark",
-                "conditions": []
+                "type": "declaration",
+                "name": "color-surface-raised",
+                "value": "var(--color-brand)"
+              }
+            ]
+          },
+          {
+            "type": "rule",
+            "prelude": ".dark",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-surface-raised",
+                "value": "var(--color-gray-90)"
               }
             ]
           }
@@ -947,9 +997,11 @@
           "classes": [
             "surface-raised"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:oklch(100% 0 none)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
+          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
           "expectedResourceOrder": [
             "color-surface-raised",
+            "color-brand",
+            "color-white",
             "color-gray-90"
           ]
         },
@@ -997,7 +1049,7 @@
             "fg-blue-60@dark",
             "bg-white@light"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:root,:root *){color:var(--color-blue-60)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:host,:host *){color:var(--color-blue-60)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:root,:root *){background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:host,:host *){background-color:oklch(100% 0 none)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}@media (prefers-color-scheme:light){.bg-white\\@light{background-color:var(--color-white)}}}"
         }
       ]
     },
@@ -1108,19 +1160,7 @@
     {
       "id": "engine-animation-resource-metadata",
       "manifest": {
-        "version": 1,
-        "animations": {
-          "float": {
-            "to": {
-              "opacity": "1"
-            }
-          },
-          "rotate": {
-            "to": {
-              "transform": "none"
-            }
-          }
-        },
+        "version": 2,
         "utilities": [
           {
             "id": ".float-left",
@@ -1186,34 +1226,23 @@
             ]
           }
         ],
-        "languageVersion": 3
+        "languageVersion": 4
       },
       "steps": [
         {
           "op": "inspect",
           "className": "float-left",
-          "expectedValid": true,
-          "expectedAnimationNames": [
-            []
-          ]
+          "expectedValid": true
         },
         {
           "op": "inspect",
           "className": "rotate-180",
-          "expectedValid": true,
-          "expectedAnimationNames": [
-            []
-          ]
+          "expectedValid": true
         },
         {
           "op": "inspect",
           "className": "animated",
-          "expectedValid": true,
-          "expectedAnimationNames": [
-            [
-              "float"
-            ]
-          ]
+          "expectedValid": true
         },
         {
           "op": "ensure",
@@ -1229,10 +1258,8 @@
           "classes": [
             "animated"
           ],
-          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}@keyframes float{to{opacity:1}}",
-          "expectedResourceOrder": [
-            "float"
-          ]
+          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}",
+          "expectedResourceOrder": []
         }
       ]
     },
@@ -1248,7 +1275,7 @@
             "r-md",
             "rtl-lg"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
         }
       ]
     },
@@ -1263,7 +1290,7 @@
             "block:nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
         }
       ]
     },
@@ -1296,7 +1323,7 @@
             "mt:1@sm",
             "mt:3@lg"
           ],
-          "expectedCss": "@layer utilities{.mt\\:0{margin-top:0}.mt\\:2{margin-top:2}@media (width>=52.125rem){.mt\\:1\\@sm{margin-top:1}}@media (width>=80rem){.mt\\:3\\@lg{margin-top:3}}}"
+          "expectedCss": "@layer utilities{.mt\\:0{margin-top:0}.mt\\:2{margin-top:2}@media (width >= 52.125rem){.mt\\:1\\@sm{margin-top:1}}@media (width >= 80rem){.mt\\:3\\@lg{margin-top:3}}}"
         }
       ]
     },
@@ -1324,7 +1351,7 @@
     {
       "id": "engine-semantic-manifest-layer",
       "manifest": {
-        "version": 1,
+        "version": 2,
         "utilities": [
           {
             "id": ".card",
@@ -1355,7 +1382,7 @@
             ]
           }
         ],
-        "languageVersion": 3
+        "languageVersion": 4
       },
       "steps": [
         {
@@ -1384,7 +1411,7 @@
     {
       "id": "engine-same-class-across-layers",
       "manifest": {
-        "version": 1,
+        "version": 2,
         "utilities": [
           {
             "id": "demo-defaults",
@@ -1429,7 +1456,7 @@
             ]
           }
         ],
-        "languageVersion": 3
+        "languageVersion": 4
       },
       "steps": [
         {
@@ -1444,14 +1471,21 @@
     {
       "id": "engine-native-alias-global-variable",
       "manifest": {
-        "version": 1,
+        "version": 2,
         "variables": {
           "": [
             {
               "name": "stripe",
               "key": "stripe",
               "type": "string",
-              "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+                }
+              ]
             }
           ]
         },
@@ -1480,7 +1514,20 @@
             ]
           }
         ],
-        "languageVersion": 3
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "stripe",
+                "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+              }
+            ]
+          }
+        ]
       },
       "steps": [
         {
@@ -1495,19 +1542,39 @@
     {
       "id": "engine-native-alias-warm-session",
       "manifest": {
-        "version": 1,
+        "version": 2,
         "variables": {
           "": [
             {
               "name": "stripe",
               "key": "stripe",
               "type": "string",
-              "value": "linear-gradient(red,blue)"
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "linear-gradient(red,blue)"
+                }
+              ]
             }
           ]
         },
         "utilities": [],
-        "languageVersion": 3
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "stripe",
+                "value": "linear-gradient(red,blue)"
+              }
+            ]
+          }
+        ]
       },
       "steps": [
         {
@@ -2642,7 +2709,7 @@
   "compilerCases": [
     {
       "id": "compiler-prose-base-responsive-order",
-      "source": "@utilities { prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } } }",
+      "source": "@utility prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2660,10 +2727,10 @@
                   "margin-top": "var(--spacing-2xl)",
                   "scroll-margin-top": "100px"
                 },
+                "selector": "& :is(h1,h2)",
                 "conditions": [
-                  "@media (width>=52.125rem)"
-                ],
-                "selector": "& :is(h1,h2)"
+                  "@media (width >= 52.125rem)"
+                ]
               },
               {
                 "declarations": {
@@ -2685,13 +2752,13 @@
     },
     {
       "id": "compiler-native-condition-order",
-      "source": ".card { @media (width>=40rem) { @variant media(all){display:grid;} } @variant media(all){display:block;} @container panel (inline-size>30rem) { @variant media(all){display:flex;} } @starting-style { @variant media(all){display:none;} } }",
+      "source": ".card { @media (width>=40rem) { @variant all {display:grid;} } @variant all {display:block;} @container panel (inline-size>30rem) { @variant all {display:flex;} } @starting-style { @variant all {display:none;} } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "@media (width>=40rem){@media all{.card{display:grid}}}@media all{.card{display:block}}@container panel (inline-size>30rem){@media all{.card{display:flex}}}@starting-style{@media all{.card{display:none}}}"
     },
     {
       "id": "compiler-managed-compose-order",
-      "source": "@utilities { btn { @variant sm { display:grid; } display:block; } }",
+      "source": "@utility btn { @variant sm { display:grid; } display:block; }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2709,7 +2776,7 @@
                   "display": "grid"
                 },
                 "conditions": [
-                  "@media (width>=52.125rem)"
+                  "@media (width >= 52.125rem)"
                 ]
               },
               {
@@ -2730,35 +2797,51 @@
     },
     {
       "id": "compiler-root-size-condition-order",
-      "source": ".card { @media (width>=42rem) { @variant media(all){display:grid;} } @media (width>=800px) { @variant media(all){display:flex;} } }",
+      "source": ".card { @media (width>=42rem) { @variant all {display:grid;} } @media (width>=800px) { @variant all {display:flex;} } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "@media (width>=42rem){@media all{.card{display:grid}}}@media (width>=800px){@media all{.card{display:flex}}}"
     },
     {
       "id": "rc87-compiler-variables-modes-dependencies",
       "sourceId": "rc87-5ae87bddfc5f375d",
-      "source": "@mode light { .light { @slot; } } @mode dark { .dark { @slot; } } @theme static { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } @theme dark static { --color-brand: #123; }",
+      "source": "@custom-variant light { &:where(.light, .light *) { @slot; } } @custom-variant dark { &:where(.dark, .dark *) { @slot; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
-        "modes": [
+        "version": 2,
+        "languageVersion": 4,
+        "theme": [
           {
-            "name": "light",
-            "branches": [
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
               {
-                "selector": ".light"
+                "type": "declaration",
+                "name": "spacing-card",
+                "value": "12"
+              },
+              {
+                "type": "declaration",
+                "name": "color-blue-50",
+                "value": "#369"
+              },
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "var(--color-blue-50)"
               }
             ]
           },
           {
-            "name": "dark",
-            "branches": [
+            "type": "rule",
+            "prelude": ".dark",
+            "children": [
               {
-                "selector": ".dark"
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "#123"
               }
             ]
           }
@@ -2768,60 +2851,164 @@
             {
               "name": "spacing-card",
               "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "12"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": 12,
               "numeric": {
-                "value": 12
-              },
-              "static": true
+                "value": 12,
+                "unit": ""
+              }
             }
           ],
           "color": [
             {
               "name": "color-blue-50",
               "key": "blue-50",
-              "type": "string",
-              "value": "#369",
-              "static": true
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "#369"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
             },
             {
               "name": "color-brand",
               "key": "brand",
-              "type": "string",
-              "value": "var(--color-blue-50)",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "var(--color-blue-50)"
+                },
+                {
+                  "path": [
+                    ".dark"
+                  ],
+                  "value": "#123"
+                }
+              ],
               "dependencies": [
                 "color-blue-50"
               ],
-              "static": true,
-              "modes": {
-                "dark": {
-                  "type": "string",
-                  "value": "#123"
-                }
-              }
+              "type": "string"
             }
           ]
-        }
+        },
+        "variants": [
+          {
+            "token": "@light",
+            "branches": [
+              {
+                "selector": "&:where(.light,.light *)",
+                "selectorNodes": [
+                  {
+                    "value": "where",
+                    "type": "pseudo-class"
+                  },
+                  {
+                    "value": "light",
+                    "type": "class"
+                  },
+                  {
+                    "value": ",",
+                    "type": "separator"
+                  },
+                  {
+                    "value": "light",
+                    "type": "class"
+                  },
+                  {
+                    "value": " ",
+                    "type": "combinator"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "token": "@dark",
+            "branches": [
+              {
+                "selector": "&:where(.dark,.dark *)",
+                "selectorNodes": [
+                  {
+                    "value": "where",
+                    "type": "pseudo-class"
+                  },
+                  {
+                    "value": "dark",
+                    "type": "class"
+                  },
+                  {
+                    "value": ",",
+                    "type": "separator"
+                  },
+                  {
+                    "value": "dark",
+                    "type": "class"
+                  },
+                  {
+                    "value": " ",
+                    "type": "combinator"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
       "id": "rc87-compiler-reject-token-alias",
       "sourceId": "rc87-1ef0184cc6a4bd8e",
-      "source": "@theme { --color-brand: $color-blue-50; }",
+      "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "$color-blue-50"
+              }
+            ]
+          }
+        ],
         "variables": {
           "color": [
             {
               "name": "color-brand",
               "key": "brand",
-              "type": "string",
-              "value": "$color-blue-50"
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "$color-blue-50"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
             }
           ]
         }
@@ -2830,25 +3017,46 @@
     {
       "id": "rc87-compiler-explicit-negative-variable",
       "sourceId": "rc87-58a8b9e387f59ddb",
-      "source": "@theme static { --spacing--card: -12; }",
+      "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "spacing--card",
+                "value": "-12"
+              }
+            ]
+          }
+        ],
         "variables": {
           "spacing": [
             {
               "name": "spacing--card",
               "key": "-card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "-12"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": -12,
               "numeric": {
-                "value": -12
-              },
-              "static": true
+                "value": -12,
+                "unit": ""
+              }
             }
           ]
         }
@@ -2857,26 +3065,14 @@
     {
       "id": "rc87-compiler-static-animation",
       "sourceId": "rc87-7d6ba9d28d83415c",
-      "source": "@theme static { @keyframes fade { to { opacity: 1; } } }",
+      "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
-        "animations": {
-          "fade": {
-            "to": {
-              "opacity": "1"
-            }
-          }
-        },
-        "animationOptions": {
-          "fade": {
-            "static": true
-          }
-        }
+        "version": 2,
+        "languageVersion": 4
       }
     },
     {
@@ -2884,7 +3080,7 @@
       "sourceId": "rc87-da6ec108d6e14a3a",
       "source": "",
       "baseManifest": {
-        "version": 1,
+        "version": 2,
         "keyAliases": {
           "w": "inline-size"
         },
@@ -2898,31 +3094,57 @@
             ]
           }
         ],
-        "languageVersion": 3
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       }
     },
     {
       "id": "rc87-compiler-breakpoint-container-conditions",
       "sourceId": "rc87-e793d99a43aa91ea",
-      "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px; }",
+      "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "breakpoint-card",
+                "value": "777px"
+              },
+              {
+                "type": "declaration",
+                "name": "container-panel",
+                "value": "333px"
+              }
+            ]
+          }
+        ],
         "variables": {
           "breakpoint": [
             {
               "name": "breakpoint-card",
               "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "777px"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "777px",
               "numeric": {
                 "value": 777,
                 "unit": "px"
@@ -2933,38 +3155,22 @@
             {
               "name": "container-panel",
               "key": "panel",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "333px"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "333px",
               "numeric": {
                 "value": 333,
                 "unit": "px"
               }
             }
           ]
-        },
-        "conditions": {
-          "card": {
-            "id": "media",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 777,
-                "unit": "px"
-              }
-            ]
-          }
-        },
-        "breakpointConditions": {
-          "card": {
-            "id": "media",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 777,
-                "unit": "px"
-              }
-            ]
-          }
         },
         "containerConditions": {
           "panel": {
@@ -2983,21 +3189,62 @@
     {
       "id": "rc87-compiler-unitful-numeric-tokens",
       "sourceId": "rc87-bce3dcbace35c62f",
-      "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; }",
+      "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "spacing-card",
+                "value": "1.5rem"
+              },
+              {
+                "type": "declaration",
+                "name": "radius-card",
+                "value": "8px"
+              },
+              {
+                "type": "declaration",
+                "name": "breakpoint-card",
+                "value": "48rem"
+              },
+              {
+                "type": "declaration",
+                "name": "container-panel",
+                "value": "512px"
+              },
+              {
+                "type": "declaration",
+                "name": "shadow-card",
+                "value": "1rem"
+              }
+            ]
+          }
+        ],
         "variables": {
           "spacing": [
             {
               "name": "spacing-card",
               "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "1.5rem"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "1.5rem",
               "numeric": {
                 "value": 1.5,
                 "unit": "rem"
@@ -3008,8 +3255,16 @@
             {
               "name": "radius-card",
               "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "8px"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "8px",
               "numeric": {
                 "value": 8,
                 "unit": "px"
@@ -3020,8 +3275,16 @@
             {
               "name": "breakpoint-card",
               "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "48rem"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "48rem",
               "numeric": {
                 "value": 48,
                 "unit": "rem"
@@ -3032,8 +3295,16 @@
             {
               "name": "container-panel",
               "key": "panel",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "512px"
+                }
+              ],
+              "dependencies": [],
               "type": "number",
-              "value": "512px",
               "numeric": {
                 "value": 512,
                 "unit": "px"
@@ -3044,34 +3315,18 @@
             {
               "name": "shadow-card",
               "key": "card",
-              "type": "string",
-              "value": "1rem"
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "1rem"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
             }
           ]
-        },
-        "conditions": {
-          "card": {
-            "id": "media",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 48,
-                "unit": "rem"
-              }
-            ]
-          }
-        },
-        "breakpointConditions": {
-          "card": {
-            "id": "media",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 48,
-                "unit": "rem"
-              }
-            ]
-          }
         },
         "containerConditions": {
           "panel": {
@@ -3090,14 +3345,14 @@
     {
       "id": "rc87-compiler-variant-branches",
       "sourceId": "rc87-2763794c2aab6ae8",
-      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @utilities { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
+      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @utility hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } }",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
         "variants": [
           {
             "token": "@motion-safe",
@@ -3173,14 +3428,14 @@
     {
       "id": "rc87-compiler-semantic-utility",
       "sourceId": "rc87-e9991ac8889c54d6",
-      "source": "@utilities { card { display: grid; color: var(--color-primary); } }",
+      "source": "@utility card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
         "utilities": [
           {
             "id": ".card",
@@ -3212,14 +3467,14 @@
     {
       "id": "rc87-compiler-browser-manifest",
       "sourceId": "rc87-229f90c18e0fc001",
-      "source": "@utilities { btn { display: flex; color: red; } }",
+      "source": "@utility btn { display: flex; color: red; }",
       "baseManifest": {
-        "version": 1,
-        "languageVersion": 3
+        "version": 2,
+        "languageVersion": 4
       },
       "expectedManifest": {
-        "version": 1,
-        "languageVersion": 3,
+        "version": 2,
+        "languageVersion": 4,
         "utilities": [
           {
             "id": ".btn",
@@ -3261,7 +3516,8 @@
     "Replace global mode settings with explicit ordered mode branches; do not infer default values or color-scheme.",
     "Scope base variables to Document and ShadowRoot using :root,:host.",
     "Preserve breakpoint and container units; reject historical inferred condition syntax.",
-    "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field."
+    "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field.",
+    "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged."
   ],
-  "languageVersion": 3
+  "languageVersion": 4
 }

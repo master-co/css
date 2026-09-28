@@ -22,7 +22,7 @@ test.each([
       writeFileSync(join(root, name), '<html><head></head><body><div class="block"></div><script type="module" src="/main.ts"></script></body></html>')
     }
     writeFileSync(join(root, 'main.ts'), 'import "./master.css"')
-    writeFileSync(join(root, 'master.css'), '@import "@master/css";')
+    writeFileSync(join(root, 'master.css'), '@import url("@master/css");')
     await build({
       root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }),
       build: { assetsDir, rollupOptions: { input: names.map(name => join(root, name)) } }

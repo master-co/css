@@ -1,6 +1,6 @@
 use mastercss_compiler::{
-    CompileNativeCssOptions, LowerCssDirectivesOptions, LowerCssDirectivesRequest,
-    compile_css_directives, lower_css_directives_request,
+    CompileNativeCssOptions, LowerCssDirectivesRequest, compile_css_directives,
+    lower_css_directives_request,
 };
 use mastercss_engine::EngineSession;
 
@@ -14,7 +14,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
         },
-        &LowerCssDirectivesOptions::default(),
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
     )
     .unwrap()
 }
@@ -22,7 +22,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
 #[test]
 fn variant_preserves_fallbacks_and_repeated_shorthand_order() {
     let result = compile(
-        r###".card{@variant media(all){color:red;}display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}"###,
+        r###".card{@variant always{color:red;}display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}"###,
     );
     let css = result.css.unwrap();
     assert!(css.contains("display:block;display:made-up-value"), "{css}");
@@ -35,7 +35,7 @@ fn variant_preserves_fallbacks_and_repeated_shorthand_order() {
 #[test]
 fn utility_rules_preserve_fallbacks_through_manifest_and_variant() {
     let result = compile(
-        r###"@utilities{fallback{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}}.a{@variant media(all){display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
+        r###"@utility fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}.a{@variant always{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     engine.ensure_class_rules(["fallback"]).unwrap();
@@ -55,7 +55,7 @@ fn removed_managed_directives_are_diagnosed() {
     for name in ["defaults", "components"] {
         let error = compile_css_directives(
             &format!("@{name}{{card{{color:red}}}}"),
-            &Default::default(),
+            &CompileNativeCssOptions::default(),
         )
         .unwrap_err();
         assert!(error.to_string().contains("has been removed"));
@@ -74,7 +74,7 @@ fn native_components_are_output_without_becoming_utilities() {
 #[test]
 fn nested_rules_are_not_moved_across_source_boundaries() {
     let result = compile(
-        r###".a{@variant media(all){color:red;}@media (width>1px){color:blue}@variant media(all){color:green;}}"###,
+        r###".a{@variant always{color:red;}@media (width>1px){color:blue}@variant always{color:green;}}"###,
     );
     let css = result.css.unwrap();
     assert!(
@@ -89,8 +89,8 @@ fn nested_rules_are_not_moved_across_source_boundaries() {
 
 #[test]
 fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
-    let source = r###"@utilities{fallback{display:-webkit-box;display:flex!important;display:grid}}.a{@variant media(all){display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
-    let parsed = compile_css_directives(source, &Default::default()).unwrap();
+    let source = r###"@utility fallback {display:-webkit-box;display:flex!important;display:grid}.a{@variant always{display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
+    let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let value = &parsed.manifest_input.utilities.as_ref().unwrap()[0]["body"];
     let declarations = value[0]["declarations"].as_array().unwrap();
     assert_eq!(
@@ -108,7 +108,7 @@ fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
     }
     let css = compile(source).css.unwrap();
     assert!(
-        css.contains("display:-webkit-box;display:flex !important;display:grid}}.a{display:block"),
+        css.contains("display:-webkit-box;display:flex !important;display:grid;display:block"),
         "{css}"
     );
 }
@@ -116,7 +116,7 @@ fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
 #[test]
 fn segmented_rules_keep_sort_classification_and_resource_lifetimes() {
     let result = compile(
-        "@theme{--color-accent:red;@keyframes spin{to{opacity:1}}}@utilities{one{display:block}fallback{display:block;display:made-up-value}resources{color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}}",
+        "@theme{:root,:host{--color-accent:red;}}@keyframes spin{to{opacity:1}}@utility one {display:block}@utility fallback {display:block;display:made-up-value}@utility resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}",
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     let one = engine.inspect("one").unwrap();
@@ -128,12 +128,12 @@ fn segmented_rules_keep_sort_classification_and_resource_lifetimes() {
     let snapshot = engine.snapshot().unwrap();
     assert_eq!(snapshot.rules[0].nodes.len(), 2);
     assert_eq!(snapshot.resources.variables[0].ref_count, 1);
-    assert_eq!(snapshot.resources.animations[0].ref_count, 1);
+    assert!(!snapshot.text.contains("@keyframes"));
     engine.delete_class_rules(["resources"]).unwrap();
     let empty = engine.snapshot().unwrap();
     assert!(empty.rules.is_empty());
     assert!(empty.resources.variables.is_empty());
-    assert!(empty.resources.animations.is_empty());
+    assert!(!empty.text.contains("@keyframes"));
 }
 
 #[test]
@@ -143,7 +143,7 @@ fn pattern_importance_spelling_and_comments_do_not_reorder_declarations() {
         "&:hover{display:block} DISPLAY:flex !/**/IMPORTANT; /* fallback */ display:made-up-value; display:grid!important",
     ] {
         let result = compile(&format!(
-            "@utilities{{paint-<a|b>{{{declarations}}}}}.a{{@variant media(all){{{declarations}}}}}"
+            "@utility paint-a{{{declarations}}}@utility paint-b{{{declarations}}}.a{{@variant always{{{declarations}}}}}"
         ));
         let css = result.css.unwrap();
         assert!(
@@ -151,7 +151,7 @@ fn pattern_importance_spelling_and_comments_do_not_reorder_declarations() {
             "{css}"
         );
         let native = compile(&format!(
-            ".a{{@variant media(all){{color:red;{declarations}}}}}"
+            ".a{{@variant always{{color:red;{declarations}}}}}"
         ));
         let css = native.css.unwrap();
         assert!(

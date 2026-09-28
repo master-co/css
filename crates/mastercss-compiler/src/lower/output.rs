@@ -88,6 +88,9 @@ pub(super) fn assemble_native_output(
         offset,
     );
     css.push_str(&output.css[source_byte..]);
+    let registry = crate::custom_media::registry(Some(&manifest))?;
+    let (css, mappings) =
+        crate::custom_media::lower_css(&css, &mappings, &registry, "stylesheet.css")?;
     result.css = Some(css);
     result.output_mappings = mappings;
     Ok(())

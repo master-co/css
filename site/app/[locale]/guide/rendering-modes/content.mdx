@@ -423,20 +423,19 @@ For the full source scanning model, see [Scanning latent classes](/guide/scannin
 ---
 
 ## Shared rendering pipeline
-Rendering modes change delivery, not the authoring model. The source of truth is the project CSS entry graph. A stylesheet becomes part of that graph when it contains a top-level `@master entry;` marker or imports `@master/css`. Use `@master entry;` when the file only needs to declare manifest input, and use `@import '@master/css'` when the stylesheet should also receive generated CSS in static builds.
+Rendering modes change delivery, not the authoring model. The source of truth is the project CSS entry graph. A project entry imports `@master/css`, which loads the full preset and establishes its native CSS dependency graph. Use `@reference` for definition context without loading native CSS from the referenced file.
 
 ```css name=index.css
 @import '@master/css';
 
-@theme {
+@theme { :root, :host {
   --color-primary: #4f46e5;
-  --breakpoint-md: 48rem;
 
-  @keyframes fade-in {
+} }
+@keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-}
 
 @custom-variant motion-safe {
   @media (prefers-reduced-motion: no-preference) {
@@ -454,13 +453,15 @@ Rendering modes change delivery, not the authoring model. The source of truth is
     background: var(--color-primary);
   }
 }
+
+@custom-media --md (width >= 48rem);
 ```
 
 These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, utilities and native variant blocks into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
-| CSS entry graph | Project stylesheets with `@import '@master/css'` or the lightweight `@master entry;` marker | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
+| CSS entry graph | Project stylesheets with `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for scoped tokens, custom media, variants, utilities, source directives, and native CSS roots. |
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-compiler/project` | Engine, runtime, server renderer, scanner, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework integrations | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may import an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |

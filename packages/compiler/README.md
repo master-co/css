@@ -51,7 +51,7 @@ const result = compiler.compileStylesheets({
     entry: 'app',
     files: {
       app: '@import "./theme.css" layer(theme);',
-      theme: '@utilities { paint { color: red } } .example { color: red; }'
+      theme: '@utility paint { color: red } .example { color: red; }'
     },
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },

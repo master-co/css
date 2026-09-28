@@ -21,12 +21,12 @@ fn compile(source: &str) -> Result<EngineSession, String> {
 fn engine() -> EngineSession {
     compile(&format!(
         r#"
-        @theme {{
+        @theme {{ :root, :host {{
             --spacing-md: 1rem; --spacing-sm: .5rem; --spacing-card-body: 1.25rem;
             --font-family-mono: monospace; --font-family-brand: Brand;
             --font-size-sm: .875rem; --font-size-brand: 2rem; --font-weight-bold: 700;
             --color-red: #e00; --color-brand: #123; --color-cover: #456;
-        }}
+        }} }}
         @custom-variant sm {{ @media (width >= 40rem) {{ @slot; }} }}
         {}
     "#,
@@ -255,13 +255,16 @@ fn native_property_names_do_not_become_token_prefixes() {
 #[test]
 fn rejects_rc_contracts_in_formal_compilation() {
     assert!(
-        compile("@utilities{font:<~font-family>{font-family:--value()}}")
+        compile("@utility font:<~font-family> {font-family:--master-value()}")
             .unwrap_err()
-            .contains("prefix-<~namespace>")
+            .contains("utility")
     );
-    assert!(compile("@utilities{font-<~font-family|*>{font-family:--value()}}").is_err());
     assert!(
-        compile("@utilities{outline:<*>{outline-width:--value()}}")
+        compile("@utility font-* from(--font-family-*, --*-*) {font-family:--master-value()}")
+            .is_err()
+    );
+    assert!(
+        compile("@utility outline:* {outline-width:--master-value()}")
             .unwrap_err()
             .contains("Native property")
     );
@@ -272,12 +275,15 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(serde_json::from_value::<CssDirectiveManifestInput>(json!({"baseUnit":4})).is_err());
     assert!(
-        MasterCssManifest::new(json!({"version":1,"languageVersion":3,"settings":{"baseUnit":4}}))
-            .is_err()
+        MasterCssManifest::new(json!({
+          "version": 1,
+          "languageVersion": 3
+        }))
+        .is_err()
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":1,"languageVersion":3,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":2,"languageVersion":4,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -310,7 +316,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":1,"languageVersion":3,"utilities":[utility]}).to_string();
+        let source = json!({"version":2,"languageVersion":4,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()
@@ -330,8 +336,8 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
 fn handwritten_static_names_reserve_token_spellings_at_every_sort_type() {
     for utility_type in [-2, -1, 0] {
         let manifest = json!({
-            "version": 1,"languageVersion":3,
-            "variables": {"color": [{"key":"red", "type":"string", "value":"#f00"}]},
+            "version": 2,"languageVersion":4,
+            "variables": {"color": [{"key":"red", "type":"string", "values":[{"path":[":root,:host"],"value":"#f00"}]}]},
             "utilities": [{
                 "id":"explicit-red", "name":"fg-red", "type": utility_type,
                 "emit":{"type":"property", "property":"color"},
@@ -366,14 +372,13 @@ fn mixed_manifest_matchers_preserve_source_boundaries() {
         })
         .unwrap();
     let matchers = family["matchers"].as_array_mut().unwrap();
-    matchers.push(json!({"type":"pattern", "prefix":"font-", "values":["reserved","other"], "valueMap":{"reserved":"serif","other":"monospace"}}));
     matchers.push(json!({"type":"key", "keys":["custom-font"]}));
     let engine = EngineSession::create(&manifest.to_string()).unwrap();
     assert!(
         engine.inspect("font-brand").unwrap().match_status
             != mastercss_schema::MatchStatus::Matched
     );
-    assert_eq!(declarations(&engine, "font-reserved"), "font-family:serif");
+
     assert_eq!(
         declarations(&engine, "custom-font:monospace"),
         "font-family:monospace"

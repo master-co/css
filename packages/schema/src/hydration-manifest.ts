@@ -39,12 +39,11 @@ export interface MasterCSSHydrationRule {
   readonly nodes?: readonly MasterCSSHydrationRuleNode[]
   readonly selectorText?: string
   readonly variableNames?: readonly string[]
-  readonly animationNames?: readonly string[]
 }
 
 export interface MasterCSSHydrationManifest {
-  readonly version: 1
-  readonly languageVersion: 3
+  readonly version: 2
+  readonly languageVersion: 4
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resourceOrder: readonly string[]
 }

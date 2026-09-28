@@ -1,17 +1,18 @@
 import DemoThemeComparison from './DemoThemeComparison'
 
 export function FoundationColorRoles() {
-  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={`<article class="p-md r-lg b:1px|solid|var(--color-line-base) surface-raised text-body">
+  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={`<article id="color-role" class="p-md r-lg b:1px|solid|var(--color-line-divider) surface-raised text-body">
 <h2 class="m:0 text-lg font-semibold text-strong">Project updates</h2>
 <p class="mt-xs mb-md text-muted">Three milestones changed this week.</p>
 <a class="text-link text-link-hover:hover underline" href="/guide/colors#preset-color-roles" target="_top">Explore color roles</a>
+<p class="mt-sm mb:0 font-xs overflow-wrap:anywhere" data-style-readout="color-role" data-style-property="color"></p>
 </article>`} caption="Both documents use identical classes. The active mode supplies the surface, line and text values." />
 }
 
 export function FoundationSurfaces() {
-  return <DemoThemeComparison name="surfaces" title="Surface hierarchy" html={`<section class="p-md r-lg surface-muted">
-<p class="mb-sm font-mono font-xs text-muted">surface-muted</p>
-<article class="p-md r-sm b:1px|solid|var(--color-line-base) surface-raised">
+  return <DemoThemeComparison name="surfaces" title="Surface hierarchy" html={`<section class="p-md r-lg surface-inset">
+<p class="mb-sm font-mono font-xs text-muted">surface-inset</p>
+<article class="p-md r-sm b:1px|solid|var(--color-line-divider) surface-raised">
 <h2 class="m:0 text-md font-semibold text-strong">Collection settings</h2>
 <p class="mt-xs mb:0 text-muted">A raised panel on a subdued section.</p>
 </article></section>`} caption="Color separates these surfaces. This example adds no shadow." />
@@ -19,13 +20,13 @@ export function FoundationSurfaces() {
 
 export function FoundationLines() {
   return <DemoThemeComparison name="lines" title="Visible boundaries" html={`<div class="grid gap-md">
-<section class="p-md r-sm b:1px|solid|var(--color-line-base) surface-raised"><h2 class="m:0 text-md font-medium">Default boundary</h2><p class="mt-xs mb:0 text-muted">b:1px|solid|var(--color-line-base)</p></section>
-<section class="p-md r-sm b:1px|solid|var(--color-line-strong) surface-raised"><h2 class="m:0 text-md font-medium">Emphasized boundary</h2><p class="mt-xs mb:0 text-muted">b:1px|solid|var(--color-line-strong)</p></section>
+<section class="p-md r-sm b:1px|solid|var(--color-line-divider) surface-raised"><h2 class="m:0 text-md font-medium">Decorative divider</h2><p class="mt-xs mb:0 text-muted">b:1px|solid|var(--color-line-divider)</p></section>
+<section class="p-md r-sm b:1px|solid|var(--color-line-control) surface-raised"><h2 class="m:0 text-md font-medium">Control boundary</h2><p class="mt-xs mb:0 text-muted">b:1px|solid|var(--color-line-control)</p></section>
 </div>`} caption="The line role selects a color. Width and style still need an explicit declaration." />
 }
 
 export function FoundationTextRoles() {
-  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={`<article class="grid gap-sm p-md r-lg b:1px|solid|var(--color-line-base) surface-raised text-body">
+  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={`<article class="grid gap-sm p-md r-lg b:1px|solid|var(--color-line-divider) surface-raised text-body">
 <h2 class="m:0 text-lg font-semibold text-strong">Quarterly report</h2>
 <p class="m:0">The current cycle is on track.</p>
 <p class="m:0 text-sm text-muted">Updated 12 minutes ago</p>
@@ -36,16 +37,16 @@ export function FoundationTextRoles() {
 }
 
 export function FoundationHue() {
-  return <DemoThemeComparison name="base-hue" title="A mode-aware hue" html={`<div class="grid gap-md">
+  return <DemoThemeComparison name="base-hue" title="A fixed hue" html={`<div class="grid gap-md">
 <div class="h:4rem r-sm bg-yellow" aria-label="Yellow background swatch" role="img"></div>
 <p class="m:0 font-mono font-xs text-muted">bg-yellow</p>
 <svg class="width:3rem height:3rem fg-yellow" viewBox="0 0 48 48" role="img" aria-label="Yellow diamond"><path d="M24 2 46 24 24 46 2 24Z" fill="currentColor"/></svg>
 <p class="m:0 font-mono font-xs text-muted">fg-yellow · currentColor</p>
-</div>`} caption="Hue aliases adapt their palette step to the mode. They do not choose a matching text color automatically." />
+</div>`} caption="General hue aliases keep the same swatch in both schemes. Use text hue aliases for adaptive readable foregrounds." />
 }
 
 export function FoundationTextHue() {
-  return <DemoThemeComparison name="text-hue" title="Foreground color by role" html={`<article class="p-md r-sm b:1px|solid|var(--color-line-base) surface-raised">
+  return <DemoThemeComparison name="text-hue" title="Foreground color by role" html={`<article class="p-md r-sm b:1px|solid|var(--color-line-divider) surface-raised">
 <p class="m:0 text-sm font-medium text-blue">Editorial notes</p>
 <h2 class="mt-xs mb-sm text-xl font-semibold text-strong">A clearer perspective</h2>
 <p class="m:0 text-body">Use a colored label alongside a clear heading and readable body copy.</p>
@@ -53,9 +54,10 @@ export function FoundationTextHue() {
 }
 
 export function FoundationElevation() {
-  return <DemoThemeComparison name="elevation" title="Quiet separation" html={`<article class="m-sm p-md r-lg surface-raised shadow-sm">
+  return <DemoThemeComparison name="elevation" title="Quiet separation" html={`<article id="shadow-role" class="m-sm p-md r-lg surface-raised shadow-sm">
 <h2 class="m:0 text-lg font-semibold text-strong">Collection notes</h2>
 <p class="mt-xs mb:0 text-muted">A raised surface with a small, consistent shadow.</p>
+<p class="mt-sm mb:0 font-xs overflow-wrap:anywhere" data-style-readout="shadow-role" data-style-property="box-shadow"></p>
 </article>`} caption="shadow-sm uses the same offsets across these modes, with different edge and shadow colors." />
 }
 

@@ -1,6 +1,6 @@
 use serde_json::{Value, json};
 
-/// Semantic identity of a compiled utility. Names and enum mapping values describe
+/// Semantic identity of a compiled utility. Definition names describe
 /// content; they do not distinguish two definitions of the same entry point.
 pub fn utility_identity(utility: &Value) -> String {
     let layer = utility
@@ -24,11 +24,6 @@ pub fn utility_identity(utility: &Value) -> String {
                         .cloned()
                         .unwrap_or(json!([]))
                 ]),
-                Some("pattern") => {
-                    let mut values = matcher["values"].as_array().cloned().unwrap_or_default();
-                    values.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
-                    json!(["pattern", matcher["prefix"], values])
-                }
                 _ => matcher.clone(),
             },
         )

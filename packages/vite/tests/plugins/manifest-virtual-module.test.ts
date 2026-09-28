@@ -45,7 +45,7 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(viteConfig.server.fs.allow).toContain(manifestEntryPath)
     expect(viteConfig.server.fs.allow).toContain(buttonManifestPath)
     expect(code).toContain('export default ')
-    expect(code).toContain('"version":1')
+    expect(code).toContain('"version":2')
   })
 
   it('keeps default manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
@@ -53,12 +53,7 @@ describe('ManifestVirtualModulePlugin', () => {
     const entryPath = path.join(root, 'app.css')
     try {
       mkdirSync(root, { recursive: true })
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@utilities {',
-        '    card { @compose bg-missing-token; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import url(\"@master/css\");\n@utility card { @compose bg-missing-token; }")
       const { context, viteConfig } = createContext(root)
       const plugin = ManifestVirtualModulePlugin(context)
       const addWatchFile = vi.fn()
@@ -68,12 +63,7 @@ describe('ManifestVirtualModulePlugin', () => {
       expect(addWatchFile).toHaveBeenCalledWith(entryPath)
       expect(viteConfig.server.fs.allow).toContain(entryPath)
 
-      writeFileSync(entryPath, [
-        '@master entry;',
-        '@utilities {',
-        "    card { @variant media(all){display:block;} }",
-        '}'
-      ].join('\n'))
+      writeFileSync(entryPath, "@import url(\"@master/css\");\n@utility card { @media all{display:block;} }")
 
       const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, RESOLVED_VIRTUAL_MANIFEST_ID)
 
@@ -96,7 +86,7 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(emitFile).toHaveBeenCalledWith(expect.objectContaining({
       type: 'asset',
       name: 'master-css-manifest.json',
-      source: expect.stringContaining('"version":1')
+      source: expect.stringContaining('"version":2')
     }))
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_manifest_ref;')
     expect(code).toContain(`new Function('specifier', "return import(specifier, { with: { type: 'json' } })")`)
@@ -104,7 +94,7 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(code).toContain('const response = await fetch(masterCSSManifestSpecifier)')
     expect(code).not.toContain('font-weight-bold')
     expect(context.defaultManifestAssetReferenceId).toBe('master_css_manifest_ref')
-    expect(context.defaultManifestAssetSource).toContain('"version":1')
+    expect(context.defaultManifestAssetSource).toContain('"version":2')
   })
 
   it('does not eagerly load the default manifest during production buildStart', async () => {

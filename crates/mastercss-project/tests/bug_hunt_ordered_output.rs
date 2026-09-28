@@ -17,10 +17,10 @@ fn flat_project_css_uses_ordered_output_while_preserving_metadata_views() {
     ));
     fs::create_dir_all(&root).unwrap();
     let entry = root.join("entry.css");
-    fs::write(&entry, r###"@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@variant media(all){padding:2rem!important;}}.b{@variant media(all){padding:1rem!important;}}}"###).unwrap();
+    fs::write(&entry, r###"@import '@master/css';@custom-media --always true;@utility paint {padding:2rem!important}@utility low {padding:1rem!important}@layer{.a{@variant always{padding:2rem!important;}}.b{@variant always{padding:1rem!important;}}}"###).unwrap();
     let result = load_project_manifest_entries(
         &[entry],
-        json!({"version":1,"languageVersion":3,"utilities":[]}),
+        json!({"version":2,"languageVersion":4,"utilities":[]}),
     );
     fs::remove_dir_all(root).unwrap();
     let result = result.unwrap();
