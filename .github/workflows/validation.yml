@@ -158,7 +158,9 @@ jobs:
           FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
         run: |
           set -euo pipefail
-          args=(run test lint type-check '--filter=./packages/*')
+          # Each Vitest suite can use half the runner's CPU. Share that budget
+          # with lint, type-check and cold package builds instead of oversubscribing.
+          args=(run test lint type-check '--filter=./packages/*' --concurrency=2)
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi

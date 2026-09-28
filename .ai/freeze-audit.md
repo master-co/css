@@ -334,6 +334,16 @@ code, test deadlines or assertions. This is a resource-contention correction;
 the next complete Windows result is required before claiming it resolves the
 observed timeouts.
 
+At `5ee8e180e`, Linux E2E passes 432 runtime cases, 10 Next cases and all 34
+tasks. Linux quality advances past both source-alias failures, then under its
+default 10-task concurrency multiple bounded CLI watch waits expire (97/110
+tasks had passed). Linux package validation is likewise limited to two tasks,
+matching the shared half-CPU worker policy. No test is removed, skipped, retried
+automatically or given a longer deadline. The complete local package validation
+with two task slots passes 111/111 tasks (32 build tasks cached); all package
+test/lint/type-check tasks pass, including 678 Vite cases. Windows CLI passes
+87/87 at `5ee8e180e`; the remaining Windows and corrected Linux gates are pending.
+
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
 examples passed using a temporary local wrapper that supplied an isolated
