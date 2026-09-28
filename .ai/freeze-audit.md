@@ -313,6 +313,18 @@ This changes build-time type resolution only, without changing emitted CSS or
 runtime execution. All 206 Next tests and Next/compiler/internal lint checks pass. The run's Linux
 E2E and eight native platform jobs pass; Windows compatibility is still running.
 
+Run `36374490996` passed the compiler checks and exposed the same missing-root-link
+problem for ESLint Config's plugin import. Its source alias now points directly
+to the workspace entry. A broader clean-source check reproduces that failure
+with all 27 package `dist` directories absent; the other errors are Webpack tests
+that intentionally import their built artifact. With only that required Webpack
+artifact retained, all workspace references pass without the other 26 `dist`
+directories. Root build passes 32/32 tasks, package artifacts 788/788, ESLint
+Config tests 4/4 and plugin tests 284/284; both packages' lint checks pass.
+Migration cases and approvals are unchanged. The run also passes Linux E2E,
+Rust quality and all eight native targets; final Windows and Linux quality
+validation must finish before integration.
+
 The unmodified Playwright Firefox launcher on this macOS host exits before tests
 start with `Could not find profile folder`. Firefox 144/144 and both progressive
 examples passed using a temporary local wrapper that supplied an isolated

@@ -21,7 +21,7 @@
       "@master/css-binding/tooling": [ "./packages/binding/src/tooling-binding.ts" ],
       "@master/css-binding/tooling/node": [ "./packages/binding/src/tooling-binding-node.ts" ],
       "@master/css-binding/*": [ "./packages/binding/src/*" ],
-      "@master/eslint-plugin-css": [ "./node_modules/@master/eslint-plugin-css/src" ],
+      "@master/eslint-plugin-css": [ "./packages/eslint-plugin/src/index.ts" ],
       "@master/css-internal": [ "./packages/internal/src/index.ts" ],
       "@master/css-internal/*": [ "./packages/internal/src/*" ],
       "@master/css-schema": [ "./node_modules/@master/css-schema/src" ],
