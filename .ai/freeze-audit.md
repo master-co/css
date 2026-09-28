@@ -278,7 +278,12 @@ obsolete VSCode grammar expectations were corrected, and the scoped rerun passes
 lint version fields (1 to 2) and two inspection fields (3 to 4) updated; all four
 smoke tests pass. Public API golden/census now remove five retired Compose types.
 Package contracts, boundaries, census and AI context checks pass. Site example,
-Reference and LLM-export tests pass 17 + 20 + 32; site lint/type-check is ongoing.
+Reference and LLM-export tests pass 17 + 20 + 32; site lint/type-check pass
+with zero errors and 265 existing warnings. The final stale Compose ordering
+paragraph in the cascade guide is corrected; focused lint and all 20 Reference
+tests pass again. Site highlight tests pass 11/11 with React server conditions.
+Focused runtime Chromium/WebKit tests pass 16/16; package artifacts (788), runtime
+size, MDN registry and release-configuration checks also pass.
 
 The integration review records 102 affected historical cases: 76 changed/renamed
 executable cases and 26 explicit retirements. All 1,033 baseline cases remain in
@@ -287,7 +292,10 @@ removals. The 21 Manifest test digests remain unchanged; four containing test-fi
 hashes change. See `parity/compose-removal-integration-review.md` for source trees,
 old/new digests, removed API rationale and the authorized integration provenance.
 Six migration-gate tests verify rename/removal identity, approval and absence.
-No earlier approval digest is silently repurposed for new bytes.
+No earlier approval digest is silently repurposed for new bytes. Rebuilt runtime
+JS remains 48,219 raw bytes; engine Wasm is 1,044,424 and the preset JSON 90,403.
+These separate artifacts total 1,183,046 raw bytes; this is an observation, not
+a new combined transport budget. The existing runtime JS size gate passes.
 
 Generated-ledger validation passes at merged source `e231a700e`: 1,546 rc.87
 cases, 1,033 Rust-refactor cases and seven post-rc.87 files. Combined-branch CI
