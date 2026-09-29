@@ -7,23 +7,10 @@ import Info from './Info'
 import InteractingIndicator from './InteractingIndicator'
 import PMAction from './PMAction'
 import Warn from './Warn'
-import DocProp from './DocProp'
-import DocFn from './DocFn'
-import ImageCallToPreview from './ImageCallToPreview'
-import InlineGood from './InlineGood'
-import InlineBad from './InlineBad'
-import InlineWarn from './InlineWarn'
-import Dropped from './Dropped'
-import ResizeZone from './ResizeZone'
-import ArticleTOC from './ArticleTOC'
-import DocBadge from './DocBadge'
-import StepSection, { Step, StepNum, StepL, StepR, StepEnd } from './StepSection'
 
-const CodeTabs = dynamic(() => import('./CodeTabs'))
 const InlineCode = dynamic(() => import('./InlineCode'))
 const Code = dynamic(() => import('./Code'))
 const DocHeading = dynamic(() => import('./DocHeading'))
-const Resizable = dynamic(() => import('./Resizable'))
 const Link = dynamic(() => import('./Link'))
 
 // This file allows you to provide custom React components
@@ -186,28 +173,7 @@ export const mdxComponents: MDXComponents = {
       </figure>
     )
   },
-  InteractingIndicator: (props: any) => <InteractingIndicator {...props} />,
-  Warn: (props: any) => <Warn {...props} />,
-  DocProp: (props: any) => <DocProp {...props} />,
-  DocFn: (props: any) => <DocFn {...props} />,
-  Resizable: (props: any) => <Resizable {...props} />,
-  StepSection: (props: any) => <StepSection {...props} />,
-  Step: (props: any) => <Step {...props} />,
-  StepNum: (props: any) => <StepNum {...props} />,
-  StepL: (props: any) => <StepL {...props} />,
-  StepR: (props: any) => <StepR {...props} />,
-  StepEnd: (props: any) => <StepEnd {...props} />,
-  CodeTabs: (props: any) => <CodeTabs {...props} />,
-  Code: (props: any) => <Code {...props} />,
-  InlineCode: (props: any) => <InlineCode {...props} />,
-  ImageCallToPreview: (props: any) => <ImageCallToPreview {...props} />,
-  InlineGood: (props: any) => <InlineGood {...props} />,
-  InlineBad: (props: any) => <InlineBad {...props} />,
-  InlineWarn: (props: any) => <InlineWarn {...props} />,
-  ArticleTOC: (props: any) => <ArticleTOC {...props} />,
-  ResizeZone: (props: any) => <ResizeZone {...props} />,
-  DocBadge: (props: any) => <DocBadge {...props} />,
-  Dropped: (props: any) => <Dropped {...props} />,
+
 }
 
 // This file is required to use MDX in `app` directory.

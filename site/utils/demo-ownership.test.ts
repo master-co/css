@@ -11,10 +11,9 @@ test('Guide MDX resolves demos from the site owner and shell has no demo imports
   const provider = await readFile(new URL('mdx-components.tsx', site), 'utf8')
   const shell = await readFile(new URL('docs-shell/components/mdxComponents.tsx', site), 'utf8')
   const shellFiles = await readdir(new URL('docs-shell/components/', site))
-  assert.match(provider, /\.\.\.demoComponents/)
-  for (const [name, implementation] of Object.entries({
-    BrowserHeader: 'DemoBrowserHeader', IFrame: 'DemoIFrame', HelloWorld: 'DemoHelloWorld'
-  })) assert.match(provider, new RegExp(`${name}: demoComponents\\.${implementation}`))
+  assert.doesNotMatch(provider, /demoComponents|components\/demo/)
+  const installation = await readFile(new URL('app/[locale]/guide/installation/vite/content.mdx', site), 'utf8')
+  assert.match(installation, /import \{ DemoHelloWorld as HelloWorld \} from '~\/site\/components\/demo\/DemoBrowser'/)
   for (const name of ['Demo', 'DemoPanel', 'DemoP', 'DemoLabel', 'DemoDark', 'DemoLight', 'IFrame', 'HelloWorld', 'BrowserHeader']) {
     assert.ok(!shellFiles.includes(`${name}.tsx`), `${name} still has a shell implementation`)
     assert.doesNotMatch(shell, new RegExp(`\\b${name}:`))

@@ -2,11 +2,14 @@ import { benchmarkContent } from './utils/benchmark-content'
 import { introductionContent } from './utils/introduction-content'
 import { brandContent } from './utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from './utils/installation-content'
-import './scripts/prepare-app'
+import { pages as basePages } from './scripts/generate-page-categories'
 
-import { readFile, rm, writeFile } from 'node:fs/promises'
-import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
+import { readFile, rm } from 'node:fs/promises'
+import i18n from './docs-shell/common/i18n.config.js'
+import { writeIfChanged } from './scripts/write-if-changed'
+import { extractSearchNodesFromMdx, generateSearchPages } from '~/site/docs-shell/utils/search-pages'
 import { generateTranslatedContentRegistry } from './scripts/generate-translation-registry'
+import { syncRawSources } from './scripts/sync-raw-sources'
 import { generateReference } from './reference/build'
 import { guideOverviewMarkdown } from './utils/guide-overview'
 import { syntaxTutorialContent } from './utils/syntax-tutorial'
@@ -17,8 +20,10 @@ import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-conte
 import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
 
+await syncRawSources()
+const searchPages = await generateSearchPages({ defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
 await generateTranslatedContentRegistry()
-await generateReference(process.cwd())
+await generateReference(process.cwd(), searchPages, basePages)
 
 const guideCategories = JSON.parse(await readFile(new URL('./.categories/guide.json', import.meta.url), 'utf8'))
 const guideOverviewNodes = extractSearchNodesFromMdx(guideOverviewMarkdown(guideCategories))
@@ -49,7 +54,7 @@ guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await in
 guideContentNodes.set('/brand', extractSearchNodesFromMdx((await brandContent(process.cwd())).searchMarkdown))
 for (const locale of ['en', 'tw']) {
   const searchFile = new URL(`./public/search/${locale}.json`, import.meta.url)
-  const pages = JSON.parse(await readFile(searchFile, 'utf8'))
+  const pages = searchPages[locale]
   const overview = pages.find((page: { url: string }) => page.url === '/guide' || page.url === `/${locale}/guide`)
   if (overview) overview.nodes = guideOverviewNodes
   const tutorial = pages.find((page: { url: string }) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/syntax-tutorial')
@@ -61,7 +66,7 @@ for (const locale of ['en', 'tw']) {
       page.identifiers = [{ text: '@compose', id: 'compose' }, { text: '@settings', id: 'settings' }, { text: 'size', id: 'sizing-and-resolution' }]
     }
   }
-  await writeFile(searchFile, JSON.stringify(pages))
+  await writeIfChanged(searchFile, JSON.stringify(pages))
 }
 
 await rm(new URL('./public/monaco-editor', import.meta.url), { recursive: true, force: true })

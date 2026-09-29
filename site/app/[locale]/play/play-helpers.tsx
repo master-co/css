@@ -1,5 +1,8 @@
 import dedent from 'ts-dedent'
 import type { PlayFile } from './types'
+import baseCSS from '../../../.generated/raw/base.css.txt' with { turbopackLoader: 'raw-loader', turbopackAs: '*.js' }
+// @ts-expect-error The standalone browser script has no JS exports; Turbopack imports its text.
+import previewScript from './preview.js' with { turbopackLoader: 'raw-loader', turbopackAs: '*.js' }
 
 const playShareApiURL = process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play'
 
@@ -31,7 +34,7 @@ export function formatCSSSize(cssText: string) {
 export function createPreviewHTML() {
   return dedent`<html hidden>
     <head>
-      <style>${require('../../../../packages/preset/src/base.css?raw')}</style>
+      <style>${baseCSS}</style>
       <style>
         @font-face {
           font-family: Geist;
@@ -51,7 +54,7 @@ export function createPreviewHTML() {
           }
         }
       </style>
-      <script>${require('./preview.js?raw')}</script>
+      <script>${previewScript}</script>
     </head>
     <body></body>
   </html>`

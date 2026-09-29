@@ -302,6 +302,15 @@ test('machine index and localized Markdown identify the same content and source 
   }
 })
 
+test('route index and individual documents preserve the complete Reference catalog', async () => {
+  const routeIndex = JSON.parse(await readFile(path.join(root, '.generated/reference-route-index.json'), 'utf8'))
+  assert.deepEqual(routeIndex, catalog.documents.map(({ id, kind, title, description, category, url }) => ({ id, kind, title, description, category, url })))
+  for (const id of ['rules/modes', 'tokens/color', 'animate']) {
+    const document = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(id)}.json`), 'utf8'))
+    assert.deepEqual(document, catalog.documents.find(doc => doc.id === id))
+  }
+})
+
 test('changing a configured token updates class output, extracted Markdown and search together', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'reference-example-'))
   try {

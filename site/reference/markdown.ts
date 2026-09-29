@@ -50,6 +50,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
   const notes: string[] = []
   const variables: Record<string, unknown> = {}
   const imports: Record<string, string> = {}
+  const rawImports: Record<string, string> = {}
   let tree: any
   try { tree = fromMarkdown(source, {
     extensions: [{ disable: { null: ['htmlFlow', 'htmlText', 'codeIndented'] } }, mdxjsEsm({ acorn, addResult: true }), mdxJsx({ acorn, addResult: true })],
@@ -61,7 +62,12 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       const program = node.data?.estree ?? acorn.parse(node.value, { ecmaVersion: 'latest', sourceType: 'module' })
       for (const statement of program.body) {
         if (statement.type === 'ImportDeclaration') {
-          for (const specifier of statement.specifiers) imports[specifier.local.name] = statement.source.value
+          for (const specifier of statement.specifiers) {
+            imports[specifier.local.name] = statement.source.value
+            if (statement.attributes?.some((attribute: any) => attribute.key.name === 'turbopackLoader' && attribute.value.value === 'raw-loader')) {
+              rawImports[specifier.local.name] = statement.source.value
+            }
+          }
         }
         const declaration = statement.declaration ?? statement
         if (declaration.type === 'VariableDeclaration') {
@@ -74,13 +80,29 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
     node.children?.forEach(collectEsm)
   }
   collectEsm(tree)
+  const readRawImport = (base: string, importedPath: string) => {
+    const target = path.resolve(base, importedPath.replace(/\?source$/, ''))
+    if (!target.startsWith(path.resolve(base) + path.sep)) throw new Error('Raw import must be package local')
+    return readFile(target, 'utf8')
+  }
   const expression = async (text: string) => {
     const value = (expressions[text.trim()] ?? text).trim().replace(/^\{([\s\S]*)\}$/, '$1').trim()
-    const requireMatch = value.match(/^require\(['"](.+?)\?raw['"]\)$/)
-    if (requireMatch) {
-      const target = path.resolve(path.dirname(file), requireMatch[1])
-      if (!target.startsWith(path.resolve(path.dirname(file)) + path.sep)) throw new Error('Raw include must be package local')
-      return readFile(target, 'utf8')
+    const rawImport = rawImports[value]
+    if (rawImport) return readRawImport(path.dirname(file), rawImport)
+    // The MDX parser does not accept import attributes. Follow a small TS module
+    // that owns native raw imports without executing its code during extraction.
+    if (imports[value]?.startsWith('./')) {
+      const moduleFile = path.resolve(path.dirname(file), `${imports[value]}.ts`)
+      const moduleSource = await readFile(moduleFile, 'utf8').catch(() => '')
+      if (moduleSource) {
+        const rawModuleAst = acorn.parse(moduleSource, { ecmaVersion: 'latest', sourceType: 'module' }) as any
+        for (const statement of rawModuleAst.body) {
+          if (statement.type !== 'ImportDeclaration' || !statement.specifiers.some((specifier: any) => specifier.local.name === value)) continue
+          if (statement.attributes?.some((attribute: any) => attribute.key.name === 'turbopackLoader' && attribute.value.value === 'raw-loader')) {
+            return readRawImport(path.dirname(moduleFile), statement.source.value)
+          }
+        }
+      }
     }
     return literal(acorn.parseExpressionAt(value, 0, { ecmaVersion: 'latest' }), variables)
   }

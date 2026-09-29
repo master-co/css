@@ -1,6 +1,6 @@
 import FastGlob from 'fast-glob'
 import Slugger from 'github-slugger'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { fromMarkdown } from 'mdast-util-from-markdown'
@@ -8,6 +8,7 @@ import { mdxjsEsm } from 'micromark-extension-mdxjs-esm'
 import { mdxjsEsmFromMarkdown } from 'mdast-util-mdxjs-esm'
 import * as acorn from 'acorn'
 import resolveHeading from './resolve-heading.js'
+import { writeIfChangedSync } from '../../scripts/write-if-changed'
 import { localizePathname, type LocalePrefixMode } from './i18n-pathname.js'
 
 const DEFAULT_METADATA_GLOB = './app/[locale]/**/*metadata.ts'
@@ -22,6 +23,7 @@ export interface SearchPage {
   category?: string
   description: string
   disabled?: boolean
+  identifiers?: SearchNode[]
   nodes: SearchNode[]
   title: string
   url: string
@@ -51,6 +53,7 @@ export interface GenerateSearchPagesOptions extends LoadSearchPageEntriesOptions
   dictionariesDir?: string
   locales: string[]
   outDir?: string
+  write?: boolean
 }
 
 type Translate = (text: string) => string
@@ -68,10 +71,12 @@ export async function generateSearchPages({
   dictionariesDir = resolve(cwd, 'public/dictionaries'),
   locales,
   metadataGlob,
-  outDir = resolve(cwd, 'public/search')
-}: GenerateSearchPagesOptions) {
+  outDir = resolve(cwd, 'public/search'),
+  write = true
+}: GenerateSearchPagesOptions): Promise<Record<string, SearchPage[]>> {
   const entries = await loadSearchPageEntries({ cwd, metadataGlob })
-  mkdirSync(outDir, { recursive: true })
+  const result: Record<string, SearchPage[]> = {}
+  if (write) mkdirSync(outDir, { recursive: true })
 
   for (const locale of locales) {
     const translations = loadDictionaryTranslations(dictionariesDir, locale)
@@ -79,10 +84,14 @@ export async function generateSearchPages({
     const pages = entries
       .map((entry) => createSearchPage({ defaultLocale, entry, locale, translate }))
       .sort((a, b) => a.url.localeCompare(b.url))
-    const filename = resolve(outDir, `${locale}.json`)
-    writeFileSync(filename, JSON.stringify(pages))
-    console.log(`產生 ${filename} (${pages.length} search pages)`)
+    result[locale] = pages
+    if (write) {
+      const filename = resolve(outDir, `${locale}.json`)
+      writeIfChangedSync(filename, JSON.stringify(pages))
+      console.log(`產生 ${filename} (${pages.length} search pages)`)
+    }
   }
+  return result
 }
 
 export async function loadSearchPageEntries({

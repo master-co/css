@@ -31,9 +31,6 @@ nextConfig.turbopack.resolveAlias = {
     browser: '../packages/binding/src/tooling-binding-browser.ts'
   }
 }
-nextConfig.experimental = {
-  ...nextConfig.experimental
-}
 nextConfig.images = {
   ...nextConfig.images,
   ...(useCloudflareImageLoader

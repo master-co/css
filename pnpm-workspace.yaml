@@ -58,6 +58,19 @@ minimumReleaseAgeExclude:
   - '@tanstack/start-plugin-core@1.171.40'
   - '@tanstack/start-server-core@1.169.32'
   - '@tanstack/start-storage-context@1.167.30'
+  - '@next/env@16.3.7'
+  - '@next/mdx@16.3.7'
+  - '@next/swc-darwin-arm64@16.3.7'
+  - '@next/swc-darwin-x64@16.3.7'
+  - '@next/swc-linux-arm64-gnu@16.3.7'
+  - '@next/swc-linux-arm64-musl@16.3.7'
+  - '@next/swc-linux-x64-gnu@16.3.7'
+  - '@next/swc-linux-x64-musl@16.3.7'
+  - '@next/swc-win32-arm64-msvc@16.3.7'
+  - '@next/swc-win32-x64-msvc@16.3.7'
+  - next@16.3.7
+  - '@next/bundle-analyzer@16.3.7'
+  - '@next/eslint-plugin-next@16.3.7'
 
 overrides:
   # Upstream pins currently retain vulnerable releases within these major lines.

@@ -1,4 +1,5 @@
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import { overviewTemplate, baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
 
 ## How layers control the cascade [sr-only] \{#how-layers-control-the-cascade\}
 Within the same origin and importance, [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer) order groups of declarations before selector specificity is compared. Master CSS assigns generated rules to five named layers. Load the base stylesheet, normally through `@import "@master/css"`, to establish their order.
@@ -63,7 +64,7 @@ Utilities is the last layer in the base order. Its normal declarations can overr
 ## A complete flow \{#a-complete-flow\}
 Add this configuration to the project CSS entry that imports `@master/css`. It defines mode-aware variables and a component; the markup below also generates base, defaults and utility rules.
 
-<ConfiguredExample source={"\n\n@theme { .light {\n  --color-primary: #000000;\n} }\n\n\n@theme { .dark {\n  --color-primary: #ffffff;\n} }\n\n\n@layer components {\n  .btn {\n    display: inline-flex;\n    background-color: var(--color-primary);\n  }\n}"} html={require('./tests/overview/template.html?raw')} />
+<ConfiguredExample source={"\n\n@theme { .light {\n  --color-primary: #000000;\n} }\n\n\n@theme { .dark {\n  --color-primary: #ffffff;\n} }\n\n\n@layer components {\n  .btn {\n    display: inline-flex;\n    background-color: var(--color-primary);\n  }\n}"} html={overviewTemplate} />
 
 Notice the shape of the output:
 
@@ -88,14 +89,14 @@ Add base rules in the stylesheet your app loads when the reset is part of the ap
 
 You can also use `@layer(base)` from markup:
 
-<ConfiguredExample source="" html={require('./tests/adding-base-styles/template.html?raw')} />
+<ConfiguredExample source="" html={baseStylesTemplate} />
 
 In most projects, import the default `@master/css` stylesheet; it includes [base styles](/guide/global-styles#base-layer) in the base layer.
 
 ## Defaults are for broad defaults \{#defaults-are-for-broad-defaults\}
 Put brand or content defaults in the defaults layer when they should apply across selected descendants but still remain easy to override.
 
-<ConfiguredExample source="" html={require('./tests/adding-default-styles/template.html?raw')} />
+<ConfiguredExample source="" html={defaultStylesTemplate} />
 
 Avoid using the base layer for brand or content typography:
 
@@ -120,7 +121,7 @@ Defaults rules are useful for descendants because they can establish defaults wi
 
 For example, set paragraph text to `1rem` across an article, then override one paragraph with `text:1.5rem`.
 
-<ConfiguredExample source="" html={require('./tests/overriding-default-styles/template.html?raw')} />
+<ConfiguredExample source="" html={overridingDefaultsTemplate} />
 
 This is the reason defaults sit before components and utilities: defaults should be broad, but final element-level decisions should stay close to the element.
 

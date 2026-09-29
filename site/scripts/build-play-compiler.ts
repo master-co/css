@@ -1,4 +1,5 @@
-import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { build, type TsdownPlugin } from 'tsdown'
@@ -38,50 +39,65 @@ function assertNoWorkspaceDistInputsPlugin(): TsdownPlugin {
 export async function buildPlayCompiler(outputDir = join(siteDir, 'public/play-compiler')) {
   const compilerOutputPath = join(outputDir, 'compiler.js')
   const compilerWasmOutputPath = join(outputDir, compilerWasmFileName)
-
-  await rm(outputDir, { recursive: true, force: true })
-  await mkdir(outputDir, { recursive: true })
-
-  await build({
-    cwd: siteDir,
-    entry: {
-      compiler: fileURLToPath(new URL('../play-compiler/compile-play-css.ts', import.meta.url))
-    },
-    outDir: outputDir,
-    platform: 'browser',
-    target: 'es2022',
-    tsconfig: './tsconfig.json',
-    deps: {
-      alwaysBundle: [/^[^./]/],
-      neverBundle: ['fs']
-    },
-    inputOptions: {
-      resolve: {
-        alias: {
-          '@master/css-binding/compiler': compilerBindingSourcePath,
-          '@master/css-binding/engine': engineBindingSourcePath,
-          '@master/css-binding': bindingSourcePath
-        },
-        conditionNames: ['browser', 'default', 'import']
+  const temporaryDir = await mkdtemp(join(tmpdir(), 'mastercss-play-'))
+  try {
+    await build({
+      cwd: siteDir,
+      entry: {
+        compiler: fileURLToPath(new URL('../play-compiler/compile-play-css.ts', import.meta.url))
+      },
+      outDir: temporaryDir,
+      platform: 'browser',
+      target: 'es2022',
+      tsconfig: './tsconfig.json',
+      deps: {
+        alwaysBundle: [/^[^./]/],
+        neverBundle: ['fs']
+      },
+      inputOptions: {
+        resolve: {
+          alias: {
+            '@master/css-binding/compiler': compilerBindingSourcePath,
+            '@master/css-binding/engine': engineBindingSourcePath,
+            '@master/css-binding': bindingSourcePath
+          },
+          conditionNames: ['browser', 'default', 'import']
+        }
+      },
+      loader: {
+        '.json': 'json'
+      },
+      minify: true,
+      dts: false,
+      logLevel: 'silent',
+      report: false,
+      plugins: [
+        assertNoWorkspaceDistInputsPlugin()
+      ],
+      outputOptions: {
+        entryFileNames: 'compiler.js',
+        codeSplitting: false,
+        comments: false
       }
-    },
-    loader: {
-      '.json': 'json'
-    },
-    minify: true,
-    dts: false,
-    logLevel: 'silent',
-    report: false,
-    plugins: [
-      assertNoWorkspaceDistInputsPlugin()
-    ],
-    outputOptions: {
-      entryFileNames: 'compiler.js',
-      codeSplitting: false,
-      comments: false
+    })
+    await copyFile(compilerWasmSourcePath, join(temporaryDir, compilerWasmFileName))
+    await mkdir(outputDir, { recursive: true })
+    const generated = await readdir(temporaryDir)
+    for (const name of generated) {
+      const source = await readFile(join(temporaryDir, name))
+      const target = join(outputDir, name)
+      const previous = await readFile(target).catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return undefined
+        throw error
+      })
+      if (!previous?.equals(source)) await writeFile(target, source)
     }
-  })
-  await copyFile(compilerWasmSourcePath, compilerWasmOutputPath)
+    for (const name of await readdir(outputDir)) {
+      if (!generated.includes(name)) await rm(join(outputDir, name), { recursive: true, force: true })
+    }
+  } finally {
+    await rm(temporaryDir, { recursive: true, force: true })
+  }
 
   const { size: compilerSize } = await stat(compilerOutputPath)
   const { size: compilerWasmSize } = await stat(compilerWasmOutputPath)

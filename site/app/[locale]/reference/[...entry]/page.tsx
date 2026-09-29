@@ -1,29 +1,29 @@
 import { notFound } from 'next/navigation'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
-import catalogJSON from '~/site/.generated/reference.json'
+import { routeIndex } from '~/site/reference/route-index'
 import ReferenceMarkdown from '~/site/reference/ReferenceBody'
-import type { ReferenceCatalog } from '~/site/reference/types'
+import { loadReferenceDocument } from '~/site/reference/load-document'
 
-const catalog = catalogJSON as ReferenceCatalog
 export const dynamic = 'force-static'
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return catalog.documents.map(doc => ({ entry: doc.id.split('/') }))
+  return routeIndex.map(doc => ({ entry: doc.id.split('/') }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; entry: string[] }> }) {
   const { entry, locale } = await params
-  const doc = catalog.documents.find(doc => doc.id === entry.join('/'))
+  const doc = routeIndex.find(doc => doc.id === entry.join('/'))
   if (!doc) return {}
   return { title: doc.title, description: doc.description, alternates: { canonical: `${locale === 'tw' ? '/tw' : ''}${doc.url}` } }
 }
 
 export default async function Page(props: { params: Promise<{ locale: string; entry: string[] }> }) {
   const { entry } = await props.params
-  const doc = catalog.documents.find(doc => doc.id === entry.join('/'))
-  if (!doc) notFound()
+  const id = entry.join('/')
+  if (!routeIndex.some(doc => doc.id === id)) notFound()
+  const doc = await loadReferenceDocument(id)
   const introHeadingId = doc.kind === 'directive' ? doc.headings[0]?.id : undefined
   const specimenNamespace = doc.kind === 'tokens' ? doc.id.slice(7) : undefined
   const tokenSpecimen = specimenNamespace

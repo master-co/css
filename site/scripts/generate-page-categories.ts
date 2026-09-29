@@ -2,22 +2,19 @@ import FastGlob from 'fast-glob'
 import { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types'
 import { dirname, join, resolve } from 'path'
 import { DefinedMetadata } from '../docs-shell/types/Metadata'
-import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync } from 'fs'
+import { writeIfChangedSync } from './write-if-changed'
 
 const { default: units } = await import(resolve('./units'))
 const metadataPaths = FastGlob.sync('./app/[locale]/**/*metadata.ts')
   .filter((metadataPath) => existsSync(join(dirname(metadataPath), 'page.tsx')))
-const pages = await Promise.all(
+export const pages = await Promise.all(
   metadataPaths
     .map(async (metadataPath) => {
       const { default: metadata } = await import(resolve(metadataPath))
       return metadata
     })
 )
-
-const pageFilename = resolve(`.pages.json`)
-writeFileSync(pageFilename, JSON.stringify(pages, null, 4))
-console.log(`產生 ${pageFilename} (${pages.length} pages)`)
 
 if (!existsSync(resolve('.categories'))) {
   mkdirSync(resolve('.categories'))
@@ -67,7 +64,7 @@ for (const name in units) {
       return indexA - indexB
     })
   const categoryFilename = resolve(`.categories/${name}.json`)
-  writeFileSync(categoryFilename, JSON.stringify(categories, null, 4))
+  writeIfChangedSync(categoryFilename, JSON.stringify(categories, null, 4))
   console.log(`產生 ${categoryFilename} (${categories.length} categories)`)
   resolvedCount = resolvedCount + categories.length
 }

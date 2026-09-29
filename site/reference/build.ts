@@ -1,5 +1,5 @@
 import { buildRecipeContracts } from './recipes'
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
+import { readFile, readdir, mkdir, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
@@ -11,6 +11,8 @@ import { extractReferenceMdx, portableMarkdown } from './markdown'
 import { ruleSources } from './editorial'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
+import type { SearchPage } from '../docs-shell/utils/search-pages'
+import { writeIfChanged } from '../scripts/write-if-changed'
 import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
 import { buildTokenContracts } from './token-contracts'
@@ -93,21 +95,31 @@ export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: Referenc
   return `# ${doc.title}\n\n${doc.description}\n\n- ID: ${doc.id}\n- Type: ${doc.kind}\n- Canonical: ${doc.url}\n- Version: ${catalog.version}\n- Source revision: ${catalog.revision} (${catalog.sourceState})\n- Source: ${doc.source}\n- Content digest: ${digest(doc.markdown)}\n- Semantic digest: ${catalog.semanticDigest}\n- Language: ${doc.language}${locale === 'tw' ? ' (English fallback; 尚無繁中全文翻譯)' : ''}\n\n${doc.kind === 'utility' ? '> Syntax placeholders illustrate declaration shapes; they are not an exhaustive grammar for valid values. Examples use the current preset.\n\n' : ''}${markdown}\n\n## Related reference\n\n${doc.related.map(id => `- [${id}](/reference/${id}.md)`).join('\n')}${doc.extractionNotes.length ? `\n\n## Additional interactive content\n\nThe HTML page contains additional presentation components: ${doc.extractionNotes.join('; ')}.` : ''}\n`
 }
 
-export async function generateReference(siteRoot: string) {
+export async function generateReference(siteRoot: string, searchPages?: Record<string, SearchPage[]>, pageEntries?: any[]) {
   const catalog = await buildReferenceCatalog(siteRoot)
-  // These two prefixes contain only generated Reference artifacts.
-  await rm(path.join(siteRoot, 'public/reference'), { recursive: true, force: true })
-  await rm(path.join(siteRoot, 'public/tw/reference'), { recursive: true, force: true })
+  const expectedFiles = new Set<string>()
   await mkdir(path.join(siteRoot, '.generated'), { recursive: true })
-  await writeFile(path.join(siteRoot, '.generated/reference.json'), JSON.stringify(catalog))
+  await writeIfChanged(path.join(siteRoot, '.generated/reference.json'), JSON.stringify(catalog))
+  const routeIndex = catalog.documents.map(({ id, kind, title, description, category, url }) => ({ id, kind, title, description, category, url }))
+  await writeIfChanged(path.join(siteRoot, '.generated/reference-route-index.json'), JSON.stringify(routeIndex))
+  const documentDir = path.join(siteRoot, '.generated/reference-documents')
+  await mkdir(documentDir, { recursive: true })
+  const expectedDocuments = new Set<string>()
+  for (const doc of catalog.documents) {
+    const filename = path.join(documentDir, `${encodeURIComponent(doc.id)}.json`)
+    expectedDocuments.add(filename)
+    await writeIfChanged(filename, JSON.stringify(doc))
+  }
+  await removeStaleGeneratedFiles(documentDir, expectedDocuments)
   for (const locale of ['en', 'tw']) {
     for (const doc of catalog.documents) {
       const filename = path.join(siteRoot, 'public', ...(locale === 'tw' ? ['tw'] : []), `${doc.url}.md`)
+      expectedFiles.add(filename)
       await mkdir(path.dirname(filename), { recursive: true })
-      await writeFile(filename, renderDocumentMarkdown(doc, catalog, locale))
+      await writeIfChanged(filename, renderDocumentMarkdown(doc, catalog, locale))
     }
     const searchFile = path.join(siteRoot, `public/search/${locale}.json`)
-    const existing = JSON.parse(await readFile(searchFile, 'utf8').catch(() => '[]'))
+    const existing = searchPages?.[locale] ?? JSON.parse(await readFile(searchFile, 'utf8').catch(() => '[]'))
     const pages = catalog.documents.map(doc => ({
       title: doc.title, description: doc.description, category: doc.category, kind: doc.kind,
       url: `${locale === 'tw' ? '/tw' : ''}${doc.url}`,
@@ -115,18 +127,42 @@ export async function generateReference(siteRoot: string) {
       terms: doc.terms,
       nodes: [...doc.rows.map(row => ({ id: row.id, tag: 'code', text: `${row.syntax} → ${row.declarations}` })), ...extractSearchNodesFromMdx(doc.markdown)]
     }))
-    await mkdir(path.dirname(searchFile), { recursive: true })
-    await writeFile(searchFile, JSON.stringify([...existing.filter((page: any) => !/^\/(?:en\/|tw\/)?reference\//.test(page.url) && !pages.some(doc => doc.url === page.url)), ...pages]))
+    const merged = [...existing.filter((page: any) => !/^\/(?:en\/|tw\/)?reference\//.test(page.url) && !pages.some(doc => doc.url === page.url)), ...pages]
+    if (searchPages) searchPages[locale] = merged
+    else {
+      await mkdir(path.dirname(searchFile), { recursive: true })
+      await writeIfChanged(searchFile, JSON.stringify(merged))
+    }
   }
   const index = { ...catalog, documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, ...doc }) => ({ ...doc, markdownUrl: `${doc.url}.md`, contentDigest: digest(markdown) })) }
-  await mkdir(path.join(siteRoot, 'public/reference'), { recursive: true })
-  await writeFile(path.join(siteRoot, 'public/reference/index.json'), JSON.stringify(index, null, 2))
+  const referenceDir = path.join(siteRoot, 'public/reference')
+  await mkdir(referenceDir, { recursive: true })
+  const indexFile = path.join(referenceDir, 'index.json')
+  expectedFiles.add(indexFile)
+  await writeIfChanged(indexFile, JSON.stringify(index, null, 2))
   const pagesFile = path.join(siteRoot, '.pages.json')
-  const pages = JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]'))
+  const pages = pageEntries ?? JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]'))
   for (const doc of catalog.documents) if (!pages.some((page: any) => page.pathname === doc.url)) pages.push({ pathname: doc.url })
-  await writeFile(pagesFile, JSON.stringify(pages))
+  await writeIfChanged(pagesFile, JSON.stringify(pages))
   for (const kind of [...new Set(catalog.documents.map(doc => doc.kind))]) {
-    await writeFile(path.join(siteRoot, `public/reference/${kind}.txt`), catalog.documents.filter(doc => doc.kind === kind).map(doc => renderDocumentMarkdown(doc, catalog)).join('\n---\n\n'))
+    const filename = path.join(referenceDir, `${kind}.txt`)
+    expectedFiles.add(filename)
+    await writeIfChanged(filename, catalog.documents.filter(doc => doc.kind === kind).map(doc => renderDocumentMarkdown(doc, catalog)).join('\n---\n\n'))
   }
+  // These two prefixes contain only generated Reference artifacts.
+  await removeStaleGeneratedFiles(referenceDir, expectedFiles)
+  await removeStaleGeneratedFiles(path.join(siteRoot, 'public/tw/reference'), expectedFiles)
   return catalog
+}
+
+async function removeStaleGeneratedFiles(directory: string, expectedFiles: Set<string>) {
+  const entries = await readdir(directory, { withFileTypes: true }).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') return []
+    throw error
+  })
+  for (const entry of entries) {
+    const filename = path.join(directory, entry.name)
+    if (entry.isDirectory()) await removeStaleGeneratedFiles(filename, expectedFiles)
+    else if (!expectedFiles.has(filename)) await rm(filename, { force: true })
+  }
 }

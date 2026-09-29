@@ -155,7 +155,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is about that framework integration.
 - Implementation demos may use React, Next.js, and `flushSync`; displayed code does not need to match exactly.
-- In `content.mdx`, do not default-import guide-local components from relative `./components/*` modules. MDX injects default exports automatically; import only named exports from those modules to avoid duplicate component registration errors.
+- Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `~/site/docs-shell/components`, and site demos under `~/site/components/demo`. The MDX provider only supplies Markdown renderers and `Image`.
 
 For View Transitions examples, keep `view-transition-name` values unique, prefer article-specific names such as `article-image`, use `view-transition-class` to group related snapshots, and avoid broad `::view-transition-group(*)` in shared demos unless intentionally documenting global behavior.
 

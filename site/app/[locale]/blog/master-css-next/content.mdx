@@ -1,3 +1,5 @@
+import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
+
 Today we are introducing `@master/css-next`, the official Master CSS integration for Next.js.
 
 The integration defaults to Static Rendering: it scans complete source class names and builds an ordinary CSS asset. Progressive Rendering is an explicit option. In that mode, the Next.js Adapter API supplies final static and pre-rendered HTML so Master CSS can inject each document's first-page rules into `<style id="master-css">`.

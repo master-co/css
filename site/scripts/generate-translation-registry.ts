@@ -1,6 +1,7 @@
-import { mkdir, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, readdir } from 'node:fs/promises'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { writeIfChanged } from './write-if-changed'
 
 const siteRoot = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const appLocaleRoot = resolve(siteRoot, 'app/[locale]')
@@ -15,7 +16,7 @@ interface TranslatedContentEntry {
 export async function generateTranslatedContentRegistry() {
   const entries = await collectTranslatedContentEntries(appLocaleRoot)
   await mkdir(dirname(registryPath), { recursive: true })
-  await writeFile(registryPath, renderRegistry(entries))
+  await writeIfChanged(registryPath, renderRegistry(entries))
   console.log(`產生 ${registryPath} (${entries.length} translated content modules)`)
 }
 
