@@ -2,9 +2,7 @@
 
 mod class_list;
 
-use mastercss_engine::{
-    ClassSemanticInspection, EngineError, EngineSession, builtin_token_aliases, natural_compare,
-};
+use mastercss_engine::{ClassSemanticInspection, EngineError, EngineSession, natural_compare};
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
     UtilityLayerName, ValidatorBatchIr,
@@ -144,8 +142,6 @@ pub struct CanonicalClassNameOptions {
     #[serde(default = "default_true")]
     pub prefer_static_utilities: bool,
     #[serde(default = "default_true")]
-    pub prefer_property_aliases: bool,
-    #[serde(default = "default_true")]
     pub prefer_composition_utilities: bool,
 }
 
@@ -153,7 +149,6 @@ impl Default for CanonicalClassNameOptions {
     fn default() -> Self {
         Self {
             prefer_static_utilities: true,
-            prefer_property_aliases: true,
             prefer_composition_utilities: true,
         }
     }
@@ -241,14 +236,12 @@ pub struct LintSession {
 #[derive(Debug, Default)]
 struct CanonicalRecommendationIndex {
     static_candidates_by_signature: HashMap<String, Vec<String>>,
-    preferred_aliases_by_property: HashMap<String, Vec<String>>,
 }
 
 #[derive(Debug)]
 struct CanonicalClassParts {
     base: String,
     suffix: String,
-    key: Option<String>,
     value: Option<String>,
 }
 

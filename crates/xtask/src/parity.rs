@@ -21,7 +21,7 @@ pub(crate) fn validate_semantic_parity_corpus(
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
     if corpus.version != 3
-        || corpus.semantic_baseline != "language-9-atomic-class-authoring"
+        || corpus.semantic_baseline != "language-10-canonical-token-families"
         || corpus.public_baseline != "Master CSS v2"
     {
         return Err("Language corpus has an unsupported version or contract.".into());
@@ -42,6 +42,7 @@ pub(crate) fn validate_semantic_parity_corpus(
     }
     let historical: SemanticParityCorpus =
         serde_json::from_slice(&historical_bytes).map_err(|error| error.to_string())?;
+    // New language cases may be appended; every frozen case keeps its position.
     if historical
         .engine_cases
         .iter()
@@ -50,6 +51,7 @@ pub(crate) fn validate_semantic_parity_corpus(
         != corpus
             .engine_cases
             .iter()
+            .take(historical.engine_cases.len())
             .map(|case| &case.id)
             .collect::<Vec<_>>()
         || historical
@@ -68,7 +70,11 @@ pub(crate) fn validate_semantic_parity_corpus(
             .map(|case| {
                 // The frozen oracle retains compose; the current lexer no longer
                 // recognizes that removed directive as a Master CSS node.
-                let canonical = if case.kind == "lexer" {
+                let canonical = if case.kind == "selector"
+                    && matches!(case.input.as_str(), ":before" | "::scrollbar-thumb")
+                {
+                    format!("&{}", case.input)
+                } else if case.kind == "lexer" {
                     case.expected_canonical
                         .split('|')
                         .filter(|name| {

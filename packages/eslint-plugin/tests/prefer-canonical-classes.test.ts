@@ -1,7 +1,6 @@
 import rule from '../src/rules/prefer-canonical-classes'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import { UtilityType } from '@master/css-schema/utility-type'
 
 const customManifest = createPresetManifest({
     customMedia: { '--tablet': { type: 'feature' as const, value: '(width >= 48rem)' } },
@@ -75,15 +74,14 @@ const customManifest = createPresetManifest({
 
 jsxTester.run('prefer canonical classes', rule, {
     valid: [
-{ code: `<div class="text-align:center font-md m-md r-md fg-red-60">Recommended classes</div>` },
+{ code: `<div class="text-align:center font-size-md m-md r-md fg-red-60">Recommended classes</div>` },
 { code: "<div class=\"btn width:futurekeyword unknown-class\">Unknown classes are ignored</div>" },
-{ code: `<div class="text-muted grid-col-span:4">Manifest aliases are preserved</div>` },
+{ code: `<div class="text-muted grid-col-span:4">Custom classes are left to validation</div>` },
 {
             code: `<div class="font-size:16px">Literal values are preserved</div>`,
         },
 {
-            code: `<div class="margin-md">Property aliases disabled</div>`,
-            options: [{ preferPropertyAliases: false }]
+            code: `<div class="margin-md">Retired token names are diagnosed by no-invalid-classes; no autofix</div>`,
         },
 {
             code: `<div class="display:block">Static utilities disabled</div>`,
@@ -158,8 +156,7 @@ code: `<div class="font-size:16px@dark@sm text-align:center@dark@sm">Condition o
 code: `<div class="font-size:16px@dark@sm">Literal values are preserved preserves condition nesting</div>`
 },
 {
-code: `<div class="margin-md@dark@sm">Property aliases disabled preserves condition nesting</div>`,
-options: [{ preferPropertyAliases: false }]
+code: `<div class="margin-md@dark@sm">Retired token names are diagnosed by no-invalid-classes; no autofix preserves condition nesting</div>`,
 },
 {
 code: "<div class=\"margin:var(--spacing-md)@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"
@@ -178,33 +175,8 @@ code: 'ctl(`display:block:hover@dark@sm`)'
 }
 , { code: 'ctl(`padding-left:1rem padding-right:1rem`)' }
 ],
-    invalid: [
-{
-            code: "<div class=\"margin:1rem margin-md padding-inline-md color-red-60\">Aliases</div>",
-            output: "<div class=\"margin:1rem m-md px-md fg-red-60\">Aliases</div>",
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-{
-            code: "<div class=\"width-md height-md width:1rem height:1rem w-md:hover h-md:hover margin-top-md margin-bottom-md padding-left:1rem padding-right:1rem\">Composition after canonicalization</div>",
-            output: "<div class=\"w-md h-md width:1rem height:1rem w-md:hover h-md:hover mt-md mb-md padding-left:1rem padding-right:1rem\">Composition after canonicalization</div>",
-            errors: [{ messageId: 'preferClass' }, { messageId: 'preferClass' }, { messageId: 'preferClass' }, { messageId: 'preferClass' }]
-        },
-{
-            code: `clsx('width-md height-md')`,
-            output: "clsx('w-md h-md')",
-            errors: [{ messageId: 'preferClass' }, { messageId: 'preferClass' }]
-        },
-{
-            code: `clsx('margin-top-md margin-bottom-md')`,
-            output: "clsx('mt-md mb-md')",
-            errors: [{ messageId: 'preferClass' }, { messageId: 'preferClass' }]
-        },
+    invalid: []
 
-]
 })
 
 createTester({

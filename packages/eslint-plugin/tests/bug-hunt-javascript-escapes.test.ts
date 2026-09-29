@@ -83,7 +83,7 @@ it.each([
 
 it('maps conflict removal and canonical replacement through escaped separators', async () => {
   const eslint = linter({ 'sort-classes': 'error', 'no-conflicting-classes': 'error', 'prefer-canonical-classes': 'error' }, true)
-  const [result] = await eslint.lintText(String.raw`clsx('padding-md\u0020padding:8px display:\u0062lock')`, { filePath: 'escape.js' })
+  const [result] = await eslint.lintText(String.raw`clsx('p-md\u0020padding:8px display:\u0062lock')`, { filePath: 'escape.js' })
   expect(result.messages).toEqual([])
   expect(cooked(result.output!)).toBe('display:block padding:8px')
   const [again] = await eslint.lintText(result.output!, { filePath: 'escape.js' })

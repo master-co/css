@@ -39,8 +39,8 @@ export default defineConfig([
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-bg-white font-md display:flex px-md position:relative width:100% shadow-lg r-md z-index:10 gap:0.5rem <!-- [!code --] -->
-position:relative z-index:10 display:flex gap:0.5rem width:100% px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+bg-white font-size-md display:flex px-md position:relative width:100% shadow-lg r-md z-index:10 gap:0.5rem <!-- [!code --] -->
+position:relative z-index:10 display:flex gap:0.5rem width:100% px-md r-md font-size-md bg-white shadow-lg <!-- [!code ++] -->
 ```
 
 Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
@@ -222,7 +222,6 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferPropertyAliases: false
       }]
     }
   }

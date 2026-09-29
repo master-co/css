@@ -68,8 +68,8 @@ jsxTester.run('vue sort classes', rule, {
       }
     },
     {
-      code: "\n          <template>\n            <div v-bind=\"data\" :class=\"[\n            'transition padding-block:1px font-medium',\n            {\n              'fg-white': variant === 'white',\n              'fg-blue-50 fg-blue-40:hover b-blue-50': variant === 'primary',\n              'text-decoration:underline|dotted text-underline-offset:10': active\n            }\n            ]\" />\n          </template>",
-      output: "\n          <template>\n            <div v-bind=\"data\" :class=\"[\n            'padding-block:1px font-medium transition',\n            {\n              'fg-white': variant === 'white',\n              'b-blue-50 fg-blue-50 fg-blue-40:hover': variant === 'primary',\n              'text-decoration:underline|dotted text-underline-offset:10': active\n            }\n            ]\" />\n          </template>",
+      code: "\n          <template>\n            <div v-bind=\"data\" :class=\"[\n            'transition padding-block:1px font-weight-medium',\n            {\n              'fg-white': variant === 'white',\n              'fg-blue-50 fg-blue-40:hover b-blue-50': variant === 'primary',\n              'text-decoration:underline|dotted text-underline-offset:10': active\n            }\n            ]\" />\n          </template>",
+      output: "\n          <template>\n            <div v-bind=\"data\" :class=\"[\n            'padding-block:1px font-weight-medium transition',\n            {\n              'fg-white': variant === 'white',\n              'b-blue-50 fg-blue-50 fg-blue-40:hover': variant === 'primary',\n              'text-decoration:underline|dotted text-underline-offset:10': active\n            }\n            ]\" />\n          </template>",
       errors: [
         { messageId: 'invalidClassOrder' },
         { messageId: 'invalidClassOrder' }

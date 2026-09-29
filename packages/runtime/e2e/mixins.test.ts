@@ -82,8 +82,8 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
       ['7xl', 60, 1.05, -.04], ['8xl', 72, 1.05, -.04], ['9xl', 96, 1, -.045], ['10xl', 128, 1, -.05]
     ] as const
     await page.setViewportSize(viewport)
-    const rendered = renderClassNamesSync([...steps.map(([step]) => `text-${step}`), 'text-4xl', 'text-5xl@sm', 'font-sans', 'font-sm'], { manifest: baseManifest })
-    await page.setContent(`<style>html{font-size:16px}body{margin:0;padding:24px;box-sizing:border-box}h1,p{margin:0 0 16px}.metrics{position:absolute;visibility:hidden}</style><style>${rendered.cssText}</style><main class="font-sans"><h1 class="text-4xl text-5xl@sm">Designing for consistency across every platform.</h1><p class="text-md">A consistent type scale keeps headings and body text readable. Typography should wrap naturally on a phone and retain the same explicit line height on a desktop.</p><p id="font-only" class="font-sm">A single font-size token.</p>${steps.map(([step]) => `<span id="step-${step}" class="metrics text-${step}">Ag</span>`).join('')}</main>`)
+    const rendered = renderClassNamesSync([...steps.map(([step]) => `text-${step}`), 'text-4xl', 'text-5xl@sm', 'font-family-sans', 'font-size-sm'], { manifest: baseManifest })
+    await page.setContent(`<style>html{font-size:16px}body{margin:0;padding:24px;box-sizing:border-box}h1,p{margin:0 0 16px}.metrics{position:absolute;visibility:hidden}</style><style>${rendered.cssText}</style><main class="font-family-sans"><h1 class="text-4xl text-5xl@sm">Designing for consistency across every platform.</h1><p class="text-md">A consistent type scale keeps headings and body text readable. Typography should wrap naturally on a phone and retain the same explicit line height on a desktop.</p><p id="font-only" class="font-size-sm">A single font-size token.</p>${steps.map(([step]) => `<span id="step-${step}" class="metrics text-${step}">Ag</span>`).join('')}</main>`)
     for (const [step, size, lineHeight, spacing] of steps) {
       const metrics = await page.locator(`#step-${step}`).evaluate(element => {
         const style = getComputedStyle(element)

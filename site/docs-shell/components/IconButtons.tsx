@@ -16,7 +16,7 @@ export default ({ children, className, url }: any) =>
         disabled={item.disabled}
         rel="noreferrer noopener">
         <item.src className={clsx('width:40% aspect-ratio:1/1', item.className)} width={40} height={40}></item.src>
-        <div className={clsx('margin-top:0.625rem font-2xs', item.name.length < 17 && 'font-xs@sm', item.disabled && 'fg-text-disabled')}>{item.name}</div>
+        <div className={clsx('margin-top:0.625rem font-size-2xs', item.name.length < 17 && 'font-size-xs@sm', item.disabled && 'fg-text-disabled')}>{item.name}</div>
       </Link>
     )
   }</section >

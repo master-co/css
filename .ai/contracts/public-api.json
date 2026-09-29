@@ -1009,11 +1009,9 @@
           "validateRuleDeclarations"
         ],
         "./builtins": [
-          "MasterCSSBuiltinTokenAliases",
           "MasterCSSBuiltinTokenFamily",
           "MasterCSSBuiltinTokenNamespace",
           "MasterCSSBuiltinTokenNamespaces",
-          "builtinTokenAliases",
           "builtinTokenFamilies",
           "builtinTokenNamespaces"
         ],
@@ -1184,7 +1182,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "41c4fdff48410eb4"
+      "surface": "30838410b622d576"
     },
     "@master/css-vite": {
       "directory": "vite",

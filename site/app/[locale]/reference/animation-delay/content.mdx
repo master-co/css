@@ -21,7 +21,7 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 ```html
 <!-- No delay -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -41,7 +41,7 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 ```html
 <!-- 600ms delay -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -85,7 +85,7 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font-sm">No offset</span>
+  <span class="font-size-sm">No offset</span>
 </div>
 ```
 
@@ -104,7 +104,7 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font-sm">500ms ahead</span>
+  <span class="font-size-sm">500ms ahead</span>
 </div>
 ```
 
@@ -118,7 +118,7 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
 ```html
 <!-- Three independent entrance timelines -->
 <ul class="display:grid gap-sm margin:0 p-sm list-style:none">
-  <li class="display:flex align-items:center gap-sm font-sm">
+  <li class="display:flex align-items:center gap-sm font-size-sm">
     <span aria-hidden="true"
       class="display:inline-block height:32px width:64px
              border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
@@ -127,7 +127,7 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
              animation-play-state:paused@motion-reduce"></span>
     <span>Item 1 · 0ms</span>
   </li>
-  <li class="display:flex align-items:center gap-sm font-sm">
+  <li class="display:flex align-items:center gap-sm font-size-sm">
     <span aria-hidden="true"
       class="display:inline-block height:32px width:64px
              border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
@@ -136,7 +136,7 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
              animation-play-state:paused@motion-reduce"></span>
     <span>Item 2 · 200ms</span>
   </li>
-  <li class="display:flex align-items:center gap-sm font-sm">
+  <li class="display:flex align-items:center gap-sm font-size-sm">
     <span id="target" aria-hidden="true"
       class="display:inline-block height:32px width:64px
              border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
@@ -173,7 +173,7 @@ Define a duration token for a shared waiting interval. This example resolves `st
            animation:none@media(print)
            animation-play-state:paused@motion-reduce
            animation-delay-stagger"></span>
-  <span class="font-sm">120ms delayed marker</span>
+  <span class="font-size-sm">120ms delayed marker</span>
 </div>
 ```
 
@@ -198,7 +198,7 @@ Resize before replaying. The marker waits 600ms below `sm` and starts immediatel
 ```html
 <!-- 600ms → no delay at sm -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"

@@ -13,7 +13,7 @@ export default function Page() {
   return <main className="min-height:100dvh p-md bg-surface-base fg-text-body">
     <section data-workspace className="grid-cols(4) gap-sm width:100% max-w-3xl margin-inline:auto grid-cols(8)@2xs gap-md@2xs">
       <header id="overview" className="display:flex flex-wrap:wrap grid-col-span(4) align-items:center justify-content:space-between gap-sm grid-col-span(8)@2xs">
-        <div><DemoLabel>Sample workspace / 024</DemoLabel><h1 className="margin-inline:0 mt-2xs margin-bottom:0 text-lg font-semibold">Project overview</h1></div>
+        <div><DemoLabel>Sample workspace / 024</DemoLabel><h1 className="margin-inline:0 mt-2xs margin-bottom:0 text-lg font-weight-semibold">Project overview</h1></div>
         <DemoLabel>September 2026</DemoLabel>
       </header>
       <nav aria-label="Workspace sections" className="display:flex flex-wrap:wrap grid-col-span(4) gap-xs grid-col-span(8)@2xs">
@@ -23,17 +23,17 @@ export default function Page() {
       </nav>
       <DemoSurface id="metrics" className="grid-col-span(4) p-md grid-col-span(2)@4xs grid-col-span(4)@2xs">
         <DemoLabel>Revenue</DemoLabel>
-        <div className="mt-sm text-2xl font-semibold">$128.4k</div>
+        <div className="mt-sm text-2xl font-weight-semibold">$128.4k</div>
         <div className="mt-xs text-xs fg-text-muted">+12.8% from last month</div>
       </DemoSurface>
       <DemoSurface className="grid-col-span(4) p-md grid-col-span(2)@4xs grid-col-span(4)@2xs">
         <DemoLabel>Activation</DemoLabel>
-        <div className="mt-sm text-2xl font-semibold">64.2%</div>
+        <div className="mt-sm text-2xl font-weight-semibold">64.2%</div>
         <div className="mt-xs text-xs fg-text-muted">+4.1 percentage points</div>
       </DemoSurface>
       <DemoSurface id="demand" className="grid-col-span(4) min-width:0 p-md grid-col-span(5)@2xs">
         <figure className="margin:0">
-          <figcaption className="text-sm font-semibold">Weekly demand</figcaption>
+          <figcaption className="text-sm font-weight-semibold">Weekly demand</figcaption>
           <p className="margin-inline:0 mt-2xs margin-bottom:0 text-xs fg-text-muted">Sample requests per day</p>
           <div className="display:flex align-items:end gap-xs height:8rem mt-sm">
             {bars.map(([day, value, height]) => <div key={day} className="display:flex flex:1 flex-direction:column gap-xs min-width:0 text-align:center">
@@ -45,7 +45,7 @@ export default function Page() {
         </figure>
       </DemoSurface>
       <DemoSurface id="launch-tasks" className="grid-col-span(4) min-width:0 p-md grid-col-span(3)@2xs">
-        <h2 className="margin:0 text-sm font-semibold">Launch tasks</h2>
+        <h2 className="margin:0 text-sm font-weight-semibold">Launch tasks</h2>
         <p className="margin-inline:0 mt-2xs margin-bottom:0 text-xs fg-text-muted">Check off a task to try the controls.</p>
         <div className="mt-sm">
           {tasks.map(([task, date]) => <label key={task} className="display:flex align-items:start gap-xs py-sm border-top-width:1px:not(:first-child) border-top-style:solid:not(:first-child) bt-line-divider:not(:first-child)">

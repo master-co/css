@@ -185,9 +185,9 @@ fn token_maps_work_without_preset_utility_definitions() {
     let output = css(
         source,
         &[
-            "font-sm",
-            "font-sans",
-            "font-bold",
+            "font-size-sm",
+            "font-family-sans",
+            "font-weight-bold",
             "p-md",
             "bg-red-60",
             "bg-surface-base",
@@ -210,7 +210,7 @@ fn token_maps_work_without_preset_utility_definitions() {
             .unwrap()
             .diagnostics
             .iter()
-            .any(|diagnostic| diagnostic.code == ErrorCode::AmbiguousToken)
+            .any(|diagnostic| diagnostic.code == ErrorCode::ClassSyntaxError)
     );
 }
 

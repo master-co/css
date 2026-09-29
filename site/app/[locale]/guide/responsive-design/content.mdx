@@ -57,7 +57,7 @@ The `container` class is a utility class that applies the `container-type: inlin
       <div className="display:flex flex-direction:column@container((width<=18rem))">
         <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="container left" />
         <div className='padding-top:var(--spacing-lg) padding-right:var(--spacing-xl) padding-bottom:var(--spacing-lg) padding-left:var(--spacing-xl)'>
-          <div className='text-md font-medium fg-text-neutral'>Lorem ipsum</div>
+          <div className='text-md font-weight-medium fg-text-neutral'>Lorem ipsum</div>
           <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
         </div>
       </div>
@@ -121,21 +121,21 @@ For example, your company is launching a game primarily targeting mobile users w
 
 (i) In mobile-first, **styles not bound by viewports are considered to define the mobile UI.**
 ```html
-<p class="font-2xl">
+<p class="font-size-2xl">
 ```
 Gradually adjust the UI for larger viewports.
 
 (wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024/16rem`.
 ```html
-<!-- @MARK font-3xl@md -->
-<p class="font-2xl font-3xl@md …"> <!-- [!code focus] -->
-<!-- @MARK font-3xl@md -->
-<p class="font-2xl font-3xl@md …">
+<!-- @MARK font-size-3xl@md -->
+<p class="font-size-2xl font-size-3xl@md …"> <!-- [!code focus] -->
+<!-- @MARK font-size-3xl@md -->
+<p class="font-size-2xl font-size-3xl@md …">
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['font-2xl', 'font-3xl@md']}
+    {['font-size-2xl', 'font-size-3xl@md']}
   </Class2CSS>
 </details>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
@@ -150,19 +150,19 @@ For example, your company is launching a web drawing software primarily targetin
 
 (i) In desktop-first, **styles not bound by viewports are considered to define the desktop UI.**
 ```html
-<p class="font-3xl">
+<p class="font-size-3xl">
 ```
 Gradually adjust the UI for smaller viewports.
 
 (wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024/16rem`.
 ```html
-<!-- @MARK font-2xl@media((width<64rem)) -->
-<p class="font-3xl font-2xl@media((width<64rem)) …">
+<!-- @MARK font-size-2xl@media((width<64rem)) -->
+<p class="font-size-3xl font-size-2xl@media((width<64rem)) …">
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['font-3xl', 'font-2xl@media((width<64rem))']}
+    {['font-size-3xl', 'font-size-2xl@media((width<64rem))']}
   </Class2CSS>
 </details>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`

@@ -108,7 +108,7 @@ export function bindLanguageSession(
       assertActive()
       const candidates = session.nativeDeclarationCandidates([className]) as MasterCSSNativeDeclarationCandidate[]
       const result = parse<MasterCSSLanguageInspection>(session.inspectClassName(className))
-      return validate(withCSSValueValidation({ ...result, diagnostics: [...(result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(className, candidates, nativeClasses) : [])] }))
+      return validate(withCSSValueValidation({ ...result, diagnostics: [...(nativeClasses.has(className) && !result.rules.length ? [] : result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(className, candidates, nativeClasses) : [])] }))
     },
     completionIndex() {
       assertActive()

@@ -104,7 +104,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         </div>
       </form>
 
-      {status && <div className="text-center font-medium mb-4 text-green-600 text-sm">{status}</div>}
+      {status && <div className="text-center font-weight-medium mb-4 text-green-600 text-sm">{status}</div>}
     </AuthLayout>
   );
 }

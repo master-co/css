@@ -24,7 +24,6 @@ fn converts_static_properties_and_parameter_recipes_without_reinterpreting_token
             "grid-cols:3@sm",
             "grid-rows:4",
             "p-md",
-            "font-sm",
             "p-4",
             "grid-cols-3",
         ],
@@ -44,13 +43,12 @@ fn converts_static_properties_and_parameter_recipes_without_reinterpreting_token
             "grid-cols(3)@sm",
             "grid-rows(4)",
             "p-md",
-            "font-sm",
             "p-4",
             "grid-cols-3"
         ]
     );
     assert!(
-        result.class_lists[0][..8]
+        result.class_lists[0][..7]
             .iter()
             .all(|item| item.status != "review")
     );
@@ -130,4 +128,18 @@ fn native_colon_values_win_over_historical_fixed_names_and_migration_is_idempote
             .iter()
             .all(|item| item.before == item.after.as_deref().unwrap())
     );
+}
+
+#[test]
+fn removed_token_spellings_require_manual_review_without_new_migrations() {
+    let result = migrate(&["font-sm", "padding-md", "text-stroke-color-red"], &[]);
+    for item in &result.class_lists[0] {
+        assert_eq!(item.status, "review", "{}", item.before);
+        assert!(item.after.is_none());
+        assert!(
+            item.notes
+                .iter()
+                .any(|note| note.contains("canonical family"))
+        );
+    }
 }

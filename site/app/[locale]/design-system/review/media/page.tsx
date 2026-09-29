@@ -22,7 +22,7 @@ function PreviousVector() {
 function FloatExample({ adopted }: { adopted: boolean }) {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
-      <DemoSurface className="display:flow-root p-md font-sm">
+      <DemoSurface className="display:flow-root p-md font-size-sm">
         {adopted
           ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
           : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />}

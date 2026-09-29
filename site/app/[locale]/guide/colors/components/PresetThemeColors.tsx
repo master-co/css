@@ -154,10 +154,10 @@ export function TextHueDemo() {
   return (
     <Demo $py={0} $px={0}>
       <DemoLight>
-        <div className="font-9xl font-heavy fg-text-yellow">M</div>
+        <div className="font-size-9xl font-weight-heavy fg-text-yellow">M</div>
       </DemoLight>
       <DemoDark>
-        <div className="font-9xl font-heavy fg-text-yellow">M</div>
+        <div className="font-size-9xl font-weight-heavy fg-text-yellow">M</div>
       </DemoDark>
     </Demo>
   )
@@ -166,8 +166,8 @@ export function TextHueDemo() {
 export function TextRolesDemo() {
   function renderPreview() {
     return (
-      <div className="display:grid gap-xs width:100% max-w-3xs p-lg r-sm font-semibold text-align:center bg-surface-raised fg-text-body shadow-lg">
-        <div className="font-md font-semibold fg-text-strong">Quarterly report</div>
+      <div className="display:grid gap-xs width:100% max-w-3xs p-lg r-sm font-weight-semibold text-align:center bg-surface-raised fg-text-body shadow-lg">
+        <div className="font-size-md font-weight-semibold fg-text-strong">Quarterly report</div>
         <p className="margin:0 fg-text-body">Revenue is on track for the current cycle.</p>
         <p className="margin:0 text-sm fg-text-muted">Updated 12 minutes ago</p>
         <button className="text-sm fg-text-disabled" disabled>Archived export unavailable</button>

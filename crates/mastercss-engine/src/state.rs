@@ -173,142 +173,194 @@ pub(crate) fn selector_token_to_template(
     if selector_token.is_empty() || !valid_class_selector(selector_token) {
         return None;
     }
-    let mut selector = normalize_selector_aliases(selector_token);
-    selector = replace_selector_underscores(&selector);
+    let selector = replace_selector_underscores(selector_token);
     Some(suffix_to_template(&selector))
 }
 
 /// Master selector suffixes accept native CSS, excluding retired class syntax.
 /// Inspect tokens so strings, escaped punctuation and attribute contents stay literal.
 pub(crate) fn valid_class_selector(selector: &str) -> bool {
+    removed_selector(selector).is_none()
+}
+
+/// Only active pseudo-class tokens are retired; literals and native pseudo-elements are opaque.
+pub(crate) fn removed_selector(selector: &str) -> Option<(&'static str, &'static str)> {
     use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
     let tokens = tokenize_css_syntax(selector);
     let mut index = 0;
     while let Some(token) = tokens.get(index) {
         if matches!(token.kind, Kind::Delim('[')) {
-            let Some(close) = token.close else {
-                return false;
-            };
-            index = close + 1;
+            index = token.close.map_or(tokens.len(), |close| close + 1);
             continue;
         }
-        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("of"))
-            && index > 0
-            && matches!(tokens[index - 1].kind, Kind::Delim(':'))
+        if matches!(token.kind, Kind::Delim(':'))
+            && (index == 0 || !matches!(tokens[index - 1].kind, Kind::Delim(':')))
+            && let Some(next) = tokens.get(index + 1)
+            && token.bytes.end == next.bytes.start
         {
-            return false;
+            let name = match &next.kind {
+                Kind::Ident(name) => name.as_ref(),
+                Kind::Function(name) if name.eq_ignore_ascii_case("of") => "of",
+                _ => "",
+            };
+            for (old, new) in [
+                ("first", ":first-child"),
+                ("last", ":last-child"),
+                ("even", ":nth-child(2n)"),
+                ("odd", ":nth-child(odd)"),
+                ("only", ":only-child"),
+                ("rtl", ":dir(rtl)"),
+                ("ltr", ":dir(ltr)"),
+                ("of", ":nth-child(...)"),
+            ] {
+                if name.eq_ignore_ascii_case(old) {
+                    return Some((old, new));
+                }
+            }
         }
         index += 1;
     }
-    true
+    None
 }
 
 pub(crate) fn resolve_style_selector_aliases(
     selector: &str,
-    manifest: &ManifestProjection,
+    _manifest: &ManifestProjection,
 ) -> String {
-    let _ = manifest;
-    normalize_selector_aliases(selector)
-}
-
-fn normalize_selector_aliases(source: &str) -> String {
-    rewrite_pseudo_selectors(source, |token| {
-        let replacement = match token {
-            ":first-letter" => "::first-letter",
-            ":first-line" => "::first-line",
-            ":before" => "::before",
-            ":after" => "::after",
-            ":first" => ":first-child",
-            ":last" => ":last-child",
-            ":even" => ":nth-child(2n)",
-            ":odd" => ":nth-child(odd)",
-            ":only" => ":only-child",
-            ":rtl" => ":dir(rtl)",
-            ":ltr" => ":dir(ltr)",
-            "::scrollbar-thumb" => "::-webkit-scrollbar-thumb",
-            "::scrollbar-track" => "::-webkit-scrollbar-track",
-            "::scrollbar" => "::-webkit-scrollbar",
-            "::slider-thumb" => "::-webkit-slider-thumb",
-            "::slider-runnable-track" => "::-webkit-slider-runnable-track",
-            "::resizer" => "::-webkit-resizer",
-            _ => return None,
-        };
-        Some(replacement.to_owned())
-    })
-}
-
-fn rewrite_pseudo_selectors(source: &str, resolve: impl Fn(&str) -> Option<String>) -> String {
-    use mastercss_lexer::{CssSyntaxKind, tokenize_css_syntax};
-
-    let tokens = tokenize_css_syntax(source);
-    let mut output = String::with_capacity(source.len());
-    let mut copied = 0;
-    let mut index = 0;
-    while index < tokens.len() {
-        let token = &tokens[index];
-        if matches!(token.kind, CssSyntaxKind::Delim('[')) {
-            index = token.close.map_or(tokens.len(), |close| close + 1);
-            continue;
-        }
-        if !matches!(token.kind, CssSyntaxKind::Delim(':')) {
-            index += 1;
-            continue;
-        }
-        let start = token.bytes.start;
-        let mut end = token.bytes.end;
-        index += 1;
-        while let Some(next) = tokens.get(index)
-            && next.bytes.start == end
-            && matches!(next.kind, CssSyntaxKind::Delim(':'))
-        {
-            end = next.bytes.end;
-            index += 1;
-        }
-        let Some(name) = tokens.get(index).filter(|name| name.bytes.start == end) else {
-            continue;
-        };
-        end = match name.kind {
-            CssSyntaxKind::Ident(_) => name.bytes.end,
-            CssSyntaxKind::Function(_) => name.bytes.end - 1,
-            _ => continue,
-        };
-        let full_function = if matches!(name.kind, CssSyntaxKind::Function(_)) {
-            name.close.and_then(|close| {
-                let end = tokens[close].bytes.end;
-                resolve(&source[start..end]).map(|replacement| (close + 1, end, replacement))
-            })
-        } else {
-            None
-        };
-        let replacement = if let Some((next, function_end, replacement)) = full_function {
-            index = next;
-            end = function_end;
-            replacement
-        } else if let Some(replacement) = resolve(&source[start..end]) {
-            replacement
-        } else {
-            continue;
-        };
-        output.push_str(&source[copied..start]);
-        output.push_str(&replacement);
-        copied = end;
-    }
-    output.push_str(&source[copied..]);
-    output
+    selector.to_owned()
 }
 
 pub(crate) fn replace_selector_underscores(source: &str) -> String {
-    let characters: Vec<char> = source.chars().collect();
-    let mut output = String::with_capacity(source.len());
-    for (index, character) in characters.iter().enumerate() {
-        if *character == '_'
-            && characters.get(index.wrapping_sub(1)) != Some(&'_')
-            && characters.get(index + 1) != Some(&'_')
+    use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
+    let mut protected = Vec::new();
+    let mut index = 0;
+    while let Some(token) = tokens.get(index) {
+        if matches!(token.kind, Kind::Delim('['))
+            && let Some(close) = token.close
         {
-            output.push(' ');
-        } else {
-            output.push(*character);
+            protected.push(token.bytes.start..tokens[close].bytes.end);
+            index = close + 1;
+            continue;
         }
+        if let Kind::Function(name) = &token.kind
+            && let Some(close) = token.close
+        {
+            // Only selector-list arguments contain descendant combinators.
+            // Other native function arguments (lang, dir, state, future syntax)
+            // keep identifier underscores as authored.
+            if ![
+                "is",
+                "where",
+                "not",
+                "has",
+                "host",
+                "host-context",
+                "slotted",
+            ]
+            .iter()
+            .any(|candidate| name.eq_ignore_ascii_case(candidate))
+            {
+                let start = if ["nth-child", "nth-last-child"]
+                    .iter()
+                    .any(|candidate| name.eq_ignore_ascii_case(candidate))
+                {
+                    tokens[index + 1..close].iter().find(|token| matches!(&token.kind, Kind::Ident(name) if name.eq_ignore_ascii_case("of")))
+                        .map_or(tokens[close].bytes.start, |token| token.bytes.start)
+                } else {
+                    tokens[close].bytes.start
+                };
+                if start > token.bytes.end {
+                    protected.push(token.bytes.end..start);
+                }
+                if start == tokens[close].bytes.start {
+                    index = close + 1;
+                    continue;
+                }
+            }
+        }
+        if matches!(token.kind, Kind::String(_)) {
+            protected.push(token.bytes.clone());
+        }
+        index += 1;
+    }
+    let mut output = String::with_capacity(source.len());
+    let mut cursor = 0;
+    while cursor < source.len() {
+        if let Some(range) = protected.iter().find(|range| range.start == cursor) {
+            output.push_str(&source[range.clone()]);
+            cursor = range.end;
+            continue;
+        }
+        if source[cursor..].starts_with("/*") {
+            let end = source[cursor + 2..]
+                .find("*/")
+                .map_or(source.len(), |n| cursor + 4 + n);
+            output.push_str(&source[cursor..end]);
+            cursor = end;
+            continue;
+        }
+        let ch = source[cursor..].chars().next().unwrap();
+        if ch == '\\' {
+            let start = cursor;
+            cursor += 1;
+            let mut digits = 0;
+            while digits < 6
+                && source
+                    .as_bytes()
+                    .get(cursor)
+                    .is_some_and(u8::is_ascii_hexdigit)
+            {
+                digits += 1;
+                cursor += 1;
+            }
+            if digits == 0 {
+                cursor += source[cursor..].chars().next().map_or(0, char::len_utf8);
+            } else if source
+                .as_bytes()
+                .get(cursor)
+                .is_some_and(u8::is_ascii_whitespace)
+            {
+                cursor += 1;
+            }
+            output.push_str(&source[start..cursor]);
+            continue;
+        }
+        output.push(
+            if ch == '_'
+                && source.as_bytes().get(cursor.wrapping_sub(1)) != Some(&b'_')
+                && source.as_bytes().get(cursor + 1) != Some(&b'_')
+                && tokens
+                    .iter()
+                    .rev()
+                    .find(|token| token.bytes.start < cursor)
+                    .and_then(|token| {
+                        source[token.bytes.start..token.bytes.end.min(cursor)]
+                            .chars()
+                            .next_back()
+                    })
+                    .is_none_or(|previous| {
+                        !matches!(
+                            previous,
+                            '(' | ',' | '.' | ':' | '#' | '>' | '+' | '~' | '|'
+                        )
+                    })
+                && tokens
+                    .iter()
+                    .find(|token| token.bytes.end > cursor + 1)
+                    .and_then(|token| {
+                        source[token.bytes.start.max(cursor + 1)..token.bytes.end]
+                            .chars()
+                            .next()
+                    })
+                    .is_some_and(|next| !matches!(next, ')' | ',' | '>' | '+' | '~' | '|'))
+            {
+                ' '
+            } else {
+                ch
+            },
+        );
+        cursor += ch.len_utf8();
     }
     output
 }

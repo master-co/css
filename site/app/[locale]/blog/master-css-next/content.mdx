@@ -26,7 +26,7 @@ Master CSS is markup-driven. The class string is the styling source of truth:
 export default function Page() {
   return (
     <main className="min-height:100vh padding:2.5rem bg-surface-base fg-text-neutral">
-      <h1 className="font-6xl font-heavy tracking-tight">
+      <h1 className="font-size-6xl font-weight-heavy tracking-tight">
         Master CSS pre-rendered by Next.js
       </h1>
     </main>
@@ -58,7 +58,7 @@ For a minimal page:
 
 ```tsx name=app/page.tsx
 export default function Page() {
-  return <h1 className="font-6xl">Hello</h1>
+  return <h1 className="font-size-6xl">Hello</h1>
 }
 ```
 
@@ -68,15 +68,15 @@ Progressive Rendering produces HTML shaped like this:
 <!doctype html>
 <html>
 <head>
-  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer theme{:root,:host{--font-size-6xl:3rem}}@layer utilities{.font-6xl{font-size:var(--font-size-6xl)}}</style>
+  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer theme{:root,:host{--font-size-6xl:3rem}}@layer utilities{.font-size-6xl{font-size:var(--font-size-6xl)}}</style>
 </head>
 <body>
-  <h1 class="font-6xl">Hello</h1>
+  <h1 class="font-size-6xl">Hello</h1>
 </body>
 </html>
 ```
 
-The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, adopts the generated `.font-6xl` rule, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
+The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, adopts the generated `.font-size-6xl` rule, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
 
 This page hydration manifest is separate from the project manifest and from the `buildReport` option in `@master/css-next`. When enabled, `buildReport` writes `.next/master-css-build-report.json` with details about rendered files; it is not the route-level JSON used to hydrate `style#master-css` in the browser.
 

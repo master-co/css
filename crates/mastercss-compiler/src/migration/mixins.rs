@@ -23,7 +23,7 @@ fn raw_property(key: &str) -> &str {
     if key == "bg" {
         return "background";
     }
-    mastercss_engine::builtin_token_aliases()
+    super::legacy_registry::builtin_token_aliases()
         .iter()
         .find_map(|(alias, property)| (*alias == key).then_some(*property))
         .unwrap_or(key)

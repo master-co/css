@@ -33,6 +33,17 @@ fn migrates_saved_rc_examples_and_preserves_identity() {
     for (case, list) in cases.iter().zip(&result.class_lists) {
         let before = case["rc"].as_str().unwrap();
         let proposal = &list[0];
+        if case["canonicalFamilyReview"] == true {
+            assert_eq!(proposal.status, "review", "{before}");
+            assert!(proposal.after.is_none());
+            assert!(
+                proposal
+                    .notes
+                    .iter()
+                    .any(|note| note.contains("canonical family"))
+            );
+            continue;
+        }
         if case["migrationReview"] == true {
             assert_eq!(proposal.status, "review");
             assert!(
@@ -105,12 +116,17 @@ fn reports_ambiguity_dynamic_values_and_cascade_risks() {
         "{}",
         serde_json::to_string(&result).unwrap()
     );
-    assert!(result.class_lists[0][0].notes[0].contains("Ambiguous"));
+    assert!(result.class_lists[0][0].notes[0].contains("canonical family"));
 }
 
 #[test]
 fn migration_is_idempotent_for_safe_classes() {
-    let input = request(&["font:mono:hover@sm!", "p:4x", "p:md:hover", "fg:red:hover"]);
+    let input = request(&[
+        "font-family:monospace:hover@sm!",
+        "p:4x",
+        "p:md:hover",
+        "fg:red:hover",
+    ]);
     let first = migrate_rc(&input).unwrap();
     let second = migrate_rc(&RcMigrationRequest {
         class_lists: first

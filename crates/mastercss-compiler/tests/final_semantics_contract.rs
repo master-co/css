@@ -84,7 +84,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
     "#,
     )
     .unwrap();
-    let output = css(&mut e, &["color-surface", "padding:1px@apply(--ocean)"]);
+    let output = css(&mut e, &["fg-surface", "padding:1px@apply(--ocean)"]);
     assert!(
         output.contains(":root,:host{--color-surface:white}"),
         "{output}"
@@ -107,7 +107,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
 #[test]
 fn variant_redefinition_preserves_authored_theme_order() {
     let mut e = engine("@mixin --a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @theme { .b { --color-x: blue; } .a { --color-x: red; } }").unwrap();
-    let output = css(&mut e, &["color-x", "padding:1px@apply(--a)"]);
+    let output = css(&mut e, &["fg-x", "padding:1px@apply(--a)"]);
     assert!(!output.contains(".old"));
     assert!(output.contains(".new"), "{output}");
     assert!(
@@ -216,7 +216,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

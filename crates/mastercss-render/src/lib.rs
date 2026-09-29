@@ -165,7 +165,7 @@ mod tests {
     use super::*;
 
     fn manifest() -> String {
-        serde_json::json!({"version":4,"languageVersion":9,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]})
+        serde_json::json!({"version":4,"languageVersion":10,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]})
         .to_string()
     }
 
@@ -191,7 +191,7 @@ mod tests {
     #[test]
     fn repeated_classes_share_generated_rules() {
         let mut session =
-            RenderSession::create(r#"{"version":4,"languageVersion":9}"#, None).unwrap();
+            RenderSession::create(r#"{"version":4,"languageVersion":10}"#, None).unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block"])
             .unwrap();
@@ -244,7 +244,7 @@ mod tests {
 
     #[test]
     fn cached_native_declarations_preserve_later_pseudo_states() {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]})
         .to_string();
         let mut cached = RenderSession::create(&manifest, None).unwrap();
         cached.ensure_classes(["background:var(--stripe)"]).unwrap();
@@ -265,7 +265,7 @@ mod tests {
 
     #[test]
     fn cached_subsets_preserve_page_resource_composition() {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"mixins":[{"name":"--brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"name":"--animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"mixins":[{"name":"--brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"name":"--animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}]})
         .to_string();
         let emitted_globals = r#"{"variables":{}}"#;
         let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
@@ -281,7 +281,7 @@ mod tests {
 
     #[test]
     fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
         .to_string();
         let mut session = RenderSession::create(&manifest, None).unwrap();
 
@@ -308,7 +308,7 @@ mod tests {
 
     #[test]
     fn preserves_and_increments_host_resource_counts() {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
         .to_string();
         let mut session =
             RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":2}}"#)).unwrap();

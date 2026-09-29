@@ -346,8 +346,8 @@ pub(crate) use condition::{
     parse_raw_condition_wrapper, render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::{
-    BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_ALIASES, BUILTIN_TOKEN_NAMESPACES,
-    add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
+    BUILTIN_NATIVE_DECLARATION_PROPERTIES, add_unique_string, compile_manifest, engine_variable_ir,
+    layer_name, single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
@@ -361,12 +361,13 @@ pub(crate) use utility::{
     split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
-    find_matching_parenthesis, is_valid_native_property, normalize_css_math_functions,
+    find_matching_parenthesis, native_declaration_head, normalize_css_math_functions,
 };
 
 pub use condition::{condition_priority, native_query_features};
-pub use manifest::{builtin_token_aliases, builtin_token_namespaces};
+pub(crate) use token_registry::BUILTIN_TOKEN_NAMESPACES;
 pub use token_registry::builtin_token_families;
+pub use token_registry::builtin_token_namespaces;
 pub use utility::compare_condition_features;
 pub use utility::{compare_rule_priority, natural_compare};
 

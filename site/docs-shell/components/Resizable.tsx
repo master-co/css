@@ -131,7 +131,7 @@ export default function Resizable({
       {(resizing && showRuler || showRuler === 'always') &&
         <div className={clsx(
           ruleClassName,
-          'left:0 z-index:1070 display:flex align-items:center justify-content:center height:32px width:100% border-bottom-width:1px border-bottom-style:solid bb-line-subtle font-xs bg-surface-base fg-text-strong',
+          'left:0 z-index:1070 display:flex align-items:center justify-content:center height:32px width:100% border-bottom-width:1px border-bottom-style:solid bb-line-subtle font-size-xs bg-surface-base fg-text-strong',
           rulerPlacement + ':0'
         )}>
           {

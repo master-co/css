@@ -9,7 +9,7 @@ Set `step` to 9 on the second item. A counter is reset, incremented, then set on
 
 ```html
 <!-- Sequence · 1, 9, 10 -->
-<ol role="list" class="margin:0 padding:0 font-md leading-lg list-style:none counter-reset:step|0">
+<ol role="list" class="margin:0 padding:0 font-size-md leading-lg list-style:none counter-reset:step|0">
   <li class="mb-2xs counter-increment:step|1 fg-text-blue::before
     content:counter(step)'.\00a0'::before">Install dependencies</li>
   <li id="target" value="9" class="mb-2xs counter-increment:step|1 counter-set:step|9
@@ -28,7 +28,7 @@ Separate names and integer values with `|`. This heading sets both `chapter` and
 
 ```html
 <!-- Two names · one declaration -->
-<h2 id="target" class="margin:0 font-md font-medium leading-lg
+<h2 id="target" class="margin:0 font-size-md font-weight-medium leading-lg
     counter-set:chapter|2|section|4 fg-text-blue::before
     content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)':\00a0'::before">Resume point</h2>
 ```
@@ -43,14 +43,14 @@ Resize past `sm` to set the second section to 9 on screen. The headings change f
 ```html
 <!-- Real viewport · conditional jump -->
 <article class="counter-reset:section">
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:section fg-text-blue::before
     content:counter(section)'.\00a0'::before">Overview</h2>
-  <h2 id="target" class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 id="target" class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:section fg-text-blue::before
     content:counter(section)'.\00a0'::before counter-set:none@media(print)
     counter-set:section|9@media(screen)@sm">Installation</h2>
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:section fg-text-blue::before
     content:counter(section)'.\00a0'::before">Configuration</h2>
 </article>

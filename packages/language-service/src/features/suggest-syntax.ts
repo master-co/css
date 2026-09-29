@@ -107,7 +107,7 @@ function selectorCompletionItems(
       ? label.slice(triggerLength)
       : undefined
     const className = `${field}${triggerLength ? label.slice(triggerLength) : label}`
-    const includeDocumentation = new Set([':first', ':hover', '::placeholder']).has(label)
+    const includeDocumentation = new Set([':first-child', ':hover', '::placeholder']).has(label)
     byLabel.set(label, {
       label,
       insertText,

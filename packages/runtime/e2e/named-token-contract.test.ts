@@ -13,7 +13,7 @@ const classLists = [
   "p-md padding-top:12px padding:8px",
   "padding:8px padding-top:12px p-md",
   "p-md padding:8px@sm",
-  'font-mono font-family:mono',
+  'font-family-mono font-family:mono',
   "bg-red background-color:transparent solid-edges border:2px outline:2px",
   'fg-red color:red',
   "background-size:cover",

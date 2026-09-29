@@ -17,9 +17,9 @@ it('offers states after a named style', () => expect(labels("text-align:center:"
 
 describe('named token completion', () => {
   test('describes the token identity and actual CSS', () => {
-    const item = hint('font-')?.find(({ label }) => label === 'font-sans')
+    const item = hint('font-')?.find(({ label }) => label === 'font-family-sans')
     expect(item).toMatchObject({
-      label: 'font-sans', kind: CompletionItemKind.Value,
+      label: 'font-family-sans', kind: CompletionItemKind.Value,
       detail: expect.stringContaining('(token --font-family-sans)'),
       documentation: { kind: 'markdown', value: expect.stringContaining('font-family: var(--font-family-sans)') }
     })
@@ -27,12 +27,12 @@ describe('named token completion', () => {
   test('keeps native font values separate from font tokens', () => {
     expect(labels('font:')).not.toContain('sans')
     expect(labels('font-family:')).not.toContain('mono')
-    expect(labels('font-')).toEqual(expect.arrayContaining(['font-mono', 'font-bold', 'font-sm']))
+    expect(labels('font-')).toEqual(expect.arrayContaining(['font-family-mono', 'font-weight-bold', 'font-size-sm']))
   })
-  test('offers registered full prefixes and aliases', () => {
+  test('offers only canonical token prefixes', () => {
     expect(labels('rtr-')).toContain('rtr-md')
     expect(labels('w-')).toContain('w-sm')
-    expect(labels('width-')).toContain('width-sm')
+    expect(labels('width-')).not.toContain('width-sm')
     expect(labels('font-family-')).toContain('font-family-mono')
   })
   test('does not suggest negative sizes or nonnumeric tokens', () => {

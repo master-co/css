@@ -119,18 +119,18 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         }),
         notes: Vec::new(),
     };
-    if let Some((property, _)) = source.split_once(':')
-        && let Some(message) = super::token_registry::removed_recipe(property)
+    if let Some((_, property)) = super::native_declaration_head(source)
+        && let Some(message) = super::token_registry::removed_recipe(&property)
     {
         return vec![error(super::ErrorCode::ClassSyntaxError, message)];
     }
-    if let Some((property, _)) = source.split_once(':')
-        && let Some(target) = super::token_registry::removed_raw_alias(property)
+    if let Some((_, property)) = super::native_declaration_head(source)
+        && let Some(target) = super::token_registry::removed_raw_alias(&property)
     {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
             format!(
-                "Raw property alias {property}: was removed; use {target}: (named token aliases remain available)"
+                "Raw property alias {property}: was removed; use {target}: (named tokens use their canonical prefixes)"
             ),
         )];
     }
@@ -143,15 +143,20 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             format!("Unbalanced or invalid Master class structure: {source}"),
         )];
     }
-    let native_state = source.split_once(':').and_then(|(property, value)| {
-        super::is_valid_native_property(property).then(|| super::split_dynamic_value_state(value).1)
-    });
+    let native_state = super::native_declaration_head(source)
+        .map(|(colon, _)| super::split_dynamic_value_state(&source[colon + 1..]).1);
     for state in matching_utilities(source, manifest)
         .into_iter()
         .map(|(_, matched)| matched.state_token)
         .chain(native_state)
     {
         let selector = super::state::split_state_token(&state).0;
+        if let Some((old, replacement)) = super::state::removed_selector(&selector) {
+            return vec![error(
+                super::ErrorCode::ClassSyntaxError,
+                format!(":{old} was removed; use {replacement}"),
+            )];
+        }
         if !selector.is_empty()
             && super::state::selector_token_to_template(&selector, manifest)
                 .is_none_or(|template| !mastercss_lexer::valid_selector_structure(&template))
@@ -257,6 +262,9 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     if !matching_utilities(source, manifest).is_empty() {
         return Vec::new();
     }
+    if let Some(message) = retired_token_message(source, manifest) {
+        return vec![error(super::ErrorCode::ClassSyntaxError, message)];
+    }
     let Some(prefix) = token_prefix(source, manifest) else {
         return Vec::new();
     };
@@ -331,6 +339,49 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     }]
 }
 
+/// Retirement metadata never participates in matching. A valid canonical class
+/// or project mixin always wins, including token keys resembling an old prefix.
+pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection) -> Option<String> {
+    if is_native_declaration(source, manifest) || !matching_utilities(source, manifest).is_empty() {
+        return None;
+    }
+    let mut replacements = Vec::new();
+    let families = super::builtin_token_families()
+        .filter(|(prefix, property, _)| prefix != property)
+        .map(|(prefix, property, _)| (property, prefix))
+        .chain([
+            ("font", "font-size"),
+            ("font", "font-family"),
+            ("font", "font-weight"),
+            ("text-stroke-color", "text-stroke"),
+        ]);
+    for (old, current) in families {
+        for (positive, sign) in [
+            (source, ""),
+            (source.strip_prefix('-').unwrap_or(source), "-"),
+        ] {
+            if let Some(tail) = positive
+                .strip_prefix(old)
+                .and_then(|tail| tail.strip_prefix('-'))
+            {
+                let candidate = format!("{sign}{current}-{tail}");
+                if !matching_utilities(&candidate, manifest).is_empty()
+                    && !replacements.contains(&candidate)
+                {
+                    replacements.push(candidate);
+                }
+            }
+        }
+    }
+    if !replacements.is_empty() {
+        return Some(format!(
+            "Token spelling {source} was removed; use the canonical family: {}",
+            replacements.join(", ")
+        ));
+    }
+    None
+}
+
 pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -> Option<&'a str> {
     // A registered declaration key owns its colon, even if a shorter named
     // family exists (font-family:mono must never mean font-family:hover).
@@ -353,16 +404,16 @@ pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -
 }
 
 fn is_native_declaration(source: &str, manifest: &ManifestProjection) -> bool {
-    let Some((key, _)) = source.split_once(':') else {
+    let Some((_, key)) = super::native_declaration_head(source) else {
         return false;
     };
-    mastercss_schema::is_native_css_property(key)
+    mastercss_schema::is_native_css_property(&key)
         || manifest.utilities.iter().any(|utility| {
             utility.native_fallback
                 && utility
                     .id
                     .strip_prefix("native:")
-                    .is_some_and(|id| id.split('\0').next() == Some(key))
+                    .is_some_and(|id| id.split('\0').next() == Some(key.as_ref()))
         })
 }
 

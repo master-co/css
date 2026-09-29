@@ -86,7 +86,7 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
                             .eq(namespaces.iter().map(|namespace| &namespace[1..]))
                 })
             && (property == key
-                || mastercss_engine::builtin_token_aliases()
+                || super::legacy_registry::builtin_token_aliases()
                     .iter()
                     .any(|(alias, target)| *alias == key && *target == property))
         {

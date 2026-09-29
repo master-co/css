@@ -149,7 +149,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   // A registry-backed consumer may have no value in the preset: order was missing
   // when this index was incorrectly derived from the defined variable inventory.
   assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order-'])
-  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-padding-inline-end-'))
+  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-pxe-'))
   assert.ok(variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.includes('@container((width>=28rem))'))
   for (const row of variableNamespaceSources) for (const consumer of row.consumers) assert.ok(renderDocumentMarkdown(modes, catalog).includes(`\`${consumer}\``))
   const layers = catalog.documents.find(doc => doc.id === 'rules/layers')!
@@ -158,7 +158,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.match(layers.markdown, /!important` reverses the order between layers/)
   const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@layer(base)'))!
   assert.match(base.css, /@layer base\{.*list-style:none/)
-  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@layer(defaults)'))!
+  const fonts = layers.examples.find(example => example.classes.includes('font-family-mono_:is(code,pre)@layer(defaults)'))!
   assert.match(fonts.css, /--font-family-mono:/)
   assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
   assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])

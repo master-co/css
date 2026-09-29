@@ -1,25 +1,20 @@
-use super::{normalize_dynamic_value, split_top_level};
+use super::normalize_dynamic_value;
+use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
+use std::borrow::Cow;
 
-pub(crate) fn is_valid_native_property(property: &str) -> bool {
-    let mut characters = property.chars();
-    if let Some(property) = property.strip_prefix("--") {
-        return !property.is_empty()
-            && property.chars().all(|character| {
-                character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
-            });
-    }
-    let first = characters.next();
-    if first == Some('-') {
-        return characters
-            .next()
-            .is_some_and(|character| character.is_ascii_alphabetic() || character == '_')
-            && characters.all(|character| {
-                character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
-            });
-    }
-    first.is_some_and(|character| character.is_ascii_alphabetic() || character == '_')
-        && characters
-            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
+pub(crate) fn native_declaration_head(source: &str) -> Option<(usize, Cow<'_, str>)> {
+    let tokens = tokenize_css_syntax(source);
+    let [first, colon, ..] = tokens.as_slice() else {
+        return None;
+    };
+    let Kind::Ident(name) = &first.kind else {
+        return None;
+    };
+    (first.bytes.start == 0
+        && colon.bytes.start == first.bytes.end
+        && colon.kind == Kind::Delim(':')
+        && name != "--")
+        .then(|| (colon.bytes.start, name.clone()))
 }
 
 pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
@@ -78,226 +73,155 @@ pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
     output
 }
 
+/// Normalize actual math component values, leaving strings, comments and URLs opaque.
 pub(crate) fn normalize_css_math_functions(source: &str) -> String {
+    let tokens = tokenize_css_syntax(source);
     let mut output = String::with_capacity(source.len());
+    let mut copied = 0;
     let mut index = 0;
-    while index < source.len() {
-        let Some(character) = source[index..].chars().next() else {
-            break;
-        };
-        if character.is_ascii_alphabetic() {
-            let name_end = source[index..]
-                .find(|character: char| !character.is_ascii_alphanumeric() && character != '-')
-                .map(|offset| index + offset)
-                .unwrap_or(source.len());
-            let name = &source[index..name_end];
-            if matches!(name, "calc" | "clamp" | "min" | "max")
-                && source[name_end..].starts_with('(')
-                && let Some(close) = find_matching_parenthesis(source, name_end)
-            {
-                let inner = normalize_css_math_functions(&source[name_end + 1..close]);
-                let inner = match name {
-                    "calc" => normalize_math_expression(&inner),
-                    "clamp" => split_top_level(&inner, ',')
-                        .into_iter()
-                        .map(|argument| {
-                            let argument = argument.trim();
-                            if has_top_level_binary_math_operator(argument)
-                                && !argument.starts_with("calc(")
-                            {
-                                format!("calc({})", normalize_math_expression(argument))
-                            } else {
-                                argument.to_owned()
-                            }
-                        })
-                        .collect::<Vec<_>>()
-                        .join(", "),
-                    _ => inner,
-                };
-                output.push_str(name);
-                output.push('(');
-                output.push_str(&inner);
-                output.push(')');
+    while let Some(token) = tokens.get(index) {
+        if let Kind::Function(name) = &token.kind
+            && let Some(close) = token.close
+        {
+            if name.eq_ignore_ascii_case("url") {
                 index = close + 1;
                 continue;
             }
+            let start = token.bytes.end;
+            let end = tokens[close].bytes.start;
+            let inner = normalize_css_math_functions(&source[start..end]);
+            let inner = if ["calc", "min", "max", "clamp"]
+                .iter()
+                .any(|n| name.eq_ignore_ascii_case(n))
+            {
+                normalize_math_expression(&inner)
+            } else {
+                inner
+            };
+            output.push_str(&source[copied..start]);
+            output.push_str(&inner);
+            copied = end;
+            index = close + 1;
+        } else {
+            index += 1;
         }
-        output.push(character);
-        index += character.len_utf8();
     }
+    output.push_str(&source[copied..]);
+    output
+}
+
+/// CSS token boundaries protect exponent signs and escaped/quoted identifiers.
+/// Signed adjacent numbers and numeric subtraction within compact dimensions
+/// are the two deliberate extensions to native CSS tokenization.
+fn normalize_math_expression(source: &str) -> String {
+    let tokens = tokenize_css_syntax(source);
+    let mut edits: Vec<(std::ops::Range<usize>, String)> = Vec::new();
+    let mut operand = false;
+    let mut index = 0;
+    while let Some(token) = tokens.get(index) {
+        let raw = &source[token.bytes.clone()];
+        if let Some(close) = token.close {
+            // Nested parentheses are math; function payloads were handled by
+            // the component-value walker (var names/fallbacks are not math).
+            if token.kind == Kind::Delim('(') {
+                let range = token.bytes.end..tokens[close].bytes.start;
+                edits.push((range.clone(), normalize_math_expression(&source[range])));
+            }
+            operand = true;
+            index = close + 1;
+            continue;
+        }
+        match &token.kind {
+            Kind::Number(number) | Kind::Dimension(number, _) | Kind::Percentage(number) => {
+                if operand && raw.starts_with(['+', '-']) {
+                    edits.push((
+                        token.bytes.start..token.bytes.start + 1,
+                        format!(" {} ", &raw[..1]),
+                    ));
+                }
+                if matches!(token.kind, Kind::Dimension(_, _)) && !raw.contains('\\') {
+                    // `1px-2px` lexes as one dimension in native CSS. Only a
+                    // minus followed by a numeric operand is Master subtraction.
+                    if let Some(at) =
+                        raw[number.len()..]
+                            .match_indices('-')
+                            .find_map(|(offset, _)| {
+                                let at = number.len() + offset;
+                                let next = raw.as_bytes().get(at + 1);
+                                (next.is_none()
+                                    && tokens.get(index + 1).is_some_and(|next| {
+                                        next.bytes.start == token.bytes.end
+                                            && matches!(
+                                                next.kind,
+                                                Kind::Number(_)
+                                                    | Kind::Dimension(_, _)
+                                                    | Kind::Percentage(_)
+                                            )
+                                    })
+                                    || next.is_some_and(u8::is_ascii_digit)
+                                    || next == Some(&b'.')
+                                        && raw
+                                            .as_bytes()
+                                            .get(at + 2)
+                                            .is_some_and(u8::is_ascii_digit))
+                                .then_some(at)
+                            })
+                    {
+                        // Re-tokenize the remaining numeric expression so a later
+                        // exponent sign never becomes another subtraction operator.
+                        edits.push((
+                            token.bytes.start + at..token.bytes.end,
+                            format!(" - {}", normalize_math_expression(&raw[at + 1..])),
+                        ));
+                    }
+                }
+                operand = true;
+            }
+            Kind::Delim(op @ ('+' | '-' | '*' | '/')) if operand => {
+                edits.push((token.bytes.clone(), format!(" {op} ")));
+                operand = false;
+            }
+            Kind::Delim(',') => {
+                edits.push((token.bytes.clone(), ", ".into()));
+                operand = false;
+            }
+            Kind::Ident(_) => operand = true,
+            _ => operand = false,
+        }
+        index += 1;
+    }
+    // Expand operator edits across adjacent whitespace, never across comments.
+    // Disjoint byte ranges make normalization idempotent without reserializing literals.
+    for (range, replacement) in &mut edits {
+        if replacement.starts_with(' ') || replacement.starts_with(',') {
+            if replacement.starts_with(' ') {
+                while range.start > 0 && source.as_bytes()[range.start - 1].is_ascii_whitespace() {
+                    range.start -= 1;
+                }
+            }
+            while range.end < source.len() && source.as_bytes()[range.end].is_ascii_whitespace() {
+                range.end += 1;
+            }
+        }
+    }
+    let mut output = String::with_capacity(source.len() + edits.len() * 2);
+    let mut copied = 0;
+    for (range, replacement) in edits {
+        if range.start < copied {
+            continue;
+        }
+        output.push_str(&source[copied..range.start]);
+        output.push_str(&replacement);
+        copied = range.end;
+    }
+    output.push_str(&source[copied..]);
     output
 }
 
 pub(crate) fn find_matching_parenthesis(source: &str, open: usize) -> Option<usize> {
-    let mut depth = 0_u32;
-    let mut quote = None;
-    let mut escaped = false;
-    for (offset, character) in source[open..].char_indices() {
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if character == '\\' {
-            escaped = true;
-            continue;
-        }
-        if let Some(current_quote) = quote {
-            if character == current_quote {
-                quote = None;
-            }
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            quote = Some(character);
-        } else if character == '(' {
-            depth += 1;
-        } else if character == ')' {
-            depth -= 1;
-            if depth == 0 {
-                return Some(open + offset);
-            }
-        }
-    }
-    None
-}
-
-pub(crate) fn normalize_math_expression(source: &str) -> String {
-    let characters = source.chars().collect::<Vec<_>>();
-    let mut output = String::with_capacity(source.len() + 8);
-    let mut index = 0;
-    while index < characters.len() {
-        if characters[index..].starts_with(&['v', 'a', 'r', '('])
-            || characters[index..].starts_with(&['e', 'n', 'v', '('])
-        {
-            let mut cursor = index;
-            let mut depth = 0_u32;
-            let mut quote = None;
-            let mut escaped = false;
-            while cursor < characters.len() {
-                let current = characters[cursor];
-                output.push(current);
-                cursor += 1;
-                if escaped {
-                    escaped = false;
-                    continue;
-                }
-                if current == '\\' {
-                    escaped = true;
-                    continue;
-                }
-                if let Some(current_quote) = quote {
-                    if current == current_quote {
-                        quote = None;
-                    }
-                    continue;
-                }
-                if matches!(current, '\'' | '"') {
-                    quote = Some(current);
-                } else if current == '(' {
-                    depth += 1;
-                } else if current == ')' {
-                    depth = depth.saturating_sub(1);
-                    if depth == 0 {
-                        break;
-                    }
-                }
-            }
-            index = cursor;
-            continue;
-        }
-        let character = characters[index];
-        let previous = characters[..index]
-            .iter()
-            .rev()
-            .find(|character| !character.is_ascii_whitespace())
-            .copied();
-        let next = characters[index + 1..]
-            .iter()
-            .find(|character| !character.is_ascii_whitespace())
-            .copied();
-        let binary = match character {
-            '*' | '/' => true,
-            '+' | '-' => is_binary_plus_minus(character, previous, next),
-            _ => false,
-        };
-        if binary {
-            while output.ends_with(' ') {
-                output.pop();
-            }
-            output.push(' ');
-            output.push(character);
-            output.push(' ');
-            index += 1;
-            while index < characters.len() && characters[index].is_ascii_whitespace() {
-                index += 1;
-            }
-            continue;
-        }
-        output.push(character);
-        index += 1;
-    }
-    normalize_unmanaged_value(&normalize_leading_decimal_sequences(&output))
-}
-
-pub(crate) fn normalize_leading_decimal_sequences(source: &str) -> String {
-    let characters = source.chars().collect::<Vec<_>>();
-    let mut output = String::with_capacity(source.len() + 4);
-    for (index, character) in characters.iter().copied().enumerate() {
-        if character == '.'
-            && characters
-                .get(index + 1)
-                .is_some_and(|next| next.is_ascii_digit())
-            && characters
-                .get(index.wrapping_sub(1))
-                .is_none_or(|previous| !previous.is_ascii_digit())
-        {
-            output.push('0');
-        }
-        output.push(character);
-    }
-    output
-}
-
-pub(crate) fn is_binary_plus_minus(
-    operator: char,
-    previous: Option<char>,
-    next: Option<char>,
-) -> bool {
-    let (Some(previous), Some(next)) = (previous, next) else {
-        return false;
-    };
-    if matches!(previous, '(' | ',' | '+' | '-' | '*' | '/') || matches!(next, '+' | '-') {
-        return false;
-    }
-    operator == '+' || !(previous.is_ascii_alphabetic() && next.is_ascii_alphabetic())
-}
-
-pub(crate) fn has_top_level_binary_math_operator(source: &str) -> bool {
-    let characters = source.chars().collect::<Vec<_>>();
-    let mut depth = 0_u32;
-    for (index, character) in characters.iter().copied().enumerate() {
-        if character == '(' {
-            depth += 1;
-        } else if character == ')' {
-            depth = depth.saturating_sub(1);
-        } else if depth == 0
-            && (matches!(character, '*' | '/')
-                || matches!(character, '+' | '-')
-                    && is_binary_plus_minus(
-                        character,
-                        characters[..index]
-                            .iter()
-                            .rev()
-                            .find(|character| !character.is_ascii_whitespace())
-                            .copied(),
-                        characters[index + 1..]
-                            .iter()
-                            .find(|character| !character.is_ascii_whitespace())
-                            .copied(),
-                    ))
-        {
-            return true;
-        }
-    }
-    false
+    let tail = &source[open..];
+    let tokens = tokenize_css_syntax(tail);
+    let first = tokens.first()?;
+    (first.bytes.start == 0 && first.kind == Kind::Delim('(')).then_some(())?;
+    Some(open + tokens.get(first.close?)?.bytes.start)
 }

@@ -1,7 +1,7 @@
 const syntaxes = [
-  'font-sans',
-  'font-serif',
-  'font-mono',
+  'font-family-sans',
+  'font-family-serif',
+  'font-family-mono',
   ['font-family:`value`'],
 ]
 

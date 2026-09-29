@@ -689,6 +689,11 @@ impl EngineSession {
 
     /// Whether a declaration key has a registered named-token counterpart.
     pub fn has_named_tokens_for_key(&self, key: &str) -> bool {
+        // Native-property policy queries resolve the property's canonical family;
+        // this does not register another token spelling.
+        let key = super::builtin_token_families()
+            .find_map(|(prefix, property, _)| (property == key).then_some(prefix))
+            .unwrap_or(key);
         let prefix = format!("{key}-");
         self.compiled
             .token_utilities

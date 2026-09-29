@@ -309,20 +309,6 @@ pub(crate) fn collect_class_completion_candidates(
             Some("ambiguous key".into()),
         );
     }
-    for (token, detail) in [(":first", ":first-child"), (":of", ":of")] {
-        push_class_completion_candidate(
-            &mut candidates,
-            &mut labels,
-            EngineClassCompletionCandidate {
-                label: token.to_owned(),
-                kind: EngineClassCompletionKind::Value,
-                detail: Some(detail.to_owned()),
-                documentation_class_name: None,
-                sort_text: None,
-                trigger_suggest: false,
-            },
-        );
-    }
     let mut suffixes = manifest
         .custom_media
         .keys()

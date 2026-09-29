@@ -192,7 +192,7 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(4)
- expect(manifest.languageVersion).toBe(9)
+ expect(manifest.languageVersion).toBe(10)
  expect(manifest.mixins).toHaveLength(11)
  expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(11)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
@@ -258,11 +258,11 @@ describe('@master/css-preset defaultManifest', () => {
   })
 
   it('exposes Rust token families independently of preset recipes', () => {
- const families = builtinTokenFamilies.filter(family => ['font', 'bg', 'p', 'surface'].includes(family.prefix))
+ const families = builtinTokenFamilies.filter(family => ['font-size', 'font-family', 'font-weight', 'bg', 'p', 'surface'].includes(family.prefix))
  expect(families).toEqual(expect.arrayContaining([
-  {prefix:'font',property:'font-size',namespaces:['font-size']},
-  {prefix:'font',property:'font-family',namespaces:['font-family']},
-  {prefix:'font',property:'font-weight',namespaces:['font-weight']},
+  {prefix:'font-size',property:'font-size',namespaces:['font-size']},
+  {prefix:'font-family',property:'font-family',namespaces:['font-family']},
+  {prefix:'font-weight',property:'font-weight',namespaces:['font-weight']},
   {prefix:'p',property:'padding',namespaces:['spacing']},
   {prefix:'bg',property:'background-color',namespaces:['color']}
  ]))
@@ -329,8 +329,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('outline-width:thick')?.text).toBe('.outline-width\\:thick{outline-width:thick}')
     expect(css.createRule('outline-width:thin')?.text).toBe('.outline-width\\:thin{outline-width:thin}')
     expect(css.createRule('text-fill-color-text-red')?.text).toBe('.text-fill-color-text-red{-webkit-text-fill-color:var(--color-text-red)}')
-    expect(css.createRule('text-decoration-color-text-red')?.text).toBe('.text-decoration-color-text-red{text-decoration-color:var(--color-text-red)}')
-    expect(css.createRule('text-stroke-color-red')?.text).toBe('.text-stroke-color-red{-webkit-text-stroke-color:var(--color-red)}')
+    expect(css.createRule('text-decoration-text-red')?.text).toBe('.text-decoration-text-red{text-decoration-color:var(--color-text-red)}')
+    expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule("-webkit-text-stroke:1px")?.text).toBe(".-webkit-text-stroke\\:1px{-webkit-text-stroke:1px}")
     expect(css.createRule('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
     expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
@@ -338,7 +338,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('box-decoration-break:clone')?.text).toBe('.box-decoration-break\\:clone{-webkit-box-decoration-break:clone;box-decoration-break:clone}')
     expect(css.createRule('font-feature-settings-tabular')?.text).toBe('.font-feature-settings-tabular{font-feature-settings:var(--font-feature-tabular)}')
     expect(css.createRule('content-empty')?.text).toBe('.content-empty{content:var(--content-empty)}')
-    expect(css.createRule('font-sm')?.text).toContain('font-size:var(--font-size-sm)')
+    expect(css.createRule('font-size-sm')?.text).toContain('font-size:var(--font-size-sm)')
     expect(css.createRule('m-md')?.text).toContain('margin:var(--spacing-md)')
     expect(css.createRule('sr-only')?.text).toContain('position:absolute')
     expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
@@ -385,7 +385,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule("border:1px|solid")?.text).toBe(".border\\:1px\\|solid{border:1px solid}")
     expect(css.createRule('border:transparent')?.text).toBe('.border\\:transparent{border:transparent}')
     expect(css.createRule('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
-    expect(css.createRule('font-sm')?.text).toBe('.font-sm{font-size:var(--font-size-sm)}')
+    expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
     expect(css.createRule("margin-inline-start:1rem")?.text).toBe(".margin-inline-start\\:1rem{margin-inline-start:1rem}")
     expect(css.createRule("padding-block-end:1rem")?.text).toBe(".padding-block-end\\:1rem{padding-block-end:1rem}")
@@ -411,7 +411,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule('text-decoration-thickness:px')?.text).toBe('.text-decoration-thickness\\:px{text-decoration-thickness:px}')
     expect(css.createRule('text-decoration-thickness:var(--thickness)')?.text).toBe('.text-decoration-thickness\\:var\\(--thickness\\){text-decoration-thickness:var(--thickness)}')
-    expect(css.createRule('background-color-red')?.text).toBe('.background-color-red{background-color:var(--color-red)}')
+    expect(css.createRule('bg-red')?.text).toBe('.bg-red{background-color:var(--color-red)}')
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
     expect(declarationsCSS.createRule("background:canvas")?.text).toContain('background:canvas')
@@ -430,8 +430,8 @@ describe('@master/css-preset defaultManifest', () => {
       expect(css.createRule(`${key}:1.25rem`)?.text).toContain(`{${key}:1.25rem}`)
       expect(css.createRule(`${key}-md`)).toBeUndefined()
     }
-    expect(css.createRule('width-md')?.text).toContain('width:var(--container-md)')
-    expect(css.createRule('height-md')?.text).toContain('height:var(--container-md)')
+    expect(css.createRule('w-md')?.text).toContain('width:var(--container-md)')
+    expect(css.createRule('h-md')?.text).toContain('height:var(--container-md)')
     expect(css.createRule('flex-basis-sm')?.text).toBe('.flex-basis-sm{flex-basis:var(--container-sm)}')
     expect(css.createRule('flex-basis:0.5rem')?.text).toBe('.flex-basis\\:0\\.5rem{flex-basis:0.5rem}')
     expect(declarationsCSS.createRule('outline-width:1px')?.text).toContain('outline-width:1px')

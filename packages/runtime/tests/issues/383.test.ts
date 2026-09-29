@@ -46,7 +46,7 @@ test('383', async ({ page }) => {
   })
   await page.evaluate(() => {
     document.body.innerHTML = `
-      <div class="font-bold fg-red"></div>
+      <div class="font-weight-bold fg-red"></div>
     `
   })
   await waitForRuntimeRemovalFlush(page)

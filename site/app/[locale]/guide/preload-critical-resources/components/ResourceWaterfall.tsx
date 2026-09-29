@@ -94,12 +94,12 @@ export default function ResourceWaterfall() {
               {scenarios.map((scenario) => (
                 <section key={scenario.title} className="p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
                   <header className="mb-sm">
-                    <h3 className="margin:0 font-sm font-semibold fg-text-neutral">{scenario.title}</h3>
-                    <p className="margin-inline:0 mt-3xs margin-bottom:0 font-2xs fg-text-gray">{scenario.summary}</p>
+                    <h3 className="margin:0 font-size-sm font-weight-semibold fg-text-neutral">{scenario.title}</h3>
+                    <p className="margin-inline:0 mt-3xs margin-bottom:0 font-size-2xs fg-text-gray">{scenario.summary}</p>
                   </header>
                   <div className="display:grid gap-2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
                     <div />
-                    <div className="position:relative font-2xs fg-text-gray" style={{ height: '1.5rem' }} aria-hidden="true">
+                    <div className="position:relative font-size-2xs fg-text-gray" style={{ height: '1.5rem' }} aria-hidden="true">
                       <span className="position:absolute left:0 top:0">Earlier</span>
                       <span className="position:absolute right:0 top:0">Later</span>
                       <MetricLine metric={scenario.metric} />
@@ -109,7 +109,7 @@ export default function ResourceWaterfall() {
                       <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
                     ))}
                     <div />
-                    <div className="position:relative font-2xs" style={{ height: '1.25rem' }}>
+                    <div className="position:relative font-size-2xs" style={{ height: '1.25rem' }}>
                       <MetricLabel metric={scenario.metric} />
                     </div>
                   </div>
@@ -129,14 +129,14 @@ export default function ResourceWaterfall() {
 function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
   return (
     <>
-      <div className="display:flex align-items:center min-width:0 font-2xs font-medium fg-text-neutral">{row.resource}</div>
+      <div className="display:flex align-items:center min-width:0 font-size-2xs font-weight-medium fg-text-neutral">{row.resource}</div>
       <div className="position:relative overflow:hidden bg-surface-inset" style={{ height: '2rem' }}>
         <TimelineTicks />
         <MetricLine metric={metric} />
         {row.bars.map((bar) => (
           <div
             key={bar.label}
-            className={`position:absolute top:50% px-2xs display:flex align-items:center font-2xs font-medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
+            className={`position:absolute top:50% px-2xs display:flex align-items:center font-size-2xs font-weight-medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
             style={{
               height: '1.25rem',
               left: `${bar.start}%`,
@@ -168,7 +168,7 @@ function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
 function MetricLabel({ metric }: { metric: WaterfallScenario['metric'] }) {
   return (
     <span
-      className="position:absolute font-2xs font-semibold fg-text-orange"
+      className="position:absolute font-size-2xs font-weight-semibold fg-text-orange"
       style={{
         left: `${metric.position}%`,
         transform: metric.position > 85 ? 'translateX(-100%)' : 'translateX(-50%)'

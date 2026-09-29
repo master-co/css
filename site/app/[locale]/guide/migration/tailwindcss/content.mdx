@@ -152,7 +152,7 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | `w-full`, `h-screen`, `min-w-0` | `w:100%`, `h:100vh`, `min-w:0` | Use native values when they read better. |
 | `rounded-lg` | `r-lg` | Radius tokens come from the `radius` namespace. |
 | `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
-| `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `line-height:1.75rem` | Use `text-*` only when the full type treatment is intended. |
+| `text-lg`, `font-semibold`, `leading-7` | `font-size-lg`, `font-weight-semibold`, `line-height:1.75rem` | Use `text-*` only when the full type treatment is intended. |
 | `flex`, `items-center`, `justify-between` | `flex`, `align-items:center`, `justify-between` | Use built-in semantic utilities or native declaration syntax. |
 | `grid-cols-3`, `gap-4` | `grid-cols:3`, `gap:1rem` | Grid column helpers and gap utilities are built in. |
 | Arbitrary value such as `w-[min(100%,72rem)]` | `w:min(100%,72rem)` | Write native CSS function values directly. |
@@ -164,7 +164,7 @@ Example conversion:
 ```html
 <section class="display:grid gap-lg width:100% max-w-5xl margin-inline:auto px-md py-2xl grid-cols(3)@md">
   <article class="p-lg r-lg bg-white shadow-sm">
-    <h2 class="margin:0 font-2xl font-semibold fg-text-neutral">Account</h2>
+    <h2 class="margin:0 font-size-2xl font-weight-semibold fg-text-neutral">Account</h2>
     <p class="mt-xs fg-text-muted">Review profile settings.</p>
   </article>
 </section>

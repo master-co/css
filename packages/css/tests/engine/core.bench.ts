@@ -10,7 +10,7 @@ const runtimeClassNames = [
   'bg-red-60',
   'fg-blue',
   "margin:1rem",
-  "padding-bottom:2rem:not(:last)",
+  "padding-bottom:2rem:not(:last-child)",
   "width:calc(var(--h)|/|var(--w)*100%)",
   "grid-cols(3)",
   "display:none@sm",
@@ -31,7 +31,7 @@ let sink = 0
 function createFixedBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
   return {
     version: 4,
-    languageVersion: 9,
+    languageVersion: 10,
     mixins: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
       name: `--icon-${index}${separator}${value}`,
       body: [{ type: 'declaration' as const, property: 'grid-area', value: [{ type: 'text' as const, value }] }]

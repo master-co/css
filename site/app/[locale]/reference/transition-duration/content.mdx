@@ -9,7 +9,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
 
 ```html
 <!-- Fast · 150ms -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -21,7 +21,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -35,7 +35,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
 
 ```html
 <!-- Slower · 500ms -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -47,7 +47,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -75,7 +75,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
 
 ```html
 <!-- 48px / 300ms · 160px per second -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(48px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move short distance"
     class="mr-xs accent-color-blue
@@ -87,7 +87,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -101,7 +101,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
 
 ```html
 <!-- 96px / 600ms · 160px per second -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move long distance"
     class="mr-xs accent-color-blue
@@ -113,7 +113,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -134,7 +134,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
 
 ```html
 <!-- 500ms · native transition -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -146,7 +146,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -160,7 +160,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
 
 ```html
 <!-- 0ms · immediate update -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -172,7 +172,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-duration:0ms
              transition-property:transform
@@ -192,7 +192,7 @@ Resize before toggling the layer. Its duration changes from 150ms to 500ms at `s
 
 ```html
 <!-- 150ms → 500ms at sm -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -204,7 +204,7 @@ Resize before toggling the layer. Its duration changes from 150ms to 500ms at `s
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear

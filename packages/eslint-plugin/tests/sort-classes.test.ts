@@ -67,7 +67,7 @@ createTester({
     { code: "<div class=\"display:block display:flex　margin-block:1px\">Do not treat full width space as class separator</div>" },
     { code: "<div class=\"margin:0.625rem margin:1.25rem margin:1.875rem:hover margin:2.5rem@dark\">Collision class</div>" },
     {
-      code: "\n        export default () => (\n          <Demo $py={0}>\n            <div className=\"transition:transform|.2s transform:scale(1.1):hover\">\n              <Image\n                src={mobileImage}\n                className=\"pointer-events:none\"\n                width=\"480\"\n                height=\"319\"\n                priority={true}\n                alt=\"hello world\"\n              />\n              <h1 className=\"position:absolute inset:0 height:fit-content margin:auto font-heavy font-size:7vw text-align:center fg-white animation:flash|3s|infinite blend:overlay font-size:2.5rem@xs\">\n                Hello, World!\n              </h1>\n            </div>\n          </Demo>\n        )\n      ",
+      code: "\n        export default () => (\n          <Demo $py={0}>\n            <div className=\"transition:transform|.2s transform:scale(1.1):hover\">\n              <Image\n                src={mobileImage}\n                className=\"pointer-events:none\"\n                width=\"480\"\n                height=\"319\"\n                priority={true}\n                alt=\"hello world\"\n              />\n              <h1 className=\"position:absolute inset:0 height:fit-content margin:auto font-weight-heavy font-size:7vw text-align:center fg-white animation:flash|3s|infinite blend:overlay font-size:2.5rem@xs\">\n                Hello, World!\n              </h1>\n            </div>\n          </Demo>\n        )\n      ",
     },
     { code: "<div class=\"margin-top:0 font:error hello:world margin-top:0@sm a c d\">Error class</div>" },
   ],
@@ -83,8 +83,8 @@ createTester({
       }],
     },
     {
-      code: "<div class=\"display:flex text-transform:uppercase margin:0 margin:0>li text-decoration:none>li>a padding-inline:0.25rem>li align-items:baseline fg-gray-30>li>a column-gap:1.75rem font-size:.75rem font-medium padding-bottom:0.375rem>li padding-top:1.25rem padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) fg-black>li:has(>.router-link-active)>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
-      output: "<div class=\"display:flex align-items:baseline margin:0 padding-top:1.25rem font-medium font-size:.75rem text-transform:uppercase column-gap:1.75rem margin:0>li padding-bottom:0.375rem>li padding-inline:0.25rem>li padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) text-decoration:none>li>a fg-black>li:has(>.router-link-active)>a fg-gray-30>li>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
+      code: "<div class=\"display:flex text-transform:uppercase margin:0 margin:0>li text-decoration:none>li>a padding-inline:0.25rem>li align-items:baseline fg-gray-30>li>a column-gap:1.75rem font-size:.75rem font-weight-medium padding-bottom:0.375rem>li padding-top:1.25rem padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) fg-black>li:has(>.router-link-active)>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
+      output: "<div class=\"display:flex align-items:baseline margin:0 padding-top:1.25rem font-weight-medium font-size:.75rem text-transform:uppercase column-gap:1.75rem margin:0>li padding-bottom:0.375rem>li padding-inline:0.25rem>li padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) text-decoration:none>li>a fg-black>li:has(>.router-link-active)>a fg-gray-30>li>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
       errors: [{ messageId: 'invalidClassOrder' }],
     },
     {

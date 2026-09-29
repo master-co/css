@@ -63,9 +63,9 @@ pnpm --filter @master/css-preset build
 
 ## Mixin And Token Ownership
 
-Token values live in `src/theme.css`. Ordered token mappings belong to `crates/mastercss-engine/src/manifest.rs` and `src/token_registry.rs`; `@master/css-tooling/builtins` exposes generated read-only `builtinTokenFamilies`, `builtinTokenAliases` and `builtinTokenNamespaces`. Do not edit generated projections or add registry fields to the preset manifest.
+Token values live in `src/theme.css`. Ordered token mappings belong to `crates/mastercss-engine/src/manifest.rs` and `src/token_registry.rs`; `@master/css-tooling/builtins` exposes generated read-only `builtinTokenFamilies` and `builtinTokenNamespaces`. Do not edit generated projections or add registry fields to the preset manifest.
 
-Author recipes in the stable `src/utilities.css` entrypoint using `@mixin`. Only used classes and delivered native `@apply` roots emit CSS/resources. Parameter recipes require static arguments; grid counts and spans must be positive integers. `font-*` selects one property by token existence and reports cross-property ambiguity. `text-*` is the generic single-string named-mixin rule with explicit typography companion tokens; it is never a color alias. Raw property abbreviations and single-declaration fixed aliases are removed. Vendor declaration pairs belong to Rust output rules.
+Author recipes in the stable `src/utilities.css` entrypoint using `@mixin`. Only used classes and delivered native `@apply` roots emit CSS/resources. Parameter recipes require static arguments; grid counts and spans must be positive integers. Each built-in token property has one canonical prefix and namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*`; `font-*` is removed. `text-*` is the generic single-string named-mixin rule with explicit typography companion tokens; it is never a color alias. Raw property abbreviations and single-declaration fixed aliases are removed. Vendor declaration pairs belong to Rust output rules.
 
 The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.
 

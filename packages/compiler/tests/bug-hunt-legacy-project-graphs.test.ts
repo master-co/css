@@ -23,7 +23,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 9 as const
+  "languageVersion": 10 as const
 }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {

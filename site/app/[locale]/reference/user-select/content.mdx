@@ -32,7 +32,7 @@ Use `user-select:all` for a short value that should be selected atomically. Try 
 
 ```html
 <code id="target"
-  class="display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-mono
+  class="display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-family-mono
          user-select:all">pnpm install @master/css</code>
 ```
 
@@ -45,7 +45,7 @@ An explicit `user-select:text` restores partial text selection within this other
 
 ```html
 <div class="p-md border-width:1px border-style:solid b-line-divider r-sm user-select:none">
-  <p class="font-xs fg-text-muted">Panel label · selection disabled</p>
+  <p class="font-size-xs fg-text-muted">Panel label · selection disabled</p>
   <p id="target" class="margin-bottom:0 user-select:text">Select only a few words from this sentence.</p>
 </div>
 ```

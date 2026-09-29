@@ -1,10 +1,127 @@
 <a id="language-version-8"></a>
 
+## Canonical token families (language 10)
+
+Direct values use full native properties, while each built-in named-token family has exactly one canonical prefix. This is a breaking language contract: regenerate manifests and hydration data with matching packages. Manifest remains v4; the binding ABI is 20.
+
+Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
+
+| Previous token prefix | Canonical prefix |
+| --- | --- |
+| `column-gap-*` | `gap-x-*` |
+| `inset-block-*` | `iy-*` |
+| `inset-block-end-*` | `iye-*` |
+| `inset-block-start-*` | `iys-*` |
+| `inset-inline-*` | `ix-*` |
+| `inset-inline-end-*` | `ixe-*` |
+| `inset-inline-start-*` | `ixs-*` |
+| `margin-*` | `m-*` |
+| `margin-block-*` | `my-*` |
+| `margin-block-end-*` | `mye-*` |
+| `margin-block-start-*` | `mys-*` |
+| `margin-bottom-*` | `mb-*` |
+| `margin-inline-*` | `mx-*` |
+| `margin-inline-end-*` | `mxe-*` |
+| `margin-inline-start-*` | `mxs-*` |
+| `margin-left-*` | `ml-*` |
+| `margin-right-*` | `mr-*` |
+| `margin-top-*` | `mt-*` |
+| `padding-*` | `p-*` |
+| `padding-block-*` | `py-*` |
+| `padding-block-end-*` | `pye-*` |
+| `padding-block-start-*` | `pys-*` |
+| `padding-bottom-*` | `pb-*` |
+| `padding-inline-*` | `px-*` |
+| `padding-inline-end-*` | `pxe-*` |
+| `padding-inline-start-*` | `pxs-*` |
+| `padding-left-*` | `pl-*` |
+| `padding-right-*` | `pr-*` |
+| `padding-top-*` | `pt-*` |
+| `row-gap-*` | `gap-y-*` |
+| `scroll-margin-*` | `scroll-m-*` |
+| `scroll-margin-block-*` | `scroll-my-*` |
+| `scroll-margin-block-end-*` | `scroll-mye-*` |
+| `scroll-margin-block-start-*` | `scroll-mys-*` |
+| `scroll-margin-bottom-*` | `scroll-mb-*` |
+| `scroll-margin-inline-*` | `scroll-mx-*` |
+| `scroll-margin-inline-end-*` | `scroll-mxe-*` |
+| `scroll-margin-inline-start-*` | `scroll-mxs-*` |
+| `scroll-margin-left-*` | `scroll-ml-*` |
+| `scroll-margin-right-*` | `scroll-mr-*` |
+| `scroll-margin-top-*` | `scroll-mt-*` |
+| `scroll-padding-*` | `scroll-p-*` |
+| `scroll-padding-block-*` | `scroll-py-*` |
+| `scroll-padding-block-end-*` | `scroll-pye-*` |
+| `scroll-padding-block-start-*` | `scroll-pys-*` |
+| `scroll-padding-bottom-*` | `scroll-pb-*` |
+| `scroll-padding-inline-*` | `scroll-px-*` |
+| `scroll-padding-inline-end-*` | `scroll-pxe-*` |
+| `scroll-padding-inline-start-*` | `scroll-pxs-*` |
+| `scroll-padding-left-*` | `scroll-pl-*` |
+| `scroll-padding-right-*` | `scroll-pr-*` |
+| `scroll-padding-top-*` | `scroll-pt-*` |
+| `text-underline-offset-*` | `text-underline-*` |
+| `block-size-*` | `size-y-*` |
+| `height-*` | `h-*` |
+| `inline-size-*` | `size-x-*` |
+| `max-block-size-*` | `max-size-y-*` |
+| `max-height-*` | `max-h-*` |
+| `max-inline-size-*` | `max-size-x-*` |
+| `max-width-*` | `max-w-*` |
+| `min-block-size-*` | `min-size-y-*` |
+| `min-height-*` | `min-h-*` |
+| `min-inline-size-*` | `min-size-x-*` |
+| `min-width-*` | `min-w-*` |
+| `width-*` | `w-*` |
+| `border-bottom-left-radius-*` | `rbl-*` |
+| `border-bottom-right-radius-*` | `rbr-*` |
+| `border-radius-*` | `r-*` |
+| `border-top-left-radius-*` | `rtl-*` |
+| `border-top-right-radius-*` | `rtr-*` |
+| `border-block-color-*` | `by-*` |
+| `border-bottom-color-*` | `bb-*` |
+| `border-color-*` | `b-*` |
+| `border-inline-color-*` | `bx-*` |
+| `border-left-color-*` | `bl-*` |
+| `border-right-color-*` | `br-*` |
+| `border-top-color-*` | `bt-*` |
+| `outline-color-*` | `outline-*` |
+| `background-color-*` | `bg-*` |
+| `color-*` | `fg-*` |
+| `-webkit-text-fill-color-*` | `text-fill-color-*` |
+| `text-decoration-color-*` | `text-decoration-*` |
+| `-webkit-text-stroke-color-*` | `text-stroke-*` |
+| `box-shadow-*` | `shadow-*` |
+| `letter-spacing-*` | `tracking-*` |
+| `line-height-*` | `leading-*` |
+| `text-stroke-color-*` | `text-stroke-*` |
+| `font-*` | Choose `font-size-*`, `font-family-*`, or `font-weight-*` from the original token definition |
+
+Families not listed keep their sole existing prefix. A project-defined mixin is preserved; do not mechanically rewrite a custom recipe merely because its name resembles a retired built-in spelling.
+
+`filter-*`, `backdrop-filter-*`, and `text-shadow-*` no longer consume color tokens. `shadow-*` consumes only shadow tokens. A color alone is not a complete filter or shadow value; author the intended native value or a mixin explicitly.
+
+| Removed selector shorthand | Native selector |
+| --- | --- |
+| `:first` / `:last` | `:first-child` / `:last-child` |
+| `:even` / `:odd` | `:nth-child(2n)` / `:nth-child(odd)` |
+| `:only` | `:only-child` |
+| `:rtl` / `:ltr` | `:dir(rtl)` / `:dir(ltr)` |
+
+Pseudo-elements are no longer translated into vendor names. To preserve the former WebKit behavior, spell `::-webkit-scrollbar`, `::-webkit-scrollbar-thumb`, `::-webkit-scrollbar-track`, `::-webkit-slider-thumb`, `::-webkit-slider-runnable-track`, or `::-webkit-resizer` explicitly. `::slider-thumb` now retains its authored spelling; browser support is a separate concern. Valid native legacy spellings such as `:before` remain valid.
+
+Math spacing is consistent across `calc`, `min`, `max`, and `clamp`; `clamp` no longer gains an extra `calc` wrapper. Quoted math text, URLs, attribute underscores and escaped identifiers retain their literal meaning. These are intentional CSS output corrections.
+
+Remove `preferPropertyAliases` from lint options. `builtinTokenAliases` and its type are removed; use `builtinTokenFamilies`. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 4.
+
+There is no new automatic migration profile for this change. Update project sources using the tables, review custom definitions, and rebuild. Existing historical RC profiles report outputs requiring further manual changes instead of treating unsupported current syntax as successful.
+
+
 ## Language version 9
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Recompile saved manifests and hydration data with matching packages. `languageVersion` is now `9`; older artifacts must be recompiled. Manifest v4 and hydration v3 remain; the binding ABI is 19 and lint batches use version 4. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 10 and ABI 20. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 
@@ -26,7 +143,7 @@ Use `bg-surface-base`, `fg-text-muted`, `b-line-divider`, `outline-line-divider`
 
 Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/guide/directives#theme-static) for references, JavaScript, source ownership and HMR.
 
-This guide upgrades saved RC contracts to language **v9** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
+This guide upgrades saved RC contracts to language **v10** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -55,9 +172,9 @@ The RC column below is historical reference text, not executable new syntax. `br
 
 | RC reference | New syntax | Generated declaration or semantic change |
 | --- | --- | --- |
-| `font:mono` | `font-mono` | `font-family:var(--font-family-mono)` |
-| `font:bold` | `font-bold` | `font-weight:var(--font-weight-bold)` |
-| `font:sm` | `font-sm` | `font-size:var(--font-size-sm)` |
+| `font:mono` | `font-family-mono` | `font-family:var(--font-family-mono)` |
+| `font:bold` | `font-weight-bold` | `font-weight:var(--font-weight-bold)` |
+| `font:sm` | `font-size-sm` | `font-size:var(--font-size-sm)` |
 | `text:sm` | `text-sm` | Uses explicit typography tokens; review the intentional line-height and letter-spacing change. |
 | `fg:brand` | `fg-brand` | `color:var(--color-brand)` |
 | `bg:brand` | `bg-brand` | `background-color:var(--color-brand)` |
@@ -78,7 +195,7 @@ The RC column below is historical reference text, not executable new syntax. `br
 
 Token classes retain `var()` references. The removed `@theme inline` modifier has no compiler substitution replacement.
 
-CSS keywords keep native meaning. `color:red` means the CSS color `red`; `color-red` and `fg-red` select the project's color token. `font-family:mono` specifies a font named `mono` and does not resolve `--font-family-mono`.
+CSS keywords keep native meaning. `color:red` means the CSS color `red`; `fg-red` selects the project's color token. `font-family:mono` specifies a font named `mono` and does not resolve `--font-family-mono`.
 
 There is no implicit token lookup inside a colon value, including functions, fallbacks, and multi-value declarations. For example, use `border-width:1px border-style:solid b-line-divider` and `transition-property:opacity transition-duration:var(--duration-normal) transition-timing-function:var(--easing-standard)` when those variables exist.
 
@@ -98,7 +215,7 @@ For this new example, define the project color token explicitly:
 ```
 
 ```text name="New v2 syntax"
-font-mono:hover@sm!
+font-family-mono:hover@sm!
 p-md:hover fg-brand:hover
 ```
 
@@ -118,11 +235,11 @@ Validate the resulting CSS in a browser. A syntax match is distinct from CSS val
 
 Single-declaration fixed aliases are removed: use `background-size:cover` instead of `bg-cover`, and `display:block` instead of `block`. A defined `--color-cover` now makes `bg-cover` a color token. Exact zero-parameter mixins still take precedence; explicit named mixins win over a built-in family at the same prefix.
 
-Use full prefixes to resolve collisions. If both `--font-family-brand` and `--font-size-brand` exist, `font-brand` is ambiguous. Choose `font-family-brand` or `font-size-brand`. Different utilities cannot resolve ambiguity through registration order.
+Use `font-family-brand` or `font-size-brand` for their respective namespaces. The overloaded `font-brand` entry is removed regardless of which tokens exist.
 
 Resolution uses the longest registered prefix. A missing `font-family-sm` does not fall back to `font-sm`. Hyphens inside token names remain part of the token: `p-card-body` selects `--spacing-card-body`.
 
-A single utility's explicit namespace fallback order remains meaningful. Negative names apply only to numeric tokens on properties that accept negative values; opacity suffixes apply only to color tokens and use the range `0..1`.
+Each built-in family reads exactly one namespace; there is no built-in namespace fallback. Negative names apply only to numeric tokens on properties that accept negative values; opacity suffixes apply only to color tokens and use the range `0..1`.
 
 ### Direct values override tokens within the same scope
 
@@ -167,7 +284,7 @@ These changes reduce special language rules. They are not a claim that AI genera
 
 ## 5. Update directives, manifests, and custom hosts
 
-Define reusable combinations with root-level mixins. Built-in token families such as `font-sans` need no preset mapping directive.
+Define reusable combinations with root-level mixins. Built-in token families such as `font-family-sans` need no preset mapping directive.
 
 ```css name="Current mixins"
 @mixin --pair(--size) {
@@ -188,10 +305,10 @@ Use `pair(2rem)` or `pair-token("card")`. To expose a named `pair-card` family i
 
 Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
-- Manifest **v4**, language **v9**, binding ABI **19**, hydration **v3** and engine transition **v3** reject incompatible data.
+- Manifest **v4**, language **v10**, binding ABI **20**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use explicit theme scopes, `customMedia` and variants.
-- Recompile into Manifest v4 / language 9 / ABI 19. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
+- Recompile into Manifest v4 / language 10 / ABI 20. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
@@ -414,7 +531,7 @@ Markdown/MDX display text, code fences, inline code and frontmatter no longer ge
 
 Use `validation: 'report' | 'error'` for compiler/stylesheet APIs. The former `cssValuePolicy` option is rejected. Strict syntax/value errors fail the whole result; unknown capabilities alone do not fail. `cssSyntaxStatus`, `cssValueStatus`, `matchStatus` and `browserSupport` describe separate checks; an unchecked browser is `not-checked`.
 
-Upgrade bindings and tools together: ABI **13**, source result **2**, validator **3**, language result **4**, diagnostics report **3**, MCP result **3**. Manifest and hydration envelopes remain v1 with `languageVersion: 3`; regenerate hydration priorities rather than filling missing fields with RC defaults.
+Rebuild matching bindings and tools for ABI **20**, Manifest **v4** / language **10**, and hydration **v3**. Source result **2**, validator **3**, language result **4**, diagnostics report **3**, and the MCP outer envelope **3** remain unchanged; MCP manifest-query data uses version **4**. Regenerate hydration priorities rather than filling missing fields with RC defaults.
 
 MCP v3 returns `{ version, metadata, diagnostics, result }`. `result` is either `{ status: 'success', data }` or `{ status: 'error', error: { code, message } }`. Read the published output schema. JSON text equals `structuredContent`; errors also set `isError`. Unavailable context/fingerprint data is null and dependencies remain explicit arrays.
 
@@ -460,7 +577,7 @@ The following is **historical RC syntax, for comparison only**:
 @mixin --size(--value) { width: var(--value); height: var(--value); }
 ```
 
-Call `size(20px)`. Use built-in `font-family-sans` or `font-sans` for a family token. A custom cross-namespace recipe needs same-name primary alias tokens and a single-string mixin; there is no replacement mapping directive.
+Call `size(20px)`. Use built-in `font-family-sans` for a family token. A custom cross-namespace recipe needs same-name primary theme tokens and a single-string mixin; there is no replacement mapping directive.
 
 A unique raw-any pattern can be simplified safely. Typed-only patterns, colon enums and overloads require review because `:<*>` accepts more values. Previously unmatched or ineffective input can start generating effective CSS. Do not silently turn `x:<number>` into `x:<*>` without auditing its uses.
 
@@ -477,7 +594,7 @@ Compare saved and new declarations, their order, selectors, conditions, variable
 
 ### Rebuild and validate the complete installation
 
-Upgrade binding ABI **13** and rebuild manifests/hydration with envelope v1 and **`languageVersion: 3`**. Older language data is rejected. Custom manifest consumers must remove `kind`, `value` matchers and segment dispatch; raw entries use a fixed key matcher. Validator, language, diagnostics and MCP outer versions stay unchanged from the preceding stage.
+Rebuild with binding ABI **20**, Manifest **v4** / language **10**, and hydration **v3**. Older language data is rejected. Custom manifest consumers must remove legacy utility matchers and mapping directives; author native declarations and mixins. Validator, language, diagnostics and MCP outer versions stay unchanged from the preceding stage.
 
 The default `validation: 'report'` keeps generated CSS and reports known math grammar errors, including missing operands, invalid separators and known function arity. `var()`, custom functions and environment-dependent results remain unknown unless a definite independent error exists. `validation: 'error'` fails the whole build without publishing partial CSS. Neither mode selects a different utility based on a value.
 
@@ -516,7 +633,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 19), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 9; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 20), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 10; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors
@@ -535,7 +652,7 @@ master-css migrate src master.css --from rc-mixins --source-version YOUR_SAVED_R
 
 Review the proposal, then add `--write` to apply safe edits. The profile rewrites `p:1rem` to `padding:1rem`, `block` to `display:block`, and `grid-cols:3@sm` to `grid-cols(3)@sm`. Native `r:2px` remains the SVG radius in the new language; old border-radius intent must migrate to `border-radius:2px`.
 
-Named tokens such as `p-md`, `font-sm`, `font-sans` and `bg-red-60` remain. `font-brand` reports ambiguity when multiple font namespaces define `brand`. `text-sm` sets font size, line height and letter spacing using primary and companion tokens; old `text-red` color usage becomes `fg-text-red`. Review typography on desktop and mobile because the old formulas are removed.
+Named tokens use canonical prefixes such as `p-md`, `font-size-sm`, `font-family-sans`, and `bg-red-60`. Replace every `font-*` token with its explicit font family. `text-sm` sets font size, line height and letter spacing using primary and companion tokens; old `text-red` color usage becomes `fg-text-red`. Review typography on desktop and mobile because the old formulas are removed.
 
 Static mixin calls cannot receive external `var()` or `attr()` values. Move dynamic recipes to ordinary CSS declarations. Only used classes and delivered native `@apply` roots emit CSS and retain tokens. Unused definitions and undelivered `@reference` styles do not retain resources.
 

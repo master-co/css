@@ -9,7 +9,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
 
 ```html
 <!-- No delay · begin immediately -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -21,7 +21,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms
              transition-property:transform
@@ -36,7 +36,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
 
 ```html
 <!-- 300ms delay · wait, then move -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -48,7 +48,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -77,7 +77,7 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
 
 ```html
 <!-- One native trigger · two independent timelines -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
               transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move both layers"
     class="mr-xs accent-color-blue
@@ -123,7 +123,7 @@ Define a named duration when a delay is shared across related interactions. This
 
 ```html
 <!-- Local duration token · 80ms delay -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -135,7 +135,7 @@ Define a named duration when a delay is shared across related interactions. This
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@media(print)
              transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slower)@media(screen)@motion-safe transition-timing-function:var(--easing-smooth)@media(screen)@motion-safe
@@ -155,7 +155,7 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
 
 ```html
 <!-- 300ms → no delay at sm -->
-<label class="display:block width:280px max-width:100% font-sm
+<label class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -167,7 +167,7 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@media(print)
              transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe
@@ -189,7 +189,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
 ```html
 <!-- Checked · wait outward, return immediately -->
 <label
-  class="display:block width:280px max-width:100% font-sm
+  class="display:block width:280px max-width:100% font-size-sm
          transform:translateX(96px):has(input:checked)>span>span@media(screen)
          transition-delay-slow:has(input:checked)>span>span@media(screen)@motion-safe">
   <input type="checkbox" aria-label="Move layer"
@@ -202,7 +202,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
            outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms transition:none@media(print)
              transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe">

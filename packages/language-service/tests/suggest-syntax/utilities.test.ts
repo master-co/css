@@ -4,9 +4,9 @@ import { hint } from './helper'
 
 test('offers mixins and named tokens while removing fixed aliases', () => {
   const roots = hint('')?.map(({ label }) => label)
-  expect(roots).toEqual(expect.arrayContaining(['sr-only', 'font-sm', 'text-sm', 'p-md', 'display:']))
+  expect(roots).toEqual(expect.arrayContaining(['sr-only', 'font-size-sm', 'text-sm', 'p-md', 'display:']))
   expect(roots).not.toEqual(expect.arrayContaining(['block', 'hidden', 'abs', 'p:', 'text:', 'fit', 'full', 'center', 'middle', 'round']))
-  expect(hint('font-s')?.map(({ label }) => label)).toContain('font-sm')
+  expect(hint('font-s')?.map(({ label }) => label)).toContain('font-size-sm')
   expect(hint('m-m')?.map(({ label }) => label)).toContain('m-md')
 })
 

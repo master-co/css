@@ -29,7 +29,7 @@ export default async function ArticleHeader(props: any) {
   let { h1ClassName, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc } = props
   const $ = await createTranslation(locale, dictionaries)
   const Category = ({ children }: any) => {
-    const categoryClasses = clsx('mb-sm font-sm font-weight:460 letter-spacing:.01em', { 'fg-accent': !categoryLink })
+    const categoryClasses = clsx('mb-sm font-size-sm font-weight:460 letter-spacing:.01em', { 'fg-accent': !categoryLink })
     return (
       categoryLink
         ? (
@@ -62,10 +62,10 @@ export default async function ArticleHeader(props: any) {
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
+            'max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-size-3xl@sm',
             h1ClassName,
             {
-              'font-4xl@md': metadata.type !== 'entity' && !toc
+              'font-size-4xl@md': metadata.type !== 'entity' && !toc
             }
           )}>
             {$(metadata.title.absolute || metadata.title)}

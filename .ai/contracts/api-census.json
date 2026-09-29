@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 878,
+    "records": 876,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 694,
+      "export": 692,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -12865,33 +12865,6 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-tooling:./builtins#builtinTokenAliases",
-      "package": "@master/css-tooling",
-      "subpath": "./builtins",
-      "name": "builtinTokenAliases"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-tooling:./builtins#builtinTokenFamilies",
       "package": "@master/css-tooling",
       "subpath": "./builtins",
@@ -12923,33 +12896,6 @@
       "package": "@master/css-tooling",
       "subpath": "./builtins",
       "name": "builtinTokenNamespaces"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-tooling:./builtins#MasterCSSBuiltinTokenAliases",
-      "package": "@master/css-tooling",
-      "subpath": "./builtins",
-      "name": "MasterCSSBuiltinTokenAliases"
     },
     {
       "kind": "export",
@@ -22824,7 +22770,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 19
+      "value": 20
     },
     {
       "kind": "wire-contract",
@@ -22934,7 +22880,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_VERSION",
       "name": "MASTER_CSS_LANGUAGE_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 9
+      "value": 10
     },
     {
       "kind": "wire-contract",
@@ -23172,7 +23118,7 @@
       "id": "wire-contract:packages/mcp/src/manifest-query.ts#MANIFEST_QUERY_VERSION",
       "name": "MANIFEST_QUERY_VERSION",
       "source": "packages/mcp/src/manifest-query.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",

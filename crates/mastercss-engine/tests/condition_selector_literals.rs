@@ -52,27 +52,26 @@ fn decimal_conditions_keep_a_single_numeric_value() {
 }
 
 #[test]
-fn selector_aliases_preserve_attribute_literals_and_escaped_identifiers() {
+fn native_selectors_preserve_attribute_literals_and_escaped_identifiers() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     for (selector, expected) in [
         (
-            r#"[data-state=":first"]:first"#,
+            r#"[data-state=":first"]:first-child"#,
             r#"[data-state=":first"]:first-child"#,
         ),
         (
             r#"[data-state=':before']:before"#,
-            r#"[data-state=':before']::before"#,
+            r#"[data-state=':before']:before"#,
         ),
         (
-            r#":is(:first,[data-state=":last"]):after"#,
-            r#":is(:first-child,[data-state=":last"])::after"#,
+            r#":is(:first-child,[data-state=":last"]):after"#,
+            r#":is(:first-child,[data-state=":last"]):after"#,
         ),
         (
-            r#"[data-state="escaped\":first"]:last"#,
-            r#"[data-state="escaped\":first"]:last-child"#,
+            r".literal\:first:first-child",
+            r".literal\:first:first-child",
         ),
-        (r".literal\:first:first", r".literal\:first:first-child"),
-        (r".literal\:before:before", r".literal\:before::before"),
+        (r".literal\:before:before", r".literal\:before:before"),
         ("::before", "::before"),
         ("::first", "::first"),
         (":first-of-type", ":first-of-type"),
@@ -103,7 +102,7 @@ fn removed_manifest_selector_indexes_are_rejected() {
         serde_json::json!({":first":[{"type":"pseudo-class","value":"first-child"}]}),
         serde_json::json!({":pick(2)":[{"type":"pseudo-class","value":"nth-child","children":[{"value":"2"}]}]}),
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"selectors":selectors});
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"selectors":selectors});
         assert!(EngineSession::create(&manifest.to_string()).is_err());
     }
 }
@@ -117,7 +116,7 @@ fn raw_manifest_mode_conditions_require_balanced_native_queries() {
         "@container (width>1px)",
         "@media (width>1px);body{display:none}",
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":9,"modes":[{"name":"custom","branches":[{"selector":".custom","conditions":[condition]}]}]});
+        let manifest = serde_json::json!({"version":4,"languageVersion":10,"modes":[{"name":"custom","branches":[{"selector":".custom","conditions":[condition]}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{condition}"
@@ -127,7 +126,7 @@ fn raw_manifest_mode_conditions_require_balanced_native_queries() {
 
 #[test]
 fn raw_manifest_variant_index_cannot_hide_a_different_condition() {
-    let mut manifest = serde_json::json!({"version":4,"languageVersion":9,"conditions":{"wide":{"id":"media","nodes":[{"type":"string","value":"(width>=800px)"}]}},"variants":[{"token":"@wide","branches":[{"conditions":["@media (width>=900px)"]}]}]});
+    let mut manifest = serde_json::json!({"version":4,"languageVersion":10,"conditions":{"wide":{"id":"media","nodes":[{"type":"string","value":"(width>=800px)"}]}},"variants":[{"token":"@wide","branches":[{"conditions":["@media (width>=900px)"]}]}]});
     assert!(EngineSession::create(&manifest.to_string()).is_err());
     manifest["variants"][0]["branches"][0]["conditions"][0] = "@media (width>=800px)".into();
     assert!(EngineSession::create(&manifest.to_string()).is_err());

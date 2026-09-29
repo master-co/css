@@ -13,11 +13,11 @@ The scanner does not run your app. Source extractors collect complete static str
 ```html name=src/index.html
 <!-- @MARK card p-md bg-white shadow-md -->
 <article class="p-md bg-white shadow-md card">
-  <h2 class="font-lg font-semibold">Release notes</h2>
+  <h2 class="font-size-lg font-weight-semibold">Release notes</h2>
 </article>
 ```
 
-The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
+The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-size-lg`, and `font-weight-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
 
 The generated result for `p-md` and `shadow-md` includes their theme dependencies:
 
@@ -84,7 +84,7 @@ Extraction returns candidate strings plus occurrences, including original UTF-16
 ## Validation \{#validation\}
 After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `fg-red-60`, or `grid-cols(3)`.
+- It is a built-in utility, such as `display:block`, `fg-red-60`, or `grid-cols(3)`.
 - It is defined by your project CSS entry and compiled into the manifest.
 - It matches a native class collected from a stylesheet; this retains usage when [native pruning](/guide/native-css-pruning) is explicitly enabled.
 
@@ -114,9 +114,9 @@ After candidate scanning, Master CSS validates each class against the active man
 </section>
 ```
 
-`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap-xl`, `bg-blue-60`, and `fg-white` are validated through the utility engine.
+`hero-title` and `btn` are valid because the project CSS entry defines them. `display:grid`, `gap-xl`, `bg-blue-60`, and `fg-white` are validated through the utility engine.
 
-Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
+Native `.btn` rules inside `@layer components` are delivered by default. Scanning controls generated utilities and mixins; native class removal applies only when native pruning is explicitly enabled.
 
 ## Complete classes \{#complete-classes\}
 Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.

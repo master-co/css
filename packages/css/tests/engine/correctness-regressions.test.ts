@@ -11,8 +11,8 @@ test.each(['native', 'wasm'] as const)('preserves decimal conditions and selecto
     ['display:block@media((width>=600.5px))', String.raw`@media (width>=600.5px){.display\:block\@media\(\(width\>\=600\.5px\)\){display:block}}`],
     ['display:block@container((width>=600.5px))', String.raw`@container (width>=600.5px){.display\:block\@container\(\(width\>\=600\.5px\)\){display:block}}`],
     ['display:block@media((width>=37.5rem))', String.raw`@media (width>=37.5rem){.display\:block\@media\(\(width\>\=37\.5rem\)\){display:block}}`],
-    ['display:block[data-state=":first"]:first', String.raw`.display\:block\[data-state\=\"\:first\"\]\:first[data-state=":first"]:first-child{display:block}`],
-    ['display:block:is(:first,[data-state=":before"]):before', String.raw`.display\:block\:is\(\:first\,\[data-state\=\"\:before\"\]\)\:before:is(:first-child,[data-state=":before"])::before{display:block}`]
+    ['display:block[data-state=":first"]:first-child', String.raw`.display\:block\[data-state\=\"\:first\"\]\:first-child[data-state=":first"]:first-child{display:block}`],
+    ['display:block:is(:first-child,[data-state=":before"]):before', String.raw`.display\:block\:is\(\:first-child\,\[data-state\=\"\:before\"\]\)\:before:is(:first-child,[data-state=":before"]):before{display:block}`]
   ]) {
     expect(engine.inspect(className).rules.map(rule => rule.text), className).toEqual([text])
   }

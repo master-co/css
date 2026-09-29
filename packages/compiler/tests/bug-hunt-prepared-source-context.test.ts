@@ -26,7 +26,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 9 as const
+  "languageVersion": 10 as const
 }
 
 async function fixture(run: (root: string) => Promise<void>) {

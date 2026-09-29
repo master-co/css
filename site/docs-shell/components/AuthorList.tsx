@@ -34,7 +34,7 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
           >
             <Image
               className={clsx('aspect-ratio:1/1 border-radius:50% object-fit:cover', {
-                'outline-width:1px outline-style:solid outline-color-line-subtle outline-offset-3xs': size === 'md'
+                'outline-width:1px outline-style:solid outline-line-subtle outline-offset-3xs': size === 'md'
               })}
               src={author.image}
               width={avatarSize}
@@ -43,13 +43,13 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
             />
             <div className="display:flex flex-direction:column gap-3xs">
               <div className={clsx('', {
-                'font-sm font-weight:460 fg-text-strong': size === 'md',
-                'font-xs': size === 'sm' || size === 'xs',
+                'font-size-sm font-weight:460 fg-text-strong': size === 'md',
+                'font-size-xs': size === 'sm' || size === 'xs',
               })}
               >
                 {author.name}
               </div>
-              {size === 'md' && <div className="font-2xs fg-text-muted">{author.twitter}</div>}
+              {size === 'md' && <div className="font-size-2xs fg-text-muted">{author.twitter}</div>}
             </div>
           </Wrapper>
         )

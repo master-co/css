@@ -10,7 +10,7 @@
 ```html
 <!-- No shadow -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          text-shadow:none"
 >
   Clear type
@@ -20,7 +20,7 @@
 ```html
 <!-- 0px x · 2px y · 4px blur -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)"
 >
   Clear type
@@ -45,7 +45,7 @@ Give overlay text a readable background before adding a shadow. Both examples be
 <!-- Dark surface · without shadow -->
 <div class="p-md r-sm bg-slate-80">
   <h2 id="target"
-    class="margin:0 font-3xl line-height:1.5 text-shadow:none fg-white"
+    class="margin:0 font-size-3xl line-height:1.5 text-shadow:none fg-white"
   >
     Open the canvas
   </h2>
@@ -56,7 +56,7 @@ Give overlay text a readable background before adding a shadow. Both examples be
 <!-- Dark surface · with shadow -->
 <div class="p-md r-sm bg-slate-80">
   <h2 id="target"
-    class="margin:0 font-3xl line-height:1.5 text-shadow:0|2px|4px|color-mix(in|oklab,oklch(0%|0|none)|40%,transparent) fg-white"
+    class="margin:0 font-size-3xl line-height:1.5 text-shadow:0|2px|4px|color-mix(in|oklab,oklch(0%|0|none)|40%,transparent) fg-white"
   >
     Open the canvas
   </h2>
@@ -73,7 +73,7 @@ Resize past `sm` to add a shadow on screen. Print removes the shadow while keepi
 ```html
 <!-- Screen shadow · plain print -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          text-shadow:none text-shadow:none@media(print)
          text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)@media(screen)@sm"
 >

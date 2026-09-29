@@ -35,13 +35,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "column-gap",
-    "property": "column-gap",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "gap-x",
     "property": "column-gap",
     "namespaces": [
@@ -63,22 +56,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "inset-block",
-    "property": "inset-block",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "iy",
     "property": "inset-block",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "inset-block-end",
-    "property": "inset-block-end",
     "namespaces": [
       "spacing"
     ]
@@ -91,22 +70,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "inset-block-start",
-    "property": "inset-block-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "iys",
     "property": "inset-block-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "inset-inline",
-    "property": "inset-inline",
     "namespaces": [
       "spacing"
     ]
@@ -119,22 +84,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "inset-inline-end",
-    "property": "inset-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "ixe",
     "property": "inset-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "inset-inline-start",
-    "property": "inset-inline-start",
     "namespaces": [
       "spacing"
     ]
@@ -154,22 +105,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin",
-    "property": "margin",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "m",
     "property": "margin",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "margin-block",
-    "property": "margin-block",
     "namespaces": [
       "spacing"
     ]
@@ -182,22 +119,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin-block-end",
-    "property": "margin-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "mye",
     "property": "margin-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "margin-block-start",
-    "property": "margin-block-start",
     "namespaces": [
       "spacing"
     ]
@@ -210,22 +133,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin-bottom",
-    "property": "margin-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "mb",
     "property": "margin-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "margin-inline",
-    "property": "margin-inline",
     "namespaces": [
       "spacing"
     ]
@@ -238,22 +147,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin-inline-end",
-    "property": "margin-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "mxe",
     "property": "margin-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "margin-inline-start",
-    "property": "margin-inline-start",
     "namespaces": [
       "spacing"
     ]
@@ -266,13 +161,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin-left",
-    "property": "margin-left",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "ml",
     "property": "margin-left",
     "namespaces": [
@@ -280,22 +168,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "margin-right",
-    "property": "margin-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "mr",
     "property": "margin-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "margin-top",
-    "property": "margin-top",
     "namespaces": [
       "spacing"
     ]
@@ -329,22 +203,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding",
-    "property": "padding",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "p",
     "property": "padding",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "padding-block",
-    "property": "padding-block",
     "namespaces": [
       "spacing"
     ]
@@ -357,22 +217,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding-block-end",
-    "property": "padding-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "pye",
     "property": "padding-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "padding-block-start",
-    "property": "padding-block-start",
     "namespaces": [
       "spacing"
     ]
@@ -385,22 +231,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding-bottom",
-    "property": "padding-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "pb",
     "property": "padding-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "padding-inline",
-    "property": "padding-inline",
     "namespaces": [
       "spacing"
     ]
@@ -413,22 +245,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding-inline-end",
-    "property": "padding-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "pxe",
     "property": "padding-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "padding-inline-start",
-    "property": "padding-inline-start",
     "namespaces": [
       "spacing"
     ]
@@ -441,13 +259,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding-left",
-    "property": "padding-left",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "pl",
     "property": "padding-left",
     "namespaces": [
@@ -455,22 +266,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "padding-right",
-    "property": "padding-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "pr",
     "property": "padding-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "padding-top",
-    "property": "padding-top",
     "namespaces": [
       "spacing"
     ]
@@ -504,22 +301,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "row-gap",
-    "property": "row-gap",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "gap-y",
     "property": "row-gap",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin",
-    "property": "scroll-margin",
     "namespaces": [
       "spacing"
     ]
@@ -532,22 +315,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-margin-block",
-    "property": "scroll-margin-block",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-my",
     "property": "scroll-margin-block",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin-block-end",
-    "property": "scroll-margin-block-end",
     "namespaces": [
       "spacing"
     ]
@@ -560,22 +329,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-margin-block-start",
-    "property": "scroll-margin-block-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-mys",
     "property": "scroll-margin-block-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin-bottom",
-    "property": "scroll-margin-bottom",
     "namespaces": [
       "spacing"
     ]
@@ -588,22 +343,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-margin-inline",
-    "property": "scroll-margin-inline",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-mx",
     "property": "scroll-margin-inline",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin-inline-end",
-    "property": "scroll-margin-inline-end",
     "namespaces": [
       "spacing"
     ]
@@ -616,22 +357,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-margin-inline-start",
-    "property": "scroll-margin-inline-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-mxs",
     "property": "scroll-margin-inline-start",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin-left",
-    "property": "scroll-margin-left",
     "namespaces": [
       "spacing"
     ]
@@ -644,22 +371,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-margin-right",
-    "property": "scroll-margin-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-mr",
     "property": "scroll-margin-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-margin-top",
-    "property": "scroll-margin-top",
     "namespaces": [
       "spacing"
     ]
@@ -672,22 +385,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding",
-    "property": "scroll-padding",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-p",
     "property": "scroll-padding",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-padding-block",
-    "property": "scroll-padding-block",
     "namespaces": [
       "spacing"
     ]
@@ -700,22 +399,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding-block-end",
-    "property": "scroll-padding-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-pye",
     "property": "scroll-padding-block-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-padding-block-start",
-    "property": "scroll-padding-block-start",
     "namespaces": [
       "spacing"
     ]
@@ -728,22 +413,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding-bottom",
-    "property": "scroll-padding-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-pb",
     "property": "scroll-padding-bottom",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-padding-inline",
-    "property": "scroll-padding-inline",
     "namespaces": [
       "spacing"
     ]
@@ -756,22 +427,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding-inline-end",
-    "property": "scroll-padding-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-pxe",
     "property": "scroll-padding-inline-end",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-padding-inline-start",
-    "property": "scroll-padding-inline-start",
     "namespaces": [
       "spacing"
     ]
@@ -784,13 +441,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding-left",
-    "property": "scroll-padding-left",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-pl",
     "property": "scroll-padding-left",
     "namespaces": [
@@ -798,22 +448,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "scroll-padding-right",
-    "property": "scroll-padding-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
     "prefix": "scroll-pr",
     "property": "scroll-padding-right",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "scroll-padding-top",
-    "property": "scroll-padding-top",
     "namespaces": [
       "spacing"
     ]
@@ -840,7 +476,7 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "text-underline-offset",
+    "prefix": "text-underline",
     "property": "text-underline-offset",
     "namespaces": [
       "spacing"
@@ -917,13 +553,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "block-size",
-    "property": "block-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "size-y",
     "property": "block-size",
     "namespaces": [
@@ -952,22 +581,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "height",
-    "property": "height",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "h",
     "property": "height",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
-    "prefix": "inline-size",
-    "property": "inline-size",
     "namespaces": [
       "container"
     ]
@@ -980,22 +595,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "max-block-size",
-    "property": "max-block-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "max-size-y",
     "property": "max-block-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
-    "prefix": "max-height",
-    "property": "max-height",
     "namespaces": [
       "container"
     ]
@@ -1008,22 +609,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "max-inline-size",
-    "property": "max-inline-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "max-size-x",
     "property": "max-inline-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
-    "prefix": "max-width",
-    "property": "max-width",
     "namespaces": [
       "container"
     ]
@@ -1036,22 +623,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "min-block-size",
-    "property": "min-block-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "min-size-y",
     "property": "min-block-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
-    "prefix": "min-height",
-    "property": "min-height",
     "namespaces": [
       "container"
     ]
@@ -1064,22 +637,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "min-inline-size",
-    "property": "min-inline-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "min-size-x",
     "property": "min-inline-size",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
-    "prefix": "min-width",
-    "property": "min-width",
     "namespaces": [
       "container"
     ]
@@ -1099,13 +658,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "width",
-    "property": "width",
-    "namespaces": [
-      "container"
-    ]
-  },
-  {
     "prefix": "w",
     "property": "width",
     "namespaces": [
@@ -1113,22 +665,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-bottom-left-radius",
-    "property": "border-bottom-left-radius",
-    "namespaces": [
-      "radius"
-    ]
-  },
-  {
     "prefix": "rbl",
     "property": "border-bottom-left-radius",
-    "namespaces": [
-      "radius"
-    ]
-  },
-  {
-    "prefix": "border-bottom-right-radius",
-    "property": "border-bottom-right-radius",
     "namespaces": [
       "radius"
     ]
@@ -1155,13 +693,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-radius",
-    "property": "border-radius",
-    "namespaces": [
-      "radius"
-    ]
-  },
-  {
     "prefix": "r",
     "property": "border-radius",
     "namespaces": [
@@ -1183,22 +714,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-top-left-radius",
-    "property": "border-top-left-radius",
-    "namespaces": [
-      "radius"
-    ]
-  },
-  {
     "prefix": "rtl",
     "property": "border-top-left-radius",
-    "namespaces": [
-      "radius"
-    ]
-  },
-  {
-    "prefix": "border-top-right-radius",
-    "property": "border-top-right-radius",
     "namespaces": [
       "radius"
     ]
@@ -1211,7 +728,7 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-block-color",
+    "prefix": "by",
     "property": "border-block-color",
     "namespaces": [
       "color"
@@ -1232,21 +749,21 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-bottom-color",
+    "prefix": "bb",
     "property": "border-bottom-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "border-color",
+    "prefix": "b",
     "property": "border-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "border-inline-color",
+    "prefix": "bx",
     "property": "border-inline-color",
     "namespaces": [
       "color"
@@ -1267,28 +784,28 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-left-color",
+    "prefix": "bl",
     "property": "border-left-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "border-right-color",
+    "prefix": "br",
     "property": "border-right-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "border-top-color",
+    "prefix": "bt",
     "property": "border-top-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "outline-color",
+    "prefix": "outline",
     "property": "outline-color",
     "namespaces": [
       "color"
@@ -1302,7 +819,7 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "background-color",
+    "prefix": "bg",
     "property": "background-color",
     "namespaces": [
       "color"
@@ -1311,13 +828,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
   {
     "prefix": "fill",
     "property": "fill",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "filter",
-    "property": "filter",
     "namespaces": [
       "color"
     ]
@@ -1337,22 +847,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "color",
-    "property": "color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "fg",
     "property": "color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "-webkit-text-fill-color",
-    "property": "-webkit-text-fill-color",
     "namespaces": [
       "color"
     ]
@@ -1365,38 +861,16 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "text-decoration-color",
+    "prefix": "text-decoration",
     "property": "text-decoration-color",
     "namespaces": [
       "color"
     ]
   },
   {
-    "prefix": "-webkit-text-stroke-color",
+    "prefix": "text-stroke",
     "property": "-webkit-text-stroke-color",
     "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "text-stroke-color",
-    "property": "-webkit-text-stroke-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "text-shadow",
-    "property": "text-shadow",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "box-shadow",
-    "property": "box-shadow",
-    "namespaces": [
-      "shadow",
       "color"
     ]
   },
@@ -1404,8 +878,7 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "shadow",
     "property": "box-shadow",
     "namespaces": [
-      "shadow",
-      "color"
+      "shadow"
     ]
   },
   {
@@ -1486,24 +959,10 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "letter-spacing",
-    "property": "letter-spacing",
-    "namespaces": [
-      "tracking"
-    ]
-  },
-  {
     "prefix": "tracking",
     "property": "letter-spacing",
     "namespaces": [
       "tracking"
-    ]
-  },
-  {
-    "prefix": "line-height",
-    "property": "line-height",
-    "namespaces": [
-      "leading"
     ]
   },
   {
@@ -1519,291 +978,577 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "namespaces": [
       "order"
     ]
-  },
-  {
-    "prefix": "font",
-    "property": "font-size",
-    "namespaces": [
-      "font-size"
-    ]
-  },
-  {
-    "prefix": "font",
-    "property": "font-family",
-    "namespaces": [
-      "font-family"
-    ]
-  },
-  {
-    "prefix": "font",
-    "property": "font-weight",
-    "namespaces": [
-      "font-weight"
-    ]
-  },
-  {
-    "prefix": "bg",
-    "property": "background-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "b",
-    "property": "border-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "bt",
-    "property": "border-top-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "br",
-    "property": "border-right-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "bb",
-    "property": "border-bottom-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "bl",
-    "property": "border-left-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "bx",
-    "property": "border-inline-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "by",
-    "property": "border-block-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "outline",
-    "property": "outline-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "text-decoration",
-    "property": "text-decoration-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "text-underline",
-    "property": "text-underline-offset",
-    "namespaces": [
-      "spacing"
-    ]
-  },
-  {
-    "prefix": "text-stroke",
-    "property": "-webkit-text-stroke-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "backdrop-filter",
-    "property": "backdrop-filter",
-    "namespaces": [
-      "color"
-    ]
   }
 ].map((family) => Object.freeze({ ...family, namespaces: Object.freeze(family.namespaces) }))
 )
 
-export type MasterCSSBuiltinTokenAliases = Readonly<Record<string, string>>
 export type MasterCSSBuiltinTokenNamespaces = readonly MasterCSSBuiltinTokenNamespace[]
 
-export const builtinTokenAliases = Object.freeze({
-  "b": "border-color",
-  "bb": "border-bottom-color",
-  "bg": "background-color",
-  "bl": "border-left-color",
-  "br": "border-right-color",
-  "bt": "border-top-color",
-  "bx": "border-inline-color",
-  "by": "border-block-color",
-  "fg": "color",
-  "gap-x": "column-gap",
-  "gap-y": "row-gap",
-  "grid-col": "grid-column",
-  "grid-col-end": "grid-column-end",
-  "grid-col-start": "grid-column-start",
-  "h": "height",
-  "ix": "inset-inline",
-  "ixe": "inset-inline-end",
-  "ixs": "inset-inline-start",
-  "iy": "inset-block",
-  "iye": "inset-block-end",
-  "iys": "inset-block-start",
-  "leading": "line-height",
-  "m": "margin",
-  "max-h": "max-height",
-  "max-size-x": "max-inline-size",
-  "max-size-y": "max-block-size",
-  "max-w": "max-width",
-  "mb": "margin-bottom",
-  "min-h": "min-height",
-  "min-size-x": "min-inline-size",
-  "min-size-y": "min-block-size",
-  "min-w": "min-width",
-  "ml": "margin-left",
-  "mr": "margin-right",
-  "mt": "margin-top",
-  "mx": "margin-inline",
-  "mxe": "margin-inline-end",
-  "mxs": "margin-inline-start",
-  "my": "margin-block",
-  "mye": "margin-block-end",
-  "mys": "margin-block-start",
-  "p": "padding",
-  "pb": "padding-bottom",
-  "pl": "padding-left",
-  "pr": "padding-right",
-  "pt": "padding-top",
-  "px": "padding-inline",
-  "pxe": "padding-inline-end",
-  "pxs": "padding-inline-start",
-  "py": "padding-block",
-  "pye": "padding-block-end",
-  "pys": "padding-block-start",
-  "r": "border-radius",
-  "rbl": "border-bottom-left-radius",
-  "rbr": "border-bottom-right-radius",
-  "rtl": "border-top-left-radius",
-  "rtr": "border-top-right-radius",
-  "scroll-m": "scroll-margin",
-  "scroll-mb": "scroll-margin-bottom",
-  "scroll-ml": "scroll-margin-left",
-  "scroll-mr": "scroll-margin-right",
-  "scroll-mt": "scroll-margin-top",
-  "scroll-mx": "scroll-margin-inline",
-  "scroll-mxe": "scroll-margin-inline-end",
-  "scroll-mxs": "scroll-margin-inline-start",
-  "scroll-my": "scroll-margin-block",
-  "scroll-mye": "scroll-margin-block-end",
-  "scroll-mys": "scroll-margin-block-start",
-  "scroll-p": "scroll-padding",
-  "scroll-pb": "scroll-padding-bottom",
-  "scroll-pl": "scroll-padding-left",
-  "scroll-pr": "scroll-padding-right",
-  "scroll-pt": "scroll-padding-top",
-  "scroll-px": "scroll-padding-inline",
-  "scroll-pxe": "scroll-padding-inline-end",
-  "scroll-pxs": "scroll-padding-inline-start",
-  "scroll-py": "scroll-padding-block",
-  "scroll-pye": "scroll-padding-block-end",
-  "scroll-pys": "scroll-padding-block-start",
-  "shadow": "box-shadow",
-  "size-x": "inline-size",
-  "size-y": "block-size",
-  "text-fill-color": "-webkit-text-fill-color",
-  "text-stroke": "-webkit-text-stroke-color",
-  "text-stroke-color": "-webkit-text-stroke-color",
-  "text-stroke-width": "-webkit-text-stroke-width",
-  "tracking": "letter-spacing",
-  "w": "width",
-  "z": "z-index"
-}) as MasterCSSBuiltinTokenAliases
 
 export const builtinTokenNamespaces = Object.freeze(
   [
   {
     "properties": [
-      "background-position",
-      "bottom",
-      "border-spacing",
-      "column-gap",
-      "gap",
-      "inset",
-      "inset-block",
-      "inset-block-end",
-      "inset-block-start",
-      "inset-inline",
-      "inset-inline-end",
-      "inset-inline-start",
-      "left",
-      "margin",
-      "margin-block",
-      "margin-block-end",
-      "margin-block-start",
-      "margin-bottom",
-      "margin-inline",
-      "margin-inline-end",
-      "margin-inline-start",
-      "margin-left",
-      "margin-right",
-      "margin-top",
-      "mask-position",
-      "object-position",
-      "outline-offset",
-      "padding",
-      "padding-block",
-      "padding-block-end",
-      "padding-block-start",
-      "padding-bottom",
-      "padding-inline",
-      "padding-inline-end",
-      "padding-inline-start",
-      "padding-left",
-      "padding-right",
-      "padding-top",
-      "perspective",
-      "perspective-origin",
-      "right",
-      "row-gap",
-      "scroll-margin",
-      "scroll-margin-block",
-      "scroll-margin-block-end",
-      "scroll-margin-block-start",
-      "scroll-margin-bottom",
-      "scroll-margin-inline",
-      "scroll-margin-inline-end",
-      "scroll-margin-inline-start",
-      "scroll-margin-left",
-      "scroll-margin-right",
-      "scroll-margin-top",
-      "scroll-padding",
-      "scroll-padding-block",
-      "scroll-padding-block-end",
-      "scroll-padding-block-start",
-      "scroll-padding-bottom",
-      "scroll-padding-inline",
-      "scroll-padding-inline-end",
-      "scroll-padding-inline-start",
-      "scroll-padding-left",
-      "scroll-padding-right",
-      "scroll-padding-top",
-      "shape-margin",
-      "text-indent",
-      "text-underline-offset",
-      "top",
-      "translate",
-      "transform-origin",
+      "background-position"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "bottom"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "border-spacing"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "column-gap"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "gap"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-block"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-block-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-block-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-inline"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-inline-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "inset-inline-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "left"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-block"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-block-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-block-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-bottom"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-inline"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-inline-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-inline-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-left"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-right"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "margin-top"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "mask-position"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "object-position"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "outline-offset"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-block"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-block-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-block-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-bottom"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-inline"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-inline-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-inline-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-left"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-right"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "padding-top"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "perspective"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "perspective-origin"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "right"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "row-gap"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-block"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-block-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-block-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-bottom"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-inline"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-inline-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-inline-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-left"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-right"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-margin-top"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-block"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-block-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-block-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-bottom"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-inline"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-inline-end"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-inline-start"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-left"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-right"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "scroll-padding-top"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "shape-margin"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "text-indent"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "text-underline-offset"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "top"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "translate"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "transform-origin"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
       "word-spacing"
     ],
     "variableAliasRefs": [
@@ -1812,10 +1557,38 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "cx",
-      "cy",
-      "stroke-dashoffset",
-      "x",
+      "cx"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "cy"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "stroke-dashoffset"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
+      "x"
+    ],
+    "variableAliasRefs": [
+      "~spacing"
+    ]
+  },
+  {
+    "properties": [
       "y"
     ],
     "variableAliasRefs": [
@@ -1824,22 +1597,134 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "background-size",
-      "block-size",
-      "contain-intrinsic-block-size",
-      "contain-intrinsic-inline-size",
-      "flex-basis",
-      "height",
-      "inline-size",
-      "max-block-size",
-      "max-height",
-      "max-inline-size",
-      "max-width",
-      "min-block-size",
-      "min-height",
-      "min-inline-size",
-      "min-width",
-      "mask-size",
+      "background-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "block-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "contain-intrinsic-block-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "contain-intrinsic-inline-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "flex-basis"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "height"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "inline-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "max-block-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "max-height"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "max-inline-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "max-width"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "min-block-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "min-height"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "min-inline-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "min-width"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
+      "mask-size"
+    ],
+    "variableAliasRefs": [
+      "~container"
+    ]
+  },
+  {
+    "properties": [
       "width"
     ],
     "variableAliasRefs": [
@@ -1848,14 +1733,70 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "border-bottom-left-radius",
-      "border-bottom-right-radius",
-      "border-end-end-radius",
-      "border-end-start-radius",
-      "border-radius",
-      "border-start-end-radius",
-      "border-start-start-radius",
-      "border-top-left-radius",
+      "border-bottom-left-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-bottom-right-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-end-end-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-end-start-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-start-end-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-start-start-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
+      "border-top-left-radius"
+    ],
+    "variableAliasRefs": [
+      "~radius"
+    ]
+  },
+  {
+    "properties": [
       "border-top-right-radius"
     ],
     "variableAliasRefs": [
@@ -1864,17 +1805,94 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "border-block-color",
-      "border-block-end-color",
-      "border-block-start-color",
-      "border-bottom-color",
-      "border-color",
-      "border-inline-color",
-      "border-inline-end-color",
-      "border-inline-start-color",
-      "border-left-color",
-      "border-right-color",
-      "border-top-color",
+      "border-block-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-block-end-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-block-start-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-bottom-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-inline-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-inline-end-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-inline-start-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-left-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-right-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "border-top-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
       "outline-color"
     ],
     "variableAliasRefs": [
@@ -1883,10 +1901,23 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "accent-color",
-      "background-color",
-      "fill",
-      "filter"
+      "accent-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "background-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
+      "fill"
     ],
     "variableAliasRefs": [
       "~color"
@@ -1918,7 +1949,14 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "-webkit-text-fill-color",
+      "-webkit-text-fill-color"
+    ],
+    "variableAliasRefs": [
+      "~color"
+    ]
+  },
+  {
+    "properties": [
       "text-decoration-color"
     ],
     "variableAliasRefs": [
@@ -1935,26 +1973,38 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "text-shadow"
-    ],
-    "variableAliasRefs": [
-      "~color"
-    ]
-  },
-  {
-    "properties": [
       "box-shadow"
     ],
     "variableAliasRefs": [
-      "~shadow",
-      "~color"
+      "~shadow"
     ]
   },
   {
     "properties": [
-      "animation-delay",
-      "animation-duration",
-      "transition-delay",
+      "animation-delay"
+    ],
+    "variableAliasRefs": [
+      "~duration"
+    ]
+  },
+  {
+    "properties": [
+      "animation-duration"
+    ],
+    "variableAliasRefs": [
+      "~duration"
+    ]
+  },
+  {
+    "properties": [
+      "transition-delay"
+    ],
+    "variableAliasRefs": [
+      "~duration"
+    ]
+  },
+  {
+    "properties": [
       "transition-duration"
     ],
     "variableAliasRefs": [
@@ -1963,7 +2013,14 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "animation-timing-function",
+      "animation-timing-function"
+    ],
+    "variableAliasRefs": [
+      "~easing"
+    ]
+  },
+  {
+    "properties": [
       "transition-timing-function"
     ],
     "variableAliasRefs": [

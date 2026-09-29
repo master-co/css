@@ -3,7 +3,7 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 9 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 10 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('directive language v9 authoring contracts', () => {
@@ -17,7 +17,7 @@ describe('directive language v9 authoring contracts', () => {
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(9)
+    expect(manifest.languageVersion).toBe(10)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')

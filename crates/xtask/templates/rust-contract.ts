@@ -515,7 +515,6 @@ export interface MasterCSSLintRawValueCandidates {
 
 export interface MasterCSSLintCanonicalClassNameOptions {
   preferStaticUtilities: boolean
-  preferPropertyAliases: boolean
   preferCompositionUtilities: boolean
 }
 

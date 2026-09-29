@@ -9,7 +9,7 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Normal float · rectangular wrap -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
@@ -29,7 +29,7 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Circle · text follows the curved boundary -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
@@ -64,7 +64,7 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- No shape · wraps at the box edge -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
@@ -84,7 +84,7 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- Inset · wraps at the painted edge -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
@@ -112,7 +112,7 @@ Open print preview to replace the circular wrap area with the ordinary float mar
 
 ```html
 <!-- Circular on screen · rectangular in print -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
@@ -141,7 +141,7 @@ Widen the real preview viewport to `sm` to wrap around the circle. Print uses th
 
 ```html
 <!-- Rectangle → circle at sm -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"

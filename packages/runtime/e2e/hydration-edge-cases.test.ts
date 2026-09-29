@@ -120,7 +120,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   })
   await init(page, "@layer utilities{.display\\:block{display:block}}", undefined, {
   "version": 3 as const,
-  "languageVersion": 9 as const,
+  "languageVersion": 10 as const,
   "rules": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
@@ -311,7 +311,7 @@ test('progressive hydration uses JSON modules without constructing a loader or c
   })
 })
 
-for (const invalid of [{ version: 2, rules: [], resourceOrder: [] }, { version: 3, languageVersion: 8, rules: [], resourceOrder: { variables: [], keyframes: [] } }]) {
+for (const invalid of [{ version: 2, rules: [], resourceOrder: [] }, { version: 3, languageVersion: 9, rules: [], resourceOrder: { variables: [], keyframes: [] } }]) {
 test(`external hydration rejects unsupported version ${invalid.version}/${invalid.languageVersion} without fetch`, async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/eval-error.json', loaderURL).href

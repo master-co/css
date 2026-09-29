@@ -15,8 +15,8 @@ export default async function NotFound() {
         <Body className="bg-surface-base">
           <DocHeader />
           <div className="display:flex flex-direction:column align-items:center justify-content:center min-height:100dvh padding-inline:2.5rem padding-top:3.125rem padding-top:3.75rem@md">
-            <h3 className="mt-2xl margin-bottom:1.25rem font-lg letter-spacing:.01em text-align:center fg-accent">404</h3>
-            <h1 className="margin-top:0 font-3xl leading-xs text-align:center fg-text-strong font-5xl@sm">{$('This page does not exist')}</h1>
+            <h3 className="mt-2xl margin-bottom:1.25rem font-size-lg letter-spacing:.01em text-align:center fg-accent">404</h3>
+            <h1 className="margin-top:0 font-size-3xl leading-xs text-align:center fg-text-strong font-size-5xl@sm">{$('This page does not exist')}</h1>
             <div className="mb-2xl padding-top:var(--spacing-md) padding-right:var(--spacing-xs) padding-bottom:var(--spacing-md) padding-left:var(--spacing-xs)">
               <p className="text-lg fg-text-muted">{$('Sorry, the page cannot be found. Please try searching for other content.')}</p>
               <SearchButton className="display:flex align-items:center min-width:15rem margin-inline:auto margin-top:2.5rem px-lg border-radius:1e9em border-width:1px border-style:solid b-line-control line-height:3rem fg-text-muted pointer-events:auto" />

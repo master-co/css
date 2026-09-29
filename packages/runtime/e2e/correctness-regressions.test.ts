@@ -83,7 +83,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'x', value: 'red' }, { type: 'declaration', name: 'y', value: 'blue' }, { type: 'declaration', name: 'a', value: 'linear-gradient(var(--x),var(--y))' }, { type: 'declaration', name: 'z', value: 'green' }] }],
-    version: 4, languageVersion: 9,
+    version: 4, languageVersion: 10,
     variables: { '': [
       { name: 'x', key: 'x', values: [{ path: [':root,:host'], value: 'red' }] },
       { name: 'y', key: 'y', values: [{ path: [':root,:host'], value: 'blue' }] },
@@ -109,7 +109,7 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 4, languageVersion: 9,
+    version: 4, languageVersion: 10,
     theme: ['light', 'dark'].map((name, index) => ({ type: 'rule', prelude: `.${name}`, children: [{ type: 'declaration', name: 'primary', value: index ? '#ffffff' : '#000000' }] })),
     variables: { '': [{ name: 'primary', key: 'primary', values: [{ path: ['.light'], value: '#000000' }, { path: ['.dark'], value: '#ffffff' }] }] },
     mixins: [mixin('theme-color', { color: 'var(--primary)' })]
@@ -145,7 +145,7 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 4, languageVersion: 9,
+      version: 4, languageVersion: 10,
       mixins: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
         name: `--${layer}`,
         body: [...mixin(layer, { color: 'red' }).body,

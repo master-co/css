@@ -6,7 +6,7 @@ const BrowserHeader = ({ url }: any) => {
       <div className="width:25%">
         <WindowControls />
       </div>
-      <div className="display:flex align-items:center justify-content:center width:50% font-xs">
+      <div className="display:flex align-items:center justify-content:center width:50% font-size-xs">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 30 30" width="12" height="12"
           className="mr-2xs opacity:.5">
           <path

@@ -11,7 +11,7 @@ const iconProps = {
 
 export function DocStringType({ className }: any) {
   return (
-    <DocBadge className={clsx('font-mono', className)}>
+    <DocBadge className={clsx('font-family-mono', className)}>
       <IconLetterT {...iconProps} />
       <InlineCode lang="ts">string</InlineCode>
     </DocBadge>
@@ -20,7 +20,7 @@ export function DocStringType({ className }: any) {
 
 export function DocNumberType({ className }: any) {
   return (
-    <DocBadge className={clsx('font-mono', className)}>
+    <DocBadge className={clsx('font-family-mono', className)}>
       <IconNumbers {...iconProps} />
       <InlineCode lang="ts">number</InlineCode>
     </DocBadge>
@@ -29,7 +29,7 @@ export function DocNumberType({ className }: any) {
 
 export function DocBooleanType({ className }: any) {
   return (
-    <DocBadge className={clsx('font-mono', className)}>
+    <DocBadge className={clsx('font-family-mono', className)}>
       <IconCheck {...iconProps} />
       <InlineCode lang="ts">boolean</InlineCode>
     </DocBadge>
@@ -38,7 +38,7 @@ export function DocBooleanType({ className }: any) {
 
 export function DocObjType({ children, className }: any) {
   return (
-    <DocBadge className={clsx('font-mono', className)}>
+    <DocBadge className={clsx('font-family-mono', className)}>
       <IconBox {...iconProps} />
       {children}
     </DocBadge>
@@ -46,12 +46,12 @@ export function DocObjType({ children, className }: any) {
 }
 
 export function DocDefaultValue({ children, className }: any) {
-  return (<DocBadge className={clsx('font-mono', className)}>{children}</DocBadge>)
+  return (<DocBadge className={clsx('font-family-mono', className)}>{children}</DocBadge>)
 }
 
 export function DocType({ type, className }: any) {
   if (type.startsWith('\'')) {
-    return <DocBadge className={clsx('font-mono', className)}><InlineCode className="white-space:nowrap" lang="ts">{type}</InlineCode></DocBadge>
+    return <DocBadge className={clsx('font-family-mono', className)}><InlineCode className="white-space:nowrap" lang="ts">{type}</InlineCode></DocBadge>
   }
   switch (type) {
     case 'string':
@@ -61,7 +61,7 @@ export function DocType({ type, className }: any) {
     case 'boolean':
       return <DocBooleanType className={className} />
     case 'void':
-      return <DocBadge className={clsx('font-mono', className)}><InlineCode className="white-space:nowrap" lang="ts">void</InlineCode></DocBadge>
+      return <DocBadge className={clsx('font-family-mono', className)}><InlineCode className="white-space:nowrap" lang="ts">void</InlineCode></DocBadge>
     default:
       return <DocObjType className={className}><InlineCode className="white-space:nowrap" lang="ts">{type}</InlineCode></DocObjType>
   }

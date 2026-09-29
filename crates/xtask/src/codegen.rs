@@ -69,10 +69,6 @@ pub(crate) fn generated_package_version() -> String {
 }
 
 pub(crate) fn generated_builtin_registry() -> String {
-    let key_aliases = mastercss_engine::builtin_token_aliases()
-        .iter()
-        .copied()
-        .collect::<std::collections::BTreeMap<_, _>>();
     let token_namespaces = mastercss_engine::builtin_token_namespaces()
         .iter()
         .map(|(properties, variable_alias_refs)| {
@@ -87,8 +83,6 @@ pub(crate) fn generated_builtin_registry() -> String {
     }).collect::<Vec<_>>();
     let token_families =
         serde_json::to_string_pretty(&token_families).expect("token families are serializable");
-    let key_aliases =
-        serde_json::to_string_pretty(&key_aliases).expect("built-in key aliases are serializable");
     let token_namespaces = serde_json::to_string_pretty(&token_namespaces)
         .expect("built-in native-value namespaces are serializable");
 
@@ -110,10 +104,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
   {token_families}.map((family) => Object.freeze({{ ...family, namespaces: Object.freeze(family.namespaces) }}))
 )
 
-export type MasterCSSBuiltinTokenAliases = Readonly<Record<string, string>>
 export type MasterCSSBuiltinTokenNamespaces = readonly MasterCSSBuiltinTokenNamespace[]
 
-export const builtinTokenAliases = Object.freeze({key_aliases}) as MasterCSSBuiltinTokenAliases
 
 export const builtinTokenNamespaces = Object.freeze(
   {token_namespaces}.map((namespace) => Object.freeze({{

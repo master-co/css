@@ -159,40 +159,6 @@ impl LintSession {
             }
         }
 
-        if let (Some(source_key), Some(source_value)) = (&parts.key, &parts.value)
-            && semantics.kind == mastercss_engine::ClassSemanticKind::Token
-            && options.prefer_property_aliases
-            && let Some(source_rule) = source.rules.first()
-        {
-            for (property, _) in collect_rule_declarations(&source_rule.text) {
-                if source_key != &property {
-                    continue;
-                }
-                for alias in self
-                    .canonical_index
-                    .preferred_aliases_by_property
-                    .get(&property)
-                    .into_iter()
-                    .flatten()
-                {
-                    push_canonical_candidate(
-                        &mut candidates,
-                        &if semantics.kind == mastercss_engine::ClassSemanticKind::Token {
-                            format!(
-                                "{}{alias}-{source_value}",
-                                if parts.base.starts_with('-') { "-" } else { "" }
-                            )
-                        } else {
-                            format!("{alias}:{source_value}")
-                        },
-                        &parts,
-                        &canonical_suffix,
-                        2,
-                    );
-                }
-            }
-        }
-
         push_canonical_candidate(&mut candidates, &parts.base, &parts, &canonical_suffix, 3);
         candidates.sort_by(|left, right| {
             left.order

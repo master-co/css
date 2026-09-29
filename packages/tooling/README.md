@@ -18,7 +18,7 @@ import { validateClassNames } from '@master/css-tooling/validator'
 import { lintClassNames } from '@master/css-tooling/lint'
 import { analyzeDocument } from '@master/css-tooling/language'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import { builtinTokenAliases } from '@master/css-tooling/builtins'
+import { builtinTokenFamilies } from '@master/css-tooling/builtins'
 ```
 
 Every semantic operation requires an explicit manifest. Use

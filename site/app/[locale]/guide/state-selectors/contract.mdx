@@ -21,7 +21,7 @@ Common examples include interaction states such as `:hover`, validation states s
 
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
-<h2 class="font-lg font-2xl:hover font-3xl:active">Release notes</h2>
+<h2 class="font-size-lg font-size-2xl:hover font-size-3xl:active">Release notes</h2>
 ```
 Selectors can be stacked when the CSS selector itself needs more detail.
 ```html
@@ -35,18 +35,15 @@ If you also need a breakpoint, mode, or other condition, put the [conditional qu
 <button type="button" class="bg-blue-60:hover@md">Save</button>
 ```
 
-For readability, Master CSS includes built-in selector aliases for selectors that appear often.
+Use native pseudo-classes directly. Shortcuts such as `:first`, `:odd`, and `:rtl` are removed.
 ```html
-<div class="mt-sm:first"></div><!-- [!code highlight] -->
 <div class="mt-sm:first-child"></div>
-<div class="mt-sm:odd"></div><!-- [!code highlight] -->
 <div class="mt-sm:nth-child(odd)"></div>
-<div class="mt-sm:rtl"></div><!-- [!code highlight] -->
 <div class="mt-sm:dir(rtl)"></div>
 ```
 Write longer project-specific selectors directly.
 ```html
-<div class="font-semibold_:is(h1,h2,h3,h4,h5,h6)"></div><!-- [!code highlight] -->
+<div class="font-weight-semibold_:is(h1,h2,h3,h4,h5,h6)"></div><!-- [!code highlight] -->
 ```
 
 ## Basic selectors \{#basic-selectors\}
@@ -217,18 +214,18 @@ Use `:focus-visible` when the browser should decide whether to show a focus ring
 <button type="button" class="outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible">Submit</button>
 ```
 
-### `:first`, `:last`, `:odd`, `:even` \{#first--last--odd--even\}
+### `:first-child`, `:last-child`, `:nth-child()` \{#first--last--odd--even\}
 ```html
 <ul>
-  <li class="bg-surface-inset:even">Draft</li>
-  <li class="bg-surface-inset:even">In review</li>
-  <li class="bg-surface-inset:even">Published</li>
+  <li class="bg-surface-inset:nth-child(even)">Draft</li>
+  <li class="bg-surface-inset:nth-child(even)">In review</li>
+  <li class="bg-surface-inset:nth-child(even)">Published</li>
 </ul>
 ```
 
-`:odd` maps to `:nth-child(odd)`; `:even` maps to `:nth-child(2n)`. Positions count all element siblings, not only siblings that carry the same class.
+Use `:nth-child(odd)` or `:nth-child(even)` for alternating rows. Positions count all element siblings, not only siblings that carry the same class.
 
-<Class2CSS>{['bg-surface-inset:even', 'mt-sm:odd']}</Class2CSS>
+<Class2CSS>{['bg-surface-inset:nth-child(even)', 'mt-sm:nth-child(odd)']}</Class2CSS>
 
 ### `:valid`, `:invalid`, `:required` \{#valid--invalid--required\}
 Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
@@ -273,7 +270,7 @@ document.querySelector('#select-all').indeterminate = true
 Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:dir(ltr)`.
 ```html
 <!-- @MARK :rtl -->
-<div dir="rtl" class="mr-xs:rtl">مرحبا</div>
+<div dir="rtl" class="mr-xs:dir(rtl)">مرحبا</div>
 ```
 
 ### `:has()` \{#has\}
@@ -320,13 +317,13 @@ Use `::before` and `::after` to style generated content attached to the element.
 </span>
 ```
 
-### `::scrollbar` \{#scrollbar\}
+### `::-webkit-scrollbar` \{#scrollbar\}
 
-These aliases generate `::-webkit-scrollbar*` selectors. Their effect depends on browser support and the platform scrollbar settings; overlay scrollbars may remain hidden until scrolling.
+Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-scrollbar-thumb`. Their effect depends on browser support and the platform scrollbar settings; overlay scrollbars may remain hidden until scrolling.
 ```html
-<!-- @MARK scrollbar --><!-- @MARK ::scrollbar-thumb -->
+<!-- @MARK scrollbar --><!-- @MARK ::-webkit-scrollbar-thumb -->
 <div tabindex="0" role="region" aria-label="Scrollable schedule"
-  class="overflow-x:auto max-width:100% width:0.375rem::scrollbar height:0.375rem::scrollbar bg-neutral-50/.2::scrollbar-thumb">
+  class="overflow-x:auto max-width:100% width:0.375rem::-webkit-scrollbar height:0.375rem::-webkit-scrollbar bg-neutral-50/.2::-webkit-scrollbar-thumb">
   <p class="w-7xl">Monday · Tuesday · Wednesday · Thursday · Friday</p>
 </div>
 ```
@@ -359,7 +356,7 @@ Use `data-*` attributes for component state that is not covered by native attrib
 ```
 
 ### `[<attr>=<value>]` \{#attrvalue\}
-Match an exact attribute value. Pseudo aliases only expand at actual pseudo selectors: `[data-state=":first"]:first` keeps the attribute value `:first` and expands the final `:first` to `:first-child`. Escaped identifier characters also remain literal.
+Match an exact attribute value. Attribute values remain literal: `[data-state=":first"]:first-child` keeps the attribute value `:first`. Escaped identifier characters also remain literal.
 ```html
 <!-- @MARK [type=checkbox] -->
 <label><input class="accent-color-blue[type=checkbox]" type="checkbox" /> Enable alerts</label>

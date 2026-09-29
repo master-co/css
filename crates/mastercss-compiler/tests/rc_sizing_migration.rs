@@ -38,7 +38,6 @@ fn preserves_dimensions_conditions_importance_and_token_identity() {
     for (index, expected) in [
         "width:20px:hover@sm! height:20px:hover@sm!",
         "min-width:2rem min-height:2rem",
-        "max-width-sm max-height-sm",
     ]
     .iter()
     .enumerate()
@@ -50,10 +49,13 @@ fn preserves_dimensions_conditions_importance_and_token_identity() {
             result.class_lists[index][0].notes
         );
     }
+    assert_eq!(result.class_lists[2][0].status, "review");
+    assert!(result.class_lists[2][0].after.is_none());
     let mut rerun = request;
     rerun.class_lists = result
         .class_lists
         .into_iter()
+        .filter(|list| list[0].after.is_some())
         .map(|list| {
             list.into_iter()
                 .flat_map(|item| {

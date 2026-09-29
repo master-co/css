@@ -90,12 +90,17 @@ export async function verifyCLIContractExamples() {
     for (const preview of [migrationPreview, migrationTarget]) {
       const result = run(preview)
       assert.equal(result.status, 0, result.stderr)
-      assert.ok(JSON.parse(result.stdout).files.some((file: any) => file.edits.length === 2))
+      assert.ok(JSON.parse(result.stdout).files.some((file: any) => file.edits.length === 1))
       assert.equal(readFileSync(file, 'utf8'), rcSource)
     }
     const migrated = run(migrationWrite)
     assert.equal(migrated.status, 0, migrated.stderr)
-    assert.equal(readFileSync(file, 'utf8'), "<button class=\"font-mono padding:1rem\">Save</button>")
+    // A review blocks the file write instead of silently accepting a removed family.
+    assert.equal(readFileSync(file, 'utf8'), rcSource)
+    writeFileSync(file, '<button class="font-family:monospace padding:4x">Save</button>')
+    const safeMigration = run(migrationWrite)
+    assert.equal(safeMigration.status, 0, safeMigration.stderr)
+    assert.equal(readFileSync(file, 'utf8'), '<button class="font-family:monospace padding:1rem">Save</button>')
     const repeated = run(migrationPreview)
     assert.equal(repeated.status, 0, repeated.stderr)
     assert.ok(JSON.parse(repeated.stdout).files.every((file: any) => file.edits.length === 0))

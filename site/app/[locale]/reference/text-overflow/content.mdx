@@ -9,7 +9,7 @@
 
 ```html
 <!-- Clip marker · complete prerequisites -->
-<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-md line-height:24px text-overflow:clip white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
+<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-size-md line-height:24px text-overflow:clip white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 ### Show an ellipsis \{#show-an-ellipsis\}
@@ -19,7 +19,7 @@
 
 ```html
 <!-- Ellipsis marker · identical width -->
-<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-md line-height:24px text-overflow:ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
+<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-size-md line-height:24px text-overflow:ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 <details>
@@ -37,9 +37,9 @@ When the clipping element is nested inside a flexible wrapper, set `min-width:0`
 ```html
 <!-- Flexible wrapper · nested clipping -->
 <div class="display:flex gap-sm width:240px max-width:100%">
-  <span class="flex:none font-sm">File</span>
+  <span class="flex:none font-size-sm">File</span>
   <div id="wrapper" class="flex:1 min-width:0">
-    <span id="target" class="display:block overflow:hidden font-md line-height:24px text-overflow:ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
+    <span id="target" class="display:block overflow:hidden font-size-md line-height:24px text-overflow:ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
   </div>
 </div>
 ```
@@ -53,7 +53,7 @@ The preview clips the same single line at the base viewport and adds an ellipsis
 
 ```html
 <!-- Clip · ellipsis · complete print text -->
-<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-md line-height:24px text-overflow:clip white-space:nowrap overflow:visible@media(print) text-overflow:clip@media(print) white-space:normal@media(print) text-overflow:ellipsis@media(screen)@sm">quarterly-roadmap-final-version.pdf</span>
+<span id="target" class="display:block overflow:hidden width:200px max-width:100% margin:0 font-size-md line-height:24px text-overflow:clip white-space:nowrap overflow:visible@media(print) text-overflow:clip@media(print) white-space:normal@media(print) text-overflow:ellipsis@media(screen)@sm">quarterly-roadmap-final-version.pdf</span>
 ```
 
 Use [line-clamp](/reference/clamp-lines) for multi-line truncation.

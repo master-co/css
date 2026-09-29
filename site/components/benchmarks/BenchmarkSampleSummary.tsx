@@ -22,8 +22,8 @@ export default function BenchmarkSampleSummary(props: BenchmarkSampleSummaryProp
     <dl className="grid-cols(2) display:grid gap-xs grid-cols(5)@sm">
       {entries.map(([label, value]) => (
         <div key={label} className="p-sm r-sm bg-surface-inset">
-          <dt className="font-xs fg-text-muted"><Translate>{label}</Translate></dt>
-          <dd className="margin-inline:0 mt-2xs margin-bottom:0 font-sm font-weight:460 fg-text-strong">{value}</dd>
+          <dt className="font-size-xs fg-text-muted"><Translate>{label}</Translate></dt>
+          <dd className="margin-inline:0 mt-2xs margin-bottom:0 font-size-sm font-weight:460 fg-text-strong">{value}</dd>
         </div>
       ))}
     </dl>

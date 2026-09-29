@@ -23,8 +23,8 @@ export default function ColorPaletteItem({ color, level, colorName }: { color: s
       >
         {/* <div className="info visibility:hidden line-height:1">#{color}</div> */}
       </div>
-      <div className="mt-xs font-xs text-align:center display:none@sm">{level}</div>
-      {/* <code className="display:block fg-text-muted font-size:10px font-regular margin-top:0.25rem">{color}</code> */}
+      <div className="mt-xs font-size-xs text-align:center display:none@sm">{level}</div>
+      {/* <code className="display:block fg-text-muted font-size:10px font-weight-regular margin-top:0.25rem">{color}</code> */}
     </div>
   )
 }

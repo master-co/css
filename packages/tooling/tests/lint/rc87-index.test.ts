@@ -96,7 +96,7 @@ describe('class sorting', () => {
 
   test('sorts generated classes into readable property groups', () => {
     const classNames = [
-      'font-heavy',
+      'font-weight-heavy',
       'bg-black:hover',
       "padding-inline:0.75rem@sm",
       "position:relative",
@@ -139,7 +139,7 @@ describe('class sorting', () => {
       "padding:1rem",
       'r-lg',
       "border:1px|solid|var(--color-gray-30)",
-      'font-heavy',
+      'font-weight-heavy',
       "text-align:center",
       'bg-blue-60',
       'fg-white',
@@ -253,7 +253,7 @@ describe('lint diagnostics', () => {
 
   test('reports canonical diagnostics with explicit replacements', () => {
     expect(createCanonicalClassesReport('margin-md@dark@sm', css).diagnostics.map(({ message }) => message))
-      .toEqual(['Use canonical class "m-md@dark@sm" instead of "margin-md@dark@sm".'])
+      .toEqual([])
     expect(createCanonicalClassesReport('font-size:16px w-md h-md', css).diagnostics).toEqual([])
   })
 
@@ -437,7 +437,7 @@ describe('partial class conflicts', () => {
     ['border-top-width:2px', 'border-width:1px'],
     ['border-left-width:1px', 'border-width:0'],
     ['b-red-60', 'bt-blue-60'],
-    ['border-color-red-60', 'border-left-color-blue-60'],
+    ['b-red-60', 'bl-blue-60'],
     ['border-style:solid', 'border-top-style:dashed'],
     ['border-bottom-style:dotted', 'border-style:solid'],
     ['ixs-lg', 'ix-md']
@@ -569,7 +569,6 @@ describe('canonical class suggestions', () => {
     })).toBeUndefined()
     expect(suggestCanonicalClassName('margin-md@dark@sm', css, {
       ...defaultCanonicalClassNameOptions,
-      preferPropertyAliases: false
     })).toBeUndefined()
     expect(suggestCanonicalClassName("margin:var(--spacing-md)@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
@@ -592,7 +591,7 @@ describe('canonical class suggestions', () => {
   })
 
   test('ignores manifest-carried key alias and native namespace registry fields', () => {
-    expect(suggestCanonicalClassName('margin-card', registryFieldCSS)).toBe('m-card')
+    expect(suggestCanonicalClassName('margin-card', registryFieldCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('--space:card', registryFieldCSS)).toBeUndefined()
   })
 
@@ -621,7 +620,6 @@ describe('canonical class suggestions', () => {
     })).toBeUndefined()
     expect(suggestCanonicalClassName('margin-md', css, {
       ...defaultCanonicalClassNameOptions,
-      preferPropertyAliases: false
     })).toBeUndefined()
     expect(suggestCanonicalClassName("margin:var(--spacing-md)", css, {
       ...defaultCanonicalClassNameOptions,

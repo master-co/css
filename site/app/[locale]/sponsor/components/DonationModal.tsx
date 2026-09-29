@@ -91,7 +91,7 @@ export default function DonationModal() {
     <div className="position:absolute inset:0 height:128px width:128px aspect-ratio:1/1 margin-inline:auto border-radius:50% bg-surface-raised transform:translateY(-50%)">
       <Image className="position:relative top-4xs aspect-ratio:1/1 margin-inline:auto border-radius:50% object-fit:contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
     </div>
-    <div className="font-2xl font-bold text-align:center">{donationOrder.name || 'Unknown'}</div>
+    <div className="font-size-2xl font-weight-bold text-align:center">{donationOrder.name || 'Unknown'}</div>
     <p className="text-align:center">{$('Thanks for your donation 🥳')}</p>
 
     <ul>

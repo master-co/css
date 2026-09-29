@@ -12,7 +12,7 @@ const masterCSSPage = pages.find((page) => page.name === 'Master CSS') || pages[
 
 const maxTotalRawBytes = Math.max(...pages.map((page) => page.css.total.rawBytes))
 const maxTotalBrotliBytes = Math.max(...pages.map((page) => page.css.total.brotliBytes))
-const detailClassName = 'min-width:0 overflow:hidden text-overflow:ellipsis white-space:nowrap font-2xs fg-text-muted'
+const detailClassName = 'min-width:0 overflow:hidden text-overflow:ellipsis white-space:nowrap font-size-2xs fg-text-muted'
 
 function formatKilobytes(bytes: number) {
   return (bytes / 1000).toFixed(1)

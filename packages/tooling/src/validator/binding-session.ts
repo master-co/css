@@ -35,7 +35,7 @@ export function bindValidatorSession(
       const values = [...classNames]
       const candidates = session.nativeDeclarationCandidates(values) as import('@master/css-binding/tooling').MasterCSSNativeDeclarationCandidate[]
       const result = parse<MasterCSSValidatorBatch>(session.generateClassRules(values))
-      return { ...result, classes: result.classes.map(result => withCSSValueValidation({ ...result, diagnostics: [...(result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(result.className, candidates, nativeClasses) : [])] })) }
+      return { ...result, classes: result.classes.map(result => withCSSValueValidation({ ...result, diagnostics: [...(nativeClasses.has(result.className) && !result.rules.length ? [] : result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(result.className, candidates, nativeClasses) : [])] })) }
     },
     dispose: () => session.dispose()
   }

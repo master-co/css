@@ -188,7 +188,6 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferPropertyAliases: true,
         preferCompositionUtilities: true,
         preferConditionOrder: true
       }]

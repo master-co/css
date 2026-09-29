@@ -9,7 +9,7 @@ Point `list-style-image` at an image asset. This local SVG has an intrinsic size
 
 ```html
 <!-- 12 × 12 SVG · native marker -->
-<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg
     list-style-type:square list-style-position:outside list-style-image:initial list-style-image:url(/demo/marker.svg)">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -33,7 +33,7 @@ A CSS gradient can be the marker image. Reference the preset color variables exp
 
 ```html
 <!-- Generated image · blue to violet -->
-<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg
     list-style-type:disc list-style-position:outside list-style-image:initial
     list-style-image:linear-gradient(var(--color-blue-50),var(--color-violet-50))">
   <li class="mb-2xs">Collect references</li>
@@ -51,7 +51,7 @@ Set only the image to `none` when the type and position should survive. Open pri
 
 ```html
 <!-- Screen SVG · print square -->
-<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg
     list-style-type:square list-style-position:outside list-style-image:initial list-style-image:url(/demo/marker.svg)
     list-style-image:none@media(print)">
   <li class="mb-2xs">Collect references</li>
@@ -68,7 +68,7 @@ Resize past `sm` to add the image on screen. The square type remains the fallbac
 
 ```html
 <!-- Real viewport · square to SVG -->
-<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg
     list-style-type:square list-style-position:outside list-style-image:initial list-style-image:none
     list-style-image:none@media(print)
     list-style-image:url(/demo/marker.svg)@media(screen)@sm">

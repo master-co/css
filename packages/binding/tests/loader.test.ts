@@ -74,7 +74,7 @@ describe('native target resolution', () => {
     const info = loadNativeBinding({ required: true })!.info
     expect(() => assertMasterCSSBindingInfo({
       ...info,
-      bindingAbiVersion: 5
+      bindingAbiVersion: 19
     }, {
       surface: 'native',
       features: ['engine']
@@ -90,7 +90,7 @@ describe('native target resolution', () => {
     const lint = loadNativeToolingBinding({ required: true })!
       .createLintSession({
   "version": 4 as const,
-  "languageVersion": 9 as const
+  "languageVersion": 10 as const
 } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
@@ -119,7 +119,7 @@ describe('native target resolution', () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 9 as const,
+  "languageVersion": 10 as const,
   "variables": {
     "spacing": [
       {
@@ -140,7 +140,7 @@ describe('native target resolution', () => {
     try {
       expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
         version: 4 as const,
-        suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
+        suggestions: []
       })
       expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
         version: 4 as const,
@@ -167,7 +167,7 @@ describe('native target resolution', () => {
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
   "version": 4 as const,
-  "languageVersion": 9 as const,
+  "languageVersion": 10 as const,
   "mixins": [
     {
       "name": "--block",

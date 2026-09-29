@@ -50,7 +50,7 @@ The title changes from `text-2xl` to `text-4xl` at `sm`, updating size, leading 
 
 ```html
 <!-- Responsive combined treatment -->
-<h2 id="target" class="margin:0 text-2xl font-regular text-xl@media(print) text-4xl@media(screen)@sm">Space for good ideas.</h2>
+<h2 id="target" class="margin:0 text-2xl font-weight-regular text-xl@media(print) text-4xl@media(screen)@sm">Space for good ideas.</h2>
 ```
 
 ### Add a named treatment
@@ -71,4 +71,4 @@ Declare a primary token with optional companions. The preset `--text` mixin make
 <p class="text-article">A shared reading treatment.</p>
 ```
 
-Missing companions use `normal`. Companion tokens alone do not create a class. `text-*` does not set family, weight or color; combine it with `font-sans`, `font-medium`, or `fg-text-body` as needed. Use `@apply --text("article");` inside native CSS, or the explicit class `text("article")` when a function call is useful. `text(article)` fails the string parameter check.
+Missing companions use `normal`. Companion tokens alone do not create a class. `text-*` does not set family, weight or color; combine it with `font-family-sans`, `font-weight-medium`, or `fg-text-body` as needed. Use `@apply --text("article");` inside native CSS, or the explicit class `text("article")` when a function call is useful. `text(article)` fails the string parameter check.

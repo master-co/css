@@ -361,7 +361,10 @@ pub(crate) fn resolve_utility_value(
         if !(0.0..=1.0).contains(&alpha) {
             return None;
         }
-        let color = format!("var(--{})", variable.name);
+        let color = format!(
+            "var({})",
+            mastercss_lexer::css_escape(&format!("--{}", variable.name))
+        );
         return Some((
             format!(
                 "color-mix(in oklab,{color} {}%,transparent)",
@@ -378,7 +381,10 @@ pub(crate) fn resolve_utility_value(
     if negative && variable.variable_type != "number" {
         return None;
     }
-    let reference = format!("var(--{})", variable.name);
+    let reference = format!(
+        "var({})",
+        mastercss_lexer::css_escape(&format!("--{}", variable.name))
+    );
     Some((
         if negative {
             format!("calc({reference} * -1)")
@@ -405,68 +411,8 @@ pub(crate) fn resolve_value_components(
     _utility: Option<&UtilityDefinition>,
     manifest: &ManifestProjection,
 ) -> (String, Vec<String>) {
-    let mut output = String::with_capacity(value.len());
-    let mut token = String::new();
-    let mut quote = None;
-    let mut escaped = false;
+    let output = mastercss_lexer::decode_native_content(value).unwrap_or_else(|| value.to_owned());
     let mut variable_names = Vec::new();
-    let flush = |token: &mut String, output: &mut String, _variable_names: &mut Vec<String>| {
-        if token.is_empty() {
-            return;
-        }
-        output.push_str(token);
-        token.clear();
-    };
-    for character in value.chars() {
-        if escaped {
-            if quote.is_some() {
-                output.push(character);
-            } else {
-                token.push(character);
-            }
-            escaped = false;
-            continue;
-        }
-        if character == '\\' {
-            if quote.is_some() {
-                output.push(character);
-            } else {
-                token.push(character);
-            }
-            escaped = true;
-            continue;
-        }
-        if let Some(current_quote) = quote {
-            output.push(character);
-            if character == current_quote {
-                quote = None;
-            }
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            flush(&mut token, &mut output, &mut variable_names);
-            quote = Some(character);
-            output.push(character);
-        } else if character == '(' {
-            // A token immediately followed by `(` is a CSS function name, not a
-            // variable key. In particular, the inline `min`/`max` variables
-            // must not rewrite the standard min()/max() math functions.
-            output.push_str(&token);
-            token.clear();
-            output.push(character);
-        } else if character == '|' {
-            flush(&mut token, &mut output, &mut variable_names);
-            output.push(' ');
-        } else if character == '/' && !token.is_empty() {
-            token.push(character);
-        } else if character.is_ascii_whitespace() || matches!(character, ')' | ',' | '/') {
-            flush(&mut token, &mut output, &mut variable_names);
-            output.push(character);
-        } else {
-            token.push(character);
-        }
-    }
-    flush(&mut token, &mut output, &mut variable_names);
     for name in collect_css_variable_names(&output) {
         if manifest.compiled_variables.contains_key(&name) && !variable_names.contains(&name) {
             variable_names.push(name);

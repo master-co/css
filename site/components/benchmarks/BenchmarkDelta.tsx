@@ -18,7 +18,7 @@ export default function BenchmarkDelta(props: BenchmarkDeltaProps) {
 
   return (
     <span
-      className={clsx('display:inline-flex align-items:center gap-2xs py-3xs px-xs r-sm font-xs font-weight:460 bg-surface-inset', benchmarkToneTextClasses[tone], className)}>
+      className={clsx('display:inline-flex align-items:center gap-2xs py-3xs px-xs r-sm font-size-xs font-weight:460 bg-surface-inset', benchmarkToneTextClasses[tone], className)}>
       <strong>{renderedValue}</strong>
       {label && <span><Translate>{label}</Translate></span>}
     </span>

@@ -271,7 +271,7 @@ Use explicit `var(--name)` references inside raw values, including functions and
 
 Resolve ambiguous short names with an explicit prefix, for example `font-family-brand` or `font-size-brand`. Check compiler diagnostics and generated declarations; the revised spelling alone does not establish CSS validity or improved AI accuracy.
 
-Use explicit dimensions: `width:20px height:20px` or `width-sm height-sm`. The preset no longer supplies `size`, `min-size`, or `max-size`; a project may explicitly define those names. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
+Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. The preset no longer supplies `size`, `min-size`, or `max-size`; a project may explicitly define those names. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
 
 When upgrading an existing v2 RC project, use [Migrating from Master CSS v2 RC](/guide/migration/v2-rc), preserve the original manifest and settings, and review migration proposals before applying them.
 

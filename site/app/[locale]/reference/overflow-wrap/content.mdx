@@ -10,14 +10,14 @@
 ```html
 <!-- wrap-normal -->
 <div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
-  <p id="target" class="overflow-wrap:normal width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="overflow-wrap:normal width:200px margin:0 font-size-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
 ```html
 <!-- wrap-break-word -->
 <div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
-  <p id="target" class="overflow-wrap:break-word width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="overflow-wrap:break-word width:200px margin:0 font-size-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
@@ -35,12 +35,12 @@
 
 ```html
 <!-- wrap-break-word -->
-<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-md line-height:24px">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-size-md line-height:24px">PREVIEW</code>
 ```
 
 ```html
 <!-- wrap-anywhere -->
-<code id="target" class="display:block overflow-wrap:anywhere width:min-content margin:0 font-md line-height:24px">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:anywhere width:min-content margin:0 font-size-md line-height:24px">PREVIEW</code>
 ```
 
 These boxes deliberately use `width:min-content`. Compare the measured widths as well as the visible wrapping.
@@ -54,7 +54,7 @@ These boxes deliberately use `width:min-content`. Compare the measured widths as
 <!-- Inherited anywhere · local normal reset -->
 <div class="overflow-wrap:anywhere">
   <div id="scrollport" role="region" aria-label="Reset wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
-    <p id="target" class="overflow-wrap:normal width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+    <p id="target" class="overflow-wrap:normal width:200px margin:0 font-size-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
   </div>
 </div>
 ```
@@ -68,7 +68,7 @@ Resize the viewport to change the intrinsic width of the same min-content box. I
 
 ```html
 <!-- One token · native intrinsic sizing -->
-<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-md line-height:24px overflow-wrap:normal@media(print) overflow-wrap:anywhere@media(screen)@sm">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-size-md line-height:24px overflow-wrap:normal@media(print) overflow-wrap:anywhere@media(screen)@sm">PREVIEW</code>
 ```
 
 Print restores normal wrapping. Use [text-overflow](/reference/text-overflow) when the design needs clipping instead of wrapping.

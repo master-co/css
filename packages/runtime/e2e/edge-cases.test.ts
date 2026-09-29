@@ -84,7 +84,7 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
 
   const disconnected = await page.evaluate(async () => {
     globalThis.__MASTER_CSS_RUNTIME_TEST__.disconnect()
-    document.body.innerHTML = '<div class="font-bold"></div>'
+    document.body.innerHTML = '<div class="font-weight-bold"></div>'
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
@@ -105,10 +105,10 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
     }
   })
   expect(reconnected.counts).toEqual({
-    'font-bold': 1
+    'font-weight-bold': 1
   })
   expect(reconnected.text).toContain(':root,:host{--font-weight-bold:700}')
-  expect(reconnected.text).toContain('.font-bold{font-weight:var(--font-weight-bold)}')
+  expect(reconnected.text).toContain('.font-weight-bold{font-weight:var(--font-weight-bold)}')
   expect(reconnected.text).not.toContain(".display\\:block{display:block}")
 })
 test('mutation removals keep counts immediate and retain CSSOM rules after settle', async ({ page }) => {

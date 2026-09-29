@@ -1,14 +1,14 @@
 {
   "version": 3,
-  "languageVersion": 5,
+  "languageVersion": 10,
   "source": "@import \"@master/css\";\n@theme { :root, :host { --font-family-brand: ui-monospace; --font-size-brand: 1rem; } }\n\n@mixin --erased { color:red; }\n@mixin --erased {}\n@mixin --pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {
       "className": "font-brand",
-      "matchStatus": "ambiguous",
+      "matchStatus": "syntax-error",
       "cssValueStatus": "not-checked",
-      "code": "AMBIGUOUS_TOKEN",
-      "cssSyntaxStatus": "not-checked"
+      "code": "CLASS_SYNTAX_ERROR",
+      "cssSyntaxStatus": "invalid"
     },
     {
       "className": "padding:red",

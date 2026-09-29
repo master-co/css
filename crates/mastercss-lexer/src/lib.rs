@@ -254,13 +254,6 @@ pub fn utf16_to_byte_offset(value: &str, utf16_offset: u32) -> Option<usize> {
     (current == utf16_offset).then_some(value.len())
 }
 
-#[derive(Debug, Clone, Copy)]
-struct CssVariableReference<'a> {
-    name: &'a str,
-    text: &'a str,
-    end: usize,
-}
-
 mod at_rules;
 mod class_list;
 mod css_syntax;

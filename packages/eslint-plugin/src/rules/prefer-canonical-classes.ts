@@ -26,7 +26,6 @@ export default createRule({
       type: 'object',
       properties: {
         preferStaticUtilities: { type: 'boolean' },
-        preferPropertyAliases: { type: 'boolean' },
         preferCompositionUtilities: { type: 'boolean' },
       },
       additionalProperties: false

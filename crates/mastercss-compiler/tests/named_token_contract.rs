@@ -56,9 +56,9 @@ fn declarations(engine: &EngineSession, class: &str) -> String {
 fn named_tokens_and_native_values_are_separate_sources() {
     let engine = engine();
     for (class, expected) in [
-        ("font-mono", "font-family:var(--font-family-mono)"),
-        ("font-bold", "font-weight:var(--font-weight-bold)"),
-        ("font-sm", "font-size:var(--font-size-sm)"),
+        ("font-family-mono", "font-family:var(--font-family-mono)"),
+        ("font-weight-bold", "font-weight:var(--font-weight-bold)"),
+        ("font-size-sm", "font-size:var(--font-size-sm)"),
         ("p-md", "padding:var(--spacing-md)"),
         ("p-card-body", "padding:var(--spacing-card-body)"),
         ("fg-red", "color:var(--color-red)"),
@@ -109,23 +109,15 @@ fn reserved_names_longest_prefix_and_ambiguity_are_deterministic() {
         declarations(&engine, "bg-cover"),
         "background-color:var(--color-cover)"
     );
+    assert!(declarations(&engine, "background-color-cover").is_empty());
+    let retired = engine.inspect("font-brand:hover").unwrap();
     assert_eq!(
-        declarations(&engine, "background-color-cover"),
-        "background-color:var(--color-cover)"
+        retired.match_status,
+        mastercss_schema::MatchStatus::SyntaxError
     );
-    let ambiguous = engine.inspect("font-brand:hover").unwrap();
-    assert!(ambiguous.match_status != mastercss_schema::MatchStatus::Matched);
-    assert!(ambiguous.diagnostics[0].message.contains("Ambiguous"));
-    assert!(
-        ambiguous.diagnostics[0]
-            .notes
-            .contains(&"font-family-brand:hover".into())
-    );
-    assert!(
-        ambiguous.diagnostics[0]
-            .notes
-            .contains(&"font-size-brand:hover".into())
-    );
+    for name in ["font-family-brand:hover", "font-size-brand:hover"] {
+        assert!(retired.diagnostics[0].message.contains(name));
+    }
     assert!(
         engine.inspect("font-family-sm").unwrap().match_status
             != mastercss_schema::MatchStatus::Matched
@@ -293,7 +285,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":9,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":4,"languageVersion":10,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -329,7 +321,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":9,"utilities":[utility]}).to_string();
+        let source = json!({"version":4,"languageVersion":10,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()

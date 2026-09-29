@@ -9,7 +9,7 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .2 · includes the outer ring -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
@@ -29,7 +29,7 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .5 · follows the opaque center -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
@@ -63,7 +63,7 @@ A continuous alpha gradient makes threshold differences visible along the float�
 
 ```html
 <!-- Threshold .2 · includes more of the fade -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
@@ -85,7 +85,7 @@ A continuous alpha gradient makes threshold differences visible along the float�
 
 ```html
 <!-- Threshold .8 · includes only the opaque end -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
@@ -114,7 +114,7 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Image shape · threshold selects the center -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
@@ -134,7 +134,7 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Basic circle · threshold has no effect -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
@@ -161,7 +161,7 @@ Widen to `sm` to lower the threshold from .5 to .2, including the translucent ri
 
 ```html
 <!-- Opaque center → outer ring at sm -->
-<article class="display:flow-root width:280px max-width:100% font-sm
+<article class="display:flow-root width:280px max-width:100% font-size-sm
          line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"

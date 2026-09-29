@@ -15,7 +15,7 @@ export default function AuthCardLayout({
   return (
     <div className="display:flex flex-direction:column align-items:center justify-content:center bg-muted gap-6 md:p-10 min-h-svh p-6">
       <div className="display:flex flex-direction:column gap-6 max-w-md w-full">
-        <Link href={route('home')} className="display:flex align-items:center align-self:center font-medium gap-2">
+        <Link href={route('home')} className="display:flex align-items:center align-self:center font-weight-medium gap-2">
           <div className="display:flex align-items:center justify-content:center h-9 w-9">
             <AppLogoIcon className="dark:text-white fill-current size-9 text-black" />
           </div>

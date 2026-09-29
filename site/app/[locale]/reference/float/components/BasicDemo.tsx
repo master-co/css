@@ -4,7 +4,7 @@ import clsx from 'clsx'
 export default function BasicDemo({ className }: { className?: string }) {
   return (
     <Demo title="Text flow" caption="Choose a float value in the syntax table to move the same image within this paragraph.">
-      <DemoSurface className="display:flow-root p-md font-sm">
+      <DemoSurface className="display:flow-root p-md font-size-sm">
         <DemoMedia className={clsx(className, 'height:auto width:7rem mb-sm r-sm', {
           'mr-md': className === 'float:left',
           'ml-md': className === 'float:right'

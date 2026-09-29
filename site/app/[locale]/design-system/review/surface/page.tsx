@@ -24,10 +24,10 @@ function ReferenceExample({ previous }: { previous: boolean }) {
   const Surface = previous ? PreviousSurface : DemoSurface
   return (
     <Demo title="Column span" caption="The surface contains real columns. Padding and columns belong to the lesson.">
-      <Surface className="p-md font-sm">
+      <Surface className="p-md font-size-sm">
         <div className="gap-md columns:2">
           <DemoText className="margin-inline:0 mb-sm margin-top:0">Start with the collection overview and its key details.</DemoText>
-          <DemoItem tone="blue" className="my-sm p-sm font-medium">Collection notes</DemoItem>
+          <DemoItem tone="blue" className="my-sm p-sm font-weight-medium">Collection notes</DemoItem>
           <DemoText className="margin:0">Continue through each column in reading order, then move to the next section.</DemoText>
         </div>
       </Surface>

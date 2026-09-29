@@ -24,21 +24,33 @@ afterEach(() => {
 
 it('previews by default, writes safe files, and is idempotent', async () => {
   const cwd = project()
-  const source = "<div class=\"font:mono p:4x fg:red:hover\"></div>"
+  const source = "<div class=\"font:16px p:4x fg:red:hover\"></div>"
   fs.writeFileSync(path.join(cwd, 'index.html'), source)
   const preview = migrate(['index.html'], { cwd })
   expect(preview.files.find(file => file.path === 'index.html')!.edits).toHaveLength(3)
   expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe(source)
   const written = migrate(['index.html'], { cwd, write: true })
   expect(written.files.find(file => file.path === 'index.html')!.written).toBe(true)
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe("<div class=\"font-mono padding:1rem fg-red:hover\"></div>")
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe("<div class=\"font-size:16px padding:1rem fg-red:hover\"></div>")
   expect(migrate(['index.html'], { cwd }).files.find(file => file.path === 'index.html')!.edits).toEqual([])
   const entry = path.join(cwd, 'app.css')
   const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
   "version": 4 as const,
-  "languageVersion": 9 as const
+  "languageVersion": 10 as const
 } })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
+})
+
+it('requires manual review when historical migration would emit a removed token prefix', () => {
+  const cwd = project()
+  const source = '<div class="font:mono"></div>'
+  fs.writeFileSync(path.join(cwd, 'index.html'), source)
+  const result = migrate(['index.html'], { cwd, write: true })
+  const file = result.files.find(file => file.path === 'index.html')!
+  expect(file.review.length).toBeGreaterThan(0)
+  expect(file.edits).toEqual([])
+  expect(result.files.every(file => !file.written)).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe(source)
 })
 
 it('does not write dynamic classes, cascade risks, or selector references', () => {
@@ -47,7 +59,7 @@ it('does not write dynamic classes, cascade risks, or selector references', () =
     'dynamic.tsx': "const view = <div className={`padding:${size} font:mono`} />",
     'cascade.html': "<div class=\"padding:md padding:8px\"></div>",
     'selector.ts': 'document.querySelector(".font\\\\:mono")',
-    'safe.html': '<div class="font:mono"></div>'
+    'safe.html': '<div class="font:16px"></div>'
   }
   for (const [name, source] of Object.entries(inputs)) fs.writeFileSync(path.join(cwd, name), source)
   const result = migrate(['*.{html,ts,tsx}'], { cwd, write: true })

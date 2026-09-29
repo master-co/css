@@ -371,7 +371,7 @@ describe('@master/css-mcp', () => {
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(3)
+      expect(manifest.version).toBe(4)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({

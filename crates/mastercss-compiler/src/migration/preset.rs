@@ -139,7 +139,7 @@ impl Saved {
         }) {
             return Err("This historical compound token family was removed; choose independent properties from the saved CSS".into());
         }
-        let mut families = mastercss_engine::builtin_token_families()
+        let mut families = super::legacy_registry::builtin_token_families()
             .map(|(prefix, property, _)| (prefix, property))
             .collect::<Vec<_>>();
         families.push(("surface", "background-color"));

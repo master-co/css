@@ -313,7 +313,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     const css = createTestCSS(defaultManifest)
     const declarationsCSS = createTestCSS(defaultManifest)
 
-    expect(css.createRule('font-sans')?.text).toContain('font-family:var(--font-family-sans)')
+    expect(css.createRule('font-family-sans')?.text).toContain('font-family:var(--font-family-sans)')
     expect(css.createRule('text-2xl')?.text).toContain('font-size:var(--text-2xl)')
     expect(css.createRule('m-md')?.text).toContain('margin:var(--spacing-md)')
     expect(css.createRule('r-lg')?.text).toContain('border-radius:var(--radius-lg)')
@@ -327,7 +327,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('fg-muted')).toBeUndefined()
     expect(css.createRule('b-line-divider')?.text).toBe('.b-line-divider{border-color:var(--color-line-divider)}')
     expect(css.createRule("border:1px|solid|var(--color-line-divider)")?.text).toBe(".border\\:1px\\|solid\\|var\\(--color-line-divider\\){border:1px solid var(--color-line-divider)}")
-    expect(css.createRule('border-color-line-divider')?.text).toBe('.border-color-line-divider{border-color:var(--color-line-divider)}')
+    expect(css.createRule('b-line-divider')?.text).toBe('.b-line-divider{border-color:var(--color-line-divider)}')
     expect(css.createRule('outline:1px|solid|var(--color-line-divider)')?.text).toBe('.outline\\:1px\\|solid\\|var\\(--color-line-divider\\){outline:1px solid var(--color-line-divider)}')
     expect(css.createRule('stroke-line-divider')?.text).toBe('.stroke-line-divider{stroke:var(--color-line-divider)}')
     expect(css.createRule('b-line-control')?.text).toBe('.b-line-control{border-color:var(--color-line-control)}')
@@ -387,7 +387,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     const css = createTestCSS(manifest)
 
     expect(css.createRule('fg-text-action')?.text).toBe('.fg-text-action{color:var(--color-text-action)}')
-    expect(css.createRule('border-color-line-divider')?.text).toBe('.border-color-line-divider{border-color:var(--color-line-divider)}')
+    expect(css.createRule('b-line-divider')?.text).toBe('.b-line-divider{border-color:var(--color-line-divider)}')
     expect(css.createRule("border:1px|solid|var(--color-line-divider)")?.text).toBe(".border\\:1px\\|solid\\|var\\(--color-line-divider\\){border:1px solid var(--color-line-divider)}")
     expect(css.createRule('outline:1px|solid|var(--color-line-divider)')?.text).toBe('.outline\\:1px\\|solid\\|var\\(--color-line-divider\\){outline:1px solid var(--color-line-divider)}')
   })

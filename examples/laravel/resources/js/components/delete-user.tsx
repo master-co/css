@@ -35,7 +35,7 @@ export default function DeleteUser() {
       <HeadingSmall title="Delete account" description="Delete your account and all of its resources" />
       <div className="bg-red-50 border border-red-100 dark:bg-red-700/10 dark:border-red-200/10 p-4 rounded-lg space-y-4">
         <div className="dark:text-red-100 relative space-y-0.5 text-red-600">
-          <p className="font-medium">Warning</p>
+          <p className="font-weight-medium">Warning</p>
           <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
         </div>
 

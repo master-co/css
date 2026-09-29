@@ -8,7 +8,7 @@ import ColorPaletteItem from './ColorPaletteItem'
 export default function ColorPalette({ filterColors }: { filterColors?: string[] }) {
   return (
     <div className="grid-cols(1) my-2xl gap-y-xl gap-y-sm@sm">
-      <div className="position:sticky top:61px grid-cols(15) margin-top:-0.75rem py-sm font-sm text-align:center bg-surface-base gap-x-xs display:none@media((width<52.125rem))">
+      <div className="position:sticky top:61px grid-cols(15) margin-top:-0.75rem py-sm font-size-sm text-align:center bg-surface-base gap-x-xs display:none@media((width<52.125rem))">
         <div className='grid-col-span(2)@sm'></div>
         {COLOR_LEVELS.map((level) => (<div key={level}>{level}</div>))}
       </div>
@@ -18,7 +18,7 @@ export default function ColorPalette({ filterColors }: { filterColors?: string[]
           const eachColors = colors[colorName]
           return (
             <div className="grid-cols(7) gap-x-sm gap-y-sm grid-cols(15)@sm row-gap:1.25rem@sm" key={colorName}>
-              <div className="display:flex align-items:center font-sm text-transform:capitalize white-space:pre-line fg-text-strong grid-col-span(2)@sm grid-col-span(7)@media((width<52.125rem))">
+              <div className="display:flex align-items:center font-size-sm text-transform:capitalize white-space:pre-line fg-text-strong grid-col-span(2)@sm grid-col-span(7)@media((width<52.125rem))">
                 {colorName}
               </div>
               {COLOR_LEVELS

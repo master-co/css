@@ -69,7 +69,7 @@ test('dispose on progressive', async ({ page }) => {
     const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
     nextRuntime.observe()
     document.body.classList.add("display:block")
-    document.body.classList.add('font-bold')
+    document.body.classList.add('font-weight-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => {
@@ -78,7 +78,7 @@ test('dispose on progressive', async ({ page }) => {
       .map(([className, snapshot]) => [className, snapshot.rules.length]))
   })).toMatchObject({
     'display:block': 1,
-    'font-bold': 1
+    'font-weight-bold': 1
   })
 })
 
@@ -242,21 +242,21 @@ test('insert semantic utility with multiple native rules into existing layer', a
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
-test('inserts functional pseudo-class selector aliases into native CSSOM', async ({ page }) => {
+test('inserts native functional pseudo-class selectors into CSSOM', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = "<div class=\"padding-bottom:2rem:not(:last) text-align:center_td:not(:first)\"></div>"
+    document.body.innerHTML = "<div class=\"padding-bottom:2rem:not(:last-child) text-align:center_td:not(:first-child)\"></div>"
   })
   await init(page)
 
   expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
     .map((cssRule) => cssRule.cssText)
   )).toEqual([
-    ".padding-bottom\\:2rem\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }",
-    '.text-align\\:center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }'
+    ".padding-bottom\\:2rem\\:not\\(\\:last-child\\):not(:last-child) { padding-bottom: 2rem; }",
+    '.text-align\\:center_td\\:not\\(\\:first-child\\) td:not(:first-child) { text-align: center; }'
   ])
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })

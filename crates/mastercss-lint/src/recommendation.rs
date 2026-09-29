@@ -1,6 +1,6 @@
 use super::{
     CanonicalCandidate, CanonicalClassParts, CanonicalRecommendationIndex, ClassSemanticInspection,
-    EngineError, EngineSession, GeneratedRuleIr, UtilityLayerName, Value, builtin_token_aliases,
+    EngineError, EngineSession, GeneratedRuleIr, UtilityLayerName, Value,
     collect_rule_declarations, push_index_value,
 };
 
@@ -9,12 +9,6 @@ pub(crate) fn build_canonical_recommendation_index(
     engine: &EngineSession,
 ) -> Result<CanonicalRecommendationIndex, EngineError> {
     let mut index = CanonicalRecommendationIndex::default();
-    for (alias, property) in builtin_token_aliases() {
-        push_index_value(&mut index.preferred_aliases_by_property, property, alias);
-    }
-    for aliases in index.preferred_aliases_by_property.values_mut() {
-        aliases.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
-    }
     for mixin in manifest
         .get("mixins")
         .and_then(Value::as_array)
@@ -80,13 +74,6 @@ pub(crate) fn canonical_class_parts(
     class_name: &str,
     semantics: &ClassSemanticInspection,
 ) -> CanonicalClassParts {
-    let key = semantics.key_token.as_deref().map(|key| {
-        if semantics.kind == mastercss_engine::ClassSemanticKind::Token {
-            key.trim_end_matches('-').trim_start_matches('-').to_owned()
-        } else {
-            key.trim_end_matches(':').to_owned()
-        }
-    });
     let value = semantics.value_token.clone();
     let base_end = if let (Some(key_token), Some(value_token)) =
         (&semantics.key_token, &semantics.value_token)
@@ -107,7 +94,6 @@ pub(crate) fn canonical_class_parts(
     CanonicalClassParts {
         base: class_name[..base_end].to_owned(),
         suffix: class_name[base_end..].to_owned(),
-        key,
         value,
     }
 }

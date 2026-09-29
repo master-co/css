@@ -26,7 +26,7 @@ impl Project {
         path.to_string_lossy().into_owned()
     }
     fn load(&self) -> mastercss_project::ProjectManifestIr {
-        load_project_manifest(&self.0, json!({"version":4,"languageVersion":9})).unwrap()
+        load_project_manifest(&self.0, json!({"version":4,"languageVersion":10})).unwrap()
     }
 }
 impl Drop for Project {
@@ -64,9 +64,10 @@ fn qualified_files_reject_global_definitions_but_keep_native_variants() {
             r###"@mixin --paint {color:red}.card{@apply --always{color:red;}}.ordinary{color:blue}"###,
         );
         if !qualifier.is_empty() {
-            let error = load_project_manifest(&project.0, json!({"version":4,"languageVersion":9}))
-                .unwrap_err()
-                .to_string();
+            let error =
+                load_project_manifest(&project.0, json!({"version":4,"languageVersion":10}))
+                    .unwrap_err()
+                    .to_string();
             assert!(error.contains("Qualified import"), "{error}");
             assert!(error.contains("child.css"), "{error}");
             project.file("entry.css", &format!("@import './child.css'{qualifier};@import '@master/css';@mixin --always{{@contents;}}@mixin --paint{{color:red}}"));
@@ -161,7 +162,7 @@ fn filesystem_import_and_reference_cycles_remain_errors() {
             &format!("@{kind} './child.css';@import '@master/css';@mixin --always{{@contents;}}"),
         );
         project.file("child.css", &format!("@{kind} './entry.css';"));
-        let error = load_project_manifest(&project.0, json!({"version":4,"languageVersion":9}))
+        let error = load_project_manifest(&project.0, json!({"version":4,"languageVersion":10}))
             .unwrap_err();
         assert!(
             error.to_string().contains("Circular CSS"),

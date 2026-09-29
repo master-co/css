@@ -1,18 +1,18 @@
 use std::collections::HashSet;
 
 use super::{
-    CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
-    EngineSession, LintClassListPolicy, LintSession, RawValueCandidateIr, RawValuePolicy,
-    SourceRange, ValidatorBatchIr, classify_host_rule_validation,
+    CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, EngineSession, LintClassListPolicy,
+    LintSession, RawValueCandidateIr, RawValuePolicy, SourceRange, ValidatorBatchIr,
+    classify_host_rule_validation,
 };
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":4,"languageVersion":9,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":4,"languageVersion":10,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn wrapper_conflicts_compare_expanded_selectors_and_keep_branch_order() {
-    let manifest = serde_json::json!({"version":4,"languageVersion":9,"mixins":[
+    let manifest = serde_json::json!({"version":4,"languageVersion":10,"mixins":[
         {"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
         {"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
         {"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},
@@ -229,13 +229,7 @@ fn suggests_canonical_classes_from_engine_facts() {
             &CanonicalClassNameOptions::default(),
         )
         .unwrap();
-    assert_eq!(
-        result.suggestions,
-        [CanonicalClassSuggestionIr {
-            class_name: "margin-md".into(),
-            recommended: "m-md".into()
-        },]
-    );
+    assert!(result.suggestions.is_empty());
     assert_eq!(session.engine.css_text(), "");
 }
 
@@ -289,7 +283,7 @@ fn suggests_canonical_composition_groups_from_engine_facts() {
 }
 
 #[test]
-fn named_aliases_preserve_identity_and_conflicts_follow_engine_order() {
+fn retired_aliases_are_not_autofixed_and_conflicts_follow_engine_order() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let names = [
         "margin-md",
@@ -308,14 +302,7 @@ fn named_aliases_preserve_identity_and_conflicts_follow_engine_order() {
             &CanonicalClassNameOptions::default(),
         )
         .unwrap();
-    assert_eq!(
-        result
-            .suggestions
-            .iter()
-            .map(|s| (s.class_name.as_str(), s.recommended.as_str()))
-            .collect::<Vec<_>>(),
-        [("margin-md", "m-md"), ("-margin-md", "-m-md"),]
-    );
+    assert!(result.suggestions.is_empty());
     for names in [["p-md", "padding:8px"], ["padding:8px", "p-md"]] {
         let support = vec![true; session.native_declaration_candidates(names).unwrap().len()];
         let result = session
@@ -382,4 +369,12 @@ fn unknown_named_prefixes_follow_the_unknown_class_policy() {
             assert_eq!(unknown[0].code, "UNKNOWN_TOKEN");
         }
     }
+}
+
+#[test]
+fn retired_alias_preference_is_rejected() {
+    assert!(
+        serde_json::from_str::<CanonicalClassNameOptions>(r#"{"preferPropertyAliases":false}"#)
+            .is_err()
+    );
 }

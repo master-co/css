@@ -11,9 +11,9 @@ import {
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 3
+const MANIFEST_QUERY_VERSION = 4
 
-export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'custom-media' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'custom-media' | 'family'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -66,22 +66,22 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
 
   const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
 
-  const aliases = builtinTokenFamilies.filter(family => family.prefix !== family.property)
-    .map(({ prefix: alias, property, namespaces }) => ({ type: 'token-alias' as const, alias, property, namespaces }))
-    .filter(alias => !namespace || alias.namespaces.includes(namespace))
-    .filter((alias) => matchesAny(Object.values(alias), query))
+  const families = builtinTokenFamilies
+    .map(({ prefix, property, namespaces }) => ({ type: 'token-family' as const, prefix, property, namespaces }))
+    .filter(family => !namespace || family.namespaces.includes(namespace))
+    .filter((family) => matchesAny(Object.values(family), query))
 
   const allResults = {
     tokens: kind === 'all' || kind === 'token' ? variables : [],
     mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
     customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
-    aliases: kind === 'all' || kind === 'alias' ? aliases : []
+    families: kind === 'all' || kind === 'family' ? families : []
   }
   const limitedResults = {
     tokens: limitResults(allResults.tokens, limit),
     mixins: limitResults(allResults.mixins, limit),
     customMedia: limitResults(allResults.customMedia, limit),
-    aliases: limitResults(allResults.aliases, limit)
+    families: limitResults(allResults.families, limit)
   }
   const total = Object.values(allResults).reduce((count, items) => count + items.length, 0)
   const returned = Object.values(limitedResults).reduce((count, items) => count + items.length, 0)
@@ -108,7 +108,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       tokens: variables.length,
       mixins: mixins.length,
       customMedia: customMedia.length,
-      aliases: aliases.length,
+      families: families.length,
       status: 'ok'
     }
   }

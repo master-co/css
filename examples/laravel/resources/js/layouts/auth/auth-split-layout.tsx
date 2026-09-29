@@ -15,7 +15,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
     <div className="display:grid flex-direction:column align-items:center justify-content:center h-dvh lg:grid-cols-2 lg:max-w-none lg:px-0 px-8 relative sm:px-0">
       <div className="display:none flex-direction:column bg-muted dark:border-r h-full lg:flex p-10 relative text-white">
         <div className="absolute bg-zinc-900 inset-0" />
-        <Link href={route('home')} className="display:flex align-items:center font-medium relative text-lg z-20">
+        <Link href={route('home')} className="display:flex align-items:center font-weight-medium relative text-lg z-20">
           <AppLogoIcon className="fill-current mr-2 size-8 text-white" />
           {name}
         </Link>
@@ -34,7 +34,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
             <AppLogoIcon className="fill-current h-10 sm:h-12 text-black" />
           </Link>
           <div className="display:flex flex-direction:column align-items:start text-align:left gap-2 sm:items-center sm:text-center">
-            <h1 className="font-medium text-xl">{title}</h1>
+            <h1 className="font-weight-medium text-xl">{title}</h1>
             <p className="text-wrap:balance text-muted-foreground text-sm">{description}</p>
           </div>
           {children}

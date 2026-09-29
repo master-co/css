@@ -98,7 +98,7 @@ Treat the app typeface as global vocabulary. Put reusable font families and Open
 
 The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp`, and `pre`. Define `--font-feature-sans` and `--font-feature-mono` when those stacks need shared OpenType features; otherwise the base layer falls back to `normal`. Form controls inherit the surrounding font and feature settings.
 
-Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font-mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
+Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font-family-mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
 
 ---
 
@@ -117,7 +117,7 @@ Use this order:
 Start with utilities when the style belongs to one element or one usage site:
 
 ```html
-<button class="display:inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
+<button class="display:inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-lg font-weight-medium font-size-sm bg-blue fg-white">
   Save changes
 </button>
 ```

@@ -14,7 +14,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
          width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor
-         border-color-blue font-md bg-surface-inset
+         b-blue font-size-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
 </div>
@@ -25,7 +25,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
          width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor
-         border-color-violet font-md bg-surface-inset
+         b-violet font-size-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
 </div>
@@ -34,7 +34,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['border-color-blue']}
+    {['b-blue']}
   </Class2CSS>
 </details>
 
@@ -48,7 +48,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
          width:240px max-width:100% p-md border-width:6px border-style:solid b-blue
-         font-md bg-surface-inset fg-text-body
+         font-size-md bg-surface-inset fg-text-body
          box-sizing:border-box">
   Preview panel
 </div>
@@ -58,8 +58,8 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Transparent top · width preserved -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border-width:6px border-style:solid border-right-color-blue border-bottom-color-blue border-left-color-blue
-         border-top-color:transparent font-md bg-surface-inset
+         width:240px max-width:100% p-md border-width:6px border-style:solid br-blue bb-blue bl-blue
+         border-top-color:transparent font-size-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
 </div>
@@ -78,7 +78,7 @@ Transparent color differs from `border-top-width:0` or `bt-none`, which remove t
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
          border-width:2px border-style:solid border-color:currentcolor border-color:currentColor r-sm
-         font-md bg-surface-base fg-text-blue box-sizing:border-box
+         font-size-md bg-surface-base fg-text-blue box-sizing:border-box
          bg-surface-inset:focus-visible
          fg-text-violet:hover@media(screen)
          fg-text-violet:focus-visible@media(screen)">
@@ -98,7 +98,7 @@ At `sm`, the blue border follows the violet foreground through `currentColor`. P
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border-width:2px border-style:solid border-color:currentcolor border-color-blue r-sm font-md
+         border-width:2px border-style:solid border-color:currentcolor b-blue r-sm font-size-md
          bg-surface-base fg-text-violet box-sizing:border-box
          bg-surface-inset:focus-visible
          border-color:transparent@media(print)
@@ -134,9 +134,9 @@ Define a semantic line token in each theme, then compile the token declarations 
 <!-- Configured divider · mode-aware paint -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor font-md
+         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor font-size-md
          bg-surface-inset fg-text-body box-sizing:border-box
-         border-color-line-divider">
+         b-line-divider">
   Project divider
 </div>
 ```

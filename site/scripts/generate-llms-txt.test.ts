@@ -334,7 +334,7 @@ test('foundation exports include all native token values and their visible table
       for (const value of [row.token, row.value, row.description, ...row.utilities]) assert.ok(bodies[slug].includes(value), `${slug}: ${value}`)
     }
   }
-  for (const role of getFontWeightRows().map(row => row.utilities[0].slice('font-'.length))) assert.ok(bodies.typography.includes(`font-${role}`), role)
+  for (const row of getFontWeightRows()) assert.ok(bodies.typography.includes(row.utilities[0]), row.utilities[0])
   for (const [group, rows] of Object.entries(rowsByGroup)) for (const row of rows) {
     for (const value of [row.token, row.value, rowDescriptionByGroup[group as keyof typeof rowsByGroup](row.key)]) assert.ok(bodies.colors.includes(value), `colors: ${value}`)
   }
@@ -606,7 +606,7 @@ test('introduction retains its authored panel code in portable and search output
   const content = await introductionContent(root)
   const pages = await loadPages(path.join(root, 'app/[locale]'))
   assert.equal(pages.find(page => page.url === '/en/guide/introduction')?.body, content.markdown)
-  for (const text of ['Launch panel', 'Build the first screen in markup', 'Dashboard', 'gap-md', 'font-2xl', 'bg-surface-raised shadow-lg']) assert.ok(content.markdown.includes(text), text)
+  for (const text of ['Launch panel', 'Build the first screen in markup', 'Dashboard', 'gap-md', 'font-size-2xl', 'bg-surface-raised shadow-lg']) assert.ok(content.markdown.includes(text), text)
   assert.doesNotMatch(content.markdown, /<Overview|<DemoConfiguredExample|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))

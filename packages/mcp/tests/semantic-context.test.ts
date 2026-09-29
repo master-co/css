@@ -36,7 +36,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 9, bindingAbiVersion: 19 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 10, bindingAbiVersion: 20 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -50,11 +50,11 @@ it('explicit preset context reports matching separately from validity and browse
   } finally { context.dispose() }
 })
 
-it('keeps complete ambiguity alternatives in both structured and JSON output', async () => {
+it('keeps complete retired-token alternatives in both structured and JSON output', async () => {
   const context = project("@import \"@master/css\"; @theme {:root, :host { --font-family-brand: Brand; --font-size-brand: 1rem; }}")
   try {
     const result = await inspectClass(context, { className: 'font-brand' })
-    expect(result.matchStatus).toBe('ambiguous')
+    expect(result.matchStatus).toBe('syntax-error')
     const response = jsonToolResult(result)
     expect(response.structuredContent).toEqual(JSON.parse((response.content[0] as { text: string }).text))
     expect(JSON.stringify(response.structuredContent)).toContain('font-family-brand')
@@ -63,12 +63,16 @@ it('keeps complete ambiguity alternatives in both structured and JSON output', a
 })
 
 it('does not warn about retired builtins for registered project CSS classes', async () => {
-  const context = project("@import \"@master/css\"; .size\\:20px { color:red; }")
+  const context = project("@import \"@master/css\"; .size\\:20px, .padding-md, .font-brand { color:red; }")
   try {
     const inspected = await inspectClass(context, { className: 'size:20px' })
     const rendered = await renderCSS(context, { classList: 'size:20px' })
     for (const diagnostics of [inspected.diagnostics, rendered.diagnostics]) {
       expect(diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+    }
+    for (const className of ['padding-md', 'font-brand']) {
+      const native = await inspectClass(context, { className })
+      expect(native.diagnostics ?? []).toEqual([])
     }
     expect(inspected.manifest).not.toHaveProperty('nativeClassNames')
     const other = await inspectClass(context, { className: 'size:30px' })

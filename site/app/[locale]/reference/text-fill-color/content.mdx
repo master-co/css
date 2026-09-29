@@ -10,7 +10,7 @@
 ```html
 <!-- Fill follows foreground -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          fg-violet-50 text-fill-color-current"
 >
   Clear type
@@ -20,7 +20,7 @@
 ```html
 <!-- Independent blue fill -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          fg-violet-50 text-fill-color-blue-50"
 >
   Clear type
@@ -44,7 +44,7 @@ Transparent fill reveals this real background gradient clipped to the glyphs. Th
 ```html
 <!-- Gradient clipped to glyphs -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
+  class="display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5
          background-clip:text text-fill-color-current
          background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports((background-clip:text))@media(screen)
          text-fill-color-current@media(print)
@@ -63,7 +63,7 @@ The gradient and transparent fill apply only on screen when the browser supports
 
 ```html
 <!-- Inherited blue fill · local foreground reset -->
-<div class="font-2xl leading-xl fg-violet-50 text-fill-color-blue-50">
+<div class="font-size-2xl leading-xl fg-violet-50 text-fill-color-blue-50">
   Parent <span id="target" class="text-fill-color-current">and child</span>
 </div>
 ```
@@ -78,7 +78,7 @@ Hover or focus to change the glyph fill independently of the button’s foregrou
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font-2xl leading-xl text-fill-color-current
+  class="font-size-2xl leading-xl text-fill-color-current
          text-fill-color-current@media(print) text-fill-color-blue-50:hover@media(screen)
          text-fill-color-blue-50:focus-visible@media(screen)"
 >

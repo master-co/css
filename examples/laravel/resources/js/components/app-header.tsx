@@ -67,7 +67,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                   <div className="display:flex flex-direction:column justify-content:space-between h-full text-sm">
                     <div className="display:flex flex-direction:column space-y-4">
                       {mainNavItems.map((item) => (
-                        <Link key={item.title} href={item.href} className="display:flex align-items:center font-medium space-x-2">
+                        <Link key={item.title} href={item.href} className="display:flex align-items:center font-weight-medium space-x-2">
                           {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                           <span>{item.title}</span>
                         </Link>
@@ -81,7 +81,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                           href={item.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="display:flex align-items:center font-medium space-x-2"
+                          className="display:flex align-items:center font-weight-medium space-x-2"
                         >
                           {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                           <span>{item.title}</span>
@@ -138,7 +138,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                           href={item.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="display:inline-flex align-items:center justify-content:center bg-transparent disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium group h-9 hover:bg-accent hover:text-accent-foreground ml-1 p-0 ring-offset-background rounded-md text-accent-foreground text-sm transition-colors w-9"
+                          className="display:inline-flex align-items:center justify-content:center bg-transparent disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-weight-medium group h-9 hover:bg-accent hover:text-accent-foreground ml-1 p-0 ring-offset-background rounded-md text-accent-foreground text-sm transition-colors w-9"
                         >
                           <span className="sr-only">{item.title}</span>
                           {item.icon && <Icon iconNode={item.icon} className="group-hover:opacity-100 opacity-80 size-5" />}

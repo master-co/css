@@ -1,5 +1,3 @@
-use super::CssVariableReference;
-
 /// Collects syntactically active CSS custom-property references in source order.
 ///
 /// References inside strings and comments are ignored. Nested fallback references
@@ -43,90 +41,40 @@ pub fn transform_css_variable_references<E>(
     source: &str,
     mut replacer: impl FnMut(&str, &str) -> Result<Option<String>, E>,
 ) -> Result<String, E> {
+    use crate::{CssSyntaxKind as Kind, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
     let mut output = String::with_capacity(source.len());
     let mut index = 0;
-    let mut copied_until = 0;
-    while index < source.len() {
-        if let Some(end) = skip_css_string_or_comment(source, index) {
-            index = end;
-            continue;
-        }
-        if let Some(reference) = read_css_variable_reference(source, index) {
-            output.push_str(&source[copied_until..index]);
-            output.push_str(
-                replacer(reference.name, reference.text)?
-                    .as_deref()
-                    .unwrap_or(reference.text),
-            );
-            index = reference.end;
-            copied_until = index;
-            continue;
-        }
-        index += source[index..].chars().next().map_or(1, char::len_utf8);
-    }
-    output.push_str(&source[copied_until..]);
-    Ok(output)
-}
-
-pub(crate) fn read_css_variable_reference(
-    source: &str,
-    start: usize,
-) -> Option<CssVariableReference<'_>> {
-    let prefix = source.get(start..start + 4)?;
-    if !prefix.eq_ignore_ascii_case("var(")
-        || source[..start]
-            .chars()
-            .next_back()
-            .is_some_and(is_css_identifier_character)
-    {
-        return None;
-    }
-    let mut cursor = start + 4;
-    while source[cursor..]
-        .chars()
-        .next()
-        .is_some_and(|character| character.is_ascii_whitespace())
-    {
-        cursor += 1;
-    }
-    if source.get(cursor..cursor + 2)? != "--" {
-        return None;
-    }
-    cursor += 2;
-    let name_start = cursor;
-    while source[cursor..]
-        .chars()
-        .next()
-        .is_some_and(is_css_variable_name_character)
-    {
-        cursor += 1;
-    }
-    if cursor == name_start {
-        return None;
-    }
-    let mut index = cursor;
-    let mut depth = 1_u32;
-    while index < source.len() {
-        if let Some(end) = skip_css_string_or_comment(source, index) {
-            index = end;
-            continue;
-        }
-        let character = source[index..].chars().next()?;
-        index += character.len_utf8();
-        if character == '(' {
-            depth += 1;
-        } else if character == ')' {
-            depth -= 1;
-            if depth == 0 {
-                return Some(CssVariableReference {
-                    name: &source[name_start..cursor],
-                    text: &source[start..index],
-                    end: index,
-                });
+    let mut copied = 0;
+    while let Some(token) = tokens.get(index) {
+        if let Kind::Function(function) = &token.kind
+            && let Some(close) = token.close
+        {
+            if function.eq_ignore_ascii_case("url") {
+                index = close + 1;
+                continue;
+            }
+            if function.eq_ignore_ascii_case("var")
+                && let Some(Kind::Ident(name)) = tokens.get(index + 1).map(|token| &token.kind)
+                && let Some(name) = name.strip_prefix("--").filter(|name| !name.is_empty())
+                && (index + 2 == close
+                    || tokens
+                        .get(index + 2)
+                        .is_some_and(|token| token.kind == Kind::Delim(',')))
+            {
+                let end = tokens[close].bytes.end;
+                let raw = &source[token.bytes.start..end];
+                output.push_str(&source[copied..token.bytes.start]);
+                output.push_str(replacer(name, raw)?.as_deref().unwrap_or(raw));
+                copied = end;
+                index = close + 1;
+                continue;
             }
         }
+        index += 1;
     }
-    None
+    output.push_str(&source[copied..]);
+    Ok(output)
 }
 
 pub(crate) fn skip_css_string_or_comment(source: &str, start: usize) -> Option<usize> {
@@ -152,15 +100,4 @@ pub(crate) fn skip_css_string_or_comment(source: &str, start: usize) -> Option<u
         );
     }
     None
-}
-
-pub(crate) fn is_css_identifier_character(character: char) -> bool {
-    character == '-'
-        || character == '_'
-        || character.is_ascii_alphanumeric()
-        || !character.is_ascii()
-}
-
-pub(crate) fn is_css_variable_name_character(character: char) -> bool {
-    character == '-' || character == '_' || character.is_ascii_alphanumeric()
 }

@@ -10,10 +10,10 @@ Create `section` with an initial value of zero. The first increment occurs on th
 ```html
 <!-- Scope · this article -->
 <article id="target" class="counter-reset:section">
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:section fg-text-blue::before
     content:counter(section)'.\00a0'::before">Setup</h2>
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:section fg-text-blue::before
     content:counter(section)'.\00a0'::before">Usage</h2>
 </article>
@@ -29,10 +29,10 @@ Specify an integer after the counter name. This article initializes `chapter` to
 ```html
 <!-- Initial 4 · first heading 5 -->
 <article id="target" class="counter-reset:chapter|4">
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:chapter fg-text-blue::before
     content:counter(chapter)'.\00a0'::before">Advanced topics</h2>
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:chapter fg-text-blue::before
     content:counter(chapter)'.\00a0'::before">Deployment</h2>
 </article>
@@ -45,10 +45,10 @@ Where supported, `reversed(step)` derives an initial value from the elements tha
 
 ```html
 <!-- Native support · explicit countdown fallback -->
-<p class="margin-inline:0 mb-2xs margin-top:0 font-sm display:none@supports((counter-reset:reversed(step)))">Explicit fallback · starts at 4</p>
-<p class="display:none margin-inline:0 mb-2xs margin-top:0 font-sm
+<p class="margin-inline:0 mb-2xs margin-top:0 font-size-sm display:none@supports((counter-reset:reversed(step)))">Explicit fallback · starts at 4</p>
+<p class="display:none margin-inline:0 mb-2xs margin-top:0 font-size-sm
     display:block@supports((counter-reset:reversed(step)))">Native reversed() · item-derived start</p>
-<ol id="target" role="list" reversed class="margin:0 padding:0 font-md leading-lg list-style:none counter-reset:step|4
+<ol id="target" role="list" reversed class="margin:0 padding:0 font-size-md leading-lg list-style:none counter-reset:step|4
     counter-reset:reversed(step)@supports((counter-reset:reversed(step)))">
   <li class="mb-2xs counter-increment:step|-1 fg-text-blue::before
     content:counter(step)'.\00a0'::before">Final review</li>
@@ -70,10 +70,10 @@ Resize past `sm` to initialize this chapter counter at 4 on screen. The headings
 <!-- Real viewport · initial 0 or 4 -->
 <article id="target" class="counter-reset:chapter counter-reset:chapter@media(print)
     counter-reset:chapter|4@media(screen)@sm">
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:chapter fg-text-blue::before
     content:counter(chapter)'.\00a0'::before">Setup</h2>
-  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
+  <h2 class="margin-inline:0 mb-2xs margin-top:0 font-size-md font-weight-medium leading-lg
     counter-increment:chapter fg-text-blue::before
     content:counter(chapter)'.\00a0'::before">Usage</h2>
 </article>

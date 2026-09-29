@@ -48,14 +48,14 @@ fn scoped_tokens_retain_all_branches_duplicates_and_dependencies() {
         }
     "#,
     );
-    engine.ensure_class_rules(["color-ink"]).unwrap();
+    engine.ensure_class_rules(["fg-ink"]).unwrap();
     let text = engine.css_text();
     assert!(text.contains("--color-ink:red;--color-ink:oklch"), "{text}");
     assert!(text.contains("[data-theme=ocean]"), "{text}");
     assert!(text.contains("prefers-contrast:more"), "{text}");
     assert!(text.contains("--color-ocean:blue"), "{text}");
     assert!(!text.contains("--color-unused"), "{text}");
-    engine.delete_class_rules(["color-ink"]).unwrap();
+    engine.delete_class_rules(["fg-ink"]).unwrap();
     assert!(engine.css_text().is_empty());
 }
 
@@ -192,7 +192,7 @@ fn theme_dependencies_handle_css_escapes_comments_and_nested_fallbacks() {
         @theme { :root { --color-a: VAR(/* x */ --color-b, var(--color-c)); --color-b: red; --color-c: blue; --unused: green; } }
     "#,
     );
-    engine.ensure_class_rules(["color-a"]).unwrap();
+    engine.ensure_class_rules(["fg-a"]).unwrap();
     let text = engine.css_text();
     assert!(text.contains("--color-b:red"), "{text}");
     assert!(text.contains("--color-c:blue"), "{text}");
@@ -243,8 +243,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":4,"languageVersion":9,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":4,"languageVersion":9,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":4,"languageVersion":10,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":4,"languageVersion":10,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

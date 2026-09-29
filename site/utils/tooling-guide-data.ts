@@ -15,7 +15,6 @@ export const toolingOptions = {
     label: 'Canonical class options',
     options: [
       { name: 'preferStaticUtilities', defaultValue: 'true', description: 'Normalize named utilities only when their cascade identity is preserved.' },
-      { name: 'preferPropertyAliases', defaultValue: 'true', description: 'Use shorter property keys: margin:1rem → m:1rem.' },
       { name: 'preferCompositionUtilities', defaultValue: 'true', description: 'Combine declarations only when value sources and cascade priorities are preserved.' },
     ]
   },

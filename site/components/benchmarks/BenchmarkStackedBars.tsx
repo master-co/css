@@ -29,11 +29,11 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
             <div className="display:flex align-items:baseline justify-content:space-between gap-sm">
               <div className="display:flex align-items:center gap-xs min-width:0">
                 {item.icon}
-                <span id={labelId} className="min-width:0 font-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-width:0 font-size-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
               <div className="display:flex align-items:baseline gap-xs white-space:nowrap">
-                <strong id={valueId} className="font-sm font-weight:460 fg-text-strong">{totalLabel}</strong>
-                {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
+                <strong id={valueId} className="font-size-sm font-weight:460 fg-text-strong">{totalLabel}</strong>
+                {item.detail && <span className="font-size-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
             <div className="display:flex overflow:hidden height:12px r-xs bg-surface-inset" role="img" aria-labelledby={`${labelId} ${valueId}`}>
@@ -62,7 +62,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                 const valueLabel = segment.valueLabel ?? (valueFormatter ? valueFormatter(segment.value) : formatMetricValue(segment.value, unit))
 
                 return (
-                  <div key={segment.id} className="display:inline-flex align-items:center gap-2xs font-xs fg-text-muted">
+                  <div key={segment.id} className="display:inline-flex align-items:center gap-2xs font-size-xs fg-text-muted">
                     <span className={clsx('display:inline-block height:0.625rem width:0.625rem r-xs', colorClasses.background)} />
                     <span><Translate>{segment.label}</Translate></span>
                     <span className="fg-text-strong">{valueLabel}</span>

@@ -10,14 +10,14 @@
 ```html
 <!-- hyphens:none -->
 <div id="scrollport" role="region" aria-label="Automatic hyphenation" tabindex="0" class="overflow:auto width:128px max-width:100%">
-  <p id="target" lang="en" class="width:128px margin:0 font-md line-height:24px hyphens:none">Antidisestablishmentarianism</p>
+  <p id="target" lang="en" class="width:128px margin:0 font-size-md line-height:24px hyphens:none">Antidisestablishmentarianism</p>
 </div>
 ```
 
 ```html
 <!-- hyphens:auto -->
 <div id="scrollport" role="region" aria-label="Automatic hyphenation" tabindex="0" class="overflow:auto width:128px max-width:100%">
-  <p id="target" lang="en" class="width:128px margin:0 font-md line-height:24px hyphens:auto">Antidisestablishmentarianism</p>
+  <p id="target" lang="en" class="width:128px margin:0 font-size-md line-height:24px hyphens:auto">Antidisestablishmentarianism</p>
 </div>
 ```
 
@@ -37,12 +37,12 @@ A browser without a suitable dictionary may leave the word unbroken. The specime
 
 ```html
 <!-- Narrow · soft hyphen used -->
-<p id="target" class="width:100px margin:0 font-md line-height:24px hyphens:manual">trans&shy;formation</p>
+<p id="target" class="width:100px margin:0 font-size-md line-height:24px hyphens:manual">trans&shy;formation</p>
 ```
 
 ```html
 <!-- Wide · soft hyphen hidden -->
-<p id="target" class="width:220px max-width:100% margin:0 font-md line-height:24px hyphens:manual">trans&shy;formation</p>
+<p id="target" class="width:220px max-width:100% margin:0 font-size-md line-height:24px hyphens:manual">trans&shy;formation</p>
 ```
 
 ### Disable hyphenation \{#disable-hyphenation\}
@@ -53,14 +53,14 @@ A browser without a suitable dictionary may leave the word unbroken. The specime
 ```html
 <!-- hyphens:manual -->
 <div id="scrollport" role="region" aria-label="Manual hyphenation comparison" tabindex="0" class="overflow:auto width:100px max-width:100%">
-  <p id="target" class="width:100px margin:0 font-md line-height:24px hyphens:manual">trans&shy;formation</p>
+  <p id="target" class="width:100px margin:0 font-size-md line-height:24px hyphens:manual">trans&shy;formation</p>
 </div>
 ```
 
 ```html
 <!-- hyphens:none -->
 <div id="scrollport" role="region" aria-label="Manual hyphenation comparison" tabindex="0" class="overflow:auto width:100px max-width:100%">
-  <p id="target" class="width:100px margin:0 font-md line-height:24px hyphens:none">trans&shy;formation</p>
+  <p id="target" class="width:100px margin:0 font-size-md line-height:24px hyphens:none">trans&shy;formation</p>
 </div>
 ```
 
@@ -72,6 +72,6 @@ Resize this fluid column from 80px toward 100px. It starts with an explicit soft
 ```html
 <!-- Fluid column · native hyphenation reset -->
 <div id="scrollport" role="region" aria-label="Responsive hyphenation" tabindex="0" class="overflow:auto width:clamp(80px,10vw,100px) max-width:100%">
-  <p id="target" class="width:100% margin:0 font-md line-height:24px hyphens:manual hyphens:none@media(print) hyphens:none@media(screen)@sm">trans&shy;formation</p>
+  <p id="target" class="width:100% margin:0 font-size-md line-height:24px hyphens:manual hyphens:none@media(print) hyphens:none@media(screen)@sm">trans&shy;formation</p>
 </div>
 ```

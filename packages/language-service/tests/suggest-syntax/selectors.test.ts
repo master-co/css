@@ -35,24 +35,24 @@ describe.concurrent('pseudo-class', () => {
   it.concurrent('should take into account trigger character :', () => expect(hint("text-align:center:")?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
   it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint("text-align:center:")?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
   it.concurrent('should take into account trigger character +', () => expect(hint("text-align:center+")?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
-  test.concurrent('info', () => expect(hint("display:block:")?.find(({ label }) => label === ':first')).toEqual({
-    'detail': ':first-child',
+  test.concurrent('info', () => expect(hint("display:block:")?.find(({ label }) => label === ':first-child')).toEqual({
+    'detail': undefined,
     'documentation': {
       'kind': 'markdown',
       'value': dedent`
         \`\`\`css
         @layer utilities {
-          .display\\:block\\:first:first-child {
+          .display\\:block\\:first-child:first-child {
             display: block
           }
         }
         \`\`\`
       `,
     },
-    'insertText': 'first',
+    'insertText': 'first-child',
     'kind': 3,
-    'label': ':first',
-    'sortText': 'yyfirst',
+    'label': ':first-child',
+    'sortText': 'yyfirst-child',
   }))
 })
 
@@ -100,4 +100,9 @@ it('reserves native colon entries and suggests display states through an explici
   expect(hint("flex:")?.map(item => item.label)).not.toContain(':hover')
   expect(hint("grid:")?.map(item => item.label)).not.toContain(':hover')
   expect(hint('display:flex:')?.map(item => item.label)).toContain(':hover')
+})
+
+test('removed selector shortcuts are absent', () => {
+  const labels = hint('display:block:')?.map(item => item.label) ?? []
+  for (const label of [':first', ':last', ':even', ':odd', ':only', ':rtl', ':ltr', ':of']) expect(labels).not.toContain(label)
 })

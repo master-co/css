@@ -71,13 +71,13 @@ test('destroy on progressive', async ({ page }) => {
   await page.evaluate(async (manifest) => {
     const runtime = await globalThis.MasterCSSRuntime.start({ manifest })
     runtime.observe()
-    document.body.classList.add("display:block", 'font-bold')
+    document.body.classList.add("display:block", 'font-weight-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime?.snapshot().classRules))
     .toMatchObject({
       'display:block': expect.anything(),
-      'font-bold': expect.anything()
+      'font-weight-bold': expect.anything()
     })
 })
 

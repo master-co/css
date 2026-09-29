@@ -279,7 +279,7 @@ Use `card-layout` and `grid-cols(3)@sm` in markup. A no-parameter mixin may also
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
 Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Raw property abbreviations and single-declaration preset aliases are removed. Genuine native names such as SVG `r` retain their native meaning.
 
-Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. Rust owns these mappings; presets define their values in `@theme`, without per-family registration directives. `font-*` chooses its property by token existence. If several font namespaces contain the same key, use an explicit family such as `font-size-brand` or `font-family-brand`.
+Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. Rust owns these mappings; presets define their values in `@theme`, without per-family registration directives. Every family has one canonical prefix and reads one namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*` for typography tokens.
 
 ### Named mixin families \{#named-token-patterns\}
 A mixin with exactly one `<string>` parameter gains a named family when a matching primary theme token exists:
@@ -301,7 +301,7 @@ A mixin with exactly one `<string>` parameter gains a named family when a matchi
 
 `text-hero` calls `--text("hero")`. `ident()` folds only when all its inputs are known and produces ordinary CSS custom-property references. Companion tokens containing `--` after the primary name do not create classes. Companions without a primary token create no class; missing companions use the authored fallback.
 
-The rule is generic, with no engine-specific typography recipe. `font-sm` sets only font size; `text-sm` also sets line height and letter spacing. Typography recipes do not set family, weight, or color. The preset's explicit typography scale is an intentional visual change; check headings, paragraphs and wrapping at desktop and mobile widths.
+The rule is generic, with no engine-specific typography recipe. `font-size-sm` sets only font size; `text-sm` also sets line height and letter spacing. Typography recipes do not set family, weight, or color. The preset's explicit typography scale is an intentional visual change; check headings, paragraphs and wrapping at desktop and mobile widths.
 
 Exact no-parameter mixins take priority. Families use the longest prefix; at the same prefix a named mixin wins over the built-in token mapping. A selected family with an unknown token reports an error and does not retry another interpretation. Built-in negative values and color opacity remain available where supported, but named mixins do not inherit those operations. `p-4` means the token named `4`; `grid-cols-3` does not imply a numeric argument.
 
@@ -373,7 +373,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 9 and binding ABI 19. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 10 and binding ABI 20. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
 
@@ -829,7 +829,7 @@ A top-level mixin name has one final definition. A later definition replaces its
 
 An exact zero-parameter mixin wins over named token families. Otherwise the longest family prefix wins, and a named string mixin wins over a built-in token mapping with the same prefix. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
 
-`font-brand` is ambiguous when both `--font-size-brand` and `--font-family-brand` exist. Use `font-size-brand` or `font-family-brand`. Namespace lookup order within one property remains deterministic; token values are never used to guess the property.
+`font-brand` is removed. Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
 
 The preset has no `size`, `min-size` or `max-size` recipe. Use explicit width and height declarations, or author a parameter mixin such as `--box`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning. See the [RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution).
 
@@ -850,3 +850,7 @@ This is Sass interpolation, not additional Master CSS syntax. Sass `@include` an
 ### Animation recipes
 
 The preset `animate-*` classes use a single `<string>` parameter mixin and a same-name primary token. For example, `--animate-fade: fade` names the keyframe; `--animate-fade--duration: 2s` customizes its duration. Companion tokens alone do not create classes. Native CSS declarations inside stylesheets and authored mixins keep ordinary CSS syntax.
+
+## Token family names
+
+Built-in named-token families have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Full-property token aliases are removed. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. Custom mixins are explicit project definitions, not a built-in alias registry.

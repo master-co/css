@@ -45,15 +45,15 @@ describe('Rust lint session', () => {
     }
   })
 
-  it('owns canonical recommendations while the wrapper only maps host diagnostics', () => {
+  it('diagnoses retired tokens without offering an alias autofix', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       const classList = 'margin-md'
       const classNames = lint.tokenizeClassList(classList).map(({ token }) => token)
       const result = lint.analyzeLintClassList(classList, classNames, { canonicalOptions: {} })
-      const diagnostics = result.diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
+      const diagnostics = result.diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes')
       expect(diagnostics.length).toBeGreaterThan(0)
-      expect(diagnostics.every(({ fix }) => fix?.scope === 'class-list')).toBe(true)
+      expect(diagnostics.every(({ fix }) => !fix)).toBe(true)
     } finally {
       lint.dispose()
     }
@@ -81,7 +81,7 @@ describe('Rust lint session', () => {
     }))
     try {
       expect(lint.rawValueCandidates([
-        'font-md',
+        'font-size-md',
         'm-md',
         "margin:var(--spacing-md)|var(--spacing-lg)",
         'fg-red-60',
@@ -95,16 +95,14 @@ describe('Rust lint session', () => {
     }
   })
 
-  it('suggests property aliases without replacing literals or changing priority', () => {
+  it('does not restore retired property token spellings through recommendations', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       expect(lint.canonicalClassNames([
         'text-align:center:hover@sm',
         'font-size:16px',
         'margin-md'
-      ])).toEqual([
-        { className: 'margin-md', recommended: 'm-md' }
-      ])
+      ])).toEqual([])
     } finally {
       lint.dispose()
     }

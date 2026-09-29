@@ -9,7 +9,7 @@ Apply a descendant selector to add a supplementary arrow after links whose `href
 
 ```html
 <!-- Descendant selector · external link -->
-<article class="font-md leading-lg
+<article class="font-size-md leading-lg
     content:'\00a0↗'_:where(a[href^='http'])::after">
   <p class="margin:0">Read the <a id="target" class="text-decoration:underline fg-text-blue" href="https://www.example.com">project website</a>.</p>
   <p class="margin:0">Return to <a class="text-decoration:underline" href="/en/reference/content">this reference</a>.</p>
@@ -25,7 +25,7 @@ HTML whitespace separates class names. Inside a quoted `content` string, `\00a0`
 
 ```html
 <!-- Escaped non-breaking space -->
-<a id="target" class="font-md text-decoration:underline fg-text-blue content:'\00a0↗'::after" href="https://www.example.com">Project website</a>
+<a id="target" class="font-size-md text-decoration:underline fg-text-blue content:'\00a0↗'::after" href="https://www.example.com">Project website</a>
 ```
 
 A theme token can hold a quoted string with ordinary whitespace. Keep its declaration in your stylesheet:
@@ -39,7 +39,7 @@ A theme token can hold a quoted string with ordinary whitespace. Keep its declar
 
 ```html
 <!-- Quoted theme value -->
-<a id="target" class="font-md text-decoration:underline fg-text-blue
+<a id="target" class="font-size-md text-decoration:underline fg-text-blue
     content-external::after" href="https://www.example.com">Project website</a>
 ```
 
@@ -52,7 +52,7 @@ Hover or focus this link to generate its arrow. The base pseudo-element has `con
 
 ```html
 <!-- Pointer and keyboard · same link -->
-<a id="target" class="font-md text-decoration:underline fg-text-blue content:none::after
+<a id="target" class="font-size-md text-decoration:underline fg-text-blue content:none::after
     content:none::after@media(print)
     content:'\00a0↗':hover::after@media(screen)
     content:'\00a0↗':focus-visible::after@media(screen)" href="https://www.example.com">Project website</a>

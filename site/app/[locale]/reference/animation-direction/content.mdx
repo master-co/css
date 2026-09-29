@@ -21,7 +21,7 @@ Play each cycle from 24px to 96px. The one-second linear path repeats with the s
 ```html
 <!-- normal -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -65,7 +65,7 @@ Play each cycle from 96px back to 24px by reversing the same keyframes.
 ```html
 <!-- reverse -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -104,7 +104,7 @@ Play the first cycle forward, then the second backward. The direction changes at
 ```html
 <!-- alternate -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -143,7 +143,7 @@ Start at 96px and play backward first, then forward on the next cycle.
 ```html
 <!-- alternate-reverse -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
@@ -181,7 +181,7 @@ Reverse the preset `fade` keyframes, which normally go from opacity 0 to 1. This
            animation-timing-function:linear
            animation:none@media(print)
            animation-play-state:paused@motion-reduce"></span>
-  <span class="font-sm">Fades out once</span>
+  <span class="font-size-sm">Fades out once</span>
 </div>
 ```
 
@@ -206,7 +206,7 @@ Resize before replaying. The path runs backward below `sm` and forward at `sm`, 
 ```html
 <!-- Reverse → normal at sm -->
 <div class="width:240px max-width:100%">
-  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-family-mono font-size-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
     class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"

@@ -62,7 +62,7 @@ const selectorVariantRuleTexts = [
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
-  version: 4 as const, languageVersion: 9 as const,
+  version: 4 as const, languageVersion: 10 as const,
   variables: {
     color: [
       {
@@ -98,7 +98,7 @@ const scopedThemeCSS = [
 
 const manifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 9 as const,
+  "languageVersion": 10 as const,
   customMedia: { "--sm": { type: "feature", value: "(width>=52.125rem)" } },
   "mixins": [
   {
@@ -380,7 +380,7 @@ describe('Rust engine session', () => {
       'fg-red-60',
       "width:calc(100%-2rem)",
       'bg-blue-20:hover@sm',
-      "color-black!", "border-bottom:2px|solid"
+      "fg-black!", "border-bottom:2px|solid"
     ])
     expect(transition.mutations.length).toBeGreaterThanOrEqual(5)
     expect(engine.snapshot().rules.map((rule) => rule.className)).toEqual(expect.arrayContaining([
@@ -388,7 +388,7 @@ describe('Rust engine session', () => {
       'fg-red-60',
       "width:calc(100%-2rem)",
       'bg-blue-20:hover@sm',
-      "color-black!", "border-bottom:2px|solid"
+      "fg-black!", "border-bottom:2px|solid"
     ]))
     engine.dispose()
   })

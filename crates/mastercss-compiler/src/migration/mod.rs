@@ -3,6 +3,7 @@
 mod conditions;
 mod configuration;
 mod directives;
+mod legacy_registry;
 mod managed;
 mod manifest;
 mod mixins;
@@ -17,9 +18,8 @@ mod values;
 mod variants;
 
 use crate::CompilerError;
-use mastercss_engine::{
-    EngineCompositionRuleIr, EngineSession, builtin_token_aliases, builtin_token_namespaces,
-};
+use legacy_registry::{builtin_token_aliases, builtin_token_namespaces};
+use mastercss_engine::{EngineCompositionRuleIr, EngineSession};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::cell::RefCell;

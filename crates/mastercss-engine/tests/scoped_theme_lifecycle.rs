@@ -17,7 +17,7 @@ fn manifest(cycle: bool) -> String {
         .push(json!("color-c"));
     variables.push(json!({"key":"c","values":[{"path":[root],"value":"blue"}],"dependencies":[]}));
     let theme = variables.iter().flat_map(|variable| variable["values"].as_array().unwrap().iter().map(|value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("color-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]}))).collect::<Vec<_>>();
-    json!({"version":4,"languageVersion":9,"variables":{"color":variables},"theme":theme,"mixins":[]}).to_string()
+    json!({"version":4,"languageVersion":10,"variables":{"color":variables},"theme":theme,"mixins":[]}).to_string()
 }
 fn counts(engine: &EngineSession) -> Vec<(String, u32)> {
     let mut values = engine
@@ -38,7 +38,7 @@ fn each_live_token_keeps_all_scopes_and_transitive_dependencies() {
         let mut engine = EngineSession::create(&manifest(cycle)).unwrap();
         assert!(engine.css_text().is_empty());
         for _ in 0..3 {
-            engine.ensure_class_rules(["color-a"]).unwrap();
+            engine.ensure_class_rules(["fg-a"]).unwrap();
             assert_eq!(
                 counts(&engine),
                 [
@@ -53,7 +53,7 @@ fn each_live_token_keeps_all_scopes_and_transitive_dependencies() {
                     .contains(".dark{--color-a:var(--color-c)}")
             );
             assert!(engine.css_text().contains("--color-c:blue"));
-            engine.delete_class_rules(["color-a"]).unwrap();
+            engine.delete_class_rules(["fg-a"]).unwrap();
             assert!(counts(&engine).is_empty());
             assert!(engine.css_text().is_empty());
         }
@@ -62,20 +62,18 @@ fn each_live_token_keeps_all_scopes_and_transitive_dependencies() {
 #[test]
 fn independently_used_dependencies_are_released_only_after_the_last_owner() {
     let mut engine = EngineSession::create(&manifest(false)).unwrap();
-    engine
-        .ensure_class_rules(["color-a", "background-color-b"])
-        .unwrap();
+    engine.ensure_class_rules(["fg-a", "bg-b"]).unwrap();
     assert_eq!(counts(&engine)[1], ("color-b".into(), 2));
-    engine.delete_class_rules(["color-a"]).unwrap();
+    engine.delete_class_rules(["fg-a"]).unwrap();
     assert_eq!(counts(&engine), [("color-b".into(), 1)]);
-    engine.delete_class_rules(["background-color-b"]).unwrap();
+    engine.delete_class_rules(["bg-b"]).unwrap();
     assert!(engine.css_text().is_empty());
 }
 #[test]
 fn refresh_replaces_authored_scopes_while_preserving_live_class_names() {
     let source = manifest(false);
     let mut engine = EngineSession::create(&source).unwrap();
-    engine.ensure_class_rules(["color-a"]).unwrap();
+    engine.ensure_class_rules(["fg-a"]).unwrap();
     engine
         .refresh(
             &source
@@ -86,14 +84,14 @@ fn refresh_replaces_authored_scopes_while_preserving_live_class_names() {
     assert!(engine.css_text().contains("[data-theme=night]{--color-a"));
     assert!(engine.css_text().contains("--color-c:green"));
     assert!(!engine.css_text().contains("blue"));
-    engine.delete_class_rules(["color-a"]).unwrap();
+    engine.delete_class_rules(["fg-a"]).unwrap();
     assert!(engine.css_text().is_empty());
 }
 #[test]
 fn removed_static_inline_and_mode_metadata_is_rejected_atomically() {
     let source = manifest(false);
     let mut engine = EngineSession::create(&source).unwrap();
-    engine.ensure_class_rules(["color-a"]).unwrap();
+    engine.ensure_class_rules(["fg-a"]).unwrap();
     let before = engine.snapshot().unwrap();
     for field in ["static", "inline", "mode", "modes", "value"] {
         let mut changed: Value = serde_json::from_str(&source).unwrap();
@@ -116,7 +114,7 @@ fn direct_manifest_values_are_opaque_and_dependencies_are_explicit() {
         input["variables"]["color"][0]["dependencies"] = json!([]);
         input["theme"] = json!([{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-a","value":value}]}]);
         let mut engine = EngineSession::create(&input.to_string()).unwrap();
-        engine.ensure_class_rules(["color-a"]).unwrap();
+        engine.ensure_class_rules(["fg-a"]).unwrap();
         assert!(engine.css_text().contains(&format!("--color-a:{value}")));
         assert_eq!(counts(&engine), [("color-a".into(), 1)]);
         assert!(!engine.css_text().contains("--color-b:"));
