@@ -14,24 +14,28 @@ export interface DemoConfiguredExampleProps {
   caption: string
   theme?: boolean
   code?: boolean
+  /** Teaching scenes can introduce the visual before their adjacent source. */
+  previewFirst?: boolean
   /** Render generated utilities inside a real, declarative shadow root. */
   shadow?: boolean
 }
 
 /** Configuration, preview and portable code use the same literal source. */
-export default function DemoConfiguredExample({ name, title, source, html, caption, theme, code = true, shadow = false }: DemoConfiguredExampleProps) {
+export default function DemoConfiguredExample({ name, title, source, html, caption, theme, code = true, previewFirst = false, shadow = false }: DemoConfiguredExampleProps) {
   const section = { page: 'project-styles', id: name, title, html: [html], css: source, classes: [], classLists: [], highlighted: [] }
   const shadowCSS = shadow ? configuredExampleCSS(source, configuredMarkupClasses(html)).replaceAll('</style', '<\\/style') : ''
   const preview = shadow ? `<div data-demo-shadow><template shadowrootmode="open"><style>${shadowCSS}</style>${html}</template></div>` : html
   const document = demoDocument(section, { html: preview, caption, bodyClass: 'p-md' })
-  return <>
-    {code && <>
+  const sourceCode = code && <>
       {source.trim() && <Code lang="css" name="Configuration">{source}</Code>}
-      <Code lang="html" name="HTML">{html}</Code>
-    </>}
+      <Code lang="html" name="HTML" beautify>{html}</Code>
+    </>
+  return <>
+    {!previewFirst && sourceCode}
     <Demo title={title} caption={caption} padding="none" background="plain" data-project-style={name}>
       <DemoViewport title={title} document={document} theme={theme} sizing="content" />
     </Demo>
+    {previewFirst && sourceCode}
     {code && <details>
       <summary>Generated CSS</summary>
       <Code lang="css" beautify>{configuredExampleCSS(source, configuredMarkupClasses(html))}</Code>

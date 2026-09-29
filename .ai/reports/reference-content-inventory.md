@@ -2,6 +2,8 @@
 
 Decision date: 2026-09-29. Status: public source and shared-data migration implemented; local verification is recorded below. The canonical policy is [site/AI.md](../../site/AI.md#guide-and-reference-ownership); [Reference maintenance](../../site/reference/MAINTENANCE.md#content-migration-sequence) owns migration mechanics.
 
+The subsequent [visual restoration inventory](foundation-visual-restoration.md) supersedes the initial migration’s generic specimen presentation and records the restored public locations. The 90-page ownership decision remains unchanged.
+
 ## Decision and scope
 
 Keep Design Foundations in Guide for design and implementation tasks. Reference owns complete lookup data and Master CSS contracts; Syntax Tutorial teaches the general syntax. Move complete palettes, scales, consumer mappings and lookup specimens to Reference while Guide selects the facts needed to complete a task. Interactivity alone does not determine ownership.

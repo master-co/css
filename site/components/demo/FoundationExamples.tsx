@@ -6,7 +6,7 @@ import { DemoComparison, DemoItem, DemoLabel, DemoMedia, DemoSurface } from './p
 
 /** The query boundary is an ancestor; it never queries its own width. */
 export function FoundationMedia() {
-  return <Demo title="A component follows its container" padding="none" data-foundation="media" caption="Below md the media stacks. At md it keeps a 36x width beside flexible text.">
+  return <Demo title="A component follows its container" padding="none" data-foundation="media" caption="Below md the media stacks. At md it keeps a 9rem width beside flexible text.">
     <DemoContainer title="Media object">
       <div className="container-type:inline-size">
         <article className="display:flex flex-direction:column align-items:start gap-md p-md flex-direction:row@container((width>=28rem)) demo-surface">
@@ -43,7 +43,7 @@ export function FoundationContainerGrid() {
 export function FoundationSizing() {
   return <Demo title="Fluid space, measured object" data-foundation="sizing">
     <DemoSurface className="width:100% max-w-sm margin-inline:auto p-md">
-      <DemoLabel>w:100% · max-w-sm</DemoLabel>
+      <DemoLabel>width:100% · max-w-sm</DemoLabel>
       <div className="display:flex align-items:center gap-md mt-md">
         <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-family-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">

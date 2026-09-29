@@ -1,10 +1,8 @@
 ## Overview [sr-only]
-<ResizeZone width="100%" originX="center" showRuler>
-  <IFrame src="/examples/responsive-gallery" height={360} />
-</ResizeZone>
+<DemoPageViewport src="/examples/responsive-gallery" title="Responsive asset gallery" height={420} />
 ```html
 <!-- @MARK @xs @sm @md -->
-<div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
+<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
 Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [named custom media](/guide/breakpoints). [Container queries](/guide/containers) measure an eligible ancestor using an explicit threshold; they do not read container size tokens.
 
@@ -19,7 +17,7 @@ These breakpoints enable developers to change layouts, typography, spacing, and 
 The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [custom media name](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
-<div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
+<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
 
 ### Querying viewport ranges
@@ -51,19 +49,19 @@ CSS [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_con
 The `container-type:inline-size` declaration establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
 
 (resize) Try making the container smaller.
-<ResizeZone width="100%" originX="center" showRuler>
+<DemoContainer title="Responsive media object">
   <Demo>
     <div className="overflow:hidden container-type:inline-size width:100% r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
       <div className="display:flex flex-direction:column@container((width<=18rem))">
-        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="container left" />
+        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
         <div className='padding-top:var(--spacing-lg) padding-right:var(--spacing-xl) padding-bottom:var(--spacing-lg) padding-left:var(--spacing-xl)'>
-          <div className='text-md font-weight-medium fg-text-neutral'>Lorem ipsum</div>
-          <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
+          <div className='text-md font-weight-medium fg-text-neutral'>Field notes</div>
+          <div className='mt-3xs text-sm'>A collection of textures, places and quiet details. This card shares the available space with its image, then stacks when its own container becomes narrow.</div>
         </div>
       </div>
     </div>
   </Demo>
-</ResizeZone>
+</DemoContainer>
 ```html
 <div class="container-type:inline-size …">
   <!-- @MARK @container((width<=18rem)) -->

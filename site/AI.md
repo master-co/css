@@ -101,6 +101,16 @@ The 2026-09-29 content decision keeps Design Foundations in Guide and makes Refe
 
 Interactivity does not determine ownership: a browsable complete palette belongs in Reference; a card comparing surface, line and text roles belongs in Guide. Guide examples must remain self-contained, including necessary values, short comparisons and generated CSS. Reference needs a purpose, a minimal example and useful visual specimens as well as complete data. Do not duplicate complete catalogs in Guide, including through hidden disclosures or search/Markdown exports.
 
+### Preserve visual teaching and lookup quality
+
+A documentation migration moves content, visual specimens and interactions together. Before deleting an original presentation, its public replacement must pass visual and functional comparison. Keeping a component only in the Design System gallery does not preserve the documentation experience. Use `fef197a78` as the visual baseline for this restoration; the unified `components/demo/` primitives remain the implementation owner.
+
+Reference lookup needs carefully designed palettes, scales, specimens and comparisons. Use subject-specific rendering: text roles paint text, line roles paint boundaries, leading uses paragraphs, and shadow specimens leave room for the full shadow in both modes. Do not default every namespace to the same clipped tile grid. Guide may keep rich, self-contained teaching scenes and meaningful selections without a two-or-three-item limit; only the complete catalog belongs in Reference.
+
+`FoundationTokens` selects shared facts by explicit keys in Guide and complete namespace in Reference. `common/foundation-data/specimens.ts` and `recipe-specimens.ts` own site-only presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
+
+For a visual migration, record old → new destinations and compare complete sections at 390, 768 and 1280px in light and dark. Verify actual effects, native keyboard focus, clipboard success/failure, paused motion, reduced motion, responsive controls and anchors. A compiling page without overflow is not sufficient evidence of visual quality. See the [restoration inventory](../.ai/reports/foundation-visual-restoration.md).
+
 ### Page admission and retirement
 
 - A new standalone Reference must document a public Master-specific contract that native CSS knowledge, an existing general rule or one registry row cannot fully explain. Cover verifiable inputs, output, scope, defaults, dependencies, overrides or errors as applicable.

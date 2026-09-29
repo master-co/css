@@ -1,11 +1,11 @@
 export const sizingRoles = [
   {
-    utility: 'w:*',
+    utility: 'w-<token>, width:<value>',
     role: 'Physical width',
     description: 'Set the width of wrappers, columns, panels, media, and proportional regions.'
   },
   {
-    utility: 'h:*',
+    utility: 'h-<token>, height:<value>',
     role: 'Physical height',
     description: 'Set the height of fixed regions, viewport sections, media slots, and controls.'
   },
@@ -15,12 +15,12 @@ export const sizingRoles = [
     description: 'Set both dimensions explicitly when the element is square by design.'
   },
   {
-    utility: 'min-w:*, min-h:*',
+    utility: 'min-w-<token>, min-h-<token>',
     role: 'Lower bound',
     description: 'Prevent collapse, allow flex children to shrink, or set a minimum usable region.'
   },
   {
-    utility: 'max-w:*, max-h:*',
+    utility: 'max-w-<token>, max-h-<token>',
     role: 'Upper bound',
     description: 'Cap growth for page wrappers, readable measures, panels, menus, and media.'
   },

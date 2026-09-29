@@ -321,18 +321,18 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
 })
 
 test('foundation exports use the same explicit token subsets as HTML', async () => {
-  const { tokenValuesMarkdown } = await import('../reference/TokenValues')
+  const { selectedSpecimensMarkdown } = await import('../common/foundation-data/specimen-content')
   const { namespaceTokens } = await import('../common/foundation-data/tokens')
   const root = fileURLToPath(new URL('../', import.meta.url))
   for (const slug of foundationGuideSlugs) {
     const source = await readFile(`${root}/app/[locale]/guide/${slug}/content.mdx`, 'utf8')
     const body = (await foundationGuideContent(root, slug)).markdown
-    for (const match of source.matchAll(/<TokenValues namespace="([^"]+)" keys={([^}]+)} \/>/g)) {
+    for (const match of source.matchAll(/<FoundationTokens namespace="([^"]+)" keys={([^}]+)} \/>/g)) {
       const keys = JSON.parse(match[2])
-      assert.ok(body.includes(tokenValuesMarkdown(match[1], keys)), `${slug}: ${match[1]}`)
+      assert.ok(body.includes(portableMarkdown(selectedSpecimensMarkdown(match[1], keys))), `${slug}: ${match[1]}`)
       assert.ok(keys.length < namespaceTokens(match[1]).length || keys.length <= 2, `${slug}: complete catalog`)
     }
-    assert.doesNotMatch(source, /<(?:ColorPalette|PresetThemeColors|ContainerQueries|BreakpointQueries|TypographyNamespaceTable|AnimationTokenTable|RadiusTokenTable)\b/)
+    assert.doesNotMatch(source, /<FoundationTokens\b(?![^>]*\bkeys=)/, `${slug}: specimens require an explicit selection`)
   }
   const colors = (await foundationGuideContent(root, 'colors')).markdown
   assert.ok(!colors.includes('--color-red-90'))

@@ -9,6 +9,7 @@ import * as acorn from 'acorn'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceExample, SyntaxRow } from './types'
 import { tokenValuesMarkdown } from './TokenValues'
+import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses, configuredMarkupMarkdown } from './configured-example'
@@ -99,6 +100,8 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         if (typeof attrs.title !== 'string' || typeof source !== 'string') throw new Error('StylesheetExample requires a literal title and source')
         return stylesheetExampleMarkdown(attrs.title, source)
       }
+      if (name === 'FoundationTokens') return selectedSpecimensMarkdown(attrs.namespace, await expression(attrs.keys.value) as string[])
+      if (name === 'DemoPageViewport') return `[Open the resizable ${attrs.title} example](${attrs.src}). The viewport slider also supports arrow keys.`
       if (name === 'TokenValues') return tokenValuesMarkdown(attrs.namespace, await expression(attrs.keys.value) as string[])
       if (name === 'DemoConfiguredExample') {
         const configuration = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value) as string

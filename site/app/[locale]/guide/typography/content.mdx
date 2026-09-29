@@ -1,5 +1,8 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 
 ## Overview [sr-only]
+
+<FoundationTypography />
 <Overview />
 Typography tokens define readable type scale, line height, letter spacing, font families, and font weights. Use `text-<token>` when you want a complete type treatment, and use lower-level typography utilities when you need to tune one property.
 
@@ -85,7 +88,7 @@ Prefer `text-<token>` for repeated body, heading, and display styles. Reach for 
 
 ## Type scale
 The font scale ranges from `font-size-3xs` to `font-size-10xl`, with each size intentionally designed to deliver visual harmony and clear hierarchy across a variety of use cases.
-<TokenValues namespace="font-size" keys={["sm", "md", "3xl"]} />
+<FoundationTokens namespace="font-size" keys={["sm", "md", "3xl"]} />
 
 See the complete [values and consumers](/reference/tokens/font-size) in Reference.
 
@@ -94,7 +97,7 @@ See the complete [values and consumers](/reference/tokens/font-size) in Referenc
 ## Font families
 Choose `font-family-sans` for interface text and `font-family-mono` for code or aligned numeric specimens. Load the chosen font files separately; the token only declares a fallback stack.
 
-<TokenValues namespace="font-family" keys={["sans", "mono"]} />
+<FoundationTokens namespace="font-family" keys={["sans", "mono"]} />
 See the [font family](/reference/tokens/font-family) reference for more details on how to add custom fonts.
 
 ---
@@ -102,7 +105,7 @@ See the [font family](/reference/tokens/font-family) reference for more details 
 ## Font weights
 Use `font-weight-regular` for body copy and `font-weight-semibold` for headings or labels that need emphasis. Check that the loaded face supports the requested weight.
 
-<TokenValues namespace="font-weight" keys={["regular", "semibold"]} />
+<FoundationTokens namespace="font-weight" keys={["regular", "semibold"]} />
 
 See the complete [values and consumers](/reference/tokens/font-weight) in Reference.
 

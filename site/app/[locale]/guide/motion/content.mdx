@@ -1,13 +1,9 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 
 ## Overview [sr-only]
 Use motion to explain a state change or show progress. Choose a short duration for feedback and reserve continuous motion for status indicators.
 
-<Demo>
-  <div className="display:flex gap-xl">
-    <div className="width:3rem height:3rem r-lg bg-blue-5 animate-fade@motion-safe"></div>
-    <div className="width:3rem height:3rem r-lg bg-green-5 animate-zoom@motion-safe"></div>
-  </div>
-</Demo>
+<FoundationMotion />
 
 ## Choose motion tokens
 ### Animation recipes
@@ -18,14 +14,14 @@ Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progr
 ### Duration scale
 Share duration tokens across animation and transition properties.
 
-<TokenValues namespace="duration" keys={["fast", "normal"]} />
+<FoundationTokens namespace="duration" keys={["fast", "normal"]} />
 
 See the complete [values and consumers](/reference/tokens/duration) in Reference.
 
 ### Easing scale
 Choose easing tokens for repeated motion decisions, or use explicit CSS curves such as `linear`, `steps()` and `cubic-bezier()`.
 
-<TokenValues namespace="easing" keys={["smooth"]} />
+<FoundationTokens namespace="easing" keys={["smooth"]} />
 
 See the complete [values and consumers](/reference/tokens/easing) in Reference.
 
@@ -43,6 +39,8 @@ Use a named recipe and override individual settings when needed. Preset animatio
 <Class2CSS>{['animate-fade', 'animation-duration-fast', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration-slowest@motion-safe']}</Class2CSS>
 
 ## Transition properties
+
+<FoundationTransition />
 Select the property, duration and timing function independently. A transition runs when the selected property's value changes.
 
 ```html
@@ -61,6 +59,8 @@ Use `@motion-safe` so nonessential motion only runs when the user has not reques
 <Class2CSS>{'animate-pulse@motion-safe'}</Class2CSS>
 
 ## Customize motion tokens
+
+<FoundationDialog />
 Define the keyframe name and each playback setting explicitly. Companion tokens customize a recipe without creating additional class names.
 
 ```css name=index.css

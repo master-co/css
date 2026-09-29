@@ -99,7 +99,7 @@ test('namespace consumer tables cover the registry including color role groups',
 test('all generated token and recipe examples reproduce complete CSS', () => {
   for (const doc of catalog.documents.filter(doc => ['utility', 'tokens'].includes(doc.kind))) {
     for (const example of doc.examples) {
-      assert.equal(example.css, generatePresetCSS(example.classes), `${doc.id}: ${example.title}`)
+      assert.equal(example.css, example.configuration ? configuredExampleCSS(example.configuration, example.classes) : generatePresetCSS(example.classes), `${doc.id}: ${example.title}`)
       assert.ok(example.css.length > 0)
       assert.ok(doc.markdown.includes(example.css))
     }

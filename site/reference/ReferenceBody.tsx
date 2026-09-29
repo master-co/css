@@ -1,4 +1,3 @@
-import TokenSpecimens from './TokenSpecimens'
 import { createElement, Fragment } from 'react'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import Link from '~/site/docs-shell/components/Link'
@@ -15,14 +14,19 @@ import { tokenValueEntry } from './value-entry'
 import { DocumentCodeTable, DocumentKeyList, DocumentNamespaceTable, DocumentValueList, type DocumentValueRow } from '../components/DocumentValues'
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
-export default function ReferenceMarkdown({ children, compactValues = false, introHeadingId, specimenNamespace }: { children: string, compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string }) {
+export default function ReferenceMarkdown({ children, compactValues = false, introHeadingId, specimenNamespace, recipeSpecimen, tokenSpecimen }: { children: string, compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string, recipeSpecimen?: React.ReactNode, tokenSpecimen?: React.ReactNode }) {
   const headings = documentHeadings(children)
   let headingIndex = 0
   let entrypoint = ''
+  let specimenSummary = false
   const definitions = new Map<string, any>()
   const tree = markdownTree(children)
   for (const node of tree.children) if (node.type === 'definition') definitions.set(node.identifier, node)
   function render(node: any, key: number): React.ReactNode {
+    // The complete visual already includes this same caption and per-token advice.
+    // Keep their text equivalent in portable Markdown without repeating it below the UI.
+    if (specimenNamespace && node.type === 'heading' && node.depth === 2) specimenSummary = node.children.some((child: any) => child.value === 'Specimens')
+    if (specimenNamespace && specimenNamespace !== 'breakpoints' && specimenSummary && ['paragraph', 'list'].includes(node.type)) return null
     const body = node.children?.map(render)
     const props = { key }
     switch (node.type) {
@@ -44,14 +48,15 @@ export default function ReferenceMarkdown({ children, compactValues = false, int
         if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclaration key={key} label={`${entrypoint} — ${headings[headingIndex - 1]?.title ?? 'API'}`}>{node.value}</DocumentDeclaration>
         const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined
         const titles = { 'input-schema': 'Complete input schema', 'output-schema': 'Complete output schema', 'command-help': 'Complete command help' }
-        const code = <Code key={key} lang={node.lang || 'plaintext'} name={node.meta?.match(/name=(\S+)/)?.[1] || node.lang?.toUpperCase()} beautify={node.lang === 'css'} dedent={node.lang === 'sh' ? false : undefined}>{node.value}</Code>
+        const code = <Code key={key} lang={node.lang || 'plaintext'} name={node.meta?.match(/name=(\S+)/)?.[1] || node.lang?.toUpperCase()} beautify={node.lang === 'css' || node.lang === 'html'} dedent={node.lang === 'sh' ? false : undefined}>{node.value}</Code>
         return disclosure ? <DocumentDisclosure key={key} title={titles[disclosure]}>{code}</DocumentDisclosure> : code
       }
       case 'heading': {
         if (node.depth === 2) entrypoint = node.children.map((child: any) => child.value ?? '').join('').replace(/\s+\{#[\w-]+\}$/, '')
         const heading = node.depth === 2 || node.depth === 3 ? headings[headingIndex++] : undefined
         if (heading && heading.id === introHeadingId) return <span key={key} id={heading.id} />
-        if (heading?.id === 'specimens' && specimenNamespace) return <Fragment key={key}><h2 id="specimens">Specimens</h2><TokenSpecimens namespace={specimenNamespace} /></Fragment>
+        if (heading?.id === 'examples' && recipeSpecimen) return <Fragment key={key}><h2 id="examples">Example</h2>{recipeSpecimen}</Fragment>
+        if (heading?.id === 'specimens' && tokenSpecimen) return <Fragment key={key}><h2 id="specimens">Specimens</h2>{tokenSpecimen}</Fragment>
         const cleanBody = node.children.map((child: any, index: number) => render(child.type === 'text' ? { ...child, value: child.value.replace(/\s+\{#[\w-]+\}$/, '') } : child, index))
         return createElement(`h${node.depth}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
           ? <DocumentIdentifier>{heading.title}</DocumentIdentifier> : cleanBody)

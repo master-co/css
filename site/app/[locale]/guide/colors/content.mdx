@@ -1,3 +1,4 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 import { BaseHueDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
 
 ## Overview [sr-only]
@@ -17,6 +18,8 @@ Choose palette steps directly for swatches, illustrations, brand accents, and st
 <!-- @MARK bg-blue-5 --><!-- @MARK fg-blue-60 -->
 <div class="bg-blue-5 fg-blue-60">…</div>
 ```
+
+<FoundationTokens namespace="color" keys={["blue-0", "blue-5", "blue-10", "blue-20", "blue-30", "blue-40", "blue-50", "blue-60", "blue-70", "blue-80", "blue-90", "blue-95", "blue-100", "sand-0", "sand-5", "sand-10", "sand-20", "sand-30", "sand-40", "sand-50", "sand-60", "sand-70", "sand-80", "sand-90", "sand-95", "sand-100", "petrol-0", "petrol-5", "petrol-10", "petrol-20", "petrol-30", "petrol-40", "petrol-50", "petrol-60", "petrol-70", "petrol-80", "petrol-90", "petrol-95", "petrol-100"]} />
 
 ### Natural material colors
 
@@ -53,6 +56,8 @@ The new `text-<family>` aliases meet at least 4.5:1 against the matching preset 
 ---
 
 ## Choose a color token
+
+<FoundationColorRoles />
 Start with the kind of decision you are making. Most app chrome should use roles first, then reach for palette steps or hue aliases when the color itself is the point.
 
 | Decision | Use | Examples |
@@ -90,7 +95,7 @@ Preset roles describe the job a color performs in the interface. Their values ar
 ### Surfaces
 Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg-surface-base` for the root canvas and `bg-surface-*` for every surface role.
 
-<TokenValues namespace="color-surface" keys={["base", "raised"]} />
+<FoundationTokens namespace="color-surface" keys={["base", "raised"]} />
 
 See the complete [values and consumers](/reference/tokens/color-surface) in Reference.
 <SurfacesDemo />
@@ -101,9 +106,9 @@ See the complete [values and consumers](/reference/tokens/color-surface) in Refe
 ```
 
 ### Line roles
-Line tokens are for borders, dividers, outlines, and strokes. `divider` and `subtle` are decorative; use `control` when a boundary is necessary to identify a control. Border, outline, and stroke utilities search line roles before the general color palette.
+Line tokens are for borders, dividers, outlines, and strokes. `divider` and `subtle` are decorative; use `control` when a boundary is necessary to identify a control. Use the explicit `line-` part in a role name, such as `b-line-control`; `b-blue-60` selects a fixed palette step.
 
-<TokenValues namespace="color-line" keys={["divider", "control"]} />
+<FoundationTokens namespace="color-line" keys={["divider", "control"]} />
 
 See the complete [values and consumers](/reference/tokens/color-line) in Reference.
 <LineRolesDemo />
@@ -116,7 +121,7 @@ See the complete [values and consumers](/reference/tokens/color-line) in Referen
 ### Text roles
 Text roles are for foreground hierarchy and interaction states. Prefer these roles for body copy, emphasis, disabled content, links, and inverse surfaces instead of using hue aliases as text hierarchy.
 
-<TokenValues namespace="color-text" keys={["body", "muted"]} />
+<FoundationTokens namespace="color-text" keys={["body", "muted"]} />
 
 See the complete [values and consumers](/reference/tokens/color-text) in Reference.
 <TextRolesDemo />
@@ -140,7 +145,7 @@ The 30 general hue aliases are fixed swatches. Only the text aliases select ligh
 ### Base hue aliases
 Base hue aliases retain their former light value in every scheme. They are accents and swatches, with no text contrast guarantee.
 
-<TokenValues namespace="color" keys={["blue"]} />
+<FoundationTokens namespace="color" keys={["yellow"]} />
 
 See the complete [values and consumers](/reference/tokens/color) in Reference.
 <BaseHueDemo />
@@ -158,7 +163,7 @@ Use `fg-text-yellow` for readable adaptive text; `fg-yellow` deliberately uses t
 ### Text hue aliases
 Text hue aliases choose foreground-oriented palette steps for light and dark modes. They are useful for colored text, but they do not replace semantic text roles such as `fg-text-body`, `fg-text-muted`, or `fg-text-link`.
 
-<TokenValues namespace="color-text" keys={["blue"]} />
+<FoundationTokens namespace="color-text" keys={["yellow"]} />
 
 See the complete [values and consumers](/reference/tokens/color-text) in Reference.
 <TextHueDemo />

@@ -1,7 +1,9 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
+
 ## Overview [sr-only]
 Spacing controls the rhythm inside components, between related elements, and across page sections. Master CSS maps the default spacing scale to `spacing` variables, so padding, margin, gap, and inset can share the same design language.
 
-<TokenValues namespace="spacing" keys={["sm", "md", "lg"]} />
+<FoundationTokens namespace="spacing" keys={["sm", "md", "lg"]} />
 
 See the complete [values and consumers](/reference/tokens/spacing) in Reference.
 
@@ -14,7 +16,7 @@ Use the scale by relationship:
 * `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
 
 <Demo>
-  <div className="grid-cols(2) gap-md width:100% p-md r-md background-color:var(--stripe-pink) grid-cols(5)@sm">
+  <div className="grid-cols(2) gap-md width:100% p-md r-md background:var(--stripe-pink) grid-cols(5)@sm">
     <div className='app-box'>1</div>
     <div className='app-box'>2</div>
     <div className='app-box'>3</div>
@@ -45,6 +47,13 @@ Use the scale by relationship:
 </details>
 
 ---
+
+## Group a form by relationship
+Use a small gap between a label and its input, a medium gap between fields, and a larger gap before the action. The content makes the spacing hierarchy visible.
+
+<DemoConfiguredExample name="form-spacing" title="A rhythm for related fields" source="" theme previewFirst
+  html={'<form class="width:100% max-w-sm margin-inline:auto p-lg r-lg bg-surface-raised shadow-sm"><h2 class="margin:0 text-xl font-weight-semibold">Collection details</h2><p class="mt-xs mb-lg text-sm fg-text-muted">Give your next project a place to begin.</p><div class="display:grid gap-md"><label class="display:grid gap-sm text-sm">Name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><label class="display:grid gap-sm text-sm">Description<textarea class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" rows="3">Places, textures, and quiet details.</textarea></label></div><button type="button" class="mt-lg px-md py-sm r-md bg-surface-inverse fg-text-inverse">Save details</button></form>'}
+  caption="gap-sm connects each label to its input; gap-md separates fields; mt-lg gives the action its own space. This preview does not submit data." />
 
 ## Namespace for spacing
 The `spacing` variable namespace is shared across padding, margin, gap, inset, scroll spacing, and similar layout rules.

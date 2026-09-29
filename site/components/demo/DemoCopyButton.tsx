@@ -7,8 +7,8 @@ import { IconCopy } from '@tabler/icons-react'
 
 const CopyFeedback = createContext<((message: string) => void) | null>(null)
 
-export function DemoCopyGroup({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState('Select a swatch to copy its variable.')
+export function DemoCopyGroup({ children, instruction = 'Select a swatch to copy its variable.' }: { children: ReactNode, instruction?: string }) {
+  const [status, setStatus] = useState(instruction)
   return <CopyFeedback.Provider value={setStatus}>
     <div className="demo-copy-group">
       <div className="demo-copy-feedback" role="status">{status}</div>
@@ -33,6 +33,7 @@ export default function DemoCopyButton({ value, label, icon = <IconCopy size={15
     if (busy) return
     setBusy(true)
     try {
+      if (!window.isSecureContext || !navigator.clipboard?.writeText) throw new Error('Clipboard unavailable')
       await navigator.clipboard.writeText(value)
       report(`Copied ${value}`)
     } catch {

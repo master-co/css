@@ -9,11 +9,9 @@ In Master CSS, those decisions stay close to the markup and share the same found
 * [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
 * Grid and Flex utilities express the actual composition.
 
-(resize) Drag the edges to see the surface move from a compact stacked layout to an 8-column composition.
+(resize) Adjust the viewport with the slider or arrow keys to see the surface move from a compact stacked layout to an 8-column composition.
 
-<ResizeZone width="100%" originX="center" showRuler>
-  <IFrame src="/examples/layout-system" height={540} />
-</ResizeZone>
+<DemoPageViewport src="/examples/layout-system" title="Workspace layout" height={540} />
 
 ```html
 <!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
@@ -52,7 +50,7 @@ These decisions are separate on purpose. A page can keep the same maximum width 
 ---
 
 ## Start with a page container
-The container defines the live area for the layout. Use `width:100%` so the wrapper can shrink, `max-width:*` so it aligns with the [container size scale](/reference/tokens/container), `margin-inline:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+The container defines the live area for the layout. Use `width:100%` so the wrapper can shrink, `max-w-*` so it aligns with the [container size scale](/reference/tokens/container), `margin-inline:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK max-w-7xl --><!-- @MARK margin-inline:auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->

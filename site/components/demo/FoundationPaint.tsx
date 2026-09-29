@@ -9,7 +9,7 @@ export function FoundationSurfaces() {
 }
 
 export function FoundationLines() {
-  return <DemoThemeComparison name="lines" title="Visible boundaries" html={"<div class=\"display:grid gap-md\">\n<section class=\"p-md r-sm border-width:1px border-style:solid b-line-divider bg-surface-raised\"><h2 class=\"margin:0 text-md font-weight-medium\">Decorative divider</h2><p class=\"mt-xs margin-bottom:0 fg-text-muted\">b:1px|solid|var(--color-line-divider)</p></section>\n<section class=\"p-md r-sm border-width:1px border-style:solid b-line-control bg-surface-raised\"><h2 class=\"margin:0 text-md font-weight-medium\">Control boundary</h2><p class=\"mt-xs margin-bottom:0 fg-text-muted\">b:1px|solid|var(--color-line-control)</p></section>\n</div>"} caption="The line role selects a color. Width and style still need an explicit declaration." />
+  return <DemoThemeComparison name="lines" title="Visible boundaries" html={"<div class=\"display:grid gap-md\">\n<section class=\"p-md r-sm border-width:1px border-style:solid b-line-divider bg-surface-raised\"><h2 class=\"margin:0 text-md font-weight-medium\">Decorative divider</h2><p class=\"mt-xs margin-bottom:0 fg-text-muted\">b-line-divider</p></section>\n<section class=\"p-md r-sm border-width:1px border-style:solid b-line-control bg-surface-raised\"><h2 class=\"margin:0 text-md font-weight-medium\">Control boundary</h2><p class=\"mt-xs margin-bottom:0 fg-text-muted\">b-line-control</p></section>\n</div>"} caption="The line role selects a color. Width and style still need an explicit declaration." />
 }
 
 export function FoundationTextRoles() {

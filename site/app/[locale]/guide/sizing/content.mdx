@@ -1,3 +1,4 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 import { SizingRoleTable } from './components/XScale'
 
 ## Overview [sr-only]
@@ -93,7 +94,7 @@ Percentage widths and heights follow native CSS behavior. The parent needs a def
 ## Use container tokens
 Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl`, `h-sm`, `min-w-xs`, and `flex-basis-lg` use `--container-*` tokens without repeating the namespace in markup.
 
-<TokenValues namespace="container" keys={["md", "5xl", "7xl"]} />
+<FoundationTokens namespace="container" keys={["md", "5xl", "7xl"]} />
 
 See the complete [values and consumers](/reference/tokens/container) in Reference.
 

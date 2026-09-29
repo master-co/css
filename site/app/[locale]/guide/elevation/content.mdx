@@ -1,9 +1,10 @@
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 import { SurfaceElevationDemo } from './components/ShadowTokens'
 
 ## Overview [sr-only]
 Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
 
-Master CSS maps elevation to the `shadow` namespace. Use `box-shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
+Master CSS maps elevation to the `shadow` namespace. Use `shadow-*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
 
 
 
@@ -14,7 +15,7 @@ Start with the surface relationship, then choose the lowest token that makes tha
 
 Try `shadow-sm` for a card and `shadow-lg` for a floating surface, then compare them against the actual background. These are design suggestions, not fixed token semantics.
 
-<TokenValues namespace="shadow" keys={["sm", "lg"]} />
+<FoundationTokens namespace="shadow" keys={["sm", "lg"]} />
 
 See the complete [values and consumers](/reference/tokens/shadow) in Reference.
 
@@ -40,7 +41,7 @@ Use surface roles for the ground and shadows for separation. A strong shadow on 
 ---
 
 ## Use shadow tokens
-Use `box-shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; native `light-dark()` colors follow the element's `color-scheme`.
+Use `shadow-<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; native `light-dark()` colors follow the element's `color-scheme`.
 
 ```html
 <!-- @MARK shadow-sm -->
@@ -61,7 +62,7 @@ Use `box-shadow:<token>` for common elevation levels. The utility resolves value
   </Class2CSS>
 </details>
 
-Use `box-shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+Use `shadow-<token>` for named product tokens. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
 ---
 
@@ -74,6 +75,8 @@ This lets elevation utilities use `sm`, `lg`, or project token names without rep
 ---
 
 ## Change elevation by state
+
+<FoundationElevationState />
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
