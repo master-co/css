@@ -8,10 +8,10 @@
 <DemoExample page="overscroll-behavior" section="contain-nested-scrolling" />
 
 ```html
-<div id="outer-scroll" class="overflow-y:auto h:14rem p-sm overscroll-behavior:contain"
+<div id="outer-scroll" class="overflow-y:auto height:14rem p-sm overscroll-behavior:contain"
   tabindex="0" aria-label="Outer collection">
   <!-- @MARK overscroll-behavior:contain -->
-  <div id="inner-scroll" class="overflow-y:auto h:9rem overscroll-behavior:contain"
+  <div id="inner-scroll" class="overflow-y:auto height:9rem overscroll-behavior:contain"
     tabindex="0" aria-label="Inner collection">
     <div class="h-xs">Inner collection</div>
   </div>
@@ -32,10 +32,10 @@
 <DemoExample page="overscroll-behavior" section="block-page-bounce-on-one-axis" />
 
 ```html
-<div id="outer-scroll" class="overflow-y:auto h:14rem p-sm overscroll-behavior:contain"
+<div id="outer-scroll" class="overflow-y:auto height:14rem p-sm overscroll-behavior:contain"
   tabindex="0" aria-label="Outer collection">
   <!-- @MARK overscroll-behavior-y:none -->
-  <div id="inner-scroll" class="overflow-y:auto h:9rem overscroll-behavior-y:none"
+  <div id="inner-scroll" class="overflow-y:auto height:9rem overscroll-behavior-y:none"
     tabindex="0" aria-label="Inner collection">
     <div class="h-xs">Inner collection</div>
   </div>
@@ -50,13 +50,13 @@ Use `overscroll-behavior-x:contain` on the inner horizontal scroller. At its rig
 
 ```html
 <div id="outer-scroll" class="overflow-x:auto p-sm overscroll-behavior:contain">
-  <div class="flex gap-md w:40rem">
+  <div class="display:flex gap-md width:40rem">
     <!-- @MARK overscroll-behavior-x:contain -->
-    <div id="inner-scroll" class="overflow-x:auto flex-shrink:0 h:9rem w:14rem overscroll-behavior-x:contain"
+    <div id="inner-scroll" class="overflow-x:auto flex-shrink:0 height:9rem width:14rem overscroll-behavior-x:contain"
       tabindex="0" aria-label="Inner horizontal collection">
-      <div class="h:100% w-md">Inner collection</div>
+      <div class="height:100% w-md">Inner collection</div>
     </div>
-    <div class="h:9rem w-xs">Outer collection continues</div>
+    <div class="height:9rem w-xs">Outer collection continues</div>
   </div>
 </div>
 ```
@@ -67,10 +67,10 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="overscroll-behavior" section="apply-conditionally" />
 
 ```html
-<div id="outer-scroll" class="overflow-y:auto h:14rem p-sm overscroll-behavior:contain"
+<div id="outer-scroll" class="overflow-y:auto height:14rem p-sm overscroll-behavior:contain"
   tabindex="0" aria-label="Outer collection">
   <!-- @MARK overscroll-behavior:contain -->
-  <div id="inner-scroll" class="overflow-y:auto h:9rem overscroll-behavior:contain overscroll-behavior:auto@sm"
+  <div id="inner-scroll" class="overflow-y:auto height:9rem overscroll-behavior:contain overscroll-behavior:auto@sm"
     tabindex="0" aria-label="Inner collection">
     <div class="h-xs">Inner collection</div>
   </div>

@@ -9,7 +9,7 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const fixtureDir = join(packageDir, 'tests/fixtures/theme-reference')
 const astroCLI = join(dirname(createRequire(import.meta.url).resolve('astro/package.json')), 'bin/astro.mjs')
 
-it('delivers referenced native variables through an Astro scoped style', () => {
+it('delivers referenced mixins and native variables through an Astro scoped style', () => {
   execFileSync(process.execPath, [astroCLI, 'build'], {
     cwd: fixtureDir,
     env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
@@ -35,6 +35,11 @@ it('delivers referenced native variables through an Astro scoped style', () => {
   expect(css).toContain('var(--color-probe)')
   expect(css).toContain('--color-probe:#123456')
   expect(css).toContain('--color-probe:#abcdef')
+  expect(css).toContain('font-size:var(--text-sm)')
+  expect(css).toContain('--text-sm:var(--font-size-sm)')
+  expect(css).not.toContain('@mixin')
+  expect(css).not.toContain('@apply')
+  expect(css).not.toContain('ident(')
   expect(css).not.toContain('@reference')
   expect(css).not.toContain('master-css-slot')
 })

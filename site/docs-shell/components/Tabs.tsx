@@ -5,10 +5,10 @@ import clsx from 'clsx'
 
 export default function Tabs(props: any) {
   return (
-    <nav className={clsx('overflow-x:auto overflow-y:hidden hidden::scrollbar', props.className)}>
-      {/* w:fit-content min-w:100% 用於觸發 ResizeObserver */}
+    <nav className={clsx('overflow-x:auto overflow-y:hidden display:none::scrollbar', props.className)}>
+      {/* width:fit-content min-width:100% 用於觸發 ResizeObserver */}
       <div className={clsx(
-        'flex gap-xl w:fit-content min-w:100% bb:1px|solid|var(--color-line-subtle)',
+        'display:flex gap-xl width:fit-content min-width:100% border-bottom:1px|solid|var(--color-line-subtle)',
         props.contentClassName
       )}>
         {props.children}
@@ -22,7 +22,7 @@ export function Tab(props: any) {
   return (
     <Link {...props}
       className={clsx(
-        'flex items-center justify-center h:48px mb:-1px by:2px|transparent|solid font-weight:460 white-space:nowrap app-nav',
+        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block:2px|transparent|solid font-weight:460 white-space:nowrap app-nav',
         {
           'font-xs!': size === 'sm',
           'font-sm!': !size
@@ -30,13 +30,13 @@ export function Tab(props: any) {
         props.className
       )}
       activeClassName="fg-accent! bb-accent"
-      inactiveClassName="text-strong bb:major:hover">
+      inactiveClassName="fg-text-strong bb-major:hover">
       {children}
     </Link>
   )
 }
 
-export const TabBadge = styled.div(DocBadge)`ml:0.5rem`
+export const TabBadge = styled.div(DocBadge)`margin-left:0.5rem`
 
 TabBadge.default = {
   color: 'primary',

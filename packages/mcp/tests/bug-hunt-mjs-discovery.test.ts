@@ -12,30 +12,30 @@ for (const operation of ['scan', 'extract', 'trace'] as const) {
       const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-mjs-')))
       const context = new MasterCSSMCPContext({ root })
       try {
-        writeFileSync(join(root, 'entry.mjs'), 'document.body.className = "block"')
-        writeFileSync(join(root, 'control.js'), 'document.body.className = "inline"')
+        writeFileSync(join(root, 'entry.mjs'), 'document.body.className = "display:block"')
+        writeFileSync(join(root, 'control.js'), 'document.body.className = "display:inline"')
         mkdirSync(join(root, 'node_modules'))
-        writeFileSync(join(root, 'node_modules/ignored.mjs'), 'document.body.className = "hidden"')
+        writeFileSync(join(root, 'node_modules/ignored.mjs'), 'document.body.className = "display:none"')
         const patterns = mode === 'default' ? undefined : [mode === 'explicit-mjs' ? 'entry.mjs' : 'control.js']
         const expected = mode === 'default' ? ['control.js', 'entry.mjs'] : patterns!
-        const className = mode === 'explicit-js' ? 'inline' : 'block'
+        const className = mode === 'explicit-js' ? "display:inline" : "display:block"
         if (operation === 'scan') {
           const report = await scanProject(context, { context: 'preset', patterns, includeCss: true })
           expect(report.files.map((f) => basename(f.filePath)).sort()).toEqual(expected)
           expect(report.scanner.classes.valid).toContain(className)
-          expect(report.scanner.classes.valid).not.toContain('hidden')
-          expect(report.css.text).toContain(`display:${className}`)
+          expect(report.scanner.classes.valid).not.toContain("display:none")
+          expect(report.css.text).toContain(className)
         } else if (operation === 'extract') {
           const report = await extractClasses(context, { context: 'preset', patterns })
           expect(report.files.map((f) => basename(f.filePath)).sort()).toEqual(expected)
           expect(report.files.flatMap((f) => f.classes.map((c) => c.token))).toContain(className)
-          expect(report.files.flatMap((f) => f.classes.map((c) => c.token))).not.toContain('hidden')
+          expect(report.files.flatMap((f) => f.classes.map((c) => c.token))).not.toContain("display:none")
         } else {
           const report = await traceClass(context, { context: 'preset', patterns, className, includeCss: true })
           expect(report.detected).toBe(true)
           expect(report.status).toBe('present')
-          expect(report.occurrences.map((f) => basename(f.filePath))).toEqual([className === 'block' ? 'entry.mjs' : 'control.js'])
-          expect(report.css.text).toContain(`display:${className}`)
+          expect(report.occurrences.map((f) => basename(f.filePath))).toEqual([className === "display:block" ? 'entry.mjs' : 'control.js'])
+          expect(report.css.text).toContain(className)
         }
       } finally {
         context.dispose()

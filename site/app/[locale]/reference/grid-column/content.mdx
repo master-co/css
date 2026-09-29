@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document grid-column syntax */}
+{ }
 
 ## Basic usage \{#basic-usage\}
 ### Place an item by columns \{#place-an-item-by-columns\}
@@ -9,7 +9,7 @@
 <DemoExample page="grid-column" section="place-an-item-by-columns" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="peer" class="p-sm">01</div>
   <div id="target" class="grid-column:2/4 p-sm">2 → 4</div>
   <div id="item-3" class="p-sm">03</div>
@@ -19,7 +19,7 @@
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="target" class="grid-column:1/-1 p-sm">1 → −1</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -27,16 +27,16 @@
 </div>
 ```
 
-Positive indices count from inline-start; negative indices count backward from the explicit grid’s inline-end. `-1` does not move to the end of any later implicit columns. Use `grid-col-start:2` and `grid-col-end:4` when setting the two edges separately.
+Positive indices count from inline-start; negative indices count backward from the explicit grid’s inline-end. `-1` does not move to the end of any later implicit columns. Use `grid-column-start:2` and `grid-column-end:4` when setting the two edges separately.
 
 ### Span columns \{#span-columns\}
-`grid-col-span:2` gives an auto-placed item a two-column span without fixing its starting line. The blue item takes the first available pair; the violet item fits in the remaining column. The blue width includes the internal 16px gap.
+`grid-col-span(2)` gives an auto-placed item a two-column span without fixing its starting line. The blue item takes the first available pair; the violet item fits in the remaining column. The blue width includes the internal 16px gap.
 
 <DemoExample page="grid-column" section="span-columns" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
-  <div id="target" class="grid-col-span:2 p-sm">2 columns</div>
+<div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
+  <div id="target" class="grid-col-span(2) p-sm">2 columns</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
 </div>
@@ -50,10 +50,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-column" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="target" class="grid-column:auto p-sm grid-column:1/-1@sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
 </div>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

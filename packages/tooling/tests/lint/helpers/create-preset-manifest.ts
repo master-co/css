@@ -1,5 +1,4 @@
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { UtilityType } from '@master/css-schema/utility-type'
 import {
   flattenMasterCSSManifestVariables,
   groupMasterCSSManifestVariables,
@@ -9,18 +8,12 @@ import {
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-type ManifestVariableDraft = MasterCSSManifestVariable
-type ManifestUtilityDraft = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
-  declarations?: Record<string, string | number>
-  rules?: { selector?: string, declarations: Record<string, string | number> }[]
+type PlanVariableDraft = MasterCSSManifestVariable
+type PresetManifestInput = Partial<Omit<MasterCSSManifest, 'variables'>> & {
+  variables?: PlanVariableDraft[]
 }
 
-type PresetManifestInput = Partial<Omit<MasterCSSManifest, 'variables' | 'utilities'>> & {
-  variables?: ManifestVariableDraft[]
-  utilities?: ManifestUtilityDraft[]
-}
-
-function normalizeVariable(variable: ManifestVariableDraft): ManifestVariableDraft {
+function normalizeVariable(variable: PlanVariableDraft): PlanVariableDraft {
   if (variable.name && variable.type) return variable
   return {
     ...variable,
@@ -29,50 +22,24 @@ function normalizeVariable(variable: ManifestVariableDraft): ManifestVariableDra
   }
 }
 
-function normalizeUtility(utility: ManifestUtilityDraft, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
-  if (utility.emit && utility.matchers) {
-    return utility as NonNullable<MasterCSSManifest['utilities']>[number]
-  }
-  const name = utility.name || utility.id?.replace(/^\./, '') || ''
-  const id = utility.id || (utility.type === UtilityType.Semantic || utility.layer === 'components' ? `.${name}` : name)
-  return {
-    id,
-    name,
-    type: utility.type ?? UtilityType.Semantic,
-    order: utility.order ?? order,
-    layer: utility.layer,
-    emit: {
-      type: 'static',
-      rules: utility.rules || [
-        {
-          selector: '&',
-          declarations: utility.declarations || {}
-        }
-      ]
-    },
-    matchers: [{ type: 'static', name }]
-  }
-}
-
-export function createPresetManifest(manifest: PresetManifestInput = {}): MasterCSSManifest {
-  if (manifest.version === 2) return manifest as unknown as MasterCSSManifest
-  const defaultUtilities = defaultManifest.utilities || []
-  const utilities = (manifest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
-  const variables = (manifest.variables || []).map(normalizeVariable)
+export function createPresetManifest(manifest: PresetManifestInput | MasterCSSManifest = {}): MasterCSSManifest {
+  if (manifest.version === 3) return manifest as MasterCSSManifest
+  const variables = ((manifest as PresetManifestInput).variables || []).map(normalizeVariable)
   return {
     ...defaultManifest,
     ...manifest,
     theme: [
       ...(defaultManifest.theme || []), ...(manifest.theme || []),
-      ...variables.flatMap(variable => variable.values.map(value => value.path.reduceRight<import('@master/css-schema/manifest').MasterCSSThemeNode>((children, prelude) => ({ type: 'rule', prelude, children: [children] }), { type: 'declaration', name: variable.name!, value: value.value })))
+      ...variables.flatMap(variable => variable.values.map(value => value.path.reduceRight<import('@master/css-schema/manifest').MasterCSSThemeNode>((children, prelude) => ({ type: 'rule' as const, prelude, children: [children] }), { type: 'declaration' as const, name: variable.name!, value: value.value })))
     ],
     variables: groupMasterCSSManifestVariables([
       ...flattenMasterCSSManifestVariables(defaultManifest.variables),
       ...variables
     ]),
-    utilities: [
-      ...defaultUtilities,
-      ...utilities
-    ]
+    variants: [
+      ...(defaultManifest.variants || []),
+      ...(manifest.variants || [])
+    ],
+    mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])]
   }
 }

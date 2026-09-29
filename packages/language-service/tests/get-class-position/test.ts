@@ -61,13 +61,13 @@ test.concurrent('valid classes', () => {
 
 test.concurrent('class in CSS @compose', () => {
   const target = 'bg-primary'
-  const contents = ['.btn { @safelist "inline-flex ', target, '"; }']
+  const contents = ['.btn { @safelist "display:inline-flex ', target, '"; }']
   expectClassPosition(target, contents, 'css')
 })
 
 test.concurrent('class in Vue style @compose', () => {
   const target = 'bg-primary'
-  const contents = ['<template><button /></template><style>.btn { @safelist "inline-flex ', target, '"; }</style>']
+  const contents = ['<template><button /></template><style>.btn { @safelist "display:inline-flex ', target, '"; }</style>']
   expectClassPosition(target, contents, 'vue')
 })
 

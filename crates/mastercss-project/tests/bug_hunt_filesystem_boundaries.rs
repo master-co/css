@@ -26,11 +26,7 @@ impl Project {
         path.to_string_lossy().into_owned()
     }
     fn load(&self) -> mastercss_project::ProjectManifestIr {
-        load_project_manifest(
-            &self.0,
-            json!({"version":2,"languageVersion":4,"utilities":[]}),
-        )
-        .unwrap()
+        load_project_manifest(&self.0, json!({"version":3,"languageVersion":5})).unwrap()
     }
 }
 impl Drop for Project {
@@ -63,15 +59,15 @@ fn qualified_files_reject_global_definitions_but_keep_native_variants() {
         );
         project.file(
             "child.css",
-            r###"@utility paint {color:red}.card{@variant always{color:red;}}.ordinary{color:blue}"###,
+            r###"@mixin --paint {color:red}.card{@variant always{color:red;}}.ordinary{color:blue}"###,
         );
         if !qualifier.is_empty() {
-            let error = load_project_manifest(&project.0, json!({"version":2,"languageVersion":4}))
+            let error = load_project_manifest(&project.0, json!({"version":3,"languageVersion":5}))
                 .unwrap_err()
                 .to_string();
             assert!(error.contains("Qualified import"), "{error}");
             assert!(error.contains("child.css"), "{error}");
-            project.file("entry.css", &format!("@import './child.css'{qualifier};@import '@master/css';@custom-media --always true;@utility paint{{color:red}}"));
+            project.file("entry.css", &format!("@import './child.css'{qualifier};@import '@master/css';@custom-media --always true;@mixin --paint{{color:red}}"));
             project.file(
                 "child.css",
                 ".card{@variant always{color:red;}}.ordinary{color:blue}",
@@ -111,7 +107,7 @@ fn imported_source_patterns_belong_to_the_child_file() {
     );
     project.file(
         "styles/child.css",
-        "@source './views/*.html';@utility paint {color:red}",
+        "@source './views/*.html';@mixin --paint {color:red}",
     );
     let view = project.file("styles/views/real.html", "<div class=paint></div>");
     project.file("views/wrong.html", "<div class=wrong></div>");
@@ -123,7 +119,7 @@ fn external_native_imports_do_not_block_manifest_and_variants() {
     let project = Project::new();
     project.file(
         "entry.css",
-        "@import './child.css' layer(cards) screen;@import '@master/css';@custom-media --always true;@utility paint {color:red}",
+        "@import './child.css' layer(cards) screen;@import '@master/css';@custom-media --always true;@mixin --paint {color:red}",
     );
     project.file("child.css", "@import 'https://invalid.invalid/remote.css';.card{@variant always{color:red;}}body{background:url('./missing.png')}");
     let result = project.load();
@@ -136,10 +132,10 @@ fn external_native_imports_do_not_block_manifest_and_variants() {
 #[test]
 fn references_resolve_variants_without_exporting_reference_definitions_or_sources() {
     let project = Project::new();
-    project.file("entry.css", "@import '@master/css';@custom-media --always true;@reference './tokens.css';@utility button {@variant paint{color:red;}}.card{@variant paint{color:red;}}");
+    project.file("entry.css", "@import '@master/css';@custom-media --always true;@reference './tokens.css';@mixin --button {@variant paint{color:red;}}.card{@variant paint{color:red;}}");
     let tokens = project.file(
         "tokens.css",
-        "@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@utility paint {color:blue}",
+        "@source './ignored/*.html';@custom-variant paint{@media print{@slot;}}@mixin --paint {color:blue}",
     );
     project.file("ignored/view.html", "ignored");
     let result = project.load();
@@ -163,11 +159,8 @@ fn filesystem_import_and_reference_cycles_remain_errors() {
             &format!("@{kind} './child.css';@import '@master/css';@custom-media --always true;"),
         );
         project.file("child.css", &format!("@{kind} './entry.css';"));
-        let error = load_project_manifest(
-            &project.0,
-            json!({"version":2,"languageVersion":4,"utilities":[]}),
-        )
-        .unwrap_err();
+        let error = load_project_manifest(&project.0, json!({"version":3,"languageVersion":5}))
+            .unwrap_err();
         assert!(
             error.to_string().contains("Circular CSS"),
             "{kind}: {error}"
@@ -182,12 +175,29 @@ fn repeated_imports_and_entry_override_keep_authoring_order() {
         "entry.css",
         "@import './red.css';@import './blue.css';@import './red.css';@import '@master/css';@custom-media --always true;",
     );
-    project.file("red.css", "@utility paint {color:red}");
-    project.file("blue.css", "@utility paint {color:blue}");
+    project.file("red.css", "@mixin --paint {color:red}");
+    project.file("blue.css", "@mixin --paint {color:blue}");
     assert!(css(&project.load().manifest, "paint").contains(".paint{color:red}"));
     project.file(
         "entry.css",
-        "@import './red.css';@import '@master/css';@custom-media --always true;@utility paint {color:blue}",
+        "@import './red.css';@import '@master/css';@custom-media --always true;@mixin --paint {color:blue}",
     );
-    assert!(css(&project.load().manifest, "paint").contains(".paint{color:#00f}"));
+    assert!(css(&project.load().manifest, "paint").contains(".paint{color:blue}"));
+}
+
+#[test]
+fn reference_native_apply_is_not_a_root_but_called_definitions_remain_available() {
+    let project = Project::new();
+    project.file("entry.css", "@import '@master/css';@reference './recipes.css';@mixin --card{@apply --paint(red)}.caption{@apply --paint(blue)}");
+    project.file("recipes.css", "@mixin --paint(--color){color:var(--color)}@mixin --unused{color:var(--unused)}.reference-only{@apply --unused;}");
+    let result = project.load();
+    assert!(
+        result.css.contains(".caption{color:blue}"),
+        "{}",
+        result.css
+    );
+    assert!(!result.css.contains("reference-only"));
+    assert!(!result.css.contains("--unused"));
+    assert_eq!(css(&result.manifest, ""), "");
+    assert!(css(&result.manifest, "card").contains(".card{color:red}"));
 }

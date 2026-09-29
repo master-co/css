@@ -9,7 +9,7 @@ export default function Body({ children, className }: {
     <body className={clsx(
       className,
       'bg-slate-50/.2_:is(::selection)',
-      'text-body'
+      'fg-text-body'
     )}>
       <CodeTabsBootstrap />
       {children}

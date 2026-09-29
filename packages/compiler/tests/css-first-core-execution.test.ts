@@ -3,7 +3,10 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('CSS-first scoped execution', () => {
@@ -14,7 +17,7 @@ describe('CSS-first scoped execution', () => {
         .dark { --color-brand: black; }
         @media (width >= 40rem) { .preview { --color-brand: green; } }
       }
-      @utility card { color: var(--color-brand); }
+      @mixin --card { color: var(--color-brand); }
     `)
     const variable = flattenMasterCSSManifestVariables(manifest.variables).find(variable => variable.name === 'color-brand')!
     expect(variable.values.map(value => value.path)).toEqual([
@@ -36,7 +39,7 @@ describe('CSS-first scoped execution', () => {
 
   test('retains authored scopes when a base manifest is extended', () => {
     const first = compile('@theme { :root { --color-brand: red; } }')
-    const second = compileCSSManifest('@theme { .dark { --color-brand: blue; } } @utility card { color: var(--color-brand); }', { baseManifest: first.manifest })
+    const second = compileCSSManifest('@theme { .dark { --color-brand: blue; } } @mixin --card { color: var(--color-brand); }', { baseManifest: first.manifest })
     const css = createTestCSS(second.manifest).ensureClassRules('card')
     expect(css.themeLayer.text).toContain(':root{--color-brand:red}')
     expect(css.themeLayer.text).toContain('.dark{--color-brand:blue}')
@@ -47,12 +50,12 @@ describe('CSS-first scoped execution', () => {
     const result = compileCSSManifest(`
       @theme { :root { --color-brand: red; } }
       @keyframes fade { to { background: var(--color-brand); opacity: 1; } }
-      @utility card { animation: fade 1s; }
+      @mixin --card { animation: fade 1s; }
     `, { baseManifest })
     expect(result.nativeCSS).toContain('@keyframes fade')
     expect(result.manifest).not.toHaveProperty('animations')
     const css = createTestCSS(result.manifest).ensureClassRules('card')
-    expect(css.text).toContain('animation:1s fade')
+    expect(css.text).toContain('animation:fade 1s')
     expect(css.text).not.toContain('@keyframes')
     css.deleteClassRules('card')
     expect(css.text).toBe('')
@@ -62,7 +65,7 @@ describe('CSS-first scoped execution', () => {
 
   test('keeps nested selectors, condition order and declaration fallbacks', () => {
     const { manifest } = compile(`
-      @utility card {
+      @mixin --card {
         color: red; color: future(red);
         p { display: block; } &:hover { color: blue; }
         @media (width >= 40rem) { @supports (display: grid) { display: grid; } }
@@ -73,7 +76,7 @@ describe('CSS-first scoped execution', () => {
     const text = css.createRule('card')!.text
     expect(text.indexOf('color:red')).toBeLessThan(text.indexOf('color:future(red)'))
     expect(text).toContain('.card p{display:block}')
-    expect(text).toContain('.card:hover{color:#00f}')
+    expect(text).toContain('.card:hover{color:blue}')
     expect(text.indexOf('@media')).toBeLessThan(text.indexOf('@supports'))
     expect(text.lastIndexOf('display:flex')).toBeGreaterThan(text.indexOf('display:grid'))
     css.dispose()
@@ -81,26 +84,26 @@ describe('CSS-first scoped execution', () => {
 
   test('substitutes parameter tokens once and preserves strings and ordinary functions', () => {
     const { manifest } = compile(`
-      @utility pair:* {
-        width: --master-value(); height: calc(--master-value() * 2);
-        --literal: "--master-value()"; --ordinary: --value(); --fragment: prefix--master-value();
+      @mixin --pair(--value) {
+        width: var(--value); height: calc(var(--value) * 2);
+        --literal: "var(--value)"; --ordinary: --value(); --fragment: prefixvar(--value);
       }
     `)
     const css = createTestCSS(manifest)
-    const text = css.createRule('pair:var(--size)')!.text
-    expect(text).toContain('width:var(--size)')
-    expect(text).toContain('calc(var(--size) * 2)')
-    expect(text).toContain('"--master-value()"')
+    const text = css.createRule('pair(24px)')!.text
+    expect(text).toContain('width:24px')
+    expect(text).toContain('calc(24px * 2)')
+    expect(text).toContain('"var(--value)"')
     expect(text).toContain('--ordinary:--value()')
-    expect(text).toContain('prefix--master-value()')
-    expect(css.createRule('pair:--master-value()')?.text).toContain('width:--master-value()')
+    expect(text).toContain('prefixvar(--value)')
+    expect(css.createRule('pair(var(--value))')).toBeUndefined()
     css.dispose()
   })
 
   test('preserves CSS variable cycles and ignores quoted references', () => {
     const { manifest } = compile(`
       @theme { :root { --a: var(--b); --b: var(--a); --quoted: "var(--missing)"; } }
-      @utility card { --value: var(--a); content: var(--quoted); }
+      @mixin --card { --value: var(--a); content: var(--quoted); }
     `)
     const variables = flattenMasterCSSManifestVariables(manifest.variables)
     expect(variables.find(variable => variable.name === 'quoted')?.dependencies).toEqual([])
@@ -119,7 +122,7 @@ test('preserves arbitrary native function arguments and custom-property data', (
     '--alpha(var(--color-blue-60) / foo)', '--alpha(var(--color-blue-60) / 50% / 20%)',
     '--alpha(var(--color-blue-60))'
   ]) {
-    const compiled = compile(`@theme { :root { --color-brand: ${value}; } } @utility paint { color: var(--color-brand); }`)
+    const compiled = compile(`@theme { :root { --color-brand: ${value}; } } @mixin --paint { color: var(--color-brand); }`)
     const css = createTestCSS(compiled.manifest).ensureClassRules('paint')
     expect(css.themeLayer.text).toContain(`--color-brand:${value}`)
     css.dispose()

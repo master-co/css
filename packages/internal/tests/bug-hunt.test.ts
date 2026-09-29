@@ -7,7 +7,10 @@ test('audit control: failed manifest loads retain watch dependencies and recover
   const plugin = createMasterCSSManifestVirtualModulePlugin(async ({ onDependency }) => {
     onDependency('/project/theme.css')
     if (fail) throw new Error('temporary invalid manifest')
-    return { manifest: { version: 2, languageVersion: 4 }, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
+    return { manifest: {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
   })
   const allow: string[] = []
   plugin.configResolved({ command: 'serve', root: '/project', server: { fs: { allow } } })
@@ -20,7 +23,7 @@ test('audit control: failed manifest loads retain watch dependencies and recover
   expect(plugin.handleHotUpdate({ file: '/project/theme.css', server })).toEqual([module])
   expect(server.moduleGraph.invalidateModule).toHaveBeenCalledWith(module)
   fail = false
-  expect(await plugin.load.call(context, RESOLVED_VIRTUAL_MANIFEST_ID)).toContain('"version":2')
+  expect(await plugin.load.call(context, RESOLVED_VIRTUAL_MANIFEST_ID)).toContain('"version":3')
   expect(allow).toHaveLength(1)
   expect(plugin.handleHotUpdate({ file: '/project/unrelated.css', server })).toBeUndefined()
 })

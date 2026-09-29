@@ -1,15 +1,15 @@
 import { Fragment } from 'react'
-import { manifestUtilities, utilityUsesVariableNamespace } from '~/site/utils/manifest-utilities'
+import { tokenFamilies } from '~/site/utils/manifest-utilities'
 
-const utilities = manifestUtilities
+const families = tokenFamilies
 
 export default () => <>
   {
-    utilities
-      .filter((utility) => utilityUsesVariableNamespace(utility, 'line'))
+    families
+      .filter((family) => family.namespaces.includes('color-line'))
       .map((utility, index, arr) =>
-        <Fragment key={utility.name}>
-          <code>{utility.name}</code>
+        <Fragment key={utility.prefix}>
+          <code>{utility.prefix}</code>
           {index !== arr.length - 1 && ', '}
         </Fragment>
       )

@@ -1,9 +1,9 @@
 const syntaxes = [
-  'bg-top',
-  'bg-bottom',
-  'bg-right',
-  'bg-left',
-  'bg-center',
+  "background-position:top",
+  "background-position:bottom",
+  "background-position:right",
+  "background-position:left",
+  "background-position:center",
   ['background-position:`value`'],
 ]
 

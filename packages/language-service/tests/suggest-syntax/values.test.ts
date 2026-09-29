@@ -10,10 +10,10 @@ function labels(target: string, settings?: ConstructorParameters<typeof CSSLangu
 }
 
 it('does not insert unencoded whitespace into values', () => expect(labels('font-family:')).not.toContain('Arial, Helvetica, sans-serif'))
-it('continues native border values after a space delimiter', () => expect(labels('b:1px|')).toContain('solid'))
+it('continues native border values after a space delimiter', () => expect(labels("border:1px|")).toContain('solid'))
 it('continues native shadow values after a comma', () => expect(labels('box-shadow:1px|1px|2px|black,')).toContain('inset'))
-it('offers conditions after a named style', () => expect(labels('text-center@')).not.toContain('center'))
-it('offers states after a named style', () => expect(labels('text-center:')).not.toContain('center'))
+it('offers conditions after a named style', () => expect(labels("text-align:center@")).not.toContain('center'))
+it('offers states after a named style', () => expect(labels("text-align:center:")).not.toContain('center'))
 
 describe('named token completion', () => {
   test('describes the token identity and actual CSS', () => {
@@ -42,9 +42,9 @@ describe('named token completion', () => {
   })
   test('keeps custom colors out of native value completion', () => {
     const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
-    expect(labels('bg-', settings)).toEqual(expect.arrayContaining(['bg-accent', 'bg-blue', 'bg-cover']))
-    expect(labels('bg:', settings)).not.toContain('accent')
-    expect(labels('bg:', settings)).toContain('cover')
+    expect(labels('bg-', settings)).toEqual(expect.arrayContaining(['bg-accent', 'bg-blue']))
+    expect(labels("background:", settings)).not.toContain('accent')
+    expect(labels("background:", settings)).toContain('cover')
   })
   test('offers named colors inside safelist', () => {
     const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }

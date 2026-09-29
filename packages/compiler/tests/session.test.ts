@@ -12,11 +12,11 @@ interface CompilerParityCase {
   expectedGeneratedCss?: string
   expectedManifest?: MasterCSSManifest
   expectedError?: string
-  expectedUtilities?: MasterCSSManifest['utilities']
+  expectedMixins?: MasterCSSManifest['mixins']
 }
 
 interface SemanticParityCorpus {
-  version: 2
+  version: 3
   compilerCases: CompilerParityCase[]
 }
 
@@ -29,7 +29,7 @@ const semanticParityCorpus = JSON.parse(readFileSync(
 test('native compiler sessions batch semantic operations and reject use after disposal', () => {
   const compiler = createCompilerSync()
   const inspected = compiler.inspectCSS('@import "@master/css";')
-  const compiled = compiler.compileCSS('@import "@master/css";\n @utility btn { display: block; } ')
+  const compiled = compiler.compileCSS('@import "@master/css";\n @mixin --btn { display: block; } ')
 
   expect(compiler.binding).toBe('native')
   expect(inspected.hasMasterEntry).toBe(true)
@@ -43,7 +43,7 @@ test('native compiler sessions batch semantic operations and reject use after di
 })
 
 test('native and Wasm compiler sessions execute the v2 language compiler corpus', async () => {
-  expect(semanticParityCorpus.version).toBe(2)
+  expect(semanticParityCorpus.version).toBe(3)
 
   const native = createCompilerSync()
   const wasm = await createCompiler({ binding: 'wasm' })
@@ -74,9 +74,9 @@ test('native and Wasm compiler sessions execute the v2 language compiler corpus'
       if (parityCase.expectedManifest) {
         expect(nativeResult.manifest, parityCase.id).toEqual(parityCase.expectedManifest)
       }
-      for (const expectedUtility of parityCase.expectedUtilities ?? []) {
+      for (const expectedUtility of parityCase.expectedMixins ?? []) {
         expect(
-          nativeResult.manifest.utilities?.find(({ name }) => name === expectedUtility.name),
+          nativeResult.manifest.mixins?.find(({ name }) => name === expectedUtility.name),
           `${parityCase.id}: utility ${expectedUtility.name}`
         ).toEqual(expectedUtility)
       }

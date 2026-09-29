@@ -9,27 +9,38 @@ beforeAll(() => {
 })
 
 const manifest = {
-  version: 2, languageVersion: 4,
-  utilities: [
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
     {
-      id: 'display-block',
-      name: 'block',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { display: 'block' } }]
-      },
-      matchers: [{ type: 'static', name: 'block' }]
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
     },
     {
-      id: 'color-red',
-      name: 'fg-red',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { color: 'red' } }]
-      },
-      matchers: [{ type: 'static', name: 'fg-red' }]
+      "name": "--fg-red",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "color",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "red"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -46,7 +57,7 @@ describe('Rust scanner state session', () => {
       candidates: ['block', 'unknown', 'fg-red'],
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
-      transition: { version: 2 }
+      transition: { version: 2 as const }
     })
     expect(scanner.scan('App.tsx', source)).toEqual({
       changed: false,
@@ -56,7 +67,7 @@ describe('Rust scanner state session', () => {
       usedNativeClasses: [],
       validClasses: [],
       invalidClasses: [],
-      transition: { version: 2, mutations: [] }
+      transition: { version: 2 as const, mutations: [] }
     })
 
     expect(scanner.snapshot()).toMatchObject({
@@ -64,7 +75,7 @@ describe('Rust scanner state session', () => {
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       cachedSources: 1,
-      engine: { version: 2 }
+      engine: { version: 2 as const }
     })
 
     scanner.reset()

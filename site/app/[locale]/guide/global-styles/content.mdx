@@ -121,7 +121,7 @@ Use this order:
 Start with utilities when the style belongs to one element or one usage site:
 
 ```html
-<button class="inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
+<button class="display:inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
   Save changes
 </button>
 ```
@@ -257,15 +257,15 @@ Use markup utilities for one-off variations at a specific call site.
 Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
 
 ```css name=app.css
-@utility flow {
+@mixin --flow {
     display: grid;
     gap: var(--spacing-md);
   }
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-@utility print-hidden {
+@mixin --print-hidden {
     @variant print {
       display: none;
     }

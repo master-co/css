@@ -15,42 +15,42 @@ test('selectors', async ({ page }) => {
   await init(page, generatedCSS, manifest, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
   expect((await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.rules)).map(({ name }) => name)).toEqual(['theme', 'utilities'])
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
-    .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:block::before,::after")?.selectorText))
+    .toBe(".display\\:block\\:\\:before\\,\\:\\:after::before,.display\\:block\\:\\:before\\,\\:\\:after::after")
 
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
-    .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}')
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
-    .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:block::before,::after")?.text))
+    .toBe(".display\\:block\\:\\:before\\,\\:\\:after::before,.display\\:block\\:\\:before\\,\\:\\:after::after{display:block}")
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:block::before,::after")?.native?.cssText))
+    .toBe(".display\\:block\\:\\:before\\,\\:\\:after::before, .display\\:block\\:\\:before\\,\\:\\:after::after { display: block; }")
 
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
-    .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
-    .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::slider-thumb")?.text))
+    .toBe(".display\\:none\\:\\:slider-thumb::-webkit-slider-thumb{display:none}")
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::slider-thumb")?.native?.cssText))
+    .toBe(".display\\:none\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }")
 
   await page.evaluate(() => {
     const baseHost = document.createElement('div')
-    baseHost.className = 'block_button@base'
+    baseHost.className = "display:block_button@base"
     baseHost.innerHTML = '<button id="selectorless-base-descendant">Base descendant</button>'
 
     const defaultsHost = document.createElement('div')
     defaultsHost.id = 'selectorless-default-host'
-    defaultsHost.className = '{flex;rel}_:is(h4,.app-nav)@default'
+    defaultsHost.className = '{display:flex;position:relative}_:is(h4,.app-nav)@default'
     defaultsHost.innerHTML = '<h4 id="selectorless-default-descendant">Default descendant</h4>'
 
     document.body.append(baseHost, defaultsHost)
   })
 
   await expect.poll(() => page.evaluate(() => ({
-    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
+    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === "display:block_button@base")?.text,
     defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.filter(
-      (rule) => rule.name === '{flex;rel}_:is(h4,.app-nav)@default'
+      (rule) => rule.name === '{display:flex;position:relative}_:is(h4,.app-nav)@default'
     ).map(rule => rule.text)
   }))).toEqual({
-    base: '.block_button\\@base button{display:block}',
+    base: '.display\\:block_button\\@base button{display:block}',
     defaults: [
-      '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}',
-      '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}'
+      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}',
+      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}'
     ]
   })
 

@@ -9,15 +9,15 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Normal float · rectangular wrap -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
-           fill-blue-60 shape-none">
+           fill-blue-60 shape-outside:none">
     <circle cx="60" cy="60" r="48" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -29,8 +29,8 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Circle · text follows the curved boundary -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
@@ -38,7 +38,7 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
            shape-outside:circle(48px)|border-box">
     <circle cx="60" cy="60" r="48" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -64,15 +64,15 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- No shape · wraps at the box edge -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
-           fill-blue-60 shape-none">
+           fill-blue-60 shape-outside:none">
     <rect x="24" y="0" width="72" height="120" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -84,8 +84,8 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- Inset · wraps at the painted edge -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
@@ -93,7 +93,7 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
            shape-outside:inset(0|24px)|border-box">
     <rect x="24" y="0" width="72" height="120" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -112,17 +112,17 @@ Open print preview to replace the circular wrap area with the ordinary float mar
 
 ```html
 <!-- Circular on screen · rectangular in print -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
            fill-blue-60
            shape-outside:circle(48px)|border-box
-           shape-none@print">
+           shape-outside:none@print">
     <circle cx="60" cy="60" r="48" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -141,16 +141,16 @@ Widen the real preview viewport to `sm` to wrap around the circle. Print uses th
 
 ```html
 <!-- Rectangle → circle at sm -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
-           fill-blue-60 shape-none shape-none@print
+           fill-blue-60 shape-outside:none shape-outside:none@print
            shape-outside:circle(48px)|border-box@screen@sm">
     <circle cx="60" cy="60" r="48" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.

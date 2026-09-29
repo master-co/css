@@ -16,15 +16,29 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
   variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }, { namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }],
-  utilities: [
-    {
-      name: 'btn',
-      layer: 'utilities',
-      rules: [
-        { selector: '&', declarations: { display: 'block' } }
-      ]
-    }
-  ]
+  mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "block"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
 })
 
 function scopeToken(scopeName: string, color: string) {
@@ -116,12 +130,12 @@ test.concurrent('defines deterministic directive scopes with native blocks', () 
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
   const directive = grammarEntry('master-directive')
-  for (const name of ['theme', 'utility', 'safelist', 'custom-variant']) {
+  for (const name of ['theme', 'mixin|apply', 'safelist', 'custom-variant']) {
     const pattern = findGrammarPattern(directive, pattern => pattern.begin === `(?i)(@)(${name})\\b`)
     expect(pattern.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   }
-  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(utility)') === true)
-  expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-utility-prelude'])
+  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(mixin|apply)') === true)
+  expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-mixin-prelude'])
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-theme-prelude')
   const classFragment = grammarEntry('master-class-fragment')
@@ -161,7 +175,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@utility btn {\n        @safelist \"inline-flex fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
+    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@mixin --btn {\n        @safelist \"fit fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -246,7 +260,7 @@ test.concurrent('normalizes Shiki language ids separately from class-list langua
 })
 
 test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () => {
-  const code = '<div className="fg-brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
+  const code = "<div className=\"fg-brand:hover@sm center btn btn:hover@sm btn_div::before\"></div>"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'tsx',
     manifest
@@ -261,37 +275,37 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
   expect(tokens).toEqual(expect.arrayContaining([
     expect.objectContaining({
       text: 'fg-brand',
-      type: 'enumMember',
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
-      text: 'block',
-      type: 'enumMember',
+      text: "center",
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'btn',
-      type: 'enumMember',
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'div',
-      type: 'type',
+      type: 'type' as const,
       modifiers: ['selector'],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-type', 'mcss-semantic-role-selector-type', 'mcss-semantic-type-selector'])
     }),
     expect.objectContaining({
       text: 'before',
-      type: 'modifier',
+      type: 'modifier' as const,
       modifiers: ['pseudoElement'],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-modifier', 'mcss-semantic-role-selector-pseudoElement-name', 'mcss-semantic-modifier-pseudoElement'])
     }),
     expect.objectContaining({
       text: '@sm',
-      type: 'keyword',
+      type: 'keyword' as const,
       modifiers: ['query'],
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-keyword', 'mcss-semantic-role-query-keyword', 'mcss-semantic-keyword-query'])
     })
@@ -300,7 +314,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 })
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
-  const code = "@safelist \"block fg-red\";\n@utility text-left {\n        text-align: left;\n    }\n@utility text-center {\n        text-align: center;\n    }\n@utility text-right {\n        text-align: right;\n    }\n@utility font-* from(--font-size-*) {\n        font-size: --master-value();\n    }\n@utility grid-cols:* {\n        grid-template-columns: repeat(--master-value(), minmax(0, 1fr));\n    }\n@utility btn {\n        @safelist \"inline-flex fg-brand:hover@sm\";\n    }"
+  const code = "@safelist \"center fg-red\";\n@mixin --text-left {\n        text-align: left;\n    }\n@mixin --text-center {\n        text-align: center;\n    }\n@mixin --text-right {\n        text-align: right;\n    }\n@utility font-* from(--font-size-*) {\n        font-size: var(--value);\n    }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    }\n@mixin --btn {\n        @safelist \"fit fg-brand:hover@sm\";\n    }"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'css',
     manifest
@@ -314,45 +328,45 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
 
   expect(tokens).toEqual(expect.arrayContaining([
     expect.objectContaining({
-      text: 'block',
-      type: 'enumMember',
+      text: "center",
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'fg-red',
-      type: 'enumMember',
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
-      text: 'inline-flex',
-      type: 'enumMember',
+      text: "fit",
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'fg-brand',
-      type: 'enumMember',
+      type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'hover',
-      type: 'modifier',
+      type: 'modifier' as const,
       modifiers: ['pseudoClass'],
       classNames: expect.arrayContaining(['mcss-semantic-role-selector-pseudoClass-name'])
     }),
     expect.objectContaining({
       text: '@sm',
-      type: 'keyword',
+      type: 'keyword' as const,
       modifiers: ['query'],
       classNames: expect.arrayContaining(['mcss-semantic-role-query-keyword'])
     })
   ]))
   expect(tokens).not.toEqual(expect.arrayContaining([
     expect.objectContaining({ text: 'text-' }),
-    expect.objectContaining({ text: 'left' }),
+    expect.objectContaining({ text: "left:0" }),
     expect.objectContaining({ text: 'font' }),
     expect.objectContaining({ text: '--value' })
   ]))
@@ -372,12 +386,12 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
   }))
 
   expect(tokens).toEqual(expect.arrayContaining([
-    { text: 'fg-brand', type: 'enumMember', modifiers: [] },
-    { text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] },
-    { text: '@sm', type: 'keyword', modifiers: ['query'] },
-    { text: '{', type: 'operator', modifiers: [] },
-    { text: ';', type: 'operator', modifiers: [] },
-    { text: '}', type: 'operator', modifiers: [] }
+    { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] },
+    { text: 'hover', type: 'modifier' as const, modifiers: ['pseudoClass'] },
+    { text: '@sm', type: 'keyword' as const, modifiers: ['query'] },
+    { text: '{', type: 'operator' as const, modifiers: [] },
+    { text: ';', type: 'operator' as const, modifiers: [] },
+    { text: '}', type: 'operator' as const, modifiers: [] }
   ]))
 })
 
@@ -393,7 +407,7 @@ test.concurrent('skips semantic token decorations inside host comments', () => {
 })
 
 test.concurrent('applies semantic token styles by type and modifier', () => {
-  const code = '<div class="block block:hover btn:hover"></div>'
+  const code = "<div class=\"center center:hover btn:hover\"></div>"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'html',
     manifest,
@@ -414,7 +428,7 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
   const enumMemberDecorations = decorations.filter((decoration) => decoration.type === 'enumMember')
   const classDecorations = decorations.filter((decoration) => decoration.type === 'enumMember')
   const blockStyles = enumMemberDecorations
-    .filter((decoration) => code.slice(decoration.start, decoration.end) === 'block')
+    .filter((decoration) => code.slice(decoration.start, decoration.end) === "center")
     .map((decoration) => decoration.properties?.style)
   const btnStyle = classDecorations.find((decoration) => code.slice(decoration.start, decoration.end) === 'btn')?.properties?.style
 
@@ -468,7 +482,7 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
 })
 
 test.concurrent('uses semantic token scope styles for selector semantic tokens', () => {
-  const code = '<div class="block>li:hover@md"></div>'
+  const code = "<div class=\"center>li:hover@md\"></div>"
   const options = {
     lang: 'html'
   }
@@ -488,7 +502,7 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
 
   expect(tokens).toEqual(expect.arrayContaining([
     {
-      content: 'block',
+      content: "center",
       htmlStyle: { color: 'value' },
       className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
@@ -516,11 +530,11 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
 })
 
 test.concurrent('uses semantic token scope styles for documentation Master CSS tokens', () => {
-  const htmlCode = '<section class="bg-blue block grid-cols:2@md fg-primary:hover"></section>'
+  const htmlCode = "<section class=\"bg-blue center grid-cols(2)@md fg-primary:hover\"></section>"
   const htmlOptions = {
     lang: 'html'
   }
-  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@utility card { @safelist \"bg-blue fg-brand:hover\"; }"
+  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@mixin --card { @safelist \"bg-blue fg-brand:hover\"; }"
   const cssOptions = {
     lang: 'css'
   }
@@ -558,7 +572,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
       className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
-      content: 'block',
+      content: "center",
       htmlStyle: { color: 'value' },
       className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
@@ -600,7 +614,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 })
 
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
-  const code = "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n@utility card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"block\";\n        }\n    }"
+  const code = "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n@mixin --card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"center\";\n        }\n    }"
   const transformer = transformerMasterCSS()
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -627,7 +641,7 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
       className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
-      content: 'block',
+      content: "center",
       htmlStyle: { color: 'value' },
       className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     }

@@ -6,19 +6,19 @@
 ## Basic usage \{#basic-usage\}
 
 ### Use shadow tokens \{#use-shadow-tokens\}
-Preset `shadow:*` tokens define common elevation levels. Switch the preview theme: the class stays the same while each token resolves to its mode-specific paint.
+Preset `box-shadow:*` tokens define common elevation levels. Switch the preview theme: the class stays the same while each token resolves to its mode-specific paint.
 
 <DemoExample page="box-shadow" section="use-shadow-tokens" />
 
 ```html
 <!-- Small elevation -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body shadow-sm box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body shadow-sm box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -27,12 +27,12 @@ Preset `shadow:*` tokens define common elevation levels. Switch the preview them
 ```html
 <!-- Large elevation -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body shadow-lg box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body shadow-lg box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -55,14 +55,14 @@ Use literal shadow layers for a specific effect. The first listed layer paints a
 ```html
 <!-- Two raw layers · literal color -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body
-         shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent),0|8px|16px|color-mix(in|oklab,var(--color-blue-50)|12%,transparent)
-         box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body
+         box-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent),0|8px|16px|color-mix(in|oklab,var(--color-blue-50)|12%,transparent)
+         box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -78,13 +78,13 @@ Raw values do not automatically acquire a separate dark-mode design. Compare aga
 ```html
 <!-- Outer shadow -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body shadow:0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
-         box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body box-shadow:0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
+         box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -93,13 +93,13 @@ Raw values do not automatically acquire a separate dark-mode design. Compare aga
 ```html
 <!-- Inset shadow -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body shadow:inset|0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
-         box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body box-shadow:inset|0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
+         box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -115,12 +115,12 @@ Hover or keyboard-focus the button to move from a small to a large shadow token.
 ```html
 <!-- Small → large elevation on interaction -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm font-md
-         bg-surface-base text-body shadow-sm
-         box-border bg-surface-inset:focus-visible
-         shadow:none@print shadow-lg:hover@screen
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm font-md
+         bg-surface-base fg-text-body shadow-sm
+         box-sizing:border-box bg-surface-inset:focus-visible
+         box-shadow:none@print shadow-lg:hover@screen
          shadow-lg:focus-visible@screen">
   Open library
 </button>
@@ -149,12 +149,12 @@ Override a shared shadow token separately in light and dark themes. The live pre
 ```html
 <!-- Configured small shadow · two theme definitions -->
 <article id="target"
-  class="w:240px max-w:100% p-lg r-md bg-surface-base
-         text-body shadow-sm box-border">
-  <h4 class="m:0 font-lg">
+  class="width:240px max-width:100% p-lg r-md bg-surface-base
+         fg-text-body shadow-sm box-sizing:border-box">
+  <h4 class="margin:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt-sm font-sm">
+  <p class="margin-inline:0 margin-bottom:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>

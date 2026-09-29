@@ -3,24 +3,24 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = { version: 3 as const, languageVersion: 5 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v4 authoring contracts', () => {
+describe('directive language v5 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { :root { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green; } }
-      @utility card { color: red; &:hover { color: blue; } }
-      @utility pair:* { width: --master-value(); height: --master-value(); }
-      @utility outline-* from(--color-line-*, --color-*) { outline-color: --master-value(); }
-      @utility align-left { text-align: left; }
-      @utility align-right { text-align: right; }
+      @mixin --card { color: red; &:hover { color: blue; } }
+      @mixin --pair(--value) { width: var(--value); height: var(--value); }
+
+      @mixin --align-left { text-align: left; }
+      @mixin --align-right { text-align: right; }
     `)
-    expect(manifest.version).toBe(2)
-    expect(manifest.languageVersion).toBe(4)
+    expect(manifest.version).toBe(3)
+    expect(manifest.languageVersion).toBe(5)
     const css = createTestCSS(manifest)
-    expect(css.createRule('card')?.text).toContain('.card:hover{color:#00f}')
-    expect(css.createRule('pair:2px')?.text).toContain('width:2px;height:2px')
+    expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
+    expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
     expect(css.createRule('outline-brand')?.text).toContain('var(--color-line-brand)')
     expect(css.createRule('outline-other')?.text).toContain('var(--color-other)')
     expect(css.createRule('align-left')?.text).toContain('text-align:left')
@@ -32,7 +32,7 @@ describe('directive language v4 authoring contracts', () => {
   test('keeps native component layers separate from on-demand utility definitions', () => {
     const result = compileCSSManifest(`
       @layer components { .card { padding: 1rem; } }
-      @utility badge { display: inline-block; }
+      @mixin --badge { display: inline-block; }
     `, { baseManifest })
     expect(result.nativeCSS).toContain('.card')
     const css = createTestCSS(result.manifest)
@@ -42,7 +42,7 @@ describe('directive language v4 authoring contracts', () => {
   })
 
   test('replaces a whole utility definition including nested branches', () => {
-    const { manifest } = compile('@utility card { color: red; &:hover { color: blue; } } @utility card { padding: 2px; }')
+    const { manifest } = compile('@mixin --card { color: red; &:hover { color: blue; } } @mixin --card { padding: 2px; }')
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toBe('.card{padding:2px}')
     css.dispose()
@@ -53,7 +53,7 @@ describe('directive language v4 authoring contracts', () => {
       @custom-media --screen-card screen and (--card);
       @custom-media --card (width >= 40rem), (orientation: landscape);
       @custom-variant focus-ring { &:focus-visible { @slot; } }
-      @utility panel { display: block; @variant screen-card { display: grid; } @variant focus-ring { outline: 2px solid; } }
+      @mixin --panel { display: block; @variant screen-card { display: grid; } @variant focus-ring { outline: 2px solid; } }
     `)
     const css = createTestCSS(manifest)
     const text = css.createRule('panel')!.text

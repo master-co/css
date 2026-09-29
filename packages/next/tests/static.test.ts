@@ -97,9 +97,7 @@ describe('Next static mode', () => {
         return <main className={mainClass}>Hello</main>
       }
     `)
-    writeFileSync(modulePath, `
-      export const mainClass = 'block m:0'
-    `)
+    writeFileSync(modulePath, "\n      export const mainClass = 'display:block margin:0'\n    ")
 
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -118,8 +116,8 @@ describe('Next static mode', () => {
   it('keeps Webpack module watches and lets generated CSS discover new sources', async () => {
     const root = createFixture()
     const first = join(root, 'app/page.tsx'), second = join(root, 'app/other.tsx')
-    writeFileSync(first, '<div className="p:11px"/>')
-    writeFileSync(second, '<div className="m:22px"/>')
+    writeFileSync(first, "<div className=\"padding:11px\"/>")
+    writeFileSync(second, "<div className=\"margin:22px\"/>")
     const state = (await prepareNextStatic({}, { projectDir: root }))!
     const dependencies: string[] = [], contexts: string[] = [], missing: string[] = []
     await new Promise<void>((resolve, reject) => {
@@ -146,7 +144,7 @@ describe('Next static mode', () => {
     expect(entry.contexts).toContain(root)
     expect(entry.missing).toEqual(expect.arrayContaining([join(root, '.gitignore'), join(root, 'app/.gitignore')]))
 
-    writeFileSync(first, '<div className="p:44px"/>')
+    writeFileSync(first, "<div className=\"padding:44px\"/>")
     await runStaticLoader(state.statePath, first, readFileSync(first, 'utf8'))
     expect(readStaticCSS(state.outputPath)).toContain('padding:44px')
     const refreshed = await runStaticCSSLoaderWithDependencies(state.statePath, stylesheet, readFileSync(stylesheet, 'utf8'))
@@ -169,7 +167,7 @@ describe('Next static mode', () => {
 
     rmSync(renamed)
     writeFileSync(join(root, '.gitignore'), 'ignored.tsx\n')
-    writeFileSync(join(root, 'ignored.tsx'), '<div className="m:55px"/>')
+    writeFileSync(join(root, 'ignored.tsx'), "<div className=\"margin:55px\"/>")
     const afterRemoval = await runStaticCSSLoaderWithDependencies(state.statePath, state.outputPath, afterRename.content)
     expect(afterRemoval.content).not.toContain('gap:33px')
     expect(afterRemoval.content).not.toContain('margin:55px')
@@ -185,8 +183,8 @@ describe('Next static mode', () => {
     const root = createFixture()
     const page = join(root, 'app/page.tsx')
     const document = join(root, 'app/content.mdx')
-    writeFileSync(page, '<main className="p:17px" />')
-    writeFileSync(document, '<section className="grid-cols:3">Documentation</section>')
+    writeFileSync(page, "<main className=\"padding:17px\" />")
+    writeFileSync(document, "<section className=\"grid-cols(3)\">Documentation</section>")
     const state = (await prepareNextStatic({}, { projectDir: root }))!
     const initial = readStaticCSS(state.outputPath)
     expect(initial).toContain('padding:17px')
@@ -196,7 +194,7 @@ describe('Next static mode', () => {
     try {
       await prepareNextStatic({}, { projectDir: root })
       expect(readStaticCSS(state.outputPath)).toBe(initial)
-      writeFileSync(document, '<section className="grid-cols:4">Documentation</section>')
+      writeFileSync(document, "<section className=\"grid-cols(4)\">Documentation</section>")
       const result = await runStaticCSSLoaderWithDependencies(state.statePath,
         join(root, 'app/globals.css'), '@import url("@master/css");')
       expect(result.dependencies).toContain(document)
@@ -214,11 +212,7 @@ describe('Next static mode', () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n      }}\n\n    ")
     const pagePath = join(root, 'app/page.tsx')
-    writeFileSync(pagePath, `
-      export default function Page() {
-        return <main className="main block">Hello</main>
-      }
-    `)
+    writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"main display:block\">Hello</main>\n      }\n    ")
 
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -239,11 +233,7 @@ describe('Next static mode', () => {
   it('prunes dev CSS chunks that import @master/css', async () => {
     const root = createFixture()
     const pagePath = join(root, 'app/page.tsx')
-    writeFileSync(pagePath, `
-      export default function Page() {
-        return <main className="main block">Hello</main>
-      }
-    `)
+    writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"main display:block\">Hello</main>\n      }\n    ")
 
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -321,9 +311,7 @@ describe('Next static mode', () => {
     expect(readStaticCSS(outputPath)).not.toContain('display:block')
 
     const modulePath = join(root, 'app/main.ts')
-    const source = `
-      export const mainClass = 'block m:0'
-    `
+    const source = "\n      export const mainClass = 'display:block margin:0'\n    "
     writeFileSync(modulePath, source)
     await expect(runStaticLoader(statePath, modulePath, source)).resolves.toBe(source)
     await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), readFileSync(join(root, 'app/globals.css'), 'utf8'))
@@ -342,11 +330,7 @@ describe('Next static mode', () => {
     writeFileSync(dependencyPath, `
       export const leaked = 'width:123456px'
     `)
-    writeFileSync(pagePath, `
-      export default function Page() {
-        return <main className="block">Hello</main>
-      }
-    `)
+    writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"display:block\">Hello</main>\n      }\n    ")
 
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -363,11 +347,7 @@ describe('Next static mode', () => {
   it('updates static CSS when Webpack reruns the source loader', async () => {
     const root = createFixture()
     const pagePath = join(root, 'app/page.tsx')
-    writeFileSync(pagePath, `
-      export default function Page() {
-        return <main className="block">Hello</main>
-      }
-    `)
+    writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"display:block\">Hello</main>\n      }\n    ")
 
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
@@ -378,11 +358,7 @@ describe('Next static mode', () => {
     expect(readStaticCSS(outputPath)).toContain('display:block')
     expect(readStaticCSS(outputPath)).not.toContain('margin:0')
 
-    writeFileSync(pagePath, `
-      export default function Page() {
-        return <main className="block m:0">Hello</main>
-      }
-    `)
+    writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"display:block margin:0\">Hello</main>\n      }\n    ")
 
     await runStaticLoader(statePath, pagePath, readFileSync(pagePath, 'utf-8'))
     await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), readFileSync(join(root, 'app/globals.css'), 'utf8'))

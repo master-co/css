@@ -124,7 +124,7 @@ describe('LocalStylesPlugin', () => {
     const root = createFixture()
     try {
       const themePath = path.join(root, 'src/theme.css')
-      writeFileSync(themePath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+      writeFileSync(themePath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
       const context = createContext(root)
       const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()

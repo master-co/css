@@ -87,17 +87,17 @@ export default function DonationModal() {
     }
   }, [searchParams])
 
-  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:5rem|1.875rem|1.875rem|1.875rem">
-    <div className="abs inset:0 width:128px height:128px round mx:auto surface-raised transform:translateY(-50%)">
-      <Image className="rel top-4xs round mx:auto object-contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
+  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-width:320px padding:5rem|1.875rem|1.875rem|1.875rem">
+    <div className="position:absolute inset:0 height:128px width:128px round margin-inline:auto surface-raised transform:translateY(-50%)">
+      <Image className="position:relative top-4xs round margin-inline:auto object-fit:contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
     </div>
-    <div className="font-2xl font-bold text-center">{donationOrder.name || 'Unknown'}</div>
-    <p className="text-center">{$('Thanks for your donation 🥳')}</p>
+    <div className="font-2xl font-bold text-align:center">{donationOrder.name || 'Unknown'}</div>
+    <p className="text-align:center">{$('Thanks for your donation 🥳')}</p>
 
     <ul>
       {donationOrder.tier && (
         <li>
-          <b className="inline-block uppercase::first-letter">{donationOrder.tier.replace('-', ' ')}</b>
+          <b className="display:inline-block text-transform:uppercase::first-letter">{donationOrder.tier.replace('-', ' ')}</b>
         </li>
       )}
       <li>

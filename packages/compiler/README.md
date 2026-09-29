@@ -50,13 +50,13 @@ const result = compiler.compileStylesheets({
   graph: {
     entry: 'app',
     files: {
-      app: '@import "./theme.css" layer(theme);',
-      theme: '@utility paint { color: red } .example { color: red; }'
+      app: '@import "./theme.css";',
+      theme: '@mixin --paint { color: red } @layer theme { .example { color: red; } }'
     },
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },
   urls: { app: '/styles/app.css', theme: '/styles/theme.css' },
-  baseManifest: { version: 1, utilities: [] }
+  baseManifest: { version: 3, languageVersion: 5, mixins: [] }
 })
 ```
 

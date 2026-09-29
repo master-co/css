@@ -11,7 +11,7 @@ Use position shortcuts to align an image within its positioning area. This 160 Ã
 ```html
 <!-- Left Â· vertical center -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-left bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:left background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -20,7 +20,7 @@ Use position shortcuts to align an image within its positioning area. This 160 Ã
 ```html
 <!-- Center Â· both axes -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -29,7 +29,7 @@ Use position shortcuts to align an image within its positioning area. This 160 Ã
 ```html
 <!-- Right Â· vertical center -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-no-repeat bg-right
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:right
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -38,7 +38,7 @@ Use position shortcuts to align an image within its positioning area. This 160 Ã
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg-left', 'bg-center', 'bg-right']}
+    {['background-position:left', 'background-position:center', 'background-position:right']}
   </Class2CSS>
 </details>
 
@@ -52,7 +52,7 @@ A two-value position supplies horizontal then vertical offsets. Percentages alig
 ```html
 <!-- 50% 25% Â· shares the free space -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-no-repeat background-position:50%|25%
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:50%|25%
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -61,7 +61,7 @@ A two-value position supplies horizontal then vertical offsets. Percentages alig
 ```html
 <!-- 24px 12px Â· measured offset -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-no-repeat background-position:var(--spacing-lg)|var(--spacing-sm)
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:var(--spacing-lg)|var(--spacing-sm)
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -77,8 +77,8 @@ The image covers a deliberately shallow frame. Widen to `sm` to move its crop fr
 ```html
 <!-- Centered crop â†’ top crop at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:120px w-xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-image:url(/demo/landscape.svg) bg-center@print bg-top@screen@sm"
+  class="height:120px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
+         background-image:url(/demo/landscape.svg) background-position:center@print background-position:top@screen@sm"
 ></div>
 ```
 

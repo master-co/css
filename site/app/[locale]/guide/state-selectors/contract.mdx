@@ -189,7 +189,7 @@ Use `,` when the same declaration should apply to several selectors.
 Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
 ```html
 <!-- @MARK , -->
-<div class="block>div,>span">
+<div class="display:block>div,>span">
   <div>First child</div>
   <span>Second child</span>
 </div>
@@ -197,7 +197,7 @@ Selector groups also work with combinators. In this example, the declaration app
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['block>div,>span']}
+    {['display:block>div,>span']}
   </Class2CSS>
 </details>
 
@@ -239,7 +239,7 @@ The required field is invalid while empty or while its value fails native email 
 <!-- @MARK :valid --><!-- @MARK :invalid --><!-- @MARK :required -->
 <label for="contact-email">Email</label>
 <input id="contact-email" type="email" required
-  class="b:1px|solid b-green:valid b-red:invalid outline:2px|solid|var(--color-blue):focus-visible" />
+  class="border:1px|solid b-green:valid b-red:invalid outline:2px|solid|var(--color-blue):focus-visible" />
 ```
 
 Use `:required` to select required controls regardless of whether their current value is valid. Avoid communicating validation through color alone; production forms should also explain the error in text.
@@ -304,7 +304,7 @@ Style the element when an ancestor matches.
 <div class="active">
   <div>
     <!-- @MARK :of(.active) -->
-    <div class="hidden:of(.active)">hidden</div>
+    <div class="display:none:of(.active)">hidden</div>
   </div>
 </div>
 ```
@@ -313,7 +313,7 @@ Style the element when its parent matches.
 <!-- @MARK active -->
 <div class="active">
   <!-- @MARK :of(.active>) -->
-  <div class="hidden:of(.active>)">hidden</div>
+  <div class="display:none:of(.active>)">hidden</div>
 </div>
 ```
 Style the element when its previous adjacent sibling matches.
@@ -321,7 +321,7 @@ Style the element when its previous adjacent sibling matches.
 <!-- @MARK active -->
 <div class="active"></div>
 <!-- @MARK :of(.active+) -->
-<div class="hidden:of(.active+)">hidden</div>
+<div class="display:none:of(.active+)">hidden</div>
 ```
 Style the element when one of its preceding siblings matches.
 ```html
@@ -329,11 +329,11 @@ Style the element when one of its preceding siblings matches.
 <div class="active"></div>
 <div></div>
 <!-- @MARK :of(.active~) -->
-<div class="hidden:of(.active~)">hidden</div>
+<div class="display:none:of(.active~)">hidden</div>
 ```
 Do not put combinators or pseudo-elements before `:of()`. The following order is unsupported:
 ```html
-<div class="hidden_div::before:of(.active)">hidden</div>
+<div class="display:none_div::before:of(.active)">hidden</div>
 ```
 
 ## Pseudo-elements \{#pseudo-elements\}
@@ -353,7 +353,7 @@ These aliases generate `::-webkit-scrollbar*` selectors. Their effect depends on
 ```html
 <!-- @MARK scrollbar --><!-- @MARK ::scrollbar-thumb -->
 <div tabindex="0" role="region" aria-label="Scrollable schedule"
-  class="overflow-x:auto max-w:100% width:0.375rem::scrollbar height:0.375rem::scrollbar bg-neutral-50/.2::scrollbar-thumb">
+  class="overflow-x:auto max-width:100% width:0.375rem::scrollbar height:0.375rem::scrollbar bg-neutral-50/.2::scrollbar-thumb">
   <p class="w-7xl">Monday · Tuesday · Wednesday · Thursday · Friday</p>
 </div>
 ```

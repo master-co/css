@@ -11,28 +11,38 @@ beforeAll(() => {
 })
 
 const manifest = {
-  version: 2,
-  languageVersion: 4,
-  utilities: [
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
     {
-      id: 'display-block',
-      name: 'block',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { display: 'block' } }]
-      },
-      matchers: [{ type: 'static', name: 'block' }]
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
     },
     {
-      id: 'color-red',
-      name: 'fg-red',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { color: 'red' } }]
-      },
-      matchers: [{ type: 'static', name: 'fg-red' }]
+      "name": "--fg-red",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "color",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "red"
+            }
+          ]
+        }
+      ]
     }
   ]
 } as unknown as MasterCSSManifest

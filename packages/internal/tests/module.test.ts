@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":2,"languageVersion":4}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":3,"languageVersion":5}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,9 +42,12 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":2,"languageVersion":4}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":3,"languageVersion":5}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {} };')
-    expect(toManifestJSON({ version: 2, languageVersion: 4 })).toBe('{"version":2,"languageVersion":4}')
+    expect(toManifestJSON({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})).toBe('{"version":3,"languageVersion":5}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1}};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {} })
   })
@@ -98,7 +101,10 @@ describe('@master/css-internal module helpers', () => {
       toBrowserManifestFacadeModule(JSON.stringify(dataManifestURL))
     )
 
-    expect(module.default).toEqual({ version: 2, languageVersion: 4 })
+    expect(module.default).toEqual({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
     expect(fetch).not.toHaveBeenCalled()
   })
 
@@ -107,7 +113,10 @@ describe('@master/css-internal module helpers', () => {
     const fetch = vi.fn(async () => ({
       ok: true,
       status: 200,
-      json: async () => ({ version: 2, languageVersion: 4 })
+      json: async () => ({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
       if (args.at(-1)?.includes(`with: { type: 'json' }`)) throw new SyntaxError('Unsupported import attributes')
@@ -119,7 +128,10 @@ describe('@master/css-internal module helpers', () => {
       toBrowserManifestFacadeModule(JSON.stringify(dataManifestURL))
     )
 
-    expect(module.default).toEqual({ version: 2, languageVersion: 4 })
+    expect(module.default).toEqual({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)
   })

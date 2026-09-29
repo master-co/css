@@ -27,10 +27,10 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
 ```
 
 ```html
-<!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK bg-surface-card --><!-- @MARK grid-cols:2@md --><!-- @MARK bg-brand --><!-- @MARK text-action -->
-<section class="p-lg r-lg grid-cols:2@md bg-surface-card">
+<!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK bg-surface-card --><!-- @MARK grid-cols(2)@md --><!-- @MARK bg-brand --><!-- @MARK fg-text-action -->
+<section class="p-lg r-lg grid-cols(2)@md bg-surface-card">
   <button class="px-md py-xs r-md fg-white bg-brand">Save</button>
-  <a class="text-action" href="/settings">Settings</a>
+  <a class="fg-text-action" href="/settings">Settings</a>
 </section>
 ```
 
@@ -93,7 +93,7 @@ Utilities resolve token values from the namespace they use. The same short key c
 <!-- @MARK bg-surface-card --><!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK font-sans --><!-- @MARK shadow-card -->
 <article class="p-lg r-lg font-sans bg-surface-card shadow-card">
   <h2>Dashboard</h2>
-  <a class="text-blue" href="/settings">Settings</a>
+  <a class="fg-text-blue" href="/settings">Settings</a>
 </article>
 ```
 
@@ -145,11 +145,11 @@ Use native media queries or selectors inside `@theme` when the same token should
 ```
 
 ```html
-<!-- @MARK bg-surface-card --><!-- @MARK text-card --><!-- @MARK shadow-card -->
-<article class="bg-surface-card shadow-card text-card">...</article>
+<!-- @MARK bg-surface-card --><!-- @MARK fg-text-card --><!-- @MARK shadow-card -->
+<article class="bg-surface-card shadow-card fg-text-card">...</article>
 ```
 
-Keep the token name mode-neutral. Markup should say `surface-card` or `text-card`, not `dark-card`.
+Keep the token name mode-neutral. Markup should say `surface-card` or `fg-text-card`, not `dark-card`.
 
 For manual switches and local theme islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
 
@@ -160,10 +160,10 @@ For manual switches and local theme islands, see [Variables and Modes](/guide/va
 ## Keep shared values dynamic
 Token utilities preserve `var()` references. `@theme inline` and `@theme static` are removed.
 
-For a fixed utility, write a declaration in `@utility`:
+For a reusable recipe, write native declarations in `@mixin`:
 
 ```css
-@utility brand-fill { background-color: #4f46e5; }
+@mixin --brand-fill { background-color: #4f46e5; }
 ```
 
 For custom properties that must always ship, use native CSS:
@@ -193,13 +193,13 @@ Define viewport conditions with `@custom-media`. Container tokens remain availab
 ```
 
 ```html
-<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w-lg --><!-- @MARK grid-cols:2@container((width>=28rem)) -->
-<div class="grid-cols:1 gap-md grid-cols:2@md grid-cols:3@lg">
+<!-- @MARK grid-cols(2)@md --><!-- @MARK grid-cols(3)@lg --><!-- @MARK max-w-lg --><!-- @MARK grid-cols(2)@container((width>=28rem)) -->
+<div class="grid-cols(1) gap-md grid-cols(2)@md grid-cols(3)@lg">
   ...
 </div>
 
-<aside class="container max-w-lg">
-  <article class="grid-cols:1 grid-cols:2@container((width>=28rem))">
+<aside class="container-type:inline-size max-w-lg">
+  <article class="grid-cols(1) grid-cols(2)@container((width>=28rem))">
     ...
   </article>
 </aside>

@@ -69,11 +69,11 @@ Use the preset spacing, radius and typography scales. Demo-specific roles live i
 
 `Demo` uses the site's neutral fine diagonal stripe by default, matching the established Guide canvas. The shell supplies a border and responsive breathing room, while the example supplies its own layout and geometry. A title, description, controls, and caption appear only when the lesson needs them; controls remain outside the demonstrated layout.
 
-<Demo><div className="flex flex-wrap gap-sm"><DemoItem className="p-md">01</DemoItem><DemoItem className="p-md">02</DemoItem><DemoItem className="p-md">03</DemoItem></div></Demo>
+<Demo><div className="display:flex flex-wrap:wrap gap-sm"><DemoItem className="p-md">01</DemoItem><DemoItem className="p-md">02</DemoItem><DemoItem className="p-md">03</DemoItem></div></Demo>
 
 ```tsx
 <Demo>
-  <div className="flex gap-sm">
+  <div className="display:flex gap-sm">
     <DemoItem className="p-md">01</DemoItem>
     <DemoItem className="p-md">02</DemoItem>
   </div>
@@ -104,7 +104,7 @@ The [column span reference](/reference/column-span) keeps columns and padding in
 
 ```tsx
 <Demo>
-  <div className="flex gap-sm">
+  <div className="display:flex gap-sm">
     <DemoItem className="p-md">Context</DemoItem>
     <DemoItem tone="blue" className="p-md">Subject</DemoItem>
   </div>
@@ -130,7 +130,7 @@ Utilities on `className` can override these paint and typography defaults when t
 `DemoMedia` renders a refined SVG specimen when no source is supplied. Its quiet contour artwork follows `currentColor` so a complete utility such as `fg-demo-violet` can mark a comparison. With `src` and required `alt`, it renders the supplied image instead. Both forms have a fine visual edge that takes no layout space.
 
 ```tsx
-<DemoMedia className="w:100% r-sm" aria-label="Sun above two mountain ridges" />
+<DemoMedia className="width:100% r-sm" aria-label="Sun above two mountain ridges" />
 <DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} />
 ```
 
@@ -161,9 +161,9 @@ The color patch is decorative when it has no children, while the visible label c
 
 The “Content specimens” and “Comparison” examples above use this layout. The [elevation guide](/guide/elevation) retains its original spacious comparison grid, while the [comparison review](/design-system/review/comparison) shows that grid beside the previous and adopted shared treatments. Place comparison labels outside any measured flex, grid or float scene.
 
-<Demo title="Badge sizes"><div className="flex flex-wrap items-center gap-md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
+<Demo title="Badge sizes"><div className="display:flex flex-wrap:wrap align-items:center gap-md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
 
-<Demo title="Badge treatments"><div className="flex flex-wrap items-center gap-md"><DemoBadge>Draft</DemoBadge><DemoBadge tone="blue" variant="solid">Selected</DemoBadge><DemoBadge tone="violet" variant="outline">Comparison</DemoBadge><DemoBadge tone="amber" variant="ghost">Note</DemoBadge></div></Demo>
+<Demo title="Badge treatments"><div className="display:flex flex-wrap:wrap align-items:center gap-md"><DemoBadge>Draft</DemoBadge><DemoBadge tone="blue" variant="solid">Selected</DemoBadge><DemoBadge tone="violet" variant="outline">Comparison</DemoBadge><DemoBadge tone="amber" variant="ghost">Note</DemoBadge></div></Demo>
 
 `DemoBadge` labels a state or category. It renders a native span with four sizes
 (`xs`, `sm`, `md`, `lg`), the shared tones and the same paint variants as `DemoItem`.
@@ -178,7 +178,7 @@ The [badge review](/design-system/review/badge) compares the Guide label, earlie
 
 ```tsx
 <Demo title="Alignment" background="grid">
-  <div className="flex items-center gap-sm">
+  <div className="display:flex align-items:center gap-sm">
     <DemoItem className="p-md">01</DemoItem>
     <DemoItem tone="violet" className="p-md">02</DemoItem>
   </div>
@@ -257,7 +257,7 @@ Place the measurement wrapper outside the flex, grid or float parent being taugh
 
 ```tsx
 <DemoAxes aria-label="Row layout: main axis rightward, cross axis downward">
-  <div className="flex gap-sm">{/* layout items */}</div>
+  <div className="display:flex gap-sm">{/* layout items */}</div>
 </DemoAxes>
 ```
 
@@ -287,7 +287,7 @@ The [controls review](/design-system/review/controls) compares both shared appea
 `DemoScrollArea` establishes native overflow and a keyboard focus stop. Its adopted fine border, compact radius and quiet surface make the scroll boundary visible against the diagonal canvas. The component caps its height at 16rem; set an explicit width or smaller height for the lesson. It does not add a child or change how content is laid out inside the scrollport.
 
 ```tsx
-<DemoScrollArea role="region" aria-label="Layer collection" className="h:10rem">
+<DemoScrollArea role="region" aria-label="Layer collection" className="height:10rem">
   {/* Overflowing content */}
 </DemoScrollArea>
 ```
@@ -316,7 +316,7 @@ Derive breakpoint widths from the active preset; the numbers above illustrate th
 
 ```tsx
 <DemoMotion>
-  <div className="grid place-items:center h:10rem">
+  <div className="display:grid place-items:center height:10rem">
     <DemoItem className="width:4rem height:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
   </div>
 </DemoMotion>
@@ -617,8 +617,8 @@ This static wrapper keeps native table headers and does not add demo geometry.
 
 | Existing CSS | Master CSS |
 | --- | --- |
-| `border-radius: .75rem` | `r:.75rem` preserves the same length. |
-| `width: var(--progress)` | `w:var(--progress)` reads the same runtime property. |
+| `border-radius: .75rem` | `border-radius:.75rem` preserves the same length. |
+| `width: var(--progress)` | `width:var(--progress)` reads the same runtime property. |
 | `@media (width >= 72rem)` | Define `@custom-media --dashboard (width >= 72rem);`, then use `@dashboard`. |
 
 </DocumentComparison>
@@ -628,7 +628,7 @@ This static wrapper keeps native table headers and does not add demo geometry.
 
 | Existing CSS | Master CSS |
 | --- | --- |
-| `border-radius: .75rem` | `r:.75rem` |
+| `border-radius: .75rem` | `border-radius:.75rem` |
 
 </DocumentComparison>
 ```
@@ -879,7 +879,7 @@ Charts and summaries render on the server and do not animate or change measureme
 ## Code
 ### Block code
 ```html
-<h1 class="block font-6xl tracking:.2em text-center">
+<h1 class="display:block font-6xl letter-spacing:.2em text-align:center">
   Hello, world!
 </h1>
 ```
@@ -1052,7 +1052,7 @@ Both use real mode variables. Content sizing keeps normal-flow content visible; 
 <DemoThemeComparison
   name="surface-card"
   title="A shared surface"
-  html='<article class="p-md surface-raised text-body">Notes</article>'
+  html='<article class="p-md surface-raised fg-text-body">Notes</article>'
 />
 ```
 
@@ -1112,8 +1112,8 @@ Use practical compositions when teaching layout decisions. These shared specimen
 ```tsx
 <Demo title="Container query" padding="none">
   <DemoContainer title="Card">
-    <section className="container">
-      <article className="grid-cols:1 grid-cols:2@container((width>=28rem))">
+    <section className="container-type:inline-size">
+      <article className="grid-cols(1) grid-cols(2)@container((width>=28rem))">
         <div>Media</div><div>Content</div>
       </article>
     </section>
@@ -1341,13 +1341,13 @@ Every specimen below is available directly in MDX. The surrounding example owns 
   <DemoItem tone="violet" variant="outline" className="p-md">After</DemoItem>
 </DemoComparison>
 
-<DemoMedia className="w:100%" />
+<DemoMedia className="width:100%" />
 <DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
 <DemoSwatch label="Subject" className="bg-demo-blue" />
 
 <DemoAxes>
   <DemoMeasure label="Container">
-    <div className="flex gap-sm">{/* measured layout */}</div>
+    <div className="display:flex gap-sm">{/* measured layout */}</div>
   </DemoMeasure>
 </DemoAxes>
 <DemoLegend items={[{ tone: 'blue', label: 'Subject' }]} />
@@ -1355,7 +1355,7 @@ Every specimen below is available directly in MDX. The surrounding example owns 
 <DemoControls label="Alignment">
   <button type="button" className="demo-button">Start</button>
 </DemoControls>
-<DemoScrollArea aria-label="Layers" className="h:10rem">
+<DemoScrollArea aria-label="Layers" className="height:10rem">
   {/* overflowing content */}
 </DemoScrollArea>
 <DemoMotion>

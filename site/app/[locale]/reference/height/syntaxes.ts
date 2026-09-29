@@ -1,8 +1,8 @@
 const syntaxes = [
-  'h:100%',
-  'h:fit-content',
-  'h:min-content',
-  'h:max-content',
+  "height:100%",
+  "height:fit-content",
+  "height:min-content",
+  "height:max-content",
   'h-3xs',
   'h-2xs',
   'h-xs',
@@ -16,7 +16,7 @@ const syntaxes = [
   'h-5xl',
   'h-6xl',
   'h-7xl',
-  ['h:`size`', 'h:`N/N`'],
+  ["height:`size`", "height:`N/N`"],
 ]
 
 export default syntaxes

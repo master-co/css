@@ -36,12 +36,12 @@ describe('Svelte server hook renderer', () => {
     const handle = createMasterCSSHandle({ manifest: defaultManifest })
     const html = await renderWithHandle(handle, [
       '<html><he',
-      'ad><meta class="block"></head><body>',
+      "ad><meta class=\"display:block\"></head><body>",
       '<div class="fg-red"></div></body></html>'
     ])
 
     expect(html).toContain('<style id="master-css">')
-    expect(html).toContain('.block')
+    expect(html).toContain(".display\\:block")
     expect(html).toContain('.fg-red')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g')))
@@ -78,12 +78,12 @@ describe('Svelte server hook renderer', () => {
       }
     })
     const html = await renderWithHandle(handle, [
-      '<html><head></head><body class="block"></body></html>'
+      "<html><head></head><body class=\"display:block\"></body></html>"
     ])
 
     expect(manifestHash).toMatch(/^[0-9a-f]{8}$/)
     expect(JSON.parse(manifestJSON).rules).toEqual([
-      expect.objectContaining({ className: 'block' })
+      expect.objectContaining({ className: "display:block" })
     ])
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/hydration/${manifestHash}.json"`

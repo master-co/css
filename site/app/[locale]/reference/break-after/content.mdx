@@ -8,12 +8,12 @@ Use `break-after:column` to force a column break after the marked element. The b
 <DemoExample page="break-after" section="set-the-break-after-behavior" />
 
 ```html
-<div class="columns:2 h:12.5rem column-fill:auto">
-  <div class="h:48px">01</div>
+<div class="columns:2 height:12.5rem column-fill:auto">
+  <div class="height:48px">01</div>
   <!-- @MARK break-after:column -->
-  <div class="h:48px break-after:column">02 · Target</div>
-  <div class="h:48px">03</div>
-  <div class="h:48px">04</div>
+  <div class="height:48px break-after:column">02 · Target</div>
+  <div class="height:48px">03</div>
+  <div class="height:48px">04</div>
 </div>
 ```
 
@@ -23,10 +23,10 @@ Leave the break automatic at narrow widths, then force a column break after the 
 <DemoExample page="break-after" section="apply-conditionally" />
 
 ```html
-<div class="columns:2 h:12.5rem column-fill:auto">
-  <div class="h:48px">01</div>
-  <div class="h:48px break-after:auto break-after:column@sm">02 · Target</div>
-  <div class="h:48px">03</div>
-  <div class="h:48px">04</div>
+<div class="columns:2 height:12.5rem column-fill:auto">
+  <div class="height:48px">01</div>
+  <div class="height:48px break-after:auto break-after:column@sm">02 · Target</div>
+  <div class="height:48px">03</div>
+  <div class="height:48px">04</div>
 </div>
 ```

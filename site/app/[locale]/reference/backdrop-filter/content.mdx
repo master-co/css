@@ -9,16 +9,16 @@ The foreground panel filters pixels behind it. Compare the same translucent pane
 
 ```html
 <!-- No filter · sharp backdrop -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base/.64 text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:none">
     Preview layer
   </div>
@@ -27,16 +27,16 @@ The foreground panel filters pixels behind it. Compare the same translucent pane
 
 ```html
 <!-- Blur · softened backdrop -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base/.64 text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:blur(8px)">
     Preview layer
   </div>
@@ -59,16 +59,16 @@ A translucent background lets the filtered result show through. An opaque backgr
 
 ```html
 <!-- Translucent · filtered pixels visible -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base/.48 text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base/.48 fg-text-strong
            backdrop-filter:saturate(0)">
     Preview layer
   </div>
@@ -77,16 +77,16 @@ A translucent background lets the filtered result show through. An opaque backgr
 
 ```html
 <!-- Opaque · filtered pixels covered -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base fg-text-strong
            backdrop-filter:saturate(0)">
     Preview layer
   </div>
@@ -102,16 +102,16 @@ Use `backdrop-filter:none` to restore the unfiltered backdrop. Open print previe
 
 ```html
 <!-- Blur on screen · none in print -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base/.64 text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:blur(8px)
            backdrop-filter:none@print">
     Preview layer
@@ -128,16 +128,16 @@ Widen the preview to `sm` to blur the backdrop. Print keeps the original sharp i
 
 ```html
 <!-- No filter → blur at sm -->
-<div class="rel h:168px w:240px max-w:100%">
+<div class="position:relative height:168px width:240px max-width:100%">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:168px w:240px max-w:100%
-         object-cover" />
+  class="display:block height:168px width:240px max-width:100%
+         object-fit:cover" />
   <div id="target"
-    class="abs inset-md flex items-center
-           justify-center p-sm b:1px|solid|var(--color-line-divider) r-sm
-           font-md bg-surface-base/.64 text-strong
+    class="position:absolute inset-md display:flex align-items:center
+           justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
+           font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:none
            backdrop-filter:none@print
            backdrop-filter:blur(8px)@screen@sm">

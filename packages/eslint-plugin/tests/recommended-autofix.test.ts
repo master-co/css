@@ -27,11 +27,11 @@ test('recommended config autofixes cross-rule class lists to a stable result', a
   })
 
   const [canonicalResult] = await preferCanonicalOnly.lintText(
-    `clsx('padding-md p:8px block')`,
+    "clsx('padding-md padding:8px display:block')",
     { filePath: 'fixture.js' }
   )
   const canonicalOutput = canonicalResult.output
-  expect(canonicalOutput).toBe(`clsx('p-md p:8px block')`)
+  expect(canonicalOutput).toBe("clsx('p-md padding:8px display:block')")
   if (!canonicalOutput) throw new Error('Expected canonical output')
   expect(canonicalResult.messages.map((message) => message.ruleId)).toEqual([
     '@master/css/sort-classes',
@@ -40,7 +40,7 @@ test('recommended config autofixes cross-rule class lists to a stable result', a
 
   const [fixedResult] = await recommendedFix.lintText(canonicalOutput, { filePath: 'fixture.js' })
   const fixedOutput = fixedResult.output
-  expect(fixedOutput).toBe(`clsx('block p:8px')`)
+  expect(fixedOutput).toBe("clsx('display:block padding:8px')")
   if (!fixedOutput) throw new Error('Expected fixed output')
   expect(fixedResult.messages).toEqual([])
 
@@ -73,7 +73,7 @@ test('recommended config preserves mdx display examples', async () => {
   })
   const source = [
     '```html',
-    '<button class="inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60">',
+    "<button class=\"display:inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60\">",
     '    Save',
     '</button>',
     '```'

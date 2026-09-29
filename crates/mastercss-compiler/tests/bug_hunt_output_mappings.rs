@@ -72,7 +72,7 @@ fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
     for source in [
         "@reference \"./😀.css\";.card { padding: 1rem; }",
         "/* 😀 */\r\n@source './src/**';\r\n.card { padding: 1rem; }",
-        r###" @utility paint { color: red }  .managed { @variant dark { @variant always{color:red;} } } .card { padding: 1rem; }"###,
+        r###" @mixin --paint { color: red }  .managed { @variant dark { @variant always{color:red;} } } .card { padding: 1rem; }"###,
         ".empty {} .card { padding: 1rem; } .after { color: blue; }",
         "@layer base { @supports (display:grid) { .card { padding: 1rem; } } }",
     ] {
@@ -104,7 +104,7 @@ fn native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification() {
 
 #[test]
 fn lower_output_retains_compose_and_native_declaration_origins() {
-    let source = r###" @utility paint { padding: 2rem; }
+    let source = r###" @mixin --paint { padding: 2rem; }
 .card {
  @variant always { padding:2rem; color: red; }
 }"###;
@@ -120,7 +120,7 @@ fn lower_output_retains_compose_and_native_declaration_origins() {
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
     )
     .unwrap();
     let value = serde_json::to_value(&result).unwrap();
@@ -217,14 +217,14 @@ fn expanded_import_graph_retains_copied_spans_through_references_wrappers_and_ho
 
 #[test]
 fn composed_declaration_mappings_preserve_the_important_and_fallback_declarations() {
-    let source = r###"@utility low {padding:2rem}@utility high {padding:3rem!important}
+    let source = r###"@mixin --low {padding:2rem}@mixin --high {padding:3rem!important}
 .card{@variant always{padding:3rem !important;padding:2rem;}padding:4rem}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
     )
     .unwrap();
     assert_eq!(
@@ -250,7 +250,7 @@ fn composed_declaration_mappings_preserve_the_important_and_fallback_declaration
 
 #[test]
 fn wrapped_lowered_selectors_map_after_generated_condition_prefixes() {
-    let source = r###"@utility paint {padding:2rem}
+    let source = r###"@mixin --paint {padding:2rem}
 @media (min-width:10px){
 .card{@variant always{padding:2rem;}}
 }"###;
@@ -259,7 +259,7 @@ fn wrapped_lowered_selectors_map_after_generated_condition_prefixes() {
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
     )
     .unwrap();
     let generated = lowered

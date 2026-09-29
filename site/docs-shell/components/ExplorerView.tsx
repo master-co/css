@@ -13,14 +13,14 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
       ? option.name.split('.').pop()
       : ''
     return (
-      <div className='flex flex-col w:100%'>
-        <div className='flex items-center'>
-          {ext && <FileIcon name={option.name} ext={ext} className="width:1.2em height:1.2em mr-3xs" />}
-          {!ext && <FolderSvg className="width:1.2em height:1.2em mr-3xs" />}
+      <div className='display:flex flex-direction:column width:100%'>
+        <div className='display:flex align-items:center'>
+          {ext && <FileIcon name={option.name} ext={ext} className="height:1.2em width:1.2em mr-3xs" />}
+          {!ext && <FolderSvg className="height:1.2em width:1.2em mr-3xs" />}
           {option.name}
         </div>
         {option.children?.length &&
-          <div className='ml:1.5em'>
+          <div className='margin-left:1.5em'>
             {option.children.map((option, index) => <Item {...option} key={option.name + index} />)}
           </div>
         }
@@ -29,7 +29,7 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
   }
   return (
     <div className='code-wrapper'>
-      <div className="px:1.25rem text-strong code-block">
+      <div className="padding-inline:1.25rem fg-text-strong code-block">
         {children.map((option, index) => (
           <Item {...option} key={option.name + index} />
         ))}

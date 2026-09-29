@@ -4,7 +4,7 @@ import { createServer } from 'vite'
 import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
 
-test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('identical imported files retain module scope and distinct resource owners in %s', async mode => {
+test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('identical imported files retain module scope and distinct resource owners in %s', async mode => {
   const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'module-duplicate-inputs-'))
   let server: Awaited<ReturnType<typeof createServer>> | undefined

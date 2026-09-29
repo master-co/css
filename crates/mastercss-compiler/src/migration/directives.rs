@@ -31,7 +31,6 @@ fn parameter(body: &str, function: &str, value: &str) -> String {
 }
 
 fn definition(name: &str, body: &str) -> Result<String, String> {
-    let body = parameter(body, "--value", "--master-value()");
     let Some((prefix, members)) = name
         .split_once('<')
         .and_then(|(prefix, rest)| rest.strip_suffix('>').map(|rest| (prefix, rest)))
@@ -41,7 +40,7 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
                 "Utility {name} requires a manual identifier migration"
             ));
         }
-        return Ok(format!("@utility {name}{{{body}}}"));
+        return Ok(format!("@mixin --{name}{{{body}}}"));
     };
     let members = members.split('|').map(str::trim).collect::<Vec<_>>();
     let namespaces = members
@@ -54,63 +53,90 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
         .copied()
         .filter(|name| !name.starts_with(['~', '=']))
         .collect::<Vec<_>>();
+    if !namespaces.is_empty() && !raw.is_empty() {
+        return Err(format!(
+            "Mixed raw and named family {name} requires manual migration to distinct mixin names"
+        ));
+    }
     if prefix.ends_with(':') && !raw.is_empty() && !raw.contains(&"*") {
         return Err(format!(
             "Utility {name} has typed-only or enum acceptance; widening its domain requires review"
         ));
     }
     let key = prefix.trim_end_matches([':', '-']);
-    let mut definitions = Vec::new();
     if !namespaces.is_empty() {
-        let sources = namespaces
-            .iter()
-            .map(|name| format!("--{}-*", &name[1..]))
-            .collect::<Vec<_>>()
-            .join(", ");
-        definitions.push(format!("@utility {key}-* from({sources}){{{body}}}"));
+        let value = parameter(body, "--value", "var(--value)");
+        let definition = crate::mixins::definition("--migration(--value)", &value)?;
+        if let [
+            mastercss_schema::MixinNode::Declaration {
+                property, value, ..
+            },
+        ] = definition.body.as_slice()
+            && mastercss_engine::evaluate_mixin_value(
+                value,
+                &std::collections::HashMap::from([("--value".into(), "MIGRATION".into())]),
+            )? == "MIGRATION"
+            && mastercss_engine::builtin_token_namespaces()
+                .iter()
+                .any(|(properties, refs)| {
+                    properties.contains(&property.as_str())
+                        && refs
+                            .iter()
+                            .map(|reference| reference.trim_start_matches('~'))
+                            .eq(namespaces.iter().map(|namespace| &namespace[1..]))
+                })
+            && (property == key
+                || mastercss_engine::builtin_token_aliases()
+                    .iter()
+                    .any(|(alias, target)| *alias == key && *target == property))
+        {
+            return Ok(String::new());
+        }
+        if namespaces.len() == 1 && &namespaces[0][1..] == key {
+            let body = parameter(
+                body,
+                "--value",
+                &format!("var(ident(\"--{key}-\" var(--key)))"),
+            );
+            return Ok(format!("@mixin --{key}(--key <string>){{{body}}}"));
+        }
+        return Err(format!(
+            "Named family {name} needs same-name primary/alias tokens and a <string> mixin; preserve cross-namespace priority explicitly"
+        ));
     }
-    if !raw.is_empty() && prefix.ends_with(':') {
-        let neutral = format!("@utility migration-raw:*{{{body}}}");
-        let parsed = crate::compile_css_directives(&neutral, &Default::default())
-            .map_err(|error| error.to_string())?;
-        let compiled = crate::compile_manifest_input(&parsed.manifest_input, &Default::default())
-            .map_err(|error| error.to_string())?;
-        let native = mastercss_engine::builtin_key_aliases()
-            .iter()
-            .find_map(|(alias, property)| (*alias == key).then_some(*property))
-            .unwrap_or(key);
-        let target = if key == "line-clamp" {
+    if prefix.ends_with(':') {
+        let key = if key == "line-clamp" {
             "clamp-lines"
-        } else if mastercss_schema::is_native_css_property(native) {
-            let rules = compiled.manifest["utilities"][0]["emit"]["rules"]
-                .as_array()
-                .ok_or("Cannot inspect saved utility")?;
-            if rules.len() == 1
-                && let Some(declarations) = rules[0]["declarations"].as_object()
-                && declarations.len() == 1
-                && declarations.values().all(serde_json::Value::is_null)
-            {
-                declarations.keys().next().unwrap()
-            } else {
-                key
-            }
         } else {
             key
         };
-        definitions.push(format!("@utility {target}:*{{{body}}}"));
-    } else if !raw.is_empty() {
-        if !namespaces.is_empty() {
-            return Err(format!(
-                "Mixed enum and namespace utility {name} requires review"
-            ));
-        }
-        for member in raw {
-            let (key, value) = member.split_once('=').unwrap_or((member, member));
-            let body = parameter(&body, "--master-value", value);
-            definitions.push(format!("@utility {prefix}{key}{{{body}}}"));
-        }
+        let body = parameter(body, "--value", "var(--value)");
+        let syntax = if [
+            "grid-cols",
+            "grid-rows",
+            "grid-col-span",
+            "grid-row-span",
+            "clamp-lines",
+        ]
+        .contains(&key)
+        {
+            " <integer>"
+        } else {
+            ""
+        };
+        return Ok(format!("@mixin --{key}(--value{syntax}){{{body}}}"));
     }
-    Ok(definitions.join("\n"))
+    Ok(raw
+        .into_iter()
+        .map(|member| {
+            let (key, value) = member.split_once('=').unwrap_or((member, member));
+            format!(
+                "@mixin --{prefix}{key}{{{}}}",
+                parameter(body, "--value", value)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n"))
 }
 
 impl Migration {
@@ -146,7 +172,7 @@ impl Migration {
                 let name = source[first.bytes.start..open.bytes.start].trim();
                 if matches!(first.kind, Kind::AtKeyword(_)) {
                     notes.push(
-                        "Move native condition wrappers inside each @utility definition".into(),
+                        "Move native condition wrappers inside each @mixin definition".into(),
                     );
                     continue;
                 }

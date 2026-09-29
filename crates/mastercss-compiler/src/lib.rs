@@ -3,6 +3,7 @@
 mod lower;
 mod manifest;
 mod migration;
+mod mixins;
 pub use migration::{
     RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
 };
@@ -107,7 +108,7 @@ pub struct CompileNativeCssResult {
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub native_output: Option<NativeCssOutput>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -399,6 +400,8 @@ enum DirectiveName {
     Theme,
     Defaults,
     Components,
+    Mixin,
+    Apply,
     Utility,
     CustomVariant,
 }
@@ -410,16 +413,9 @@ impl DirectiveName {
             Self::Defaults => "defaults",
             Self::Components => "components",
             Self::Utility => "utility",
+            Self::Mixin => "mixin",
+            Self::Apply => "apply",
             Self::CustomVariant => "custom-variant",
-        }
-    }
-
-    const fn layer(self) -> Option<UtilityLayerName> {
-        match self {
-            Self::Defaults => Some(UtilityLayerName::Defaults),
-            Self::Components => Some(UtilityLayerName::Components),
-            Self::Utility => Some(UtilityLayerName::Utilities),
-            Self::Theme | Self::CustomVariant => None,
         }
     }
 }
@@ -454,11 +450,16 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
             name if name.eq_ignore_ascii_case("defaults") => DirectiveName::Defaults,
             name if name.eq_ignore_ascii_case("components") => DirectiveName::Components,
             name if name.eq_ignore_ascii_case("utility") => DirectiveName::Utility,
+            name if name.eq_ignore_ascii_case("mixin") => DirectiveName::Mixin,
+            name if name.eq_ignore_ascii_case("apply") => DirectiveName::Apply,
             name if name.eq_ignore_ascii_case("custom-variant") => DirectiveName::CustomVariant,
             _ => return Err(input.new_error(BasicParseErrorKind::AtRuleInvalid(name))),
         };
         let mut parts = Vec::new();
-        if directive_name == DirectiveName::Utility {
+        if matches!(
+            directive_name,
+            DirectiveName::Utility | DirectiveName::Mixin | DirectiveName::Apply
+        ) {
             let start = input.position();
             while input.next_including_whitespace_and_comments().is_ok() {}
             parts.push(input.slice_from(start).trim().to_owned());
@@ -482,7 +483,7 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
         let prelude = ThemePrelude {
             parts: prelude.parts.into_iter().skip(1).collect(),
         };
-        if is_nested {
+        if is_nested && name != DirectiveName::Apply {
             self.nested_directive = Some((start.position().byte_index(), name));
         }
         Ok(ThemeAtRule {
@@ -506,7 +507,7 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
         let prelude = ThemePrelude {
             parts: prelude.parts.into_iter().skip(1).collect(),
         };
-        if is_nested {
+        if is_nested && name != DirectiveName::Apply {
             self.nested_directive = Some((start.position().byte_index(), name));
         }
         let body_start = input.position();
@@ -526,6 +527,8 @@ fn directive_name_from_prelude(prelude: &ThemePrelude) -> DirectiveName {
         Some("defaults") => DirectiveName::Defaults,
         Some("components") => DirectiveName::Components,
         Some("utility") => DirectiveName::Utility,
+        Some("mixin") => DirectiveName::Mixin,
+        Some("apply") => DirectiveName::Apply,
         Some("custom-variant") => DirectiveName::CustomVariant,
         _ => DirectiveName::Theme,
     }
@@ -645,11 +648,9 @@ mod compiled_stylesheet_graph;
 mod custom_media;
 mod directives;
 mod imports;
-mod managed;
 mod native_conditionals;
 mod native_output;
 mod native_source;
-mod utility_definitions;
 pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
 mod graph_inline;
 mod native_style;
@@ -673,14 +674,12 @@ mod variant;
 pub(crate) use imports::{
     decode_css_quoted_string, default_filename, default_true, extraction_policy_from_statements,
 };
-pub(crate) use managed::lower_managed_rule_list;
 pub(crate) use native_style::{
     NativeStyleContext, lower_native_rule_list, lower_native_style_rule,
     native_rule_list_has_directives,
 };
 pub(crate) use pattern::{
-    ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
-    minified_css,
+    condition_properties, css_block_end, css_statement_delimiter, minified_css,
 };
 pub(crate) use syntax::{
     collect_declarations, css_comment_end, css_quote_end, declaration_name, directive_error,
@@ -688,8 +687,8 @@ pub(crate) use syntax::{
 };
 pub(crate) use theme::lower_theme_rule;
 pub(crate) use variant::{
-    combine_managed_selectors, lower_custom_variant_rule, managed_selector_definition,
-    printed_selectors, reject_removed_directives, rewrite_managed_variant_directives,
+    combine_managed_selectors, lower_custom_variant_rule, printed_selectors,
+    reject_removed_directives, rewrite_managed_variant_directives,
     validate_condition_variant_syntax,
 };
 
@@ -717,7 +716,5 @@ pub use stylesheet_graph::{
 mod tests;
 
 mod declarations;
-mod utility_sources;
-use declarations::{
-    collect_ordered_declarations, declaration_runs, preserve_ordered_literal_spelling,
-};
+mod mixin_sources;
+use declarations::{collect_ordered_declarations, preserve_ordered_literal_spelling};

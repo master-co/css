@@ -7,7 +7,22 @@ const cases = JSON.parse(readFileSync(new URL('./bug-hunt-static-retention.json'
 
 for (const entry of cases) {
   test(`BH-0003: ${entry.id} scoped dependency graph survives public compile and class lifetimes`, async () => {
-    const compiled = await compileRenderedStylesheet('/static.css', entry.css + ".native{color:var(--color-brand)}", { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })
+    const compiled = await compileRenderedStylesheet('/static.css', entry.css + ".native{color:var(--color-brand)}", { baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} })
     const snapshots = []
     for (const binding of ['native', 'wasm'] as const) {
       const engine = await createEngine({ manifest: compiled.manifest, binding })

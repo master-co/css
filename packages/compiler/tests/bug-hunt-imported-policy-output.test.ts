@@ -11,14 +11,14 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
     const scanner = new MasterCSSScanner({}, root)
     try {
       mkdirSync(join(root, 'styles/views'), { recursive: true })
-      writeFileSync(join(root, 'styles/child.css'), "@source './views/*.html';@safelist 'flex';")
-      writeFileSync(join(root, 'styles/views/view.html'), '<div class="block"></div>')
+      writeFileSync(join(root, 'styles/child.css'), "@source './views/*.html';@safelist 'display:flex';")
+      writeFileSync(join(root, 'styles/views/view.html'), "<div class=\"display:block\"></div>")
       await scanner.init()
       const stylesheetSources = new Map()
       await registerStylesheetSource(scanner, stylesheetSources, join(root, 'entry.css'), `@import './styles/child.css' ${qualifier};@import "@master/css";`, { baseManifest: scanner.css.manifest })
       const css = await createExtractedCSS({ scanner, stylesheetSources, baseManifest: scanner.css.manifest, projectDir: root })
-      expect(css).toContain('.block{display:block}')
-      expect(css).toContain('.flex{display:flex}')
+      expect(css).toContain(".display\\:block{display:block}")
+      expect(css).toContain(".display\\:flex{display:flex}")
       expect(css).not.toMatch(/@(?:source|safelist)\b/)
     } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }
   })
@@ -28,9 +28,24 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
   test(`BH-0004 graph compilation consumes policies before ${qualifier} wrapping`, async () => {
     const root = mkdtempSync(join(tmpdir(), 'master-policy-graph-control-'))
     try {
-      writeFileSync(join(root, 'child.css'), '@source "./views/*.html";@safelist "flex";.sentinel{display:grid}')
+      writeFileSync(join(root, 'child.css'), '@source "./views/*.html";@safelist "display:flex";.sentinel{display:grid}')
       const result = await compileRenderedStylesheet(join(root, 'entry.css'), `@import './child.css' ${qualifier};@import "@master/css";`, {
-        baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, projectDir: root
+        baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)
       expect(result.css).toContain('.sentinel')

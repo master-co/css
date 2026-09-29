@@ -7,7 +7,7 @@ import { UtilityType } from '@master/css-schema/utility-type'
 jsxTester.run('invalid', rule, {
   valid: [
     {
-      code: `<div class="m:0.5rem p:0.5rem bg-black fg-white font-size:1.5rem">Simple, basic</div>`,
+      code: "<div class=\"margin:0.5rem padding:0.5rem bg-black fg-white font-size:1.5rem\">Simple, basic</div>",
     },
     {
       code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
@@ -53,7 +53,7 @@ jsxTester.run('invalid', rule, {
       ]
     },
     {
-      code: `<div class="a c d hello-world text-decoration:1 mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
@@ -69,7 +69,7 @@ jsxTester.run('invalid', rule, {
       ] as any
     },
     {
-      code: `<div class="a c d hello-world text-decoration:1 mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
         { messageId: 'invalidClass' },
 { messageId: 'invalidClass' }
@@ -82,16 +82,29 @@ createTester({
   settings: {
     '@master/css': {
       manifest: createPresetManifest({
-        utilities: [
+        mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
           {
-            name: 'btn',
-            type: UtilityType.Semantic,
-            layer: 'components',
-            rules: [
-              { selector: '&', declarations: { display: 'block' } }
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "block"
+              }
             ]
           }
         ]
+      }
+    ]
+  }
+]
       })
     }
   }
@@ -112,7 +125,7 @@ createTester({
       ] as any
     },
     {
-      code: `<div class="btn a c d hello-world text-decoration:1 mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"btn a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },

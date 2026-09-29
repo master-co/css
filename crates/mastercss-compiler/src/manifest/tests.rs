@@ -10,7 +10,7 @@ fn compiles_scoped_variables_custom_media_and_utilities() {
                 {"type":"declaration","name":"color-brand","value":"var(--color-blue-50)"}]},
             {"type":"rule","prelude":"[data-theme=dark]","children":[{"type":"declaration","name":"color-brand","value":"#123"}]}],
         "customMedia":[{"name":"--card","query":"(width >= 48rem)"}],
-        "utilities":[{"name":"card","layer":"components","declarations":{"display":"grid","color":"var(--color-primary)"}}]
+        "mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]}]}]
     })).unwrap();
     let manifest = compile_manifest_input(&input, &CompileManifestOptions::default())
         .unwrap()
@@ -28,7 +28,7 @@ fn compiles_scoped_variables_custom_media_and_utilities() {
         manifest["customMedia"]["--card"]["value"],
         "(width >= 48rem)"
     );
-    assert_eq!(manifest["utilities"][0]["matchers"][0]["name"], "card");
+    assert_eq!(manifest["mixins"][0]["name"], "--card");
 }
 
 #[test]
@@ -51,7 +51,7 @@ fn compiles_variant_nodes() {
 fn ignores_placeholders_and_dependencies_inside_quoted_values() {
     let input: CssDirectiveManifestInput = serde_json::from_value(json!({
         "theme":[{"type":"rule","prelude":":root","children":[{"type":"declaration","name":"content-demo","value":"\"var(--color-blue-60) | $quoted\""}]}],
-        "utilities":[{"name":"label:*","type":"dynamic","dynamic":{"key":"label"},"declarations":{"content":"\"--master-value()\"","color":"--master-value()"}}]
+        "mixins":[{"name":"--label","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"content","value":[{"type":"text","value":"\"var(--value)\""}]},{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]
     })).unwrap();
     let manifest = compile_manifest_input(&input, &CompileManifestOptions::default())
         .unwrap()
@@ -65,13 +65,17 @@ fn ignores_placeholders_and_dependencies_inside_quoted_values() {
             .as_array()
             .is_none_or(|values| values.is_empty())
     );
-    let declarations = &manifest["utilities"][0]["emit"]["rules"][0]["declarations"];
-    assert_eq!(declarations["content"], "\"--master-value()\"");
-    assert!(declarations["color"].is_null());
+    let body = &manifest["mixins"][0]["body"];
+    assert_eq!(body[0]["value"][0]["value"], "\"var(--value)\"");
+    assert_eq!(body[1]["value"][0]["name"], "var");
 }
 
 #[test]
 fn removed_enum_authoring_input_is_not_treated_as_a_static_definition() {
-    let input: CssDirectiveManifestInput = serde_json::from_value(json!({"utilities":[{"name":"x-<a|b>","type":"pattern","pattern":{"prefix":"x-","values":["a","b"]},"declarations":{"color":"--value()"}}]})).unwrap();
-    assert!(compile_manifest_input(&input, &CompileManifestOptions::default()).is_err());
+    assert!(
+        serde_json::from_value::<CssDirectiveManifestInput>(
+            json!({"utilities":[{"name":"x-<a|b>"}]})
+        )
+        .is_err()
+    );
 }

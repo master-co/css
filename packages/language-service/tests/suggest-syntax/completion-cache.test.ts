@@ -15,20 +15,20 @@ function suggest(languageService: CSSLanguageService, target: string) {
 test.concurrent('returns fresh class completion items from cached skeletons', () => {
   const languageService = new CSSLanguageService()
   const firstCompletionItems = suggest(languageService, '')
-  const firstBlockCompletionItem = firstCompletionItems?.find(({ label }) => label === 'block')
-  if (!firstBlockCompletionItem) throw new Error('Expected block completion item')
+  const firstBlockCompletionItem = firstCompletionItems?.find(({ label }) => label === 'center')
+  if (!firstBlockCompletionItem) throw new Error('Expected center completion item')
 
   firstBlockCompletionItem.detail = 'mutated'
 
   const secondCompletionItems = suggest(languageService, '')
-  expect(secondCompletionItems?.find(({ label }) => label === 'block')?.detail).not.toBe('mutated')
+  expect(secondCompletionItems?.find(({ label }) => label === 'center')?.detail).not.toBe('mutated')
 })
 
 test.concurrent('does not leak selector insertText mutations between requests', () => {
   const languageService = new CSSLanguageService()
-  expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
-  expect(suggest(languageService, 'text-center::')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' })
-  expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
+  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
+  expect(suggest(languageService, "text-align:center::")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' })
+  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
 })
 
 function snapshotLanguageCSS(languageService: CSSLanguageService) {
@@ -45,8 +45,8 @@ test.concurrent('documentation CSS generation does not mutate language service s
 
   expect(before.font.text).toContain('.font-bold')
   expect(before.animation.text).not.toContain('@keyframes fade')
-  expect(suggest(languageService, '')?.find(({ label }) => label === 'block')?.documentation).toBeTruthy()
-  expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
+  expect(suggest(languageService, '')?.find(({ label }) => label === 'center')?.documentation).toBeTruthy()
+  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
 
   expect(snapshotLanguageCSS(languageService)).toEqual(before)
 })

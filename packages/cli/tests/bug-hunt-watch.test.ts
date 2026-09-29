@@ -12,7 +12,7 @@ it('scans a new sibling HTML file after an existing-file change', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-watch-'))
     const output = join(cwd, 'master.css')
     const source = join(cwd, 'index.html')
-    writeFileSync(source, '<div class="block"></div>')
+    writeFileSync(source, "<div class=\"display:block\"></div>")
     const child = spawn(process.execPath, [
         '--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
         resolve(__dirname, '../src/bin/index.ts'), 'generate', '--watch'
@@ -29,11 +29,11 @@ it('scans a new sibling HTML file after an existing-file change', async () => {
     }
     try {
         await waitUntil(() => stderr.includes('Start watching source changes'))
-        expect(css()).toContain('.block{display:block}')
-        writeFileSync(source, '<div class="hidden"></div>')
-        await waitUntil(() => css().includes('.hidden{display:none}'))
-        writeFileSync(join(cwd, 'new.html'), '<div class="flex"></div>')
-        await waitUntil(() => css().includes('.flex{display:flex}'), 5000)
+        expect(css()).toContain(".display\\:block{display:block}")
+        writeFileSync(source, "<div class=\"display:none\"></div>")
+        await waitUntil(() => css().includes(".display\\:none{display:none}"))
+        writeFileSync(join(cwd, 'new.html'), "<div class=\"display:flex\"></div>")
+        await waitUntil(() => css().includes(".display\\:flex{display:flex}"), 5000)
     } finally {
         if (child.exitCode === null) {
             const exited = once(child, 'exit')

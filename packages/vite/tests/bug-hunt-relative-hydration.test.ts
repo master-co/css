@@ -10,7 +10,7 @@ test('BH-0016 nested HTML resolves its hydration asset when base is relative', a
   const root = mkdtempSync(join(temporaryParent, 'audit-relative-hydration-'))
   try {
     mkdirSync(join(root, 'pages'))
-    const html = '<html><head></head><body><div class="block"></div><script type="module" src="/main.ts"></script></body></html>'
+    const html = "<html><head></head><body><div class=\"display:block\"></div><script type=\"module\" src=\"/main.ts\"></script></body></html>"
     writeFileSync(join(root, 'index.html'), html)
     writeFileSync(join(root, 'pages/nested.html'), html)
     writeFileSync(join(root, 'main.ts'), 'import "./master.css"')

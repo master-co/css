@@ -15,7 +15,7 @@ beforeAll(() => {
 it('matches the core render owner and native render protocol', () => {
   const html = [
     '<html class="bg-white">',
-    '<body><div class="text-center block:hover@sm text-center"></div></body>',
+    "<body><div class=\"text-align:center block:hover@sm text-align:center\"></div></body>",
     '</html>'
   ].join('')
   const manifest = defaultManifestJSON as unknown as MasterCSSManifest

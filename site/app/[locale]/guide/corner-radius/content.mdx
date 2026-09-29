@@ -23,7 +23,7 @@ Use related tokens for related surfaces. A card, its nested media, and an action
 ---
 
 ## Use radius tokens
-Use `r:<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
+Use `border-radius:<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
 
 ```html
 <!-- @MARK r-md -->
@@ -45,7 +45,7 @@ Use `r:<token>` for all corners. The utility resolves values from `radius-*` tok
   </Class2CSS>
 </details>
 
-Use `r:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+Use `border-radius:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
 ---
 
@@ -67,11 +67,11 @@ Use `rounded` when the element should behave like a pill, regardless of its widt
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['rounded', 'round']}
+    {['border-radius:1e9em', 'round']}
   </Class2CSS>
 </details>
 
-Use shape shortcuts for semantic shapes. Use `r:*` when the element should stay on the shared radius scale.
+Use shape shortcuts for semantic shapes. Use `border-radius:*` when the element should stay on the shared radius scale.
 
 ---
 
@@ -120,7 +120,7 @@ Override radius variables when your product needs sharper controls, softer panel
 <section class="r-panel">...</section>
 ```
 
-Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `r:1px` or `r:0.5rem` until it becomes a reusable shape.
+Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `border-radius:1px` or `border-radius:0.5rem` until it becomes a reusable shape.
 
 ---
 

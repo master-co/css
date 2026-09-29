@@ -1,5 +1,5 @@
 use super::{
-    ManifestProjection, Map, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
+    ManifestProjection, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
     is_css_identifier_character, split_top_level,
 };
 
@@ -177,94 +177,23 @@ pub(crate) fn emit_declarations(
     utility: &UtilityDefinition,
     matched_value: Option<&str>,
     important: bool,
+    manifest: &super::ManifestProjection,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
     match &utility.emit {
-        UtilityEmit::Static { rules } => rules
-            .iter()
-            .enumerate()
-            .filter_map(|(index, rule)| {
-                serialize_declarations(&rule.declarations, matched_value, important).map(
-                    |declarations| {
-                        (
-                            index,
-                            declarations,
-                            rule.selector.clone(),
-                            rule.conditions.clone(),
-                        )
-                    },
-                )
-            })
-            .collect(),
+        UtilityEmit::Mixin { name } => {
+            super::mixin_matching::emit(manifest, name, matched_value, important)
+        }
         UtilityEmit::Property { property } => matched_value
             .filter(|value| !value.is_empty())
             .map(|value| {
                 vec![(
                     0,
-                    format_declaration(property, value, important),
+                    format_native_declaration(property, value, important),
                     None,
                     Vec::new(),
                 )]
             })
             .unwrap_or_default(),
-        UtilityEmit::Template { declarations } => {
-            serialize_declarations(declarations, matched_value, important)
-                .map(|declarations| vec![(0, declarations, None, Vec::new())])
-                .unwrap_or_default()
-        }
-        UtilityEmit::Declarations { declarations } => {
-            let text = declarations
-                .iter()
-                .map(|declaration| {
-                    let declaration = matched_value
-                        .map(|value| declaration.replace("$value", value))
-                        .unwrap_or_else(|| declaration.clone());
-                    if important && !declaration.ends_with("!important") {
-                        format!("{declaration}!important")
-                    } else {
-                        declaration
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join(";");
-            (!text.is_empty())
-                .then_some(vec![(0, text, None, Vec::new())])
-                .unwrap_or_default()
-        }
-    }
-}
-
-pub(crate) fn serialize_declarations(
-    declarations: &Map<String, Value>,
-    matched_value: Option<&str>,
-    important: bool,
-) -> Option<String> {
-    let mut output = Vec::new();
-    for (property, raw_value) in declarations {
-        let value = serialize_declaration_value(raw_value, matched_value)?;
-        output.push(format_declaration(property, &value, important));
-    }
-    (!output.is_empty()).then(|| output.join(";"))
-}
-
-pub(crate) fn serialize_declaration_value(
-    value: &Value,
-    matched_value: Option<&str>,
-) -> Option<String> {
-    match value {
-        Value::Null => Some(matched_value?.to_owned()),
-        Value::String(value) => Some(
-            matched_value
-                .map(|matched| value.replace("$value", matched))
-                .unwrap_or_else(|| value.clone()),
-        ),
-        Value::Number(value) => Some(value.to_string()),
-        Value::Bool(value) => Some(value.to_string()),
-        Value::Array(segments) => segments
-            .iter()
-            .map(|segment| serialize_declaration_value(segment, matched_value))
-            .collect::<Option<Vec<_>>>()
-            .map(|segments| segments.join("")),
-        _ => None,
     }
 }
 
@@ -273,5 +202,26 @@ pub(crate) fn format_declaration(property: &str, value: &str, important: bool) -
         format!("{property}:{value}!important")
     } else {
         format!("{property}:{value}")
+    }
+}
+
+/// Compatibility declarations are an engine output policy, not preset recipes.
+fn format_native_declaration(property: &str, value: &str, important: bool) -> String {
+    let standard = format_declaration(property, value, important);
+    if matches!(
+        property,
+        "text-decoration"
+            | "backdrop-filter"
+            | "box-decoration-break"
+            | "mask-image"
+            | "user-drag"
+            | "user-select"
+    ) {
+        format!(
+            "{};{standard}",
+            format_declaration(&format!("-webkit-{property}"), value, important)
+        )
+    } else {
+        standard
     }
 }

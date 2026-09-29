@@ -32,12 +32,12 @@ const html = '<!doctype html><html class="bg-probe padding:11px@dark"><head><sty
   + '<section data-theme="ocean" id="ocean" class="bg-probe color:red@ocean"><div id="nested" class="bg-probe padding:11px@dark color:red@ocean">Nested</div></section>'
   + '<div id="query" class="padding:9px@media((width>=800px))@media((hover:hover))">Query</div></body></html>'
 
-for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
+for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: explicit mode branches, inheritance and repeated query wrappers`, async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 700 })
     await page.emulateMedia({ colorScheme: 'dark' })
     const generated = renderClassNamesSync(classes, { manifest })
-    if (mode === 'static') {
+    if (mode === "static") {
       await page.setContent(html.replace('</head>', `<style>${generated.cssText}</style></head>`))
     } else if (mode === 'runtime') {
       await page.setContent(html)

@@ -1,5 +1,5 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest';
-import type { CSSDirectiveExtractionPolicy, CSSDirectiveReference, CSSUtilitySource } from '@master/css-schema/css-directives';
+import type { CSSDirectiveExtractionPolicy, CSSDirectiveReference, CSSMixinSource } from '@master/css-schema/css-directives';
 import { type CompilerDiagnosticRecorder } from './compiler-diagnostics';
 import { type CompileCSSOptions, type CSSReferenceStatement, type CompileCSSFileOptions, type CompileCSSResult, type ResolvedCSSImportGraph } from './contracts';
 import { type PreparedCSSImportGraph } from './node-imports';
@@ -100,7 +100,7 @@ export declare function resolveCSSReferenceFile(reference: CSSDirectiveReference
 export declare function compileCSSManifestGraph(graph: PreparedCSSImportGraph, options?: CompileCSSManifestInternalOptions & {
     mapReferences?: (file: string, source: string, references: CSSDirectiveReference[]) => readonly CSSDirectiveReference[];
 }): {
-    utilitySources?: CSSUtilitySource[];
+    mixinSources?: CSSMixinSource[];
     nativeOutput?: import("@master/css-schema/css-directives").CSSNativeOutput;
     sourceMap?: string;
     nativeMappings?: import("@master/css-schema/css-directives").CSSOutputMapping[];

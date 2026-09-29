@@ -13,7 +13,7 @@ export default function DemoFoundations() {
         <div className="demo-background-grid">
           {(['stripes', 'plain', 'grid', 'dots', 'checkerboard'] as const).map(background => (
             <div key={background} className="p-lg demo-canvas" data-background={background}>
-              <DemoItem className="mb-sm p-md text-center" tone="neutral">Aa</DemoItem>
+              <DemoItem className="mb-sm p-md text-align:center" tone="neutral">Aa</DemoItem>
               <DemoLabel>{background}</DemoLabel>
             </div>
           ))}
@@ -36,12 +36,12 @@ export function DemoPrimitives() {
     <>
       <Demo title="Objects" caption="Items provide paint. Their parent supplies layout, spacing and dimensions.">
         <div className="demo-specimen-grid">
-          {(['soft', 'solid', 'outline', 'ghost'] as const).map(variant => <div key={variant}><DemoItem variant={variant} className="mb-xs p-lg text-center">01</DemoItem><DemoLabel>{variant}</DemoLabel></div>)}
+          {(['soft', 'solid', 'outline', 'ghost'] as const).map(variant => <div key={variant}><DemoItem variant={variant} className="mb-xs p-lg text-align:center">01</DemoItem><DemoLabel>{variant}</DemoLabel></div>)}
         </div>
       </Demo>
       <Demo title="Object tones">
         <div className="demo-specimen-grid">
-          {(['blue', 'violet', 'neutral', 'amber'] as const).map(tone => <DemoItem key={tone} tone={tone} className="p-md text-center"><DemoLabel>{tone}</DemoLabel></DemoItem>)}
+          {(['blue', 'violet', 'neutral', 'amber'] as const).map(tone => <DemoItem key={tone} tone={tone} className="p-md text-align:center"><DemoLabel>{tone}</DemoLabel></DemoItem>)}
         </div>
       </Demo>
       <Demo title="Surfaces" caption="The default gives content a quiet boundary. Add elevation only when the example explains a raised layer.">
@@ -53,7 +53,7 @@ export function DemoPrimitives() {
       <Demo title="Content specimens">
         <DemoComparison>
           <DemoSurface className="p-md"><DemoLabel>TEXT</DemoLabel><DemoText variant="lead" className="mt-sm">Form follows function.</DemoText><DemoText variant="caption" className="mt-xs">Use meaningful content to make layout decisions visible.</DemoText></DemoSurface>
-          <DemoSurface className="p-md"><DemoLabel>MEDIA</DemoLabel><DemoMedia className="w:100% mt-sm r-sm" /><DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" className="w:100% mt-sm r-sm" /></DemoSurface>
+          <DemoSurface className="p-md"><DemoLabel>MEDIA</DemoLabel><DemoMedia className="width:100% mt-sm r-sm" /><DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" className="width:100% mt-sm r-sm" /></DemoSurface>
         </DemoComparison>
       </Demo>
       <Demo title="Comparison" caption="Equal specimens isolate the change being taught.">
@@ -71,10 +71,10 @@ export function DemoAnnotations() {
     <Demo title="Anatomy of a layout" caption={<DemoLegend items={[{ tone: 'blue', label: 'Subject' }, { tone: 'violet', label: 'Comparison' }, { tone: 'neutral', label: 'Context' }]} />}>
       <DemoAxes>
         <DemoMeasure label="Container">
-          <DemoSurface className="flex items-center gap-sm min-h:10rem p-md">
-            <DemoItem tone="blue" className="flex:1 p-md text-center">01</DemoItem>
-            <DemoItem tone="violet" className="flex:1 p-md text-center">02</DemoItem>
-            <DemoItem tone="neutral" className="flex:1 p-md text-center">03</DemoItem>
+          <DemoSurface className="display:flex align-items:center gap-sm min-height:10rem p-md">
+            <DemoItem tone="blue" className="flex:1 p-md text-align:center">01</DemoItem>
+            <DemoItem tone="violet" className="flex:1 p-md text-align:center">02</DemoItem>
+            <DemoItem tone="neutral" className="flex:1 p-md text-align:center">03</DemoItem>
           </DemoSurface>
         </DemoMeasure>
       </DemoAxes>

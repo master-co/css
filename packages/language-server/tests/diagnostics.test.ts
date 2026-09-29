@@ -136,7 +136,7 @@ withFixture('missing-workspace', async (context) => {
 
 withFixture('invalid-manifest', async (context) => {
   test('publishes manifest loading diagnostics', async ({ expect }) => {
-    const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
+    const document = context.createDocument("<div class=\"display:block\"></div>", { lang: 'html' })
     const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
 
     await context.server.onDidOpen({ document })
@@ -151,7 +151,7 @@ withFixture('invalid-manifest', async (context) => {
   })
 
   test('maps structured manifest diagnostics without parsing the error message', async ({ expect }) => {
-    const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
+    const document = context.createDocument("<div class=\"display:block\"></div>", { lang: 'html' })
     const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
     await context.server.onDidOpen({ document })
     context.rootWorkspace!.manifestErrors = [

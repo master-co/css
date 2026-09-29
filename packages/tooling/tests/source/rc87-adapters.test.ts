@@ -16,7 +16,7 @@ afterEach(() => {
 
 describe('source adapters', () => {
   test('exports class candidate extraction', () => {
-    expect(extractClassCandidates('<div class="block mx:auto"></div>')).toEqual(['block', 'mx:auto'])
+    expect(extractClassCandidates("<div class=\"display:block margin-inline:auto\"></div>")).toEqual(["display:block", "margin-inline:auto"])
   })
 
   test('ignores module specifiers, require calls, dynamic imports, and common directives with Oxc', () => {
@@ -26,27 +26,21 @@ describe('source adapters', () => {
       export { helper } from 'pkg'
       await import('lazy-module')
       const fs = require('fs')
-      const classes = 'block fg-red'
+      const classes = 'display:block fg-red'
     `)).toEqual([
-      'block',
+      "display:block",
       'fg-red'
     ])
   })
 
   test('extracts class attributes and script strings from HTML', () => {
-    expect(extractHTMLClasses('index.html', `
-      <div class="block mx:auto"></div>
-      <script>
-        element.classList.add('fg-red', 'p:1rem')
-        const classes = 'flex hidden'
-      </script>
-    `)).toEqual([
-      'block',
-      'mx:auto',
+    expect(extractHTMLClasses('index.html', "\n      <div class=\"display:block margin-inline:auto\"></div>\n      <script>\n        element.classList.add('fg-red', 'padding:1rem')\n        const classes = 'display:flex display:none'\n      </script>\n    ")).toEqual([
+      "display:block",
+      "margin-inline:auto",
       'fg-red',
-      'p:1rem',
-      'flex',
-      'hidden'
+      "padding:1rem",
+      "display:flex",
+      "display:none"
     ])
   })
 
@@ -54,78 +48,39 @@ describe('source adapters', () => {
     const importer = vi.fn(async () => ({}))
     setOptionalPeerImporterForTest(importer)
 
-    expect(extractClassCandidates('<div class="block"></div>')).toEqual(['block'])
+    expect(extractClassCandidates("<div class=\"display:block\"></div>")).toEqual(["display:block"])
     expect(importer).not.toHaveBeenCalled()
   })
 
   test('extracts template, script, and script setup classes from Vue SFCs', async () => {
-    await expect(extractVueClasses('App.vue', `
-      <template>
-        <button class="block mx:auto">Save</button>
-      </template>
-      <script>
-        const rootClasses = 'fg-red'
-      </script>
-      <script setup lang="ts">
-        const setupClasses = 'p:1rem'
-      </script>
-    `)).resolves.toEqual([
-      'block',
-      'mx:auto',
+    await expect(extractVueClasses('App.vue', "\n      <template>\n        <button class=\"display:block margin-inline:auto\">Save</button>\n      </template>\n      <script>\n        const rootClasses = 'fg-red'\n      </script>\n      <script setup lang=\"ts\">\n        const setupClasses = 'padding:1rem'\n      </script>\n    ")).resolves.toEqual([
+      "display:block",
+      "margin-inline:auto",
       'fg-red',
-      'p:1rem'
+      "padding:1rem"
     ])
   })
 
   test('extracts markup, module script, instance script, and class directive classes from Svelte files', async () => {
-    await expect(extractSvelteClasses('Component.svelte', `
-      <script context="module">
-        const moduleClasses = 'fg-red'
-      </script>
-      <script>
-        const instanceClasses = 'p:1rem'
-        let enabled = true
-      </script>
-      <button class="block mx:auto" class:active={enabled}>Save</button>
-    `)).resolves.toEqual([
+    await expect(extractSvelteClasses('Component.svelte', "\n      <script context=\"module\">\n        const moduleClasses = 'fg-red'\n      </script>\n      <script>\n        const instanceClasses = 'padding:1rem'\n        let enabled = true\n      </script>\n      <button class=\"display:block margin-inline:auto\" class:active={enabled}>Save</button>\n    ")).resolves.toEqual([
       'fg-red',
-      'p:1rem',
-      'block',
-      'mx:auto',
+      "padding:1rem",
+      "display:block",
+      "margin-inline:auto",
       'active'
     ])
   })
 
   test('parses TypeScript in Svelte scripts and class expressions without treating it as JavaScript', async () => {
-    await expect(extractSvelteClasses('Typed.svelte', `
-      <script context="module" lang="ts">
-        import type { Component } from 'svelte'
-        const moduleClasses: string = 'fg-red'
-      </script>
-      <script lang='ts'>
-        const enabled: boolean = true
-        const instanceClasses: string = 'p:1rem'
-      </script>
-      <button class={enabled ? 'block' : ('hidden' satisfies string)} class:active={enabled}>Save</button>
-    `)).resolves.toEqual(['fg-red', 'p:1rem', 'block', 'hidden', 'active'])
+    await expect(extractSvelteClasses('Typed.svelte', "\n      <script context=\"module\" lang=\"ts\">\n        import type { Component } from 'svelte'\n        const moduleClasses: string = 'fg-red'\n      </script>\n      <script lang='ts'>\n        const enabled: boolean = true\n        const instanceClasses: string = 'padding:1rem'\n      </script>\n      <button class={enabled ? 'display:block' : ('display:none' satisfies string)} class:active={enabled}>Save</button>\n    ")).resolves.toEqual(['fg-red', "padding:1rem", "display:block", "display:none", 'active'])
   })
 
   test('extracts frontmatter, script, and markup classes from Astro files while ignoring styles', () => {
-    expect(extractAstroClasses('Page.astro', `---
-const frontmatterClasses = 'fg-red'
----
-<script>
-  const scriptClasses = 'p:1rem'
-</script>
-<style>
-  .ignored { color: red; }
-</style>
-<main class="block mx:auto">Hello</main>
-    `)).toEqual([
+    expect(extractAstroClasses('Page.astro', "---\nconst frontmatterClasses = 'fg-red'\n---\n<script>\n  const scriptClasses = 'padding:1rem'\n</script>\n<style>\n  .ignored { color: red; }\n</style>\n<main class=\"display:block margin-inline:auto\">Hello</main>\n    ")).toEqual([
       'fg-red',
-      'p:1rem',
-      'block',
-      'mx:auto'
+      "padding:1rem",
+      "display:block",
+      "margin-inline:auto"
     ])
   })
 
@@ -135,13 +90,13 @@ const frontmatterClasses = 'fg-red'
       throw new Error('missing peer')
     })
 
-    await expect(extractVueClasses('App.vue', '<template><div class="block"></div></template>'))
+    await expect(extractVueClasses('App.vue', "<template><div class=\"display:block\"></div></template>"))
       .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
     await expect(extractVueClasses('Other.vue', '<template><div class="fg-red"></div></template>'))
       .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
-    await expect(extractSvelteClasses('Component.svelte', '<div class="p:1rem"></div>'))
+    await expect(extractSvelteClasses('Component.svelte', "<div class=\"padding:1rem\"></div>"))
       .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
-    await expect(extractSvelteClasses('Other.svelte', '<div class="mx:auto"></div>'))
+    await expect(extractSvelteClasses('Other.svelte', "<div class=\"margin-inline:auto\"></div>"))
       .rejects.toMatchObject({ code: 'SOURCE_PARSE_ERROR' })
 
     expect(warn).toHaveBeenCalledTimes(2)

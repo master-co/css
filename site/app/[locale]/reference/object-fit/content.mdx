@@ -12,8 +12,8 @@ The same 320 × 200 source fills two explicit 220 × 220 image boxes. `object-co
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-cover object-right" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-fit:cover object-position:right" />
 ```
 
 ```html
@@ -21,14 +21,14 @@ The same 320 × 200 source fills two explicit 220 × 220 image boxes. `object-co
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-fill object-right" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-fit:fill object-position:right" />
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['object-cover', 'object-fill']}
+    {['object-fit:cover', 'object-fit:fill']}
   </Class2CSS>
 </details>
 
@@ -44,8 +44,8 @@ Right alignment keeps the sun in view. The sun stays round with cover and become
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-contain object-right" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-fit:contain object-position:right" />
 ```
 
 ```html
@@ -53,8 +53,8 @@ Right alignment keeps the sun in view. The sun stays round with cover and become
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-cover object-right" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-fit:cover object-position:right" />
 ```
 
 The unused bands show the image element’s own background. The image content is about 220 × 137.5 here, while its layout box remains 220 × 220. Use [object-position](/reference/object-position) to move the content within that box.
@@ -69,8 +69,8 @@ The unused bands show the image element’s own background. The image content is
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-right object-fit:none" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-position:right object-fit:none" />
 ```
 
 ```html
@@ -78,8 +78,8 @@ The unused bands show the image element’s own background. The image content is
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-right object-scale-down" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-position:right object-fit:scale-down" />
 ```
 
 Both samples retain the same 220 × 220 layout box. Scale-down may shrink media but does not enlarge it beyond the none result. Explicit width and height are necessary to make this fitting comparison meaningful.
@@ -94,10 +94,10 @@ Widen the preview to `sm` to switch from cover to contain. Print also uses conta
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block width:220px height:220px max-w:100%
-         bg-surface-base object-cover object-right
-         object-contain@print
-         object-contain@screen@sm" />
+  class="display:block width:220px height:220px max-width:100%
+         bg-surface-base object-fit:cover object-position:right
+         object-fit:contain@print
+         object-fit:contain@screen@sm" />
 ```
 
 The responsive rule uses the iframe’s real viewport. The authored square stays the same size; only the way its source fits changes.

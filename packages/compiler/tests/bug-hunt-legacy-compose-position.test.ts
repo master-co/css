@@ -5,8 +5,23 @@ import { join } from 'node:path'
 import { createCompiler } from '../src/index'
 import { compileManifestSync, compileManifestFileSync } from '../src/node'
 
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
-const definitions = '@utility paint {color:red}'
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
+const definitions = '@mixin --paint {color:red}'
 const cases = [
   { name: 'compose before native', body: ".example{@variant all {color:red;}}.example{color:blue}", order: ['red', 'blue'] },
   { name: 'compose after native', body: ".example{color:blue}.example{@variant all {color:red;}}", order: ['blue', 'red'] },

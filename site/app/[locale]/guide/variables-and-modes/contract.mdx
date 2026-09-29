@@ -52,8 +52,8 @@ Write custom properties as `--<namespace>-<key>`. Namespace lookup uses the long
 ```
 
 ```html
-<article class="r-card p-card b:1px|solid|var(--color-line-divider)">
-  <a class="text-action" href="/settings">Settings</a>
+<article class="r-card p-card border:1px|solid|var(--color-line-divider)">
+  <a class="fg-text-action" href="/settings">Settings</a>
 </article>
 ```
 
@@ -68,10 +68,10 @@ The registry lists namespaces consumed by default utilities and named property t
 | --- | --- |
 | `p-card` | `--spacing-card` |
 | `r-card` | `--radius-card` |
-| `text-action` | `--color-text-action` |
+| `fg-text-action` | `--color-text-action` |
 | `bg-brand` | `--color-brand` |
 
-An explicit parameter utility can declare ordered sources with `@utility outline-* from(--color-line-*, --color-*)`. The first matching namespace wins. Use direct native values such as `padding:1rem` for values without a project token.
+Built-in token families own ordered namespace lookup in the Rust engine; `outline-*` checks `--color-line-*` before `--color-*`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
 
 ## Native values and unconditional declarations \{#inline-and-static-variables\}
 `@theme inline` and `@theme static` are removed. Token utilities retain `var()` references. For unconditional declarations, write native CSS:

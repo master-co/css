@@ -4,13 +4,25 @@ import { createEngine } from '@master/css'
 import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 
 const minimal: MasterCSSManifest = {
-  version: 2,
-  languageVersion: 4,
-  utilities: [{
-    id: 'audit-block', type: -2,
-    matchers: [{ type: 'static', name: 'audit-block' }],
-    emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] }
-  }]
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--audit-block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 
 test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered declarations and resource lifetimes', async (binding) => {
@@ -21,8 +33,8 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
       --color-brand: var(--color-root);
     } }
     @keyframes audit-fade { from { color: var(--color-brand); } to { opacity: 1; } }
-    @utility audit-paint { color: var(--color-brand); display: block; display: flex; }
-    @utility audit-motion { animation: audit-fade 1s; }
+    @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; }
+    @mixin --audit-motion { animation: audit-fade 1s; }
   `, { baseManifest: minimal, preserveNativeCSS: true })
   const wire = serializeMasterCSSManifest(manifest)
   const reloaded: MasterCSSManifest = JSON.parse(wire)
@@ -50,10 +62,10 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
 
 test.each(['native', 'wasm'] as const)('450: %s validates execution versions independently of codec serialization', async (binding) => {
   for (const invalid of [
-    { languageVersion: 4 },
-    { version: 99, languageVersion: 4 },
-    { version: 2 },
-    { version: 2, languageVersion: 99 },
+    { languageVersion: 4 as const },
+    { version: 99 as const, languageVersion: 4 as const },
+    { version: 2 as const },
+    { version: 2 as const, languageVersion: 99 as const },
     { ...minimal, utilityBuckets: {} },
     { ...minimal, modes: [{ name: 'audit', branches: [{ selector: '.audit', future: true }] }] }
   ]) {

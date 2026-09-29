@@ -17,11 +17,11 @@ it('should not encode entities', () => {
 
 test('>', () => {
   expect(renderHTML(
-    `<div class="mt:0&gt;div"></div>`,
+    "<div class=\"margin-top:0&gt;div\"></div>",
     { manifest: defaultManifest }
   ).html).toEqual([
-    '<style id="master-css">@layer utilities{.mt\\:0\\>div>div{margin-top:0}}</style>',
-    `<div class="mt:0&gt;div"></div>`
+    "<style id=\"master-css\">@layer utilities{.margin-top\\:0\\>div>div{margin-top:0}}</style>",
+    "<div class=\"margin-top:0&gt;div\"></div>"
   ].join(''))
 })
 

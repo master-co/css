@@ -60,8 +60,12 @@ struct ManifestProjection {
     #[serde(default)]
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
     version: u32,
-    #[serde(default)]
+    #[serde(skip)]
     utilities: Vec<UtilityDefinition>,
+    #[serde(default)]
+    mixins: Vec<mastercss_schema::MixinDefinition>,
+    #[serde(skip)]
+    function_utilities: HashMap<String, usize>,
     #[serde(default)]
     variants: Vec<ManifestVariant>,
     #[serde(default)]
@@ -163,25 +167,14 @@ enum UtilityMatcher {
     Static { name: String },
     Key { keys: Vec<String> },
     Token { prefix: String },
+    Function { name: String },
 }
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 enum UtilityEmit {
-    Static { rules: Vec<StaticUtilityRule> },
+    Mixin { name: String },
     Property { property: String },
-    Template { declarations: Map<String, Value> },
-    Declarations { declarations: Vec<String> },
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct StaticUtilityRule {
-    declarations: Map<String, Value>,
-    #[serde(default)]
-    selector: Option<String>,
-    #[serde(default)]
-    conditions: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -197,6 +190,7 @@ struct UtilityMatch {
 #[serde(rename_all = "lowercase")]
 pub enum ClassSemanticKind {
     Unknown,
+    Mixin,
     Component,
     Semantic,
     Token,
@@ -206,6 +200,7 @@ pub enum ClassSemanticKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UtilityMatcherType {
+    Function,
     Static,
     Key,
     Token,
@@ -262,6 +257,7 @@ struct NativeDeclarationCandidate {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EngineClassCompletionKind {
+    Function,
     Property,
     Value,
 }
@@ -362,6 +358,11 @@ pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod execution_state;
 mod generation;
 mod manifest;
+mod mixin;
+pub use mixin::{
+    ExpandedMixinRule, evaluate_mixin_value, expand_mixin, validate_mixin_argument, validate_mixins,
+};
+mod mixin_matching;
 mod named;
 mod render;
 mod resources;
@@ -369,9 +370,8 @@ mod session;
 mod state;
 mod stylesheet_resources;
 mod theme_batch;
+mod token_registry;
 mod utility;
-mod utility_identity;
-pub use utility_identity::{effective_utilities, utility_identity};
 mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
@@ -381,7 +381,7 @@ pub(crate) use condition::{
     resolve_layer_condition,
 };
 pub(crate) use manifest::{
-    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
+    BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_ALIASES, BUILTIN_TOKEN_NAMESPACES,
     add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
 };
 pub(crate) use render::{
@@ -394,9 +394,9 @@ pub(crate) use state::{
 };
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
-    append_builtin_native_declaration_utilities, append_builtin_token_utilities, builtin_key_alias,
-    canonicalize_class_name, compare_stored_rules, compile_utility_variables, layer_index,
-    resolve_value_components, split_dynamic_value_state,
+    append_builtin_native_declaration_utilities, append_builtin_token_utilities,
+    compare_stored_rules, compile_utility_variables, layer_index, resolve_value_components,
+    split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
     find_matching_parenthesis, is_native_shorthand_property, is_valid_native_property,
@@ -404,7 +404,8 @@ pub(crate) use value_syntax::{
 };
 
 pub use condition::{condition_priority, native_query_features};
-pub use manifest::{builtin_key_aliases, builtin_token_namespaces};
+pub use manifest::{builtin_token_aliases, builtin_token_namespaces};
+pub use token_registry::builtin_token_families;
 pub use utility::compare_condition_features;
 pub use utility::{compare_rule_priority, natural_compare};
 

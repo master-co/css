@@ -12,7 +12,7 @@ const masterCSSPage = pages.find((page) => page.name === 'Master CSS') || pages[
 
 const maxTotalRawBytes = Math.max(...pages.map((page) => page.css.total.rawBytes))
 const maxTotalBrotliBytes = Math.max(...pages.map((page) => page.css.total.brotliBytes))
-const detailClassName = 'min-w:0 overflow:hidden text-ellipsis white-space:nowrap font-2xs text-muted'
+const detailClassName = 'min-width:0 overflow:hidden text-overflow:ellipsis white-space:nowrap font-2xs fg-text-muted'
 
 function formatKilobytes(bytes: number) {
   return (bytes / 1000).toFixed(1)
@@ -62,10 +62,10 @@ export default () => (
                       width={'60%'}
                       suffix='kB'
                       animated
-                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.rawBytes, masterCSSPage.css.total.rawBytes)}x larger</div>}
+                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('margin-inline:0', brand?.className)} />}>
+                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='display:none@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.rawBytes, masterCSSPage.css.total.rawBytes)}x larger</div>}
                       {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'hidden@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('rawBytes')} )</div>
+                        <div className={clsx(detailClassName, 'display:none@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('rawBytes')} )</div>
                       )}
                     </Bar>
                   )
@@ -89,10 +89,10 @@ export default () => (
                       width={maxTotalBrotliBytes / maxTotalRawBytes * 60 + '%'}
                       suffix='kB'
                       animated
-                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.brotliBytes, masterCSSPage.css.total.brotliBytes)}x larger</div>}
+                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('margin-inline:0', brand?.className)} />}>
+                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='display:none@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.brotliBytes, masterCSSPage.css.total.brotliBytes)}x larger</div>}
                       {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'hidden@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('brotliBytes')} )</div>
+                        <div className={clsx(detailClassName, 'display:none@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('brotliBytes')} )</div>
                       )}
                     </Bar>
                   )

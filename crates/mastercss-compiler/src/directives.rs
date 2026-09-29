@@ -1,102 +1,15 @@
 use super::{
     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
-    CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap,
-    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
+    CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashSet,
+    MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
-    lower_managed_rule_list, lower_theme_rule, reject_removed_directives,
-    rewrite_managed_variant_directives, validate_condition_variant_syntax,
+    lower_theme_rule, reject_removed_directives, rewrite_managed_variant_directives,
+    validate_condition_variant_syntax,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
 };
-
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn lower_managed_definition_rule(
-    source_index: &crate::source_index::SourceIndex<'_>,
-    filename: &str,
-    rule: ThemeAtRule,
-    manifest_input: &mut CssDirectiveManifestInput,
-    class_names: &mut Vec<String>,
-    style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
-    style_order: &mut u32,
-    stylesheet_variant_rule_offsets: &HashMap<usize, String>,
-) -> Result<(), CompilerError> {
-    let source = source_index.text();
-    let prelude = rule
-        .prelude
-        .parts
-        .first()
-        .map(String::as_str)
-        .unwrap_or_default();
-    let pattern = crate::pattern::parse_managed_pattern(prelude)
-        .map_err(|message| directive_error(source, filename, rule.start_byte, message))?;
-    let body_text = rule.body.as_deref().ok_or_else(|| {
-        directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@utility requires a style block",
-        )
-    })?;
-    let open = rule
-        .body_start_byte
-        .unwrap_or(rule.start_byte)
-        .saturating_sub(1);
-    let name_start = mastercss_lexer::tokenize_css_syntax(&source[rule.start_byte..open])
-        .get(1)
-        .map(|token| rule.start_byte + token.bytes.start)
-        .unwrap_or(open);
-    // Parse one synthetic style rule. Keep every byte and newline after its
-    // prelude in place, so authored nested rules retain their source ranges.
-    let body = &source[name_start..open + 1 + body_text.len() + 1];
-    let mut rewritten_body = body.as_bytes().to_vec();
-    for byte in &mut rewritten_body[..open - name_start] {
-        if !matches!(*byte, b'\r' | b'\n') {
-            *byte = b' ';
-        }
-    }
-    rewritten_body[0] = b'm';
-    let rewritten_body = String::from_utf8(rewritten_body).expect("masked prelude");
-    let (rewritten_body, _) = rewrite_managed_variant_directives(&rewritten_body);
-    let pattern_rule_offsets = HashMap::from([(0, pattern)]);
-    let body_start_byte = name_start;
-    let variant_rule_offsets = stylesheet_variant_rule_offsets
-        .iter()
-        .filter_map(|(offset, token)| {
-            offset
-                .checked_sub(body_start_byte)
-                .filter(|offset| *offset < body.len())
-                .map(|offset| (offset, token.clone()))
-        })
-        .collect::<HashMap<_, _>>();
-    let stylesheet = StyleSheet::parse(
-        &rewritten_body,
-        ParserOptions {
-            filename: filename.to_owned(),
-            ..ParserOptions::default()
-        },
-    )
-    .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
-    let layer = rule.name.layer().expect("managed directives have a layer");
-    let body_index = crate::source_index::SourceIndex::new(body);
-    lower_managed_rule_list(
-        source_index,
-        filename,
-        &body_index,
-        body_start_byte,
-        stylesheet.rules.0,
-        None,
-        &[],
-        &variant_rule_offsets,
-        &pattern_rule_offsets,
-        layer,
-        class_names,
-        manifest_input,
-        style_definitions,
-        style_order,
-    )
-}
 
 /// Lowers the production Master CSS directives and preserves host-native CSS.
 pub fn compile_css_directives(
@@ -145,7 +58,7 @@ fn compile_css_directives_impl(
     });
     validate_condition_variant_syntax(source, &options.from)?;
     reject_removed_directives(source, &options.from)?;
-    crate::utility_definitions::validate_placeholders(source, &options.from)?;
+    crate::mixins::reject_placeholder(source, &options.from)?;
     let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
     let standalone_directives = find_standalone_css_directive_statements(source);
@@ -258,6 +171,13 @@ fn compile_css_directives_impl(
             }
         }
     }
+    if !extraction_policy.preserve_native
+        && (options.prune_native_css || extraction_policy.prune_native)
+        && let Some(classes) = &options.classes
+    {
+        stylesheet.rules.0 =
+            filter_native_css_rules(stylesheet.rules.0, &classes.iter().cloned().collect());
+    }
     for rule in stylesheet.rules.0.drain(..) {
         if let CssRule::Custom(directive) = &rule {
             consumed.push(directive.start_byte);
@@ -290,16 +210,65 @@ fn compile_css_directives_impl(
                         ),
                     ));
                 }
-                DirectiveName::Utility => lower_managed_definition_rule(
-                    &source_index,
-                    &options.from,
-                    directive,
-                    &mut manifest_input,
-                    &mut class_names,
-                    &mut style_definitions,
-                    &mut style_order,
-                    &stylesheet_variant_rule_offsets,
-                )?,
+                DirectiveName::Mixin => {
+                    let body = directive.body.as_deref().ok_or_else(|| {
+                        directive_error(
+                            source,
+                            &options.from,
+                            directive.start_byte,
+                            "@mixin requires a body",
+                        )
+                    })?;
+                    let body = directive
+                        .body_start_byte
+                        .and_then(|start| source.get(start..start + body.len()))
+                        .unwrap_or(body);
+                    let mut definition = crate::mixins::definition(
+                        directive
+                            .prelude
+                            .parts
+                            .first()
+                            .map(String::as_str)
+                            .unwrap_or_default(),
+                        body,
+                    )
+                    .map_err(|message| {
+                        directive_error(source, &options.from, directive.start_byte, message)
+                    })?;
+                    if let Some(body_start) = directive.body_start_byte {
+                        crate::mixins::attach_sources(
+                            &mut definition,
+                            &source_index,
+                            &options.from,
+                            directive.start_byte,
+                            body_start,
+                            body,
+                        );
+                    }
+                    if definition.parameters.is_empty() {
+                        class_names.push(definition.name.trim_start_matches("--").into());
+                    }
+                    manifest_input
+                        .mixins
+                        .get_or_insert_default()
+                        .push(definition);
+                }
+                DirectiveName::Utility => {
+                    return Err(directive_error(
+                        source,
+                        &options.from,
+                        directive.start_byte,
+                        "@utility was removed; use native declarations, named tokens or @mixin",
+                    ));
+                }
+                DirectiveName::Apply => {
+                    return Err(directive_error(
+                        source,
+                        &options.from,
+                        directive.start_byte,
+                        "@apply requires a style rule",
+                    ));
+                }
             },
             rule => {
                 let mut lowerer = crate::native_conditionals::NativeConditionalLowerer {
@@ -319,25 +288,6 @@ fn compile_css_directives_impl(
         }
     }
     crate::output_mappings::refine_native_declaration_sources(source, &mut style_definitions);
-    // Index authoring declarations once for all definition bodies.
-    let mut bodies = Vec::new();
-    let mut sizes = Vec::new();
-    for utility in manifest_input.utilities.iter().flatten() {
-        let body: Vec<CssDirectiveStyleDefinition> = utility
-            .get("body")
-            .map(|body| serde_json::from_value(body.clone()).expect("compiler body"))
-            .unwrap_or_default();
-        sizes.push(body.len());
-        bodies.extend(body);
-    }
-    crate::output_mappings::refine_native_declaration_sources(source, &mut bodies);
-    let mut bodies = bodies.into_iter();
-    for (utility, size) in manifest_input.utilities.iter_mut().flatten().zip(sizes) {
-        if utility.get("body").is_some() {
-            utility["body"] = serde_json::to_value(bodies.by_ref().take(size).collect::<Vec<_>>())
-                .expect("compiler body");
-        }
-    }
     stylesheet.rules.0 = native_rules;
     if !extraction_policy.preserve_native
         && (options.prune_native_css || extraction_policy.prune_native)
@@ -445,7 +395,7 @@ fn compile_css_directives_impl(
         });
     }
     Ok(CompileCssDirectivesResult {
-        utility_sources: crate::utility_sources::collect(source, &options.from),
+        mixin_sources: crate::mixin_sources::collect(source, &options.from),
         native_output,
         native_mappings,
         manifest_input,
@@ -496,7 +446,7 @@ fn contained_directive(
 ) -> Option<(usize, DirectiveName)> {
     for rule in rules {
         if let CssRule::Custom(directive) = rule {
-            if contained {
+            if contained && directive.name != DirectiveName::Apply {
                 return Some((directive.start_byte, directive.name));
             }
             continue;

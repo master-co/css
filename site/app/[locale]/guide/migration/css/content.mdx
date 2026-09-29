@@ -61,7 +61,7 @@ Move local visual declarations into markup when the class list is easier to revi
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap-md p-lg r-lg bg-surface">
+    <section className="display:grid gap-md p-lg r-lg bg-surface">
       {children}
     </section>
   )
@@ -125,7 +125,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 ```
 
 ```html
-<article class="r-card fg-body grid-cols:3@md bg-surface p-card">
+<article class="r-card fg-body grid-cols(3)@md bg-surface p-card">
   ...
 </article>
 ```
@@ -133,7 +133,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 Keep plain CSS custom properties when the value is runtime-owned, component-private, or intentionally outside the design system.
 
 ```tsx
-<div className="w:var(--progress) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+<div className="width:var(--progress) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
 ```
 
 ---

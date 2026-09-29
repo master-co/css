@@ -6,7 +6,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['reference-one', 'reference-three', 'entry-resource-three'].flatMap(kind => ['default', 'node'].map(backend => ({ mode, kind, backend }))))
 function notified(calls: readonly (readonly unknown[])[]) {
   return calls.some(([value]) => value && typeof value === 'object' && 'type' in value && ['update', 'full-reload'].includes(String(value.type)))

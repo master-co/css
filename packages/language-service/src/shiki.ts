@@ -378,7 +378,7 @@ const SEMANTIC_SCOPE_STYLE_PROBE = [
   '@theme {',
   '  :root { --token: var(--value); }',
   '}',
-  '@utility btn {',
+  '@mixin --btn {',
   '  display: block; &:hover { color: red; }',
   '}',
   '.x, div > li:hover::before {',

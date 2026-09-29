@@ -1,9 +1,9 @@
 const syntaxes = [
-  'min-vh',
-  'min-h:100%',
-  'min-h:fit-content',
-  'min-h:min-content',
-  'min-h:max-content',
+  "min-height:100vh",
+  "min-height:100%",
+  "min-height:fit-content",
+  "min-height:min-content",
+  "min-height:max-content",
   'min-h-3xs',
   'min-h-2xs',
   'min-h-xs',
@@ -17,7 +17,7 @@ const syntaxes = [
   'min-h-5xl',
   'min-h-6xl',
   'min-h-7xl',
-  ['min-h:`size`'],
+  ["min-height:`size`"],
 ]
 
 export default syntaxes

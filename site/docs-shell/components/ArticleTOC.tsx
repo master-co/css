@@ -37,5 +37,5 @@ export default function ArticleTOC({ data }: { data: [] }) {
 
   const nestedData = buildNestedStructure(data)
 
-  return <div className='my:2em'>{renderNestedList(nestedData)}</div>
+  return <div className='margin-block:2em'>{renderNestedList(nestedData)}</div>
 }

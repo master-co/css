@@ -1,8 +1,8 @@
 const syntaxes = [
-  'flex-row',
-  'flex-col',
-  'flex-col-reverse',
-  'flex-row-reverse',
+  "flex-direction:row",
+  "flex-direction:column",
+  "flex-direction:column-reverse",
+  "flex-direction:row-reverse",
   ['flex-direction:`value`'],
 ]
 

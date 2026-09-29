@@ -2,11 +2,26 @@ import { describe, expect, it } from 'vitest'
 import { compileManifestSync, createCompilerSync } from '../src/node'
 import { validateCompiledCSS } from '../src/value-validation'
 
-const baseManifest = { version: 2 as const, languageVersion: 4 as const, variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }] }
+const baseManifest = {
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ]
+}
 
 describe('preserve and diagnose CSS values', () => {
   it('preserves invalid managed declarations and checks their expanded result', () => {
-    const source = " @utility cols:* { grid-template-columns:repeat(--master-value(),minmax(0,1fr)); } .card{@variant all{grid-template-columns:repeat(2.5,minmax(0,1fr));}}"
+    const source = " @mixin --cols(--value) { grid-template-columns:repeat(var(--value),minmax(0,1fr)); } .card{@variant all{grid-template-columns:repeat(2.5,minmax(0,1fr));}}"
     const result = compileManifestSync(source, { baseManifest })
     expect(result.css).toContain('repeat(2.5')
     expect(result.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'CSS_VALUE_INVALID' })]))

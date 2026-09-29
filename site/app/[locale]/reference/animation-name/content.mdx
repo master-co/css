@@ -9,10 +9,10 @@ Select the preset fade or rotate keyframes while keeping the same duration and l
 
 ```html
 <!-- Fade keyframes -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation-duration:1s
+    class="fg-text-blue animation-duration:1s
            animation-fill-mode:forwards
            animation-name:fade
            animation-timing-function:linear
@@ -27,10 +27,10 @@ Select the preset fade or rotate keyframes while keeping the same duration and l
 
 ```html
 <!-- Rotate keyframes -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation-duration:1s
+    class="fg-text-blue animation-duration:1s
            animation-fill-mode:forwards
            animation-name:rotate
            animation-timing-function:linear
@@ -57,10 +57,10 @@ Compare the same timing settings with rotate selected and with none. The second 
 
 ```html
 <!-- Rotate selected -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation-duration:2s
+    class="fg-text-blue animation-duration:2s
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
@@ -75,10 +75,10 @@ Compare the same timing settings with rotate selected and with none. The second 
 
 ```html
 <!-- None selected -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation-duration:2s
+    class="fg-text-blue animation-duration:2s
            animation-iteration-count:infinite
            animation-name:none
            animation-timing-function:linear
@@ -111,13 +111,13 @@ Pair the name with an explicit one-second duration, 300ms delay, linear easing a
 
 ```html
 <!-- Complete timing · one cycle -->
-<div class="w:240px max-w:100%">
-  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
+<div class="width:240px max-width:100%">
+  <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="height:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:40px w:48px
-             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+      class="display:grid place-items:center height:40px width:48px
+             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              fg-blue-80 transform:none
              animation-delay-slow animation-duration:1s
              animation-fill-mode:both
@@ -139,10 +139,10 @@ Resize to select no animation below `sm` or rotate at `sm`. Then press Play to i
 
 ```html
 <!-- None → rotate at sm -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation-duration:2s
+    class="fg-text-blue animation-duration:2s
            animation-iteration-count:infinite
            animation-name:none
            animation-timing-function:linear

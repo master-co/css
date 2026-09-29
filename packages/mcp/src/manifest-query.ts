@@ -1,19 +1,20 @@
+import { builtinTokenFamilies } from '@master/css-tooling/builtins'
 import {
   flattenMasterCSSManifestVariables,
-  type MasterCSSManifestUtility
+  type MasterCSSMixinDefinition
 } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import {
   compactConditions,
-  compactUtility,
+  compactMixin,
   compactVariable,
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 2
+const MANIFEST_QUERY_VERSION = 3
 
-export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'custom-media' | 'condition' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'variant' | 'custom-media' | 'condition' | 'alias'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -37,18 +38,8 @@ function limitResults<T>(items: T[], limit: number) {
   return items.slice(0, limit)
 }
 
-function utilitySearchValues(utility: MasterCSSManifestUtility) {
-  return [
-    utility.id,
-    utility.name,
-    utility.key,
-    utility.subkey,
-    ...(utility.keys || []),
-    ...(utility.namespaces || []),
-    ...(utility.aliasGroups || []),
-    ...(utility.variableAliasRefs || []),
-    ...utility.matchers.flatMap((matcher) => Object.values(matcher))
-  ]
+function mixinSearchValues(mixin: MasterCSSMixinDefinition) {
+  return [mixin.name, ...(mixin.parameters ?? []).map(parameter => parameter.name)]
 }
 
 export async function queryManifest(context: MasterCSSMCPContext, options: ManifestQueryOptions = {}) {
@@ -69,10 +60,10 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     ], query))
     .map(compactVariable)
 
-  const utilities = (activeManifest.utilities || [])
-    .filter((utility) => !namespace || utility.namespaces?.includes(namespace))
-    .filter((utility) => matchesAny(utilitySearchValues(utility), query))
-    .map(compactUtility)
+  const mixins = (activeManifest.mixins || [])
+    .filter((mixin) => !namespace || mixin.name === `--${namespace}`)
+    .filter((mixin) => matchesAny(mixinSearchValues(mixin), query))
+    .map(compactMixin)
 
   const variants = (activeManifest.variants || [])
     .filter((variant) => includesQuery(variant.token, query))
@@ -89,30 +80,14 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     ...compactConditions(activeManifest.containerConditions)
   ].filter((rule) => matchesAny([rule.name, rule.id], query))
 
-  const aliases = (activeManifest.utilities || [])
-    .flatMap((utility) => [
-      ...(utility.variableAliases || []).map(([key, name]) => ({
-        utility: utility.id,
-        key,
-        name,
-        type: 'variable-alias' as const
-      })),
-      ...(utility.variableAliasRefs || []).map((ref) => ({
-        utility: utility.id,
-        ref,
-        type: 'variable-alias-ref' as const
-      })),
-      ...(utility.aliasGroups || []).map((group) => ({
-        utility: utility.id,
-        group,
-        type: 'alias-group' as const
-      }))
-    ])
+  const aliases = builtinTokenFamilies.filter(family => family.prefix !== family.property)
+    .map(({ prefix: alias, property, namespaces }) => ({ type: 'token-alias' as const, alias, property, namespaces }))
+    .filter(alias => !namespace || alias.namespaces.includes(namespace))
     .filter((alias) => matchesAny(Object.values(alias), query))
 
   const allResults = {
     tokens: kind === 'all' || kind === 'token' ? variables : [],
-    utilities: kind === 'all' || kind === 'utility' ? utilities : [],
+    mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
     variants: kind === 'all' || kind === 'variant' ? variants : [],
     customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
     conditions: kind === 'all' || kind === 'condition' ? conditions : [],
@@ -120,7 +95,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
   }
   const limitedResults = {
     tokens: limitResults(allResults.tokens, limit),
-    utilities: limitResults(allResults.utilities, limit),
+    mixins: limitResults(allResults.mixins, limit),
     variants: limitResults(allResults.variants, limit),
     customMedia: limitResults(allResults.customMedia, limit),
     conditions: limitResults(allResults.conditions, limit),
@@ -149,7 +124,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       total,
       returned,
       tokens: variables.length,
-      utilities: utilities.length,
+      mixins: mixins.length,
       variants: variants.length,
       customMedia: customMedia.length,
       conditions: conditions.length,

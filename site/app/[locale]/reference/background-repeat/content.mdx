@@ -11,7 +11,7 @@ Compare the same small background tile with repetition enabled and disabled. Nei
 ```html
 <!-- Repeat · both axes -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-repeat background-position:0|0
+  class="height:160px w-xs max-width:100% background-repeat:repeat background-position:0|0
          background-size:80px|50px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -20,7 +20,7 @@ Compare the same small background tile with repetition enabled and disabled. Nei
 ```html
 <!-- No repeat · one tile -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-no-repeat background-position:0|0
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:0|0
          background-size:80px|50px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -29,7 +29,7 @@ Compare the same small background tile with repetition enabled and disabled. Nei
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg-repeat', 'bg-no-repeat']}
+    {['background-repeat:repeat', 'background-repeat:no-repeat']}
   </Class2CSS>
 </details>
 
@@ -41,7 +41,7 @@ Compare the same small background tile with repetition enabled and disabled. Nei
 ```html
 <!-- Repeat horizontally -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-repeat-x background-position:0|0
+  class="height:160px w-xs max-width:100% background-repeat:repeat-x background-position:0|0
          background-size:80px|50px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -50,7 +50,7 @@ Compare the same small background tile with repetition enabled and disabled. Nei
 ```html
 <!-- Repeat vertically -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-repeat-y background-position:0|0
+  class="height:160px w-xs max-width:100% background-repeat:repeat-y background-position:0|0
          background-size:80px|50px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -66,9 +66,9 @@ Widen to `sm` to repeat the tile on both axes. Narrow screens and print show it 
 ```html
 <!-- One tile → repeat at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-no-repeat background-position:0|0
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:0|0
          background-size:80px|50px bg-surface-inset
-         background-image:url(/demo/landscape.svg) bg-no-repeat@print bg-repeat@screen@sm"
+         background-image:url(/demo/landscape.svg) background-repeat:no-repeat@print background-repeat:repeat@screen@sm"
 ></div>
 ```
 

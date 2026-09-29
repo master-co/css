@@ -3,7 +3,7 @@ fn executes_language_v2_parser_cases_and_historical_rejections() {
     let corpus: ParserParityCorpus =
         serde_json::from_str(include_str!("../../../../parity/v2-language-corpus.json"))
             .expect("semantic parity corpus parses");
-    assert_eq!(corpus.version, 2);
+    assert_eq!(corpus.version, 3);
     assert!(!corpus.parser_cases.is_empty());
 
     let engine = EngineSession::create(include_str!(
@@ -33,22 +33,22 @@ fn executes_language_v2_parser_cases_and_historical_rejections() {
 fn creates_sorted_rule_transitions_and_css() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
     let transition = engine
-        .ensure_class_rules(["block", "w:10px", "bg-origin-border"])
+        .ensure_class_rules(["block", "width:10px", "bg-origin-border"])
         .unwrap();
     assert_eq!(transition.mutations.len(), 3);
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
+        "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.width\\:10px{width:10px}}"
     );
     let snapshot = engine.snapshot().unwrap();
     assert_eq!(snapshot.rules.len(), 3);
-    assert_eq!(snapshot.rules[2].class_name, "w:10px");
+    assert_eq!(snapshot.rules[2].class_name, "width:10px");
 }
 
 #[test]
 fn ensure_is_idempotent_and_delete_reports_exact_index() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    engine.ensure_class_rules(["block", "w:10px"]).unwrap();
+    engine.ensure_class_rules(["block", "width:10px"]).unwrap();
     assert!(
         engine
             .ensure_class_rules(["block"])
@@ -58,14 +58,14 @@ fn ensure_is_idempotent_and_delete_reports_exact_index() {
     );
     let deleted = engine.delete_class_rules(["block"]).unwrap();
     assert_eq!(deleted.mutations.len(), 1);
-    assert_eq!(engine.css_text(), "@layer utilities{.w\\:10px{width:10px}}");
+    assert_eq!(engine.css_text(), "@layer utilities{.width\\:10px{width:10px}}");
 }
 
 #[test]
 fn refresh_replays_connected_classes_against_new_manifest() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
     engine.ensure_class_rules(["block"]).unwrap();
-    let updated = MANIFEST.replace("\"block\"", "\"inline\"");
+    let updated = MANIFEST.replace("\"--block\"", "\"--inline\"");
     let transition = engine.refresh(&updated).unwrap();
     assert_eq!(transition.mutations.len(), 1);
     assert_eq!(engine.css_text(), "");
@@ -126,12 +126,12 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
         }
     );
     assert_eq!(
-        engine.inspect_class_semantics("w:10px!:hover").unwrap(),
+        engine.inspect_class_semantics("width:10px!:hover").unwrap(),
         ClassSemanticInspection {
-            class_name: "w:10px!:hover".into(),
+            class_name: "width:10px!:hover".into(),
             kind: ClassSemanticKind::Declaration,
             matcher_types: vec![UtilityMatcherType::Key],
-            key_token: Some("w:".into()),
+            key_token: Some("width:".into()),
             value_token: Some("10px".into()),
             state_token: Some(":hover".into()),
             important: true,
@@ -149,19 +149,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
-    let manifest = r#"{
-          "version":2,"languageVersion":4,
-          "utilities":[{
-            "id":".multi",
-            "name":"multi",
-            "type":-2,
-            "emit":{"type":"static","rules":[
-              {"declarations":{"display":"grid"}},
-              {"selector":"&:hover","declarations":{"color":"red"}}
-            ]},
-            "matchers":[{"type":"static","name":"multi"}]
-          }]
-        }"#;
+    let manifest = r#"{"version":3,"languageVersion":5,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     let inspection = engine.inspect("multi").unwrap();
     assert_eq!(inspection.rules.len(), 1);
@@ -326,14 +314,14 @@ fn rejects_removed_animation_resource_registration_atomically() {
 #[test]
 fn removed_static_variable_and_managed_animation_fields_are_rejected() {
     for field in [r#""settings":{}"#, r#""animations":{}"#, r#""animationOptions":{}"#, r#""modes":[]"#] {
-        assert!(EngineSession::create(&format!(r#"{{"version":2,"languageVersion":4,{field}}}"#)).is_err());
+        assert!(EngineSession::create(&format!(r#"{{"version":3,"languageVersion":5,{field}}}"#)).is_err());
     }
-    assert!(EngineSession::create(r#"{"version":2,"languageVersion":4,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
+    assert!(EngineSession::create(r#"{"version":3,"languageVersion":5,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
 }
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["display:block", "made-up:nope"])
         .unwrap();
@@ -353,9 +341,9 @@ fn commits_native_declarations_without_host_support_filtering() {
 // Also replaces commits_only_host_supported_native_declarations with preservation assertions.
 // The final v2 contract preserves declarations; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
     let candidates = engine
-        .native_declaration_candidates(["width:error", "w:10px"])
+        .native_declaration_candidates(["width:error", "width:10px"])
         .unwrap();
     assert_eq!(candidates.len(), 2);
     assert_eq!(candidates[0].property, "width");
@@ -364,9 +352,9 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
     assert_eq!(candidates[1].value, "10px");
 
     engine
-        .ensure_class_rules(["width:error", "w:10px"])
+        .ensure_class_rules(["width:error", "width:10px"])
         .unwrap();
-    assert_eq!(engine.css_text(), "@layer utilities{.w\\:10px{width:10px}.width\\:error{width:error}}");
+    assert_eq!(engine.css_text(), "@layer utilities{.width\\:10px{width:10px}.width\\:error{width:error}}");
     assert!(engine.inspect("width:error").unwrap().match_status == mastercss_schema::MatchStatus::Matched);
 
     let token_engine = EngineSession::create(include_str!(
@@ -382,15 +370,15 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
     let candidates = engine
-        .native_declaration_candidates(["pl:calc(5x-2px)"])
+        .native_declaration_candidates(["padding-left:calc(5x-2px)"])
         .unwrap();
     assert_eq!(candidates.len(), 1);
     assert_eq!(candidates[0].property, "padding-left");
     assert_eq!(candidates[0].value, "calc(5x - 2px)");
     assert_eq!(
-        engine.inspect("pl:calc(5x-2px)").unwrap().rules[0].text,
-        ".pl\\:calc\\(5x-2px\\){padding-left:calc(5x - 2px)}"
+        engine.inspect("padding-left:calc(5x-2px)").unwrap().rules[0].text,
+        ".padding-left\\:calc\\(5x-2px\\){padding-left:calc(5x - 2px)}"
     );
 }

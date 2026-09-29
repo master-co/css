@@ -14,7 +14,7 @@ function linter(fix: boolean) {
 }
 
 it('BH-0015 maps a Vue expression through both HTML entities and JavaScript escapes', async () => {
-  const source = String.raw`<template><div :class="'fg:\u0072ed&#32;zzz'" /></template>`
+  const source = String.raw`<template><div :class="'color:\u0072ed&#32;zzz'" /></template>`
   const [result] = await linter(false).lintText(source, { filePath: 'escape.vue' })
   expect(result.messages).toHaveLength(1)
   expect(result.messages[0]).toMatchObject({
@@ -25,10 +25,10 @@ it('BH-0015 maps a Vue expression through both HTML entities and JavaScript esca
 })
 
 it('BH-0015 fixes the complete Vue source range without leaving entity fragments or invalid syntax', async () => {
-  const source = String.raw`<template><div :class="'fg:white&#32;\u0062g:black'" /></template>`
+  const source = String.raw`<template><div :class="'color:white&#32;\u0062ackground:black'" /></template>`
   const [result] = await linter(true).lintText(source, { filePath: 'escape.vue' })
   expect(result.messages).toEqual([])
-  expect(result.output).toBe(`<template><div :class="'bg:black fg:white'" /></template>`)
+  expect(result.output).toBe(`<template><div :class="'background:black color:white'" /></template>`)
   const [stable] = await linter(true).lintText(result.output!, { filePath: 'escape.vue' })
   expect(stable.messages).toEqual([])
   expect(stable.output).toBeUndefined()

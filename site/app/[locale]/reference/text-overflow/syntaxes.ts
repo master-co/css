@@ -1,6 +1,6 @@
 const syntaxes = [
-  'text-clip',
-  'text-ellipsis',
+  "text-overflow:clip",
+  "text-overflow:ellipsis",
   ['text-overflow:`value`'],
 ]
 

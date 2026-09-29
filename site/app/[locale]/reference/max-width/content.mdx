@@ -3,64 +3,64 @@
 
 ## Examples \{#examples\}
 ### Cap a fluid element \{#cap-a-fluid-element\}
-`max-w:*` sets an upper bound; it does not make a narrow element grow. Compare `w:100%` capped at 192px with a preferred width of 80px under the same cap. Automatic inline margins center both inside the 280px parent.
+`max-width:*` sets an upper bound; it does not make a narrow element grow. Compare `width:100%` capped at 192px with a preferred width of 80px under the same cap. Automatic inline margins center both inside the 280px parent.
 
 <DemoExample page="max-width" section="cap-a-fluid-element" />
 
 ```html
 <!-- Fluid width reaches the cap -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:100% max-w:12rem mx:auto p-sm">192px cap</div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:100% max-width:12rem margin-inline:auto p-sm">192px cap</div>
 </div>
 ```
 
 ```html
 <!-- Small width stays small -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:5rem max-w:12rem mx:auto p-sm">80px</div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:5rem max-width:12rem margin-inline:auto p-sm">80px</div>
 </div>
 ```
 
 ### Set a readable measure \{#set-a-readable-measure\}
-Text-relative limits constrain the line length using the current font. This compact specimen uses `max-w:24ch` so the cap is visible in the docs column. The cap includes the specimen’s padding. The zero glyph defines `ch`; it is not a count of arbitrary characters.
+Text-relative limits constrain the line length using the current font. This compact specimen uses `max-width:24ch` so the cap is visible in the docs column. The cap includes the specimen’s padding. The zero glyph defines `ch`; it is not a count of arbitrary characters.
 
 <DemoExample page="max-width" section="set-a-readable-measure" />
 
 ```html
-<div id="layout" class="w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:100% max-w:24ch p-sm font-mono font-sm leading:24px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
+<div id="layout" class="width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:100% max-width:24ch p-sm font-mono font-sm line-height:24px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
 </div>
 ```
 
-Choose a measure for your typeface and content; a longer article may use a larger value such as `max-w:72ch`. The maximum and the available containing width both limit the result.
+Choose a measure for your typeface and content; a longer article may use a larger value such as `max-width:72ch`. The maximum and the available containing width both limit the result.
 
 ### Keep media responsive \{#keep-media-responsive\}
-The source is 320 × 200px. `max-w:100%` caps its width at the 240px parent, and `h:auto` preserves its intrinsic ratio, giving a 240 × 150px image. A wider parent does not force the image to upscale.
+The source is 320 × 200px. `max-width:100%` caps its width at the 240px parent, and `height:auto` preserves its intrinsic ratio, giving a 240 × 150px image. A wider parent does not force the image to upscale.
 
 <DemoExample page="max-width" section="keep-media-responsive" />
 
 ```html
-<div id="layout" class="w:15rem" role="group" aria-label="Available space">
-  <img id="target" class="block h:auto max-w:100%" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="width:15rem" role="group" aria-label="Available space">
+  <img id="target" class="display:block height:auto max-width:100%" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
 ### Use viewport and container caps \{#use-viewport-and-container-caps\}
-A viewport cap is not a parent-width cap. Here `max-vw` permits a box as wide as the current iframe even inside a 240px parent; `max-w:100%` restricts the second box to that parent. Scroll the preview horizontally if needed to see the viewport-capped edge.
+A viewport cap is not a parent-width cap. Here `max-vw` permits a box as wide as the current iframe even inside a 240px parent; `max-width:100%` restricts the second box to that parent. Scroll the preview horizontally if needed to see the viewport-capped edge.
 
 <DemoExample page="max-width" section="use-viewport-and-container-caps" />
 
 ```html
 <!-- Viewport cap -->
-<div id="layout" class="w:15rem" role="group" aria-label="Available space">
-  <div id="target" class="w:1000px max-vw p-sm">100vw maximum</div>
+<div id="layout" class="width:15rem" role="group" aria-label="Available space">
+  <div id="target" class="width:1000px max-width:100vw p-sm">100vw maximum</div>
 </div>
 ```
 
 ```html
 <!-- Containing-block cap -->
-<div id="layout" class="w:15rem" role="group" aria-label="Available space">
-  <div id="target" class="w:1000px max-w:100% p-sm">100% maximum</div>
+<div id="layout" class="width:15rem" role="group" aria-label="Available space">
+  <div id="target" class="width:1000px max-width:100% p-sm">100% maximum</div>
 </div>
 ```
 
@@ -72,7 +72,7 @@ Resize past `sm` to relax the cap from 160px to 240px. The blue panel still pref
 <DemoExample page="max-width" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:100% max-w:10rem p-sm max-w:15rem@sm">Responsive cap</div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:100% max-width:10rem p-sm max-width:15rem@sm">Responsive cap</div>
 </div>
 ```

@@ -21,8 +21,8 @@ test('renders a complete immutable HTML result', () => {
 
 
 test('deduplicates decoded classes in first appearance order without changing HTML entities', () => {
-  const html = '<div class="fg-red mt:0&gt;div fg-red"></div><span class="mt:0>div bg-blue fg-red"></span>'
+  const html = "<div class=\"fg-red margin-top:0&gt;div fg-red\"></div><span class=\"margin-top:0>div bg-blue fg-red\"></span>"
   const result = renderHTML(html, { manifest: defaultManifest })
-  expect(result.classNames).toEqual(['fg-red', 'mt:0>div', 'bg-blue'])
+  expect(result.classNames).toEqual(['fg-red', "margin-top:0>div", 'bg-blue'])
   expect(result.html).toContain(html)
 })

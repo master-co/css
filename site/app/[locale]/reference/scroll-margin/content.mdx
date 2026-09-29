@@ -3,13 +3,13 @@
 
 ## Examples \{#examples\}
 ### Offset anchor targets \{#offset-anchor-targets\}
-`scroll-mt:*` expands a target’s scroll-into-view area above its border box. Activate Details: its 64px offset clears the 48px sticky header and leaves a 16px gap. The target’s layout position and size do not change.
+`scroll-margin-top:*` expands a target’s scroll-into-view area above its border box. Activate Details: its 64px offset clears the 48px sticky header and leaves a 16px gap. The target’s layout position and size do not change.
 
 <DemoExample page="scroll-margin" section="offset-anchor-targets" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
-  <header class="sticky top z:1 h:3rem">Collection navigation</header>
+<div id="scrollport" class="overflow-y:auto height:14rem" tabindex="0" aria-label="Scrollable collection">
+  <header class="position:sticky top:0 z-index:1 height:3rem">Collection navigation</header>
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
@@ -35,19 +35,19 @@
 The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.
 
 ### Add horizontal snap margin \{#add-horizontal-snap-margin\}
-`scroll-mx:*` expands the snap area on both horizontal sides. With start alignment, the left expansion changes where the target stops; it does not center the item or add layout space between cards. Choose Panel 2 to compare the gap at the leading edge.
+`scroll-margin-inline:*` expands the snap area on both horizontal sides. With start alignment, the left expansion changes where the target stops; it does not center the item or add layout space between cards. Choose Panel 2 to compare the gap at the leading edge.
 
 <DemoExample page="scroll-margin" section="add-horizontal-snap-margin" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="display:flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem scroll-mx-md snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 height:9rem width:12rem scroll-snap-align:start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 height:9rem width:12rem scroll-mx-md scroll-snap-align:start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 height:9rem width:12rem scroll-snap-align:start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 height:9rem width:12rem scroll-snap-align:start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 height:9rem width:12rem scroll-snap-align:start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 height:9rem width:12rem scroll-snap-align:start">Panel 6</article>
 </div>
 ```
 
@@ -59,12 +59,12 @@ The destination controls use the browser’s scroll-into-view behavior. The same
 </details>
 
 ### Use all-side margin for compact cases \{#use-all-side-margin-for-compact-cases\}
-`scroll-m:*` expands the target’s scroll area on all four sides. In this vertical example, the top expansion leaves 12px above Details when it is scrolled into view.
+`scroll-margin:*` expands the target’s scroll area on all four sides. In this vertical example, the top expansion leaves 12px above Details when it is scrolled into view.
 
 <DemoExample page="scroll-margin" section="use-all-side-margin-for-compact-cases" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
+<div id="scrollport" class="overflow-y:auto height:14rem" tabindex="0" aria-label="Scrollable collection">
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
@@ -88,7 +88,7 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="scroll-margin" section="apply-conditionally" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
+<div id="scrollport" class="overflow-y:auto height:14rem" tabindex="0" aria-label="Scrollable collection">
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>

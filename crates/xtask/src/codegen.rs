@@ -69,7 +69,7 @@ pub(crate) fn generated_package_version() -> String {
 }
 
 pub(crate) fn generated_builtin_registry() -> String {
-    let key_aliases = mastercss_engine::builtin_key_aliases()
+    let key_aliases = mastercss_engine::builtin_token_aliases()
         .iter()
         .copied()
         .collect::<std::collections::BTreeMap<_, _>>();
@@ -82,6 +82,11 @@ pub(crate) fn generated_builtin_registry() -> String {
             })
         })
         .collect::<Vec<_>>();
+    let token_families = mastercss_engine::builtin_token_families().map(|(prefix, property, namespaces)| {
+        serde_json::json!({"prefix": prefix, "property": property, "namespaces": namespaces.iter().map(|name| name.trim_start_matches('~')).collect::<Vec<_>>()})
+    }).collect::<Vec<_>>();
+    let token_families =
+        serde_json::to_string_pretty(&token_families).expect("token families are serializable");
     let key_aliases =
         serde_json::to_string_pretty(&key_aliases).expect("built-in key aliases are serializable");
     let token_namespaces = serde_json::to_string_pretty(&token_namespaces)
@@ -95,10 +100,20 @@ export interface MasterCSSBuiltinTokenNamespace {{
   readonly variableAliasRefs: readonly string[]
 }}
 
-export type MasterCSSBuiltinKeyAliases = Readonly<Record<string, string>>
+export interface MasterCSSBuiltinTokenFamily {{
+  readonly prefix: string
+  readonly property: string
+  readonly namespaces: readonly string[]
+}}
+
+export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Object.freeze(
+  {token_families}.map((family) => Object.freeze({{ ...family, namespaces: Object.freeze(family.namespaces) }}))
+)
+
+export type MasterCSSBuiltinTokenAliases = Readonly<Record<string, string>>
 export type MasterCSSBuiltinTokenNamespaces = readonly MasterCSSBuiltinTokenNamespace[]
 
-export const builtinKeyAliases = Object.freeze({key_aliases}) as MasterCSSBuiltinKeyAliases
+export const builtinTokenAliases = Object.freeze({key_aliases}) as MasterCSSBuiltinTokenAliases
 
 export const builtinTokenNamespaces = Object.freeze(
   {token_namespaces}.map((namespace) => Object.freeze({{
@@ -125,6 +140,10 @@ pub(crate) fn check_generated_file(path: &Path, generated: &str) -> Result<(), S
 pub(crate) fn codegen(check: bool) -> Result<(), String> {
     let root = workspace_root();
     let outputs = [
+        (
+            root.join("packages/schema/src/mixin.ts"),
+            include_str!("../templates/mixin.ts").to_owned(),
+        ),
         (
             root.join("packages/binding/src/protocol.ts"),
             generated_contract(),

@@ -91,9 +91,9 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 ```
 
 ```html
-<section class="w:100% max-w-6xl mx:auto px-md py-2xl">
-  <div class="grid gap-lg grid-cols:3@md">
-    <article class="p-lg b:1px|solid|var(--color-line-divider) r-lg bg-white">
+<section class="width:100% max-w-6xl margin-inline:auto px-md py-2xl">
+  <div class="display:grid gap-lg grid-cols(3)@md">
+    <article class="p-lg border:1px|solid|var(--color-line-divider) r-lg bg-white">
       ...
     </article>
   </div>
@@ -102,13 +102,13 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 
 Use native declaration syntax when it is clearer than a utility alias:
 
-{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native declaration example */}
+{ }
 ```html
 <div class="scroll-margin-top:4rem display:contents@md">
   ...
 </div>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }
 
 Keep Bootstrap layout classes in templates that still need Bootstrap's container widths, gutter assumptions, or component internals.
 
@@ -163,7 +163,7 @@ Bootstrap JavaScript components are not just CSS. They can manage focus, ARIA at
 Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
 
 ```html
-<section class="grid gap-md">
+<section class="display:grid gap-md">
   <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
 </section>
 ```
@@ -186,7 +186,7 @@ Keep the override as CSS when it targets Bootstrap internals:
 Move the override to Master CSS only after the markup is app-owned:
 
 ```html
-<nav class="flex items-center gap-md">
+<nav class="display:flex align-items:center gap-md">
   <div class="min-w-3xs">...</div>
 </nav>
 ```

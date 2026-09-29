@@ -33,8 +33,8 @@ test('BH-0045 gives custom filename callbacks the final CSS and preserves fixed 
   const { output } = await prepare('.example{color:red}', callback)
   expect(output.assetFileNames(asset)).toMatch(/^red\/\[name\]-[\w-]{8}\.css$/)
   expect(callback).toHaveBeenCalledWith(expect.objectContaining({ source: 'body{margin:0}.example{color:red}' }))
-  const fixed = await prepare('.example{color:red}', 'fixed.css')
-  expect(fixed.output.assetFileNames(asset)).toBe('fixed.css')
+  const fixed = await prepare('.example{color:red}', "position:fixed.css")
+  expect(fixed.output.assetFileNames(asset)).toBe("position:fixed.css")
 })
 
 test('BH-0045 leaves non-managed CSS and non-CSS asset patterns unchanged', async () => {

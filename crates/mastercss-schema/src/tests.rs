@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn validates_manifest_v1_without_dropping_unknown_fields() {
-    let source = r#"{"version":2,"languageVersion":4,"future":{"value":true},"utilities":[]}"#;
+    let source = r#"{"version":3,"languageVersion":5,"future":{"value":true}}"#;
     let manifest = MasterCssManifest::parse(source).unwrap();
     assert_eq!(manifest.to_json().unwrap(), source);
 }
@@ -14,11 +14,11 @@ fn rejects_legacy_manifest_shapes() {
         Err(SchemaError::UnsupportedManifestVersion)
     ));
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":2,"languageVersion":4,"variables":[]}"#),
+        MasterCssManifest::parse(r#"{"version":3,"languageVersion":5,"variables":[]}"#),
         Err(SchemaError::UnsupportedVariablesFormat)
     ));
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":2,"languageVersion":4,"utilityBuckets":{}}"#),
+        MasterCssManifest::parse(r#"{"version":3,"languageVersion":5,"utilityBuckets":{}}"#),
         Err(SchemaError::UnsupportedUtilityBuckets)
     ));
 }

@@ -11,6 +11,7 @@ export class HydratedGeneratedRuleNode {
 
 export default class HydratedGeneratedRule {
   native?: CSSRule
+  nativeNodeCount?: number
   readonly name: string
   readonly key: string
   readonly layerName: MasterCSSHydrationRule['layer']

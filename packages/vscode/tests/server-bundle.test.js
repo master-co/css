@@ -396,13 +396,13 @@ test('staged language server starts without workspace node_modules and shuts dow
 
       server.notify('initialized', {})
       const uri = 'untitled:selector-test.html'
-      const text = '<div class="block:">'
+      const text = '<div class="display:block:">'
       server.notify('textDocument/didOpen', {
         textDocument: { uri, languageId: 'html', version: 1, text }
       })
       const completion = await server.request('textDocument/completion', {
         textDocument: { uri },
-        position: { line: 0, character: text.indexOf('block:') + 'block:'.length },
+        position: { line: 0, character: text.indexOf('display:block:') + 'display:block:'.length },
         context: { triggerKind: 2, triggerCharacter: ':' }
       })
       expect(completion.find((item) => item.label === ':first')?.detail).toBe(':first-child')

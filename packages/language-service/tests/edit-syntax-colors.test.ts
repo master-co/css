@@ -15,8 +15,8 @@ const expectEditedColors = async ({
   source: RegExp
   named?: boolean
 }) => {
-  const beforeContent = `export default () => <div className='fg${named ? '-' : ':'}${before}'></div>`
-  const afterContent = `export default () => <div className='fg:${after}'></div>`
+  const beforeContent = `export default () => <div className='${named ? 'fg-' : 'color:'}${before}'></div>`
+  const afterContent = `export default () => <div className='color:${after}'></div>`
   const beforeDoc = createDoc('tsx', beforeContent)
   const afterDoc = createDoc('tsx', afterContent)
   const languageService = new CSSLanguageService({ manifest: createPresetManifest() })

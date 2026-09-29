@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest'
 import path from 'node:path'
 
 const SOURCE = 'foo.tsx'
-const CONTENT = `<div className="bg-white fg-black m:0.5rem">hi</div>`
+const CONTENT = "<div className=\"bg-white fg-black margin:0.5rem\">hi</div>"
 const ROOT = path.join(path.parse(process.cwd()).root, 'project')
 
 describe('content-hash cache (Phase A optimisation)', () => {
@@ -77,11 +77,11 @@ describe('class exclusion matcher', () => {
       blocklist: [/^bg-/g]
     }).init()
 
-    await ex.scan(SOURCE, `<div className="bg-red bg-blue block">hi</div>`)
+    await ex.scan(SOURCE, "<div className=\"bg-red bg-blue display:block\">hi</div>")
 
     expect(ex.validClasses.has('bg-red')).toBe(false)
     expect(ex.validClasses.has('bg-blue')).toBe(false)
-    expect(ex.validClasses.has('block')).toBe(true)
+    expect(ex.validClasses.has("display:block")).toBe(true)
   })
 
   test('rebuilds when blocklist is reassigned', async () => {
@@ -89,7 +89,7 @@ describe('class exclusion matcher', () => {
       blocklist: [/^bg-/]
     }).init()
 
-    await ex.scan('excluded.tsx', `<div className="bg-red block">hi</div>`)
+    await ex.scan('excluded.tsx', "<div className=\"bg-red display:block\">hi</div>")
     ex.options.blocklist = []
     await ex.scan('included.tsx', `<div className="bg-blue">hi</div>`)
 
@@ -102,8 +102,8 @@ describe('module source matcher cache', () => {
   test('scan() accepts trusted content without module filtering', async () => {
     const ex = await new MasterCSSScanner({ exclude: ['**/*.tsx'] }).init()
 
-    expect(await ex.scan('component.tsx', `<div className="block">hi</div>`)).toBe(true)
-    expect(ex.validClasses.has('block')).toBe(true)
+    expect(await ex.scan('component.tsx', "<div className=\"display:block\">hi</div>")).toBe(true)
+    expect(ex.validClasses.has("display:block")).toBe(true)
   })
 
   test('normalizes query suffixes before matching module paths', async () => {
@@ -209,10 +209,10 @@ describe('module source matcher cache', () => {
       exclude: ['src/skip.tsx']
     }, ROOT).init()
 
-    expect(await ex.scanModule(path.join(ROOT, 'src/App.tsx'), `<div className="block">hi</div>`)).toBe(true)
+    expect(await ex.scanModule(path.join(ROOT, 'src/App.tsx'), "<div className=\"display:block\">hi</div>")).toBe(true)
     expect(await ex.scanModule(path.join(ROOT, 'src/skip.tsx'), `<div className="fg-red">hi</div>`)).toBe(false)
     expect(await ex.scanModule(path.join(ROOT, 'src/data.json'), `<div className="bg-red">hi</div>`)).toBe(false)
-    expect(ex.validClasses.has('block')).toBe(true)
+    expect(ex.validClasses.has("display:block")).toBe(true)
     expect(ex.validClasses.has('fg-red')).toBe(false)
     expect(ex.validClasses.has('bg-red')).toBe(false)
   })

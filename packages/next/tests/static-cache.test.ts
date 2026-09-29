@@ -24,7 +24,7 @@ async function fixture(css = "@import url(\"@master/css\");") {
   roots.push(root)
   const entry = join(root, 'app.css'), source = join(root, 'page.tsx')
   await writeFile(entry, css)
-  await writeFile(source, '<div className="p:11px"/>')
+  await writeFile(source, "<div className=\"padding:11px\"/>")
   const state = (await prepareNextStatic({}, { projectDir: root }))!
   const session = [...globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__!.entries()].find(([key]) => key.startsWith(root + '\0'))![1]
   return { root, entry, source, state, session }
@@ -49,7 +49,7 @@ test('verified unchanged inputs skip registration, reconciliation, composition a
 test('class edits reuse the stylesheet collection, while CSS and processed inputs invalidate it', async () => {
   const { root, entry, source, state, session } = await fixture()
   const register = vi.spyOn(session.stylesheets, 'register')
-  await writeFile(source, '<div className="p:29px"/>')
+  await writeFile(source, "<div className=\"padding:29px\"/>")
   await scanStaticModule(state.statePath, source, '')
   expect(register).not.toHaveBeenCalled()
   expect(await text(state.outputPath)).toContain('padding:29px')
@@ -132,7 +132,7 @@ test('an edit during cache verification retries instead of accepting the old pub
   const original = snapshotModule.captureStaticSnapshot
   vi.spyOn(snapshotModule, 'captureStaticSnapshot').mockImplementationOnce(async (...args) => {
     const snapshot = await original(...args)
-    await writeFile(source, '<div className="p:31px"/>')
+    await writeFile(source, "<div className=\"padding:31px\"/>")
     return snapshot
   })
   await scanStaticModule(state.statePath, source, '')
@@ -144,7 +144,7 @@ test('an edit during cache verification retries instead of accepting the old pub
 test('same-mtime ignore changes invalidate the scanner policy as well as publication reuse', async () => {
   const { root, state, source } = await fixture()
   const ignore = join(root, '.gitignore')
-  await writeFile(join(root, 'ignored.tsx'), '<div className="m:37px"/>')
+  await writeFile(join(root, 'ignored.tsx'), "<div className=\"margin:37px\"/>")
   await writeFile(ignore, 'ignored.tsx\n')
   await scanStaticModule(state.statePath, source, '')
   expect(await text(state.outputPath)).not.toContain('margin:37px')
@@ -161,7 +161,7 @@ test('explicit source globs conservatively rebuild to discover new ignored input
   await mkdir(join(root, 'hidden'))
   await writeFile(join(root, '.gitignore'), 'hidden/\n')
   await scanStaticModule(state.statePath, source, '')
-  await writeFile(join(root, 'hidden/new.tsx'), '<div className="p:71px"/>')
+  await writeFile(join(root, 'hidden/new.tsx'), "<div className=\"padding:71px\"/>")
   await scanStaticModule(state.statePath, source, '')
   expect(await text(state.outputPath)).toContain('padding:71px')
 })
@@ -170,7 +170,7 @@ test('explicit source globs conservatively rebuild to discover new ignored input
 test('concurrent module notifications perform one composition for the shared current source set', async () => {
   const { source, state, session } = await fixture()
   await scanStaticModule(state.statePath, source, '')
-  await writeFile(source, '<div className="p:43px"/>')
+  await writeFile(source, "<div className=\"padding:43px\"/>")
   const compose = vi.spyOn(session.stylesheets, 'compose')
   await Promise.all(Array.from({ length: 20 }, () => scanStaticModule(state.statePath, source, '')))
   expect(compose).toHaveBeenCalledTimes(2)
@@ -180,12 +180,12 @@ test('concurrent module notifications perform one composition for the shared cur
 test('replacement, shared references and last-reference deletion agree with a fresh build', async () => {
   const { root, source, state } = await fixture()
   const shared = join(root, 'shared.tsx')
-  await writeFile(shared, '<div className="p:11px m:22px"/>')
+  await writeFile(shared, "<div className=\"padding:11px margin:22px\"/>")
   await scanStaticModule(state.statePath, shared, '')
   await writeFile(source, '')
   await scanStaticModule(state.statePath, source, '')
   expect(await text(state.outputPath)).toContain('padding:11px')
-  await writeFile(shared, '<div className="m:22px"/>')
+  await writeFile(shared, "<div className=\"margin:22px\"/>")
   await scanStaticModule(state.statePath, shared, '')
   expect(await text(state.outputPath)).not.toContain('padding:11px')
   const warm = await text(state.outputPath)
@@ -213,7 +213,7 @@ test('independent workers compile one changed snapshot once and subsequent publi
     child.on('exit', code => code === 0 ? resolve(stdout) : reject(new Error(stderr)))
   })
   await worker(`import {prepareNextStatic} from ${moduleURL}; await prepareNextStatic({}, {projectDir:${JSON.stringify(root)}});`)
-  await writeFile(source, '<div className="p:47px"/>')
+  await writeFile(source, "<div className=\"padding:47px\"/>")
   const script = `
     import {MasterCSSStylesheetCollection} from '@master/css-compiler/stylesheet';
     import {scanStaticModule} from ${moduleURL};

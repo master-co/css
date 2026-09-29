@@ -1,25 +1,19 @@
-import type { MasterCSSManifestUtility } from '@master/css-schema/manifest'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinKeyAliases, builtinTokenNamespaces } from '@master/css-tooling/builtins'
+import { builtinTokenFamilies } from '@master/css-tooling/builtins'
 
-export const manifestUtilities = defaultManifest.utilities || []
-
-export function getUtilityVariableNamespaces(utility: MasterCSSManifestUtility) {
-  return [
-    ...(utility.namespaces || []),
-    ...(utility.variableAliasRefs || []).map((ref) => ref.replace(/^[=~]/, ''))
-  ].filter((namespace, index, namespaces) => namespaces.indexOf(namespace) === index)
-}
-
-export function utilityUsesVariableNamespace(utility: MasterCSSManifestUtility, pattern: string) {
-  return getUtilityVariableNamespaces(utility).some((namespace) => namespace.includes(pattern))
-}
+/** Read-only engine projection plus generic single-string mixin families. */
+export const tokenFamilies = [
+  ...builtinTokenFamilies,
+  ...(defaultManifest.mixins ?? []).filter(mixin => mixin.parameters?.length === 1 && mixin.parameters[0].syntax === 'string')
+    .map(mixin => ({ prefix: mixin.name.slice(2), property: '', namespaces: [mixin.name.slice(2)] }))
+]
 
 export function getVariableNamespacePublicKeys(namespace: string) {
-  return normalizePublicKeys([
-    ...getTokenNamespacePublicKeys(namespace),
-    ...getManifestVariableNamespacePublicKeys(namespace)
-  ])
+  return Array.from(new Set(tokenFamilies.filter(family => family.namespaces.includes(namespace)).map(family => family.prefix))).sort()
+}
+
+export function getTokenNamespacePublicKeys(namespace: string) {
+  return Array.from(new Set(builtinTokenFamilies.filter(family => family.namespaces.includes(namespace)).map(family => family.prefix))).sort()
 }
 
 /** Keep curated documentation groups aligned with the public namespace consumers. */
@@ -28,76 +22,4 @@ export function filterNamespaceKeys(group: { keys: string[], namespace?: string,
   if (!namespaces.length) return group.keys
   const keys = new Set(namespaces.flatMap(getVariableNamespacePublicKeys))
   return group.keys.filter(key => keys.has(key))
-}
-
-export function getTokenNamespacePublicKeys(namespace: string) {
-  const properties = new Set<string>()
-  for (const eachNamespace of builtinTokenNamespaces) {
-    if (!eachNamespace.variableAliasRefs.some((ref) => normalizeNamespaceRef(ref) === namespace)) continue
-    for (const property of eachNamespace.properties) {
-      if (property) properties.add(property)
-    }
-  }
-
-  const keys = new Set<string>()
-  for (const [alias, property] of Object.entries(builtinKeyAliases)) {
-    if (properties.has(property)) keys.add(alias)
-  }
-  for (const property of properties) {
-    keys.add(property)
-  }
-
-  return Array.from(keys)
-    .filter(isPublicKey)
-    .sort(sortKeys)
-}
-
-function getManifestVariableNamespacePublicKeys(namespace: string) {
-  const keys = new Set<string>()
-  for (const utility of manifestUtilities) {
-    if (!getUtilityVariableNamespaces(utility).includes(namespace)) continue
-    for (const key of getUtilityMatcherKeys(utility)) {
-      keys.add(key)
-    }
-  }
-
-  for (const [alias, key] of Object.entries(builtinKeyAliases)) {
-    if (keys.has(key)) keys.add(alias)
-  }
-
-  return normalizePublicKeys(keys)
-}
-
-function getUtilityMatcherKeys(utility: MasterCSSManifestUtility) {
-  const keys = new Set<string>()
-  for (const matcher of utility.matchers || []) {
-    if (matcher.type === 'token') {
-      keys.add(matcher.prefix.replace(/-$/, ''))
-      continue
-    }
-    const matcherKeys = (matcher as { keys?: readonly string[] }).keys
-    if (!matcherKeys) continue
-    for (const key of matcherKeys) {
-      keys.add(key)
-    }
-  }
-  return keys
-}
-
-function normalizePublicKeys(keys: Iterable<string>) {
-  return Array.from(new Set(keys))
-    .filter(isPublicKey)
-    .sort(sortKeys)
-}
-
-function isPublicKey(key: string) {
-  return Boolean(key) && !key.includes('<~')
-}
-
-function sortKeys(a: string, b: string) {
-  return a.localeCompare(b)
-}
-
-function normalizeNamespaceRef(ref: string) {
-  return ref.replace(/^[=~]/, '')
 }

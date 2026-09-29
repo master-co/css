@@ -205,10 +205,10 @@ function InteractionChart(props: {
   items: BenchmarkBarItem[]
 }) {
   return (
-    <div className="grid gap-sm">
-      <div className="flex items-baseline justify-between gap-md">
-        <h4 className="m:0 font-weight:460 font-sm text-strong">{props.title}</h4>
-        <span className="font-xs text-muted">{props.detail}</span>
+    <div className="display:grid gap-sm">
+      <div className="display:flex align-items:baseline justify-content:space-between gap-md">
+        <h4 className="margin:0 font-sm font-weight:460 fg-text-strong">{props.title}</h4>
+        <span className="font-xs fg-text-muted">{props.detail}</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />
     </div>
@@ -221,7 +221,7 @@ export function InteractionCostSummary() {
 
 export function InteractionPrimaryCharts() {
   return (
-    <div className="grid gap-lg">
+    <div className="display:grid gap-lg">
       <InteractionChart
         title={getScenarioLabel('existing-class-toggle')}
         detail="Mutation-ready median"
@@ -240,7 +240,7 @@ export function InteractionPrimaryCharts() {
 
 export function InteractionRuntimeCharts() {
   return (
-    <div className="grid gap-lg">
+    <div className="display:grid gap-lg">
       <InteractionChart
         title="Existing class runtime update"
         detail="Runtime mutation median"

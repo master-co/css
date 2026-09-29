@@ -1,9 +1,9 @@
 const syntaxes = [
-  'min-vw',
-  'min-w:100%',
-  'min-w:fit-content',
-  'min-w:min-content',
-  'min-w:max-content',
+  "min-width:100vw",
+  "min-width:100%",
+  "min-width:fit-content",
+  "min-width:min-content",
+  "min-width:max-content",
   'min-w-3xs',
   'min-w-2xs',
   'min-w-xs',
@@ -17,7 +17,7 @@ const syntaxes = [
   'min-w-5xl',
   'min-w-6xl',
   'min-w-7xl',
-  ['min-w:`size`'],
+  ["min-width:`size`"],
 ]
 
 export default syntaxes

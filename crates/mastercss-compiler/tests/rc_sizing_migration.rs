@@ -82,14 +82,13 @@ fn reviews_dimension_competition_and_retains_explicit_custom_sizing() {
         .as_array_mut()
         .unwrap()
         .push(custom.clone());
-    input.target_manifest["utilities"]
-        .as_array_mut()
-        .unwrap()
-        .push(custom);
+    input.target_manifest["mixins"].as_array_mut().unwrap().push(json!({"name":"--size","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
     input.class_lists = vec![vec!["size:20px".into()]];
     assert_eq!(
-        migrate_rc(&input).unwrap().class_lists[0][0].status,
-        "unchanged"
+        migrate_rc(&input).unwrap().class_lists[0][0]
+            .after
+            .as_deref(),
+        Some("size(20px)")
     );
 }
 #[test]
@@ -146,14 +145,13 @@ fn every_profile_finishes_with_the_shared_sizing_stage() {
 fn sizing_helpers_do_not_replace_explicit_short_alias_definitions() {
     let mut input = request(vec![vec!["min:20px"], vec!["min-size:20px"]]);
     let custom = json!({"id":"project-min","type":-1,"emit":{"type":"property","property":"inline-size"},"matchers":[{"type":"key","keys":["min"]}]});
-    for manifest in [&mut input.manifest, &mut input.target_manifest] {
-        manifest["utilities"]
-            .as_array_mut()
-            .unwrap()
-            .push(custom.clone());
-    }
+    input.manifest["utilities"]
+        .as_array_mut()
+        .unwrap()
+        .push(custom);
+    input.target_manifest["mixins"].as_array_mut().unwrap().push(json!({"name":"--min","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
     let result = migrate_rc(&input).unwrap();
-    assert_eq!(result.class_lists[0][0].status, "unchanged");
+    assert_eq!(result.class_lists[0][0].after.as_deref(), Some("min(20px)"));
     assert_eq!(
         result.class_lists[1][0].after.as_deref(),
         Some("{min-width:20px;min-height:20px}")

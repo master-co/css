@@ -1,28 +1,27 @@
 import { afterAll, test, describe } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { UtilityType } from '@master/css-schema/utility-type'
 import { createEngineSync } from '../../src/node'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const runtimeClassNames = [
-  'block',
-  'text:center',
+  "display:block",
+  'text-align:center',
   'bg-red-60',
-  'fg:primary',
-  'm:1rem',
-  'pb:2rem:not(:last)',
-  'w:calc(var(--h)|/|var(--w)*100%)',
-  'grid-cols:3',
-  'hidden@sm',
-  'b:1px|solid|line',
+  'fg-blue',
+  "margin:1rem",
+  "padding-bottom:2rem:not(:last)",
+  "width:calc(var(--h)|/|var(--w)*100%)",
+  "grid-cols(3)",
+  "display:none@sm",
+  'border:1px|solid|var(--color-line-divider)',
   'font-size:.75rem',
   'round',
-  'fixed',
+  "position:fixed",
   'animation:fade|1s',
   '-translate-md',
   'background-image:linear-gradient(currentColor,oklch(0%|0|none))',
-  'flex@sm'
+  "display:flex@sm"
 ]
 
 // Use time budgets even when one iteration creates 100 native sessions.
@@ -31,15 +30,11 @@ let sink = 0
 
 function createFixedBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
   return {
-    version: 2,
-    languageVersion: 4,
-    utilities: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
-      id: `icon-${index}${separator}${value}`,
-      name: `icon-${index}${separator}${value}`,
-      type: UtilityType.Semantic,
-      order: index,
-      emit: { type: 'static' as const, rules: [{ declarations: { 'grid-area': value } }] },
-      matchers: [{ type: 'static' as const, name: `icon-${index}${separator}${value}` }]
+    version: 3,
+    languageVersion: 5,
+    mixins: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
+      name: `--icon-${index}${separator}${value}`,
+      body: [{ type: 'declaration' as const, property: 'grid-area', value: [{ type: 'text' as const, value }] }]
     }))).flat()
   }
 }

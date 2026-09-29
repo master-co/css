@@ -1,12 +1,10 @@
-import { builtinTokenNamespaces } from '@master/css-tooling/builtins'
-import { getUtilityVariableNamespaces, getVariableNamespacePublicKeys, manifestUtilities } from './manifest-utilities'
+import { getVariableNamespacePublicKeys, tokenFamilies } from './manifest-utilities'
 
 /** Registry consumers can exist before a project defines any values in that namespace. */
 export const variableNamespaceSources = [
   { namespace: 'breakpoint', consumers: ['@md', '@media((width<64rem))', '@sm&<lg'] },
   ...[...new Set([
-    ...builtinTokenNamespaces.flatMap(entry => entry.variableAliasRefs.map(ref => ref.replace(/^[=~]/, ''))),
-    ...manifestUtilities.flatMap(getUtilityVariableNamespaces),
+    ...tokenFamilies.flatMap(family => family.namespaces),
   ])].filter(namespace => namespace !== 'breakpoint').sort().map(namespace => ({
     namespace,
     consumers: [

@@ -45,14 +45,14 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utility`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@mixin`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
 
 ```css name=index.css
-@utility flow {
+@mixin --flow {
     display: grid;
     gap: var(--spacing-md);
   }
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -70,7 +70,7 @@ Notice the shape of the output:
 - `@master/css/base.css` defines the global layer order once.
 - Theme variables are emitted in `@layer theme`.
 - The `.btn` definition is emitted in `@layer components`.
-- `flex` and `animation:fade|1s` are emitted in `@layer utilities`.
+- `display:flex` and `animation:fade|1s` are emitted in `@layer utilities`.
 - `@keyframes` are emitted at the top level, outside cascade layers.
 
 ## Base is for normalization \{#base-is-for-normalization\}
@@ -109,9 +109,9 @@ Base should normalize. Defaults should express broad design defaults.
 ## Utilities can override components \{#utilities-can-override-components\}
 With the base order loaded, normal utility declarations take precedence over normal component declarations, independently of selector specificity between those layers.
 
-Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
+Here, `btn` defines `display: inline-flex`. The same button also uses `display:flex`, so the utilities layer sets its final display to `flex`:
 
-<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'display:flex']} element="button" label="Preview button" />
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
@@ -144,7 +144,7 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 Native `@layer` blocks remain ordinary stylesheet output; they do not define on-demand classes. For on-demand managed definitions, use the explicit directive forms:
 
 ```css name=index.css
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
   }
 
@@ -178,14 +178,14 @@ size is 16px:
 
 | Competing classes or rules | Result | Reason |
 | --- | --- | --- |
-| `p-md p:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
-| `p-md! p:8px` | `padding: 1rem` | Importance takes precedence over value source. |
-| `p-md! p:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
-| `p:8px@base p:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
-| `p:8px@base! p:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
-| Unlayered `.outside { padding: 32px; }` and `p:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
-| Component-layer `padding: 24px !important` and `p:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
-| `p:8px pt:12px` | Top padding is `12px`; other sides are `8px` | The longhand supplies the more specific property override. |
+| `p-md padding:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
+| `p-md! padding:8px` | `padding: 1rem` | Importance takes precedence over value source. |
+| `p-md! padding:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
+| `padding:8px@base padding:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `padding:8px@base! padding:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| Unlayered `.outside { padding: 32px; }` and `padding:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
+| Component-layer `padding: 24px !important` and `padding:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `padding:8px padding-top:12px` | Top padding is `12px`; other sides are `8px` | The longhand supplies the more specific property override. |
 
 Selector and condition scope still matter. A hover or breakpoint rule only
 participates while its selector and conditions match. Direct values do not

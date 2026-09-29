@@ -11,7 +11,7 @@ test('runtime synchronizes warm ensures, deletions and globals with batched exec
       registerEmittedGlobals(globals: { variables: Record<string, number> }): void
       themeLayer: { tokenCounts: Map<string, number> }
     }
-    runtime.ensureClassRules(Array.from({ length: 1000 }, (_, index) => `w:${index}px`))
+    runtime.ensureClassRules(Array.from({ length: 1000 }, (_, index) => `width:${index}px`))
     const engine = internals.bindingEngine
     const counts = { snapshot: 0, inspect: 0, executionState: 0, mutations: 0, globals: 0 }
     for (const name of ['snapshot', 'inspect', 'executionState'] as const) {
@@ -22,9 +22,9 @@ test('runtime synchronizes warm ensures, deletions and globals with batched exec
       }, configurable: true })
     }
     for (let index = 0; index < 5; index++) {
-      counts.mutations += runtime.ensureClassRules(['w:999px']).mutations.length
+      counts.mutations += runtime.ensureClassRules(["width:999px"]).mutations.length
     }
-    runtime.deleteClassRules(['w:999px'])
+    runtime.deleteClassRules(["width:999px"])
     // An unknown external variable changes counts while producing no CSS mutation.
     internals.registerEmittedGlobals({ variables: { external: 1 } })
     internals.registerEmittedGlobals({ variables: { external: 2 } })

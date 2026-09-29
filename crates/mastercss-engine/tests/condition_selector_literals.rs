@@ -6,17 +6,32 @@ const MANIFEST: &str = include_str!("../../../packages/preset/src/default-manife
 fn decimal_conditions_keep_a_single_numeric_value() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     for (class_name, condition) in [
-        ("block@media((width>=600.5px))", "@media (width>=600.5px)"),
-        ("block@media((width>=.5rem))", "@media (width>=.5rem)"),
-        ("block@media((width>=-0.5px))", "@media (width>=-0.5px)"),
         (
-            "block@container((width>=600.5px))",
+            "display:block@media((width>=600.5px))",
+            "@media (width>=600.5px)",
+        ),
+        (
+            "display:block@media((width>=.5rem))",
+            "@media (width>=.5rem)",
+        ),
+        (
+            "display:block@media((width>=-0.5px))",
+            "@media (width>=-0.5px)",
+        ),
+        (
+            "display:block@container((width>=600.5px))",
             "@container (width>=600.5px)",
         ),
-        ("block@media((width>=37.5rem))", "@media (width>=37.5rem)"),
-        ("block@media((width:37.5rem))", "@media (width:37.5rem)"),
         (
-            "block@media((600.5px<=height<800.5px))",
+            "display:block@media((width>=37.5rem))",
+            "@media (width>=37.5rem)",
+        ),
+        (
+            "display:block@media((width:37.5rem))",
+            "@media (width:37.5rem)",
+        ),
+        (
+            "display:block@media((600.5px<=height<800.5px))",
             "@media (600.5px<=height<800.5px)",
         ),
     ] {
@@ -64,7 +79,7 @@ fn selector_aliases_preserve_attribute_literals_and_escaped_identifiers() {
     ] {
         assert_eq!(engine.resolve_style_selector(selector).unwrap(), expected);
         if !selector.starts_with('.') {
-            let result = engine.inspect(&format!("block{selector}")).unwrap();
+            let result = engine.inspect(&format!("display:block{selector}")).unwrap();
             assert!(
                 result.match_status == mastercss_schema::MatchStatus::Matched,
                 "{selector}"
@@ -85,7 +100,7 @@ fn selector_aliases_preserve_attribute_literals_and_escaped_identifiers() {
 #[test]
 fn manifest_selector_aliases_match_actual_pseudos_only() {
     let engine = EngineSession::create(
-        r#"{"version":2,"languageVersion":4,"selectors":{":first":[{"type":"pseudo-class","value":"first-child"}]}}"#,
+        r#"{"version":3,"languageVersion":5,"selectors":{":first":[{"type":"pseudo-class","value":"first-child"}]}}"#,
     )
     .unwrap();
     assert_eq!(
@@ -100,7 +115,7 @@ fn manifest_selector_aliases_match_actual_pseudos_only() {
 
 #[test]
 fn preserves_complete_functional_manifest_aliases() {
-    let engine = EngineSession::create(r#"{"version":2,"languageVersion":4,"selectors":{":pick(2)":[{"type":"pseudo-class","value":"nth-child","children":[{"value":"2"}]}]}}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":3,"languageVersion":5,"selectors":{":pick(2)":[{"type":"pseudo-class","value":"nth-child","children":[{"value":"2"}]}]}}"#).unwrap();
     assert_eq!(
         engine
             .resolve_style_selector(r#":is(:pick(2),[data-state=":pick(2)"]):first"#)
@@ -118,7 +133,7 @@ fn raw_manifest_mode_conditions_require_balanced_native_queries() {
         "@container (width>1px)",
         "@media (width>1px);body{display:none}",
     ] {
-        let manifest = serde_json::json!({"version":2,"languageVersion":4,"modes":[{"name":"custom","branches":[{"selector":".custom","conditions":[condition]}]}]});
+        let manifest = serde_json::json!({"version":3,"languageVersion":5,"modes":[{"name":"custom","branches":[{"selector":".custom","conditions":[condition]}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{condition}"
@@ -128,9 +143,7 @@ fn raw_manifest_mode_conditions_require_balanced_native_queries() {
 
 #[test]
 fn raw_manifest_variant_index_cannot_hide_a_different_condition() {
-    let mut manifest = serde_json::json!({"version":2,"languageVersion":4,
-      "conditions":{"wide":{"id":"media","nodes":[{"type":"string","value":"(width>=800px)"}]}},
-      "variants":[{"token":"@wide","branches":[{"conditions":["@media (width>=900px)"]}]}]});
+    let mut manifest = serde_json::json!({"version":3,"languageVersion":5,"conditions":{"wide":{"id":"media","nodes":[{"type":"string","value":"(width>=800px)"}]}},"variants":[{"token":"@wide","branches":[{"conditions":["@media (width>=900px)"]}]}]});
     assert!(EngineSession::create(&manifest.to_string()).is_err());
     manifest["variants"][0]["branches"][0]["conditions"][0] = "@media (width>=800px)".into();
     assert!(EngineSession::create(&manifest.to_string()).is_ok());

@@ -271,7 +271,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, ' @utility card { color: #123456; } ')
+      writeFileSync(themePath, ' @mixin --card { color: #123456; } ')
       writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)
@@ -293,9 +293,9 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
       expect(resolveData.fileDependencies.has(themePath)).toBe(true)
       expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-        .not.toContain('"color":"#123456"')
+        .not.toContain('"value":"#123456"')
       expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
-        .toContain('"color":"#123456"')
+        .toContain('"value":"#123456"')
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -306,7 +306,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       mkdirSync(path.join(root, 'src'), { recursive: true })
       const entryPath = path.join(root, 'app.css')
-      const source = "@import \"@master/css\";\n\n.root-native {\n    color: #789;\n}\n\n.root-unused {\n    color: #abc;\n}\n\n.native-used {\n    color: var(--color-primary);\n}\n\n@theme { :root, :host {\n    --color-primary: #123456;\n} }\n\n\n@utility btn {\n        display: grid;\n    }"
+      const source = "@import \"@master/css\";\n\n.root-native {\n    color: #789;\n}\n\n.root-unused {\n    color: #abc;\n}\n\n.native-used {\n    color: var(--color-primary);\n}\n\n@theme { :root, :host {\n    --color-primary: #123456;\n} }\n\n\n@mixin --btn {\n        display: grid;\n    }"
       writeFileSync(entryPath, source)
 
       const plugin = await new MasterCSSWebpackPlugin({
@@ -360,7 +360,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      const source = "@import \"@master/css\";\n@utility card { @compose bg-missing-token; }"
+      const source = "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; }"
       writeFileSync(entryPath, source)
       const plugin = await new MasterCSSWebpackPlugin({
         scanner: { verbose: 0 }
@@ -371,7 +371,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 
-      const validSource = "@import \"@master/css\";\n@utility card { display: block; }"
+      const validSource = "@import \"@master/css\";\n@mixin --card { display: block; }"
       writeFileSync(entryPath, validSource)
       await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
       expect((plugin as any).stylesheets.snapshot().dependencies).toContain(entryPath)
@@ -409,7 +409,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const configPath = path.join(root, 'app.css')
     const tokenPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(tokenPath, ' @utility card { color: #123456; } ')
+      writeFileSync(tokenPath, ' @mixin --card { color: #123456; } ')
       writeFileSync(configPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)
@@ -689,7 +689,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     ;(plugin as any).manifestJSONAssets.set('assets/master-css-manifest.12345678.json', '{}')
     const assets = {
       'index.html': {
-        source: () => '<html><head></head><body><main class="box block"></main></body></html>'
+        source: () => "<html><head></head><body><main class=\"box display:block\"></main></body></html>"
       },
       'assets/mastercss_binding_wasm_engine_bg.12345678.wasm': {
         source: () => 'wasm'

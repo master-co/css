@@ -3,23 +3,23 @@
 
 ## Examples \{#examples\}
 ### Order positioned elements \{#order-positioned-elements\}
-`z:*` controls paint order within a stacking context. These positioned boxes overlap; larger values paint above smaller ones. Flex and grid items can also use z-index without a non-static position.
+`z-index:*` controls paint order within a stacking context. These positioned boxes overlap; larger values paint above smaller ones. Flex and grid items can also use z-index without a non-static position.
 
 <DemoExample page="z-index" section="order-positioned-elements" />
 
 ```html
-<div class="rel isolate h:11rem">
-  <div class="abs left top z:30 h:6rem w:10rem">Layer 30</div>
-  <div class="abs left-lg top-lg z:20 h:6rem w:10rem">Layer 20</div>
-  <!-- @MARK z:10 -->
-  <div class="abs left-2xl top-2xl z:10 h:6rem w:10rem">Layer 10</div>
+<div class="position:relative isolation:isolate height:11rem">
+  <div class="position:absolute left:0 top:0 z-index:30 height:6rem width:10rem">Layer 30</div>
+  <div class="position:absolute left-lg top-lg z-index:20 height:6rem width:10rem">Layer 20</div>
+  <!-- @MARK z-index:10 -->
+  <div class="position:absolute left-2xl top-2xl z-index:10 height:6rem width:10rem">Layer 10</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['z:10']}
+    {['z-index:10']}
   </Class2CSS>
 </details>
 
@@ -29,24 +29,24 @@ A negative z-index can place decoration behind content. `isolate` establishes a 
 <DemoExample page="z-index" section="use-negative-stacking-when-intentional" />
 
 ```html
-<article class="rel isolate h:10rem p-md">
-  <!-- @MARK z:-1 -->
-  <div class="abs inset:0 z:-1" aria-hidden="true"></div>
+<article class="position:relative isolation:isolate height:10rem p-md">
+  <!-- @MARK z-index:-1 -->
+  <div class="position:absolute inset:0 z-index:-1" aria-hidden="true"></div>
   <p>Foreground content</p>
 </article>
 ```
 
 ### Prefer local stacking contexts \{#prefer-local-stacking-contexts\}
-A child’s z-index competes inside its own stacking context. The blue `z:99` child cannot rise above the violet `z:1` sibling because its entire parent context is at `z:0`.
+A child’s z-index competes inside its own stacking context. The blue `z-index:99` child cannot rise above the violet `z-index:1` sibling because its entire parent context is at `z-index:0`.
 
 <DemoExample page="z-index" section="prefer-local-stacking-contexts" />
 
 ```html
-<div class="rel h:11rem">
-  <article class="rel z:0 isolate h:10rem w:12rem">
-    <div class="abs left-md top-md z:99 h:6rem w:10rem">Child 99</div>
+<div class="position:relative height:11rem">
+  <article class="position:relative z-index:0 isolation:isolate height:10rem width:12rem">
+    <div class="position:absolute left-md top-md z-index:99 height:6rem width:10rem">Child 99</div>
   </article>
-  <div class="abs left-2xl top-2xl z:1 h:6rem w:10rem">Sibling 1</div>
+  <div class="position:absolute left-2xl top-2xl z-index:1 height:6rem width:10rem">Sibling 1</div>
 </div>
 ```
 
@@ -56,10 +56,10 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="z-index" section="apply-conditionally" />
 
 ```html
-<div class="rel isolate h:11rem">
-  <div tabindex="0" class="abs left top z:0 h:6rem w:10rem z:20:focus-visible z:20@sm">
+<div class="position:relative isolation:isolate height:11rem">
+  <div tabindex="0" class="position:absolute left:0 top:0 z-index:0 height:6rem width:10rem z-index:20:focus-visible z-index:20@sm">
     Focus with Tab
   </div>
-  <div class="abs left-2xl top-2xl z:10 h:6rem w:10rem">Layer 10</div>
+  <div class="position:absolute left-2xl top-2xl z-index:10 height:6rem width:10rem">Layer 10</div>
 </div>
 ```

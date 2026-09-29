@@ -11,9 +11,9 @@ export default () => {
       <table>
         <thead>
           <tr>
-            <th className="w:0">Value</th>
-            <th className="w:0">Token</th>
-            <th className="w:0">Size</th>
+            <th className="width:0">Value</th>
+            <th className="width:0">Token</th>
+            <th className="width:0">Size</th>
             <th>Example utility</th>
           </tr>
         </thead>

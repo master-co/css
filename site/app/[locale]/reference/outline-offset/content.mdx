@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- this reference explains x-unit outline offsets explicitly */}
+{ }
 
 ## Examples \{#examples\}
 
@@ -12,11 +12,11 @@ A positive `outline-offset` leaves a gap outside the element’s border edge. Co
 ```html
 <!-- Zero offset · at the border edge -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
          outline-offset:0 font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -25,11 +25,11 @@ A positive `outline-offset` leaves a gap outside the element’s border edge. Co
 ```html
 <!-- 2x offset · 8px gap -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
          outline-offset:0.5rem font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -52,11 +52,11 @@ A negative offset moves the ring inside the border edge. Compare zero with −4p
 ```html
 <!-- Zero offset -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
          outline-offset:0 font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -65,11 +65,11 @@ A negative offset moves the ring inside the border edge. Compare zero with −4p
 ```html
 <!-- −4px offset · inside the edge -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
          outline-offset:-4px font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -85,11 +85,11 @@ Keyboard focus moves the blue outline outward by `0.5rem`. Print returns the off
 ```html
 <!-- Zero → 2x on keyboard focus -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline:2px|solid|var(--color-blue)
          outline-offset:0 font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
          outline-offset:0@print
          outline-offset:0.5rem:focus-visible@screen">
@@ -99,4 +99,4 @@ Keyboard focus moves the blue outline outward by `0.5rem`. Print returns the off
 
 The gap is independent of outline width and style. The live size reading stays unchanged while the offset changes.
 
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

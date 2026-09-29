@@ -265,7 +265,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
             {print && <button type="button" disabled={!ready} className="demo-button" onClick={() => ref.current?.contentWindow?.print()}><IconPrinter size={14} aria-hidden="true" />Print preview</button>}
           </DemoControls>}
           <output className="demo-viewport-status">{measurement}</output>
-          {properties && <output className="w:100% demo-label" aria-live="polite">{properties}</output>}
+          {properties && <output className="width:100% demo-label" aria-live="polite">{properties}</output>}
         </div>
       )}
     </div>

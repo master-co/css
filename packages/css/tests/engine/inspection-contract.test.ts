@@ -24,7 +24,7 @@ test.each(['native', 'wasm'] as const)('%s exposes typed syntax status and optio
   expect(Object.isFrozen(invalid.diagnostics)).toBe(true)
   expect(Object.isFrozen(invalid.diagnostics?.[0])).toBe(true)
 
-  const unknown = engine.inspect('block@inspection-undefined')
+  const unknown = engine.inspect("display:block@inspection-undefined")
   expect(unknown.cssSyntaxStatus).toBe('not-checked')
   expect(unknown.diagnostics?.map(({ code }) => code)).toContain('UNKNOWN_CONDITION')
   expect(engine.snapshot()).toEqual(before)

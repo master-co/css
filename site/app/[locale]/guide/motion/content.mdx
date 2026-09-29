@@ -9,15 +9,15 @@ Motion explains what changed, where attention should go, and whether an action i
 Master CSS keeps those decisions close to the element with `animate-*` recipes, native `animation:*` and `transition:*` shorthands, shared `duration` tokens, shared `easing` tokens, managed `@theme` keyframes, and motion preference conditions such as `@motion` and `@reduce-motion`.
 
 <Demo>
-  <div className="container w:100%">
-    <div className="grid grid-cols:1 gap-md w:100% grid-cols:2@container((width>=16rem))">
+  <div className="container-type:inline-size width:100%">
+    <div className="grid-cols(1) display:grid gap-md width:100% grid-cols(2)@container((width>=16rem))">
       <div className="p-lg r-lg surface-raised shadow-xs">
         <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-        <div className="width:3.5rem height:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion"></div>
+        <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion"></div>
       </div>
       <div className="p-lg r-lg surface-raised shadow-xs">
         <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-        <div className="width:3.5rem height:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion"></div>
+        <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion"></div>
       </div>
     </div>
   </div>

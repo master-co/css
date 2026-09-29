@@ -5,7 +5,7 @@ type Inputs = { manifest: unknown; emittedGlobals: unknown }
 type Module = { default: unknown } | undefined
 
 for (const pending of [false, true]) for (const order of ['manifest-first', 'globals-first', 'together']) test(`runtime HMR retains latest inputs: ${order}, pending=${pending}`, async () => {
-  const initialManifest = { version: 1, utilities: [] }, latestManifest = { version: 1, utilities: [] }
+  const initialManifest = { version: 1 as const, mixins: [] }, latestManifest = { version: 1 as const, mixins: [] }
   const initialGlobals = { variables: {} }, latestGlobals = { variables: { '--color-primary': 1 } }
   const gate = Promise.withResolvers<undefined>(), observed: Inputs[] = [], errors = vi.fn()
   let update: (modules: Module[]) => void, dispose: (data: object) => void

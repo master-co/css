@@ -116,18 +116,18 @@ test('a configuration change during composition rejects the older publisher', as
   try {
     mkdirSync(join(root, 'app'))
     writeFileSync(join(root, 'app/globals.css'), "@import url(\"@master/css\");")
-    writeFileSync(join(root, 'app/page.tsx'), '<main className="p:19px" />')
+    writeFileSync(join(root, 'app/page.tsx'), "<main className=\"padding:19px\" />")
     const state = (await prepareNextStatic({}, { projectDir: root }))!
     const previous = readFileSync(state.outputPath, 'utf8')
     const session = [...globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__!.entries()].find(([key]) => key.startsWith(root + '\0'))![1]
     const compose = session.stylesheets.compose.bind(session.stylesheets)
-    const next = resolveOptions({ mode: 'static', scanner: { ...readStaticState(state.statePath).options.scanner, blocklist: ['p:19px'] } })
+    const next = resolveOptions({ mode: 'static', scanner: { ...readStaticState(state.statePath).options.scanner, blocklist: ["padding:19px"] } })
     const spy = vi.spyOn(session.stylesheets, 'compose').mockImplementationOnce(async options => {
       const result = await compose(options)
       await writeStaticState(root, state.outputPath, state.statePath, state.scanLogPath, next)
       return result
     })
-    writeFileSync(join(root, 'app/page.tsx'), '<main className="p:20px" />')
+    writeFileSync(join(root, 'app/page.tsx'), "<main className=\"padding:20px\" />")
     await expect(session.write()).rejects.toThrow('configuration changed')
     expect(readFileSync(state.outputPath, 'utf8')).toBe(previous)
     spy.mockRestore()

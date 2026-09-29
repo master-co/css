@@ -8,7 +8,7 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]},{"id":"m","name":"m:","type":-1,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},{"id":"physical-mx","name":"physical-mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["physical-mx"]}]},{"id":"ml","name":"ml:","type":-1,"emit":{"type":"property","property":"margin-left"},"matchers":[{"type":"key","keys":["ml"]}]},{"id":"mr","name":"mr:","type":-1,"emit":{"type":"property","property":"margin-right"},"matchers":[{"type":"key","keys":["mr"]}]},{"id":"fg","name":"fg:","type":0,"emit":{"type":"property","property":"color"},"matchers":[{"type":"key","keys":["fg"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#;
+const MANIFEST: &str = r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn classifies_host_rule_validation_results_in_rust() {
@@ -61,7 +61,7 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
     let mut session = LintSession::create(MANIFEST).unwrap();
     let batch = session
         .analyze(
-            ["fg:white", "m:2px", "m:3px", "unknown"],
+            ["color:white", "margin:2px", "margin:3px", "unknown"],
             None,
             &HashSet::new(),
         )
@@ -69,22 +69,30 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
     assert_eq!(batch.version, 3);
     assert_eq!(
         batch.sorted_class_names,
-        ["m:2px", "m:3px", "fg:white", "unknown"]
+        ["margin:2px", "margin:3px", "color:white", "unknown"]
     );
-    assert_eq!(batch.conflicts[0].class_name, "m:2px");
-    assert_eq!(batch.conflicts[0].conflicts, ["m:3px"]);
+    assert_eq!(batch.conflicts[0].class_name, "margin:2px");
+    assert_eq!(batch.conflicts[0].conflicts, ["margin:3px"]);
 
     let mut default_session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let conditional = default_session
-        .analyze(["m:2.5rem@sm", "m:3.125rem@sm"], None, &HashSet::new())
+        .analyze(
+            ["margin:2.5rem@sm", "margin:3.125rem@sm"],
+            None,
+            &HashSet::new(),
+        )
         .unwrap();
     assert_eq!(
         conditional.sorted_class_names,
-        ["m:2.5rem@sm", "m:3.125rem@sm"]
+        ["margin:2.5rem@sm", "margin:3.125rem@sm"]
     );
 
     let partial = session
-        .analyze(["physical-mx:2px", "ml:3px"], None, &HashSet::new())
+        .analyze(
+            ["physical-mx:2px", "margin-left:3px"],
+            None,
+            &HashSet::new(),
+        )
         .unwrap();
     assert!(
         partial.partial_conflicts.is_empty(),
@@ -97,7 +105,7 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
     let mut session = LintSession::create(MANIFEST).unwrap();
     let class_names = vec![
         "m-md".into(),
-        "m:var(--spacing-md)|17px".into(),
+        "margin:var(--spacing-md)|17px".into(),
         "block".into(),
     ];
     let candidates = session
@@ -106,8 +114,8 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
     assert_eq!(
         candidates.candidates,
         [RawValueCandidateIr {
-            class_name: "m:var(--spacing-md)|17px".into(),
-            key: "m".into(),
+            class_name: "margin:var(--spacing-md)|17px".into(),
+            key: "margin".into(),
             segments: vec!["17px".into()],
             properties: vec!["margin".into()],
         }]
@@ -115,8 +123,8 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
 
     let ir = session
         .analyze_class_list(
-            "😀 m:var(--spacing-md)|17px",
-            &["😀".into(), "m:var(--spacing-md)|17px".into()],
+            "😀 margin:var(--spacing-md)|17px",
+            &["😀".into(), "margin:var(--spacing-md)|17px".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -133,17 +141,17 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
         .iter()
         .find(|diagnostic| diagnostic.code == "unapproved-raw-value")
         .unwrap();
-    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 27 });
+    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 32 });
     assert_eq!(
         diagnostic.message,
-        "Raw value \"17px\" is not approved for class \"m:var(--spacing-md)|17px\". Use a token or allow the value explicitly."
+        "Raw value \"17px\" is not approved for class \"margin:var(--spacing-md)|17px\". Use a token or allow the value explicitly."
     );
     assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
 
     let approved = session
         .analyze_class_list(
-            "m:var(--spacing-md)|17px",
-            &["m:var(--spacing-md)|17px".into()],
+            "margin:var(--spacing-md)|17px",
+            &["margin:var(--spacing-md)|17px".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -171,8 +179,8 @@ fn suggests_canonical_classes_from_engine_facts() {
         "font-size:16px",
         "margin-md",
         "position:relative",
-        "m:1rem|1.5rem",
-        "m:var(--spacing-md)",
+        "margin:1rem|1.5rem",
+        "margin:var(--spacing-md)",
         "block@dark@sm",
     ]
     .map(str::to_owned);
@@ -257,7 +265,7 @@ fn named_aliases_preserve_identity_and_conflicts_follow_engine_order() {
         "-margin-md",
         "margin:16px",
         "padding:1rem",
-        "p:16px",
+        "padding:16px",
         "font-size:16px",
     ]
     .map(str::to_owned);
@@ -275,28 +283,23 @@ fn named_aliases_preserve_identity_and_conflicts_follow_engine_order() {
             .iter()
             .map(|s| (s.class_name.as_str(), s.recommended.as_str()))
             .collect::<Vec<_>>(),
-        [
-            ("margin-md", "m-md"),
-            ("-margin-md", "-m-md"),
-            ("margin:16px", "m:16px"),
-            ("padding:1rem", "p:1rem")
-        ]
+        [("margin-md", "m-md"), ("-margin-md", "-m-md"),]
     );
-    for names in [["p-md", "p:8px"], ["p:8px", "p-md"]] {
+    for names in [["p-md", "padding:8px"], ["padding:8px", "p-md"]] {
         let support = vec![true; session.native_declaration_candidates(names).unwrap().len()];
         let result = session
             .analyze(names, Some(&support), &HashSet::new())
             .unwrap();
         assert_eq!(result.conflicts.len(), 1);
         assert_eq!(result.conflicts[0].class_name, "p-md");
-        assert_eq!(result.conflicts[0].conflicts, ["p:8px"]);
+        assert_eq!(result.conflicts[0].conflicts, ["padding:8px"]);
     }
 }
 
 #[test]
 fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
     let classes = (0..80)
-        .flat_map(|i| [format!("p:{i}px"), format!("unknown-{i}")])
+        .flat_map(|i| [format!("padding:{i}px"), format!("unknown-{i}")])
         .collect::<Vec<_>>();
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     for input in [classes.clone(), classes.into_iter().rev().collect()] {
@@ -308,7 +311,7 @@ fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
             result
                 .conflicts
                 .iter()
-                .all(|conflict| conflict.conflicts == ["p:79px"])
+                .all(|conflict| conflict.conflicts == ["padding:79px"])
         );
     }
 }

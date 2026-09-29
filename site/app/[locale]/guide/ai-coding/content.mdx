@@ -63,7 +63,7 @@ Good context includes:
 - The official documentation URL: `https://rc.css.master.co`
 - The framework, build tool, package manager, and rendering mode.
 - The CSS entry that imports `@master/css`.
-- Existing `@theme`, `@layer components`, `@utility`, and `@custom-variant` definitions.
+- Existing `@theme`, `@layer components`, `@mixin`, and `@custom-variant` definitions.
 - Existing component, template, and design-system patterns near the target UI.
 - The formatter, lint, type-check, test, build, and visual review commands.
 
@@ -123,7 +123,7 @@ When editing Master CSS:
 - Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
 - Put resets and normalization in @layer base, broad project visual defaults in @layer defaults, and named UI classes in @layer components.
 - For example, put button font inheritance in base, the page text color in defaults, and a .btn design in components; defaults does not mean browser defaults.
-- Prefer existing @theme tokens. Use @utility for on-demand primitives.
+- Prefer existing @theme tokens. Use @mixin for on-demand primitives.
 - Write native declarations and selectors in CSS; use utilities directly in markup. Native component classes do not derive Master suffixes.
 - Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
 - Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.
@@ -140,7 +140,7 @@ Keep project-specific commands in the same file so the agent does not have to in
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 
 ```html
-<button class="inline-flex items-center gap-xs h:2.5rem px-md r-md fg-white bg-blue-70:hover opacity:.5:disabled bg-brand">
+<button class="display:inline-flex align-items:center gap-xs height:2.5rem px-md r-md fg-white bg-blue-70:hover opacity:.5:disabled bg-brand">
   Save
 </button>
 ```
@@ -150,7 +150,7 @@ Readable Master CSS usually follows these habits:
 - Use complete class strings instead of building classes from small string fragments.
 - Prefer project tokens such as `bg-brand`, `p-card`, and `r-card` when they exist.
 - Use native declaration syntax such as `scroll-margin-top:4rem` when it is clearer than a custom abstraction.
-- Keep selector states and conditions attached to the class they affect, such as `bg-blue-70:hover` and `grid-cols:3@md`.
+- Keep selector states and conditions attached to the class they affect, such as `bg-blue-70:hover` and `grid-cols(3)@md`.
 - Move repeated product values into `@theme`; move repeated product patterns into `@layer components` only when a named abstraction improves maintainability.
 
 Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
@@ -266,7 +266,7 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 
 ## Named tokens and native values
 
-Use hyphens for named tokens, such as `font-mono`, `fg-red`, and `p-md`. Use colons for direct CSS values, such as `font-size:16px`, `fg:red`, and `p:1rem`. Property aliases have fixed meanings: `bg:#fff` is the native `background` shorthand, so use `background-color:#fff` for a color-only change.
+Use hyphens for named tokens, such as `font-mono`, `fg-red`, and `p-md`. Use colons for direct CSS values, such as `font-size:16px`, `color:red`, and `padding:1rem`. Property aliases have fixed meanings: `background:#fff` is the native `background` shorthand, so use `background-color:#fff` for a color-only change.
 
 Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Do not generate `$name`, Master length `x`, or `base-unit`. Native resolution `x` in `image-set()` remains valid. Do not invent numeric names such as `p-4` unless the project defines that token.
 

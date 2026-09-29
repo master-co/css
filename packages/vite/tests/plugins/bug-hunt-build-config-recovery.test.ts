@@ -10,7 +10,7 @@ function files(directory: string): string[] {
   try { return readdirSync(directory, { recursive: true }).map(String).filter(name => name.endsWith('invalidate')) } catch { return [] }
 }
 
-for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) {
+for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) {
   for (const failure of ['config-sync', 'config-async', 'factory', 'environment-init'] as const) {
     test(`failed ${failure} bounds recovery material to one run (${mode})`, async () => {
       const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-build-config-lifetime-'))), cacheDir = join(root, '.vite')

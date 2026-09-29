@@ -6,8 +6,8 @@ export function flow(section: ReferenceDemoSection): DemoScene {
   const target = lists[0] ?? ''
   if (page === 'clear') {
     const cleared = lists.find(value => value.includes('clear:')) ?? 'clear:both'
-    const left = lists.find(value => value.includes('float:left')) ?? 'float:left w:34% h:4.5rem'
-    const right = lists.find(value => value.includes('float:right')) ?? 'float:right w:34% h:8.5rem'
+    const left = lists.find(value => value.includes('float:left')) ?? 'float:left width:34% height:4.5rem'
+    const right = lists.find(value => value.includes('float:right')) ?? 'float:right width:34% height:8.5rem'
     const conditional = id === 'apply-conditionally'
     return {
       html: `<div data-ui="float-context">${tile('Left float', left, 'neutral').replace(' data-target', '')}${tile('Right float', right, 'violet').replace(' data-target', '')}${tile(conditional ? 'Focus with Tab' : 'Clear target', cleared, 'blue', 'width:58%;min-height:56px', conditional ? 'tabindex="0"' : '')}</div>`,
@@ -23,7 +23,7 @@ export function flow(section: ReferenceDemoSection): DemoScene {
   }
   if (page === 'box-sizing') {
     return {
-      html: comparison((lists.length ? lists : ['box-border', 'box-content']).map(value => ({ name: value, content: `${label('160px reference')}<div data-ui="box-size-guide">${tile('Content', value)}</div>` }))).replace('data-ui="comparison"', 'data-ui="comparison" data-scenario="box-sizing"'),
+      html: comparison((lists.length ? lists : ['box-sizing:border-box', 'box-sizing:content-box']).map(value => ({ name: value, content: `${label('160px reference')}<div data-ui="box-size-guide">${tile('Content', value)}</div>` }))).replace('data-ui="comparison"', 'data-ui="comparison" data-scenario="box-sizing"'),
       caption: 'The dashed reference is 160px wide. Border-box fits inside it; content-box adds its padding and border to that width.', inspect: ['box-sizing', 'width'], sizing: 'content',
     }
   }
@@ -39,7 +39,7 @@ export function flow(section: ReferenceDemoSection): DemoScene {
   }
   if (page.startsWith('break-')) {
     const parent = lists.find(value => value.includes('columns:')) ?? 'columns:2 h:12.5rem column-fill:auto'
-    const values = lists.length > 1 ? lists.slice(1, 5) : ['h:130px', target, 'h:60px', 'h:40px']
+    const values = lists.length > 1 ? lists.slice(1, 5) : ['height:130px', target, 'height:60px', 'height:40px']
     const preview = (baseline: boolean) => `<div data-ui="columns" data-scenario="fragmentation" class="${classValue(parent)}">${values.map((value, index) => tile(index === 1 ? '02 · Target' : `0${index + 1}`, value, index === 1 ? 'blue' : 'neutral', baseline && index === 1 ? `${page}:auto` : '').replace(baseline || index !== 1 ? ' data-target' : ' data-unused', '')).join('')}</div>`
     const caption = page === 'break-inside' ? 'Both column sets are 200px tall. The blue block can split in the automatic flow; avoid keeps it together when the condition applies.' : `Both column sets are 200px tall. The forced break moves content to the next column ${page === 'break-before' ? 'before' : 'after'} the blue block when the condition applies.`
     return { html: comparison([{ name: 'Automatic breaks', content: preview(true) }, { name: 'With class', content: preview(false) }]), caption, sizing: 'content' }
@@ -63,24 +63,24 @@ export function flow(section: ReferenceDemoSection): DemoScene {
 
 function display(section: ReferenceDemoSection): DemoScene {
   const { id, classLists: lists } = section
-  const target = lists[0] ?? 'block'
+  const target = lists[0] ?? 'display:block'
   let html: string
   if (id.includes('table')) {
-    html = section.html[0].replace('<div class="table">', '<div class="table" data-ui="table" data-target>')
+    html = section.html[0].replace("<div class=\"display:table\">", "<div class=\"display:table\" data-ui=\"table\" data-target>")
   } else if (id === 'contents') {
-    html = `<div data-ui="flex" class="${classValue(target)}">${tile('01', lists[1])}<div class="contents">${tile('02', lists[3], 'violet')}${tile('03', lists[4], 'violet')}</div>${tile('04', lists[5])}</div>`
+    html = `<div data-ui="flex" class="${classValue(target)}">${tile('01', lists[1])}<div class="display:contents">${tile('02', lists[3], 'violet')}${tile('03', lists[4], 'violet')}</div>${tile('04', lists[5])}</div>`
   } else if (id === 'flow-root') {
-    html = `<div class="flow-root" data-ui="surface">${image(lists[1], 'data-ui="float-image"')}<p>${prose}</p></div>`
+    html = `<div class="display:flow-root" data-ui="surface">${image(lists[1], 'data-ui="float-image"')}<p>${prose}</p></div>`
   } else if (id === 'hidden') {
-    html = `<div data-ui="flex" class="${classValue(target)}">${tile('01')}${tile('02', 'hidden')}${tile('03', '', 'violet')}</div>`
+    html = `<div data-ui="flex" class="${classValue(target)}">${tile('01')}${tile('02', 'display:none')}${tile('03', '', 'violet')}</div>`
   } else if (id === 'inline-grid') {
     html = `<p>Before <span data-ui="inline-layout" data-target class="${classValue(target)}">${['01', '02', '03', '04'].map(value => `<span data-ui="tile">${value}</span>`).join('')}</span> after. The grid stays in the surrounding text flow.</p>`
   } else if (id === 'inline-flex') {
     html = `<p>Before <span data-ui="inline-layout" data-target class="${classValue(target)}"><span aria-hidden="true">●</span><span>In progress</span></span> after. The badge stays in the surrounding text flow.</p>`
   } else if (id === 'list-item') {
-    html = `<div data-ui="list">${['01', '02', '03'].map(value => `<div data-ui="inline" data-target class="list-item">${value}</div>`).join('')}</div>`
+    html = `<div data-ui="list">${['01', '02', '03'].map(value => `<div data-ui="inline" data-target class="display:list-item">${value}</div>`).join('')}</div>`
   } else if (id === 'block--inline') {
-    const variants = ['block', 'inline', 'inline-block']
+    const variants = ['display:block', 'display:inline', 'display:inline-block']
     html = variants.map(value => `<p>Before <span data-ui="inline" data-target class="${classValue(value)}">${value}</span> after. Follow where this line continues.</p>`).join('')
   } else {
     html = specimen(numbered(id === 'grid' ? 4 : 3), target, 'data-ui="display"')

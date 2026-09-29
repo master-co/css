@@ -1,3 +1,3 @@
 import styled from '@master/styled.react'
 
-export const GridsBg = styled.div`background:var(--grid) mask-image:radial-gradient(black,transparent) untouchable contain:strict`
+export const GridsBg = styled.div`background:var(--grid) mask-image:radial-gradient(black,transparent) pointer-events:none contain:strict`

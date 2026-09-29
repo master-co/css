@@ -5,7 +5,7 @@
 ```txt
 class string
   -> Rust EngineSession.ensure_class_rules(batch)
-  -> match Manifest v2 utilities
+  -> match native declarations, built-in token families, and Manifest v3 mixins
   -> parse values, variables, selectors, and conditions
   -> calculate stable priority and layer indexes
   -> insert referenced tokens with all authored scopes and dependencies
@@ -30,8 +30,8 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
-Manifest and hydration envelopes are v2; executable data must carry
-`languageVersion: 4`. Reject missing or unsupported language versions before
+Manifest envelopes are v3; hydration and transition envelopes remain v2. Executable data must carry
+`languageVersion: 5` (binding ABI 16). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
@@ -46,7 +46,7 @@ project CSS containing @import "@master/css"
   -> Rust project policy discovers and merges entries
   -> @master/css-compiler/project supplies filesystem and package resolution
   -> Rust compiler parses directives and native CSS
-  -> Rust compiler lowers Manifest v2 plus native CSS results
+  -> Rust compiler lowers Manifest v3 plus native CSS results
   -> compiler / integrations / ESLint / language-server share that manifest
   -> Rust engine executes the manifest
 ```
@@ -66,7 +66,7 @@ Risks:
 - Only `@import "@master/css"` identifies a project entry; it loads the full preset.
 - Package CSS entrypoints must not accidentally identify themselves as project roots.
 - Import-graph order and manifest merge order affect every consumer.
-- Static utility layers affect semantic class output and cascade behavior.
+- Mixin expansion and recipe sorting affect generated CSS and cascade behavior. Native @apply roots pin their expanded token closure through emittedGlobals; unreferenced definitions are not roots.
 - Virtual ids and generated JavaScript module source are private official-integration
   protocol, not project semantics.
 

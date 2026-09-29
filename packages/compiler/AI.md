@@ -6,7 +6,7 @@
 
 ## Owns
 
-- CSS directive parsing and lowering for `@theme`, `@custom-media`, `@custom-variant`, `@utility` and rule-local `@variant`.
+- CSS directive parsing and lowering for `@theme`, `@custom-media`, `@custom-variant`, `@mixin`, `@apply` and rule-local `@variant`.
 - Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
@@ -81,4 +81,4 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-`@utility name { ... }` declares one top-level definition. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. `@compose` is removed in every context: retain only the ranged removal diagnostic, not parsing, execution or compatibility IR. Use native declarations and nested selectors; `@variant` remains supported. Raw parameters use `key:*`; token parameters use `prefix-* from(--namespace-*, ...)`. Only `--master-value()` inside parameter declaration values substitutes a value. Enum/valueMap definitions are removed. Later definitions replace the complete matching identity. Preserve declaration order and duplicates. Directive changes require updating `site/app/[locale]/guide/directives/contract.mdx`.
+Top-level unconditional `@mixin --name(...) { ... }` defines a static recipe; later definitions replace the entire name. `@apply --name(...)` calls only mixins, never class lists. Rust engine expansion is shared by class generation and native CSS lowering. Preserve ordered declarations, duplicates, source positions and URL owners. Supported types are untyped, `<integer>`, `<number>`, `<string>` and `<custom-ident>`; typed numbers are literals. Fold static `ident()` after lexical parameter binding; retain ordinary theme `var()` values. Reject dynamic arguments, cross-element parameter uses, prelude interpolation, recursive calls, contents/private syntax and nested registration. `@utility`, `from()`, `--master-value()`, `@defaults`, `@components` and `@compose` are removed. Native defaults/components use `@layer`. Changes must update `site/app/[locale]/guide/directives/contract.mdx`.

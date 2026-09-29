@@ -37,6 +37,12 @@ pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
 }
 
 pub(super) fn current_helper(manifest: &mut Value) {
+    if manifest["version"] == 3
+        && manifest["languageVersion"] == 5
+        && manifest.get("utilities").is_none()
+    {
+        return;
+    }
     super::manifest::upgrade(manifest);
     for utility in manifest["utilities"].as_array_mut().into_iter().flatten() {
         if let Some(object) = utility.as_object_mut() {
@@ -62,6 +68,7 @@ pub(super) fn current_helper(manifest: &mut Value) {
             }
         }
     }
+    super::saved_rules::freeze(manifest);
 }
 
 impl Migration {
@@ -124,9 +131,7 @@ impl Migration {
             }
             let engine =
                 EngineSession::create(&manifest.to_string()).map_err(|error| error.to_string())?;
-            let old = engine
-                .composition_rules(if translated { &after } else { before })
-                .map_err(|error| error.to_string())?;
+            let old = super::saved_rules::rules(&engine, if translated { &after } else { before })?;
             if old.is_empty() {
                 let target = self
                     .target
@@ -207,9 +212,10 @@ impl Migration {
         current_helper(&mut manifest);
         let engine =
             EngineSession::create(&manifest.to_string()).map_err(|error| error.to_string())?;
-        let old = engine
-            .composition_rules(&format!("migration-saved-utility:{value}{suffix}"))
-            .map_err(|error| error.to_string())?;
+        let old = super::saved_rules::rules(
+            &engine,
+            &format!("migration-saved-utility:{value}{suffix}"),
+        )?;
         let candidate =
             if key == "text-stroke" && old.len() == 1 && old[0].declarations.len() == 1 {
                 let property = old[0].declarations[0].property.as_str();
@@ -249,15 +255,19 @@ impl Migration {
             return Ok(());
         }
         let resources = |engine: &EngineSession, class: &str| -> Result<Value, String> {
-            let manifest = engine.manifest_json().map_err(|error| error.to_string())?;
-            let mut probe = EngineSession::create(&manifest).map_err(|error| error.to_string())?;
+            let (mut probe, class, _) = super::saved_rules::prepare(engine, class)?;
             probe
-                .ensure_class_rules([class])
+                .ensure_class_rules([class.as_str()])
                 .map_err(|error| error.to_string())?;
             let snapshot = probe.snapshot().map_err(|error| error.to_string())?;
             serde_json::to_value(snapshot.resources).map_err(|error| error.to_string())
         };
-        if resources(original, before)? != resources(&self.target.borrow(), after)? {
+        if resources(original, before)?
+            != resources(
+                &self.target.borrow(),
+                &super::mixins::class(after, &self.original)?,
+            )?
+        {
             return Err("Saved token or animation resources differ from the target; review resource values, ordering and ownership before migrating".into());
         }
         Ok(())

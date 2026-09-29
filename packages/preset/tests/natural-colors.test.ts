@@ -40,12 +40,13 @@ describe('natural material colors', () => {
 
   test('the public theme entry includes every token from the internal color source', () => {
     const theme = createDefaultManifestFromSourceFile(fileURLToPath(import.meta.resolve('@master/css-preset/theme.css')))
-    expect(flattenMasterCSSManifestVariables(theme.variables)).toEqual(variables)
+    expect(flattenMasterCSSManifestVariables(theme.variables).filter(variable => variable.name?.startsWith('color-')))
+      .toEqual(variables.filter(variable => variable.name?.startsWith('color-')))
   })
 
   test('fixed colors, text aliases, borders, gradients and alpha use the Rust engine', () => {
     const css = createTestCSS(manifest).ensureClassRules(
-      'bg-sand-5', 'fg-taupe-70', 'text-terracotta', 'b:1px|solid|var(--color-moss-30)',
+      'bg-sand-5', 'fg-taupe-70', 'fg-text-terracotta', "border:1px|solid|var(--color-moss-30)",
       'bg-petrol-60/.5', 'background-image:linear-gradient(var(--color-sand-5), var(--color-copper-30))'
     )
     expect(css.text).toContain('background-color:var(--color-sand-5)')
@@ -73,12 +74,12 @@ describe('natural material colors', () => {
   })
 
   test('olive follows the preset while a literal retains the native CSS olive color', () => {
-    const css = createTestCSS(manifest).ensureClassRules('fg-olive', 'bg-olive', 'fg:#808000', 'fg:olive')
+    const css = createTestCSS(manifest).ensureClassRules('fg-olive', 'bg-olive', "color:#808000", "color:olive")
     expect(css.text).toContain('color:var(--color-olive)')
     expect(css.text).toContain('background-color:var(--color-olive)')
     expect(css.text).toContain('--color-olive:var(--color-olive-50)')
     expect(css.text).not.toContain('--color-olive-40:')
     expect(css.text).toContain('color:#808000')
-    expect(css.text).toContain('.fg\\:olive{color:olive}')
+    expect(css.text).toContain(".color\\:olive{color:olive}")
   })
 })

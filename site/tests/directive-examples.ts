@@ -31,10 +31,10 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('Scoped tokens in native CSS')!, /color:var\(--color-brand\)/)
   assert.match(output.get('Scoped tokens in native CSS')!, /\.dark\{--color-brand:#111827/)
   assert.match(output.get('Native keyframes')!, /@keyframesfade-in/)
-  assert.match(output.get('A parameter utility')!, /width:2rem;height:2rem/)
+  assert.match(output.get('A parameter mixin')!, /width:2rem;height:2rem/)
   assert.match(output.get('A named media condition')!, /@media\(width>=40rem\)/)
   await assert.rejects(stylesheetExampleCSS('@theme inline { --color-brand: red; }'), /does not accept modes/)
-  assert.throws(() => configuredExampleCSS('@settings { important: true; }', ['p:1rem']), /removed/)
+  assert.throws(() => configuredExampleCSS('@settings { important: true; }', ['padding:1rem']), /removed/)
   const preservation = deliveryFences(directiveSection('native-css-preservation')).find(fence => fence.text.includes('@preserve native;'))!.text
   const pruningFixture = deliveryFixture()
   const scanner = new MasterCSSScanner({ manifest: preset }, pruningFixture.root)

@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- These examples spell out the native decoration longhands to distinguish them from the resetting shorthand. */}
+{ }
 
 ## Examples \{#examples\}
 ### Set decoration color \{#set-decoration-color\}
@@ -11,7 +11,7 @@
 ```html
 <!-- Current foreground -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-color:currentColor text-decoration-thickness:2px"
 >
   Design together
@@ -21,7 +21,7 @@
 ```html
 <!-- Independent blue line -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-color-blue-50 text-decoration-thickness:2px"
 >
   Design together
@@ -43,7 +43,7 @@
 ```html
 <!-- Foreground · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:2px text-decoration-current fg-blue-50"
 >
   Design together
@@ -53,7 +53,7 @@
 ```html
 <!-- Foreground · violet-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:2px text-decoration-current fg-violet-50"
 >
   Design together
@@ -70,7 +70,7 @@ The line is still required. Unlike a full `text-decoration` shorthand, this colo
 ```html
 <!-- Line color · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:3px text-decoration-blue-50"
 >
   Design together
@@ -80,7 +80,7 @@ The line is still required. Unlike a full `text-decoration` shorthand, this colo
 ```html
 <!-- Line color · transparent -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:3px text-decoration-color:transparent"
 >
   Design together
@@ -97,7 +97,7 @@ Hover or focus to change only the underline color from the current foreground to
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font-2xl leading-xl underline text-decoration-thickness:2px
+  class="font-2xl leading-xl text-decoration:underline text-decoration-thickness:2px
          text-decoration-current text-decoration-current@print
          text-decoration-color-blue-50:hover@screen
          text-decoration-color-blue-50:focus-visible@screen"
@@ -106,4 +106,4 @@ Hover or focus to change only the underline color from the current foreground to
 </button>
 ```
 
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

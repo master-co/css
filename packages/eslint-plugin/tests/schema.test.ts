@@ -55,19 +55,19 @@ test('accepts no-invalid-classes rule options explicitly', async () => {
 test('rejects unknown no-invalid-classes rule options', async () => {
   await expect(createESLint({
     '@master/css/no-invalid-classes': ['error', { classAttributes: ['className'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 })
 
 test('rejects rule options for rules configured through settings only', async () => {
   await expect(createESLint({
     '@master/css/sort-classes': ['error', { classAttributes: ['className'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 
   await expect(createESLint({
     '@master/css/no-conflicting-classes': ['error', { classFunctions: ['ctl'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 })
 

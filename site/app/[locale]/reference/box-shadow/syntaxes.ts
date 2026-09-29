@@ -5,8 +5,8 @@ const syntaxes = [
   'shadow-lg',
   'shadow-xl',
   'shadow-2xl',
-  ['shadow:`value`,`…`'],
-  ['shadow:inset|`offset-x`|`offset-y`|`color`'],
+  ["box-shadow:`value`,`…`"],
+  ["box-shadow:inset|`offset-x`|`offset-y`|`color`"],
 ]
 
 export default syntaxes

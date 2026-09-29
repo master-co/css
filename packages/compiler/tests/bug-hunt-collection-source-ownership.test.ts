@@ -18,19 +18,19 @@ for (const deliver of [false, true]) test(`collection source selection isolates 
       writeFileSync(id, `@import "@master/css";@preserve native;.owner-${name}{color:${index ? 'blue' : 'red'};background-image:url("./${name}.svg")}`)
       await collection.register(scanner, id, readFileSync(id, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: root })
     }
-    const options = { scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['block'],
+    const options = { scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ["display:block"],
       ...(deliver ? { delivery: { relativeResourceURLs: true, entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: (file: string) => `./${basename(file)}` } } : {}) }
     const text = (result: Awaited<ReturnType<typeof collection.compose>>) => [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     const selected = await collection.compose({ ...options, sourceIds: [ids[0] + '?owner'] })
     expect(text(selected)).toContain('.owner-a')
     expect(text(selected)).not.toContain('.owner-b')
-    expect(text(selected)).toContain('.block{display:block}')
+    expect(text(selected)).toContain(".display\\:block{display:block}")
     expect(selected.dependencies).toContain(ids[0])
     expect(selected.dependencies).not.toContain(ids[1])
     if (deliver) expect(selected.resources?.map(resource => resource.file)).toEqual([join(root, 'a.svg')])
     const empty = await collection.compose({ ...options, sourceIds: [] })
     expect(text(empty)).not.toMatch(/owner-[ab]/)
-    expect(text(empty)).toContain('.block{display:block}')
+    expect(text(empty)).toContain(".display\\:block{display:block}")
     expect(collection.snapshot().sourceIds).toEqual(ids)
     const all = await collection.compose(options)
     expect(text(all)).toContain('.owner-a')
@@ -63,17 +63,17 @@ test('collection emits referenced native resources once without exposing referen
   using collection = createStylesheetCollection()
   try {
     await scanner.init()
-    writeFileSync(join(root, 'tokens.css'), "@theme { :root, :host {--color-accent:#123456;} }\n\n@keyframes pop{to{opacity:1}}\n@utility reference-only {color:blue}.reference-native{color:red}")
+    writeFileSync(join(root, 'tokens.css'), "@theme { :root, :host {--color-accent:#123456;} }\n\n@keyframes pop{to{opacity:1}}\n@mixin --reference-only {color:blue}.reference-native{color:red}")
     const source = "@import \"@master/css\";@reference \"./tokens.css\";@keyframes local{to{opacity:0}}.card{color:var(--color-accent);animation:pop 1s,local 2s}"
     const id = join(root, 'entry.css')
     await collection.register(scanner, id, source, { baseManifest: scanner.css.manifest, projectDir: root })
-    const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['reference-only', 'block'] })
+    const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['reference-only', "display:block"] })
     const css = [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     expect(css).toContain('--color-accent:#123456')
     expect(css).not.toContain("@keyframes pop")
     expect(css.match(/@keyframes local/g)).toHaveLength(1)
     expect(result.emittedGlobals.variables).toMatchObject({ 'color-accent': 1 })
-    expect(css).toContain('.block{display:block}')
+    expect(css).toContain(".display\\:block{display:block}")
     expect(css).not.toMatch(/reference-only|reference-native/)
   } finally { await scanner.dispose(); rmSync(root, { recursive: true, force: true }) }
 })

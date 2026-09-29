@@ -10,11 +10,11 @@ export default ({ children, className }: any) => {
   const $ = useTranslation()
   const locale = useLocale()
   return (
-    <section className={clsx(className, 'mt-md@default grid-cols:1 bl:1px|solid|var(--color-line-subtle) bt:1px|solid|var(--color-line-subtle) grid-cols:2@sm grid-cols:3@lg')}>{
+    <section className={clsx(className, 'mt-md@default grid-cols(1) border-left:1px|solid|var(--color-line-subtle) border-top:1px|solid|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@lg')}>{
       children.map((definedMetadata: DefinedMetadata) =>
         <Link key={definedMetadata.pathname}
           className={clsx(
-            'flex-col items-start! justify-between! p-xl bb:1px|solid|var(--color-line-subtle) br:1px|solid|var(--color-line-subtle) text-left transition:background-color|.2s surface-raised:hover',
+            'flex-direction:column align-items:start! justify-content:space-between! p-xl border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:left transition:background-color|.2s surface-raised:hover',
             {
               'disabled': definedMetadata.disabled
             }
@@ -24,9 +24,9 @@ export default ({ children, className }: any) => {
           rel="noreferrer noopener">
           <div className={clsx('font-md leading-md word-break:break-all')}>
             {$(((definedMetadata.title as any)?.absolute || definedMetadata.title) as string)}
-            {definedMetadata.type === 'entity' && locale !== 'en' && typeof definedMetadata.title === 'string' && <span className='ml:.25em' translate="no">{definedMetadata.title}</span>}
+            {definedMetadata.type === 'entity' && locale !== 'en' && typeof definedMetadata.title === 'string' && <span className='margin-left:.25em' translate="no">{definedMetadata.title}</span>}
           </div>
-          {definedMetadata.description && <div className='clamp-lines:2 mt-3xs text-xs font-regular text-muted'>{definedMetadata.description as string}</div>}
+          {definedMetadata.description && <div className='clamp-lines(2) mt-3xs text-xs font-regular fg-text-muted'>{definedMetadata.description as string}</div>}
         </Link>
       )
     }</section >

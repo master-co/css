@@ -12,8 +12,8 @@ Filter functions process the element’s painted result in their written order. 
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:137.5px w:220px max-w:100% m-md
-         filter:none object-cover" />
+  class="display:block height:137.5px width:220px max-width:100% m-md
+         filter:none object-fit:cover" />
 ```
 
 ```html
@@ -21,8 +21,8 @@ Filter functions process the element’s painted result in their written order. 
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:137.5px w:220px max-w:100% m-md
-         filter:blur(4px)|brightness(.8) object-cover" />
+  class="display:block height:137.5px width:220px max-width:100% m-md
+         filter:blur(4px)|brightness(.8) object-fit:cover" />
 ```
 
 <details>
@@ -44,7 +44,7 @@ Drop-shadow follows the source’s alpha silhouette. The same transparent SVG ma
 <svg id="target" role="img"
   aria-label="Circle and diamond"
   width="160" height="120" viewBox="0 0 160 120"
-  class="block m-md
+  class="display:block m-md
          filter:drop-shadow(0|4px|2px|#7c3aed)">
   <circle cx="48" cy="60" r="28" fill="#2563eb" />
   <path d="M100 30 140 60 100 90 60 60Z" fill="#7c3aed" />
@@ -56,7 +56,7 @@ Drop-shadow follows the source’s alpha silhouette. The same transparent SVG ma
 <svg id="target" role="img"
   aria-label="Circle and diamond"
   width="160" height="120" viewBox="0 0 160 120"
-  class="block m-md shadow:0|4px|2px|#7c3aed">
+  class="display:block m-md box-shadow:0|4px|2px|#7c3aed">
   <circle cx="48" cy="60" r="28" fill="#2563eb" />
   <path d="M100 30 140 60 100 90 60 60Z" fill="#7c3aed" />
 </svg>
@@ -74,8 +74,8 @@ Use `filter:none` to remove the entire chain. Open print preview to restore this
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:137.5px w:220px max-w:100% m-md
-         filter:blur(4px)|brightness(.8) object-cover
+  class="display:block height:137.5px width:220px max-width:100% m-md
+         filter:blur(4px)|brightness(.8) object-fit:cover
          filter:none@print" />
 ```
 
@@ -89,17 +89,17 @@ Hover or keyboard-focus the native button to restore its colors. The filter incl
 ```html
 <!-- Grayscale → color on hover or focus -->
 <button id="target" type="button"
-  class="block p:0 b:1px|solid|var(--color-line-divider) r-sm
-         bg-surface-base text-body
+  class="display:block padding:0 border:1px|solid|var(--color-line-divider) r-sm
+         bg-surface-base fg-text-body
          filter:grayscale(1) filter:none@print
          filter:none:hover@screen
          filter:none:focus-visible@screen">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""
-  class="block h:137.5px w:220px max-w:100%
-         object-cover" />
-  <span class="block p-sm font-md">
+  class="display:block height:137.5px width:220px max-width:100%
+         object-fit:cover" />
+  <span class="display:block p-sm font-md">
     Preview artwork
   </span>
 </button>

@@ -3,35 +3,35 @@ import styled from '@master/styled.react'
 const StepSection = styled.div`
   mt-2xl
   {counter-reset:step}
-  {font-size:16px;margin-left:-44.5px;mt:0;font-weight:460}_:is(h2,h3,h4)
-  my:1.875rem_hr
-  mb:0_.code:last
-  ml:0_.codeTabs_.code
+  margin-block:1.875rem_hr
+  margin-bottom:0_.code:last
+  margin-left:0_.codeTabs_.code
   text-sm_:is(li,p)
+  {font-size:16px;margin-left:-44.5px;margin-top:0;font-weight:460}_:is(h2,h3,h4)
   user-select:text_a
-  ml:-2.781rem_:is(.code,.codeTabs,.demo)@media((width<64rem))
+  margin-left:-2.781rem_:is(.code,.codeTabs,.demo)@media((width<64rem))
 `
 
 export const StepNum = styled.div`
-  inline-flex items-center
-  justify-center
-  width:24px height:24px mr:1.281rem b:1px|solid|var(--color-line-subtle) r-sm font-weight:460 font-xs tracking-normal surface-raised counter-increment:step vertical-align:middle
+  display:inline-flex align-items:center
+  justify-content:center
+  height:24px width:24px margin-right:1.281rem r-sm border:1px|solid|var(--color-line-subtle) font-xs font-weight:460 tracking-normal surface-raised counter-increment:step vertical-align:middle
   content:counter(step):before
 `
 
 export const StepEnd = styled.div`
-  abs bottom left-2xl width:10px height:10px round b:1px|solid|var(--color-line-subtle)
+  position:absolute left-2xl bottom:0 height:10px width:10px round border:1px|solid|var(--color-line-subtle)
   surface-raised
-  transform:translate(-4px,4px)
-  hidden@media((width<64rem)) shadow:0|0.1px|0.3px|rgba(0,0,0,0.024),0|0.4px|0.9px|rgba(0,0,0,0.036),0|1px|1px|rgba(0,0,0,0.06)
+  box-shadow:0|0.1px|0.3px|rgba(0,0,0,0.024),0|0.4px|0.9px|rgba(0,0,0,0.036),0|1px|1px|rgba(0,0,0,0.06)
+  transform:translate(-4px,4px) display:none@media((width<64rem))
 `
 
 export const Step = styled.div(
-  'rel ml:0.938rem pl-xl bl:1px|solid|var(--color-line-subtle) ml:-3.125rem:last>*:last pb-xl:not(:last)',
-  ({ $row }) => $row && `flex flex-wrap@media((width<64rem)) gap:2rem|2.5rem@md`
+  'position:relative margin-left:0.938rem pl-xl border-left:1px|solid|var(--color-line-subtle) margin-left:-3.125rem:last>*:last pb-xl:not(:last)',
+  ({ $row }) => $row && `display:flex flex-wrap:wrap@media((width<64rem)) gap:2rem|2.5rem@md`
 )
 
-export const StepL = styled.div`flex:1|1|100% min-w:0 mb:0>:last flex:1|1|40%@md`
-export const StepR = styled.div`flex:1|1|100% min-w:0 mt:0>:first flex:1|1|60%@md`
+export const StepL = styled.div`flex:1|1|100% min-width:0 margin-bottom:0>:last flex:1|1|40%@md`
+export const StepR = styled.div`flex:1|1|100% min-width:0 margin-top:0>:first flex:1|1|60%@md`
 
 export default StepSection

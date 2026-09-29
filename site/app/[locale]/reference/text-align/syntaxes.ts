@@ -1,10 +1,10 @@
 const syntaxes = [
-  'text-left',
-  'text-right',
-  'text-center',
-  'text-justify',
-  'text-start',
-  'text-end',
+  "text-align:left",
+  "text-align:right",
+  "text-align:center",
+  "text-align:justify",
+  "text-align:start",
+  "text-align:end",
   ['text-align:`align`'],
 ]
 

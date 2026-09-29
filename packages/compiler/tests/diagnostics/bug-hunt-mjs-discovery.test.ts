@@ -10,23 +10,23 @@ for (const mode of ['default', 'explicit-mjs', 'explicit-js'] as const) {
   test(`project inspection discovers ESM classes (${mode})`, async () => {
     const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-inspect-mjs-')))
     try {
-      writeFileSync(join(cwd, 'entry.mjs'), 'document.body.className = "block"')
-      writeFileSync(join(cwd, 'control.js'), 'document.body.className = "inline"')
+      writeFileSync(join(cwd, 'entry.mjs'), 'document.body.className = "display:block"')
+      writeFileSync(join(cwd, 'control.js'), 'document.body.className = "display:inline"')
       mkdirSync(join(cwd, 'node_modules'))
-      writeFileSync(join(cwd, 'node_modules/ignored.mjs'), 'document.body.className = "hidden"')
+      writeFileSync(join(cwd, 'node_modules/ignored.mjs'), 'document.body.className = "display:none"')
       const patterns = mode === 'default' ? undefined : [mode === 'explicit-mjs' ? 'entry.mjs' : 'control.js']
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifestJSON as unknown as MasterCSSManifest,
-        cwd, patterns, classes: ['block', 'inline', 'hidden'], includeCss: true
+        cwd, patterns, classes: ["display:block", "display:inline", "display:none"], includeCss: true
       })
       const expected = mode === 'default' ? ['control.js', 'entry.mjs'] : patterns!
       expect(report.files.map((f) => basename(f.filePath)).sort()).toEqual(expected)
-      const found = mode === 'explicit-js' ? 'inline' : 'block'
+      const found = mode === 'explicit-js' ? "display:inline" : "display:block"
       expect(report.scanner.classes.valid).toContain(found)
-      expect(report.css.text).toContain(`display:${found}`)
+      expect(report.css.text).toContain(found)
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({ className: found }))
-      expect(report.scanner.classes.valid).not.toContain('hidden')
-      if (mode !== 'default') expect(report.scanner.classes.valid).not.toContain(mode === 'explicit-js' ? 'block' : 'inline')
+      expect(report.scanner.classes.valid).not.toContain("display:none")
+      if (mode !== 'default') expect(report.scanner.classes.valid).not.toContain(mode === 'explicit-js' ? "display:block" : "display:inline")
     } finally { rmSync(cwd, { recursive: true, force: true }) }
   })
 }

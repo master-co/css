@@ -8,9 +8,9 @@ export default function DocFn({ children }: any) {
       <table>
         <thead>
           <tr>
-            <th className="w:0 text-xs white-space:nowrap">Argument</th>
+            <th className="width:0 text-xs white-space:nowrap">Argument</th>
             <th className="text-xs">Type</th>
-            <th className="w:100% text-xs">Default</th>
+            <th className="width:100% text-xs">Default</th>
           </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@ export default function DocFn({ children }: any) {
                   ? <DocDefaultValue className="vertical-align:middle">
                     <InlineCode lang="ts">{arg.defaultValue}</InlineCode>
                   </DocDefaultValue>
-                  : <code className="text-muted!">-</code>
+                  : <code className="fg-text-muted!">-</code>
                 }
               </td>
             </tr>

@@ -9,7 +9,7 @@ const syntaxes = [
   'pointer-events:stroke',
   'pointer-events:all',
   ['pointer-events:`value`'],
-  ['pointer-events:none', 'untouchable'],
+  ['pointer-events:none', "pointer-events:none"],
 ]
 
 export default syntaxes

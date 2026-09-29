@@ -25,7 +25,7 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     examples: [
       { description: 'Inspect class-order proposals in one existing source file:', command: "master-css lint \"src/button.html\" \\\n  --rules sort-classes \\\n  --fix-dry-run" },
       { description: 'Apply those class-order fixes after reviewing the proposals:', command: "master-css lint \"src/button.html\" \\\n  --rules sort-classes \\\n  --fix" },
-      { description: 'Inspect a source buffer on stdin without modifying its virtual file:', command: "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md flex\">\n  Save\n</button>\nHTML" }
+      { description: 'Inspect a source buffer on stdin without modifying its virtual file:', command: "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md display:flex\">\n  Save\n</button>\nHTML" }
     ]
   },
   migrate: {

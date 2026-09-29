@@ -4,7 +4,7 @@ import { createServer } from 'vite'
 import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
 
-const cases = (['static', 'progressive'] as const).flatMap(mode =>
+const cases = (["static", 'progressive'] as const).flatMap(mode =>
   [...['pixel.svg', 'pixel space.svg', 'pixel#part.svg', 'pixel%value.svg', '圖像.svg', ...process.platform === 'win32' ? [] : ['pixel?query.svg']].map(name => ({ mode, name, denied: false })), { mode, name: 'private.svg', denied: true }]
 )
 

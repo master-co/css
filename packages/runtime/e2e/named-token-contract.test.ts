@@ -1,22 +1,23 @@
 import { expect, test, type Page } from '@playwright/test'
+import { compileManifestSync } from '@master/css-compiler/node'
 import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
 
-const manifest = defaultManifest as unknown as MasterCSSManifest
+const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
 const classLists = [
-  'p-md p:8px',
-  'p:8px p-md',
-  '{p-md;pt:12px} p:8px',
-  'p:8px {pt:12px;p-md}',
-  'p-md p:8px@sm',
+  "p-md padding:8px",
+  "padding:8px p-md",
+  "{p-md;padding-top:12px} padding:8px",
+  "padding:8px {padding-top:12px;p-md}",
+  "p-md padding:8px@sm",
   'font-mono font-family:mono',
-  'bg-red background-color:transparent b-solid b:2px outline-solid outline:2px',
+  "bg-red background-color:transparent solid-edges border:2px outline:2px",
   'fg-red color:red',
-  'bg-cover',
-  'bg:transparent'
+  "background-size:cover",
+  "background:transparent"
 ]
 const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;html{font-size:16px}@layer defaults{#target-9{background-color:red;background-image:linear-gradient(red,blue);background-size:cover}}</style></head><body>'
   + classLists.map((classes, i) => `<div id="target-${i}" class="${classes}">test</div>`).join('') + '</body></html>'
@@ -28,13 +29,13 @@ async function computed(page: Page) {
   }))
 }
 
-for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
+for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode} preserves named and native value priorities, groups and shorthand resets`, async ({ page }) => {
     await page.setViewportSize({ width: 1100, height: 720 })
     await page.emulateMedia({ colorScheme: 'light' })
     const classes = classLists.flatMap(value => value.split(' '))
     const generated = renderClassNamesSync(classes, { manifest })
-    if (mode === 'static') {
+    if (mode === "static") {
       await page.setContent(html.replace('</head>', `<style>${generated.cssText}</style></head>`))
     } else if (mode === 'ssr' || mode === 'progressive') {
       using renderer = createServerRenderer({ manifest })
@@ -52,7 +53,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
       }
     } else {
       await page.setContent(html)
-      await init(page)
+      await init(page, undefined, { mixins: manifest.mixins })
     }
     const styles = await computed(page)
     expect(styles[0].padding).toBe('8px')
@@ -68,9 +69,9 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
     await page.setViewportSize({ width: 500, height: 720 })
     expect((await computed(page))[4].padding).toBe('16px')
     if (mode === 'runtime' || mode === 'progressive') {
-      await page.locator('#target-0').evaluate(element => { element.className = 'p-md p:10px' })
+      await page.locator('#target-0').evaluate(element => { element.className = "p-md padding:10px" })
       await expect(page.locator('#target-0')).toHaveCSS('padding', '10px')
-      await page.locator('#target-2').evaluate(element => { element.className = '{p-md;pt:14px} p:8px' })
+      await page.locator('#target-2').evaluate(element => { element.className = "{p-md;padding-top:14px} padding:8px" })
       await expect(page.locator('#target-2')).toHaveCSS('padding-top', '14px')
       expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('padding-top:14px')
     }
@@ -80,7 +81,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
 test('native resolution descriptors survive runtime compilation', async ({ page }) => {
   const className = 'background-image:image-set(url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)|1x)'
   await page.setContent(`<div id="image" class="${className}"></div>`)
-  await init(page)
+  await init(page, undefined, { mixins: manifest.mixins })
   const css = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(css).toContain(' 1x)')
   expect(css).not.toContain('0.25rem')

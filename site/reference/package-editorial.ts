@@ -17,7 +17,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
       './variants.css': 'Preset reusable conditions.',
-      './utilities.css': 'Preset utility definitions.'
+      './utilities.css': 'Preset mixin recipes.'
     }
   },
   '@master/css-compiler': {
@@ -84,7 +84,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     entries: { '.': 'Nuxt module.' }
   },
   '@master/css-preset': {
-    introduction: 'The preset supplies theme tokens, conditions, utilities and a compiled default manifest. CSS imports and the JSON manifest serve different consumers.',
+    introduction: 'The preset supplies theme tokens, conditions, mixins and a compiled default manifest. CSS imports and the JSON manifest serve different consumers.',
     usage: 'Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme Tokens](/guide/theme) explains authoring and overrides.',
     entries: {
       '.': 'Complete preset stylesheet entry.',
@@ -93,7 +93,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
       './variants.css': 'Preset reusable conditions.',
-      './utilities.css': 'Preset utility definitions.'
+      './utilities.css': 'Preset mixin recipes.'
     }
   },
   '@master/css-runtime': {
@@ -106,7 +106,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     usage: 'Import types from the narrow subpath that owns them. A type declaration describes a data shape; it does not validate arbitrary input or compile stylesheet directives. Preserve version fields when passing manifests and diagnostics between APIs.',
     entries: {
       '.': 'Common manifest, diagnostic and rendering-mode exports.',
-      './manifest': 'Manifest v2 types, variable helpers and serialization.',
+      './manifest': 'Manifest v3 types, variable helpers and serialization.',
       './hydration-manifest': 'Hydration rules, resource order and serialization helpers.',
       './css-directives': 'Directive results, source ranges and output mappings.',
       './css-syntax': 'Utility, selector and value representation types.',

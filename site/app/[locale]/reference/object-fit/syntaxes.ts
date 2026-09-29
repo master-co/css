@@ -1,9 +1,9 @@
 const syntaxes = [
   'object-fit:none',
-  'object-contain',
-  'object-cover',
-  'object-fill',
-  'object-scale-down',
+  "object-fit:contain",
+  "object-fit:cover",
+  "object-fit:fill",
+  "object-fit:scale-down",
   ['object-fit:`value`'],
 ]
 

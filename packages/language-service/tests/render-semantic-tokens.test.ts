@@ -50,21 +50,50 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    '<div className="fg-brand:hover@sm block block:hover block:is(:state-name) hidden_div::before:of(.active) m:1rem background-color:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
+    "<div className=\"fg-brand:hover@sm center center:hover center:is(:state-name) sr-only_div::before:of(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
         variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }],
-        utilities: [
+        mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
           {
-            name: 'btn',
-            layer: 'utilities',
-            rules: [
-              { selector: '&', declarations: { color: 'var(--color-brand)' } },
-              { selector: '&', declarations: { display: 'block' } }
+            "type": "declaration" as const,
+            "property": "color",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "var(--color-brand)"
+              }
             ]
           }
         ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "block"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
       })
     }
   )
@@ -73,9 +102,9 @@ test.concurrent('renders semantic tokens for class attributes', () => {
   expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@sm', 'keyword', ['query'])
-  expectToken(tokens, 'block', 'enumMember')
+  expectToken(tokens, "center", 'enumMember')
   expectToken(tokens, 'state-name', 'modifier', ['pseudoClass'])
-  expectToken(tokens, 'hidden', 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, '_', 'operator', ['selector', 'selectorCombinator'])
   expectToken(tokens, 'div', 'type', ['selector'])
   expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector', 'pseudoElementDelimiter'])
@@ -93,7 +122,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
   const { tokens } = renderTokens(
-    '<div className="h:var(--size-sm) fg:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@base font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
+    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@base font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -149,11 +178,11 @@ test.concurrent('renders semantic tokens for vendor-prefixed native declarations
 
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
   const { tokens } = renderTokens(
-    '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg-center bg-cover background-image:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
+    "<div className=\"sr-only@container(sm&<=md) container:card/inline-size grid-cols(2)@card(3xs) background-position:center background-size:cover background-image:url(/hero.jpg) sr-only@media(pointer:coarse) sr-only@h>=sm&h<lg\"></div>",
     'html'
   )
 
-  expectToken(tokens, 'hidden', 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, '@container', 'keyword', ['query'])
   expectToken(tokens, '(', 'operator', ['query', 'queryPunctuation'])
   expectToken(tokens, 'sm', 'enumMember', ['query'])
@@ -165,13 +194,13 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
   expectToken(tokens, 'card', 'enumMember')
   expectToken(tokens, '/', 'operator', ['valueSeparator'])
   expectToken(tokens, 'inline-size', 'enumMember')
-  expectToken(tokens, 'grid-cols', 'property')
+  expectToken(tokens, 'grid-cols', 'function')
   expectToken(tokens, '2', 'number')
   expectToken(tokens, '@card', 'keyword', ['query'])
   expectToken(tokens, '3', 'number', ['query'])
   expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
-  expectToken(tokens, 'bg-center', 'enumMember')
-  expectToken(tokens, 'bg-cover', 'enumMember')
+  expectToken(tokens, 'center', 'enumMember')
+  expectToken(tokens, 'cover', 'enumMember')
   expectToken(tokens, 'background-image', 'property')
   expectToken(tokens, 'url', 'function')
   expectToken(tokens, '/hero.jpg', 'string')
@@ -189,7 +218,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 })
 
 test.concurrent('renders semantic tokens for internal styles dogfood directives', () => {
-  const { tokens } = renderTokens("@utility monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    }", 'css')
+  const { tokens } = renderTokens("@mixin --monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    }", 'css')
 
   expectToken(tokens, '--vscode-editor-background', 'property')
   expectToken(tokens, 'transparent', 'enumMember')
@@ -233,7 +262,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
 
 test.concurrent('renders native-aligned semantic tokens for grouped classes with selector suffixes', () => {
   const { tokens } = renderTokens(
-    '<div class="{text-align:center;block}>li:hover@sm"></div>',
+    "<div class=\"{text-align:center;center}>li:hover@sm\"></div>",
     'html'
   )
 
@@ -242,50 +271,50 @@ test.concurrent('renders native-aligned semantic tokens for grouped classes with
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
   expectToken(tokens, 'center', 'enumMember')
   expectToken(tokens, ';', 'operator', ['declarationTerminator'])
-  expectToken(tokens, 'block', 'enumMember')
+  expectToken(tokens, "center", 'enumMember')
   expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, '>', 'operator', ['selector', 'selectorCombinator'])
   expectToken(tokens, 'li', 'type', ['selector'])
   expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@sm', 'keyword', ['query'])
-  expect(tokens.some(({ text }) => text.includes('block}>li:hover@sm'))).toBe(false)
+  expect(tokens.some(({ text }) => text.includes("center}>li:hover@sm"))).toBe(false)
 })
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
-  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"block fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @utility reset {\n        @safelist \"block\";\n      }\n\n    @utility btn {\n        @safelist \"inline-flex fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"block\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @utility content-auto {\n        @safelist \"block\";\n      }\n@utility text-left {\n        text-align: left;\n      }\n@utility text-center {\n        text-align: center;\n      }\n@utility text-right {\n        text-align: right;\n      }\n@utility font-* from(--font-size-*) {\n        font-size: --master-value();\n      }\n@utility bg-* from(--color-*) {\n        background-color: --master-value();\n      }\n@utility text-decoration-* from(--color-*) {\n        text-decoration: --master-value();\n      }\n@utility user-select:* {\n        user-select: --master-value();\n      }\n@utility grid-cols:* {\n        grid-template-columns: repeat(--master-value(), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: --master-value();\n        }\n\n        &:hover {\n          text-align: --master-value();\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"center fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @mixin --reset {\n        @safelist \"center\";\n      }\n\n    @mixin --btn {\n        @safelist \"fit fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"center\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"center\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@utility font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@utility bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
-  expectToken(tokens, 'block', 'enumMember')
+  expectToken(tokens, "center", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'fg-primary', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
-  expectToken(tokens, 'inline-flex', 'enumMember')
+  expectToken(tokens, "fit", 'enumMember')
   expectToken(tokens, 'bg-blue', 'enumMember')
 
-  expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@settings', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'root-size', type: 'property', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword', modifiers: ['query'] })
-  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '<', type: 'operator', modifiers: ['query', 'queryOperator'] })
-  expect(tokens).not.toContainEqual({ text: 'sm', type: 'enumMember', modifiers: ['query'] })
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'text-', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'text-align', type: 'property', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'repeat', type: 'function', modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@settings', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'root-size', type: 'property' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword' as const, modifiers: ['query'] })
+  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '<', type: 'operator' as const, modifiers: ['query', 'queryOperator'] })
+  expect(tokens).not.toContainEqual({ text: 'sm', type: 'enumMember' as const, modifiers: ['query'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'text-', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '--value', type: 'function' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'text-align', type: 'property' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'repeat', type: 'function' as const, modifiers: [] })
 })
 
 test.concurrent('does not render semantic tokens for theme directive declarations', () => {
@@ -295,50 +324,50 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens("\n    @utility reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @utility btn {\n        @safelist \"inline-flex\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@utility btn:hover {\n        @safelist \"block\";\n      }\n\n    @utility font:* {\n        font-size: --master-value();\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@utility text-left {\n        text-align: left;\n      }\n@utility text-right {\n        text-align: right;\n      }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"fit\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@utility btn:hover {\n        @safelist \"center\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
 
-  expectToken(tokens, 'inline-flex', 'enumMember')
-  expectToken(tokens, 'block', 'enumMember')
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@dark', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'font', type: 'property', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'font-size', type: 'variable', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'text-', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@media', type: 'keyword', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'label', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] })
-  expect(tokens).not.toContainEqual({ text: 'font-size', type: 'property', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
+  expectToken(tokens, "fit", 'enumMember')
+  expectToken(tokens, "center", 'enumMember')
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@dark', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'font', type: 'property' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'font-size', type: 'variable' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '--value', type: 'function' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'text-', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: '@media', type: 'keyword' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'label', type: 'class' as const, modifiers: ['selector'] })
+  expect(tokens).not.toContainEqual({ text: 'hover', type: 'modifier' as const, modifiers: ['pseudoClass'] })
+  expect(tokens).not.toContainEqual({ text: 'font-size', type: 'property' as const, modifiers: [] })
+  expect(tokens).not.toContainEqual({ text: 'var', type: 'function' as const, modifiers: [] })
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
-  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"block fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"center fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
 
-  expectToken(tokens, 'block', 'enumMember')
+  expectToken(tokens, "center", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
-  expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })
-  expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@preserve', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'native', type: 'enumMember', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@quoted', type: 'keyword', modifiers: ['query'] })
-  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: 'debug-*', type: 'string', modifiers: ['quoted'] })
+  expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: ';', type: 'operator' as const, modifiers: ['directive', 'directiveTerminator'] })
+  expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@preserve', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'native', type: 'enumMember' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@quoted', type: 'keyword' as const, modifiers: ['query'] })
+  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: 'debug-*', type: 'string' as const, modifiers: ['quoted'] })
 })
 
 test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
-  const { tokens } = renderTokens('.btn { @compose "block fg-red"; }', 'css')
+  const { tokens } = renderTokens(".btn { @compose \"center fg-red\"; }", 'css')
 
   expect(tokens).toEqual([])
 })
@@ -388,6 +417,6 @@ test.concurrent('does not render non-entry @master at-rules as CSS directives', 
     @master no-shake;
   `, 'css')
 
-  expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword' as const, modifiers: ['directive'] })
 })
 

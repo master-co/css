@@ -1,3 +1,4 @@
+import type { MasterCSSMixinDefinition, MasterCSSMixinValue } from './mixin.js'
 import type {
   MasterCSSThemeNode,
   MasterCSSManifestUtilityLayerName,
@@ -103,42 +104,11 @@ export type CSSDirectiveConditionPathEntry =
   | { type: 'condition'; value: string }
   | { type: 'variant'; token: string }
 
-export interface CSSDirectiveUtilityRuleDefinition {
-  declarations: CSSDirectiveDeclarations
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  selector?: string
-}
-
-export interface CSSDirectiveUtilityDynamicDefinition {
-  key: string
-}
-
-export interface CSSDirectiveUtilityTokenDefinition {
-  prefix: string
-  variableAliasRefs: string[]
-}
-
-export interface CSSDirectiveUtilityDefinition {
-  name: string
-  /** Complete ordered authoring body; retained until whole-definition replacement. */
-  body?: CSSDirectiveStyleDefinition[]
-  source?: CSSDirectiveSourceReference
-  type?: 'static' | 'dynamic' | 'token'
-  layer?: CSSDirectiveLayerName
-  dynamic?: CSSDirectiveUtilityDynamicDefinition
-  token?: CSSDirectiveUtilityTokenDefinition
-  declarations?: CSSDirectiveDeclarations
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  rules?: CSSDirectiveUtilityRuleDefinition[]
-}
-
 export interface CSSDirectiveManifestInput {
   variants?: CSSDirectiveVariantDefinitions
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
-  utilities?: CSSDirectiveUtilityDefinition[]
+  mixins?: MasterCSSMixinDefinition[]
 }
 
 export interface CSSDirectiveExtractionPolicy {
@@ -174,7 +144,18 @@ export interface CSSDirectiveStyleNativeDefinition {
   name?: string
 }
 
+export interface CSSDirectiveStyleApplyDefinition {
+  type: 'apply'
+  order: number
+  selector: string
+  name: string
+  arguments: MasterCSSMixinValue[]
+  source?: CSSDirectiveSourceReference
+  conditionPath?: CSSDirectiveConditionPathEntry[]
+}
+
 export type CSSDirectiveStyleDefinition =
+  | CSSDirectiveStyleApplyDefinition
   | CSSDirectiveStyleNativeDefinition
 
 /** Generated UTF-16 offset and its original authoring-source anchor. */
@@ -191,7 +172,7 @@ export interface CSSNativeOutput {
   slots: { start: number, end: number, marker: string, definitions: CSSDirectiveStyleDefinition[] }[]
 }
 
-export interface CSSUtilitySource {
+export interface CSSMixinSource {
   name: string
   identity: string
   replacedBy?: CSSDirectiveSourceReference
@@ -199,7 +180,7 @@ export interface CSSUtilitySource {
 }
 
 export interface CSSDirectiveResult {
-  utilitySources?: CSSUtilitySource[]
+  mixinSources?: CSSMixinSource[]
   nativeOutput?: CSSNativeOutput
   outputMappings?: CSSOutputMapping[]
   /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */

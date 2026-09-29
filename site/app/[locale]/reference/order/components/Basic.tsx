@@ -4,7 +4,7 @@ export default ({ className }: any) => {
   return (
     <>
       <Code lang="html">{`
-        <div class="flex">
+        <div class="display:flex">
           <div>1</div>
           <!-- @MARK ${className} -->
           <div class="${className}">2</div>

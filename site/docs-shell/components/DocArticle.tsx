@@ -6,6 +6,6 @@ import clsx from 'clsx'
 
 export default function DocArticle(props: any) {
   return (
-    <article {...props} className={clsx('flex:1|1|auto w:100% min-w:0 pb-2xl pt:5.063rem max-w:52.125rem:has(+aside) p:3.75rem|1.875rem@print pb:5rem@sm px:5rem@md pr:2.5rem:not(:has(+aside))@md pt:8.75rem@md prose', props.className)} />
+    <article {...props} className={clsx('flex:1|1|auto width:100% min-width:0 pb-2xl padding-top:5.063rem max-width:52.125rem:has(+aside) padding:3.75rem|1.875rem@print padding-bottom:5rem@sm padding-inline:5rem@md padding-right:2.5rem:not(:has(+aside))@md padding-top:8.75rem@md prose', props.className)} />
   )
 }

@@ -8,11 +8,11 @@
 <DemoExample page="position" section="positioning-elements-as-static" />
 
 ```html
-<div class="w:8rem">
-  <!-- @MARK static -->
-  <div class="static left:1.25rem top:1.25rem h:4rem">Target</div>
+<div class="width:8rem">
+  <!-- @MARK position:static -->
+  <div class="position:static left:1.25rem top:1.25rem height:4rem">Target</div>
 </div>
-<div class="h:4rem w:8rem mt-lg">Next in flow</div>
+<div class="height:4rem width:8rem mt-lg">Next in flow</div>
 ```
 
 ### Positioning elements as relative \{#positioning-elements-as-relative\}
@@ -21,11 +21,11 @@
 <DemoExample page="position" section="positioning-elements-as-relative" />
 
 ```html
-<div class="w:8rem">
-  <!-- @MARK rel -->
-  <div class="rel left:1.25rem top:1.25rem h:4rem">Target</div>
+<div class="width:8rem">
+  <!-- @MARK position:relative -->
+  <div class="position:relative left:1.25rem top:1.25rem height:4rem">Target</div>
 </div>
-<div class="h:4rem w:8rem mt-lg">Next in flow</div>
+<div class="height:4rem width:8rem mt-lg">Next in flow</div>
 ```
 
 ### Positioning elements as absolute \{#positioning-elements-as-absolute\}
@@ -34,9 +34,9 @@
 <DemoExample page="position" section="positioning-elements-as-absolute" />
 
 ```html
-<div class="rel h:10rem">
-  <!-- @MARK abs -->
-  <div class="abs right-md top-md h:4rem w:8rem">Target</div>
+<div class="position:relative height:10rem">
+  <!-- @MARK position:absolute -->
+  <div class="position:absolute right-md top-md height:4rem width:8rem">Target</div>
 </div>
 ```
 
@@ -47,10 +47,10 @@
 
 ```html
 <div class="pt-3xl">
-  <!-- @MARK fixed -->
+  <!-- @MARK position:fixed -->
   <input type="search" aria-label="Filter assets" placeholder="Filter assets"
-    class="fixed left-md top-md z:1 w:calc(100%-2rem)">
-  <div class="h:40rem">Scrollable collection</div>
+    class="position:fixed left-md top-md z-index:1 width:calc(100%-2rem)">
+  <div class="height:40rem">Scrollable collection</div>
 </div>
 ```
 
@@ -62,11 +62,11 @@
 <DemoExample page="position" section="positioning-elements-as-sticky" />
 
 ```html
-<div class="overflow:auto h:15rem" tabindex="0" aria-label="Scrollable asset list">
-  <div class="h:4rem">Scroll down</div>
-  <!-- @MARK sticky -->
-  <div class="sticky top z:1">Pinned collection</div>
-  <div class="h:35rem">Scrollable collection</div>
+<div class="overflow:auto height:15rem" tabindex="0" aria-label="Scrollable asset list">
+  <div class="height:4rem">Scroll down</div>
+  <!-- @MARK position:sticky -->
+  <div class="position:sticky top:0 z-index:1">Pinned collection</div>
+  <div class="height:35rem">Scrollable collection</div>
 </div>
 ```
 
@@ -76,9 +76,9 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="position" section="apply-conditionally" />
 
 ```html
-<div class="rel h:10rem">
+<div class="position:relative height:10rem">
   <div tabindex="0"
-    class="static bottom-md right-md h:4rem w:8rem abs:focus-visible abs@sm">
+    class="position:static bottom-md right-md height:4rem width:8rem position:absolute:focus-visible position:absolute@sm">
     Focus with Tab
   </div>
 </div>

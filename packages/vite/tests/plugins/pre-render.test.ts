@@ -42,7 +42,7 @@ describe('PreRenderPlugin', () => {
     expect(preRenderPlugin).toBeDefined()
     const result = await (preRenderPlugin as any).transformIndexHtml.call(
       {},
-      '<html><head></head><body><section class="card p:0.125rem">Content</section></body></html>',
+      "<html><head></head><body><section class=\"card padding:0.125rem\">Content</section></body></html>",
     )
     const html = typeof result === 'string' ? result : result.html
     const hydrationManifestSource = html.match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
@@ -52,7 +52,7 @@ describe('PreRenderPlugin', () => {
     if (mode === 'progressive') expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
     expect(html).toContain('@layer utilities{.card{background-color:var(--color-brand)}@media (width >= 48rem){.card{font-size:1.125rem}}.card{border-color:#456}')
     expect(html).toContain('@media (width >= 48rem){.card{font-size:1.125rem}}')
-    expect(html).toContain('.p\\:0\\.125rem{padding:0.125rem}}')
+    expect(html).toContain(".padding\\:0\\.125rem{padding:0.125rem}}")
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
 
@@ -83,7 +83,7 @@ describe('PreRenderPlugin', () => {
     )
     expect(next).not.toHaveBeenCalled()
     expect(headers.get('Content-Type')).toContain('application/json')
-    expect(JSON.parse(body).rules.map((rule: { className: string }) => rule.className)).toEqual(['card', 'p:0.125rem'])
+    expect(JSON.parse(body).rules.map((rule: { className: string }) => rule.className)).toEqual(['card', "padding:0.125rem"])
   })
 
   it.each([
@@ -117,7 +117,7 @@ describe('PreRenderPlugin', () => {
     const themePath = path.join(root, 'theme.css')
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
-      writeFileSync(themePath, "@utility card { color: #123456; }")
+      writeFileSync(themePath, "@mixin --card { color: #123456; }")
       writeFileSync(entryPath, "@import url(\"@master/css\");\n@import \"./theme.css\";\n\n@theme { :root, :host {\n    --color-brand: #123;\n} }\n")
 
       const plugins = masterCSS({
@@ -144,7 +144,7 @@ describe('PreRenderPlugin', () => {
       let html = typeof result === 'string' ? result : result.html
       expect(html).toContain('.card{color:#123456}')
 
-      writeFileSync(themePath, "@utility card { color: #abcdef; }")
+      writeFileSync(themePath, "@mixin --card { color: #abcdef; }")
       const send = vi.fn()
       await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
       expect(send).toHaveBeenCalledWith({ type: 'full-reload' })

@@ -782,6 +782,7 @@ function isSelectorMarker(candidate: string, file: string): boolean {
 function isLocallyDefinedClass(candidate: string, context: string): boolean {
   if (!/^[a-z][\w-]*$/.test(candidate)) return false
   const escapedCandidate = escapeRegExp(candidate)
+  if (new RegExp(`@mixin\\s+--${escapedCandidate}\\s*(?:\\(\\s*\\))?\\s*\\{`).test(context)) return true
   return new RegExp(`(?:\\.${escapedCandidate}|(?:^|[\\s{])${escapedCandidate})\\s*\\{`, 'm').test(context)
 }
 
@@ -912,12 +913,12 @@ test('vendor migration snippets parse and the documented engine wrapper forwards
   const wrapper = exports.wrapEngine!(inner)
   try {
     assert.equal(wrapper.binding, inner.binding)
-    assert.deepEqual(wrapper.executionState(['block']).classes[0].references, [])
-    wrapper.ensureClassRules(['block'])
-    assert.deepEqual(wrapper.executionState(['block']), inner.executionState(['block']))
-    assert.ok(wrapper.executionState(['block']).classes[0].references.length)
-    wrapper.deleteClassRules(['block'])
-    assert.deepEqual(wrapper.executionState(['block']).classes[0].references, [])
+    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
+    wrapper.ensureClassRules(['display:block'])
+    assert.deepEqual(wrapper.executionState(['display:block']), inner.executionState(['display:block']))
+    assert.ok(wrapper.executionState(['display:block']).classes[0].references.length)
+    wrapper.deleteClassRules(['display:block'])
+    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
     assert.deepEqual(wrapper.snapshot(), inner.snapshot())
   } finally { wrapper[Symbol.dispose]() }
   assert.throws(() => inner.executionState([]), /disposed/)

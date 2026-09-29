@@ -5,12 +5,9 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
 
 const preset = defaultManifest as unknown as MasterCSSManifest
-const utility = (name: string, declarations: Record<string, string>) => ({
-  id: name,
-  name,
-  type: 0,
-  matchers: [{ type: 'static' as const, name }],
-  emit: { type: 'static' as const, rules: [{ declarations }] }
+const mixin = (name: string, declarations: Record<string, string>) => ({
+  name: `--${name}`,
+  body: Object.entries(declarations).map(([property, value]) => ({ type: 'declaration' as const, property, value: [{ type: 'text' as const, value }] }))
 })
 
 async function startRendered(page: Page, html: string, manifest: MasterCSSManifest) {
@@ -28,7 +25,7 @@ test('refresh creates rules for previously unknown DOM classes and removes obsol
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.refresh(manifest)
     return { ruleCount: runtime.snapshot().classRules['new-custom'].rules.length, display: getComputedStyle(document.querySelector('#target')!).display }
-  }, { ...preset, utilities: [...(preset.utilities || []), utility('new-custom', { display: 'none' })] })
+  }, { ...preset, mixins: [...(preset.mixins || []), mixin('new-custom', { display: 'none' })] })
   expect(added).toEqual({ ruleCount: 1, display: 'none' })
   const removed = await page.evaluate((manifest) => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
@@ -43,7 +40,7 @@ for (const invalid of [false, true]) {
     await init(page)
     const result = await page.evaluate(async (invalid) => {
       const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-      document.body.className = 'hidden'
+      document.body.className = "display:none"
       await Promise.resolve()
       let threw = false
       try {
@@ -51,7 +48,7 @@ for (const invalid of [false, true]) {
         else runtime.refresh()
       } catch { threw = true }
       await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
-      return { threw, usageCount: runtime.snapshot().usageCounts.hidden, ruleCount: runtime.snapshot().classRules.hidden.rules.length, display: getComputedStyle(document.body).display }
+      return { threw, usageCount: runtime.snapshot().usageCounts['display:none'], ruleCount: runtime.snapshot().classRules['display:none'].rules.length, display: getComputedStyle(document.body).display }
     }, invalid)
     expect(result).toEqual({ threw: invalid, usageCount: 1, ruleCount: 1, display: 'none' })
   })
@@ -60,7 +57,7 @@ for (const invalid of [false, true]) {
 for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as const) {
   test(`hydration validates utility CSSOM positions: ${change}`, async ({ page }) => {
     using renderer = createServerRenderer({ manifest: preset })
-    const rendered = renderer.renderHTML('<html><head></head><body><div id="target" class="block hidden"></div></body></html>', { hydrationManifest: 'inject' })
+    const rendered = renderer.renderHTML("<html><head></head><body><div id=\"target\" class=\"display:block display:none\"></div></body></html>", { hydrationManifest: 'inject' })
     const rules = rendered.hydrationManifest!.rules.map(rule => rule.text)
     const css = change === 'none' ? rendered.cssText
       : change === 'reverse' ? `@layer utilities{${[...rules].reverse().join('')}}`
@@ -71,32 +68,32 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
     const result = await page.evaluate(() => {
       const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
       const hydration = runtime.snapshot().hydration.state
-      runtime.deleteClassRules(['block'])
+      runtime.deleteClassRules(["display:block"])
       const css = [...(document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules)].map(rule => rule.cssText).join('')
       return { hydration, css, snapshot: runtime.snapshot().cssText, display: getComputedStyle(document.querySelector('#target')!).display }
     })
     expect(result.hydration).toBe(change === 'none' ? 'progressive' : 'runtime')
-    expect(result.css).toContain('.hidden')
-    expect(result.css).not.toContain('.block')
+    expect(result.css).toContain(".display\\:none")
+    expect(result.css).not.toContain(".display\\:block")
     expect(result.css).not.toContain('.foreign')
-    expect(result.snapshot).toContain('.hidden')
+    expect(result.snapshot).toContain(".display\\:none")
     expect(result.display).toBe('none')
   })
 }
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'x', value: 'red' }, { type: 'declaration', name: 'y', value: 'blue' }, { type: 'declaration', name: 'a', value: 'linear-gradient(var(--x),var(--y))' }, { type: 'declaration', name: 'z', value: 'green' }] }],
-    version: 2, languageVersion: 4,
+    version: 3, languageVersion: 5,
     variables: { '': [
       { name: 'x', key: 'x', values: [{ path: [':root,:host'], value: 'red' }] },
       { name: 'y', key: 'y', values: [{ path: [':root,:host'], value: 'blue' }] },
       { name: 'a', key: 'a', values: [{ path: [':root,:host'], value: 'linear-gradient(var(--x),var(--y))' }], dependencies: ['x', 'y'] },
       { name: 'z', key: 'z', values: [{ path: [':root,:host'], value: 'green' }] }
     ] },
-    utilities: [
-      utility('a', { 'background-image': 'var(--a)' }),
-      utility('b', { color: 'var(--x)', 'border-color': 'var(--z)' }),
-      utility('c', { color: 'var(--x)' })
+    mixins: [
+      mixin('a', { 'background-image': 'var(--a)' }),
+      mixin('b', { color: 'var(--x)', 'border-color': 'var(--z)' }),
+      mixin('c', { color: 'var(--x)' })
     ]
   }
   using renderer = createServerRenderer({ manifest })
@@ -112,10 +109,10 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 2, languageVersion: 4,
+    version: 3, languageVersion: 5,
     theme: ['light', 'dark'].map((name, index) => ({ type: 'rule', prelude: `.${name}`, children: [{ type: 'declaration', name: 'primary', value: index ? '#ffffff' : '#000000' }] })),
     variables: { '': [{ name: 'primary', key: 'primary', values: [{ path: ['.light'], value: '#000000' }, { path: ['.dark'], value: '#ffffff' }] }] },
-    utilities: [utility('theme-color', { color: 'var(--primary)' })]
+    mixins: [mixin('theme-color', { color: 'var(--primary)' })]
   }
   using renderer = createServerRenderer({ manifest })
   const rendered = renderer.renderHTML('<html class="dark"><head></head><body><div id="target" class="theme-color"></div></body></html>', { hydrationManifest: 'inject' })
@@ -133,9 +130,9 @@ test('reordered theme buckets cannot silently change the dark-mode cascade', asy
 
 test('decimal media queries and quoted attribute values match in the browser', async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 600 })
-  await page.setContent('<div id="responsive" class="hidden@media((width>=600.5px))"></div><div id="literal" data-state=":first"></div><div id="different" data-state=":first-child"></div>')
+  await page.setContent("<div id=\"responsive\" class=\"display:none@media((width>=600.5px))\"></div><div id=\"literal\" data-state=\":first\"></div><div id=\"different\" data-state=\":first-child\"></div>")
   await page.evaluate(() => {
-    for (const id of ['literal', 'different']) document.getElementById(id)!.className = 'hidden[data-state=":first"]'
+    for (const id of ['literal', 'different']) document.getElementById(id)!.className = 'display:none[data-state=":first"]'
   })
   await init(page)
   await expect(page.locator('#responsive')).toHaveCSS('display', 'none')
@@ -148,18 +145,16 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 2, languageVersion: 4,
-      utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
-        ...utility(layer, { color: 'red' }),
-        layer: layer as 'base' | 'defaults' | 'components' | 'utilities',
-        emit: { type: 'static', rules: [
-          { declarations: { color: 'red' } },
-          { selector: '&[data-active]', declarations: { display: 'none' } }
-        ] }
+      version: 3, languageVersion: 5,
+      variants: ['base', 'defaults', 'components', 'utilities'].map(layer => ({ token: `@${layer}` as const, branches: [{ layer: layer as 'base' | 'defaults' | 'components' | 'utilities' }] })),
+      mixins: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
+        name: `--${layer}`,
+        body: [...mixin(layer, { color: 'red' }).body,
+          { type: 'rule' as const, selector: '&[data-active]', body: mixin(layer, { display: 'none' }).body }]
       }))
     }
     using renderer = createServerRenderer({ manifest })
-    const rendered = renderer.renderHTML('<html><head></head><body><div id="target" data-active class="base defaults components utilities"></div></body></html>', { hydrationManifest: 'inject' })
+    const rendered = renderer.renderHTML('<html><head></head><body><div id="target" data-active class="base@base defaults@defaults components@components utilities@utilities"></div></body></html>', { hydrationManifest: 'inject' })
     expect(rendered.hydrationManifest!.rules.every(rule => rule.nodes.length === 2)).toBe(true)
     await page.setContent(rendered.html)
     await page.evaluate((change) => {
@@ -178,7 +173,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
       await startCSSRuntime({ manifest })
     }, { loader: await getRuntimeLoaderURL(), manifest })
     expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe(change === 'none' ? 'progressive' : 'runtime')
-    await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['base', 'defaults', 'components']))
+    await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['base@base', 'defaults@defaults', 'components@components']))
     await expect(page.locator('#target')).toHaveCSS('display', 'none')
   })
 }
@@ -186,13 +181,13 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
 test('hydration rejects CSSOM nodes dropped by the browser', async ({ page }) => {
   const manifest: MasterCSSManifest = {
     ...preset,
-    utilities: [...(preset.utilities || []), {
-      ...utility('dropped', { display: 'block' }),
-      emit: { type: 'static', rules: [{ selector: '&:mastercss-unknown-pseudo', declarations: { display: 'block' } }] }
+    mixins: [...(preset.mixins || []), {
+      ...mixin('dropped', { display: 'block' }),
+      body: [{ type: 'rule', selector: '&:mastercss-unknown-pseudo', body: mixin('dropped', { display: 'block' }).body }]
     }]
   }
   using renderer = createServerRenderer({ manifest })
-  const rendered = renderer.renderHTML('<html><head></head><body><div id="target" class="dropped hidden"></div></body></html>', { hydrationManifest: 'inject' })
+  const rendered = renderer.renderHTML("<html><head></head><body><div id=\"target\" class=\"dropped display:none\"></div></body></html>", { hydrationManifest: 'inject' })
   expect(rendered.hydrationManifest!.rules).toHaveLength(2)
   await startRendered(page, rendered.html, manifest)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('runtime')

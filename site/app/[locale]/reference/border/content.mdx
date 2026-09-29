@@ -4,17 +4,17 @@
 ## Examples \{#examples\}
 
 ### Set width, style, and color together \{#set-width-style-and-color-together\}
-Use `b:<size>|<style>|<color>` for the native border shorthand. This panel supplies its own size and padding; the 2px border is part of its 240 × 96 border box.
+Use `border:<size>|<style>|<color>` for the native border shorthand. This panel supplies its own size and padding; the 2px border is part of its 240 × 96 border box.
 
 <DemoExample page="border" section="set-width-style-and-color-together" />
 
 ```html
 <!-- 2px · solid · blue -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Preview panel
 </div>
 ```
@@ -22,7 +22,7 @@ Use `b:<size>|<style>|<color>` for the native border shorthand. This panel suppl
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b:2px|solid|var(--color-blue)']}
+    {['border:2px|solid|var(--color-blue)']}
   </Class2CSS>
 </details>
 
@@ -36,10 +36,10 @@ The shorthand resets omitted border width, style and color components. The all-s
 ```html
 <!-- Physical bottom · horizontal writing -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md bb:3px|solid|var(--color-blue)
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-bottom:3px|solid|var(--color-blue)
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Bottom edge
 </div>
 ```
@@ -47,10 +47,10 @@ The shorthand resets omitted border width, style and color components. The all-s
 ```html
 <!-- Inline edges · horizontal writing -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-inline:3px|solid|var(--color-blue)
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Left and right
 </div>
 ```
@@ -58,10 +58,10 @@ The shorthand resets omitted border width, style and color components. The all-s
 ```html
 <!-- Inline edges · vertical writing -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
-         font-md bg-surface-inset text-body
-         box-border writing-mode:vertical-rl">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-inline:3px|solid|var(--color-blue)
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box writing-mode:vertical-rl">
   Top and bottom
 </div>
 ```
@@ -76,10 +76,10 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
 ```html
 <!-- Width longhand · preserves style and color -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:2px|dashed|var(--color-blue) r-sm font-md
-         bg-surface-base text-body box-border
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:2px|dashed|var(--color-blue) r-sm font-md
+         bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
          border-width:6px:hover@screen
          border-width:6px:focus-visible@screen">
@@ -90,13 +90,13 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
 ```html
 <!-- Full shorthand · resets omitted components -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:2px|dashed|var(--color-blue) r-sm font-md
-         bg-surface-base text-body box-border
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:2px|dashed|var(--color-blue) r-sm font-md
+         bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
-         b:solid:hover@screen
-         b:solid:focus-visible@screen">
+         border:solid:hover@screen
+         border:solid:focus-visible@screen">
   Preview details
 </button>
 ```
@@ -111,13 +111,13 @@ Hover or keyboard-focus the button to change its complete border from a subtle s
 ```html
 <!-- Solid → dashed on interaction -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm font-md
-         bg-surface-base text-body box-border
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm font-md
+         bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible border-width:0@print
-         b:2px|dashed|var(--color-blue):hover@screen
-         b:2px|dashed|var(--color-blue):focus-visible@screen">
+         border:2px|dashed|var(--color-blue):hover@screen
+         border:2px|dashed|var(--color-blue):focus-visible@screen">
   Preview details
 </button>
 ```

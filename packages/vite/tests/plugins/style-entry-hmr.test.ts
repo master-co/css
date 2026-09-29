@@ -76,7 +76,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     ;(plugin as any).buildStart.call({})
 
     // Drive a transformIndexHtml first so the second arm of handleReset has work to do
-    await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:0.25rem"></html>', { filename: '/index.html' })
+    await (plugin as any).transformIndexHtml.handler.call({}, "<html class=\"padding:0.25rem\"></html>", { filename: '/index.html' })
 
     const updateSendCallsBefore = server.ws.send.mock.calls.length
     scanner.emit('reset')
@@ -111,7 +111,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
 
     const server = makeServer({
       modules: [
-        ['/a.tsx', { transformResult: { code: '<div class="block"></div>' }, file: '/a.tsx' }],
+        ['/a.tsx', { transformResult: { code: '<div class="display:block"></div>' }, file: '/a.tsx' }],
       ],
     })
     const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
@@ -212,7 +212,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
 
     const server = makeServer({
       modules: [
-        ['/a.tsx', { transformResult: { code: '<div class="block"></div>' }, file: '/a.tsx' }],
+        ['/a.tsx', { transformResult: { code: '<div class="display:block"></div>' }, file: '/a.tsx' }],
       ],
     })
     const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)

@@ -1,46 +1,40 @@
-use mastercss_engine::{EngineSession, effective_utilities};
+use mastercss_engine::EngineSession;
 use mastercss_schema::MatchStatus;
 use serde_json::{Value, json};
 
-fn engine(utilities: Value, variables: Value) -> EngineSession {
-    let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, variables)| variables.as_array().unwrap().iter().flat_map(move |variable| variable["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
-    EngineSession::create(
-        &json!({"version":2,"languageVersion":4,"utilities":utilities,"variables":variables,"theme":theme})
-            .to_string(),
-    )
-    .unwrap()
+fn definition(name: &str, property: &str, value: &str) -> Value {
+    json!({"name":name,"body":[{"type":"declaration","property":property,"value":[{"type":"text","value":value}]}]})
 }
-fn raw(id: &str, keys: &[&str], property: &str) -> Value {
-    json!({"id":id,"type":-1,"emit":{"type":"property","property":property},"matchers":[{"type":"key","keys":keys}]})
-}
-fn token(id: &str, namespace: &str, layer: &str, property: &str) -> Value {
-    json!({"id":id,"type":0,"layer":layer,"variableAliasRefs":[namespace],"emit":{"type":"property","property":property},"matchers":[{"type":"token","prefix":"paint-"}]})
+fn engine(mixins: Vec<Value>, variables: Value) -> EngineSession {
+    let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, entries)| entries.as_array().unwrap().iter().flat_map(move |entry| entry["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",entry["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
+    EngineSession::create(&json!({"version":3,"languageVersion":5,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
 }
 
 #[test]
-fn raw_alias_replacement_preserves_only_unmodified_entries() {
-    let definitions = vec![
-        raw("old", &["size", "box"], "width"),
-        raw("new", &["size"], "height"),
-    ];
-    let normalized = effective_utilities(&definitions);
-    assert_eq!(effective_utilities(&normalized), normalized);
-    let mut session = engine(json!(definitions), json!({}));
-    session
-        .ensure_class_rules(["size:20px", "box:30px"])
-        .unwrap();
+fn replacements_are_by_complete_mixin_name() {
+    let mut session = engine(
+        vec![
+            definition("--size", "width", "20px"),
+            definition("--box", "width", "30px"),
+            definition("--size", "height", "20px"),
+        ],
+        json!({}),
+    );
+    session.ensure_class_rules(["size", "box"]).unwrap();
     let text = session.snapshot().unwrap().text;
-    assert!(text.contains(".size\\:20px{height:20px}"), "{text}");
-    assert!(text.contains(".box\\:30px{width:30px}"), "{text}");
+    assert!(text.contains(".size{height:20px}"));
+    assert!(text.contains(".box{width:30px}"));
     assert!(!text.contains("width:20px"));
 }
 
 #[test]
-fn static_alias_replacement_removes_nested_rules_and_resources() {
-    let old = json!({"id":"old","type":-2,"matchers":[{"type":"static","name":"card"},{"type":"static","name":"panel"}],"emit":{"type":"static","rules":[{"declarations":{"color":"var(--color-old)"}},{"selector":"&:hover","declarations":{"color":"red"}}]}});
-    let new = json!({"id":"new","type":-2,"matchers":[{"type":"static","name":"card"}],"emit":{"type":"static","rules":[]}});
+fn empty_replacement_clears_old_rules_and_resources() {
     let mut session = engine(
-        json!([old, new]),
+        vec![
+            definition("--card", "color", "var(--color-old)"),
+            definition("--panel", "color", "var(--color-old)"),
+            json!({"name":"--card","body":[]}),
+        ],
         json!({"color":[{"key":"old","values":[{"path":[":root,:host"],"value":"blue"}]}]}),
     );
     assert_eq!(
@@ -62,40 +56,34 @@ fn static_alias_replacement_removes_nested_rules_and_resources() {
 }
 
 #[test]
-fn token_ambiguity_is_independent_of_scoped_values_and_layers() {
-    for value in ["red", "blue"] {
-        for layer in ["utilities", "components"] {
-            let session = engine(
-                json!([
-                    token("a", "~a", "utilities", "color"),
-                    token("b", "~b", layer, "color")
-                ]),
-                json!({"a":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}],"b":[{"key":"brand","values":[{"path":[":root,:host"],"value":value}]}]}),
+fn font_ambiguity_depends_on_token_existence_instead_of_values() {
+    for value in ["1rem", "sans-serif"] {
+        let session = engine(
+            vec![],
+            json!({"font-size":[{"key":"brand","values":[{"path":[":root"],"value":"1rem"}]}],"font-family":[{"key":"brand","values":[{"path":[".dark"],"value":value}]}]}),
+        );
+        let result = session.inspect("font-brand").unwrap();
+        assert_eq!(result.match_status, MatchStatus::Ambiguous);
+        assert!(result.rules.is_empty());
+        for name in ["font-size-brand", "font-family-brand"] {
+            assert_eq!(
+                session.inspect(name).unwrap().match_status,
+                MatchStatus::Matched
             );
-            let result = session.inspect("paint-brand").unwrap();
-            assert_eq!(result.match_status, MatchStatus::Ambiguous);
-            assert!(result.rules.is_empty());
-            assert!(result.diagnostics[0].message.contains("a [~a], b [~b]"));
-            assert!(result.diagnostics[0].notes.is_empty());
         }
     }
 }
 
 #[test]
-fn same_token_family_retains_each_layer_and_namespace_order() {
-    let mut session = engine(
-        json!([
-            token("a", "~color", "components", "color"),
-            token("b", "~color", "utilities", "background-color")
-        ]),
-        json!({"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}]}),
+fn static_mixin_names_do_not_override_native_properties() {
+    let session = engine(vec![definition("--display", "color", "red")], json!({}));
+    assert_eq!(
+        session.inspect("display:block").unwrap().rules[0].text,
+        ".display\\:block{display:block}"
     );
-    let result = session.inspect("paint-brand").unwrap();
-    assert_eq!(result.match_status, MatchStatus::Matched);
-    assert_eq!(result.rules.len(), 2);
-    session.ensure_class_rules(["paint-brand"]).unwrap();
-    let text = session.snapshot().unwrap().text;
-    assert!(text.contains("@layer components{"), "{text}");
-    assert!(text.contains("@layer utilities{"), "{text}");
-    assert!(text.contains("background-color:var(--color-brand)"));
+    assert!(
+        session.inspect("display").unwrap().rules[0]
+            .text
+            .contains("color:red")
+    );
 }

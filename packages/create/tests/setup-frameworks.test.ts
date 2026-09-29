@@ -507,7 +507,7 @@ export default defineConfig({
       minimal: true
     })
 
-    expect(staticPlan.mode).toBe('static')
+    expect(staticPlan.mode).toBe("static")
     expect(staticPlan.files.find((file) => file.path === 'vite.config.ts')?.content).toContain("masterCSS({ mode: 'static' })")
     expect(() => planMasterCSSSetup({
       root,
@@ -660,7 +660,7 @@ export default nextConfig;
         framework: 'rspack' as const,
         file: 'rspack.config.mjs',
         expected: "new MasterCSSPlugin({ mode: 'static' })",
-        mode: 'static' as const
+        mode: "static" as const
       },
       {
         framework: 'rsbuild' as const,

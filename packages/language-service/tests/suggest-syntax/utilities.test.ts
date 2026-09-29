@@ -1,35 +1,36 @@
-import { test, it, expect, describe } from 'vitest'
-import dedent from 'ts-dedent'
+import { expect, test } from 'vitest'
+import { CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-protocol'
 import { hint } from './helper'
 
-it.concurrent('types a', () => expect(hint('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
-it.concurrent('hints semantic utilities', () => {
-  expect(hint('text-c')?.find(({ label }) => label === 'text-center')).toMatchObject({ label: 'text-center' })
-  expect(hint('bg-c')?.find(({ label }) => label === 'bg-cover')).toMatchObject({ label: 'bg-cover' })
-  expect(hint('object-c')?.find(({ label }) => label === 'object-cover')).toMatchObject({ label: 'object-cover' })
-  expect(hint('b-d')?.find(({ label }) => label === 'b-dashed')).toMatchObject({ label: 'b-dashed' })
-  expect(hint('b-g')?.find(({ label }) => label === 'b-groove')).toMatchObject({ label: 'b-groove' })
-  expect(hint('bl-s')?.find(({ label }) => label === 'bl-solid')).toMatchObject({ label: 'bl-solid' })
-  expect(hint('outline-m')?.find(({ label }) => label === 'outline-medium')).toMatchObject({ label: 'outline-medium' })
-  expect(hint('outline-t')?.find(({ label }) => label === 'outline-thick')).toMatchObject({ label: 'outline-thick' })
-  expect(hint('outline-t')?.find(({ label }) => label === 'outline-thin')).toMatchObject({ label: 'outline-thin' })
-  expect(hint('border-d')?.find(({ label }) => label === 'border-dashed')).toBeUndefined()
-  expect(hint('font-s')?.find(({ label }) => label === 'font-sm')).toMatchObject({ label: 'font-sm' })
-  expect(hint('m-m')?.find(({ label }) => label === 'm-md')).toMatchObject({ label: 'm-md' })
+test('offers mixins and named tokens while removing fixed aliases', () => {
+  const roots = hint('')?.map(({ label }) => label)
+  expect(roots).toEqual(expect.arrayContaining(['center', 'sr-only', 'font-sm', 'text-sm', 'p-md', 'display:']))
+  expect(roots).not.toEqual(expect.arrayContaining(['block', 'hidden', 'abs', 'p:', 'text:']))
+  expect(hint('font-s')?.map(({ label }) => label)).toContain('font-sm')
+  expect(hint('m-m')?.map(({ label }) => label)).toContain('m-md')
 })
-test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'block')).toMatchObject({
-  detail: 'display: block',
-  documentation: {
-    kind: 'markdown',
-    value: dedent`
-      \`\`\`css
-      @layer utilities {
-        .block {
-          display: block
-        }
-      }
-      \`\`\`
-    `
-  }
-}))
 
+test.each([
+  ['position:', 'absolute'], ['text-align:', 'center'], ['background-size:', 'cover'],
+  ['object-fit:', 'cover'], ['border-style:', 'dashed'], ['border-left-style:', 'solid'],
+  ['outline-width:', 'thin']
+])('offers native values for %s', (property, value) => {
+  expect(hint(property)?.map(({ label }) => label)).toContain(value)
+})
+
+test('parameter mixin completion inserts a snippet and describes its parameter', () => {
+  expect(hint('grid-cols')?.find(({ label }) => label === 'grid-cols()')).toMatchObject({
+    kind: CompletionItemKind.Function,
+    insertTextFormat: InsertTextFormat.Snippet,
+    insertText: expect.stringContaining('${1:'),
+    detail: expect.stringContaining('integer')
+  })
+  expect(hint('grid-cols(3)_')?.map(({ label }) => label)).toContain(':hover')
+})
+
+test('zero-argument mixin completion documents its generated CSS', () => {
+  expect(hint('cent')?.find(({ label }) => label === 'center')).toMatchObject({
+    detail: 'mixin',
+    documentation: { kind: 'markdown', value: expect.stringContaining('margin-left: auto') }
+  })
+})

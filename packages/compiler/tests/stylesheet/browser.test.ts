@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStylesheet("\n      @utility btn {\n          @variant all {display:flex;}\n          color: red;\n        }\n    ", {
+    const result = await compileBrowserStylesheet("\n      @mixin --btn {\n          @variant all {display:flex;}\n          color: red;\n        }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['btn']
     })
@@ -25,7 +25,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
       '../../../binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm',
       import.meta.url
     )))
-    const result = await compileBrowserStylesheet(' @utility card { display: block; } ', {
+    const result = await compileBrowserStylesheet(' @mixin --card { display: block; } ', {
       baseManifest: defaultManifest,
       classNames: ['card'],
       binding: { input }
@@ -37,11 +37,11 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   it('preserves native CSS while rendering class names', async () => {
     const result = await compileBrowserStylesheet("\n      @theme {:root, :host {\n        --color-card: #ffffff;\n      }}\n\n\n      .native {\n        color: var(--color-card);\n      }\n    ", {
       baseManifest: defaultManifest,
-      classNames: ['block']
+      classNames: ["display:block"]
     })
 
     expect(result.css).toMatch(/\.native\s*\{\s*color:\s*var\(--color-card\);\s*\}/)
-    expect(result.css).toContain('.block{display:block}')
+    expect(result.css).toContain(".display\\:block{display:block}")
     expect(result.css).toContain('--color-card:#fff')
   })
 

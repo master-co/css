@@ -10,25 +10,25 @@
 
 ```html
 <!-- Element box · scroll attachment -->
-<body class="min-h:720px">
+<body class="min-height:720px">
   <section id="target" tabindex="0" aria-label="Scrollable background specimen"
-  class="overflow:auto h:220px w-xs max-w:100% p-md b:1px|solid|var(--color-line-divider)
-         bg-repeat-y bg-scroll background-position:50%|0
+  class="overflow:auto height:220px w-xs max-width:100% p-md border:1px|solid|var(--color-line-divider)
+         background-repeat:repeat-y background-attachment:scroll background-position:50%|0
          background-size:320px|200px background-image:url(/demo/landscape.svg)"
 >
-    <div class="flex flex-col items-start justify-between h:480px">
-      <p class="m:0 p-xs bg-surface-base text-body">Start of content</p>
-      <p class="m:0 p-xs bg-surface-base text-body">End of content</p>
+    <div class="display:flex flex-direction:column align-items:start justify-content:space-between height:480px">
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">Start of content</p>
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">End of content</p>
     </div>
   </section>
-  <p class="mt-md font-sm text-muted">Scroll this page as well as the inner panel.</p>
+  <p class="mt-md font-sm fg-text-muted">Scroll this page as well as the inner panel.</p>
 </body>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg-scroll']}
+    {['background-attachment:scroll']}
   </Class2CSS>
 </details>
 
@@ -39,18 +39,18 @@
 
 ```html
 <!-- Iframe viewport · fixed attachment -->
-<body class="min-h:720px">
+<body class="min-height:720px">
   <section id="target" tabindex="0" aria-label="Scrollable background specimen"
-  class="overflow:auto h:220px w-xs max-w:100% p-md b:1px|solid|var(--color-line-divider)
-         bg-fixed bg-repeat-y background-position:50%|0
+  class="overflow:auto height:220px w-xs max-width:100% p-md border:1px|solid|var(--color-line-divider)
+         background-attachment:fixed background-repeat:repeat-y background-position:50%|0
          background-size:320px|200px background-image:url(/demo/landscape.svg)"
 >
-    <div class="flex flex-col items-start justify-between h:480px">
-      <p class="m:0 p-xs bg-surface-base text-body">Start of content</p>
-      <p class="m:0 p-xs bg-surface-base text-body">End of content</p>
+    <div class="display:flex flex-direction:column align-items:start justify-content:space-between height:480px">
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">Start of content</p>
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">End of content</p>
     </div>
   </section>
-  <p class="mt-md font-sm text-muted">Scroll this page as well as the inner panel.</p>
+  <p class="mt-md font-sm fg-text-muted">Scroll this page as well as the inner panel.</p>
 </body>
 ```
 
@@ -63,18 +63,18 @@ This preview uses its own real iframe viewport. Fixed backgrounds can behave dif
 
 ```html
 <!-- Scrollable content · local attachment -->
-<body class="min-h:720px">
+<body class="min-height:720px">
   <section id="target" tabindex="0" aria-label="Scrollable background specimen"
-  class="overflow:auto h:220px w-xs max-w:100% p-md b:1px|solid|var(--color-line-divider)
-         bg-local bg-repeat-y background-position:50%|0
+  class="overflow:auto height:220px w-xs max-width:100% p-md border:1px|solid|var(--color-line-divider)
+         background-attachment:local background-repeat:repeat-y background-position:50%|0
          background-size:320px|200px background-image:url(/demo/landscape.svg)"
 >
-    <div class="flex flex-col items-start justify-between h:480px">
-      <p class="m:0 p-xs bg-surface-base text-body">Start of content</p>
-      <p class="m:0 p-xs bg-surface-base text-body">End of content</p>
+    <div class="display:flex flex-direction:column align-items:start justify-content:space-between height:480px">
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">Start of content</p>
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">End of content</p>
     </div>
   </section>
-  <p class="mt-md font-sm text-muted">Scroll this page as well as the inner panel.</p>
+  <p class="mt-md font-sm fg-text-muted">Scroll this page as well as the inner panel.</p>
 </body>
 ```
 
@@ -87,19 +87,19 @@ The panel uses local attachment on narrow screens and fixed attachment from `sm`
 
 ```html
 <!-- Local → fixed at sm -->
-<body class="min-h:720px">
+<body class="min-height:720px">
   <section id="target" tabindex="0" aria-label="Scrollable background specimen"
-  class="overflow:auto h:220px w-xs max-w:100% p-md b:1px|solid|var(--color-line-divider)
-         bg-local bg-repeat-y background-position:50%|0
+  class="overflow:auto height:220px w-xs max-width:100% p-md border:1px|solid|var(--color-line-divider)
+         background-attachment:local background-repeat:repeat-y background-position:50%|0
          background-size:320px|200px background-image:url(/demo/landscape.svg)
-         bg-scroll@print bg-fixed@screen@sm"
+         background-attachment:scroll@print background-attachment:fixed@screen@sm"
 >
-    <div class="flex flex-col items-start justify-between h:480px">
-      <p class="m:0 p-xs bg-surface-base text-body">Start of content</p>
-      <p class="m:0 p-xs bg-surface-base text-body">End of content</p>
+    <div class="display:flex flex-direction:column align-items:start justify-content:space-between height:480px">
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">Start of content</p>
+      <p class="margin:0 p-xs bg-surface-base fg-text-body">End of content</p>
     </div>
   </section>
-  <p class="mt-md font-sm text-muted">Scroll this page as well as the inner panel.</p>
+  <p class="mt-md font-sm fg-text-muted">Scroll this page as well as the inner panel.</p>
 </body>
 ```
 

@@ -11,7 +11,7 @@ async function rootsFixture(run: (roots: string[]) => Promise<void>, qualified =
   try {
     for (const [index, root] of roots.entries()) {
       const color = ['#123456', '#abcdef'][index]
-      writeFileSync(join(root, 'style.css'), `@import "./child.css" layer(shared);@import url("@master/css");@preserve native;@utility card {color:${color}}.example{color:${color};background:url(pixel.svg)}`)
+      writeFileSync(join(root, 'style.css'), `@import "./child.css" layer(shared);@import url("@master/css");@preserve native;@mixin --card {color:${color}}.example{color:${color};background:url(pixel.svg)}`)
       writeFileSync(join(root, 'child.css'), (qualified ? '@import "https://external.test/style.css";' : '') + '.child{background:url(pixel.svg)}')
       writeFileSync(join(root, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>root-${index}</title></svg>`)
       writeFileSync(join(root, 'index.html'), '<div class="example card"></div><script type="module" src="./client.js"></script>')
@@ -32,7 +32,7 @@ function singleOutput(result: Awaited<ReturnType<typeof build>>) {
   return result.output
 }
 
-test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 shared %s plugins isolate concurrent HTML builds and resources', async mode => {
+test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 shared %s plugins isolate concurrent HTML builds and resources', async mode => {
   await rootsFixture(async roots => {
     const plugins = masterCSS({ mode })
     const outputs = await settleBuilds(roots.map((root, index) => build({ root, configFile: false, base: `/root-${index}/`, logLevel: 'silent', plugins: process.env.BH_INDEPENDENT === '1' ? masterCSS({ mode }) : plugins, build: { write: false, minify: false, cssMinify: false } }).then(singleOutput)))

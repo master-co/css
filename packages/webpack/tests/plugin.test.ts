@@ -282,7 +282,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const homePath = path.join(root, 'home.css')
     const pagePath = path.join(root, 'page.tsx')
     try {
-      writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @utility active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
+      writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @mixin --active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
       writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./home.css\";")
 
       const transformed = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
@@ -329,12 +329,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       compilation.hooks.succeedModule.call({
         resource: path.join(root, 'src/main.js'),
         originalSource: () => ({
-          source: () => 'document.body.className = "block"'
+          source: () => 'document.body.className = "display:block"'
         })
       })
       await compilation.hooks.finishModules.promise([])
 
-      expect([...plugin.validClasses]).toContain('block')
+      expect([...plugin.validClasses]).toContain("display:block")
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -420,7 +420,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const modulePath = path.join(root, 'Button.module.css')
     const tokenPath = path.join(root, 'tokens.css')
     try {
-      writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+      writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
 
       const result = await transformStyleSource(modulePath, "@reference \"./tokens.css\"; .button { @media all {padding:var(--spacing-card);animation:pop 1s;} }", {
         projectDir: root,
@@ -518,7 +518,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('font-weight:bold')
     expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
-      .toContain('"version":2')
+      .toContain('"version":3')
   })
 
   test('adds resolve file dependencies to Set and array-like containers', () => {
@@ -553,7 +553,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":2/)
+      .toMatch(/^export default \{"version":3/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('loadMasterCSSManifestModule')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -563,7 +563,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-manifest-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, "@import \"@master/css\";\n@utility card { @compose bg-missing-token; }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -581,7 +581,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
-      writeFileSync(entryPath, "@import \"@master/css\";\n@utility card { @media all{display:block;} }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @media all{display:block;} }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
@@ -665,7 +665,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":2/)
+      .toMatch(/^export default \{"version":3/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .toContain('#456')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -675,7 +675,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
     const manifestPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(manifestPath, "@utility card { @compose bg-missing-token; }")
+      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -693,7 +693,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
-      writeFileSync(manifestPath, "@utility card { display:block; }")
+      writeFileSync(manifestPath, "@mixin --card { display:block; }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect(resolveData.request).toContain('.manifest.js')

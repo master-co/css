@@ -4,17 +4,17 @@
 ## Examples \{#examples\}
 
 ### Set border width \{#set-border-width\}
-`b:<size>` changes only border width. Both panels below have the same 240 × 96 border box. A thicker border leaves less room for content and padding inside that fixed outer size.
+`border:<size>` changes only border width. Both panels below have the same 240 × 96 border box. A thicker border leaves less room for content and padding inside that fixed outer size.
 
 <DemoExample page="border-width" section="set-border-width" />
 
 ```html
 <!-- 2px border · fixed outer box -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:2px b-blue
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:2px b-blue
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Preview panel
 </div>
 ```
@@ -22,10 +22,10 @@
 ```html
 <!-- 8px border · same outer box -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:8px b-blue
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:8px b-blue
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Preview panel
 </div>
 ```
@@ -47,10 +47,10 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 ```html
 <!-- Top edge · physical -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid b-blue border-bottom-width:0
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid b-blue border-bottom-width:0
          border-left-width:0 border-right-width:0 border-top-width:6px font-md bg-surface-inset
-         text-body box-border">
+         fg-text-body box-sizing:border-box">
   Top: 6px
 </div>
 ```
@@ -58,10 +58,10 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 ```html
 <!-- Block edges · horizontal writing -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:0 b-blue
-         border-block-width:6px font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:0 b-blue
+         border-block-width:6px font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Top and bottom: 6px
 </div>
 ```
@@ -69,10 +69,10 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 ```html
 <!-- Block edges · vertical writing -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:0 b-blue
-         border-block-width:6px font-md bg-surface-inset text-body
-         box-border writing-mode:vertical-rl">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:0 b-blue
+         border-block-width:6px font-md bg-surface-inset fg-text-body
+         box-sizing:border-box writing-mode:vertical-rl">
   Left and right: 6px
 </div>
 ```
@@ -87,10 +87,10 @@ Widen to `sm` to add a 6px border. The explicitly fixed border-box dimensions re
 ```html
 <!-- 0 → 6px at sm · fixed outer geometry -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:0 b-blue
-         font-md bg-surface-inset text-body
-         box-border border-width:0@print border-width:6px@screen@sm">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:0 b-blue
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box border-width:0@print border-width:6px@screen@sm">
   Preview panel
 </div>
 ```

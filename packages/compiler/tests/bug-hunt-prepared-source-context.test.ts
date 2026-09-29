@@ -7,7 +7,22 @@ import { prepareStylesheet, transformStylesheet } from '../src/stylesheet/index-
 
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sass = createRequire(require.resolve('vite'))('sass')
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 
 async function fixture(run: (root: string) => Promise<void>) {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'prepared-source-context-')))

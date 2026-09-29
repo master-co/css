@@ -5,7 +5,7 @@ import { withFixture } from './setup'
 
 withFixture('invalid-manifest', context => {
   test('preserves the real compiler diagnostic when manifest loading fails', async ({ expect }) => {
-    const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
+    const document = context.createDocument("<div class=\"display:block\"></div>", { lang: 'html' })
     const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
     try {
       await context.server.onDidOpen({ document })
@@ -29,7 +29,7 @@ withFixture('invalid-manifest', context => {
 
   for (const error of [new Error('Unable to read manifest'), new CSSDirectiveError('legacy-error', 'Legacy manifest failure')]) {
     test(`keeps the generic loading code for unstructured ${error.name}`, async ({ expect }) => {
-      const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
+      const document = context.createDocument("<div class=\"display:block\"></div>", { lang: 'html' })
       const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
       try {
         await context.server.onDidOpen({ document })

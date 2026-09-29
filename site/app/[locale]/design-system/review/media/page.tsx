@@ -11,7 +11,7 @@ export const metadata = {
 }
 
 function PreviousVector() {
-  return <svg viewBox="0 0 320 200" role="img" aria-label="Landscape with a sun and mountains" className={`review-media-mediaSpecimen review-media-mediaPrevious`}>
+  return <svg viewBox="0 0 320 200" role="img" aria-label="Landscape with a sun and mountains" className={`review-media-mediaPrevious review-media-mediaSpecimen`}>
     <rect width="320" height="200" fill="currentColor" opacity=".12" />
     <circle cx="240" cy="54" r="24" fill="currentColor" opacity=".55" />
     <path d="M0 200 100 50 205 200Z" fill="currentColor" opacity=".8" />
@@ -22,11 +22,11 @@ function PreviousVector() {
 function FloatExample({ adopted }: { adopted: boolean }) {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
-      <DemoSurface className="flow-root p-md font-sm">
+      <DemoSurface className="display:flow-root p-md font-sm">
         {adopted
-          ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left h:auto w:7rem mb-sm mr-md r-sm" />
-          : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left h:auto w:7rem mb-sm mr-md r-sm" />}
-        <DemoText className="m:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
+          ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
+          : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />}
+        <DemoText className="margin:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
       </DemoSurface>
     </Demo>
   )
@@ -66,8 +66,8 @@ export default function Page() {
         <p className="review-media-sectionCopy">The fallback uses <code>currentColor</code>, so actual utility classes determine the subject color. A supplied <code>src</code> keeps its own pixels and alt text.</p>
         <Demo>
           <div className="review-media-variantGrid">
-            <div><span className="review-media-variantLabel">Subject · blue</span><DemoMedia className={`review-media-mediaSpecimen fg-demo-blue`} aria-label="Blue outlined mountain landscape" /></div>
-            <div><span className="review-media-variantLabel">Comparison · violet</span><DemoMedia className={`review-media-mediaSpecimen fg-demo-violet`} aria-label="Violet outlined mountain landscape" /></div>
+            <div><span className="review-media-variantLabel">Subject · blue</span><DemoMedia className={`fg-demo-blue review-media-mediaSpecimen`} aria-label="Blue outlined mountain landscape" /></div>
+            <div><span className="review-media-variantLabel">Comparison · violet</span><DemoMedia className={`fg-demo-violet review-media-mediaSpecimen`} aria-label="Violet outlined mountain landscape" /></div>
             <div><span className="review-media-variantLabel">Asset · source supplied</span><DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} className="review-media-mediaSpecimen" /></div>
           </div>
         </Demo>

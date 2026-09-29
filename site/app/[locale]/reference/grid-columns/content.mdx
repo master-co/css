@@ -3,12 +3,12 @@
 
 ## Basic usage \{#basic-usage\}
 ### Create equal columns \{#create-equal-columns\}
-`grid-cols:3` establishes `display:grid` and three equal tracks using `repeat(3,minmax(0,1fr))`. The six items fill across each row. In this 280px container, two 16px gaps are subtracted before the remaining width is divided into thirds.
+`grid-cols(3)` establishes `display:grid` and three equal tracks using `repeat(3,minmax(0,1fr))`. The six items fill across each row. In this 280px container, two 16px gaps are subtracted before the remaining width is divided into thirds.
 
 <DemoExample page="grid-columns" section="create-equal-columns" />
 
 ```html
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -21,7 +21,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid-cols:3']}
+    {['grid-cols(3)']}
   </Class2CSS>
 </details>
 
@@ -33,7 +33,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-columns" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid-cols:2 grid-auto-rows:48px gap-md w:17.5rem max-w:100% grid-cols:3@sm grid-cols:4@lg">
+<div id="layout" class="grid-cols(2) grid-auto-rows:48px gap-md width:17.5rem max-width:100% grid-cols(3)@sm grid-cols(4)@lg">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

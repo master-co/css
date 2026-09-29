@@ -18,6 +18,7 @@ pub(crate) fn native_rule_list_has_directives(
     variant_rule_offsets: &HashMap<usize, String>,
 ) -> bool {
     rules.iter().any(|rule| match rule {
+        CssRule::Custom(rule) if rule.name == super::DirectiveName::Apply => true,
         CssRule::Unknown(_) => false,
         CssRule::Style(rule) => {
             native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
@@ -137,6 +138,43 @@ pub(crate) fn lower_native_rule_list(
 ) -> Result<(), CompilerError> {
     for child in rules {
         match child {
+            CssRule::Custom(rule) if rule.name == super::DirectiveName::Apply => {
+                let context = context.as_ref().ok_or_else(|| {
+                    super::directive_error(
+                        source.text(),
+                        filename,
+                        rule.start_byte,
+                        "@apply requires a style rule",
+                    )
+                })?;
+                if rule.body.is_some() {
+                    return Err(super::directive_error(
+                        source.text(),
+                        filename,
+                        rule.start_byte,
+                        "@apply contents blocks are not supported",
+                    ));
+                }
+                let (name, arguments) = crate::mixins::application(
+                    rule.prelude
+                        .parts
+                        .first()
+                        .map(String::as_str)
+                        .unwrap_or_default(),
+                )
+                .map_err(|message| {
+                    super::directive_error(source.text(), filename, rule.start_byte, message)
+                })?;
+                *style_order += 1;
+                style_definitions.push(CssDirectiveStyleDefinition::Apply {
+                    order: *style_order,
+                    selector: context.selectors.join(","),
+                    name,
+                    arguments,
+                    source: source.reference(filename, rule.start_byte, rule.start_byte + 6),
+                    condition_path: (!condition_path.is_empty()).then(|| condition_path.to_vec()),
+                });
+            }
             CssRule::Style(child) => {
                 let child_selectors = printed_selectors(&child.selectors.0, filename)?;
                 let selectors = context

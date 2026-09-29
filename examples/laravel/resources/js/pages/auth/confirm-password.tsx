@@ -31,7 +31,7 @@ export default function ConfirmPassword() {
 
       <form onSubmit={submit}>
         <div className="space-y-6">
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -47,7 +47,7 @@ export default function ConfirmPassword() {
             <InputError message={errors.password} />
           </div>
 
-          <div className="flex items-center">
+          <div className="display:flex align-items:center">
             <Button className="w-full" disabled={processing}>
               {processing && <LoaderCircle className="animate-spin h-4 w-4" />}
               Confirm password

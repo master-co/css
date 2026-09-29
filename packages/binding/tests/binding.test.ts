@@ -7,24 +7,10 @@ import {
 import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
-const manifest = Object.freeze({
-  version: 2, languageVersion: 4,
-  utilities: Object.freeze([Object.freeze({
-    id: 'display-block',
-    name: 'block',
-    type: -2,
-    emit: Object.freeze({
-      type: 'static',
-      rules: Object.freeze([Object.freeze({
-        declarations: Object.freeze({ display: 'block' })
-      })])
-    }),
-    matchers: Object.freeze([Object.freeze({
-      type: 'static',
-      name: 'block'
-    })])
-  })])
-}) as unknown as MasterCSSManifest
+const manifest: MasterCSSManifest = {
+  version: 3, languageVersion: 5,
+  mixins: [{ name: '--block', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
+}
 
 describe('binding loader', () => {
   it('normalizes operation failures and disposes engine sessions idempotently', async () => {
@@ -45,24 +31,46 @@ describe('binding loader', () => {
     }))
 
     const nativeDeclarationSession = await createEngineBindingSession({
-      manifest: { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
-        version: 2, languageVersion: 4,
-        variables: {
-          '': [{
-            name: 'stripe',
-            key: 'stripe',
-            type: 'string',
-            values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
-          }]
-        },
-        utilities: []
+      manifest: {
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "stripe",
+          "value": "linear-gradient(red,blue)"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "": [
+      {
+        "name": "stripe",
+        "key": "stripe",
+        "type": "string" as const,
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "linear-gradient(red,blue)"
+          }
+        ]
       }
+    ]
+  }
+}
     }, { binding: 'native' })
     try {
-      nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
+      nativeDeclarationSession.ensureClassRules(["background:var(--stripe)"])
       expect(nativeDeclarationSession.snapshot().text).toBe(
         '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
-        + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
+        + "@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
       )
     } finally {
       nativeDeclarationSession.dispose()
@@ -110,7 +118,7 @@ describe('binding loader', () => {
     const tooling = await createToolingBinding({ binding: 'wasm' })
     const lexer = await tooling.createLexerSession()
     expect(lexer.analyze({ classLists: [{ source: 'block' }] })).toMatchObject({
-      version: 1
+      version: 1 as const
     })
     lexer.dispose()
     lexer.dispose()

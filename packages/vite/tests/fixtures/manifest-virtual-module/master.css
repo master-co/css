@@ -7,7 +7,7 @@
 
 
 
-  @utility btn {
+  @mixin --btn {
     background-color:var(--color-primary);
     display: inline-flex;
   }

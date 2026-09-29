@@ -8,23 +8,23 @@
 <DemoExample page="place-self" section="align-one-item-on-both-axes" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
-  <div id="target" class="place-self:end h:3rem w:5rem p-sm">Target</div>
-  <div id="peer" class="h:3rem w:5rem p-sm">Start</div>
+<div id="layout" class="display:grid grid-cols(2) grid-template-rows:160px place-items:start gap-md width:17.5rem max-width:100%">
+  <div id="target" class="place-self:end height:3rem width:5rem p-sm">Target</div>
+  <div id="peer" class="height:3rem width:5rem p-sm">Start</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
-  <div id="target" class="place-self:end|start h:3rem w:5rem p-sm">Target</div>
-  <div id="peer" class="h:3rem w:5rem p-sm">Start</div>
+<div id="layout" class="display:grid grid-cols(2) grid-template-rows:160px place-items:start gap-md width:17.5rem max-width:100%">
+  <div id="target" class="place-self:end|start height:3rem width:5rem p-sm">Target</div>
+  <div id="peer" class="height:3rem width:5rem p-sm">Start</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'place-items:start', 'place-self:end', 'place-self:end|start']}
+    {['display:grid', 'place-items:start', 'place-self:end', 'place-self:end|start']}
   </Class2CSS>
 </details>
 
@@ -36,9 +36,9 @@ These directions refer to the grid container’s writing mode. The examples use 
 <DemoExample page="place-self" section="center-one-item" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
-  <div id="target" class="place-self:center h:4rem w:6rem p-sm">Centered</div>
-  <div id="peer" class="h:4rem w:6rem p-sm">Start</div>
+<div id="layout" class="display:grid grid-cols(2) grid-template-rows:160px place-items:start gap-md width:17.5rem max-width:100%">
+  <div id="target" class="place-self:center height:4rem width:6rem p-sm">Centered</div>
+  <div id="peer" class="height:4rem width:6rem p-sm">Start</div>
 </div>
 ```
 
@@ -50,8 +50,8 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="place-self" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:end gap-md w:17.5rem max-w:100%">
-  <div id="target" class="place-self:auto h:3rem w:5rem p-sm place-self:center@sm">Target</div>
-  <div id="peer" class="h:3rem w:5rem p-sm">End</div>
+<div id="layout" class="display:grid grid-cols(2) grid-template-rows:160px place-items:end gap-md width:17.5rem max-width:100%">
+  <div id="target" class="place-self:auto height:3rem width:5rem p-sm place-self:center@sm">Target</div>
+  <div id="peer" class="height:3rem width:5rem p-sm">End</div>
 </div>
 ```

@@ -20,24 +20,24 @@ const views = [
     title: 'Overview',
     eyebrow: 'Root update',
     body: 'The browser captures the old card, applies the state update, then animates into the new card.',
-    accent: 'bg:accent',
-    tint: 'bg:accent-surface'
+    accent: 'bg-accent',
+    tint: 'bg-accent-surface'
   },
   {
     id: 'product',
     title: 'Product detail',
     eyebrow: 'Named snapshot',
     body: 'The panel and title have stable view-transition-name values, so they transition apart from the root snapshot.',
-    accent: 'bg:info',
-    tint: 'bg:info/.14'
+    accent: 'bg-info',
+    tint: 'bg-info/.14'
   },
   {
     id: 'settings',
     title: 'Settings',
     eyebrow: 'Fallback path',
     body: 'The click handler falls back to an immediate state update when the View Transition API is missing.',
-    accent: 'bg:success',
-    tint: 'bg:success/.14'
+    accent: 'bg-success',
+    tint: 'bg-success/.14'
   }
 ]
 
@@ -68,42 +68,42 @@ export default function ViewTransitionDemo() {
   }
 
   return (
-    <Demo className="container w:100%">
-      <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
-      <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container((width>=16rem))">
-        <div className="grid grid-cols:1 gap-sm">
+    <Demo className="container-type:inline-size width:100%">
+      <span aria-hidden className={clsx(rootTransitionClassName, 'display:none')} />
+      <div className="grid-cols(1) display:grid gap-lg width:100% grid-cols(2)@container((width>=16rem))">
+        <div className="grid-cols(1) display:grid gap-sm">
           {views.map((view) => {
             const activeButton = view.id === activeId
             return (
               <button
                 aria-pressed={activeButton}
                 className={clsx(
-                  'app-panel min-h:4.5rem p-md text-left cursor:pointer',
-                  'b:1px|solid|var(--color-line-divider) r-md',
+                  'min-height:4.5rem p-md text-align:left cursor:pointer app-panel',
+                  'r-md border:1px|solid|var(--color-line-divider)',
                   activeButton ? 'outline:2px|solid|var(--color-accent) surface-raised' : 'surface-raised:hover'
                 )}
                 key={view.id}
                 onClick={() => selectView(view.id)}
                 type="button"
               >
-                <span className={clsx('inline-block width:0.5rem height:0.5rem mr-xs r:100%', view.accent)} />
+                <span className={clsx('display:inline-block height:0.5rem width:0.5rem mr-xs border-radius:100%', view.accent)} />
                 <span className="text-sm font-medium">{view.title}</span>
-                <span className="block mt-2xs text-xs text-body">{view.eyebrow}</span>
+                <span className="display:block mt-2xs text-xs fg-text-body">{view.eyebrow}</span>
               </button>
             )
           })}
         </div>
         <section className={clsx(
-          'app-panel rel overflow:hidden p-lg p-xl@container((width>=16rem))',
-          'flex flex-col view-transition-name:panel',
+          'position:relative overflow:hidden p-lg p-xl@container((width>=16rem)) app-panel',
+          'display:flex flex-direction:column view-transition-name:panel',
           active.tint
         )}>
-          <p className="m:0 text-xs font-medium text-body">{active.eyebrow}</p>
-          <h3 className="mx:0 mb:0 mt-sm text-2xl font-semibold view-transition-name:title text-3xl@container((width>=16rem))">
+          <p className="margin:0 text-xs font-medium fg-text-body">{active.eyebrow}</p>
+          <h3 className="margin-inline:0 mt-sm margin-bottom:0 text-2xl font-semibold view-transition-name:title text-3xl@container((width>=16rem))">
             {active.title}
           </h3>
-          <div className={clsx('h:0.25rem w:2em mt-md rounded opacity:.8', active.accent)} />
-          <p className="max-w:100% mx:0 mb:0 mt-md text-sm text-body">
+          <div className={clsx('height:0.25rem width:2em mt-md border-radius:1e9em opacity:.8', active.accent)} />
+          <p className="max-width:100% margin-inline:0 mt-md margin-bottom:0 text-sm fg-text-body">
             {active.body}
           </p>
         </section>

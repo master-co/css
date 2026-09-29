@@ -94,23 +94,23 @@ Custom properties can use the same direct declaration form:
 </details>
 
 ### Native declarations and Master utilities
-Complete CSS properties such as `margin:1rem` keep their native value semantics. Master CSS key aliases such as `mt:1rem` map to a specific property, while named utilities such as `mt-md` select theme tokens. Registered parameter utilities and transforms keep their documented behavior; colon values do not infer token names or convert the former Master length multiplier `x`.
+Complete CSS properties such as `margin:1rem` keep their native value semantics. Master CSS key aliases such as `margin-top:1rem` map to a specific property, while named utilities such as `mt-md` select theme tokens. Registered parameter utilities and transforms keep their documented behavior; colon values do not infer token names or convert the former Master length multiplier `x`.
 
 ```html
-<!-- @MARK mt:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
-<div class="mx-md mb-md mt:1rem bg-red-60">…</div>
+<!-- @MARK margin-top:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
+<div class="mx-md mb-md margin-top:1rem bg-red-60">…</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['mt:1rem', 'margin:1rem', 'bg-red-60']}
+    {['margin-top:1rem', 'margin:1rem', 'bg-red-60']}
   </Class2CSS>
 </details>
 
 This preserves the expected syntax model:
 
-- `mt:1rem` uses a curated alias and emits `margin-top:1rem`.
+- `margin-top:1rem` uses a curated alias and emits `margin-top:1rem`.
 - `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
@@ -213,7 +213,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="h:40px px-md r-md bg-blue">Save</button>
+<button class="height:40px px-md r-md bg-blue">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#default-pruning).

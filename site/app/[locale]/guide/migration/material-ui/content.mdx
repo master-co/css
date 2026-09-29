@@ -75,7 +75,7 @@ export const theme = createTheme({
 ```
 
 ```html
-<section class="b:1px|solid|var(--color-line-divider) fg-body bg-surface r-control">
+<section class="border:1px|solid|var(--color-line-divider) fg-body bg-surface r-control">
   ...
 </section>
 ```
@@ -108,7 +108,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap-md p-lg bg-surface r-control">
+    <section className="display:grid gap-md p-lg bg-surface r-control">
       {children}
     </section>
   )
@@ -118,7 +118,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 Use Material UI components with `className` when the component still provides useful behavior and forwards the class to the root element.
 
 ```tsx
-<Button className="min-w:0 px-md" variant="contained">
+<Button className="min-width:0 px-md" variant="contained">
   Save
 </Button>
 ```
@@ -172,7 +172,7 @@ Translate static responsive `sx` into Master CSS conditions.
 ```
 
 ```html
-<section class="grid grid-cols:1 gap-md grid-cols:3@md">
+<section class="display:grid grid-cols(1) gap-md grid-cols(3)@md">
   ...
 </section>
 ```

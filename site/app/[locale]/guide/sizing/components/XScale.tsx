@@ -3,12 +3,12 @@ import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 
 const sizingRoles = [
   {
-    utility: 'w:*',
+    utility: 'width:*',
     role: 'Preferred inline size',
     description: 'Set the width of wrappers, columns, panels, media, and proportional regions.'
   },
   {
-    utility: 'h:*',
+    utility: 'height:*',
     role: 'Preferred block size',
     description: 'Set the height of fixed regions, viewport sections, media slots, and controls.'
   },
@@ -18,12 +18,12 @@ const sizingRoles = [
     description: 'Set width and height together when the element is square by design.'
   },
   {
-    utility: 'min-w:*, min-h:*',
+    utility: 'min-width:*, min-height:*',
     role: 'Lower bound',
     description: 'Prevent collapse, allow flex children to shrink, or set a minimum usable region.'
   },
   {
-    utility: 'max-w:*, max-h:*',
+    utility: 'max-width:*, max-height:*',
     role: 'Upper bound',
     description: 'Cap growth for page wrappers, readable measures, panels, menus, and media.'
   },
@@ -58,7 +58,7 @@ const containerDescriptions: Record<string, string> = {
 
 function renderInlineCodes(values: string[]) {
   return (
-    <div className="flex flex-wrap gap-xs">
+    <div className="display:flex flex-wrap:wrap gap-xs">
       {values.map((value) => (
         <InlineCode key={value} className="white-space:nowrap">{value}</InlineCode>
       ))}

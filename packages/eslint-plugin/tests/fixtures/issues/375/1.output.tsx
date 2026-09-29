@@ -3,9 +3,9 @@ import React from 'react'
 export default function Componennt() {
   return (
     <div className={`
-      block
+      display:block
       font-size:1rem
-      text-center
+      text-align:center
       fg-blue
     `}></div>
   )

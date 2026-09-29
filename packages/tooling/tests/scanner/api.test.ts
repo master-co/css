@@ -20,25 +20,25 @@ describe('MasterCSSScanner public API', () => {
   test('can reset scanner state without source discovery', async () => {
     const scanner = await new MasterCSSScanner({}).init()
 
-    await scanner.scan('index.html', '<div class="block"></div>')
-    expect(scanner.validClasses.has('block')).toBe(true)
+    await scanner.scan('index.html', "<div class=\"display:block\"></div>")
+    expect(scanner.validClasses.has("display:block")).toBe(true)
 
     await scanner.reset()
 
-    expect(scanner.validClasses.has('block')).toBe(false)
+    expect(scanner.validClasses.has("display:block")).toBe(false)
   })
 
   test('inserts safelist during init and reset', async () => {
     const scanner = await new MasterCSSScanner({
-      safelist: ['block']
+      safelist: ["display:block"]
     }).init()
 
-    expect(scanner.css.text).toContain('.block{display:block}')
+    expect(scanner.css.text).toContain(".display\\:block{display:block}")
 
     await scanner.scan('index.html', '<div class="fg-red"></div>')
     await scanner.reset()
 
     expect(scanner.validClasses.has('fg-red')).toBe(false)
-    expect(scanner.css.text).toContain('.block{display:block}')
+    expect(scanner.css.text).toContain(".display\\:block{display:block}")
   })
 })

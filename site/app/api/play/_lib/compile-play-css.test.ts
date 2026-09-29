@@ -43,7 +43,7 @@ test('compiles the starter Play template into generated CSS', async () => {
   assert.match(result.css, /--color-surface-raised/)
   assert.match(result.css, /--color-text-body/)
   assert.match(result.css, /\.surface-raised\{/)
-  assert.match(result.css, /\.text-body\{/)
+  assert.match(result.css, /\.fg-text-body\{/)
   assert.match(result.css, /\.btn\s*\{[\s\S]*?&:hover \.btn-arrow-line\s*\{\s*opacity:\s*1;\s*transform:\s*scale\(1\);\s*\}/)
   assertUnverifiedCustomProperties(result)
   assert.equal(result.result.manifest, result.manifest)
@@ -63,8 +63,8 @@ test('keeps native CSS while generating Play classes', async () => {
   assertUnverifiedCustomProperties(result)
 })
 
-test('includes generated keyframes referenced by native CSS', async () => {
-  const sourceCSS = '.native { animation: fade 1s; }'
+test('delivers authored keyframes referenced by native CSS', async () => {
+  const sourceCSS = '@keyframes fade { to { opacity: 1; } } .native { animation: fade 1s; }'
   const result = await compileFixture(sourceCSS, [])
 
   assert.match(result.css, /\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)

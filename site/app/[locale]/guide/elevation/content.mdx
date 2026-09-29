@@ -4,7 +4,7 @@ import { ShadowNamespaceTable } from './components/ShadowNamespace'
 ## Overview [sr-only]
 Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
 
-Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
+Master CSS maps elevation to the `shadow` namespace. Use `box-shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
 
 <ShadowScaleDemo />
 
@@ -27,8 +27,8 @@ Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and r
 ```html
 <!-- @MARK shadow-lg -->
 <article class="r-lg surface-raised shadow-lg">
-  <h2 class="text-strong">Raised surface</h2>
-  <p class="text-muted">Cards need a clear surface before they need a large shadow.</p>
+  <h2 class="fg-text-strong">Raised surface</h2>
+  <p class="fg-text-muted">Cards need a clear surface before they need a large shadow.</p>
 </article>
 ```
 
@@ -37,7 +37,7 @@ Use surface roles for the ground and shadows for separation. A strong shadow on 
 ---
 
 ## Use shadow tokens
-Use `shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; native `light-dark()` colors follow the element's `color-scheme`.
+Use `box-shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; native `light-dark()` colors follow the element's `color-scheme`.
 
 ```html
 <!-- @MARK shadow-sm -->
@@ -58,7 +58,7 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
   </Class2CSS>
 </details>
 
-Use `shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+Use `box-shadow:*` in product markup. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
 ---
 
@@ -75,8 +75,8 @@ This lets elevation utilities use `sm`, `lg`, or project token names without rep
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
-<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow:none@print -->
-<article class="shadow-sm shadow-md:hover shadow:none@print">
+<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK box-shadow:none@print -->
+<article class="shadow-sm shadow-md:hover box-shadow:none@print">
   ...
 </article>
 ```
@@ -84,7 +84,7 @@ State elevation should communicate interaction, not decoration. A hover shadow c
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow-sm', 'shadow-md:hover', 'shadow:none@print']}
+    {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@print']}
   </Class2CSS>
 </details>
 
@@ -142,8 +142,8 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 (x) Raw shadows become repeated product decisions without a name.
 
 ```html
-<article class="shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</article>
-<aside class="shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</aside>
+<article class="box-shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</article>
+<aside class="box-shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</aside>
 ```
 
 (o) Repeated decisions override a shadow scale token.

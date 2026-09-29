@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "semanticBaseline": "v2-final-semantics-contract",
+  "version": 3,
+  "semanticBaseline": "language-5-static-mixins",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -440,7 +440,7 @@
       "id": "rc87-lexer-6d5d386f580d29af",
       "sourceId": "rc87-6d5d386f580d29af",
       "kind": "lexer",
-      "input": "block　fg:red",
+      "input": "block\u3000fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -467,7 +467,7 @@
       "id": "rc87-lexer-9548ae64df5ed481",
       "sourceId": "rc87-9548ae64df5ed481",
       "kind": "lexer",
-      "input": " block  fg:red　m:1x ",
+      "input": " block  fg:red\u3000m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -742,11 +742,11 @@
         {
           "op": "ensure",
           "classes": [
-            "block",
-            "w:10px",
-            "bg-origin-border"
+            "display:block",
+            "width:10px",
+            "background-origin:border-box"
           ],
-          "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
+          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
         }
       ]
     },
@@ -757,11 +757,11 @@
         {
           "op": "ensure",
           "classes": [
-            "w:10px",
-            "block",
-            "bg-origin-border"
+            "width:10px",
+            "display:block",
+            "background-origin:border-box"
           ],
-          "expectedCss": "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.w\\:10px{width:10px}}"
+          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
         }
       ]
     },
@@ -772,10 +772,10 @@
         {
           "op": "ensure",
           "classes": [
-            "{color-black!;bb:2px|solid}",
-            "{pt:calc(2.5em+3.75rem);mt:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
+            "{color-black!;border-bottom:2px|solid}",
+            "{padding-top:calc(2.5em+3.75rem);margin-top:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-black:oklch(0% 0 none)}}@layer utilities{.\\{color-black\\!\\;bb\\:2px\\|solid\\}{border-bottom:2px solid}.\\{color-black\\!\\;bb\\:2px\\|solid\\}{color:var(--color-black)!important}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){margin-top:-3.75rem}.\\{pt\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;mt\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-black:oklch(0% 0 none)}}@layer utilities{.\\{color-black\\!\\;border-bottom\\:2px\\|solid\\}{border-bottom:2px solid}.\\{color-black\\!\\;border-bottom\\:2px\\|solid\\}{color:var(--color-black)!important}.\\{padding-top\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;margin-top\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){margin-top:-3.75rem}.\\{padding-top\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;margin-top\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem)}}"
         }
       ]
     },
@@ -786,12 +786,12 @@
         {
           "op": "ensure",
           "classes": [
-            "block:hover",
-            "block_button@base",
-            "{flex;rel}_:is(h4,.app-nav)@default",
-            "block@starting-style"
+            "display:block:hover",
+            "display:block_button@base",
+            "{display:flex;position:relative}_:is(h4,.app-nav)@default",
+            "display:block@starting-style"
           ],
-          "expectedCss": "@layer base{.block_button\\@base button{display:block}}@layer defaults{.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}}@layer utilities{.block\\:hover:hover{display:block}@starting-style{.block\\@starting-style{display:block}}}"
+          "expectedCss": "@layer base{.display\\:block_button\\@base button{display:block}}@layer defaults{.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
         }
       ]
     },
@@ -801,15 +801,15 @@
       "steps": [
         {
           "op": "inspect",
-          "className": "{flex;rel}_:is(h4,.app-nav)@default",
+          "className": "{display:flex;position:relative}_:is(h4,.app-nav)@default",
           "expectedValid": true,
           "expectedRuleTexts": [
-            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}",
-            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}"
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}",
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}"
           ],
           "expectedSelectorTexts": [
-            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)",
-            ".\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)"
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)",
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)"
           ],
           "expectedLayers": [
             "defaults",
@@ -857,7 +857,7 @@
     {
       "id": "engine-inline-theme-variable-dependencies",
       "manifest": {
-        "version": 2,
+        "version": 3,
         "variables": {
           "color": [
             {
@@ -925,26 +925,7 @@
             }
           ]
         },
-        "utilities": [
-          {
-            "id": "surface",
-            "type": 0,
-            "variableAliasRefs": [
-              "color-surface"
-            ],
-            "emit": {
-              "type": "property",
-              "property": "background-color"
-            },
-            "matchers": [
-              {
-                "type": "token",
-                "prefix": "surface-"
-              }
-            ]
-          }
-        ],
-        "languageVersion": 4,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -997,13 +978,7 @@
           "classes": [
             "surface-raised"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
-          "expectedResourceOrder": [
-            "color-surface-raised",
-            "color-brand",
-            "color-white",
-            "color-gray-90"
-          ]
+          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
         },
         {
           "op": "delete",
@@ -1060,11 +1035,11 @@
         {
           "op": "ensure",
           "classes": [
-            "w:calc(100%-2rem)",
+            "width:calc(100%-2rem)",
             "background-color:oklch(60%|.2|240/.5)",
             "-m-md"
           ],
-          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.width\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
         }
       ]
     },
@@ -1075,12 +1050,12 @@
         {
           "op": "ensure",
           "classes": [
-            "m:0.25rem",
-            "m:-0.25rem",
-            "m:.25rem",
-            "m:-.25rem"
+            "margin:0.25rem",
+            "margin:-0.25rem",
+            "margin:.25rem",
+            "margin:-.25rem"
           ],
-          "expectedCss": "@layer utilities{.m\\:-\\.25rem{margin:-.25rem}.m\\:-0\\.25rem{margin:-0.25rem}.m\\:\\.25rem{margin:.25rem}.m\\:0\\.25rem{margin:0.25rem}}"
+          "expectedCss": "@layer utilities{.margin\\:-\\.25rem{margin:-.25rem}.margin\\:-0\\.25rem{margin:-0.25rem}.margin\\:\\.25rem{margin:.25rem}.margin\\:0\\.25rem{margin:0.25rem}}"
         }
       ]
     },
@@ -1105,16 +1080,16 @@
         {
           "op": "ensure",
           "classes": [
-            "block:before",
-            "block::before",
-            "block:after",
-            "block::after",
-            "block:first-letter",
-            "block::first-letter",
-            "block:first-line",
-            "block::first-line"
+            "display:block:before",
+            "display:block::before",
+            "display:block:after",
+            "display:block::after",
+            "display:block:first-letter",
+            "display:block::first-letter",
+            "display:block:first-line",
+            "display:block::first-line"
           ],
-          "expectedCss": "@layer utilities{.block\\:\\:after::after{display:block}.block\\:\\:before::before{display:block}.block\\:\\:first-letter::first-letter{display:block}.block\\:\\:first-line::first-line{display:block}.block\\:after::after{display:block}.block\\:before::before{display:block}.block\\:first-letter::first-letter{display:block}.block\\:first-line::first-line{display:block}}"
+          "expectedCss": "@layer utilities{.display\\:block\\:\\:after::after{display:block}.display\\:block\\:\\:before::before{display:block}.display\\:block\\:\\:first-letter::first-letter{display:block}.display\\:block\\:\\:first-line::first-line{display:block}.display\\:block\\:after::after{display:block}.display\\:block\\:before::before{display:block}.display\\:block\\:first-letter::first-letter{display:block}.display\\:block\\:first-line::first-line{display:block}}"
         }
       ]
     },
@@ -1124,34 +1099,37 @@
       "steps": [
         {
           "op": "inspect",
-          "className": "block.active",
+          "className": "display:block.active",
           "expectedValid": true,
           "expectedPriorities": [
             {
+              "features": [],
               "selector": 3,
-              "features": []
+              "sortKey": "display:block"
             }
           ]
         },
         {
           "op": "inspect",
-          "className": "block:hover:not(.disabled)",
+          "className": "display:block:hover:not(.disabled)",
           "expectedValid": true,
           "expectedPriorities": [
             {
+              "features": [],
               "selector": 5,
-              "features": []
+              "sortKey": "display:block"
             }
           ]
         },
         {
           "op": "inspect",
-          "className": "block[disabled]",
+          "className": "display:block[disabled]",
           "expectedValid": true,
           "expectedPriorities": [
             {
+              "features": [],
               "selector": 4,
-              "features": []
+              "sortKey": "display:block"
             }
           ]
         }
@@ -1160,73 +1138,55 @@
     {
       "id": "engine-animation-resource-metadata",
       "manifest": {
-        "version": 2,
-        "utilities": [
+        "version": 3,
+        "languageVersion": 5,
+        "mixins": [
           {
-            "id": ".float-left",
-            "name": "float-left",
-            "type": -2,
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "float": "left"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--float-left",
+            "body": [
               {
-                "type": "static",
-                "name": "float-left"
+                "type": "declaration",
+                "property": "float",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "left"
+                  }
+                ]
               }
             ]
           },
           {
-            "id": ".rotate-180",
-            "name": "rotate-180",
-            "type": -2,
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "rotate": "180deg"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--rotate-180",
+            "body": [
               {
-                "type": "static",
-                "name": "rotate-180"
+                "type": "declaration",
+                "property": "rotate",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "180deg"
+                  }
+                ]
               }
             ]
           },
           {
-            "id": ".animated",
-            "name": "animated",
-            "type": -2,
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "animation": "float 1s"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--animated",
+            "body": [
               {
-                "type": "static",
-                "name": "animated"
+                "type": "declaration",
+                "property": "animation",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "float 1s"
+                  }
+                ]
               }
             ]
           }
-        ],
-        "languageVersion": 4
+        ]
       },
       "steps": [
         {
@@ -1250,16 +1210,14 @@
             "float-left",
             "rotate-180"
           ],
-          "expectedCss": "@layer utilities{.float-left{float:left}.rotate-180{rotate:180deg}}",
-          "expectedResourceOrder": []
+          "expectedCss": "@layer utilities{.float-left{float:left}.rotate-180{rotate:180deg}}"
         },
         {
           "op": "ensure",
           "classes": [
             "animated"
           ],
-          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}",
-          "expectedResourceOrder": []
+          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}"
         }
       ]
     },
@@ -1270,12 +1228,12 @@
         {
           "op": "ensure",
           "classes": [
-            "b:2px|solid|var(--color-red-60)",
-            "bt:1px|solid|var(--color-blue-60)",
+            "border:2px|solid|var(--color-red-60)",
+            "border-top:1px|solid|var(--color-blue-60)",
             "r-md",
             "rtl-lg"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.border-top\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.border\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
         }
       ]
     },
@@ -1286,11 +1244,11 @@
         {
           "op": "ensure",
           "classes": [
-            "block:of(.active>)",
-            "block:nth-child(2n+1)",
+            "display:block:of(.active>)",
+            "display:block:nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.display\\:block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.display\\:block\\:of\\(\\.active\\>\\){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
         }
       ]
     },
@@ -1301,13 +1259,13 @@
         {
           "op": "ensure",
           "classes": [
-            "grid-col-span:2",
-            "max-w:max-content",
-            "min-h:min-content",
+            "grid-col-span(2)",
+            "max-width:max-content",
+            "min-height:min-content",
             "transition:opacity|300ms|ease|100ms",
             "font-feature-settings:\"kern\""
           ],
-          "expectedCss": "@layer utilities{.grid-col-span\\:2{grid-column:span 2/span 2}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-w\\:max-content{max-width:max-content}.min-h\\:min-content{min-height:min-content}}"
+          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-width\\:max-content{max-width:max-content}.min-height\\:min-content{min-height:min-content}}"
         }
       ]
     },
@@ -1318,12 +1276,12 @@
         {
           "op": "ensure",
           "classes": [
-            "mt:0",
-            "mt:2",
-            "mt:1@sm",
-            "mt:3@lg"
+            "margin-top:0",
+            "margin-top:2",
+            "margin-top:1@sm",
+            "margin-top:3@lg"
           ],
-          "expectedCss": "@layer utilities{.mt\\:0{margin-top:0}.mt\\:2{margin-top:2}@media (width >= 52.125rem){.mt\\:1\\@sm{margin-top:1}}@media (width >= 80rem){.mt\\:3\\@lg{margin-top:3}}}"
+          "expectedCss": "@layer utilities{.margin-top\\:0{margin-top:0}.margin-top\\:2{margin-top:2}@media (width >= 52.125rem){.margin-top\\:1\\@sm{margin-top:1}}@media (width >= 80rem){.margin-top\\:3\\@lg{margin-top:3}}}"
         }
       ]
     },
@@ -1351,49 +1309,63 @@
     {
       "id": "engine-semantic-manifest-layer",
       "manifest": {
-        "version": 2,
-        "utilities": [
+        "version": 3,
+        "languageVersion": 5,
+        "mixins": [
           {
-            "id": ".card",
-            "name": "card",
-            "type": -2,
-            "layer": "components",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "display": "grid"
-                  }
-                },
-                {
-                  "selector": "&:hover",
-                  "declarations": {
-                    "color": "red"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--card",
+            "body": [
               {
-                "type": "static",
-                "name": "card"
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "grid"
+                  }
+                ]
+              },
+              {
+                "type": "rule",
+                "selector": "&:hover",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "color",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "red"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
         ],
-        "languageVersion": 4
+        "variants": [
+          {
+            "token": "@component",
+            "branches": [
+              {
+                "layer": "components",
+                "selector": "&"
+              }
+            ]
+          }
+        ]
       },
       "steps": [
         {
           "op": "inspect",
-          "className": "card",
+          "className": "card@component",
           "expectedValid": true,
           "expectedRuleTexts": [
-            ".card{display:grid}.card:hover{color:red}"
+            ".card\\@component{display:grid}.card\\@component:hover{color:red}"
           ],
           "expectedSelectorTexts": [
-            ".card"
+            ".card\\@component"
           ],
           "expectedLayers": [
             "components"
@@ -1402,76 +1374,85 @@
         {
           "op": "ensure",
           "classes": [
-            "card"
+            "card@component"
           ],
-          "expectedCss": "@layer components{.card{display:grid}.card:hover{color:red}}"
+          "expectedCss": "@layer components{.card\\@component{display:grid}.card\\@component:hover{color:red}}"
         }
       ]
     },
     {
       "id": "engine-same-class-across-layers",
       "manifest": {
-        "version": 2,
-        "utilities": [
+        "version": 3,
+        "languageVersion": 5,
+        "mixins": [
           {
-            "id": "demo-defaults",
-            "type": -2,
-            "layer": "defaults",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "background": "var(--stripe)"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--demo-default",
+            "body": [
               {
-                "type": "static",
-                "name": "demo"
+                "type": "declaration",
+                "property": "background",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "var(--stripe)"
+                  }
+                ]
               }
             ]
           },
           {
-            "id": "demo-components",
-            "type": -2,
-            "layer": "components",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "display": "flex"
-                  }
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--demo",
+            "body": [
               {
-                "type": "static",
-                "name": "demo"
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "flex"
+                  }
+                ]
               }
             ]
           }
         ],
-        "languageVersion": 4
+        "variants": [
+          {
+            "token": "@default",
+            "branches": [
+              {
+                "layer": "defaults",
+                "selector": "&"
+              }
+            ]
+          },
+          {
+            "token": "@component",
+            "branches": [
+              {
+                "layer": "components",
+                "selector": "&"
+              }
+            ]
+          }
+        ]
       },
       "steps": [
         {
           "op": "ensure",
           "classes": [
-            "demo"
+            "demo-default@default",
+            "demo@component"
           ],
-          "expectedCss": "@layer defaults{.demo{background:var(--stripe)}}@layer components{.demo{display:flex}}"
+          "expectedCss": "@layer defaults{.demo-default\\@default{background:var(--stripe)}}@layer components{.demo\\@component{display:flex}}"
         }
       ]
     },
     {
       "id": "engine-native-alias-global-variable",
       "manifest": {
-        "version": 2,
+        "version": 3,
         "variables": {
           "": [
             {
@@ -1489,32 +1470,7 @@
             }
           ]
         },
-        "utilities": [
-          {
-            "id": "bg:<~color|color>",
-            "type": 0,
-            "variableAliasRefs": [
-              "~color"
-            ],
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "background-color": null
-                  }
-                }
-              ]
-            },
-            "matchers": [
-              {
-                "type": "token",
-                "prefix": "bg-"
-              }
-            ]
-          }
-        ],
-        "languageVersion": 4,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -1533,16 +1489,16 @@
         {
           "op": "ensure",
           "classes": [
-            "bg:var(--stripe)"
+            "background:var(--stripe)"
           ],
-          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
         }
       ]
     },
     {
       "id": "engine-native-alias-warm-session",
       "manifest": {
-        "version": 2,
+        "version": 3,
         "variables": {
           "": [
             {
@@ -1560,8 +1516,7 @@
             }
           ]
         },
-        "utilities": [],
-        "languageVersion": 4,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -1587,9 +1542,9 @@
         {
           "op": "ensure",
           "classes": [
-            "bg:var(--stripe)"
+            "background:var(--stripe)"
           ],
-          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
         }
       ]
     },
@@ -1650,7 +1605,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bg-clip-border",
+          "className": "background-clip:border-box",
           "expectedRuleContains": "background-clip:border-box"
         },
         {
@@ -1714,7 +1669,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "r:1rem",
+          "className": "border-radius:1rem",
           "expectedRuleContains": "border-radius:1rem"
         },
         {
@@ -1751,7 +1706,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "b-solid",
+          "className": "border-style:solid",
           "expectedRuleContains": "border-style:solid"
         },
         {
@@ -1761,7 +1716,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bb-solid",
+          "className": "border-bottom-style:solid",
           "expectedRuleContains": "border-bottom-style:solid"
         },
         {
@@ -1771,7 +1726,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bt-solid",
+          "className": "border-top-style:solid",
           "expectedRuleContains": "border-top-style:solid"
         },
         {
@@ -1781,7 +1736,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bl-solid",
+          "className": "border-left-style:solid",
           "expectedRuleContains": "border-left-style:solid"
         },
         {
@@ -1791,7 +1746,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "br-solid",
+          "className": "border-right-style:solid",
           "expectedRuleContains": "border-right-style:solid"
         },
         {
@@ -1860,7 +1815,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "b-solid",
+          "className": "border-style:solid",
           "expectedRuleContains": "border-style:solid"
         },
         {
@@ -1870,7 +1825,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "b-none",
+          "className": "border-style:none",
           "expectedRuleContains": "border-style:none"
         },
         {
@@ -1940,7 +1895,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "b:1px|solid",
+          "className": "border:1px|solid",
           "expectedRuleContains": "border:1px solid"
         },
         {
@@ -1950,7 +1905,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bt:1px|solid",
+          "className": "border-top:1px|solid",
           "expectedRuleContains": "border-top:1px solid"
         },
         {
@@ -1960,7 +1915,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bb:1px|solid",
+          "className": "border-bottom:1px|solid",
           "expectedRuleContains": "border-bottom:1px solid"
         },
         {
@@ -1970,7 +1925,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "bl:1px|solid",
+          "className": "border-left:1px|solid",
           "expectedRuleContains": "border-left:1px solid"
         },
         {
@@ -1980,7 +1935,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "br:1px|solid",
+          "className": "border-right:1px|solid",
           "expectedRuleContains": "border-right:1px solid"
         },
         {
@@ -2019,7 +1974,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "box-content",
+          "className": "box-sizing:content-box",
           "expectedRuleContains": "box-sizing:content-box"
         }
       ]
@@ -2048,7 +2003,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "fg:#fff",
+          "className": "color:#fff",
           "expectedRuleContains": "color:#fff"
         },
         {
@@ -2058,12 +2013,12 @@
         },
         {
           "op": "inspectContains",
-          "className": "fg:transparent",
+          "className": "color:transparent",
           "expectedRuleContains": "color:transparent"
         },
         {
           "op": "inspectContains",
-          "className": "fg:inherit",
+          "className": "color:inherit",
           "expectedRuleContains": "color:inherit"
         },
         {
@@ -2126,12 +2081,12 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "mys:1rem",
+          "className": "margin-block-start:1rem",
           "expectedRuleContains": "margin-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mye:1rem",
+          "className": "margin-block-end:1rem",
           "expectedRuleContains": "margin-block-end:1rem"
         },
         {
@@ -2141,12 +2096,12 @@
         },
         {
           "op": "inspectContains",
-          "className": "pys:1rem",
+          "className": "padding-block-start:1rem",
           "expectedRuleContains": "padding-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pye:1rem",
+          "className": "padding-block-end:1rem",
           "expectedRuleContains": "padding-block-end:1rem"
         },
         {
@@ -2156,32 +2111,32 @@
         },
         {
           "op": "inspectContains",
-          "className": "ixs:1rem",
+          "className": "inset-inline-start:1rem",
           "expectedRuleContains": "inset-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "ixe:1rem",
+          "className": "inset-inline-end:1rem",
           "expectedRuleContains": "inset-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "ix:1rem",
+          "className": "inset-inline:1rem",
           "expectedRuleContains": "inset-inline:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "iys:1rem",
+          "className": "inset-block-start:1rem",
           "expectedRuleContains": "inset-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "iye:1rem",
+          "className": "inset-block-end:1rem",
           "expectedRuleContains": "inset-block-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "iy:1rem",
+          "className": "inset-block:1rem",
           "expectedRuleContains": "inset-block:1rem"
         },
         {
@@ -2203,47 +2158,47 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "ml:1rem",
+          "className": "margin-left:1rem",
           "expectedRuleContains": "margin-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mr:1rem",
+          "className": "margin-right:1rem",
           "expectedRuleContains": "margin-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mt:1rem",
+          "className": "margin-top:1rem",
           "expectedRuleContains": "margin-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mb:1rem",
+          "className": "margin-bottom:1rem",
           "expectedRuleContains": "margin-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "m:1rem",
+          "className": "margin:1rem",
           "expectedRuleContains": "margin:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "m:1px",
+          "className": "margin:1px",
           "expectedRuleContains": "margin:1px"
         },
         {
           "op": "inspectContains",
-          "className": "mxs:1rem",
+          "className": "margin-inline-start:1rem",
           "expectedRuleContains": "margin-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mxe:1rem",
+          "className": "margin-inline-end:1rem",
           "expectedRuleContains": "margin-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "mx:1rem",
+          "className": "margin-inline:1rem",
           "expectedRuleContains": "margin-inline:1rem"
         }
       ]
@@ -2270,22 +2225,22 @@
         },
         {
           "op": "inspectContains",
-          "className": "outline-solid",
+          "className": "outline-style:solid",
           "expectedRuleContains": "outline-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "outline-medium",
+          "className": "outline-width:medium",
           "expectedRuleContains": "outline-width:medium"
         },
         {
           "op": "inspectContains",
-          "className": "outline-thick",
+          "className": "outline-width:thick",
           "expectedRuleContains": "outline-width:thick"
         },
         {
           "op": "inspectContains",
-          "className": "outline-thin",
+          "className": "outline-width:thin",
           "expectedRuleContains": "outline-width:thin"
         },
         {
@@ -2295,12 +2250,12 @@
         },
         {
           "op": "inspectContains",
-          "className": "outline-none",
+          "className": "outline-style:none",
           "expectedRuleContains": "outline-style:none"
         },
         {
           "op": "inspectContains",
-          "className": "outline-auto",
+          "className": "outline-style:auto",
           "expectedRuleContains": "outline-style:auto"
         },
         {
@@ -2347,7 +2302,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "overflow",
+          "className": "overflow:visible",
           "expectedRuleContains": "overflow:visible"
         },
         {
@@ -2369,42 +2324,42 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "pl:1rem",
+          "className": "padding-left:1rem",
           "expectedRuleContains": "padding-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pr:1rem",
+          "className": "padding-right:1rem",
           "expectedRuleContains": "padding-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pt:1rem",
+          "className": "padding-top:1rem",
           "expectedRuleContains": "padding-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pb:1rem",
+          "className": "padding-bottom:1rem",
           "expectedRuleContains": "padding-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "p:1rem",
+          "className": "padding:1rem",
           "expectedRuleContains": "padding:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pxs:1rem",
+          "className": "padding-inline-start:1rem",
           "expectedRuleContains": "padding-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "pxe:1rem",
+          "className": "padding-inline-end:1rem",
           "expectedRuleContains": "padding-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "px:1rem",
+          "className": "padding-inline:1rem",
           "expectedRuleContains": "padding-inline:1rem"
         }
       ]
@@ -2416,27 +2371,27 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "scroll-ml:1rem",
+          "className": "scroll-margin-left:1rem",
           "expectedRuleContains": "scroll-margin-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-mr:1rem",
+          "className": "scroll-margin-right:1rem",
           "expectedRuleContains": "scroll-margin-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-mt:1rem",
+          "className": "scroll-margin-top:1rem",
           "expectedRuleContains": "scroll-margin-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-mb:1rem",
+          "className": "scroll-margin-bottom:1rem",
           "expectedRuleContains": "scroll-margin-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-m:1rem",
+          "className": "scroll-margin:1rem",
           "expectedRuleContains": "scroll-margin:1rem"
         }
       ]
@@ -2448,27 +2403,27 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "scroll-pl:1rem",
+          "className": "scroll-padding-left:1rem",
           "expectedRuleContains": "scroll-padding-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-pr:1rem",
+          "className": "scroll-padding-right:1rem",
           "expectedRuleContains": "scroll-padding-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-pt:1rem",
+          "className": "scroll-padding-top:1rem",
           "expectedRuleContains": "scroll-padding-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-pb:1rem",
+          "className": "scroll-padding-bottom:1rem",
           "expectedRuleContains": "scroll-padding-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-p:1rem",
+          "className": "scroll-padding:1rem",
           "expectedRuleContains": "scroll-padding:1rem"
         }
       ]
@@ -2480,7 +2435,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "snap-x",
+          "className": "scroll-snap-type:x",
           "expectedRuleContains": "scroll-snap-type:x"
         },
         {
@@ -2514,7 +2469,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "text-clip",
+          "className": "text-overflow:clip",
           "expectedRuleContains": "text-overflow:clip"
         },
         {
@@ -2524,7 +2479,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "text-ellipsis",
+          "className": "text-overflow:ellipsis",
           "expectedRuleContains": "text-overflow:ellipsis"
         },
         {
@@ -2541,7 +2496,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "text-stroke-width:thin",
+          "className": "-webkit-text-stroke-width:thin",
           "expectedRuleContains": "-webkit-text-stroke-width:thin"
         }
       ]
@@ -2553,22 +2508,22 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "text-wrap",
+          "className": "text-wrap:wrap",
           "expectedRuleContains": "text-wrap:wrap"
         },
         {
           "op": "inspectContains",
-          "className": "text-nowrap",
+          "className": "text-wrap:nowrap",
           "expectedRuleContains": "text-wrap:nowrap"
         },
         {
           "op": "inspectContains",
-          "className": "text-balance",
+          "className": "text-wrap:balance",
           "expectedRuleContains": "text-wrap:balance"
         },
         {
           "op": "inspectContains",
-          "className": "text-pretty",
+          "className": "text-wrap:pretty",
           "expectedRuleContains": "text-wrap:pretty"
         }
       ]
@@ -2579,28 +2534,28 @@
       "manifest": "default",
       "steps": [
         {
-          "op": "inspectContains",
+          "op": "inspect",
           "className": "text:1.25rem",
-          "expectedRuleContains": "font-size:1.25rem;line-height:max(1.8em - max(0rem, 1.25rem - 1rem) * 1.12, 1.25rem);letter-spacing:clamp(-.072em, calc((1.25rem - 1rem) * -.048), 0em)"
+          "expectedValid": false
         },
         {
-          "op": "inspectContains",
+          "op": "inspect",
           "className": "text:50%",
-          "expectedRuleContains": "font-size:50%;line-height:max(1.8em - max(0rem, 50% - 1rem) * 1.12, 50%);letter-spacing:clamp(-.072em, calc((50% - 1rem) * -.048), 0em)"
+          "expectedValid": false
         },
         {
           "op": "inspectContains",
-          "className": "text-blue",
+          "className": "fg-text-blue",
           "expectedRuleContains": "color:var(--color-text-blue)"
         },
         {
           "op": "inspectContains",
-          "className": "text-stroke-color:#fff",
+          "className": "-webkit-text-stroke-color:#fff",
           "expectedRuleContains": "-webkit-text-stroke-color:#fff"
         },
         {
           "op": "inspectContains",
-          "className": "text-stroke-color:transparent",
+          "className": "-webkit-text-stroke-color:transparent",
           "expectedRuleContains": "-webkit-text-stroke-color:transparent"
         }
       ]
@@ -2612,7 +2567,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "transform-content",
+          "className": "transform-box:content-box",
           "expectedRuleContains": "transform-box:content-box"
         }
       ]
@@ -2629,7 +2584,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "w:25%",
+          "className": "width:25%",
           "expectedRuleContains": "width:25%"
         },
         {
@@ -2709,44 +2664,169 @@
   "compilerCases": [
     {
       "id": "compiler-prose-base-responsive-order",
-      "source": "@utility prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
+      "source": "@mixin --prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
-      "expectedUtilities": [
+      "expectedMixins": [
         {
-          "id": ".prose",
-          "name": "prose",
-          "type": -2,
-          "order": 0,
-          "layer": "utilities",
-          "emit": {
-            "type": "static",
-            "rules": [
-              {
-                "declarations": {
-                  "margin-top": "var(--spacing-2xl)",
-                  "scroll-margin-top": "100px"
-                },
-                "selector": "& :is(h1,h2)",
-                "conditions": [
-                  "@media (width >= 52.125rem)"
-                ]
-              },
-              {
-                "declarations": {
-                  "margin-top": "var(--spacing-lg)",
-                  "scroll-margin-top": "60px"
-                },
-                "selector": "& :is(h1,h2)"
-              }
-            ]
-          },
-          "matchers": [
+          "name": "--prose",
+          "body": [
             {
-              "type": "static",
-              "name": "prose"
+              "type": "condition",
+              "condition": "@media (width >= 52.125rem)",
+              "body": [
+                {
+                  "type": "rule",
+                  "selector": ":is(h1,h2)",
+                  "body": [
+                    {
+                      "type": "declaration",
+                      "property": "margin-top",
+                      "value": [
+                        {
+                          "type": "function",
+                          "name": "var",
+                          "value": [
+                            {
+                              "type": "text",
+                              "value": "--spacing-2xl"
+                            }
+                          ]
+                        }
+                      ],
+                      "source": {
+                        "file": "parity/compiler-prose-base-responsive-order.css",
+                        "range": {
+                          "start": 44,
+                          "end": 73
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 45
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 74
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "declaration",
+                      "property": "scroll-margin-top",
+                      "value": [
+                        {
+                          "type": "text",
+                          "value": "100px"
+                        }
+                      ],
+                      "source": {
+                        "file": "parity/compiler-prose-base-responsive-order.css",
+                        "range": {
+                          "start": 74,
+                          "end": 97
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 75
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 98
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rule",
+              "selector": ":is(h1,h2)",
+              "body": [
+                {
+                  "type": "declaration",
+                  "property": "margin-top",
+                  "value": [
+                    {
+                      "type": "function",
+                      "name": "var",
+                      "value": [
+                        {
+                          "type": "text",
+                          "value": "--spacing-lg"
+                        }
+                      ]
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-prose-base-responsive-order.css",
+                    "range": {
+                      "start": 116,
+                      "end": 144
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 117
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 145
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "declaration",
+                  "property": "scroll-margin-top",
+                  "value": [
+                    {
+                      "type": "text",
+                      "value": "60px"
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-prose-base-responsive-order.css",
+                    "range": {
+                      "start": 145,
+                      "end": 167
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 146
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 168
+                      }
+                    }
+                  }
+                }
+              ]
             }
-          ]
+          ],
+          "source": {
+            "file": "parity/compiler-prose-base-responsive-order.css",
+            "range": {
+              "start": 0,
+              "end": 172
+            },
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 173
+              }
+            }
+          }
         }
       ]
     },
@@ -2758,40 +2838,91 @@
     },
     {
       "id": "compiler-managed-compose-order",
-      "source": "@utility btn { @variant sm { display:grid; } display:block; }",
+      "source": "@mixin --btn { @variant sm { display:grid; } display:block; }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
-      "expectedUtilities": [
+      "expectedMixins": [
         {
-          "id": ".btn",
-          "name": "btn",
-          "type": -2,
-          "order": 0,
-          "layer": "utilities",
-          "emit": {
-            "type": "static",
-            "rules": [
-              {
-                "declarations": {
-                  "display": "grid"
+          "name": "--btn",
+          "body": [
+            {
+              "type": "condition",
+              "condition": "@media (width >= 52.125rem)",
+              "body": [
+                {
+                  "type": "declaration",
+                  "property": "display",
+                  "value": [
+                    {
+                      "type": "text",
+                      "value": "grid"
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-managed-compose-order.css",
+                    "range": {
+                      "start": 29,
+                      "end": 41
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 30
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 42
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "declaration",
+              "property": "display",
+              "value": [
+                {
+                  "type": "text",
+                  "value": "block"
+                }
+              ],
+              "source": {
+                "file": "parity/compiler-managed-compose-order.css",
+                "range": {
+                  "start": 45,
+                  "end": 58
                 },
-                "conditions": [
-                  "@media (width >= 52.125rem)"
-                ]
-              },
-              {
-                "declarations": {
-                  "display": "block"
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 46
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 59
+                  }
                 }
               }
-            ]
-          },
-          "matchers": [
-            {
-              "type": "static",
-              "name": "btn"
             }
-          ]
+          ],
+          "source": {
+            "file": "parity/compiler-managed-compose-order.css",
+            "range": {
+              "start": 0,
+              "end": 61
+            },
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 62
+              }
+            }
+          }
         }
       ]
     },
@@ -2806,12 +2937,12 @@
       "sourceId": "rc87-5ae87bddfc5f375d",
       "source": "@custom-variant light { &:where(.light, .light *) { @slot; } } @custom-variant dark { &:where(.dark, .dark *) { @slot; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -2975,12 +3106,12 @@
       "sourceId": "rc87-1ef0184cc6a4bd8e",
       "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -3019,12 +3150,12 @@
       "sourceId": "rc87-58a8b9e387f59ddb",
       "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -3067,12 +3198,12 @@
       "sourceId": "rc87-7d6ba9d28d83415c",
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       }
     },
     {
@@ -3080,7 +3211,7 @@
       "sourceId": "rc87-da6ec108d6e14a3a",
       "source": "",
       "baseManifest": {
-        "version": 2,
+        "version": 3,
         "keyAliases": {
           "w": "inline-size"
         },
@@ -3094,11 +3225,11 @@
             ]
           }
         ],
-        "languageVersion": 4
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       }
     },
     {
@@ -3106,12 +3237,12 @@
       "sourceId": "rc87-e793d99a43aa91ea",
       "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -3191,12 +3322,12 @@
       "sourceId": "rc87-bce3dcbace35c62f",
       "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "theme": [
           {
             "type": "rule",
@@ -3345,14 +3476,14 @@
     {
       "id": "rc87-compiler-variant-branches",
       "sourceId": "rc87-2763794c2aab6ae8",
-      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @utility hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } }",
+      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } }",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
+        "version": 3,
+        "languageVersion": 5,
         "variants": [
           {
             "token": "@motion-safe",
@@ -3389,38 +3520,94 @@
             ]
           }
         },
-        "utilities": [
+        "mixins": [
           {
-            "id": ".hocus",
-            "name": "hocus",
-            "type": -2,
-            "order": 0,
-            "layer": "utilities",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "display": "block"
-                  },
-                  "selector": "&:is(:hover,:focus)"
-                },
-                {
-                  "declarations": {
-                    "display": "grid"
-                  },
-                  "conditions": [
-                    "@media (prefers-reduced-motion:no-preference)"
-                  ]
-                }
-              ]
-            },
-            "matchers": [
+            "name": "--hocus",
+            "body": [
               {
-                "type": "static",
-                "name": "hocus"
+                "type": "rule",
+                "selector": "&:is(:hover,:focus)",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "display",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "block"
+                      }
+                    ],
+                    "source": {
+                      "file": "parity/rc87-compiler-variant-branches.css",
+                      "range": {
+                        "start": 128,
+                        "end": 142
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 129
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 143
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "condition",
+                "condition": "@media (prefers-reduced-motion:no-preference)",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "display",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "grid"
+                      }
+                    ],
+                    "source": {
+                      "file": "parity/rc87-compiler-variant-branches.css",
+                      "range": {
+                        "start": 169,
+                        "end": 182
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 170
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 183
+                        }
+                      }
+                    }
+                  }
+                ]
               }
-            ]
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-variant-branches.css",
+              "range": {
+                "start": 89,
+                "end": 187
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 90
+                },
+                "end": {
+                  "line": 1,
+                  "column": 188
+                }
+              }
+            }
           }
         ]
       }
@@ -3428,38 +3615,96 @@
     {
       "id": "rc87-compiler-semantic-utility",
       "sourceId": "rc87-e9991ac8889c54d6",
-      "source": "@utility card { display: grid; color: var(--color-primary); }",
+      "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
-        "utilities": [
+        "version": 3,
+        "languageVersion": 5,
+        "mixins": [
           {
-            "id": ".card",
-            "name": "card",
-            "type": -2,
-            "order": 0,
-            "layer": "utilities",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "display": "grid",
-                    "color": "var(--color-primary)"
+            "name": "--card",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "grid"
+                  }
+                ],
+                "source": {
+                  "file": "parity/rc87-compiler-semantic-utility.css",
+                  "range": {
+                    "start": 16,
+                    "end": 29
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 30
+                    }
                   }
                 }
-              ]
-            },
-            "matchers": [
+              },
               {
-                "type": "static",
-                "name": "card"
+                "type": "declaration",
+                "property": "color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color-primary"
+                      }
+                    ]
+                  }
+                ],
+                "source": {
+                  "file": "parity/rc87-compiler-semantic-utility.css",
+                  "range": {
+                    "start": 31,
+                    "end": 58
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 59
+                    }
+                  }
+                }
               }
-            ]
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-semantic-utility.css",
+              "range": {
+                "start": 0,
+                "end": 61
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 62
+                }
+              }
+            }
           }
         ]
       }
@@ -3467,38 +3712,90 @@
     {
       "id": "rc87-compiler-browser-manifest",
       "sourceId": "rc87-229f90c18e0fc001",
-      "source": "@utility btn { display: flex; color: red; }",
+      "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
-        "version": 2,
-        "languageVersion": 4
+        "version": 3,
+        "languageVersion": 5
       },
       "expectedManifest": {
-        "version": 2,
-        "languageVersion": 4,
-        "utilities": [
+        "version": 3,
+        "languageVersion": 5,
+        "mixins": [
           {
-            "id": ".btn",
-            "name": "btn",
-            "type": -2,
-            "order": 0,
-            "layer": "utilities",
-            "emit": {
-              "type": "static",
-              "rules": [
-                {
-                  "declarations": {
-                    "display": "flex",
-                    "color": "red"
+            "name": "--btn",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "flex"
+                  }
+                ],
+                "source": {
+                  "file": "parity/rc87-compiler-browser-manifest.css",
+                  "range": {
+                    "start": 15,
+                    "end": 28
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 16
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 29
+                    }
                   }
                 }
-              ]
-            },
-            "matchers": [
+              },
               {
-                "type": "static",
-                "name": "btn"
+                "type": "declaration",
+                "property": "color",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "red"
+                  }
+                ],
+                "source": {
+                  "file": "parity/rc87-compiler-browser-manifest.css",
+                  "range": {
+                    "start": 30,
+                    "end": 40
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 31
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 41
+                    }
+                  }
+                }
               }
-            ]
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-browser-manifest.css",
+              "range": {
+                "start": 0,
+                "end": 43
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 44
+                }
+              }
+            }
           }
         ]
       }
@@ -3519,5 +3816,5 @@
     "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field.",
     "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged."
   ],
-  "languageVersion": 4
+  "languageVersion": 5
 }

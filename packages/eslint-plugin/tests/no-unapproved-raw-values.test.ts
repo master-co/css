@@ -8,14 +8,14 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const customManifest = createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ]
 })
 
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
 const registryFieldManifest = createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   nativeValueNamespaces: [{
     properties: ['--space'],
@@ -27,32 +27,32 @@ const registryFieldManifest = createPresetManifest({
 
 jsxTester.run('no unapproved raw values', rule, {
   valid: [
-    { code: `<div class="font-md m-md m:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-center">Tokens and static utilities</div>` },
+    { code: "<div class=\"font-md m-md margin:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-align:center\">Tokens and static utilities</div>" },
     { code: `<div class="font: unknown-class">Invalid and unknown classes are ignored</div>` },
     {
       code: `<div class="font-size:15px">Raw values disabled</div>`,
       options: [{ allowRawValues: true }]
     },
     {
-      code: `<div class="w:50%">Allowed by generated property</div>`,
+      code: "<div class=\"width:50%\">Allowed by generated property</div>",
       options: [{ allowProperties: ['width'] }]
     },
     {
-      code: `<div class="w:50%">Allowed by class key</div>`,
-      options: [{ allowProperties: ['w'] }]
+      code: "<div class=\"width:50%\">Allowed by class key</div>",
+      options: [{ allowProperties: ['width'] }]
     },
     {
-      code: `<div class="m:calc(1rem+1px)">Allowed by pattern</div>`,
+      code: "<div class=\"margin:calc(1rem+1px)\">Allowed by pattern</div>",
       options: [{ allowedPatterns: ['^calc\\('] }]
     },
     {
-      code: `<div class="m:var(--spacing-md)|calc(1rem+1px) m:calc(1rem+1px)|var(--spacing-md)">Allowed multi-value segment by pattern</div>`,
+      code: "<div class=\"margin:var(--spacing-md)|calc(1rem+1px) margin:calc(1rem+1px)|var(--spacing-md)\">Allowed multi-value segment by pattern</div>",
       options: [{ allowedPatterns: ['^calc\\('] }]
     },
   ],
   invalid: [
     {
-      code: `<div class="font-size:15px m:17px fg:#123456">Raw values</div>`,
+      code: "<div class=\"font-size:15px margin:17px color:#123456\">Raw values</div>",
       errors: [
         {
           messageId: 'unapprovedRawValue',
@@ -65,7 +65,7 @@ jsxTester.run('no unapproved raw values', rule, {
       ]
     },
     {
-      code: `<div class="m:var(--spacing-md)|17px m:calc(1rem+1px)|18px m:19px|20px">Multi-value raw value segments</div>`,
+      code: "<div class=\"margin:var(--spacing-md)|17px margin:calc(1rem+1px)|18px margin:19px|20px\">Multi-value raw value segments</div>",
       options: [{ allowedPatterns: ['^calc\\('] }],
       errors: [
         { messageId: 'unapprovedRawValue' },
@@ -74,14 +74,14 @@ jsxTester.run('no unapproved raw values', rule, {
       ]
     },
     {
-      code: `clsx('font-size:15px m:17px')`,
+      code: "clsx('font-size:15px margin:17px')",
       errors: [
         { messageId: 'unapprovedRawValue' },
         { messageId: 'unapprovedRawValue' },
       ]
     },
     {
-      code: 'ctl(`fg:#123456`)',
+      code: "ctl(`color:#123456`)",
       errors: [
         { messageId: 'unapprovedRawValue' },
       ]
@@ -93,14 +93,23 @@ createTester({
   settings: {
     '@master/css': {
       manifest: createPresetManifest({
-        utilities: [
+        mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
           {
-            name: 'btn',
-            type: UtilityType.Semantic,
-            layer: 'components',
-            declarations: { display: 'block' }
+            "type": "text" as const,
+            "value": "block"
           }
         ]
+      }
+    ]
+  }
+]
       })
     }
   }
@@ -123,7 +132,7 @@ createTester({
   ],
   invalid: [
     {
-      code: `<div class="m:17px">Custom token namespace raw value</div>`,
+      code: "<div class=\"margin:17px\">Custom token namespace raw value</div>",
       errors: [
         { messageId: 'unapprovedRawValue' },
       ]

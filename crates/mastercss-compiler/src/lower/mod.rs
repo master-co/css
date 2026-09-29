@@ -6,7 +6,7 @@ use mastercss_schema::{
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value, json};
+use serde_json::Value;
 
 use crate::{CompileManifestOptions, CompilerError};
 
@@ -23,7 +23,7 @@ pub struct LowerCssDirectivesOptions {
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesRequest {
     #[serde(default)]
-    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     #[serde(default)]
     pub native_output: Option<crate::NativeCssOutput>,
     #[serde(default)]
@@ -37,7 +37,7 @@ pub struct LowerCssDirectivesRequest {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesResult {
-    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -69,7 +69,6 @@ struct MergedStyleDefinition {
 }
 
 mod api;
-mod definitions;
 mod merge;
 mod output;
 mod render;

@@ -26,7 +26,10 @@ interface Result {
 }
 interface Helpers { result: Result; postcss: typeof postcss }
 const phases = ['Once', 'Declaration', 'OnceExit'] as const
-const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const initialSource = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old);audit-trigger:1}"
 
 async function runNative(plugins: unknown[], source: string, file = '/audit/entry.css', hook?: PostCSSResourceHook, sharedProcessor?: { plugins: unknown[] }) {
@@ -110,7 +113,7 @@ test('prepare, helpers, messages, native dependencies and receiver identity surv
       root.append({ selector: '.prepared', nodes: [{ prop: 'color', value: 'red' }] })
       result.warn('kept warning')
       for (const type of ['dependency', 'build-dependency', 'missing-dependency', 'context-dependency']) result.messages.push({ type, file: '/audit/' + type })
-      result.messages.push({ type: 'asset', file: 'proof.txt', content: 'proof' })
+      result.messages.push({ type: 'asset' as const, file: 'proof.txt', content: 'proof' })
     }, Declaration: { color(this: unknown, _declaration: Declaration, helpers: Helpers) {
       expect(this).toBeUndefined()
       expect(receivers.has(helpers.result.lastPlugin)).toBe(true)
@@ -149,7 +152,7 @@ test('legacy function plugin runs once with original Result and unbound receiver
     calls++
     const result = value as Result
     expect(result.root).toBe(node)
-    result.messages.push({ type: 'dependency', file: '/audit/function.css' })
+    result.messages.push({ type: 'dependency' as const, file: '/audit/function.css' })
   }
   const output = await runNative(createPostCSSRequestPlugins([plugin], () => {}), '.a{}')
   expect(calls).toBe(1)

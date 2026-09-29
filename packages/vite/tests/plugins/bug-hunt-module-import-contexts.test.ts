@@ -5,7 +5,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared imported CSS keeps two root module scopes, resources and HMR in %s', async mode => {
+test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('shared imported CSS keeps two root module scopes, resources and HMR in %s', async mode => {
   const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'module-import-contexts-'))
   let server: Awaited<ReturnType<typeof createServer>> | undefined

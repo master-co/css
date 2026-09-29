@@ -6,14 +6,14 @@
 
 ## Owns
 
-- Default token, utility, native keyframe, variant, and layer-statement source.
+- Default token, mixin, native keyframe, variant, and layer-statement source.
 - `src/default-manifest.json`.
 - `src/default-native.css`.
 - Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
 
 ## Does Not Own
 
-- Engine built-in key aliases, namespaces, named-token namespaces, or namespace refs.
+- Engine built-in token aliases, namespaces, named-token namespaces, or namespace refs.
 - Engine execution behavior.
 - Project manifest discovery.
 - Build integration behavior.
@@ -41,7 +41,7 @@
 - Default manifest or native CSS artifact output changes.
 - Layer statement must stay `@layer theme, base, defaults, components, utilities;`.
 - Token namespace changes must align with engine built-ins.
-- Utility additions can accidentally belong in engine aliases or CSS directives instead.
+- Recipe additions must justify multiple declarations or parameters; single declarations use native properties or engine token families.
 
 ## Constraints
 
@@ -61,8 +61,10 @@ pnpm --filter @master/css-preset type-check
 pnpm --filter @master/css-preset build
 ```
 
-## Utility Definition Notes
+## Mixin And Token Ownership
 
-Apply the utility definition ladder in `AGENTS.md`. Default token namespaces and property aliases belong to the Rust engine registries in `crates/mastercss-engine/src/manifest.rs`; `@master/css-tooling/builtins` exposes generated read-only projections (`builtinKeyAliases`, `builtinTokenNamespaces`). Do not edit those generated projections or add registry fields to the preset manifest.
+Token values live in `src/theme.css`. Ordered token mappings belong to `crates/mastercss-engine/src/manifest.rs` and `src/token_registry.rs`; `@master/css-tooling/builtins` exposes generated read-only `builtinTokenFamilies`, `builtinTokenAliases` and `builtinTokenNamespaces`. Do not edit generated projections or add registry fields to the preset manifest.
 
-Author preset utilities in `src/utilities.css`. The former `src/utilities.ts` implementation no longer exists; compiler-inexpressible behavior must be handled by the owning Rust semantic layer, not a new TypeScript fallback. Explain why simpler manifest mechanisms cannot express an added utility.
+Author recipes in the stable `src/utilities.css` entrypoint using `@mixin`. Only used classes and delivered native `@apply` roots emit CSS/resources. Parameter recipes require static arguments; grid counts and spans must be positive integers. `font-*` selects one property by token existence and reports cross-property ambiguity. `text-*` is the generic single-string named-mixin rule with explicit typography companion tokens; it is never a color alias. Raw property abbreviations and single-declaration fixed aliases are removed. Vendor declaration pairs belong to Rust output rules.
+
+The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.

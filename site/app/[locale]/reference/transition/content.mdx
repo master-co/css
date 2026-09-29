@@ -11,8 +11,8 @@ Hover or keyboard-focus the button to increase its opacity. The shorthand keeps 
 <!-- Opacity · 150ms ease-out -->
 <div class="p-sm">
   <button id="target" type="button"
-    class="inline-grid place-items:center h:64px
-           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+    class="display:inline-grid place-items:center height:64px
+           width:160px p-sm border:1px|solid|var(--color-blue-60) r-sm
            font-sm bg-blue-10 fg-blue-80 opacity:.72
            outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
@@ -42,8 +42,8 @@ Focus or hover the real link to lift it by 8px. Only transform interpolates, whi
 <!-- Transform · named link with a real destination -->
 <div class="p-sm">
   <a id="target" href="#report"
-    class="inline-grid place-items:center h:64px
-           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+    class="display:inline-grid place-items:center height:64px
+           width:160px p-sm border:1px|solid|var(--color-blue-60) r-sm
            font-sm bg-blue-10 fg-blue-80 transform:none
            outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
@@ -67,8 +67,8 @@ The longhands below keep opacity and ease-out fixed while enabling a 150ms durat
 <!-- Independent duration · hover or focus -->
 <div class="p-sm">
   <button id="target" type="button"
-    class="inline-grid place-items:center h:64px
-           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+    class="display:inline-grid place-items:center height:64px
+           width:160px p-sm border:1px|solid|var(--color-blue-60) r-sm
            font-sm bg-blue-10 fg-blue-80 opacity:.72
            transition-property:opacity
            transition-timing-function:ease-out
@@ -92,7 +92,7 @@ Use the native checkbox to change opacity. Below `sm` the change is immediate; a
 
 ```html
 <!-- Immediate → eased at sm -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          opacity:.72:has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Fade layer"
     class="mr-xs accent-color-blue
@@ -100,11 +100,11 @@ Use the native checkbox to change opacity. Below `sm` the change is immediate; a
            outline-offset:3px:focus-visible">
   Fade layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none transition:none@print
              transition:opacity|var(--duration-fast)|var(--easing-smooth)@screen@motion@sm">

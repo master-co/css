@@ -1,9 +1,9 @@
 const syntaxes = [
-  'max-vh',
-  'max-h:100%',
-  'max-h:fit-content',
-  'max-h:min-content',
-  'max-h:max-content',
+  "max-height:100vh",
+  "max-height:100%",
+  "max-height:fit-content",
+  "max-height:min-content",
+  "max-height:max-content",
   'max-h-3xs',
   'max-h-2xs',
   'max-h-xs',
@@ -17,7 +17,7 @@ const syntaxes = [
   'max-h-5xl',
   'max-h-6xl',
   'max-h-7xl',
-  ['max-h:`size`'],
+  ["max-height:`size`"],
 ]
 
 export default syntaxes

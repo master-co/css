@@ -91,6 +91,7 @@ const SERVER_CAPABILITIES: ServerCapabilities = {
   },
   colorProvider: true,
   hoverProvider: true,
+  definitionProvider: true,
   documentFormattingProvider: true,
   documentRangeFormattingProvider: true,
   semanticTokensProvider: {
@@ -196,6 +197,7 @@ export class MasterCSSLanguageServer implements Disposable {
       this.documents.listen(this.connection),
       this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this)),
       this.connection.onHover(this.onHover.bind(this)),
+      this.connection.onDefinition(this.onDefinition.bind(this)),
       this.connection.onCompletion(this.onCompletion.bind(this)),
       this.connection.onDocumentColor(this.onDocumentColor.bind(this)),
       this.connection.onColorPresentation(this.onColorPresentation.bind(this)),
@@ -257,6 +259,20 @@ export class MasterCSSLanguageServer implements Disposable {
       const document = this.documents.get(params.textDocument.uri)
       if (document) return workspace.languageService.inspectSyntax(document, params.position)
     }
+  }
+
+  async onDefinition(params: TextDocumentPositionParams) {
+    await this.init()
+    const service = this.findClosestWorkspace(params.textDocument.uri)?.languageService
+    const document = this.documents.get(params.textDocument.uri)
+    if (!service || !document) return
+    const position = service.getClassPosition(document, params.position)
+    if (!position) return
+    const source = service.session.inspectClassName(position.token).definitionSource
+    if (!source?.file) return
+    const uri = URI.file(source.file).toString()
+    const target = this.documents.get(uri) ?? TextDocument.create(uri, 'css', 0, await readFile(source.file, 'utf8'))
+    return { uri, range: { start: target.positionAt(source.range.start), end: target.positionAt(source.range.end) } }
   }
 
   async onCompletion(params: CompletionParams): Promise<CompletionItem[] | undefined> {

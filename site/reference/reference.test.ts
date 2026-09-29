@@ -68,7 +68,7 @@ test('30 acceptance queries find the intended document in the first three result
     const search = createDocumentationSearch(pages)
     const failures = searchTasks.filter(([query, id]) => !search(query, 3).some(result => result.page.url.endsWith(`/reference/${id}`)))
     assert.ok(failures.length <= 3, `${locale}: ${JSON.stringify(failures)}`)
-    const padding = search('pxs:', 1)[0]
+    const padding = search('padding-inline-start:', 1)[0]
     assert.equal(padding.page.title, 'padding')
     assert.match(padding.excerpt, /padding-inline-start/)
     assert.match(padding.href, /#syntax-/)
@@ -204,7 +204,7 @@ test('language contracts export portable examples, complete CSS and stable secti
   }
   const extraction = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/extraction')!, catalog)
   assert.match(extraction, /font-size:var\(--headline-size\)/)
-  assert.match(extraction, /w:var\(--progress\)/)
+  assert.match(extraction, /width:var\(--progress\)/)
   assert.match(extraction, /setAttribute\('aria-valuenow'/)
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)

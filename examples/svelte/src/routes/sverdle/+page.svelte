@@ -108,7 +108,7 @@
 >
   <a class="how-to-play" href="/sverdle/how-to-play">How to play</a>
 
-  <div class="grid" class:playing={!won} class:bad-guess={form?.badGuess}>
+  <div class="display:grid" class:playing={!won} class:bad-guess={form?.badGuess}>
     {#each Array.from(Array(6).keys()) as row (row)}
       {@const current = row === i}
       <h2 class="visually-hidden">Row {row + 1}</h2>

@@ -6,7 +6,22 @@ import { createCompiler } from '../src/index'
 import { compileStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = "@theme {:root, :host {--color-unused:red}}\n\n" + native
 

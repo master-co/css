@@ -1,7 +1,7 @@
 const syntaxes = [
-  'bg-auto',
-  'bg-cover',
-  'bg-contain',
+  "background-size:auto",
+  "background-size:cover",
+  "background-size:contain",
   ['background-size:`size`,`…`'],
 ]
 

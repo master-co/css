@@ -4,22 +4,22 @@
 ## Examples \{#examples\}
 
 ### Use the background shorthand \{#use-the-background-shorthand\}
-Combine an image, position, size and repetition in one `bg:*` class. Pipes separate values; `/` separates position from size.
+Combine an image, position, size and repetition in one `background:*` class. Pipes separate values; `/` separates position from size.
 
 <DemoExample page="background" section="use-the-background-shorthand" />
 
 ```html
 <!-- Centered cover · one shorthand -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100%
-         bg:url(/demo/landscape.svg)|center/cover|no-repeat"
+  class="height:160px w-xs max-width:100%
+         background:url(/demo/landscape.svg)|center/cover|no-repeat"
 ></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/demo/landscape.svg)|center/cover|no-repeat']}
+    {['background:url(/demo/landscape.svg)|center/cover|no-repeat']}
   </Class2CSS>
 </details>
 
@@ -33,7 +33,7 @@ Hover or focus each surface. The first changes only the background color, preser
 ```html
 <!-- Color longhand · keeps the image -->
 <div id="target" tabindex="0" role="img" aria-label="Change only the background color"
-  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg) bg-blue-20:hover@screen
          bg-blue-20:focus-visible@screen"
@@ -43,7 +43,7 @@ Hover or focus each surface. The first changes only the background color, preser
 ```html
 <!-- Full shorthand · resets the image -->
 <div id="target" tabindex="0" role="img" aria-label="Reset the complete background"
-  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)
          background:var(--color-blue-20):hover@screen
@@ -61,8 +61,8 @@ Widen the actual preview viewport to `sm` to apply the complete image shorthand.
 ```html
 <!-- Plain surface → image at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-surface-inset background:white@print
-         bg:url(/demo/landscape.svg)|center/cover|no-repeat@screen@sm"
+  class="height:160px w-xs max-width:100% bg-surface-inset background:white@print
+         background:url(/demo/landscape.svg)|center/cover|no-repeat@screen@sm"
 ></div>
 ```
 

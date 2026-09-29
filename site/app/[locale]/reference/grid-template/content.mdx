@@ -8,7 +8,7 @@
 <DemoExample page="grid-template" section="define-rows-and-columns-together" />
 
 ```html
-<div id="layout" class="grid grid-template:64px|1fr/96px|1fr gap-md h:14rem w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-template:64px|1fr/96px|1fr gap-md height:14rem width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -17,7 +17,7 @@
 ```
 
 ```html
-<div id="layout" class="grid grid-template:none grid-auto-columns:72px grid-auto-flow:column grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-template:none grid-auto-columns:72px grid-auto-flow:column grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -39,7 +39,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-template" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-template:repeat(4,48px)/1fr gap-md h:15rem w:17.5rem max-w:100% grid-template:64px|1fr/96px|1fr@sm">
+<div id="layout" class="display:grid grid-template:repeat(4,48px)/1fr gap-md height:15rem width:17.5rem max-width:100% grid-template:64px|1fr/96px|1fr@sm">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

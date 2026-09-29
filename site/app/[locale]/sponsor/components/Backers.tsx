@@ -8,19 +8,19 @@ const sourceIcons: Record<string, string> = {
 }
 
 export default function Backers({ backers }: any) {
-  return <div className="grid-cols:6 gap-xs grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
+  return <div className="grid-cols(6) gap-xs grid-cols(8)@2xs grid-cols(10)@xs grid-cols(14)@sm">
     {backers.map((eachBacker: any, i: number) => {
       let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
       if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
         // 如果沒有，根據需要自動加上
         href = 'https://' + href // 或是 "http://" + url;
       }
-      const className = `rel block round aspect-ratio:1/1 content:''::after`
+      const className = `position:relative display:block round aspect-ratio:1/1 content:''::after`
       const sourceIcon = sourceIcons[eachBacker.from]
       const Avatar = () =>
         <>
-          <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-          {sourceIcon && <div className="abs bottom:-3px right:-3px width:22px height:22px round p-4xs surface-raised">
+          <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-fit:cover" width="64" height="64" />
+          {sourceIcon && <div className="position:absolute bottom:-3px right:-3px height:22px width:22px round p-4xs surface-raised">
             <Image src={sourceIcon} alt="source" width="18" height="18" />
           </div>}
         </>
@@ -30,7 +30,7 @@ export default function Backers({ backers }: any) {
           : <div key={'backer-' + i} className={className}><Avatar /></div>
       )
     })}
-    <Link href="#become-a-backer" className="app-object app-object-interactive flex-col round aspect-ratio:1/1">
+    <Link href="#become-a-backer" className="flex-direction:column round aspect-ratio:1/1 app-object app-object-interactive">
       <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill="currentColor">
         <path d="M0 0h24v24H0V0z" fill="none" />
         <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />

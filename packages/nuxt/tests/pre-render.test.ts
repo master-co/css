@@ -45,7 +45,7 @@ it('externalizes Nitro prerender hydration manifests', () => {
     fileName: 'index.html',
     contents: [
       '<html><head>',
-      '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+      "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
       `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
       '</head></html>'
     ].join('')
@@ -95,7 +95,7 @@ it('registers hydration externalization on Nitro prerender generation', () => {
       fileName: 'index.html',
       contents: [
         '<html><head>',
-        '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
         '</head></html>'
       ].join('')

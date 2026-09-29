@@ -6,14 +6,25 @@ import { createToolingSessionSync } from '../../src/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
-  version: 2, languageVersion: 4,
-  utilities: [{
-    id: '.block',
-    name: 'block',
-    type: -2,
-    emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
-    matchers: [{ type: 'static', name: 'block' }]
-  }]
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 
 const factories = {
@@ -40,8 +51,8 @@ for (const [name, create] of Object.entries(factories)) {
         const classes = ['block', 'display:flex', 'unknown']
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
-        expect(session.formatDirectives({ source: " @utility box { display:block; } " })).toEqual(
-          full.formatDirectives({ source: " @utility box { display:block; } " })
+        expect(session.formatDirectives({ source: " @mixin --box { display:block; } " })).toEqual(
+          full.formatDirectives({ source: " @mixin --box { display:block; } " })
         )
       } finally {
         session.dispose()

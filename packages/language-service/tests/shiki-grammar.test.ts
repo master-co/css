@@ -45,12 +45,12 @@ test.concurrent('defines deterministic directive scopes with native blocks', () 
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
   const directive = grammarEntry('master-directive')
-  for (const name of ['theme', 'utility', 'safelist', 'custom-variant']) {
+  for (const name of ['theme', 'mixin|apply', 'safelist', 'custom-variant']) {
     const pattern = findGrammarPattern(directive, pattern => pattern.begin === `(?i)(@)(${name})\\b`)
     expect(pattern.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   }
-  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(utility)') === true)
-  expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-utility-prelude'])
+  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(mixin|apply)') === true)
+  expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-mixin-prelude'])
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-theme-prelude')
   const classFragment = grammarEntry('master-class-fragment')
@@ -90,7 +90,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@utility btn {\n        @safelist \"inline-flex fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
+    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@mixin --btn {\n        @safelist \"display:inline-flex fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme

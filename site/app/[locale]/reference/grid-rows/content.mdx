@@ -3,12 +3,12 @@
 
 ## Basic usage \{#basic-usage\}
 ### Create equal rows \{#create-equal-rows\}
-`grid-rows:3` sets `display:grid`, `grid-auto-flow:column` and three equal rows using `repeat(3,minmax(0,1fr))`. Six items fill down the first column, then down the second. A 224px container leaves 192px after its two 16px row gaps, producing three 64px rows.
+`grid-rows(3)` sets `display:grid`, `grid-auto-flow:column` and three equal rows using `repeat(3,minmax(0,1fr))`. Six items fill down the first column, then down the second. A 224px container leaves 192px after its two 16px row gaps, producing three 64px rows.
 
 <DemoExample page="grid-rows" section="create-equal-rows" />
 
 ```html
-<div id="layout" class="grid-rows:3 grid-auto-columns:1fr gap-md h:14rem w:17.5rem max-w:100%">
+<div id="layout" class="grid-rows(3) grid-auto-columns:1fr gap-md height:14rem width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -21,7 +21,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid-rows:3']}
+    {['grid-rows(3)']}
   </Class2CSS>
 </details>
 
@@ -33,7 +33,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-rows" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid-rows:2 grid-auto-columns:1fr gap-md h:14rem w:17.5rem max-w:100% grid-rows:3@sm">
+<div id="layout" class="grid-rows(2) grid-auto-columns:1fr gap-md height:14rem width:17.5rem max-width:100% grid-rows(3)@sm">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

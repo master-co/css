@@ -24,25 +24,28 @@ afterEach(() => {
 
 it('previews by default, writes safe files, and is idempotent', async () => {
   const cwd = project()
-  const source = '<div class="font:mono p:4x fg:red:hover"></div>'
+  const source = "<div class=\"font:mono p:4x fg:red:hover\"></div>"
   fs.writeFileSync(path.join(cwd, 'index.html'), source)
   const preview = migrate(['index.html'], { cwd })
   expect(preview.files.find(file => file.path === 'index.html')!.edits).toHaveLength(3)
   expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe(source)
   const written = migrate(['index.html'], { cwd, write: true })
   expect(written.files.find(file => file.path === 'index.html')!.written).toBe(true)
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe('<div class="font-mono p:1rem fg-red:hover"></div>')
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe("<div class=\"font-mono padding:1rem fg-red:hover\"></div>")
   expect(migrate(['index.html'], { cwd }).files.find(file => file.path === 'index.html')!.edits).toEqual([])
   const entry = path.join(cwd, 'app.css')
-  const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: { version: 2, languageVersion: 4 } })
+  const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })
 
 it('does not write dynamic classes, cascade risks, or selector references', () => {
   const cwd = project()
   const inputs = {
-    'dynamic.tsx': 'const view = <div className={`p:${size} font:mono`} />',
-    'cascade.html': '<div class="p:md p:8px"></div>',
+    'dynamic.tsx': "const view = <div className={`padding:${size} font:mono`} />",
+    'cascade.html': "<div class=\"padding:md padding:8px\"></div>",
     'selector.ts': 'document.querySelector(".font\\\\:mono")',
     'safe.html': '<div class="font:mono"></div>'
   }
@@ -55,11 +58,11 @@ it('does not write dynamic classes, cascade risks, or selector references', () =
 
 it('fails before writing when the saved configuration cannot be read', () => {
   const cwd = project()
-  fs.writeFileSync(path.join(cwd, 'index.html'), '<div class="p:4x"></div>')
+  fs.writeFileSync(path.join(cwd, 'index.html'), "<div class=\"padding:4x\"></div>")
   expect(() => migrate(['index.html'], { cwd, manifest: 'missing.json', write: true })).toThrow()
   fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), '{broken')
   expect(() => migrate(['index.html'], { cwd, write: true })).toThrow()
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toContain('p:4x')
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toContain("padding:4x")
 })
 
 it('reads custom RC units and preserves native resolution descriptors', () => {
@@ -69,17 +72,17 @@ it('reads custom RC units and preserves native resolution descriptors', () => {
   manifest.settings = { ...manifest.settings, baseUnit: 6, rootSize: 20 }
   fs.writeFileSync(path.join(cwd, 'app.css'), '@master entry; @settings { base-unit:6; root-size:20; }')
   fs.writeFileSync(manifestPath, JSON.stringify(manifest))
-  fs.writeFileSync(path.join(cwd, 'index.html'), '<div class="m:-2.5x p:calc(4x+2px) background-image:image-set(url(a.png)|1x,url(b.png)|2x)"></div>')
+  fs.writeFileSync(path.join(cwd, 'index.html'), "<div class=\"m:-2.5x p:calc(4x|+|2px) background-image:image-set(url(a.png)|1x,url(b.png)|2x)\"></div>")
   const result = migrate(['index.html'], { cwd, write: true })
   expect(result.files.find(file => file.path === 'index.html')!.review).toEqual([])
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe('<div class="m:-0.75rem p:calc(1.2rem+2px) background-image:image-set(url(a.png)|1x,url(b.png)|2x)"></div>')
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe("<div class=\"margin:-0.75rem padding:calc(1.2rem|+|2px) background-image:image-set(url(a.png)|1x,url(b.png)|2x)\"></div>")
 })
 
 
 it('previews the named RC profile with the saved root size and blocks a mixed unsafe batch', () => {
   const cwd = project()
   const saved = {
-    version: 1, packageVersion: '2.0.0-rc.named', settings: { rootSize: 20 },
+    version: 1 as const, packageVersion: '2.0.0-rc.named', settings: { rootSize: 20 },
     variables: { spacing: [{ key: 'md', value: '1rem' }] }, utilities: []
   }
   fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), JSON.stringify(saved))
@@ -88,7 +91,7 @@ it('previews the named RC profile with the saved root size and blocks a mixed un
   fs.writeFileSync(path.join(cwd, 'safe.html'), safe)
   fs.writeFileSync(path.join(cwd, 'unsafe.html'), unsafe)
   const result = runMigrate(['*.html'], { cwd, from: 'rc-named', write: true })
-  expect(result).toMatchObject({ version: 2, from: 'rc-named', sourceVersion: saved.packageVersion })
+  expect(result).toMatchObject({ version: 2 as const, from: 'rc-named', sourceVersion: saved.packageVersion })
   expect(result.configurationCSS).toContain('@custom-variant dark')
   expect(result.files.find(file => file.path === 'safe.html')?.edits).toEqual([
     expect.objectContaining({ before: 'p-md@>=800', after: 'p-md@media((width>=40rem))' })
@@ -185,13 +188,13 @@ it('migrates rc-managed native components in preview and atomically blocks unsaf
 it('previews rc-utilities and blocks every write when one typed definition needs review', () => {
   const cwd = project()
   fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), JSON.stringify({
-    version: 1, languageVersion: 2, packageVersion: '2.0.0-rc.utilities', utilities: []
+    version: 1 as const, languageVersion: 2 as const, packageVersion: '2.0.0-rc.utilities', utilities: []
   }))
   const safe = '@master entry; @utilities { pair:<number|*> { width:--value(); height:--value(); } }'
   fs.writeFileSync(path.join(cwd, 'app.css'), safe)
   const options = { cwd, from: 'rc-utilities' as const }
   const preview = runMigrate(['app.css'], options)
-  expect(preview.files[0].edits.find(edit => edit.before.includes('@utilities'))!.after).toContain('@utility pair:*')
+  expect(preview.files[0].edits.find(edit => edit.before.includes('@utilities'))!.after).toContain('@mixin --pair(--value)')
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(safe)
   fs.writeFileSync(path.join(cwd, 'unsafe.css'), '@utilities { limited:<number> { width:--value(); } }')
   const blocked = runMigrate(['*.css'], { ...options, write: true })
@@ -206,7 +209,7 @@ it('previews rc-utilities and blocks every write when one typed definition needs
 it('migrates rc-sizing as one grouped class, preserves preview and blocks competing dimensions', () => {
   const cwd = nativeProject()
   const manifest = { ...preset, packageVersion: '2.0.0-rc.sizing', utilities: [...preset.utilities, {
-    id: 'size:<*>', type: -1, emit: { type: 'static', rules: [{ declarations: { width: null, height: null } }] }, matchers: [{ type: 'key', keys: ['size'] }]
+    id: 'size:<*>', type: -1, emit: { type: "static" as const, rules: [{ declarations: { width: null, height: null } }] }, matchers: [{ type: 'key' as const, keys: ['size'] }]
   }] }
   fs.writeFileSync(path.join(cwd, 'master.rc.manifest.json'), JSON.stringify(manifest))
   const file = path.join(cwd, 'index.html')

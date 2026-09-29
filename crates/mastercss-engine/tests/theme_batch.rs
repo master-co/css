@@ -73,13 +73,11 @@ fn assert_replay(
 #[test]
 fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals() {
     let manifest = json!({
-        "version": 2,"languageVersion":4,
+        "version":3,"languageVersion":5,
         "variables": {"": (0..200).map(|i| json!({"name":format!("v{i}"),"key":format!("v{i}"),"values":[{"path":[":root,:host"],"value":"red"}]})).collect::<Vec<_>>()},
         "theme": [{"type":"rule","prelude":":root,:host","children":(0..200).map(|i|json!({"type":"declaration","name":format!("v{i}"),"value":"red"})).collect::<Vec<_>>() }],
-        "utilities": (0..200).map(|i| json!({
-            "id":format!("c{i}"),"name":format!("c{i}"),"type":0,
-            "matchers":[{"type":"static","name":format!("c{i}")}],
-            "emit":{"type":"static","rules":[{"declarations":{"color":format!("var(--v{i})")}}]}
+        "mixins": (0..200).map(|i| json!({
+            "name":format!("--c{i}"), "body":[{"type":"declaration","property":"color","value":[{"type":"text","value":format!("var(--v{i})")}]}]
         })).collect::<Vec<_>>()
     }).to_string();
     let classes = (0..200).map(|i| format!("c{i}")).collect::<Vec<_>>();
@@ -142,8 +140,7 @@ fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals()
 #[test]
 fn batches_scoped_tokens_cyclic_dependencies_and_native_animation_properties() {
     let manifest = json!({
-      "version": 2,
-      "languageVersion": 4,
+      "version":3,"languageVersion":5,
       "variables": {
         "": [
           {
@@ -223,53 +220,16 @@ fn batches_scoped_tokens_cyclic_dependencies_and_native_animation_properties() {
           }
         ]
       },
-      "utilities": [
-        {
-          "id": "one",
-          "name": "one",
-          "type": 0,
-          "matchers": [
-            {
-              "type": "static",
-              "name": "one"
-            }
-          ],
-          "emit": {
-            "type": "static",
-            "rules": [
-              {
-                "declarations": {
-                  "color": "var(--a)",
-                  "background": "var(--inline)",
-                  "animation": "pulse 1s"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "two",
-          "name": "two",
-          "type": 0,
-          "layer": "base",
-          "matchers": [
-            {
-              "type": "static",
-              "name": "two"
-            }
-          ],
-          "emit": {
-            "type": "static",
-            "rules": [
-              {
-                "declarations": {
-                  "color": "var(--b)",
-                  "animation": "pulse 1s"
-                }
-              }
-            ]
-          }
-        }
+      "mixins": [
+        {"name":"--one","body":[
+          {"type":"declaration","property":"color","value":[{"type":"text","value":"var(--a)"}]},
+          {"type":"declaration","property":"background","value":[{"type":"text","value":"var(--inline)"}]},
+          {"type":"declaration","property":"animation","value":[{"type":"text","value":"pulse 1s"}]}
+        ]},
+        {"name":"--two","body":[
+          {"type":"declaration","property":"color","value":[{"type":"text","value":"var(--b)"}]},
+          {"type":"declaration","property":"animation","value":[{"type":"text","value":"pulse 1s"}]}
+        ]}
       ],
       "variants": [
         {

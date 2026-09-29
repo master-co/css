@@ -181,7 +181,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
     try {
       const entryPath = path.join(root, 'app.css')
-      const source = "\n        @import url(\"@master/css\");\n\n        body {\n          margin: 0;\n        }\n\n        .native-card,\n        .unused-card {\n          color: red;\n        }\n\n        \n          @utility btn {\n            display: inline-flex;\n          }\n        \n      "
+      const source = "\n        @import url(\"@master/css\");\n\n        body {\n          margin: 0;\n        }\n\n        .native-card,\n        .unused-card {\n          color: red;\n        }\n\n        \n          @mixin --btn {\n            display: inline-flex;\n          }\n        \n      "
       writeFileSync(entryPath, source)
       const ctx = makeContext(SLOT, '')
       ctx.config = {
@@ -226,7 +226,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
     try {
       const entryPath = path.join(root, 'app.css')
-      const source = "\n        @import url(\"@master/css\");\n\n        .native-used,\n        .native-unused {\n          color: var(--color-primary);\n        }\n\n        @theme {:root, :host {\n          --color-primary: #123456;\n        }}\n\n\n        \n          @utility btn {\n            display: grid;\n          }\n        \n      "
+      const source = "\n        @import url(\"@master/css\");\n\n        .native-used,\n        .native-unused {\n          color: var(--color-primary);\n        }\n\n        @theme {:root, :host {\n          --color-primary: #123456;\n        }}\n\n\n        \n          @mixin --btn {\n            display: grid;\n          }\n        \n      "
       writeFileSync(entryPath, source)
       const ctx = makeContext(SLOT, '')
       ctx.config = {

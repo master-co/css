@@ -1,13 +1,13 @@
 
-  @utility card {
+  @mixin --card {
     border-radius: 0.5rem;
   }
-  @utility card-header {
+  @mixin --card-header {
     border-bottom: 0.0625rem solid oklch(0% 0 none);
   }
-  @utility card-content {
+  @mixin --card-content {
     padding: 1.25rem;
   }
-  @utility card-footer {
+  @mixin --card-footer {
     border-top: 0.0625rem solid oklch(0% 0 none);
   }

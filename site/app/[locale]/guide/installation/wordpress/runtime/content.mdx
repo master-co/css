@@ -107,7 +107,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
   <Step $row>
     <StepL>
       ### <StepNum />Prevent unstyled first paint
-      Add `hidden` to the root document in the theme header so the runtime can reveal the page after it starts.
+      Add `display:none` to the root document in the theme header so the runtime can reveal the page after it starts.
     </StepL>
     <StepR>
       ```php name=header.php
@@ -123,7 +123,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
 </StepSection>
 
 ```html name=index.php
-<h1 class="m-2xl italic font-5xl font-heavy text-neutral">
+<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```

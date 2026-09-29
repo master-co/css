@@ -11,7 +11,7 @@
 ```html
 <!-- Local SVG · centered cover -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
          bg-surface-inset background-image:url(/demo/landscape.svg)"
 ></div>
 ```
@@ -33,7 +33,7 @@ Use native gradient functions as background images. Commas inside the function s
 ```html
 <!-- One gradient layer -->
 <div id="target" role="img" aria-label="Blue to violet gradient"
-  class="h:160px w-xs max-w:100%
+  class="height:160px w-xs max-width:100%
          background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))"
 ></div>
 ```
@@ -41,7 +41,7 @@ Use native gradient functions as background images. Commas inside the function s
 ```html
 <!-- Transparent gradient over artwork -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
          background-image:linear-gradient(90deg,transparent,var(--color-blue-50)),url(/demo/landscape.svg)"
 ></div>
 ```
@@ -56,7 +56,7 @@ Widen the preview viewport to `sm` to add the image. The frame, surface color an
 ```html
 <!-- Image appears at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+  class="height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
          background-image:none bg-surface-inset background-image:none@print
          background-image:url(/demo/landscape.svg)@screen@sm"
 ></div>

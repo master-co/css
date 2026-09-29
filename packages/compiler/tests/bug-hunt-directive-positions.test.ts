@@ -7,7 +7,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding} directives and references retain original diagnostic ranges`, async () => {
     using compiler = await createCompiler({ binding })
     for (const prefix of ["@import \"@master/css\";\n", "@reference \"./😀.css\";\r\n@import \"@master/css\";@preserve native;\n", "@source \"./😀.html\";\n/*😀*/@import \"@master/css\";\n"]) {
-      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', '@compose'], ["@utilities {paint {color:red}}", '@utilities'], ['@utility paint {@compose unknown-utility;}', '@compose']]) {
+      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', '@compose'], ["@utilities {paint {color:red}}", '@utilities'], ['@mixin --paint {@compose unknown-utility;}', '@compose']]) {
         const source = prefix + body
         const start = source.indexOf(token!)
         const position = (offset: number) => {
@@ -18,7 +18,37 @@ for (const binding of ['native', 'wasm'] as const) {
         try {
           compiler.compileStylesheets({
             graph: { entry: 'entry.css', files: { 'entry.css': source }, edges: [] }, urls: { 'entry.css': '/entry.css' },
-            baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, resolutionManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
+            baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, resolutionManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
           })
         } catch (error) { caught = error }
         expect(caught).toBeInstanceOf(MasterCSSError)
@@ -30,7 +60,22 @@ for (const binding of ['native', 'wasm'] as const) {
 
 test('BH-0004 local stylesheet lowering retains source text for diagnostics', async () => {
   const source = '/*😀*/\n.example {\n  @compose unknown-utility;\n}'
-  await expect(transformStylesheet('local.css', source, { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })).rejects.toMatchObject({
+  await expect(transformStylesheet('local.css', source, { baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} })).rejects.toMatchObject({
     diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })
 })

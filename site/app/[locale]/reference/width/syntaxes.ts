@@ -1,8 +1,8 @@
 const syntaxes = [
-  'w:100%',
-  'w:fit-content',
-  'w:min-content',
-  'w:max-content',
+  "width:100%",
+  "width:fit-content",
+  "width:min-content",
+  "width:max-content",
   'w-3xs',
   'w-2xs',
   'w-xs',
@@ -16,7 +16,7 @@ const syntaxes = [
   'w-5xl',
   'w-6xl',
   'w-7xl',
-  ['w:`size`'],
+  ["width:`size`"],
 ]
 
 export default syntaxes

@@ -10,13 +10,13 @@ test('BH-0009 tracks class updates in a same-origin iframe Document root', async
     document.body.appendChild(frame)
     const root = frame.contentDocument!
     const element = root.createElement('div')
-    element.className = 'block'
+    element.className = "display:block"
     root.body.appendChild(element)
     const runtime = await globalThis.MasterCSSRuntime.start({ root, manifest })
     try {
       runtime.observe()
       const before = runtime.snapshot().usageCounts
-      element.className = 'hidden'
+      element.className = "display:none"
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
       })
@@ -26,8 +26,8 @@ test('BH-0009 tracks class updates in a same-origin iframe Document root', async
       frame.remove()
     }
   }, defaultManifestJSON as unknown as MasterCSSManifest)
-  expect(result.before).toEqual({ block: 1 })
-  expect(result.after).toEqual({ hidden: 1 })
+  expect(result.before).toEqual({ 'display:block': 1 })
+  expect(result.after).toEqual({ 'display:none': 1 })
 })
 
 for (const kind of ['document', 'shadow'] as const) {
@@ -48,14 +48,14 @@ for (const kind of ['document', 'shadow'] as const) {
       try {
         runtime.observe()
         const subtree = owner.createElement('div')
-        subtree.className = 'block'
+        subtree.className = "display:block"
         const child = owner.createElementNS('http://www.w3.org/2000/svg', 'svg')
-        child.setAttribute('class', 'block')
-        subtree.append(child, owner.createTextNode('text'), owner.createComment('hidden'))
+        child.setAttribute('class', "display:block")
+        subtree.append(child, owner.createTextNode('text'), owner.createComment("display:none"))
         container.append(subtree)
         await flush()
         const added = runtime.snapshot().usageCounts
-        child.setAttribute('class', 'hidden')
+        child.setAttribute('class', "display:none")
         await flush()
         const changed = runtime.snapshot().usageCounts
         const display = owner.defaultView!.getComputedStyle(child).display
@@ -73,6 +73,6 @@ for (const kind of ['document', 'shadow'] as const) {
         frame.remove()
       }
     }, { manifest: defaultManifestJSON as unknown as MasterCSSManifest, kind })
-    expect(result).toEqual({ added: { block: 2 }, changed: { block: 1, hidden: 1 }, display: 'none', moved: { block: 1, hidden: 1 }, removed: {} })
+    expect(result).toEqual({ added: { 'display:block': 2 }, changed: { 'display:block': 1, 'display:none': 1 }, display: 'none', moved: { 'display:block': 1, 'display:none': 1 }, removed: {} })
   })
 }

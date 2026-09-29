@@ -14,7 +14,7 @@ export const metadata = {
 const blue = getColor('blue', 60)
 
 function PreviousSwatch() {
-  return <div className="review-swatch-swatchPrevious"><div className={`review-swatch-colorPrevious bg-demo-blue`} /><span className="demo-label">Subject</span></div>
+  return <div className="review-swatch-swatchPrevious"><div className={`bg-demo-blue review-swatch-colorPrevious`} /><span className="demo-label">Subject</span></div>
 }
 
 export default function Page() {

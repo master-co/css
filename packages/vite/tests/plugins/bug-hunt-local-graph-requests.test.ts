@@ -5,7 +5,7 @@ import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
 
 for (const command of ['serve', 'build'] as const) {
-  test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)(`local graph keeps CSS Modules exports and inline output in ${command}/%s`, async mode => {
+  test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`local graph keeps CSS Modules exports and inline output in ${command}/%s`, async mode => {
     const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
     const root = mkdtempSync(join(parent, 'local-graph-requests-'))
     let server: Awaited<ReturnType<typeof createServer>> | undefined

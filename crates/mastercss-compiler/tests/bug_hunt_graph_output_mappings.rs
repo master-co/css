@@ -19,7 +19,7 @@ fn compile(entry: &str, child: &str, resource_urls: Value) -> Value {
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
         "urls":{"/entry.css":"/entry.css","/child.css":"/assets/very-long-child-😀.css?version=abcdef"},
         "resourceURLs":resource_urls,
-        "baseManifest":{"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]}
+        "baseManifest":{"version":3,"languageVersion":5, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap()
 }
@@ -35,7 +35,7 @@ fn graph_native_anchor_survives_import_url_length_change() {
 fn graph_compose_and_native_siblings_keep_original_child_anchors() {
     let child = "/* 😀 */\n@layer{.card{@variant always{padding:2rem;}}.card{padding:3rem}}";
     let result = compile(
-        "@import './child.css' layer;@utility paint {padding:2rem}",
+        "@import './child.css' layer;@mixin --paint {padding:2rem}",
         child,
         Value::Null,
     );
@@ -53,7 +53,7 @@ fn graph_compose_and_native_siblings_keep_original_child_anchors() {
 #[test]
 fn graph_resource_relocation_preserves_later_authored_ranges() {
     let child = r###".image{background:url('./dot.svg')}/* 😀 */
-.after{margin:1px}@utility paint {padding:2rem}.card{@variant always{padding:2rem;}}"###;
+.after{margin:1px}@mixin --paint {padding:2rem}.card{@variant always{padding:2rem;}}"###;
     let result = compile(
         "@import './child.css';",
         child,
@@ -71,7 +71,7 @@ fn graph_resource_relocation_preserves_later_authored_ranges() {
 }
 #[test]
 fn graph_compose_slot_does_not_replace_a_quoted_marker() {
-    let child = r###"@utility paint {padding:2rem}.label{content:'@--master-css-style-slot-0;'}.card{@variant always{padding:2rem;}}"###;
+    let child = r###"@mixin --paint {padding:2rem}.label{content:'@--master-css-style-slot-0;'}.card{@variant always{padding:2rem;}}"###;
     let result = compile("@import './child.css';", child, Value::Null);
     let css = result["stylesheets"][1]["css"].as_str().unwrap();
     assert!(css.contains("\"@--master-css-style-slot-0;\""), "{css}");
@@ -80,11 +80,11 @@ fn graph_compose_slot_does_not_replace_a_quoted_marker() {
 
 #[test]
 fn graph_native_suppression_keeps_composed_conditions_and_layer_identity() {
-    let source = r###"@utility paint {padding:2rem}.plain{margin:1px}@media print{@layer{.card{@variant always{padding:2rem;}}.other{@variant always{padding:2rem;}}}}"###;
+    let source = r###"@mixin --paint {padding:2rem}.plain{margin:1px}@media print{@layer{.card{@variant always{padding:2rem;}}.other{@variant always{padding:2rem;}}}}"###;
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"/entry.css","files":{"/entry.css":source},"edges":[]},
         "urls":{"/entry.css":"/entry.css"},"options":{"preserveNativeCSS":false},
-        "baseManifest":{"version":2,"languageVersion":4, "customMedia":{"--always":{"type":"true"}},"utilities":[]}
+        "baseManifest":{"version":3,"languageVersion":5, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
     }))
     .unwrap();
     let result = serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap();

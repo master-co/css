@@ -57,7 +57,7 @@ export default function Password() {
           <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
 
           <form onSubmit={updatePassword} className="space-y-6">
-            <div className="grid gap-2">
+            <div className="display:grid gap-2">
               <Label htmlFor="current_password">Current password</Label>
 
               <Input
@@ -66,7 +66,7 @@ export default function Password() {
                 value={data.current_password}
                 onChange={(e) => setData('current_password', e.target.value)}
                 type="password"
-                className="block mt-1 w-full"
+                className="display:block mt-1 w-full"
                 autoComplete="current-password"
                 placeholder="Current password"
               />
@@ -74,7 +74,7 @@ export default function Password() {
               <InputError message={errors.current_password} />
             </div>
 
-            <div className="grid gap-2">
+            <div className="display:grid gap-2">
               <Label htmlFor="password">New password</Label>
 
               <Input
@@ -83,7 +83,7 @@ export default function Password() {
                 value={data.password}
                 onChange={(e) => setData('password', e.target.value)}
                 type="password"
-                className="block mt-1 w-full"
+                className="display:block mt-1 w-full"
                 autoComplete="new-password"
                 placeholder="New password"
               />
@@ -91,7 +91,7 @@ export default function Password() {
               <InputError message={errors.password} />
             </div>
 
-            <div className="grid gap-2">
+            <div className="display:grid gap-2">
               <Label htmlFor="password_confirmation">Confirm password</Label>
 
               <Input
@@ -99,7 +99,7 @@ export default function Password() {
                 value={data.password_confirmation}
                 onChange={(e) => setData('password_confirmation', e.target.value)}
                 type="password"
-                className="block mt-1 w-full"
+                className="display:block mt-1 w-full"
                 autoComplete="new-password"
                 placeholder="Confirm password"
               />
@@ -107,7 +107,7 @@ export default function Password() {
               <InputError message={errors.password_confirmation} />
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="display:flex align-items:center gap-4">
               <Button disabled={processing}>Save password</Button>
 
               <Transition

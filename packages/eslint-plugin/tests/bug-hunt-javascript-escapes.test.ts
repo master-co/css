@@ -6,7 +6,10 @@ import * as svelteParser from 'svelte-eslint-parser'
 import plugin from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
-const manifest = createPresetManifest()
+// Explicit local recipes keep escape-decoding cases independent of preset aliases.
+const manifest = createPresetManifest({ mixins: ['block', 'hidden'].map(name => ({
+  name: `--${name}`, body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: name === 'block' ? 'block' : 'none' }] }]
+})) })
 function linter(rules: Record<string, any>, fix = false, languageOptions: any = {}) {
   return new ESLint({ fix, overrideConfigFile: true, overrideConfig: [{
     files: ['**/*.{js,jsx,ts,vue,svelte}'],
@@ -17,12 +20,12 @@ function linter(rules: Record<string, any>, fix = false, languageOptions: any = 
 }
 const invalid = { 'no-invalid-classes': ['error', { disallowUnknownClass: true }] }
 const validStrings = [
-  String.raw`"\u0062lock"`, String.raw`'\u{62}lock'`, String.raw`"\x62lock"`,
+  String.raw`"display:\u0062lock"`, String.raw`'\u{62}lock'`, String.raw`"\x62lock"`,
   String.raw`"blo\ck"`,
   String.raw`"block\u0020hidden"`, String.raw`"block\x20hidden"`, String.raw`"block\nhidden"`,
   String.raw`"block\thidden"`, String.raw`"block\rhidden"`, String.raw`"block\fhidden"`,
   '"blo\\\nck"', '"blo\\\r\nck"', '"blo\\\u2028ck"',
-  '`\\u0062lock`', '`block\r\nhidden`', String.raw`"content:'\u{1F600}'"`,
+  '`\display:\u0062lock`', '`block\r\nhidden`', String.raw`"content:'\u{1F600}'"`,
   String.raw`"content:'\uD83D\uDE00'"`, String.raw`"content:'\\b'"`
 ]
 it.each(validStrings)('recognizes the parser cooked value of %s', async literal => {
@@ -55,17 +58,17 @@ it('recognizes legacy octal escapes when the JavaScript parser accepts them', as
     languageOptions: { sourceType: 'script' }, plugins: { '@master/css': plugin },
     settings: { '@master/css': { manifest } }, rules: { '@master/css/no-invalid-classes': invalid['no-invalid-classes'] }
   }] })
-  const [result] = await eslint.lintText(String.raw`clsx("\142lock")`, { filePath: 'legacy.js' })
+  const [result] = await eslint.lintText(String.raw`clsx("display:\142lock")`, { filePath: 'legacy.js' })
   expect(result.messages).toEqual([])
 })
 it.each([
-  String.raw`clsx("fg-white \u0062g:black")`,
-  String.raw`clsx("fg:white\u0020bg:black")`,
+  String.raw`clsx("fg-white \u0062ackground:black")`,
+  String.raw`clsx("color:white\u0020background:black")`,
   String.raw`clsx('fg-white content:\'a\\b\' bg-black')`,
   'clsx(`fg-white content:\'\\${value}\' bg-black`)',
-  'clsx(`\n fg:white\n bg:black\n`)',
-  'clsx(`\r\n fg:white\\r\\n bg:black\r\n`)',
-  'clsx("fg:white\\\n bg-black")'
+  'clsx(`\n color:white\n background:black\n`)',
+  'clsx(`\r\n color:white\\r\\n background:black\r\n`)',
+  'clsx("color:white\\\n bg-black")'
 ])('sorts escaped strings with valid syntax, equivalent classes and stable fixes: %s', async source => {
   const eslint = linter({ 'sort-classes': 'error' }, true)
   const [result] = await eslint.lintText(source, { filePath: 'escape.js' })
@@ -80,15 +83,15 @@ it.each([
 
 it('maps conflict removal and canonical replacement through escaped separators', async () => {
   const eslint = linter({ 'sort-classes': 'error', 'no-conflicting-classes': 'error', 'prefer-canonical-classes': 'error' }, true)
-  const [result] = await eslint.lintText(String.raw`clsx('padding-md\u0020p:8px \u0062lock')`, { filePath: 'escape.js' })
+  const [result] = await eslint.lintText(String.raw`clsx('padding-md\u0020padding:8px display:\u0062lock')`, { filePath: 'escape.js' })
   expect(result.messages).toEqual([])
-  expect(cooked(result.output!)).toBe('block p:8px')
+  expect(cooked(result.output!)).toBe('display:block padding:8px')
   const [again] = await eslint.lintText(result.output!, { filePath: 'escape.js' })
   expect(again.output).toBeUndefined()
 })
 
 it('uses cooked policy values and original ranges for unapproved raw values', async () => {
-  const raw = String.raw`fg:\u0023ff0000`
+  const raw = String.raw`color:\u0023ff0000`
   const source = `clsx("${raw}")`
   const [result] = await linter({ 'no-unapproved-raw-values': 'error' }).lintText(source, { filePath: 'escape.js' })
   expect(result.messages).toHaveLength(1)
@@ -96,9 +99,9 @@ it('uses cooked policy values and original ranges for unapproved raw values', as
 })
 
 it.each([
-  ['jsx', String.raw`const view = <div className={"\u0062lock"} />`, undefined],
-  ['vue', String.raw`<template><div :class="'\u0062lock'" /></template>`, vueParser],
-  ['svelte', String.raw`<div class={'\u0062lock'} />`, svelteParser]
+  ['jsx', String.raw`const view = <div className={"display:\u0062lock"} />`, undefined],
+  ['vue', String.raw`<template><div :class="'display:\u0062lock'" /></template>`, vueParser],
+  ['svelte', String.raw`<div class={'display:\u0062lock'} />`, svelteParser]
 ])('recognizes JavaScript expression escapes inside %s', async (extension, source, frameworkParser) => {
   const [result] = await linter(invalid, false, frameworkParser ? { parser: frameworkParser } : {}).lintText(source as string, { filePath: `escape.${extension}` })
   expect(result.messages).toEqual([])
@@ -115,13 +118,13 @@ it.each([
 })
 
 it.each(['\n', '\r\n', '\r'])('preserves template literal line endings when sorting: %j', async newline => {
-  const source = ['clsx(`', '  fg:white', '  bg:black', '`)'].join(newline)
-  const expected = ['clsx(`', '  bg:black', '  fg:white', '`)'].join(newline)
+  const source = ['clsx(`', '  color:white', '  background:black', '`)'].join(newline)
+  const expected = ['clsx(`', '  background:black', '  color:white', '`)'].join(newline)
   const eslint = linter({ 'sort-classes': 'error' }, true)
   const [result] = await eslint.lintText(source, { filePath: 'line-endings.js' })
   expect(result.messages).toEqual([])
   expect(result.output).toBe(expected)
-  expect(cooked(result.output!)).toBe('\n  bg:black\n  fg:white\n')
+  expect(cooked(result.output!)).toBe('\n  background:black\n  color:white\n')
   const [again] = await eslint.lintText(result.output!, { filePath: 'line-endings.js' })
   expect(again.output).toBeUndefined()
 })

@@ -67,7 +67,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { className, ...buttonProps } = props
   return (
     <button
-      className={['inline-flex items-center gap-xs min-h:2.5rem px-md r-md bg-primary fg-white', className].filter(Boolean).join(' ')}
+      className={['display:inline-flex align-items:center gap-xs min-height:2.5rem px-md r-md bg-primary fg-white', className].filter(Boolean).join(' ')}
       type="button"
       {...buttonProps}
     />
@@ -129,7 +129,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
   return (
     <button
-      className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
+      className={['display:inline-flex align-items:center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
       type="button"
       {...props}
     />
@@ -147,9 +147,9 @@ Runtime values should not become generated class names. Keep the class static an
 ```tsx
 export function Meter({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:0.5rem r:100% bg-gray-10">
+    <div className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
       <div
-        className="h:100% w:var(--value) bg-green-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
+        className="height:100% width:var(--value) bg-green-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--value': `${value}%` } as React.CSSProperties}
       />
     </div>

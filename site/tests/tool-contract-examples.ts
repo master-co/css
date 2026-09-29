@@ -10,7 +10,7 @@ export async function verifyToolContractExamples() {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-doc-contract-')))
   mkdirSync(join(root, 'src'))
   const file = join(root, 'src/button.html')
-  const source = '<button class="bg-blue-60 p-md flex gap-sm">Save</button>'
+  const source = "<button class=\"bg-blue-60 p-md display:flex gap-sm\">Save</button>"
   writeFileSync(file, source)
   writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@theme { :root { --color-brand: blue; } }')
   const connection = await connect(root)
@@ -32,11 +32,11 @@ export async function verifyToolContractExamples() {
     assert.match(reports.inspect_class.css, /padding:var\(--spacing-md\)/)
     assert.equal(reports.trace_class.status, 'present')
     assert.equal(reports.trace_class.detected, true)
-    assert.deepEqual(reports.extract_classes.files[0].classes.map((item: any) => item.token), ['flex', 'gap-sm', 'p-md'])
+    assert.deepEqual(reports.extract_classes.files[0].classes.map((item: any) => item.token), ['display:flex', 'gap-sm', 'p-md'])
     assert.equal(reports.extract_classes.inputs.mode, 'content')
     assert.equal(reports.inspect_directives.status, 'ok')
     assert.equal(reports.inspect_directives.directiveEntries[0].name, 'theme')
-    assert.deepEqual(reports.render_css.classes, ['flex', 'gap-sm'])
+    assert.deepEqual(reports.render_css.classes, ['display:flex', 'gap-sm'])
     assert.match(reports.render_css.css.text, /display:flex/)
     assert.deepEqual(reports.scan_project.missingCSS.missing, [])
     assert.ok(reports.scan_project.missingCSS.present.some((item: any) => item.className === 'p-md'))
@@ -59,7 +59,7 @@ export async function verifyToolContractExamples() {
     assert.ok(preview.changes[0].diff.includes('-' + source))
     const applied = value<any>(await connection.call('mastercss_apply_preview', { ...mcpEditorial.mastercss_apply_preview.example, confirmToken: preview.confirmToken }))
     assert.equal(applied.applied, true)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="flex gap-sm p-md bg-blue-60">Save</button>')
+    assert.equal(readFileSync(file, 'utf8'), "<button class=\"display:flex gap-sm p-md bg-blue-60\">Save</button>")
   } finally { await connection.close(); rmSync(root, { recursive: true, force: true }) }
   // Contributor requests read this actual repository; no preview or write tool is called here.
   const repo = fileURLToPath(new URL('../../', import.meta.url))

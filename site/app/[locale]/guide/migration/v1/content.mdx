@@ -27,7 +27,7 @@ Inspect the v1 project before changing files.
 | Packages | `@master/css`, runtime, server, framework packages, language tooling, and ESLint packages | Replace v1 packages with the current package or integration that owns the behavior. |
 | Runtime setup | Manual runtime initialization, framework runtime helpers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
 | CSS entries | Imported Master CSS files, generated CSS files, global styles, and old config references | Create a current CSS entry with `@import "@master/css";`. |
-| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@custom-variant`, `@layer components`, and `@utility`. |
+| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@custom-variant`, `@layer components`, and `@mixin`. |
 | Class syntax | Old class strings, dynamic class builders, custom utilities, selectors, variables, and important flags | Convert intentionally and validate generated CSS. |
 | Tooling | Editor extension, language service, lint rules, build commands, and CI scripts | Update after the app compiles with current packages. |
 
@@ -78,13 +78,13 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 @custom-media --dashboard (width >= 72rem);
 ```
 
-{/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
+{ }
 ```html
-<section class="grid gap-lg r-card fg-body grid-cols:3@dashboard p-card">
+<section class="display:grid gap-lg r-card fg-body grid-cols:3@dashboard p-card">
   ...
 </section>
 ```
-{/* eslint-enable @master/css/no-invalid-classes */}
+{ }
 
 Keep non-CSS application configuration in JavaScript or TypeScript. Move only values that are part of the styling vocabulary.
 
@@ -129,10 +129,10 @@ If the v1 project had reusable component abstractions, migrate them to `@layer c
 </article>
 ```
 
-Use `@utility` when the reusable name is a low-level primitive rather than a component role.
+Use `@mixin` when the reusable name is a low-level primitive rather than a component role.
 
 ```css name=app.css
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -146,7 +146,7 @@ Current Master CSS class strings should be complete, explicit, and validated by 
 Use current syntax for states, conditions, native declarations, and CSS variables:
 
 ```html
-<button class="inline-flex items-center gap-xs h:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
+<button class="display:inline-flex align-items:center gap-xs height:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```
@@ -154,9 +154,9 @@ Use current syntax for states, conditions, native declarations, and CSS variable
 ```tsx
 function Progress({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:0.5rem r:100% bg-gray-10">
+    <div className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
       <div
-        className="h:100% w:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
+        className="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--progress': `${value}%` } as React.CSSProperties}
       />
     </div>
@@ -194,5 +194,5 @@ After replacing setup code, remove old imports, virtual module names, config loa
 - [Rendering modes](/guide/rendering-modes) for runtime, static, server, and progressive delivery.
 - [Style declarations](/reference/rules/declarations) for current class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for native theme selectors and conditions, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@layer components`, `@utility`, `@reference`, and source exceptions.
+- [CSS directives](/reference#directives) for `@layer components`, `@mixin`, `@reference`, and source exceptions.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static-safe complete class strings.

@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- Explicit longhands retain decoration lines; the shorthand resets them. Raw underline offsets require the native property. */}
+{ }
 
 ## Examples \{#examples\}
 ### Move underline away from text \{#move-underline-away-from-text\}
@@ -11,7 +11,7 @@
 ```html
 <!-- Underline offset · 2px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:2px text-underline-offset:2px"
 >
   Typography
@@ -21,7 +21,7 @@
 ```html
 <!-- Underline offset · 6px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:2px text-underline-offset:6px"
 >
   Typography
@@ -45,7 +45,7 @@ Choose the line weight and offset independently. This pair uses the same 4px off
 ```html
 <!-- 4px offset · 1px thickness -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:1px text-underline-3xs"
 >
   Typography
@@ -55,7 +55,7 @@ Choose the line weight and offset independently. This pair uses the same 4px off
 ```html
 <!-- 4px offset · 3px thickness -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:3px text-underline-3xs"
 >
   Typography
@@ -72,7 +72,7 @@ Resize past `sm` to reset this underline’s offset from 6px to zero. The line b
 ```html
 <!-- 6px offset · zero at sm -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline
          text-decoration-thickness:2px text-underline-offset:6px
          text-underline-offset:0@sm"
 >
@@ -90,7 +90,7 @@ Hover or focus to move the underline from 2px to 6px. Print returns to 2px. The 
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font-2xl leading-xl underline text-decoration-thickness:2px
+  class="font-2xl leading-xl text-decoration:underline text-decoration-thickness:2px
          text-underline-offset:2px text-underline-offset:2px@print
          text-underline-offset:6px:hover@screen
          text-underline-offset:6px:focus-visible@screen"
@@ -99,4 +99,4 @@ Hover or focus to move the underline from 2px to 6px. Print returns to 2px. The 
 </button>
 ```
 
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

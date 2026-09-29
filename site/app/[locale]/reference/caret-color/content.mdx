@@ -11,22 +11,22 @@ Focus either input and edit its value. `caret-color-blue` requests a colored ins
 
 ```html
 <!-- Automatic caret -->
-<label class="grid gap-sm w:240px max-w:100%">
+<label class="display:grid gap-sm width:240px max-width:100%">
   Layer name
   <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
-    class="w:100% caret-color:auto">
+    class="width:100% caret-color:auto">
 </label>
-<p id="caret-help" class="mb:0 mt-sm font-xs text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
+<p id="caret-help" class="margin-bottom:0 mt-sm font-xs fg-text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
 ```
 
 ```html
 <!-- Blue caret -->
-<label class="grid gap-sm w:240px max-w:100%">
+<label class="display:grid gap-sm width:240px max-width:100%">
   Layer name
   <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
-    class="w:100% caret-color-blue">
+    class="width:100% caret-color-blue">
 </label>
-<p id="caret-help" class="mb:0 mt-sm font-xs text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
+<p id="caret-help" class="margin-bottom:0 mt-sm font-xs fg-text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
 ```
 
 <details>
@@ -43,12 +43,12 @@ Use `caret-color-current` to follow the input’s foreground color. The semantic
 
 ```html
 <!-- Caret follows text -->
-<label class="grid gap-sm w:240px max-w:100%">
+<label class="display:grid gap-sm width:240px max-width:100%">
   Layer name
   <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
-    class="w:100% text-blue caret-color-current">
+    class="width:100% fg-text-blue caret-color-current">
 </label>
-<p id="caret-help" class="mb:0 mt-sm font-xs text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
+<p id="caret-help" class="margin-bottom:0 mt-sm font-xs fg-text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
 ```
 
 ### Hide the caret intentionally \{#hide-the-caret-intentionally\}
@@ -58,12 +58,12 @@ Use `caret-color-current` to follow the input’s foreground color. The semantic
 
 ```html
 <!-- Transparent caret -->
-<label class="grid gap-sm w:240px max-w:100%">
+<label class="display:grid gap-sm width:240px max-width:100%">
   Layer name
   <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
-    class="w:100% caret-color:transparent">
+    class="width:100% caret-color:transparent">
 </label>
-<p id="caret-help" class="mb:0 mt-sm font-xs text-muted">The caret is hidden. This is a behavior demonstration, not a complete custom editor.</p>
+<p id="caret-help" class="margin-bottom:0 mt-sm font-xs fg-text-muted">The caret is hidden. This is a behavior demonstration, not a complete custom editor.</p>
 ```
 
 Only hide the native caret when an editing implementation provides a usable replacement. This class does not draw one or disable keyboard input.
@@ -75,14 +75,14 @@ Use `caret-color-violet:focus` to change the insertion caret when the field rece
 
 ```html
 <!-- Focus changes only the caret -->
-<label class="grid gap-sm w:240px max-w:100%">
+<label class="display:grid gap-sm width:240px max-width:100%">
   Layer name
   <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
-    class="w:100% text-blue caret-color-current
+    class="width:100% fg-text-blue caret-color-current
            caret-color-violet:focus">
 </label>
-<p id="caret-help" class="mb:0 mt-sm font-xs text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
-<label class="flex items-center gap-sm mt-md">
+<p id="caret-help" class="margin-bottom:0 mt-sm font-xs fg-text-muted">Type a name, then move the insertion caret with the arrow keys.</p>
+<label class="display:flex align-items:center gap-sm mt-md">
   <input type="checkbox"> Lock layer after editing
 </label>
 ```

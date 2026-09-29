@@ -23,7 +23,7 @@ capability callbacks. Do not add a TypeScript semantic fallback.
 The public JavaScript architecture is intentionally concentrated into three primary
 surfaces:
 
-- `@master/css` executes Manifest v2 and exposes the stable CSS entrypoints.
+- `@master/css` executes Manifest v3 and exposes the stable CSS entrypoints.
 - `@master/css-compiler` owns CSS authoring, project loading, stylesheet composition,
   and project inspection.
 - `@master/css-tooling` owns lexer, source extraction, scanning, validation, lint, and
@@ -40,7 +40,7 @@ matching, value and selector semantics, modes, variables, animations, layer plac
 priority, and CSS bytes. `packages/css` must not grow config resolution, declarers,
 transformers, or duplicated parsers.
 
-`packages/preset` owns the default preset CSS and generated default Manifest v2. The
+`packages/preset` owns the default preset CSS and generated default Manifest v3. The
 stable layer statement remains:
 
 ```txt
@@ -63,7 +63,7 @@ Important files:
 `packages/compiler` contains four cohesive host responsibilities:
 
 - Root compiler sessions for directive inspection, lowering, normalization, and
-  Manifest v2 compilation.
+  Manifest v3 compilation.
 - `./project` for entry discovery, project manifests, sync loading, and workspace
   package resolution.
 - `./stylesheet` for managed stylesheet lifecycle, extraction policy, native CSS

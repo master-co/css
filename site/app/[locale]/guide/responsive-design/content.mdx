@@ -4,7 +4,7 @@
 </ResizeZone>
 ```html
 <!-- @MARK @xs @sm @md -->
-<div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
+<div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
 Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [breakpoint tokens](/guide/breakpoints), while container queries use [container size tokens](/guide/containers).
 
@@ -19,19 +19,19 @@ These breakpoints enable developers to change layouts, typography, spacing, and 
 The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [breakpoint theme token](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
-<div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
+<div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
 
 ### Querying viewport ranges
 Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex viewport range queries.
 ```html
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
-<div class="hidden@media((52.125rem<=width<=64rem))">…</div>
+<div class="display:none@media((52.125rem<=width<=64rem))">…</div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@media((52.125rem<=width<=64rem))']}
+    {['display:none@media((52.125rem<=width<=64rem))']}
   </Class2CSS>
 </details>
 
@@ -53,11 +53,11 @@ The `container` class is a utility class that applies the `container-type: inlin
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
   <Demo>
-    <div className="overflow:hidden container w:100% b:1px|solid|var(--color-line-divider) r-lg surface-raised">
-      <div className="flex flex-col@container((width<=18rem))">
-        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-cover {w:100%;aspect-ratio:16/9}@container((width<=18rem))" width={300} height={200} alt="container left" />
-        <div className='p:var(--spacing-lg)|var(--spacing-xl)'>
-          <div className='text-md font-medium text-neutral'>Lorem ipsum</div>
+    <div className="overflow:hidden container-type:inline-size width:100% r-lg border:1px|solid|var(--color-line-divider) surface-raised">
+      <div className="display:flex flex-direction:column@container((width<=18rem))">
+        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover {width:100%;aspect-ratio:16/9}@container((width<=18rem))" width={300} height={200} alt="container left" />
+        <div className='padding:var(--spacing-lg)|var(--spacing-xl)'>
+          <div className='text-md font-medium fg-text-neutral'>Lorem ipsum</div>
           <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
         </div>
       </div>
@@ -65,15 +65,15 @@ The `container` class is a utility class that applies the `container-type: inlin
   </Demo>
 </ResizeZone>
 ```html
-<div class="container …">
+<div class="container-type:inline-size …">
   <!-- @MARK @container((width<=18rem)) -->
-  <div class="flex flex-col@container((width<=18rem))">…</div>
+  <div class="display:flex flex-direction:column@container((width<=18rem))">…</div>
 </div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'flex-col@container((width<=18rem))']}
+    {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
   </Class2CSS>
 </details>
 Native container queries preserve their explicit lengths. Choose values from your [container scale](/guide/containers) when appropriate; named custom variants can provide reusable queries.
@@ -82,12 +82,12 @@ Native container queries preserve their explicit lengths. Choose values from you
 Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex container range queries.
 ```html
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
-<div class="hidden@container((24rem<=width<=28rem))">…</div>
+<div class="display:none@container((24rem<=width<=28rem))">…</div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@container((24rem<=width<=28rem))']}
+    {['display:none@container((24rem<=width<=28rem))']}
   </Class2CSS>
 </details>
 
@@ -97,13 +97,13 @@ Use the `container:<name>/<type>` to create a named container with a specific ty
 <!-- @MARK container:card/inline-size -->
 <div class="container:card/inline-size">
   <!-- @MARK @container(card) -->
-  <div class="hidden@container(card|(width>=16rem))"></div>
+  <div class="display:none@container(card|(width>=16rem))"></div>
 </div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container:card/inline-size', 'hidden@container(card|(width>=16rem))']}
+    {['container:card/inline-size', 'display:none@container(card|(width>=16rem))']}
   </Class2CSS>
 </details>
 

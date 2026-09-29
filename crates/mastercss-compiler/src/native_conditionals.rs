@@ -27,6 +27,15 @@ impl NativeConditionalLowerer<'_> {
         mut rule: CssRule<'i, ThemeAtRule>,
         path: &[CssDirectiveConditionPathEntry],
     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
+        if let CssRule::Custom(directive) = &rule
+            && directive.name == super::DirectiveName::Apply
+        {
+            return Err(CompilerError::Directive {
+                message: "@apply requires a style rule".into(),
+                filename: self.filename.into(),
+                range: None,
+            });
+        }
         if !native_rule_list_has_directives(
             self.rewritten,
             std::slice::from_ref(&rule),
@@ -149,12 +158,19 @@ impl NativeConditionalLowerer<'_> {
         // The graph slot remains inside its authored container. Only conditions
         // introduced within the replaced style/variant belong in its replacement.
         for definition in &mut definitions {
+            if let CssDirectiveStyleDefinition::Apply { condition_path, .. } = definition {
+                let suffix =
+                    condition_path.as_deref().unwrap_or_default()[retained_prefix..].to_vec();
+                *condition_path = (!suffix.is_empty()).then_some(suffix);
+                continue;
+            }
             let (conditions, path) = match definition {
                 CssDirectiveStyleDefinition::Native {
                     conditions,
                     condition_path,
                     ..
                 } => (conditions, condition_path),
+                CssDirectiveStyleDefinition::Apply { .. } => unreachable!(),
             };
             let suffix = path.as_deref().unwrap_or_default()[retained_prefix..].to_vec();
             (*conditions, *path) = condition_properties(&suffix);

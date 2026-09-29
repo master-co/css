@@ -8,7 +8,7 @@
 <DemoExample page="place-content" section="align-grid-or-wrapped-flex-content-on-both-axes" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:center gap-md h:14rem w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:center gap-md height:14rem width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -19,7 +19,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'place-content:center']}
+    {['display:grid', 'place-content:center']}
   </Class2CSS>
 </details>
 
@@ -31,7 +31,7 @@ The first value sets `align-content`; the second sets `justify-content`. Here `s
 <DemoExample page="place-content" section="use-separate-axis-values" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:start|space-between gap-md h:14rem w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:start|space-between gap-md height:14rem width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -47,7 +47,7 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="place-content" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:start gap-md h:14rem w:17.5rem max-w:100% place-content:center@sm">
+<div id="layout" class="display:grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem place-content:start gap-md height:14rem width:17.5rem max-width:100% place-content:center@sm">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

@@ -26,7 +26,7 @@ function ShadowSpecimens() {
 }
 
 function OriginalComparison() {
-  return <div className="container w:100%"><div className="grid-cols:1 gap-xl w:100% grid-cols:2@container((width>=18rem))"><ShadowSpecimens /></div></div>
+  return <div className="container-type:inline-size width:100%"><div className="grid-cols(1) gap-xl width:100% grid-cols(2)@container((width>=18rem))"><ShadowSpecimens /></div></div>
 }
 
 const options = [

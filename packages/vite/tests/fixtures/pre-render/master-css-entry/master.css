@@ -5,7 +5,7 @@
 
 
 
-  @utility card {
+  @mixin --card {
     background-color:var(--color-brand);
     @variant md {
       font-size:1.125rem;

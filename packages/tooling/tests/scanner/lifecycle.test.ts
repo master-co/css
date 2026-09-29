@@ -64,7 +64,7 @@ describe('MasterCSSScanner lifecycle', () => {
     expect(scanner.initializing).toBeUndefined()
     expect(disposeStates).toEqual([{ initialized: false, stateCleared: true }])
     expect(scanner.listenerCount('dispose')).toBe(0)
-    await expect(scanner.scan('index.html', '<div class="block"></div>'))
+    await expect(scanner.scan('index.html', "<div class=\"display:block\"></div>"))
       .rejects.toThrow('must be initialized')
   })
 
@@ -73,10 +73,10 @@ describe('MasterCSSScanner lifecycle', () => {
     const initialSession = createBindingSession()
     const firstResetSession = createBindingSession()
     const latestSession = createBindingSession()
-    const firstManifest = { version: 1, utilities: [] } as unknown as MasterCSSManifest
+    const firstManifest = { version: 1 as const, mixins: [] } as unknown as MasterCSSManifest
     const latestManifest = {
-      version: 1,
-      utilities: [{ id: 'latest', type: -2, emit: { type: 'static', rules: [] }, matchers: [] }]
+      version: 1 as const,
+      mixins: []
     } as unknown as MasterCSSManifest
 
     const initializing = scanner.init()

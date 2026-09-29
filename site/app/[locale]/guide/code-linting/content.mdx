@@ -30,7 +30,7 @@ export default defineConfig([
 | `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
 | `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
 | `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
-| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, property aliases, composition utilities, and condition order. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, matching mixin recipes, and condition order. |
 
 ---
 
@@ -39,22 +39,22 @@ export default defineConfig([
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-bg:white font:md flex px:4x rel w:full shadow:lg rounded z:10 gap:0.5rem <!-- [!code --] -->
-rel z:10 flex gap:0.5rem w:full px:4x rounded font:md bg:white shadow:lg <!-- [!code ++] -->
+bg-white font-md display:flex px-md position:relative width:100% shadow-lg r-md z-index:10 gap:0.5rem <!-- [!code --] -->
+position:relative z-index:10 display:flex gap:0.5rem width:100% px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
 ```
 
 Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
 
 ```mcss
-bg:black:hover flex p:2x w:full block@dark text-center <!-- [!code --] -->
-flex w:full p:2x text-center bg:black:hover block@dark <!-- [!code ++] -->
+bg-black:hover display:flex p-sm width:100% display:block@dark text-align:center <!-- [!code --] -->
+display:flex width:100% p-sm text-align:center bg-black:hover display:block@dark <!-- [!code ++] -->
 ```
 
 Sorting also removes duplicate class values in the same class string.
 
 ```mcss
-inline-flex px-md inline-flex <!-- [!code --] -->
-inline-flex px-md <!-- [!code ++] -->
+display:inline-flex px-md display:inline-flex <!-- [!code --] -->
+display:inline-flex px-md <!-- [!code ++] -->
 ```
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
@@ -109,8 +109,8 @@ Define project classes in the CSS entry when they are intentional:
 `@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
 
 ```mcss
-margin:16px block@dark@sm <!-- [!code --] -->
-m:16px block@sm@dark <!-- [!code ++] -->
+margin:16px display:block@dark@sm <!-- [!code --] -->
+margin:16px display:block@sm@dark <!-- [!code ++] -->
 ```
 
 Canonical fixes preserve value sources and cascade priority. A literal stays a literal; `font-size:16px` is not replaced by a token that happens to equal `16px` today. Explicit `var()` references and multi-value declarations retain their identities. A shorter static utility or composition is not suggested when it changes the existing shorthand, longhand, or value-source priority.
@@ -122,16 +122,16 @@ Use the explicit [v2 RC migration command](/guide/migration/v2-rc#6-preview-and-
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
 ```mcss
-m:0.625rem m:1.25rem <!-- [!code --] -->
-m:1.25rem <!-- [!code ++] -->
+margin:0.625rem margin:1.25rem <!-- [!code --] -->
+margin:1.25rem <!-- [!code ++] -->
 ```
 
-(!) `"m:0.625rem" is overridden by "m:1.25rem".`
+(!) `"margin:0.625rem" is overridden by "margin:1.25rem".`
 
 Variant scope matters. Classes with different selectors, modes, or conditions do not conflict with each other.
 
 ```mcss
-m:2.5rem@sm m:3.125rem@md
+margin:2.5rem@sm margin:3.125rem@md
 ```
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
@@ -139,13 +139,13 @@ When a conflict can be fixed automatically, the rule removes the earlier overrid
 Partially overlapping spacing, physical inset, radius, and border width/color/style shorthands are split so the surviving declarations are kept:
 
 ```mcss
-mx:md ml:lg <!-- [!code --] -->
-mr:md ml:lg <!-- [!code ++] -->
+mx-md ml-lg <!-- [!code --] -->
+mr-md ml-lg <!-- [!code ++] -->
 ```
 
 ```mcss
-b-solid bt-dashed <!-- [!code --] -->
-br-solid bb-solid bl-solid bt-dashed <!-- [!code ++] -->
+border-style:solid border-top-style:dashed <!-- [!code --] -->
+border-right-style:solid border-bottom-style:solid border-left-style:solid border-top-style:dashed <!-- [!code ++] -->
 ```
 
 ---
@@ -251,10 +251,10 @@ export default defineConfig([
 ```
 
 ```mcss
-font:15px m:17px fg:#123456
+font-size:15px margin:17px color:#123456
 ```
 
-(!) Unexpected raw value `"15px"` in `"font:15px"`. Use a token or allow it explicitly.
+(!) Unexpected raw value `"15px"` in `"font-size:15px"`. Use a token or allow it explicitly.
 
 Use editor sort-on-save for low-friction cleanup:
 

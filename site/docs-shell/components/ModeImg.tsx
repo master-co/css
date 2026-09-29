@@ -7,8 +7,8 @@ declare type ModeImgProps = ImgHTMLAttributes<HTMLImageElement>
 const ModeImg: FC<ModeImgProps> = (props) => {
   return (
     <>
-      <img {...props} className='hidden@site-dark' />
-      <img {...props} src={(props.src as string)?.replace(/(\.\w+)$/, '@dark$1')} className='hidden@site-light' />
+      <img {...props} className='display:none@site-dark' />
+      <img {...props} src={(props.src as string)?.replace(/(\.\w+)$/, '@dark$1')} className='display:none@site-light' />
     </>
   )
 }

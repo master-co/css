@@ -9,7 +9,7 @@
 
 ```html
 <div class="p-md bg-blue-20">
-  <section class="isolate">
+  <section class="isolation:isolate">
     <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Blend layer</div>
   </section>
 </div>
@@ -18,7 +18,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['isolate']}
+    {['isolation:isolate']}
   </Class2CSS>
 </details>
 
@@ -29,7 +29,7 @@
 
 ```html
 <div class="p-md bg-blue-20">
-  <section class="isolate isolation:auto@sm">
+  <section class="isolation:isolate isolation:auto@sm">
     <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Blend layer</div>
   </section>
 </div>
@@ -41,8 +41,8 @@ Use isolation to keep negative z-index decoration inside its component. The blue
 <DemoExample page="isolation" section="protect-layered-components" />
 
 ```html
-<article class="rel isolate h:10rem p-md">
-  <div class="abs inset:0 z:-1" aria-hidden="true"></div>
+<article class="position:relative isolation:isolate height:10rem p-md">
+  <div class="position:absolute inset:0 z-index:-1" aria-hidden="true"></div>
   <p>Foreground content</p>
 </article>
 ```
@@ -54,7 +54,7 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 
 ```html
 <div class="p-md bg-blue-20">
-  <section tabindex="0" class="isolation:auto isolate:focus-visible isolate@sm">
+  <section tabindex="0" class="isolation:auto isolation:isolate:focus-visible isolation:isolate@sm">
     <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Focus with Tab</div>
   </section>
 </div>

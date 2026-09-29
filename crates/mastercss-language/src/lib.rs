@@ -132,6 +132,8 @@ pub struct LanguageInspectionIr {
     pub state_token: Option<String>,
     pub important: bool,
     pub matcher_types: Vec<UtilityMatcherType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub definition_source: Option<mastercss_schema::CssDirectiveSourceReference>,
     pub variables: Vec<EngineClassVariableIr>,
     pub rules: Vec<GeneratedRuleIr>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -156,6 +158,8 @@ pub struct LanguageCompletionEntryIr {
     pub detail: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub documentation_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub insert_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sort_text: Option<String>,
     pub trigger_suggest: bool,
@@ -228,6 +232,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
             kind: LanguageCompletionKind::Function,
             detail: Some("Complete native CSS query; retain the query's own parentheses".into()),
             documentation_text: None,
+            insert_text: None,
             sort_text: Some(format!("2000-{name}")),
             trigger_suggest: false,
         });
@@ -261,6 +266,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
                 kind: LanguageCompletionKind::Value,
                 detail: None,
                 documentation_text: None,
+                insert_text: None,
                 sort_text: Some(sort_text),
                 trigger_suggest: false,
             });
@@ -316,6 +322,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
                     kind: value.kind,
                     detail: Some(detail),
                     documentation_text: None,
+                    insert_text: None,
                     sort_text: Some(sort_text),
                     trigger_suggest: false,
                 });

@@ -51,7 +51,7 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
                 ),
                 (
                     "/utilities.css".into(),
-                    "@utility block {display:block}".into(),
+                    "@mixin --block {display:block}".into(),
                 ),
             ]),
             resolutions: HashMap::from([
@@ -78,7 +78,7 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
             .source
             .starts_with("@import \"https://example.com/font.css\";\n")
     );
-    assert!(graph.source.contains("@utility block {display:block}"));
+    assert!(graph.source.contains("@mixin --block {display:block}"));
     assert!(graph.source.ends_with(".entry{display:block}"));
 }
 
@@ -258,31 +258,39 @@ fn settings_are_removed_at_the_directive_boundary() {
 }
 
 #[test]
-fn lowers_static_utilities_with_utf16_source_ranges() {
-    let source = "/* 😀 */\n@utility btn { display: inline-flex; color: red; }\n@utility content-auto { content-visibility: auto; }";
+fn lowers_mixins_with_utf16_source_ranges() {
+    let source = "/* 😀 */\n@mixin --btn { display: inline-flex; color: red; }\n@mixin --content-auto { content-visibility: auto; }";
     let result = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
-    let definitions = result.manifest_input.utilities.unwrap();
+    let definitions = result.manifest_input.mixins.unwrap();
     for (definition, name, property, value) in [
-        (&definitions[0], "btn", "display", "inline-flex"),
+        (&definitions[0], "--btn", "display", "inline-flex"),
         (
             &definitions[1],
-            "content-auto",
+            "--content-auto",
             "content-visibility",
             "auto",
         ),
     ] {
-        let body = &definition["body"][0];
-        assert_eq!(body["name"], name);
-        assert_eq!(body["layer"], "utilities");
-        assert_eq!(body["declarations"][0]["property"], property);
-        assert_eq!(body["declarations"][0]["value"], value);
-        let declaration = format!("{property}: {value}");
-        let start = source[..source.find(&declaration).unwrap()]
+        assert_eq!(definition.name, name);
+        let mastercss_schema::MixinNode::Declaration {
+            property: actual_property,
+            value: actual_value,
+            ..
+        } = &definition.body[0]
+        else {
+            panic!("declaration");
+        };
+        assert_eq!(actual_property, property);
+        assert_eq!(
+            mastercss_engine::evaluate_mixin_value(actual_value, &Default::default()).unwrap(),
+            value
+        );
+        let start = source[..source.find(&format!("@mixin {name}")).unwrap()]
             .encode_utf16()
             .count();
         assert_eq!(
-            body["declarations"][0]["source"]["range"],
-            serde_json::json!({"start":start,"end":start+declaration.len()})
+            definition.source.as_ref().unwrap().range.start as usize,
+            start
         );
     }
 }

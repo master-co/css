@@ -48,7 +48,7 @@ test('does not install the removed devtools hook global', async ({ page }) => {
 test('dispose on progressive', async ({ page }) => {
   await init(page, '@layer utilities{}')
   await page.evaluate(() => {
-    document.body.classList.add('text-center')
+    document.body.classList.add("text-align:center")
   })
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() =>
@@ -68,7 +68,7 @@ test('dispose on progressive', async ({ page }) => {
   await page.evaluate(async (manifest) => {
     const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
     nextRuntime.observe()
-    document.body.classList.add('block')
+    document.body.classList.add("display:block")
     document.body.classList.add('font-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
@@ -77,28 +77,91 @@ test('dispose on progressive', async ({ page }) => {
     return Object.fromEntries(Object.entries(classRules || {})
       .map(([className, snapshot]) => [className, snapshot.rules.length]))
   })).toMatchObject({
-    block: 1,
+    'display:block': 1,
     'font-bold': 1
   })
 })
 
 test('prevent attach layer twice', async ({ page }) => {
   await init(page, '@layer components{}', {
-    utilities: [
+    mixins: [
+  {
+    "name": "--app-wrapper",
+    "body": [
       {
-        name: 'app-wrapper',
-        type: UtilityType.Semantic,
-        layer: 'components',
-        rules: [
-          { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
-          { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
-          { selector: '&', declarations: { height: '2.5rem' } }
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "margin-left",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "auto"
+              }
+            ]
+          },
+          {
+            "type": "declaration" as const,
+            "property": "margin-right",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:hover",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "padding-left",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "1.25rem"
+              }
+            ]
+          },
+          {
+            "type": "declaration" as const,
+            "property": "padding-right",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "1.25rem"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:focus",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "height",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "2.5rem"
+              }
+            ]
+          }
         ]
       }
     ]
+  }
+]
   })
   await page.evaluate(() => {
-    document.body.classList.add('app-wrapper')
+    document.body.classList.add('app-wrapper@component')
   })
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules?.length)).toBe(3)
@@ -110,19 +173,70 @@ test('insert semantic utility with multiple native rules into existing layer', a
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="block multi-rule"></div>'
+    document.body.innerHTML = "<div class=\"display:block multi-rule\"></div>"
   })
   await init(page, '', {
-    utilities: [
+    mixins: [
+  {
+    "name": "--multi-rule",
+    "body": [
       {
-        name: 'multi-rule',
-        rules: [
-          { selector: '&', declarations: { display: 'flex' } },
-          { selector: '&:hover', declarations: { color: 'red' } },
-          { selector: '&', conditions: ['@supports (appearance:none)'], declarations: { 'scrollbar-width': 'thin' } }
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "flex"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:hover",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "color",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "red"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "condition" as const,
+        "condition": "@supports (appearance:none)",
+        "body": [
+          {
+            "type": "rule" as const,
+            "selector": "&",
+            "body": [
+              {
+                "type": "declaration" as const,
+                "property": "scrollbar-width",
+                "value": [
+                  {
+                    "type": "text" as const,
+                    "value": "thin"
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
     ]
+  }
+]
   })
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules.length)).toBe(4)
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
@@ -134,15 +248,15 @@ test('inserts functional pseudo-class selector aliases into native CSSOM', async
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="pb:2rem:not(:last) text-center_td:not(:first)"></div>'
+    document.body.innerHTML = "<div class=\"padding-bottom:2rem:not(:last) text-align:center_td:not(:first)\"></div>"
   })
   await init(page)
 
   expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
     .map((cssRule) => cssRule.cssText)
   )).toEqual([
-    '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }',
-    '.pb\\:2rem\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
+    ".padding-bottom\\:2rem\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }",
+    '.text-align\\:center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }'
   ])
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
@@ -205,8 +319,8 @@ test('preserves native declarations independently of browser support', async ({ 
 })
 
 test('progressive hydration leaves unconditional native CSS in its own stylesheet', async ({ page }) => {
-  await page.setContent('<style id="native">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class="block"></div>')
-  await init(page, '@layer utilities{.block{display:block}}', {}, 'auto')
+  await page.setContent("<style id=\"native\">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class=\"display:block\"></div>")
+  await init(page, "@layer utilities{.display\\:block{display:block}}", {}, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('--color-static')
   expect(await page.locator('#native').textContent()).toContain('@keyframes steady')

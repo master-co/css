@@ -1,5 +1,5 @@
 const syntaxes = [
-  'break-spaces',
+  "white-space:break-spaces",
   'white-space:normal',
   'white-space:nowrap',
   'white-space:pre',

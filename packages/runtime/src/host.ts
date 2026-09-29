@@ -160,12 +160,14 @@ export default class RuntimeHost {
   }
 
   protected insertLayerRule(layer: RuntimeLayer, rule: RuntimeLayerRule, nativeIndex: number) {
+    rule.nativeNodeCount = 0
     const nativeLayer = this.ensureNativeLayer(layer)
     if (!nativeLayer) return
     const nodes = 'nodes' in rule ? rule.nodes : undefined
     for (const [nodeIndex, text] of getGeneratedRuleNodeTexts(rule).entries()) {
       try {
-        const insertedIndex = nativeLayer.insertRule(text, nativeIndex + nodeIndex)
+        const insertedIndex = nativeLayer.insertRule(text, nativeIndex + rule.nativeNodeCount)
+        rule.nativeNodeCount++
         const native = nativeLayer.cssRules.item(insertedIndex) || undefined
         if (nodes?.[nodeIndex]) nodes[nodeIndex].native = native
         else rule.native = native

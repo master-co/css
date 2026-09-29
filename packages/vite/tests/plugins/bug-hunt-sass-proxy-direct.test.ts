@@ -10,7 +10,7 @@ import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
-for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) for (const syntax of ['scss', 'sass']) for (const base of ['/', '/base/']) {
+for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) for (const syntax of ['scss', 'sass']) for (const base of ['/', '/base/']) {
   test(`internal ${syntax} CSS proxy serves direct requests in ${mode} at ${base}`, async () => {
     const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-proxy-direct-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined

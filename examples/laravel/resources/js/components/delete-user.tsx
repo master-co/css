@@ -50,7 +50,7 @@ export default function DeleteUser() {
               to confirm you would like to permanently delete your account.
             </DialogDescription>
             <form className="space-y-6" onSubmit={deleteUser}>
-              <div className="grid gap-2">
+              <div className="display:grid gap-2">
                 <Label htmlFor="password" className="sr-only">
                   Password
                 </Label>

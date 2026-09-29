@@ -12,8 +12,8 @@ test('BH-0015 recognizes cooked JavaScript Unicode escapes in static class strin
       rules: { '@master/css/no-invalid-classes': ['error', { disallowUnknownClass: true }] }
     }]
   })
-  const [control] = await eslint.lintText('clsx("block")', { filePath: 'audit.js' })
+  const [control] = await eslint.lintText('clsx("display:block")', { filePath: 'audit.js' })
   expect(control.messages).toEqual([])
-  const [escaped] = await eslint.lintText(String.raw`clsx("\u0062lock")`, { filePath: 'audit.js' })
+  const [escaped] = await eslint.lintText(String.raw`clsx("display:\u0062lock")`, { filePath: 'audit.js' })
   expect(escaped.messages).toEqual([])
 })

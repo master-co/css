@@ -7,7 +7,7 @@ function pluginNames(options: MasterCSSVitePluginOptions = {}) {
 }
 
 describe('masterCSS plugin composition', () => {
-  test.each(['runtime', 'static', 'pre-render', 'progressive'] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
+  test.each(['runtime', "static", 'pre-render', 'progressive'] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
     const names = pluginNames({ mode })
 
     expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)

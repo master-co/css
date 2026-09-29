@@ -14,10 +14,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
-pub const MANIFEST_VERSION: u32 = 2;
-pub const LANGUAGE_VERSION: u32 = 4;
+pub const MANIFEST_VERSION: u32 = 3;
+pub const LANGUAGE_VERSION: u32 = 5;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 2;
-pub const BINDING_ABI_VERSION: u32 = 15;
+pub const BINDING_ABI_VERSION: u32 = 16;
 pub const ENGINE_TRANSITION_VERSION: u32 = 2;
 pub const VALIDATOR_BATCH_VERSION: u32 = 4;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
@@ -144,10 +144,12 @@ impl From<UtilityLayerName> for RuleTarget {
 mod directives;
 mod engine;
 mod manifest;
+mod mixin;
 
 pub use directives::*;
 pub use engine::*;
 pub use manifest::*;
+pub use mixin::*;
 
 #[cfg(test)]
 mod tests;

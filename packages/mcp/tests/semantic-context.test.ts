@@ -24,7 +24,7 @@ it('distinguishes missing entries from failed entries without selecting a preset
   try {
     expect(await loadWorkspaceManifest(missing)).toMatchObject({ status: 'error', reason: 'entry-not-found', context: 'project' })
     expect(await loadWorkspaceManifest(failed)).toMatchObject({ status: 'error', reason: 'entry-load-failed', context: 'project' })
-    const result = await executeTool(() => inspectClass(failed, { className: 'block' }))
+    const result = await executeTool(() => inspectClass(failed, { className: "display:block" }))
     expect(result.isError).toBe(true)
     expect(result.structuredContent).toMatchObject({ version: 3, result: { status: 'error' }, metadata: { context: 'project', manifestFingerprint: null } })
     expect(result.content[0]).toEqual({ type: 'text', text: JSON.stringify(result.structuredContent, null, 2) })
@@ -36,7 +36,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 4, bindingAbiVersion: 15 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 5, bindingAbiVersion: 16 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -51,7 +51,7 @@ it('explicit preset context reports matching separately from validity and browse
 })
 
 it('keeps complete ambiguity alternatives in both structured and JSON output', async () => {
-  const context = project("@import \"@master/css\"; @theme {:root, :host { --font-family-brand: Brand; --font-size-brand: 1rem; }}\n  @utility font-* from(--font-family-*) { font-family: --master-value(); } @utility font-* from(--font-size-*) { font-size: --master-value(); } ")
+  const context = project("@import \"@master/css\"; @theme {:root, :host { --font-family-brand: Brand; --font-size-brand: 1rem; }}")
   try {
     const result = await inspectClass(context, { className: 'font-brand' })
     expect(result.matchStatus).toBe('ambiguous')

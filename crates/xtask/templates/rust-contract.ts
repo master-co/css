@@ -15,7 +15,7 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
 export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins'
   readonly sourceVersion: string
   readonly manifest: Readonly<Record<string, unknown>>
   readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -34,7 +34,7 @@ export interface MasterCSSRCClassMigration {
 
 export interface MasterCSSRCMigrationResult {
   readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins'
   readonly sourceVersion: string
   readonly behaviorChanges: readonly string[]
   readonly configurationCSS: string
@@ -653,13 +653,14 @@ export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
+  | 'mixin'
   | 'declaration'
   | 'token'
 
 export interface MasterCSSLanguageClass {
   className: string
   kind: MasterCSSLanguageClassKind
-  matcherTypes: ('static' | 'key' | 'token')[]
+  matcherTypes: ('static' | 'key' | 'token' | 'function')[]
   keyToken?: string
   valueToken?: string
   stateToken?: string
@@ -702,7 +703,8 @@ export interface MasterCSSLanguageInspection {
   valueToken?: string
   stateToken?: string
   important: boolean
-  matcherTypes: ('static' | 'key' | 'token')[]
+  matcherTypes: ('static' | 'key' | 'token' | 'function')[]
+  definitionSource?: import('@master/css-schema/css-directives').CSSDirectiveSourceReference
   variables: MasterCSSLanguageClassVariable[]
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   text: string
@@ -716,6 +718,7 @@ export interface MasterCSSLanguageCompletionEntry {
   kind: MasterCSSLanguageCompletionKind
   detail?: string
   documentationText?: string
+  insertText?: string
   sortText?: string
   triggerSuggest: boolean
 }
@@ -784,7 +787,7 @@ export interface MasterCSSDirectiveExtractionPolicy {
 }
 
 export interface MasterCSSDirectiveCompilation {
-  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
+  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   extractionPolicy: MasterCSSDirectiveExtractionPolicy
@@ -867,7 +870,7 @@ export interface MasterCSSCompileDefaultPresetResult {
 }
 
 export interface MasterCSSLowerDirectivesRequest {
-  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
+  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
@@ -916,7 +919,7 @@ export interface MasterCSSResolvedImportGraph {
 }
 
 export interface MasterCSSCompileStylesheetGraphRequest {
-  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
+  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
   /** Unresolved imports already emitted by the host, keyed by original stylesheet ID. */
   hostImports?: Record<string, string[]>
   /** Inline compatible local children; retained boundaries still require asset delivery. */

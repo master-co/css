@@ -13,7 +13,7 @@ use std::process::ExitCode;
 
 const DEFAULT_OUTPUT: &str = "master.css";
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
-const SELF_TEST_MANIFEST: &str = r#"{"version":2,"languageVersion":4,"utilities":[{"id":"display-block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]}]}"#;
+const SELF_TEST_MANIFEST: &str = r#"{"version":3,"languageVersion":5,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
 const SOURCE_EXTENSIONS: &[&str] = &[
     "html", "htm", "js", "mjs", "jsx", "cjs", "ts", "tsx", "mts", "cts", "svelte", "astro", "vue",
     "md", "mdx", "pug", "php",

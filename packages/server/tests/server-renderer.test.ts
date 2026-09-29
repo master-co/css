@@ -18,7 +18,7 @@ function expectHTMLParity(
 
 test('reuses a renderer without leaking rules between documents', () => {
   using renderer = createServerRenderer({ manifest: defaultManifest })
-  const firstHTML = '<main class="fg-red block"></main>'
+  const firstHTML = "<main class=\"fg-red display:block\"></main>"
   const secondHTML = '<main class="fg-blue"></main>'
   const first = renderer.renderHTML(firstHTML)
   const second = renderer.renderHTML(secondHTML)
@@ -29,27 +29,49 @@ test('reuses a renderer without leaking rules between documents', () => {
 })
 
 test('preserves native aliases that share a declaration across cached pages', () => {
-  const manifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
-    version: 2, languageVersion: 4,
-    variables: {
-      '': [{
-        name: 'stripe',
-        key: 'stripe',
-        type: 'string',
-        values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
-      }]
-    },
-    utilities: []
-  } as unknown as MasterCSSManifest
+  const manifest = {
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "stripe",
+          "value": "linear-gradient(red,blue)"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "": [
+      {
+        "name": "stripe",
+        "key": "stripe",
+        "type": "string" as const,
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "linear-gradient(red,blue)"
+          }
+        ]
+      }
+    ]
+  }
+} as unknown as MasterCSSManifest
   using renderer = createServerRenderer({
     manifest,
     maxCachedClasses: Infinity
   })
   renderer.renderHTML('<div class="background:var(--stripe)"></div>')
-  const second = renderer.renderHTML('<div class="bg:var(--stripe)"></div>')
+  const second = renderer.renderHTML("<div class=\"background:var(--stripe)\"></div>")
 
-  expectHTMLParity(second, renderHTML('<div class="bg:var(--stripe)"></div>', { manifest }))
-  expect(second.cssText).toContain('.bg\\:var\\(--stripe\\){background:var(--stripe)}')
+  expectHTMLParity(second, renderHTML("<div class=\"background:var(--stripe)\"></div>", { manifest }))
+  expect(second.cssText).toContain(".background\\:var\\(--stripe\\){background:var(--stripe)}")
 })
 
 test('rebuilds bounded cache generations without changing output', () => {
@@ -59,7 +81,7 @@ test('rebuilds bounded cache generations without changing output', () => {
   })
   const pages = [
     '<div class="fg-red bg-blue"></div>',
-    '<div class="block"></div>',
+    "<div class=\"display:block\"></div>",
     '<div class="fg-red"></div>'
   ]
 
@@ -118,10 +140,10 @@ test('streams the stable document prefix across arbitrary chunk boundaries', () 
   expect(session.write('ml><he')).toBe('')
   const prefix = session.write('ad></he')
   expect(prefix).toBe('<html><head>')
-  const ended = session.end('ad><body><div class="text-center"></div></body></html>')
+  const ended = session.end("ad><body><div class=\"text-align:center\"></div></body></html>")
 
   expect(prefix + ended.chunk).toBe(ended.result.html)
-  expect(ended.result.cssText).toBe('@layer utilities{.text-center{text-align:center}}')
+  expect(ended.result.cssText).toBe("@layer utilities{.text-align\\:center{text-align:center}}")
   expect(ended.chunk).toContain('master-css-hydration-manifest')
   expect(() => session.write('later')).toThrow('The Master CSS HTML render session has ended.')
 })
@@ -130,18 +152,18 @@ test('keeps streamed HTML and the final immutable result on the same complete sn
   using renderer = createServerRenderer({ manifest: defaultManifest })
   using session = renderer.createHTMLRenderSession({ hydrationManifest: 'inject' })
 
-  const first = session.write('<html><head><meta class="block"></head><body>')
+  const first = session.write("<html><head><meta class=\"display:block\"></head><body>")
   const second = session.write('<div class="fg-red"></div>')
   const ended = session.end('</body></html>')
   const streamedHTML = first + second + ended.chunk
   const expected = renderer.renderHTML(
-    '<html><head><meta class="block"></head><body><div class="fg-red"></div></body></html>',
+    "<html><head><meta class=\"display:block\"></head><body><div class=\"fg-red\"></div></body></html>",
     { hydrationManifest: 'inject' }
   )
 
   expect(streamedHTML).toBe(ended.result.html)
   expectHTMLParity(ended.result, expected)
-  expect(ended.result.classNames).toEqual(['block', 'fg-red'])
+  expect(ended.result.classNames).toEqual(["display:block", 'fg-red'])
   expect(ended.result.cssText).toContain('.fg-red')
 })
 
@@ -152,8 +174,8 @@ test('returns a complete final chunk when no prefix can be emitted safely', () =
   })
 
   expect(session.write('<html lang="en"><head>')).toBe('')
-  const ended = session.end('<body class="block"></body></html>')
+  const ended = session.end("<body class=\"display:block\"></body></html>")
 
   expect(ended.chunk).toBe(ended.result.html)
-  expect(ended.result.cssText).toBe('@layer utilities{.block{display:block}}')
+  expect(ended.result.cssText).toBe("@layer utilities{.display\\:block{display:block}}")
 })

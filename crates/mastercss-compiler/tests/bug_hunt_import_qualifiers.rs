@@ -151,9 +151,9 @@ fn qualified_imports_reject_global_master_definitions() {
         "@custom-media --wide (width > 40rem);",
         "@theme {:root, :host { --color-card: red; }}",
         "@custom-variant print { @media print { @slot; } }",
-        " @utility card { padding: 1rem; } ",
-        " @utility card { padding: 1rem; } ",
-        " @utility card { padding: 1rem; } ",
+        " @mixin --card { padding: 1rem; } ",
+        " @mixin --card { padding: 1rem; } ",
+        " @mixin --card { padding: 1rem; } ",
     ] {
         let error = resolve_css_import_graph("entry", &DefiningChild(source)).unwrap_err();
         let message = error.to_string();
@@ -174,7 +174,7 @@ fn bh_0004_unqualified_import_leaves_definitions_where_they_were() {
         fn load(&self, id: &str) -> Result<String, String> {
             match id {
                 "entry" => Ok("@import './child.css';\n.after{margin:1px}".into()),
-                "child" => Ok("@utility paint {padding:2rem}\n.card{padding:3rem}".into()),
+                "child" => Ok("@mixin --paint {padding:2rem}\n.card{padding:3rem}".into()),
                 _ => Err("missing".into()),
             }
         }
@@ -185,7 +185,7 @@ fn bh_0004_unqualified_import_leaves_definitions_where_they_were() {
     let result = resolve_css_import_graph("entry", &Plain).unwrap();
     assert_eq!(
         result.source,
-        "@utility paint {padding:2rem}\n.card{padding:3rem}\n.after{margin:1px}"
+        "@mixin --paint {padding:2rem}\n.card{padding:3rem}\n.after{margin:1px}"
     );
 }
 

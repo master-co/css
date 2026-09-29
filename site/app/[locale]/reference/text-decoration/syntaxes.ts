@@ -1,8 +1,8 @@
 const syntaxes = [
   'text-decoration:none',
-  'underline',
-  'line-through',
-  'overline',
+  "text-decoration:underline",
+  "text-decoration:line-through",
+  "text-decoration:overline",
   ['text-decoration:`line`|`color`|`style`|`thickness`'],
 ]
 

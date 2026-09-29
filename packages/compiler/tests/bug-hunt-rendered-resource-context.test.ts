@@ -2,7 +2,22 @@ import { expect, test } from 'vitest'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const definitions = "@theme {:root{--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;}}\n\n@keyframes audit{from{opacity:0}to{opacity:1}}"
 const initialSource = definitions + '.card{color:var(--color-old)}'
 // A host has modified the old generated value and introduced new resources.

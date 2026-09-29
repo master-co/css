@@ -7,12 +7,27 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { createCompiler } from '../src/index'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
 
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const inputs = [
-  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
-  { source: "/*😀*/.image{background:url(a.png)} @utilities {paint {color:red}}", token: '@utilities', code: 'CSS_DIRECTIVE_ERROR' },
-  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' },
-  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: '@compose', code: 'removed-compose-directive' }
+  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },
+  { source: "/*😀*/.image{background:url(a.png)} @utilities {paint {color:red}}", token: '@utilities' as const, code: 'CSS_DIRECTIVE_ERROR' },
+  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },
+  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' }
 ]
 function rangeFor(source: string, token: string) {
   const start = source.indexOf(token)

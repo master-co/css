@@ -184,10 +184,10 @@ function LifecycleChart(props: {
   const unit = props.metricId === 'cssomRuleCount' || props.metricId === 'longTaskCount' ? 'count' : 'ms'
 
   return (
-    <div className="grid gap-sm">
-      <div className="flex items-baseline justify-between gap-md">
-        <h4 className="m:0 font-weight:460 font-sm text-strong">{chartMetricLabels[props.metricId]}</h4>
-        <span className="font-xs text-muted">Five-minute median</span>
+    <div className="display:grid gap-sm">
+      <div className="display:flex align-items:baseline justify-content:space-between gap-md">
+        <h4 className="margin:0 font-sm font-weight:460 fg-text-strong">{chartMetricLabels[props.metricId]}</h4>
+        <span className="font-xs fg-text-muted">Five-minute median</span>
       </div>
       <BenchmarkBars items={createChartItems(props.metricId)} unit={unit} />
     </div>
@@ -200,7 +200,7 @@ export function BrowserLifecycleSummary() {
 
 export function BrowserLifecycleLongSessionCharts() {
   return (
-    <div className="grid gap-lg">
+    <div className="display:grid gap-lg">
       {([
         'styleRecalculationMs',
         'layoutMs',

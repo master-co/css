@@ -21,7 +21,7 @@ Choose palette steps directly for swatches, illustrations, brand accents, and st
 
 ### Natural material colors
 
-Eight material-inspired families extend the palette with warm neutrals, botanical greens, mineral blue-green, and fired earth. Each has all thirteen fixed steps, a base hue alias such as `bg-petrol`, and a foreground alias such as `text-petrol`.
+Eight material-inspired families extend the palette with warm neutrals, botanical greens, mineral blue-green, and fired earth. Each has all thirteen fixed steps, a base hue alias such as `bg-petrol`, and a foreground alias such as `fg-text-petrol`.
 
 | Family | Character | Pairing direction |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ The lightest steps retain a tint; the darkest retain the material's hue. Step nu
 <article class="bg-sand-5 fg-taupe-80 bg-taupe-95@dark fg-sand-10@dark">
   Warm materials, with explicit light and dark pairings.
 </article>
-<p class="surface-raised text-petrol">A mode-aware mineral accent.</p>
+<p class="surface-raised fg-text-petrol">A mode-aware mineral accent.</p>
 ```
 
 <NaturalMaterials />
@@ -49,7 +49,7 @@ All eight families fit within Display P3. Petrol's `60` and `70` steps use a sma
 
 The new `text-<family>` aliases meet at least 4.5:1 against the matching preset `base`, `inset`, `raised`, and `floating` surfaces in both modes, measured after sRGB gamut mapping. Check contrast again when changing the surface, adding transparency, or choosing a fixed step or base hue alias. See [WCAG's text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
 
-(!) `olive` resolves to the fixed preset alias, just as `red` and `blue` do. Existing classes such as `fg-olive` and `bg-olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `fg:#808000` or `background-color:#808000`.
+(!) `olive` resolves to the fixed preset alias, just as `red` and `blue` do. Existing classes such as `fg-olive` and `bg-olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `color:#808000` or `background-color:#808000`.
 
 ---
 
@@ -59,17 +59,17 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | Decision | Use | Examples |
 | --- | --- | --- |
 | Fixed swatch | Palette steps | `bg-blue-5`, `fg-blue-60` |
-| App structure and hierarchy | Preset roles | `bg-surface-base`, `surface-raised`, `b-divider`, `text-body` |
+| App structure and hierarchy | Preset roles | `bg-surface-base`, `surface-raised`, `b-divider`, `fg-text-body` |
 | Fixed hue swatch | Hue aliases | `bg-blue`, `fg-blue` |
-| Adaptive readable foreground | Text hue aliases | `text-blue`, `text-petrol` |
+| Adaptive readable foreground | Text hue aliases | `fg-text-blue`, `fg-text-petrol` |
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-divider) --><!-- @MARK text-strong --><!-- @MARK text-muted --><!-- @MARK text-link -->
-<main class="bg-surface-base text-body">
-  <section class="b:1px|solid|var(--color-line-divider) surface-raised">
-    <h2 class="text-strong">Project updates</h2>
-    <p class="text-muted">Three milestones changed this week.</p>
-    <a class="text-link underline" href="#">Continue</a>
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK surface-raised --><!-- @MARK border:1px|solid|var(--color-line-divider) --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<main class="bg-surface-base fg-text-body">
+  <section class="border:1px|solid|var(--color-line-divider) surface-raised">
+    <h2 class="fg-text-strong">Project updates</h2>
+    <p class="fg-text-muted">Three milestones changed this week.</p>
+    <a class="fg-text-link text-decoration:underline" href="#">Continue</a>
   </section>
 </main>
 ```
@@ -77,7 +77,7 @@ Start with the kind of decision you are making. Most app chrome should use roles
 ---
 
 ## Namespaces for color
-Color utilities use focused namespaces so role names stay short in markup. Use `b-divider` for decorative dividers, `b-control` for required control boundaries, `surface-inset` for recessed areas, and `text-muted` for secondary text.
+Color utilities use focused namespaces so role names stay short in markup. Use `b-divider` for decorative dividers, `b-control` for required control boundaries, `surface-inset` for recessed areas, and `fg-text-muted` for secondary text.
 
 <ColorNamespaceTable />
 
@@ -86,7 +86,7 @@ Use the narrow role namespace first when the color describes structure, line wor
 ---
 
 ## Preset color roles
-Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg-surface-base`, `surface-raised`, `b-divider`, and `text-body` can stay stable while light and dark modes choose different underlying colors.
+Preset roles describe the job a color performs in the interface. Their values are mode-aware, so `bg-surface-base`, `surface-raised`, `b-divider`, and `fg-text-body` can stay stable while light and dark modes choose different underlying colors.
 
 ### Surfaces
 Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg-surface-base` for the root canvas and the dedicated `surface-*` shorthand for surface roles.
@@ -106,8 +106,8 @@ Line tokens are for borders, dividers, outlines, and strokes. `divider` and `sub
 <LineRolesDemo />
 
 ```html
-<!-- @MARK b:1.25rem|solid|var(--color-line-divider) -->
-<div class="b:1.25rem|solid|var(--color-line-divider)"></div>
+<!-- @MARK border:1.25rem|solid|var(--color-line-divider) -->
+<div class="border:1.25rem|solid|var(--color-line-divider)"></div>
 ```
 
 ### Text roles
@@ -117,13 +117,13 @@ Text roles are for foreground hierarchy and interaction states. Prefer these rol
 <TextRolesDemo />
 
 ```html
-<!-- @MARK text-body --><!-- @MARK text-strong --><!-- @MARK text-muted --><!-- @MARK text-disabled --><!-- @MARK text-link --><!-- @MARK text-link-hover --><!-- @MARK text-inverse -->
-<article class="text-body">
-  <h2 class="text-strong">Quarterly report</h2>
-  <p class="text-muted">Updated 12 minutes ago</p>
-  <button class="text-disabled" disabled>Archive</button>
-  <a class="text-link text-link-hover:hover underline" href="#">Open report</a>
-  <span class="surface-inverse text-inverse">Private</span>
+<!-- @MARK fg-text-body --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-disabled --><!-- @MARK fg-text-link --><!-- @MARK fg-text-link-hover --><!-- @MARK fg-text-inverse -->
+<article class="fg-text-body">
+  <h2 class="fg-text-strong">Quarterly report</h2>
+  <p class="fg-text-muted">Updated 12 minutes ago</p>
+  <button class="fg-text-disabled" disabled>Archive</button>
+  <a class="fg-text-link fg-text-link-hover:hover text-decoration:underline" href="#">Open report</a>
+  <span class="surface-inverse fg-text-inverse">Private</span>
 </article>
 ```
 
@@ -142,21 +142,21 @@ Base hue aliases retain their former light value in every scheme. They are accen
 <!-- @MARK bg-yellow -->
 <div class="bg-yellow"></div>
 ```
-Use `text-yellow` for readable adaptive text; `fg-yellow` deliberately uses the fixed swatch.
+Use `fg-text-yellow` for readable adaptive text; `fg-yellow` deliberately uses the fixed swatch.
 ```html
 <!-- @MARK fg-yellow -->
 <div class="fg-yellow">Aa</div>
 ```
 
 ### Text hue aliases
-Text hue aliases choose foreground-oriented palette steps for light and dark modes. They are useful for colored text, but they do not replace semantic text roles such as `text-body`, `text-muted`, or `text-link`.
+Text hue aliases choose foreground-oriented palette steps for light and dark modes. They are useful for colored text, but they do not replace semantic text roles such as `fg-text-body`, `fg-text-muted`, or `fg-text-link`.
 
 <PresetThemeColors group="textHue" />
 <TextHueDemo />
 
 ```html
-<!-- @MARK text-yellow -->
-<div class="text-yellow">M</div>
+<!-- @MARK fg-text-yellow -->
+<div class="fg-text-yellow">M</div>
 ```
 
 ---
@@ -174,10 +174,10 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 ```
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK text-body --><!-- @MARK surface-raised --><!-- @MARK b:1px|solid|var(--color-line-divider) --><!-- @MARK text-muted -->
-<main class="bg-surface-base text-body">
-  <section class="b:1px|solid|var(--color-line-divider) surface-raised">
-    <p class="text-muted">The classes stay the same in every mode.</p>
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK surface-raised --><!-- @MARK border:1px|solid|var(--color-line-divider) --><!-- @MARK fg-text-muted -->
+<main class="bg-surface-base fg-text-body">
+  <section class="border:1px|solid|var(--color-line-divider) surface-raised">
+    <p class="fg-text-muted">The classes stay the same in every mode.</p>
   </section>
 </main>
 ```
@@ -191,8 +191,8 @@ The preset sets `:root { color-scheme: light dark; }`. Its 45 adaptive semantic 
 
 ```html
 <html data-theme="dark">
-  <body class="surface-base text-body">
-    <section data-theme="light" class="surface-raised text-body">A light region</section>
+  <body class="surface-base fg-text-body">
+    <section data-theme="light" class="surface-raised fg-text-body">A light region</section>
   </body>
 </html>
 ```
@@ -213,10 +213,10 @@ Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset do
 
 ## Contrast and migration
 
-- `text-body`, `text-strong`, links, and all 30 `text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
-- `text-muted` is for base, inset, and raised surfaces. Use `text-body` on floating surfaces. `text-disabled` is reserved for genuinely disabled controls.
+- `fg-text-body`, `fg-text-strong`, links, and all 30 `fg-text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `fg-text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
+- `fg-text-muted` is for base, inset, and raised surfaces. Use `fg-text-body` on floating surfaces. `fg-text-disabled` is reserved for genuinely disabled controls.
 - `line-control` uses neutral-50 / gray-40 for necessary boundaries, targeting at least 3:1. `line-divider` and `line-subtle` are decorative.
-- Pair `surface-inverse` with `text-inverse`. Keep link underlines or another non-color cue; `text-link-hover` needs `:hover` explicitly.
+- Pair `surface-inverse` with `fg-text-inverse`. Keep link underlines or another non-color cue; `fg-text-link-hover` needs `:hover` explicitly.
 - Recheck transparency, gradients, and custom backgrounds in their actual context; the opaque preset contrast matrix does not cover them.
 
 | Previous name | Replacement |
@@ -226,6 +226,6 @@ Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset do
 | `line-base`, `b-base` | `line-divider`, `b-divider` |
 | `line-strong`, `b-strong` | `line-control`, `b-control` with stronger values |
 | `line-muted` | Choose subtle, divider, or control by purpose |
-| `text-subtle`, `text-placeholder` | Use text-muted on approved surfaces, or text-body |
+| `text-subtle`, `text-placeholder` | Use fg-text-muted on approved surfaces, or fg-text-body |
 
 The old names are removed without compatibility aliases. Inputs still need a visible label independent of placeholder text. General hue aliases now stay fixed; explicit numbered palette steps and all 390 underlying colors retain their values.

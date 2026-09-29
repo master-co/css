@@ -37,7 +37,7 @@ test('Next additionalData does not shift imported partial diagnostics', async ()
   await fixture(async root => {
     const file = join(root, 'card.module.scss'), partial = join(root, 'parts/_rules.scss')
     writeFileSync(partial, '/* partial */\n.card{@compose "block";}')
-    await expect(compile(root, file, '@use "parts/rules";', [], { implementation: sassFile, additionalData: '$a:1;\n$b:2;' })).rejects.toMatchObject({
+    await expect(compile(root, file, '@use "parts/rules";', [], { implementation: sassFile, additionalData: "$a:1;\n$border:2;" })).rejects.toMatchObject({
       diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })]
     })
   })
@@ -46,7 +46,7 @@ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} reports Sass errors 
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax)
     const source = syntax === 'sass' ? '/* authored */\n.card\n  padding: $missing\n' : "/* authored */\n.card { @media all {padding: $missing;} }"
-    const additionalData = syntax === 'sass' ? '$a: 1\r\n$b: 2' : '$a:1;\r\n$b:2;'
+    const additionalData = syntax === 'sass' ? "$a: 1\r\n$border: 2" : "$a:1;\r\n$border:2;"
     await expect(compile(root, file, source, [], { implementation: sassFile, additionalData })).rejects.toMatchObject({
       span: { start: { line: syntax === 'sass' ? 2 : 1 }, text: '$missing' }, message: expect.stringContaining(`${file}:${syntax === 'sass' ? 3 : 2}:`)
     })

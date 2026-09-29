@@ -33,8 +33,22 @@ fn migrates_saved_rc_examples_and_preserves_identity() {
     for (case, list) in cases.iter().zip(&result.class_lists) {
         let before = case["rc"].as_str().unwrap();
         let proposal = &list[0];
+        if case["migrationReview"] == true {
+            assert_eq!(proposal.status, "review");
+            assert!(
+                proposal
+                    .notes
+                    .iter()
+                    .any(|note| note.contains("Typography"))
+            );
+            continue;
+        }
         assert_ne!(proposal.status, "review", "{before}: {:?}", proposal.notes);
-        assert_eq!(proposal.after.as_deref(), case["v2"].as_str(), "{before}");
+        assert_eq!(
+            proposal.after.as_deref(),
+            case["current"].as_str(),
+            "{before}"
+        );
     }
 }
 
@@ -42,7 +56,7 @@ fn migrates_saved_rc_examples_and_preserves_identity() {
 fn reads_original_units_and_preserves_resolution_and_quoted_values() {
     let mut request = request(&[
         "m:-1.5x@sm!",
-        "w:calc(2x+1px)",
+        "w:calc(2x|+|1px)",
         "background-image:image-set(url(a.png)|1x,url(b.png)|2x)",
         "content:'4x'",
         "image-resolution:2x",
@@ -52,13 +66,13 @@ fn reads_original_units_and_preserves_resolution_and_quoted_values() {
     request.manifest["settings"] = json!({"baseUnit":8,"rootSize":20});
     let result = migrate_rc(&request).unwrap();
     for (list, expected) in result.class_lists.iter().zip([
-        "m:-0.6rem@media((width>=52.125rem))!",
-        "w:calc(0.8rem+1px)",
+        "margin:-0.6rem@media((width>=52.125rem))!",
+        "width:calc(0.8rem|+|1px)",
         "background-image:image-set(url(a.png)|1x,url(b.png)|2x)",
         "content:'4x'",
         "image-resolution:2x",
-        "m:var(--spacing-sm)|var(--spacing-md)",
-        "p:var(--spacing-md)",
+        "margin:var(--spacing-sm)|var(--spacing-md)",
+        "padding:var(--spacing-md)",
     ]) {
         assert_ne!(list[0].status, "review", "{:?}", list[0].notes);
         assert_eq!(list[0].after.as_deref(), Some(expected));
@@ -143,8 +157,13 @@ fn migrates_directives_and_reports_selector_references() {
         );
     }
     assert!(!migrated.contains("base-unit"));
-    assert!(migrated.contains("@utility font-* from(--font-size-*)"));
-    assert!(migrated.contains("@utility font-size:*"));
+    assert!(!migrated.contains("@utility"));
+    assert!(
+        result.stylesheets[0]
+            .notes
+            .iter()
+            .any(|note| note.contains("@mixin") || note.contains("native"))
+    );
     assert!(migrated.contains("@compose p:md font:mono"));
     assert!(!result.stylesheets[1].notes.is_empty());
     input.stylesheets = vec![migrated];
@@ -214,10 +233,10 @@ fn custom_static_definitions_require_a_proven_target() {
         migrate_rc(&input).unwrap().class_lists[0][0].status,
         "review"
     );
-    input.target_manifest["utilities"]
+    input.target_manifest["mixins"]
         .as_array_mut()
         .unwrap()
-        .push(custom);
+        .push(json!({"name":"--card","body":[{"type":"declaration","property":"padding","value":[{"type":"text","value":"4px"}]}]}));
     assert_eq!(
         migrate_rc(&input).unwrap().class_lists[0][0].status,
         "replace"
@@ -233,7 +252,7 @@ fn migrates_var_fallbacks_and_nested_image_lengths_without_touching_resolution()
     .unwrap();
     assert_eq!(
         result.class_lists[0][0].after.as_deref(),
-        Some("p:var(--space,1rem)")
+        Some("padding:var(--space,1rem)")
     );
     assert_eq!(result.class_lists[0][0].status, "replace");
     assert_eq!(

@@ -29,5 +29,5 @@ test('public tooling session returns frozen HTML mappings and enforces disposal'
   expect(Object.isFrozen(result)).toBe(true)
   expect(Object.isFrozen(result.spans[0].sourceRange)).toBe(true)
   session.dispose()
-  expect(() => session.decodeHTMLAttribute('block')).toThrow(/disposed/)
+  expect(() => session.decodeHTMLAttribute("display:block")).toThrow(/disposed/)
 })

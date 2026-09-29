@@ -26,7 +26,7 @@
 
   <div class="counter-viewport">
     <div class="counter-digits" style="transform: translate(0, {100 * offset}%)">
-      <strong class="hidden" aria-hidden="true">{Math.floor($displayedCount + 1)}</strong>
+      <strong class="display:none" aria-hidden="true">{Math.floor($displayedCount + 1)}</strong>
       <strong>{Math.floor($displayedCount)}</strong>
     </div>
   </div>

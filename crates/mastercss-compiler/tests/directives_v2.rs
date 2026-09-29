@@ -20,13 +20,12 @@ fn utility_definitions_use_native_preludes_and_whole_value_parameters() {
     let mut engine = engine(
         r#"
         @theme { :root, :host { --color-line-brand: red; } }
-        @utility content-auto { content-visibility: auto; }
-        @utility equal-cols:* { display: grid; grid-template-columns: repeat(--master-value(), minmax(0, 1fr)); }
-        @utility outline-* from(--color-line-*, --color-*) { outline-color: --master-value(); }
+        @mixin --content-auto { content-visibility: auto; }
+        @mixin --equal-cols(--value) { display: grid; grid-template-columns: repeat(var(--value), minmax(0, 1fr)); }
     "#,
     );
     engine
-        .ensure_class_rules(["content-auto", "equal-cols:4", "outline-brand"])
+        .ensure_class_rules(["content-auto", "equal-cols(4)", "outline-brand"])
         .unwrap();
     let text = engine.css_text();
     assert!(text.contains("content-visibility:auto"), "{text}");
@@ -90,7 +89,7 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
         @custom-media --small (width >= 48rem);
         @custom-media --off false;
         @custom-media --outside not (--wide);
-        @utility visible-wide { @media (--wide) { visibility: visible; } }
+        @mixin --visible-wide { @media (--wide) { visibility: visible; } }
     "#;
     let mut engine = engine(source);
     engine
@@ -134,12 +133,9 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
 #[test]
 fn parameters_are_tokens_only_in_parameterized_declaration_values() {
     for source in [
-        "@utility box { width: --master-value(); }",
-        "@utility box:* { width: --master-value(1); }",
-        "@utility box:* { @media (width > --master-value()) { width: 1px; } }",
-        "@utility box:* { &:nth-child(--master-value()) { width: 1px; } }",
-        ".box { width: --master-value(); }",
-        "@theme { :root { --x: --master-value(); } }",
+        "@mixin --box(--value) { width: --master-value(1); }",
+        "@mixin --box(--value) { @media (width > var(--value)) { width: 1px; } }",
+        "@mixin --box(--value) { &:nth-child(var(--value)) { width: 1px; } }",
         "@theme { :root { @variant dark { --color: red; } } }",
         "@media print { @variant dark { color: red; } }",
     ] {
@@ -147,13 +143,20 @@ fn parameters_are_tokens_only_in_parameterized_declaration_values() {
             compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap_err();
         assert!(error.diagnostic().range.is_some(), "{source}: {error}");
     }
+    for source in [
+        "@mixin --box { width: var(--value); }",
+        ".box { width: var(--value); }",
+        "@theme { :root { --x: var(--value); } }",
+    ] {
+        assert!(compile_css_directives(source, &CompileNativeCssOptions::default()).is_ok());
+    }
     let mut engine = engine(
-        r#"@utility box:* { width: --master-value(); content: "--master-value()"; color: --value(); }"#,
+        r#"@mixin --box(--value) { width: var(--value); content: "var(--value)"; color: --value(); }"#,
     );
-    engine.ensure_class_rules(["box:10px"]).unwrap();
+    engine.ensure_class_rules(["box(10px)"]).unwrap();
     assert!(engine.css_text().contains("width:10px"));
     assert!(engine.css_text().contains("--value()"));
-    assert!(engine.css_text().contains("--master-value()"));
+    assert!(engine.css_text().contains("var(--value)"));
 }
 
 #[test]
@@ -164,7 +167,7 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
         @custom-media --b screen and (--a);
         @custom-media --off false;
         @custom-variant named { @media (--b) { @slot; } }
-        @utility box { @variant off { color: red; } display: block; }
+        @mixin --box { @variant off { color: red; } display: block; }
     "#,
     );
     engine
@@ -241,8 +244,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":2,"languageVersion":4,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":2,"languageVersion":4,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":3,"languageVersion":5,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":3,"languageVersion":5,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

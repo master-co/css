@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 
+mod functional_class;
+pub use functional_class::{FunctionalClassHead, parse_functional_class};
+
 mod utility_name;
 pub use utility_name::{decode_utility_name, valid_utility_name};
 

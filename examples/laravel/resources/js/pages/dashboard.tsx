@@ -14,8 +14,8 @@ export default function Dashboard() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
-      <div className="flex flex-col flex-1 gap-4 h-full p-4 rounded-xl">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+      <div className="display:flex flex-direction:column flex-1 gap-4 h-full p-4 rounded-xl">
+        <div className="display:grid auto-rows-min gap-4 md:grid-cols-3">
           <div className="aspect-video border border-sidebar-border/70 dark:border-sidebar-border overflow-hidden relative rounded-xl">
             <PlaceholderPattern className="absolute dark:stroke-neutral-100/20 inset-0 size-full stroke-neutral-900/20" />
           </div>

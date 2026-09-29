@@ -93,6 +93,11 @@ impl RelocatedStylesheet {
 
     pub fn restore_definition(&self, original: &str, definition: &mut CssDirectiveStyleDefinition) {
         match definition {
+            CssDirectiveStyleDefinition::Apply { source, .. } => {
+                if let Some(reference) = source {
+                    self.restore_reference(original, reference);
+                }
+            }
             CssDirectiveStyleDefinition::Native {
                 source,
                 selector_source,

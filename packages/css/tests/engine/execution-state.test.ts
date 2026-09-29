@@ -8,9 +8,9 @@ const manifest = defaultManifest as unknown as MasterCSSManifest
 test.each(['native', 'wasm'] as const)('%s executionState returns immutable stored references and current resources', async (binding) => {
   const engine = await createEngine({ manifest, binding })
   try {
-    expect(engine.inspect('block').matchStatus).toBe('matched')
-    expect(engine.executionState(['block']).classes).toEqual([{ className: 'block', references: [] }])
-    const classes = ['block', 'fg-red-60', 'block@base', 'unknown', 'block']
+    expect(engine.inspect("display:block").matchStatus).toBe('matched')
+    expect(engine.executionState(["display:block"]).classes).toEqual([{ className: "display:block", references: [] }])
+    const classes = ["display:block", 'fg-red-60', "display:block@base", 'unknown', "display:block"]
     engine.ensureClassRules(classes)
     const snapshot = engine.snapshot()
     const state = engine.executionState(classes)
@@ -24,12 +24,15 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     expect(Object.isFrozen(state)).toBe(true)
     expect(Object.isFrozen(state.classes[0].references[0])).toBe(true)
     expect(engine.snapshot()).toEqual(snapshot)
-    expect(engine.ensureClassRules(['block']).mutations).toEqual([])
+    expect(engine.ensureClassRules(["display:block"]).mutations).toEqual([])
     expect(engine.executionState(classes)).toEqual(state)
-    engine.deleteClassRules(['block'])
-    expect(engine.executionState(['block']).classes[0].references).toEqual([])
-    engine.refresh({ version: 2, languageVersion: 4 })
-    expect(engine.executionState(['block@base']).classes[0].references).toEqual([])
+    engine.deleteClassRules(["display:block"])
+    expect(engine.executionState(["display:block"]).classes[0].references).toEqual([])
+    engine.refresh({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
+    expect(engine.executionState(["display:block@base"]).classes[0].references).toEqual([])
   } finally {
     engine.dispose()
   }

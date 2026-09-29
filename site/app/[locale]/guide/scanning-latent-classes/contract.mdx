@@ -52,7 +52,7 @@ JavaScript and TypeScript extraction includes static strings, object maps, condi
 
 ```js name=src/button.js
 const toneClasses = {
-  neutral: 'bg-white text-neutral',
+  neutral: 'bg-white fg-text-neutral',
   destructive: 'bg-red-60 fg-white'
 }
 
@@ -66,7 +66,7 @@ The scanner can see these complete class strings across the two files:
 
 ```txt
 bg-white
-text-neutral
+fg-text-neutral
 bg-red-60
 fg-white
 r-md
@@ -84,7 +84,7 @@ Extraction returns candidate strings plus occurrences, including original UTF-16
 ## Validation \{#validation\}
 After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `fg-red-60`, or `grid-cols:3`.
+- It is a built-in utility, such as `block`, `fg-red-60`, or `grid-cols(3)`.
 - It is defined by your project CSS entry and compiled into the manifest.
 - It matches a native class collected from a stylesheet; this retains usage when [native pruning](/guide/native-css-pruning) is explicitly enabled.
 
@@ -108,7 +108,7 @@ After candidate scanning, Master CSS validates each class against the active man
 ```
 
 ```html name=src/index.html
-<section class="grid gap-xl">
+<section class="display:grid gap-xl">
   <h1 class="hero-title">Master CSS</h1>
   <a class="btn bg-blue-60 fg-white" href="/guide">Read docs</a>
 </section>
@@ -140,7 +140,7 @@ For variants, map a dynamic input to a complete class list.
 An interpolated color fragment has the same problem:
 
 ```js
-const className = `px-xs r:100% fg-white bg-${tone}`
+const className = `px-xs border-radius:100% fg-white bg-${tone}`
 ```
 
 Keep the supported variants in a static map:
@@ -152,7 +152,7 @@ const toneClasses = {
   neutral: 'bg-gray-10 fg-gray-90'
 }
 
-const className = `px-xs r:100% ${toneClasses[tone] ?? toneClasses.neutral}`
+const className = `px-xs border-radius:100% ${toneClasses[tone] ?? toneClasses.neutral}`
 ```
 
 This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
@@ -161,7 +161,7 @@ This also gives each variant room to choose its own contrast, hover state, disab
 When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
 
 ```html
-<h1 id="headline" class="font-size:var(--headline-size) leading:1.1" style="--headline-size: 2rem">
+<h1 id="headline" class="font-size:var(--headline-size) line-height:1.1" style="--headline-size: 2rem">
   Launch notes
 </h1>
 ```
@@ -183,8 +183,8 @@ Use the same pattern for a data-driven progress value. Keep an accessible numeri
 ```html
 <div id="progress" role="progressbar" aria-label="Upload progress"
   aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
-  class="overflow:hidden h:1rem r:100% bg-gray-10">
-  <div id="progress-fill" class="h:100% w:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)@motion"
+  class="overflow:hidden height:1rem border-radius:100% bg-gray-10">
+  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)@motion"
     style="--progress: 25%"></div>
 </div>
 ```

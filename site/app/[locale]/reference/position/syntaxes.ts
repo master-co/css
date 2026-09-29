@@ -1,9 +1,9 @@
 const syntaxes = [
-  'rel',
-  'abs',
-  'static',
-  'fixed',
-  'sticky',
+  "position:relative",
+  "position:absolute",
+  "position:static",
+  "position:fixed",
+  "position:sticky",
   ['position:`type`'],
 ]
 

@@ -1,6 +1,6 @@
 const syntaxes = [
-  'square',
-  'video',
+  "aspect-ratio:1/1",
+  "aspect-ratio:16/9",
   ['aspect-ratio:`ratio`,`aspect`'],
 ]
 

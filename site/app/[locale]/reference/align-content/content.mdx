@@ -8,18 +8,18 @@ Use `content-between` to put the first and last flex lines against opposite cros
 <DemoExample page="align-content" section="align-multiple-rows-or-tracks" />
 
 ```html
-<div id="layout" class="flex flex-wrap content-between gap-md h:14rem w:17.5rem max-w:100%">
-  <div id="target" class="flex:none h:3rem w:7.5rem p-sm">01</div>
-  <div id="peer" class="flex:none h:3rem w:7.5rem p-sm">02</div>
-  <div id="item-3" class="flex:none h:3rem w:7.5rem p-sm">03</div>
-  <div id="item-4" class="flex:none h:3rem w:7.5rem p-sm">04</div>
+<div id="layout" class="display:flex flex-wrap:wrap align-content:space-between gap-md height:14rem width:17.5rem max-width:100%">
+  <div id="target" class="flex:none height:3rem width:7.5rem p-sm">01</div>
+  <div id="peer" class="flex:none height:3rem width:7.5rem p-sm">02</div>
+  <div id="item-3" class="flex:none height:3rem width:7.5rem p-sm">03</div>
+  <div id="item-4" class="flex:none height:3rem width:7.5rem p-sm">04</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'flex-wrap', 'content-between']}
+    {['display:flex', 'flex-wrap:wrap', 'align-content:space-between']}
   </Class2CSS>
 </details>
 
@@ -31,16 +31,16 @@ In Flexbox, `align-content` positions lines along the cross axis. In Grid, it po
 <DemoExample page="align-content" section="center-wrapped-lines" />
 
 ```html
-<div id="layout" class="flex flex-wrap content-center gap-md h:14rem w:17.5rem max-w:100%">
-  <div id="target" class="flex:none h:3rem w:7.5rem p-sm">01</div>
-  <div id="peer" class="flex:none h:3rem w:7.5rem p-sm">02</div>
-  <div id="item-3" class="flex:none h:3rem w:7.5rem p-sm">03</div>
-  <div id="item-4" class="flex:none h:3rem w:7.5rem p-sm">04</div>
+<div id="layout" class="display:flex flex-wrap:wrap align-content:center gap-md height:14rem width:17.5rem max-width:100%">
+  <div id="target" class="flex:none height:3rem width:7.5rem p-sm">01</div>
+  <div id="peer" class="flex:none height:3rem width:7.5rem p-sm">02</div>
+  <div id="item-3" class="flex:none height:3rem width:7.5rem p-sm">03</div>
+  <div id="item-4" class="flex:none height:3rem width:7.5rem p-sm">04</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:3rem|3rem content-center gap-md h:14rem w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-cols(2) grid-template-rows:3rem|3rem align-content:center gap-md height:14rem width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -56,10 +56,10 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="align-content" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex flex-wrap content-start gap-md h:14rem w:17.5rem max-w:100% content-between@sm">
-  <div id="target" class="flex:none h:3rem w:7.5rem p-sm">01</div>
-  <div id="peer" class="flex:none h:3rem w:7.5rem p-sm">02</div>
-  <div id="item-3" class="flex:none h:3rem w:7.5rem p-sm">03</div>
-  <div id="item-4" class="flex:none h:3rem w:7.5rem p-sm">04</div>
+<div id="layout" class="display:flex flex-wrap:wrap align-content:start gap-md height:14rem width:17.5rem max-width:100% align-content:space-between@sm">
+  <div id="target" class="flex:none height:3rem width:7.5rem p-sm">01</div>
+  <div id="peer" class="flex:none height:3rem width:7.5rem p-sm">02</div>
+  <div id="item-3" class="flex:none height:3rem width:7.5rem p-sm">03</div>
+  <div id="item-4" class="flex:none height:3rem width:7.5rem p-sm">04</div>
 </div>
 ```

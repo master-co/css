@@ -26,23 +26,23 @@ describe('@master/css-compiler/diagnostics', () => {
   it('reports scanner state, per-file discoveries, and missing CSS diagnostics', async () => {
     const cwd = createTempDir('master-css-diagnostics-inspect-')
     try {
-      writeFileSync(join(cwd, 'index.html'), '<div class="block p-missing"></div>')
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"display:block p-missing\"></div>")
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifest,
         cwd,
         patterns: ['index.html'],
-        classes: ['block', 'never-generated-class']
+        classes: ["display:block", 'never-generated-class']
       })
 
       expect(report.version).toBe(5)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
-      expect(report.scanner.classes.valid).toContain('block')
+      expect(report.scanner.classes.valid).toContain("display:block")
       expect(report.scanner.classes.invalid).toContain('p-missing')
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].discovered.valid).toContain('block')
+      expect(report.files[0].discovered.valid).toContain("display:block")
       expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
-        className: 'block',
+        className: "display:block",
         reason: 'generated'
       }))
       expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
@@ -69,19 +69,19 @@ describe('@master/css-compiler/diagnostics', () => {
   it('reports checks for native and managed declarations without rejecting ordinary classes', async () => {
     const cwd = createTempDir('master-css-diagnostics-values-')
     try {
-      writeFileSync(join(cwd, 'index.html'), '<div class="ordinary font:16px grid-cols:2.5 width:future(2qu) padding:var(--space)"></div>')
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"ordinary font:16px grid-cols(2.5) width:future(2qu) padding:var(--space)\"></div>")
       const report = await createMasterCSSInspectionReport({ manifest: defaultManifest, cwd, patterns: ['index.html'], includeCss: true })
       const byName = new Map(report.inspections.map(item => [item.className, item]))
       expect(byName.get('font:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-      expect(byName.get('grid-cols:2.5')?.cssValueStatus).toBe('invalid')
+      expect(byName.get("grid-cols(2.5)")?.matchStatus).toBe('syntax-error')
       expect(byName.get('width:future(2qu)')?.cssValueStatus).toBe('unknown')
       expect(byName.get('padding:var(--space)')?.cssValueStatus).toBe('unknown')
       expect(byName.get('font:16px')?.checks).toEqual([expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-value', scope: 'expanded-declarations-and-known-math-grammar-and-static-types-v1', version: expect.any(String) })])
-      expect(report.diagnostics.filter(item => item.code === 'CSS_VALUE_INVALID')).toHaveLength(2)
+      expect(report.diagnostics.filter(item => item.code === 'CSS_VALUE_INVALID')).toHaveLength(1)
       expect(report.diagnostics.some(item => item.message.includes('ordinary'))).toBe(false)
       expect(report.summary.errors).toBe(2)
       expect(report.css.text).toContain('font:16px')
-      expect(report.css.text).toContain('repeat(2.5')
+      expect(report.css.text).not.toContain('repeat(2.5')
     } finally { rmSync(cwd, { recursive: true, force: true }) }
   })
 
@@ -89,12 +89,12 @@ describe('@master/css-compiler/diagnostics', () => {
     const cwd = createTempDir('master-css-diagnostics-css-')
     try {
       writeFileSync(join(cwd, 'index.css'), "@import \"@master/css\";")
-      writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"display:block\"></div>")
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifest,
         cwd,
         patterns: ['index.html'],
-        classes: 'block',
+        classes: 'display:block',
         includeCss: true
       })
 
@@ -117,7 +117,7 @@ describe('@master/css-compiler/diagnostics', () => {
     const cwd = createTempDir('master-css-diagnostics-entry-error-')
     try {
       writeFileSync(join(cwd, 'index.css'), "@import \"@master/css\";\n@import \"./missing.css\";")
-      writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"display:block\"></div>")
       const report = await createMasterCSSInspectionReport({
         manifest: defaultManifest,
         cwd,

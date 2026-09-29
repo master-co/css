@@ -2,17 +2,13 @@ import { expect, test } from 'vitest'
 import { extractClassCandidatesNative as extractClassCandidates } from '../../src/source/native'
 
 test.concurrent('extracts class candidates from mixed source strings', () => {
-  const source = `
-    import styles from './style.css'
-    const cls = "fg-red hover:bg:blue"
-    const nested = { class: 'content:"a;b" background-image:url("/logo.png")' }
-  `
+  const source = "\n    import styles from './style.css'\n    const cls = \"fg-red hover:background:blue\"\n    const nested = { class: 'content:\"a;b\" background-image:url(\"/logo.png\")' }\n  "
 
   expect(extractClassCandidates(source)).toEqual([
     'const',
     'cls',
     'fg-red',
-    'hover:bg:blue',
+    "hover:background:blue",
     'nested',
     'class',
     'content:"a;b"',

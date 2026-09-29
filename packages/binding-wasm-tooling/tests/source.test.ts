@@ -44,26 +44,34 @@ test('loads the isolated source tooling Wasm surface', async () => {
   const tooling = await initToolingWasm({ input })
   expect(tooling.extractOxcClasses(
     'component.tsx',
-    'const classes = "block mx:auto"; import value from "ignored"'
-  )).toEqual(['block', 'mx:auto'])
+    "const classes = \"block margin-inline:auto\"; import value from \"ignored\""
+  )).toEqual(['block', "margin-inline:auto"])
   expect(tooling.extractHTMLClasses(
     'index.html',
-    '<main class="grid"><script>const classes = "fg-red"</script></main>'
-  )).toEqual(['grid', 'fg-red'])
+    "<main class=\"display:grid\"><script>const classes = \"fg-red\"</script></main>"
+  )).toEqual(["display:grid", 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
-    version: 2, languageVersion: 4,
-    utilities: [{
-      id: 'display-block',
-      name: 'block',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { display: 'block' } }]
-      },
-      matchers: [{ type: 'static', name: 'block' }]
-    }]
-  }))
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}))
   expect(scanner.scan('component.tsx', 'const classes = "block unknown"')).toMatchObject({
     changed: true,
     validClasses: ['block'],
@@ -77,20 +85,28 @@ test('loads the isolated source tooling Wasm surface', async () => {
   scanner.free()
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
-    version: 2, languageVersion: 4,
-    utilities: [{
-      id: 'display-block',
-      name: 'block',
-      type: 0,
-      emit: {
-        type: 'static',
-        rules: [{ declarations: { display: 'block' } }]
-      },
-      matchers: [{ type: 'static', name: 'block' }]
-    }]
-  }))
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}))
   expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
-    version: 4,
+    version: 4 as const,
     classes: [
       { className: 'block', matchStatus: 'matched', rules: [{ text: '.block{display:block}' }] },
       { className: 'unknown', matchStatus: 'unmatched', rules: [] }
@@ -99,90 +115,116 @@ test('loads the isolated source tooling Wasm surface', async () => {
   validator.dispose()
   validator.free()
 
-  const lint = new tooling.ToolingLintSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "spacing-md", value: '1rem' }] }],
-    version: 2, languageVersion: 4,
-    variables: {
-      spacing: [{ key: 'md', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }] }]
-    },
-    utilities: [
+  const lint = new tooling.ToolingLintSession(JSON.stringify({
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "spacing-md",
+          "value": "1rem"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "spacing": [
       {
-        id: 'display-block',
-        name: 'block',
-        type: -2,
-        emit: {
-          type: 'static',
-          rules: [{ declarations: { display: 'block' } }]
-        },
-        matchers: [{ type: 'static', name: 'block' }]
-      },
-      {
-        id: 'margin',
-        name: 'm:',
-        type: -1,
-        variableAliasRefs: ['~spacing'],
-        emit: { type: 'property', property: 'margin' },
-        matchers: [{ type: 'key', keys: ['m'] }]
-      },
-      {
-        id: 'margin-x',
-        name: 'mx:',
-        type: -1,
-        emit: {
-          type: 'template',
-          declarations: { 'margin-inline': null }
-        },
-        matchers: [{ type: 'key', keys: ['mx'] }]
-      },
-      {
-        id: 'margin-inline-start',
-        name: 'mxs:',
-        type: -1,
-        emit: { type: 'property', property: 'margin-inline-start' },
-        matchers: [{ type: 'key', keys: ['mxs'] }]
-      },
-      {
-        id: 'margin-inline-end',
-        name: 'mxe:',
-        type: -1,
-        emit: { type: 'property', property: 'margin-inline-end' },
-        matchers: [{ type: 'key', keys: ['mxe'] }]
+        "key": "md",
+        "type": "number" as const,
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "1rem"
+          }
+        ]
       }
     ]
-  }))
-  expect(lint.analyze(['block', 'm:2px', 'm:3px', 'unknown'], undefined, [])).toEqual({
-    version: 3,
-    sortedClassNames: ['block', 'm:2px', 'm:3px', 'unknown'],
-    conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }],
+  },
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "--mx",
+      "parameters": [
+        {
+          "name": "--value"
+        }
+      ],
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "margin-inline",
+          "value": [
+            {
+              "type": "function" as const,
+              "name": "var",
+              "value": [
+                {
+                  "type": "text" as const,
+                  "value": "--value"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}))
+  expect(lint.analyze(['block', "margin:2px", "margin:3px", 'unknown'], undefined, [])).toEqual({
+    version: 3 as const,
+    sortedClassNames: ['block', "margin:2px", "margin:3px", 'unknown'],
+    conflicts: [{ className: "margin:2px", conflicts: ["margin:3px"] }],
     partialConflicts: []
   })
-  expect(lint.analyze(['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 3,
-    sortedClassNames: ['mx:2px', 'mxs:3px'],
+  expect(lint.analyze(["margin-inline:2px", "margin-inline-start:3px"], undefined, [])).toEqual({
+    version: 3 as const,
+    sortedClassNames: ["margin-inline:2px", "margin-inline-start:3px"],
     conflicts: [],
     partialConflicts: []
   })
   expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
-    version: 3,
+    version: 3 as const,
     suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
   })
   expect(lint.canonicalClassGroups(['mxs-md', 'mxe-md'], undefined, undefined)).toEqual({
-    version: 3,
+    version: 3 as const,
     suggestions: []
   })
-  expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-    version: 3,
+  expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
+    version: 3 as const,
     candidates: [
-      { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+      { className: "margin:var(--spacing-md)|17px", key: 'margin', segments: ['17px'], properties: ['margin'] }
     ]
   })
   // Decomposing a shorthand would change its cascade tier, so no partial autofix.
-  expect(lint.analyzeClassList('mx:2px  mxs:3px', ['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
-    version: 3,
-    analysis: { version: 3, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
+  expect(lint.analyzeClassList("margin-inline:2px  margin-inline-start:3px", ["margin-inline:2px", "margin-inline-start:3px"], undefined, [])).toEqual({
+    version: 3 as const,
+    analysis: { version: 3 as const, sortedClassNames: ["margin-inline:2px", "margin-inline-start:3px"], conflicts: [], partialConflicts: [] },
     diagnostics: []
   })
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 3,
+    version: 3 as const,
     classList: 'block unknown',
     classNames: ['block', 'unknown'],
     validationErrors: [
@@ -204,9 +246,9 @@ test('loads the isolated source tooling Wasm surface', async () => {
     })
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 3,
-    classList: '😀 m:var(--spacing-md)|17px',
-    classNames: ['😀', 'm:var(--spacing-md)|17px'],
+    version: 3 as const,
+    classList: "😀 margin:var(--spacing-md)|17px",
+    classNames: ['😀', "margin:var(--spacing-md)|17px"],
     rawValuePolicy: {
       allowedPatterns: []
     }
@@ -214,12 +256,12 @@ test('loads the isolated source tooling Wasm surface', async () => {
   expect(rawPolicy.diagnostics).toContainEqual({
     ruleId: 'no-unapproved-raw-values',
     code: 'unapproved-raw-value',
-    message: 'Raw value "17px" is not approved for class "m:var(--spacing-md)|17px". Use a token or allow the value explicitly.',
-    range: { start: 3, end: 27 },
+    message: "Raw value \"17px\" is not approved for class \"margin:var(--spacing-md)|17px\". Use a token or allow the value explicitly.",
+    range: { start: 3, end: 32 },
     data: {
-      className: 'm:var(--spacing-md)|17px',
+      className: "margin:var(--spacing-md)|17px",
       value: '17px',
-      key: 'm',
+      key: 'margin',
       properties: ['margin']
     }
   })
@@ -227,43 +269,54 @@ test('loads the isolated source tooling Wasm surface', async () => {
   lint.free()
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
-    version: 2, languageVersion: 4,
-    utilities: [{
-      id: 'display-block',
-      name: 'block',
-      type: -2,
-      emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
-      matchers: [{ type: 'static', name: 'block' }]
-    }]
-  }))
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 5,
+    version: 5 as const,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 5,
+    version: 5 as const,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 5,
+    version: 5 as const,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
-      expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
+      expect.objectContaining({ label: "color:", kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 5,
+    version: 5 as const,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
-    sourceFormat: { syntax: 'rgb' }
+    sourceFormat: { syntax: 'rgb' as const }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 5,
+    version: 5 as const,
     tokens: [{
       range: { start: 8, end: 12 },
       expression: { kind: 'literal', value: '#123' }
@@ -273,7 +326,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   language.free()
 
   expect(tooling.createInspectionReport({
-    version: 5,
+    version: 5 as const,
     cwd: '/project',
     patterns: ['index.html'],
     files: [],
@@ -282,7 +335,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     stylesheets: {},
     css: { text: '😀' }
   })).toMatchObject({
-    version: 5,
+    version: 5 as const,
     // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
     // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
     css: { bytes: 4, included: false },

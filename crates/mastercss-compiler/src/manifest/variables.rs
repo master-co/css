@@ -54,22 +54,14 @@ pub(super) fn collect_namespaces(
             }
         }
     }
-    for utility in input.utilities.as_deref().unwrap_or_default() {
-        let Some(utility) = utility.as_object() else {
-            continue;
-        };
-        for reference in utility
-            .get("token")
-            .and_then(Value::as_object)
-            .and_then(|dynamic| dynamic.get("variableAliasRefs"))
-            .and_then(Value::as_array)
-            .into_iter()
-            .flatten()
-            .filter_map(Value::as_str)
+    for mixin in input.mixins.iter().flatten() {
+        if mixin.parameters.len() == 1
+            && mixin.parameters[0].syntax == Some(mastercss_schema::MixinParameterSyntax::String)
         {
-            if matches!(reference.as_bytes().first(), Some(b'~' | b'=')) {
-                push_unique(&mut namespaces, reference[1..].to_owned());
-            }
+            push_unique(
+                &mut namespaces,
+                mixin.name.trim_start_matches("--").to_owned(),
+            );
         }
     }
     namespaces.sort_by(|left, right| right.len().cmp(&left.len()).then_with(|| left.cmp(right)));

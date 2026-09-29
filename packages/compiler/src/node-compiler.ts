@@ -13,7 +13,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   CSSDirectiveExtractionPolicy,
   CSSDirectiveReference,
-  CSSUtilitySource
+  CSSMixinSource
 } from '@master/css-schema/css-directives'
 import {
   setCompilerDiagnosticCount,
@@ -356,7 +356,7 @@ function compileManifestInputWithBinding(
 }
 
 interface BindingLowerCSSDirectivesResult {
-  utilitySources: CSSUtilitySource[]
+  mixinSources: CSSMixinSource[]
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: CompileCSSResult['generatedMappings']
@@ -382,7 +382,7 @@ function lowerCSSDirectivesWithBinding(
     nativeCompiler().lowerCSSDirectives(
       {
         manifestInput: result.manifestInput,
-        utilitySources: result.utilitySources || [],
+        mixinSources: result.mixinSources || [],
         nativeOutput: result.nativeOutput,
         styleDefinitions: result.styleDefinitions || [],
         warnings: result.warnings
@@ -437,7 +437,7 @@ function resolveCSSReferenceContext(
   const warnings: string[] = []
   let manifest = options.baseManifest
   let hasReferences = false
-  const utilitySources: CSSUtilitySource[] = []
+  const mixinSources: CSSMixinSource[] = []
 
   for (const reference of references || []) {
     const referenceFile = resolveCSSReferenceFile(reference, options)
@@ -454,7 +454,7 @@ function resolveCSSReferenceContext(
       referenceResources: options.resolveReferenceResources,
       referenceStack: options.referenceStack
     })
-    utilitySources.push(...(result.utilitySources || []))
+    mixinSources.push(...(result.mixinSources || []))
     hasReferences = true
     manifest = result.manifest
     addUnique(dependencies, result.dependencies)
@@ -464,7 +464,7 @@ function resolveCSSReferenceContext(
   return {
     dependencies,
     warnings,
-    utilitySources,
+    mixinSources,
     ...(hasReferences ? { manifest } : {})
   }
 }
@@ -475,8 +475,8 @@ function toCompileCSSManifestResult(
 ): CompileCSSManifestResult {
   const { manifestInput: _directiveManifestInput, ...directiveData } = result
   const referenceContext = resolveCSSReferenceContext(result.references, options)
-  const utilitySources = [...referenceContext.utilitySources, ...(result.utilitySources || [])]
-  const lowerResult = lowerCSSDirectivesWithBinding({ ...result, utilitySources }, {
+  const mixinSources = [...referenceContext.mixinSources, ...(result.mixinSources || [])]
+  const lowerResult = lowerCSSDirectivesWithBinding({ ...result, mixinSources }, {
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onDiagnostic: options.onDiagnostic,
@@ -496,7 +496,7 @@ function toCompileCSSManifestResult(
   ].filter(Boolean).join('\n')
   return {
     ...directiveData,
-    utilitySources: lowerResult.utilitySources,
+    mixinSources: lowerResult.mixinSources,
     ...(lowerResult.css === undefined ? {} : { outputMappings: lowerResult.outputMappings ?? [] }),
     dependencies,
     manifest: lowerResult.manifest,
@@ -538,7 +538,7 @@ export function compileCSSManifestGraph(
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
-    utilitySources: referenceContext.utilitySources,
+    mixinSources: referenceContext.mixinSources,
     resourceURLs,
     options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
         pruneNativeCSS: options.pruneNativeCSS === true,

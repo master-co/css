@@ -58,6 +58,56 @@
     --font-size-9xl: 6rem;
     --font-size-10xl: 8rem;
 
+    /* Typography recipes: explicit line height and letter spacing per step. */
+    --text-3xs: var(--font-size-3xs);
+    --text-3xs--line-height: 1.5;
+    --text-3xs--letter-spacing: 0;
+    --text-2xs: var(--font-size-2xs);
+    --text-2xs--line-height: 1.5;
+    --text-2xs--letter-spacing: 0;
+    --text-xs: var(--font-size-xs);
+    --text-xs--line-height: 1.5;
+    --text-xs--letter-spacing: 0;
+    --text-sm: var(--font-size-sm);
+    --text-sm--line-height: 1.5;
+    --text-sm--letter-spacing: 0;
+    --text-md: var(--font-size-md);
+    --text-md--line-height: 1.6;
+    --text-md--letter-spacing: 0;
+    --text-lg: var(--font-size-lg);
+    --text-lg--line-height: 1.5;
+    --text-lg--letter-spacing: 0;
+    --text-xl: var(--font-size-xl);
+    --text-xl--line-height: 1.4;
+    --text-xl--letter-spacing: -.01em;
+    --text-2xl: var(--font-size-2xl);
+    --text-2xl--line-height: 1.35;
+    --text-2xl--letter-spacing: -.015em;
+    --text-3xl: var(--font-size-3xl);
+    --text-3xl--line-height: 1.25;
+    --text-3xl--letter-spacing: -.02em;
+    --text-4xl: var(--font-size-4xl);
+    --text-4xl--line-height: 1.2;
+    --text-4xl--letter-spacing: -.025em;
+    --text-5xl: var(--font-size-5xl);
+    --text-5xl--line-height: 1.15;
+    --text-5xl--letter-spacing: -.03em;
+    --text-6xl: var(--font-size-6xl);
+    --text-6xl--line-height: 1.1;
+    --text-6xl--letter-spacing: -.035em;
+    --text-7xl: var(--font-size-7xl);
+    --text-7xl--line-height: 1.05;
+    --text-7xl--letter-spacing: -.04em;
+    --text-8xl: var(--font-size-8xl);
+    --text-8xl--line-height: 1.05;
+    --text-8xl--letter-spacing: -.04em;
+    --text-9xl: var(--font-size-9xl);
+    --text-9xl--line-height: 1;
+    --text-9xl--letter-spacing: -.045em;
+    --text-10xl: var(--font-size-10xl);
+    --text-10xl--line-height: 1;
+    --text-10xl--letter-spacing: -.05em;
+
     /* Font features */
     --font-feature-tabular: 'tnum';
 

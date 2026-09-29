@@ -1,6 +1,6 @@
 const syntaxes = [
   'font-weight:normal',
-  'font-bolder',
+  "font-weight:bolder",
   'font-thin',
   'font-extralight',
   'font-light',

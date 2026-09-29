@@ -72,6 +72,6 @@ export const agentFixExample = {
   language: 'html',
   sourceLabel: 'src/button.html — before',
   resultLabel: 'Proposed content',
-  source: '<button class="bg-blue-60 p-md flex gap-sm">Save</button>',
-  result: '<button class="flex gap-sm p-md bg-blue-60">Save</button>'
+  source: "<button class=\"bg-blue-60 p-md display:flex gap-sm\">Save</button>",
+  result: "<button class=\"display:flex gap-sm p-md bg-blue-60\">Save</button>"
 } satisfies DocumentCodeExampleProps

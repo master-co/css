@@ -13,8 +13,8 @@ export default () => {
       <table>
         <thead>
           <tr>
-            <th className="w:0">Variant</th>
-            <th className="w:0">Value</th>
+            <th className="width:0">Variant</th>
+            <th className="width:0">Value</th>
             <th>Generated query</th>
           </tr>
         </thead>

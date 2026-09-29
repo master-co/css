@@ -31,17 +31,17 @@ fn preserves_actual_stroke_intent_and_does_not_guess_variable_types() {
     .unwrap();
     assert_eq!(
         result.class_lists[0][0].after.as_deref(),
-        Some("text-stroke-width:2px"),
+        Some("-webkit-text-stroke-width:2px"),
         "{:?}",
         result.class_lists[0][0].notes
     );
     assert_eq!(
         result.class_lists[1][0].after.as_deref(),
-        Some("text-stroke-color:#fff")
+        Some("-webkit-text-stroke-color:#fff")
     );
     assert_eq!(
         result.class_lists[2][0].after.as_deref(),
-        Some("text-stroke:red")
+        Some("-webkit-text-stroke:red")
     );
     assert_eq!(result.class_lists[3][0].status, "review");
     assert_eq!(result.class_lists[4][0].status, "review");
@@ -62,11 +62,8 @@ fn converts_only_safe_patterns_and_retains_native_values() {
             &edit.after,
         );
     }
-    assert!(output.contains("@utility size:*"), "{output}");
-    assert!(
-        output.contains("@utility gap-* from(--spacing-*)"),
-        "{output}"
-    );
+    assert!(output.contains("@mixin --size(--value)"), "{output}");
+    assert!(!output.contains("@utility"), "{output}");
     assert!(output.contains("--alpha(red,.5)"));
     let rerun = migrate_rc(&request(vec![], vec![&output])).unwrap();
     assert!(rerun.stylesheets[0].edits.is_empty());
@@ -89,7 +86,7 @@ fn combines_adjacent_static_definitions_in_original_order() {
     assert_eq!(result.stylesheets[0].edits.len(), 1);
     assert_eq!(
         result.stylesheets[0].edits[0].after,
-        "@utility card{color:red;&:hover{display:block}\ncolor:blue}"
+        "@mixin --card{color:red;&:hover{display:block}\ncolor:blue}"
     );
 }
 
@@ -139,7 +136,7 @@ fn does_not_activate_previously_unmatched_or_invalid_values() {
     assert_eq!(result.class_lists[1][0].status, "review");
     assert_eq!(
         result.class_lists[2][0].after.as_deref(),
-        Some("text-stroke-width:2px:hover@media((width>=40rem))")
+        Some("-webkit-text-stroke-width:2px:hover@media((width>=40rem))")
     );
 }
 
@@ -148,7 +145,7 @@ fn unchanged_declarations_do_not_hide_changed_resource_values() {
     let mut request = request(vec![vec!["card"]], vec![]);
     let definition = json!({"id":"card","type":-2,"emit":{"type":"declarations","declarations":["color:var(--color-brand)"]},"matchers":[{"type":"static","name":"card"}]});
     request.manifest = json!({"version":1,"languageVersion":2,"variables":{"color":[{"key":"brand","value":"red"}]},"utilities":[definition.clone()]});
-    request.target_manifest = json!({"version":2,"languageVersion":4,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"utilities":[definition]});
+    request.target_manifest = json!({"version":3,"languageVersion":5,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
     let result = migrate_rc(&request).unwrap();
     assert_eq!(result.class_lists[0][0].status, "review");
     assert!(

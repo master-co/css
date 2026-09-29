@@ -15,7 +15,7 @@ const syntaxes = [
   'border-block-color:transparent',
   'border-color:currentColor',
   ['border-color:`color`'],
-  ['b:`color`'],
+  ["border:`color`"],
 ]
 
 export default syntaxes

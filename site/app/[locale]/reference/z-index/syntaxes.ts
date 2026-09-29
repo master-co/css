@@ -1,5 +1,5 @@
 const syntaxes = [
-  ['z:`value`']
+  ["z-index:`value`"]
 ]
 
 export default syntaxes

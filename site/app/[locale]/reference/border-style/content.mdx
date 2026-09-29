@@ -11,10 +11,10 @@
 ```html
 <!-- Solid style · 3px width -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-solid border-width:3px b-blue
-         font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:solid border-width:3px b-blue
+         font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Preview panel
 </div>
 ```
@@ -22,7 +22,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b-solid']}
+    {['border-style:solid']}
   </Class2CSS>
 </details>
 
@@ -34,10 +34,10 @@ Compare dashed and dotted borders of the same box. Both use a 3px border; the br
 ```html
 <!-- Dashed border -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-dashed border-width:3px
-         b-blue font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:dashed border-width:3px
+         b-blue font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Dashed frame
 </div>
 ```
@@ -45,10 +45,10 @@ Compare dashed and dotted borders of the same box. Both use a 3px border; the br
 ```html
 <!-- Dotted border -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b-dotted border-width:3px
-         b-blue font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border-style:dotted border-width:3px
+         b-blue font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Dotted frame
 </div>
 ```
@@ -63,8 +63,8 @@ Use these patterns to support a visible label. The decorative samples do not imp
 ```html
 <!-- Solid · border adds to content box -->
 <div id="target"
-  class="h:48px w:160px p-md b-solid border-width:6px b-blue
-         bg-surface-inset text-body box-content">
+  class="height:48px width:160px p-md border-style:solid border-width:6px b-blue
+         bg-surface-inset fg-text-body box-sizing:content-box">
   Content box
 </div>
 ```
@@ -72,8 +72,8 @@ Use these patterns to support a visible label. The decorative samples do not imp
 ```html
 <!-- None · no used border width -->
 <div id="target"
-  class="h:48px w:160px p-md b-none border-width:6px b-blue
-         bg-surface-inset text-body box-content">
+  class="height:48px width:160px p-md border-style:none border-width:6px b-blue
+         bg-surface-inset fg-text-body box-sizing:content-box">
   Content box
 </div>
 ```
@@ -81,8 +81,8 @@ Use these patterns to support a visible label. The decorative samples do not imp
 ```html
 <!-- Hidden · same ordinary box geometry -->
 <div id="target"
-  class="h:48px w:160px p-md b-hidden border-width:6px b-blue
-         bg-surface-inset text-body box-content">
+  class="height:48px width:160px p-md border-style:hidden border-width:6px b-blue
+         bg-surface-inset fg-text-body box-sizing:content-box">
   Content box
 </div>
 ```
@@ -97,13 +97,13 @@ Hover or keyboard-focus this button to switch from solid to dashed without chang
 ```html
 <!-- Solid → dashed · width stays 2px -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm b-solid
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm border-style:solid
          border-width:2px b-blue r-sm font-md bg-surface-base
-         text-body box-border
-         bg-surface-inset:focus-visible b-none@print
-         b-dashed:hover@screen
-         b-dashed:focus-visible@screen">
+         fg-text-body box-sizing:border-box
+         bg-surface-inset:focus-visible border-style:none@print
+         border-style:dashed:hover@screen
+         border-style:dashed:focus-visible@screen">
   Preview details
 </button>
 ```

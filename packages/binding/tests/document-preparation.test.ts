@@ -5,7 +5,10 @@ const request = { source: '<div class="display:block" />', languageId: 'html' }
 
 test.each(['native', 'wasm'] as const)('%s prepared documents reject stale IDs without consuming newer work', async (binding) => {
   const tooling = await createToolingBinding({ binding })
-  using session = await tooling.createLanguageSession({ version: 2, languageVersion: 4 })
+  using session = await tooling.createLanguageSession({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
   const first = session.prepareDocument(request)
   const second = session.prepareDocument(request)
   expect(() => session.finishDocument(first.id, [true])).toThrow()
@@ -17,7 +20,10 @@ test.each(['native', 'wasm'] as const)('%s prepared documents reject stale IDs w
 
 test.each(['native', 'wasm'] as const)('%s releases prepared input after invalid requests and support payloads', async (binding) => {
   const tooling = await createToolingBinding({ binding })
-  using session = await tooling.createLanguageSession({ version: 2, languageVersion: 4 })
+  using session = await tooling.createLanguageSession({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+})
   const first = session.prepareDocument(request)
   expect(() => session.prepareDocument({ ...request, source: 42 } as unknown as typeof request)).toThrow()
   expect(() => session.finishDocument(first.id, [true])).toThrow()

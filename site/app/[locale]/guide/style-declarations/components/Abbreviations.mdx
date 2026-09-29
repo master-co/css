@@ -1,12 +1,12 @@
-export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
+export const code1 =   `
   <!-- @MARK font-size:16px --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
   <p class="font-size:16px margin-top:32px justify-content:center">
 `
 export const code2 = `
-  <!-- @MARK font-size:16px --><!-- @MARK mt:32px --><!-- @MARK justify-content:center -->
-  <p class="font-size:16px mt:32px justify-content:center">
+  <!-- @MARK font-size:16px --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
+  <p class="font-size:16px margin-top:32px justify-content:center">
 `
-/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
+
 
 Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property-name</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code> -> <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">alias</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code>
 
@@ -22,25 +22,25 @@ Property names can still be long after you learn the syntax. Master CSS keeps a 
 
 Use full property names for rare CSS properties. Valid native declarations can be written directly without waiting for a built-in abbreviation.
 
-Retained abbreviations canonicalize to full property keys, so the same raw value and unit behavior works whether you write `w:32px` or `width:32px`.
+Retained abbreviations canonicalize to full property keys, so the same raw value and unit behavior works whether you write `width:32px` or `width:32px`.
 
-export const code3 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand progression examples */ `
+export const code3 =   `
   <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
   <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
 `
 export const code4 = `
-  <!-- @MARK w:32px --><!-- @MARK h:32px --><!-- @MARK r:5px --><!-- @MARK z:10 --><!-- @MARK mt:1px --><!-- @MARK mb:1px --><!-- @MARK pl:1px --><!-- @MARK pr:1px -->
-  <div class="w:32px h:32px r:5px z:10 mt:1px mb:1px pl:1px pr:1px">
+  <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
+  <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
 `
 export const code5 = `
-  <!-- @MARK my:1px --><!-- @MARK px:1px -->
-  <div class="w:32px h:32px r:5px z:10 my:1px px:1px">
+  <!-- @MARK margin-block:1px --><!-- @MARK padding-inline:1px -->
+  <div class="width:32px height:32px border-radius:5px z-index:10 margin-block:1px padding-inline:1px">
 `
 export const code6 = `
   <!-- @MARK width:32px height:32px -->
-  <div class="width:32px height:32px r:5px z:10 my:1px px:1px">
+  <div class="width:32px height:32px border-radius:5px z-index:10 margin-block:1px padding-inline:1px">
 `
-/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
+
 
 <Code lang="html">
   {code3}

@@ -1,5 +1,5 @@
 const syntaxes = [
-  ['bg:`image`|`position`/`size`|`repeat`'],
+  ["background:`image`|`position`/`size`|`repeat`"],
   ['background:`value`'],
 ]
 

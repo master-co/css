@@ -1,10 +1,9 @@
 use super::{
     EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet,
-    RulePriorityIr, StoredRule, canonicalize_class_name, collect_css_variable_names,
-    composition_conditions, composition_selector, create_selector_text, emit_declarations,
-    find_group_close, normalize_dynamic_value, parse_serialized_declarations,
-    resolve_state_branches, selector_priority, split_top_level, wrap_raw_conditions,
-    wrap_state_conditions,
+    RulePriorityIr, StoredRule, collect_css_variable_names, composition_conditions,
+    composition_selector, create_selector_text, emit_declarations, find_group_close,
+    normalize_dynamic_value, parse_serialized_declarations, resolve_state_branches,
+    selector_priority, split_top_level, wrap_raw_conditions, wrap_state_conditions,
 };
 
 impl EngineSession {
@@ -39,8 +38,7 @@ impl EngineSession {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let matching_class_names = [canonicalize_class_name(semantic_class_name)
-            .unwrap_or_else(|| semantic_class_name.to_owned())];
+        let matching_class_names = [semantic_class_name.to_owned()];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
             let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
@@ -72,8 +70,12 @@ impl EngineSession {
                         .into_iter()
                         .enumerate()
                 {
-                    let emitted_rules =
-                        emit_declarations(utility, resolved_value.as_deref(), branch.important);
+                    let emitted_rules = emit_declarations(
+                        utility,
+                        resolved_value.as_deref(),
+                        branch.important,
+                        &self.compiled,
+                    );
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -102,7 +104,7 @@ impl EngineSession {
                         } else {
                             0
                         },
-                        sort_key: super::named::sort_key(utility, &matched),
+                        sort_key: super::named::sort_key(utility, &matched, &self.compiled),
                         features,
                         conditions,
                         selector: selector_priority(branch.selector_template.as_deref()),
@@ -154,8 +156,7 @@ impl EngineSession {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let matching_class_names = [canonicalize_class_name(semantic_class_name)
-            .unwrap_or_else(|| semantic_class_name.to_owned())];
+        let matching_class_names = [semantic_class_name.to_owned()];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
             let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
@@ -185,8 +186,12 @@ impl EngineSession {
                     }
                 });
                 for (branch_index, branch) in state_branches.into_iter().enumerate() {
-                    let emitted_rules =
-                        emit_declarations(utility, resolved_value.as_deref(), branch.important);
+                    let emitted_rules = emit_declarations(
+                        utility,
+                        resolved_value.as_deref(),
+                        branch.important,
+                        &self.compiled,
+                    );
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -252,7 +257,11 @@ impl EngineSession {
                                     } else {
                                         0
                                     },
-                                    sort_key: super::named::sort_key(utility, &matched),
+                                    sort_key: super::named::sort_key(
+                                        utility,
+                                        &matched,
+                                        &self.compiled,
+                                    ),
                                     features,
                                     conditions,
                                     selector: selector_priority(

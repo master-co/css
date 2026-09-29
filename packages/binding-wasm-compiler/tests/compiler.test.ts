@@ -63,30 +63,50 @@ test('loads the isolated compiler Wasm surface', async () => {
     css: '.card {\n  color: red;\n}',
     nativeCSS: '.card {\n  color: red;\n}'
   })
-  const theme = [{ type: 'rule', prelude: '.dark', children: [
-    { type: 'declaration', name: 'color-brand', value: '#fff' }
+  const theme = [{ type: 'rule' as const, prelude: '.dark', children: [
+    { type: 'declaration' as const, name: 'color-brand', value: '#fff' }
   ] }]
   expect(compiler.compileCSSDirectives("@theme { .dark { --color-brand: #fff; } }\n")).toMatchObject({
     manifestInput: { theme }, nativeCSS: ''
   })
   expect(toPlainValue(compiler.compileManifestInput({
     theme,
-    utilities: [{ name: 'card', declarations: { color: 'red' } }]
+    mixins: [
+  {
+    "name": "--card",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "color",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "red"
+          }
+        ]
+      }
+    ]
+  }
+]
   }))).toMatchObject({
     manifest: {
-      version: 2, languageVersion: 4, theme,
+      version: 3 as const, languageVersion: 5 as const, theme,
       variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: ['.dark'], value: '#fff' }] }] },
-      utilities: [{ name: 'card', emit: { rules: [{ declarations: { color: 'red' } }] } }]
+      mixins: [
+  {
+    "name": "--card",
+    "body": [{ type: "declaration", property: "color", value: [{ type: "text", value: "red" }] }]
+  }
+]
     }
   })
-  expect(toPlainValue(compiler.compileManifestInput({
-    utilities: [{ name: 'text:*', type: 'dynamic', dynamic: { key: 'text' }, declarations: {
-      'font-size': '--master-value()',
-      'line-height': 'calc(--master-value() * 1.5)'
-    } }]
-  }))).toMatchObject({ manifest: { utilities: [{ emit: { rules: [{ declarations: {
-    'font-size': null, 'line-height': ['calc(', null, ' * 1.5)']
-  } }] } }] } })
+  const parameterMixin = {
+    name: '--type-size', parameters: [{ name: '--size' }], body: [
+      { type: 'declaration' as const, property: 'font-size', value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--size' }] }] }
+    ]
+  }
+  expect(toPlainValue(compiler.compileManifestInput({ mixins: [parameterMixin] })))
+    .toMatchObject({ manifest: { mixins: [parameterMixin] } })
   // Match rather than equal: the graph also carries sourceMappings, whose
   // contents are the compiler crate's contract, not this surface check's.
   expect(compiler.resolveCSSImportGraph({
@@ -128,4 +148,31 @@ test('loads the isolated compiler Wasm surface', async () => {
     '../../preset/src/default-manifest.json',
     import.meta.url
   ), 'utf8'))
+})
+
+test('static mixins decode parameter identifiers and CSS function names in Wasm', async () => {
+  const input = new Uint8Array(await readFile(new URL('../artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)))
+  const compiler = await initCompilerWasm({ input })
+  const source = String.raw`@theme{:root{--step-hero:2rem}}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p)))}.caption{@apply --label("hero")}`
+  const result = toPlainValue(compiler.compileCSSStylesheetGraph({
+    graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] },
+    urls: { '/entry.css': '/out/entry.css' }
+  })) as { manifest: unknown; stylesheets: { css: string }[] }
+  expect(result.stylesheets).toHaveLength(1)
+  const css = result.stylesheets[0].css
+  expect(css).toMatch(/font-size:\s*VAR\(--step-hero\)/)
+  const render = new compiler.CompilerRenderSession(JSON.stringify(result.manifest))
+  try {
+    render.ensureStylesheetResources(css)
+    expect(toPlainValue(render.emittedGlobals())).toHaveProperty('variables.step-hero')
+    expect(JSON.stringify(toPlainValue(render.snapshot()))).toContain('--step-hero:2rem')
+  } finally {
+    render.dispose()
+    render.free()
+  }
+  expect(css).not.toContain('@apply')
+  expect(() => compiler.compileCSSStylesheetGraph({
+    graph: { entry: '/entry.css', files: { '/entry.css': '@mixin --x(--n){width:var(--n)}.x{@apply --x(VAR(--external))}' }, edges: [] },
+    urls: { '/entry.css': '/out/entry.css' }
+  })).toThrow('must be static')
 })

@@ -63,7 +63,7 @@ describe('InjectRuntimePlugin', () => {
         '<html>',
         '<head></head>',
         '<body>',
-        '<main class="block"></main>',
+        "<main class=\"display:block\"></main>",
         '<script type="module" src="/src/main.ts"></script>',
         '</body>',
         '</html>'

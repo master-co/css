@@ -5,7 +5,10 @@ mod configuration;
 mod directives;
 mod managed;
 mod manifest;
+mod mixins;
 mod native;
+mod removed_static;
+mod saved_rules;
 mod sizing;
 mod stylesheets;
 mod utilities;
@@ -13,7 +16,7 @@ mod values;
 
 use crate::CompilerError;
 use mastercss_engine::{
-    EngineCompositionRuleIr, EngineSession, builtin_key_aliases, builtin_token_namespaces,
+    EngineCompositionRuleIr, EngineSession, builtin_token_aliases, builtin_token_namespaces,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -47,6 +50,7 @@ pub enum RcMigrationProfile {
     RcManaged,
     RcUtilities,
     RcSizing,
+    RcMixins,
 }
 
 #[derive(Debug, Serialize)]
@@ -117,6 +121,9 @@ fn error(message: impl Into<String>) -> CompilerError {
 }
 
 pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, CompilerError> {
+    if request.from == RcMigrationProfile::RcMixins {
+        return mixins::migrate(request);
+    }
     let migration = Migration::create(request)?;
     let mut class_lists = Vec::new();
     for classes in &request.class_lists {
@@ -361,7 +368,7 @@ impl Migration {
                 let utility = json!({"id":property,"type":0,"variableAliasRefs": references,
                     "emit":{"type":"property","property": property},"matchers":[{"type":"key","keys":[property]}]});
                 add_family(&mut utilities, &mut families, property, &utility, false);
-                for (alias, target) in builtin_key_aliases() {
+                for (alias, target) in builtin_token_aliases() {
                     if target == property {
                         add_family(&mut utilities, &mut families, alias, &utility, false);
                     }
@@ -466,6 +473,7 @@ impl Migration {
             }
         }
         let sizing_helpers = sizing::add_helpers(&request.manifest, &mut target_manifest);
+        saved_rules::freeze(&mut target_manifest);
         Ok(Self {
             profile: request.from,
             sizing_helpers,
@@ -538,9 +546,12 @@ impl Migration {
     }
 
     fn convert(&self, source: &str) -> Result<String, String> {
+        if source.starts_with("text:") && self.profile == RcMigrationProfile::RcLegacy {
+            return Err("Typography now uses explicit --text-name and companion tokens. Choose text-name or font-size:value, then review line-height and letter-spacing instead of preserving the removed formula".into());
+        }
         let after = self.convert_previous(source)?;
         let after = self.utility_class(source, after)?;
-        self.sizing_class(after)
+        mixins::class(&self.sizing_class(after)?, &self.original)
     }
 
     fn convert_previous(&self, source: &str) -> Result<String, String> {
@@ -612,12 +623,19 @@ impl Migration {
             self.profile,
             RcMigrationProfile::RcNamed | RcMigrationProfile::RcNative
         ) {
-            let diagnostics = self
-                .target
-                .borrow()
-                .inspect(source)
+            let (probe, class, _) = saved_rules::prepare(&self.target.borrow(), source)?;
+            let mut diagnostics = probe
+                .inspect(&class)
                 .map_err(|error| error.to_string())?
                 .diagnostics;
+            if !diagnostics.is_empty() {
+                let current = mixins::class(source, &self.original)?;
+                let (probe, class, _) = saved_rules::prepare(&self.target.borrow(), &current)?;
+                diagnostics = probe
+                    .inspect(&class)
+                    .map_err(|error| error.to_string())?
+                    .diagnostics;
+            }
             if let Some(diagnostic) = diagnostics.first() {
                 return Err(diagnostic.message.clone());
             }
@@ -682,7 +700,7 @@ impl Migration {
                 "clamp-lines".to_owned()
             } else if old.len() == 1 && old[0].declarations.len() == 1 && family.managed {
                 let property = &old[0].declarations[0].property;
-                let canonical = builtin_key_aliases()
+                let canonical = builtin_token_aliases()
                     .iter()
                     .find_map(|(alias, property)| (*alias == key).then_some(*property))
                     .unwrap_or(key);
@@ -704,7 +722,9 @@ impl Migration {
         let candidate = format!("{key}:{rewritten}{suffix}");
         if candidate != source
             && !mastercss_schema::is_native_css_property(key)
-            && !builtin_key_aliases().iter().any(|(alias, _)| *alias == key)
+            && !builtin_token_aliases()
+                .iter()
+                .any(|(alias, _)| *alias == key)
         {
             return Err("Custom utility has no provable equivalent in the target manifest".into());
         }
@@ -712,13 +732,20 @@ impl Migration {
     }
 
     fn rules(&self, engine: &RefCell<EngineSession>, class: &str) -> Vec<EngineCompositionRuleIr> {
-        let mut engine = engine.borrow_mut();
-        if engine.ensure_class_rules([class]).is_err() {
-            return Vec::new();
-        }
-        let rules = engine.composition_rules(class).unwrap_or_default();
+        let engine = engine.borrow();
+        let helper = engine
+            .manifest_json()
+            .ok()
+            .and_then(|manifest| serde_json::from_str::<Value>(&manifest).ok())
+            .is_some_and(|manifest| manifest["debug"].get("migrationUtilities").is_some());
+        let candidate = if helper {
+            class.to_owned()
+        } else {
+            mixins::class(class, &self.original).unwrap_or_else(|_| class.into())
+        };
+        let rules = saved_rules::rules(&engine, &candidate).unwrap_or_default();
         // A failed synthetic probe is not an unknown native declaration.
-        let rules = if rules.iter().any(|rule| {
+        if rules.iter().any(|rule| {
             rule.declarations
                 .iter()
                 .map(|declaration| &declaration.property)
@@ -727,9 +754,7 @@ impl Migration {
             Vec::new()
         } else {
             rules
-        };
-        let _ = engine.delete_class_rules([class]);
-        rules
+        }
     }
 
     fn equivalent(

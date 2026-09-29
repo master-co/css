@@ -1,6 +1,6 @@
 const syntaxes = [
   'isolation:auto',
-  'isolate',
+  "isolation:isolate",
   ['isolation:`value`'],
 ]
 

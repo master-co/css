@@ -16,7 +16,7 @@ use crate::{
 pub struct CompileCssStylesheetGraphRequest {
     pub graph: CssImportGraphRequest,
     #[serde(default)]
-    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     /// Final URLs chosen by the host, keyed by source file ID.
     pub urls: HashMap<String, String>,
     /// Supplying this enables strict relocation of every relative resource URL.
@@ -94,6 +94,7 @@ fn merge_input(target: &mut Map<String, Value>, next: &CssDirectiveManifestInput
 fn is_managed(definition: &CssDirectiveStyleDefinition) -> bool {
     match definition {
         CssDirectiveStyleDefinition::Native { name, .. } => name.is_some(),
+        CssDirectiveStyleDefinition::Apply { .. } => false,
     }
 }
 
@@ -241,7 +242,14 @@ pub fn compile_css_stylesheet_graph(
             *definition = refined.next().expect("one refined slot definition");
         }
         if let Some(css) = &relocated {
-            for definition in &mut result.utility_sources {
+            for definition in result.manifest_input.mixins.iter_mut().flatten() {
+                crate::mixins::visit_sources(definition, &mut |source| {
+                    if let Some(reference) = source {
+                        css.restore_reference(original_source, reference);
+                    }
+                });
+            }
+            for definition in &mut result.mixin_sources {
                 css.restore_reference(original_source, &mut definition.source);
             }
             for mapping in &mut result.native_mappings {
@@ -281,9 +289,7 @@ pub fn compile_css_stylesheet_graph(
             continue;
         }
         let result = &parsed[index];
-        combined
-            .utility_sources
-            .extend(result.utility_sources.clone());
+        combined.mixin_sources.extend(result.mixin_sources.clone());
         merge_input(&mut input, &result.manifest_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
@@ -292,12 +298,14 @@ pub fn compile_css_stylesheet_graph(
         let order_offset = all_definitions
             .last()
             .map_or(0, |definition| match definition {
-                CssDirectiveStyleDefinition::Native { order, .. } => *order,
+                CssDirectiveStyleDefinition::Native { order, .. }
+                | CssDirectiveStyleDefinition::Apply { order, .. } => *order,
             });
         for definition in result.style_definitions.as_deref().unwrap_or_default() {
             let mut definition = definition.clone();
             match &mut definition {
-                CssDirectiveStyleDefinition::Native { order, .. } => {
+                CssDirectiveStyleDefinition::Native { order, .. }
+                | CssDirectiveStyleDefinition::Apply { order, .. } => {
                     *order = order
                         .checked_add(order_offset)
                         .ok_or_else(|| graph_error(&graph.entry, "Too many style definitions"))?
@@ -553,9 +561,9 @@ pub fn compile_css_stylesheet_graph(
         .collect::<Result<Vec<_>, CompilerError>>()?;
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
     combined
-        .utility_sources
-        .splice(0..0, request.utility_sources.clone());
-    crate::utility_sources::resolve(&mut combined.utility_sources);
+        .mixin_sources
+        .splice(0..0, request.mixin_sources.clone());
+    crate::mixin_sources::resolve(&mut combined.mixin_sources);
     combined.css = entry.css.clone();
     combined.native_css = entry.native_css.clone();
     combined.generated_css = entry.generated_css.clone();

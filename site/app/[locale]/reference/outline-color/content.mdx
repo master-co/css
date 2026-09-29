@@ -11,11 +11,11 @@
 ```html
 <!-- Blue outline · 3px solid -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline-solid
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
          outline-offset-3xs outline-width:3px outline-blue
-         font-md bg-surface-base text-body box-border
+         font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -24,12 +24,12 @@
 ```html
 <!-- Violet outline · same width -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline-solid
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
          outline-offset-3xs outline-width:3px
          outline-violet font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
   Preview details
 </button>
@@ -50,15 +50,15 @@
 ```html
 <!-- Current color · follows this label -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline-solid
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
          outline-offset-3xs outline-width:3px
          outline-current font-md bg-surface-base
-         text-blue box-border
+         fg-text-blue box-sizing:border-box
          bg-surface-inset:focus-visible
-         text-violet:hover@screen
-         text-violet:focus-visible@screen">
+         fg-text-violet:hover@screen
+         fg-text-violet:focus-visible@screen">
   Current color
 </button>
 ```
@@ -73,12 +73,12 @@ Keyboard focus changes the outline from transparent to blue. Print uses the curr
 ```html
 <!-- Transparent → blue on keyboard focus -->
 <button id="target" type="button"
-  class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px-md py-sm
-         b:1px|solid|var(--color-line-divider) r-sm outline-solid
+  class="display:inline-flex align-items:center justify-content:center
+         min-height:44px max-width:100% px-md py-sm
+         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
          outline-offset-3xs outline-width:3px
          outline-color:transparent font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
          outline-current@print
          outline-blue:focus-visible@screen">

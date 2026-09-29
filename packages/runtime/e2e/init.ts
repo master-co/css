@@ -12,7 +12,6 @@ import {
   groupMasterCSSManifestVariables,
   type MasterCSSManifestVariable
 } from '@master/css-schema/manifest'
-import { UtilityType } from '@master/css-schema/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { createServer, type ViteDevServer } from 'vite'
@@ -23,43 +22,13 @@ const packageRoot = resolve(__dirname, '..')
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 let runtimeServerPromise: Promise<ViteDevServer> | undefined
 
-type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
-  declarations?: Record<string, string | number>
-  rules?: { selector?: string, declarations: Record<string, string | number> }[]
-}
-
 type RuntimeManifestVariableInput = MasterCSSManifestVariable
 
-type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities' | 'variables'>> & {
+type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'variables'>> & {
   variables?: RuntimeManifestVariableInput[]
-  utilities?: RuntimeProjectManifestUtilityInput[]
-}
-
-function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
-  if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSManifest['utilities']>[number]
-  const name = utility.name || utility.id || ''
-  const isSemantic = utility.type === UtilityType.Semantic || utility.type === undefined
-  return {
-    id: utility.id || (isSemantic ? `.${name}` : name),
-    name,
-    type: utility.type ?? UtilityType.Semantic,
-    order: utility.order ?? order,
-    layer: utility.layer,
-    emit: {
-      type: 'static',
-      rules: utility.rules || [
-        {
-          selector: '&',
-          declarations: utility.declarations || {}
-        }
-      ]
-    },
-    matchers: [{ type: 'static', name }]
-  }
 }
 
 export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput): MasterCSSManifest {
-  const defaultUtilities = defaultManifest.utilities || []
   const custom = (manifest.variables || []).map(variable => ({
     ...variable,
     name: variable.name || (variable.namespace ? `${variable.namespace}-${variable.key}` : variable.key)
@@ -76,19 +45,19 @@ export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInp
       const previous = children.at(-1)
       if (previous?.type === 'rule' && previous.prelude === prelude) children = previous.children
       else {
-        const node: import('@master/css-schema/manifest').MasterCSSThemeNode = { type: 'rule', prelude, children: [] }
+        const node: import('@master/css-schema/manifest').MasterCSSThemeNode = { type: 'rule' as const, prelude, children: [] }
         children.push(node)
         children = node.children
       }
     }
-    children.push({ type: 'declaration', name: variable.name, value: value.value })
+    children.push({ type: 'declaration' as const, name: variable.name, value: value.value })
   }
   return {
     ...defaultManifest, ...manifest,
     theme: [...(defaultManifest.theme || []), ...(manifest.theme || []), ...nodes],
     variables: groupMasterCSSManifestVariables([...merged.values()]),
     variants: [...new Map([...(defaultManifest.variants || []), ...(manifest.variants || [])].map(variant => [variant.token, variant])).values()],
-    utilities: [...defaultUtilities, ...(manifest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))]
+    mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])]
   }
 }
 

@@ -1,11 +1,11 @@
 const syntaxes = [
-  'leading:1',
+  "line-height:1",
   'leading-xs',
   'leading-sm',
   'leading-md',
   'leading-lg',
   'leading-xl',
-  ['leading:`size`']
+  ["line-height:`size`"]
 ]
 
 export default syntaxes

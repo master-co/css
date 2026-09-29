@@ -476,7 +476,7 @@ describe('withMasterCSS', () => {
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
     mkdirSync(join(root, 'app'), { recursive: true })
     writeFileSync(join(root, 'index.css'), "@import url(\"@master/css\");")
-    writeFileSync(join(root, 'app/page.tsx'), 'export default function Page() { return <main className="block" /> }')
+    writeFileSync(join(root, 'app/page.tsx'), "export default function Page() { return <main className=\"display:block\" /> }")
     try {
       process.chdir(root)
       const nextConfig = await withMasterCSS({}) as any

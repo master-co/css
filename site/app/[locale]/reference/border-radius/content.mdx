@@ -29,24 +29,24 @@ Radius curves the border and background without changing the box dimensions. Com
 ```html
 <!-- Radius only · child corners stay square -->
 <div id="target"
-  class="w:240px max-w:100% r-2xl bg-surface-inset
-         box-border">
+  class="width:240px max-width:100% r-2xl bg-surface-inset
+         box-sizing:border-box">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
     width="320" height="200"
-    class="block h:auto w:100%" />
+    class="display:block height:auto width:100%" />
 </div>
 ```
 
 ```html
 <!-- Radius + overflow hidden · child is clipped -->
 <div id="target"
-  class="overflow:hidden w:240px max-w:100% r-2xl
-         bg-surface-inset box-border">
+  class="overflow:hidden width:240px max-width:100% r-2xl
+         bg-surface-inset box-sizing:border-box">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
     width="320" height="200"
-    class="block h:auto w:100%" />
+    class="display:block height:auto width:100%" />
 </div>
 ```
 
@@ -67,10 +67,10 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 ```html
 <!-- Top corners only -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
          rtl-xl rtr-xl font-md bg-surface-inset
-         text-body box-border">
+         fg-text-body box-sizing:border-box">
   Rounded top
 </div>
 ```
@@ -78,10 +78,10 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 ```html
 <!-- Opposite corners -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
          rbl-xl rtr-xl font-md bg-surface-inset
-         text-body box-border">
+         fg-text-body box-sizing:border-box">
   Diagonal corners
 </div>
 ```
@@ -96,10 +96,10 @@ Widen to `sm` to increase the radius from `sm` to `xl`. Print restores square co
 ```html
 <!-- Small → large radius at sm -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         r-sm font-md bg-surface-inset text-body
-         box-border r:0@print r-xl@screen@sm">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         r-sm font-md bg-surface-inset fg-text-body
+         box-sizing:border-box border-radius:0@print r-xl@screen@sm">
   Preview panel
 </div>
 ```
@@ -124,10 +124,10 @@ Define project radius tokens in `@theme`, then use the same token key in the cla
 ```html
 <!-- Configured panel radius · 18px -->
 <div id="target"
-  class="flex items-center justify-center h:96px
-         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
-         r-panel font-md bg-surface-inset text-body
-         box-border">
+  class="display:flex align-items:center justify-content:center height:96px
+         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         r-panel font-md bg-surface-inset fg-text-body
+         box-sizing:border-box">
   Preview panel
 </div>
 ```

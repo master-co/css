@@ -9,7 +9,7 @@ Use this for human and AI review.
 - Package exports are unchanged unless intentional.
 - Refactor changes do not keep legacy compatibility paths unless compatibility was explicitly required.
 - CSS output changes are intentional and explained.
-- New or changed preset utilities first prove `keyAliases` plus `tokenNamespaces` cannot satisfy the behavior.
+- New or changed preset mixins first prove native property classes plus the engine-owned token families cannot satisfy the behavior; token aliases never become raw property aliases.
 - Parser, syntax, selector, condition, variable, mode, priority, and cascade changes have tests.
 - Runtime or hydration changes have browser/e2e coverage.
 - Static extraction changes cover false positives and false negatives.

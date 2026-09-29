@@ -7,11 +7,11 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-async function fixture(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', run: (state: Awaited<ReturnType<typeof setup>>) => Promise<void>, exclude?: string[], managed = false) {
+async function fixture(mode: "static" | 'runtime' | 'pre-render' | 'progressive', run: (state: Awaited<ReturnType<typeof setup>>) => Promise<void>, exclude?: string[], managed = false) {
   const state = await setup(mode, exclude, managed)
   try { await run(state) } finally { await state.close();rmSync(state.root, { recursive: true, force: true }) }
 }
-async function setup(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', exclude?: string[], managed = false, include?: string[]) {
+async function setup(mode: "static" | 'runtime' | 'pre-render' | 'progressive', exclude?: string[], managed = false, include?: string[]) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-build-recovery-'))), cacheDir = join(root, '.vite')
   const reference = join(root, 'missing/nested/tokens.css'), style = join(root, 'style.css')
   const trace = (kind: string, detail: unknown) => {
@@ -39,11 +39,11 @@ async function setup(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', 
     async close() { if (!closed) { closed = true;await result.close();await Promise.all(closing) } }
   }
 }
-for (const managed of [false, true]) for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) {
+for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) {
   test(`build recovery replaces failures and forgets successful dependencies in ${mode} (managed=${managed})`, async () => {
     await fixture(mode, async state => {
       expect((await state.next()).code).toBe('ERROR')
-      state.write('@utility paint {@compose definitely-missing;}')
+      state.write('@mixin --paint {@compose definitely-missing;}')
       const invalid = await state.next();expect(invalid.code).toBe('ERROR');expect(String(invalid.error)).toContain('@compose has been removed')
       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(state.events).toEqual([])
       state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
@@ -68,7 +68,7 @@ for (const managed of [false, true]) for (const mode of ['static', 'runtime', 'p
 }
 
 test('closing a failed build releases its polling and owned cache files', async () => {
-  await fixture('static', async state => {
+  await fixture("static", async state => {
     expect((await state.next()).code).toBe('ERROR')
     expect(state.cacheFiles().length).toBeGreaterThan(0)
     await state.close()
@@ -79,7 +79,7 @@ test('closing a failed build releases its polling and owned cache files', async 
 })
 
 test('build recovery respects excluded dependencies', async () => {
-  await fixture('static', async state => {
+  await fixture("static", async state => {
     expect((await state.next()).code).toBe('ERROR')
     state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
     await delay(350);expect(state.events).toEqual([])
@@ -90,7 +90,7 @@ for (const filter of [
   { name: 'authored-file include', include: ['**/*.css', '**/*.js', '**/*.html'] },
   { name: 'cache-directory exclude', exclude: ['**/.vite/**'] }
 ]) test(`watch filters allow reference recovery with ${filter.name}`, async () => {
-  const state = await setup('static', filter.exclude, false, filter.include)
+  const state = await setup("static", filter.exclude, false, filter.include)
   try {
     expect((await state.next()).code).toBe('ERROR')
     state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
@@ -100,7 +100,7 @@ for (const filter of [
 })
 
 test('a watch filter that accepts no recovery location allocates nothing', async () => {
-  const state = await setup('static', undefined, false, ['**/*.no-such-extension'])
+  const state = await setup("static", undefined, false, ['**/*.no-such-extension'])
   try {
     expect((await state.next()).code).toBe('ERROR')
     expect(state.cacheFiles()).toEqual([])

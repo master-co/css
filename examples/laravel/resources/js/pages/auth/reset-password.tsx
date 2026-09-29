@@ -40,8 +40,8 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
       <Head title="Reset password" />
 
       <form onSubmit={submit}>
-        <div className="grid gap-6">
-          <div className="grid gap-2">
+        <div className="display:grid gap-6">
+          <div className="display:grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -49,14 +49,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
               name="email"
               autoComplete="email"
               value={data.email}
-              className="block mt-1 w-full"
+              className="display:block mt-1 w-full"
               readOnly
               onChange={(e) => setData('email', e.target.value)}
             />
             <InputError message={errors.email} className="mt-2" />
           </div>
 
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -64,7 +64,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
               name="password"
               autoComplete="new-password"
               value={data.password}
-              className="block mt-1 w-full"
+              className="display:block mt-1 w-full"
               autoFocus
               onChange={(e) => setData('password', e.target.value)}
               placeholder="Password"
@@ -72,7 +72,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <InputError message={errors.password} />
           </div>
 
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="password_confirmation">Confirm password</Label>
             <Input
               id="password_confirmation"
@@ -80,7 +80,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
               name="password_confirmation"
               autoComplete="new-password"
               value={data.password_confirmation}
-              className="block mt-1 w-full"
+              className="display:block mt-1 w-full"
               onChange={(e) => setData('password_confirmation', e.target.value)}
               placeholder="Confirm password"
             />

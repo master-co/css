@@ -43,17 +43,17 @@ describe('rc.87 Svelte server hook renderer', () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
-        '<html><head><meta class="block">',
+        "<html><head><meta class=\"display:block\">",
         '</head><body><div class="fg-red"></div></body></html>'
       ]
     )
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-    expect(html).toContain('"className":"block"')
+    expect(html).toContain('"className":"display:block"')
     expect(html).toContain('"className":"fg-red"')
     expect(countManifestScripts(html)).toBe(1)
-    expect(html).toContain('.block')
+    expect(html).toContain(".display\\:block")
     expect(html).toContain('.fg-red')
     expect(html).toContain('</script></head>')
   })
@@ -62,12 +62,12 @@ describe('rc.87 Svelte server hook renderer', () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
-        '<html><head><meta class="block"></head>',
+        "<html><head><meta class=\"display:block\"></head>",
         '<body><div class="fg-red"></div></body></html>'
       ]
     )
 
-    expect(html).toContain('.block')
+    expect(html).toContain(".display\\:block")
     expect(html).toContain('.fg-red')
     expect(html).toContain('<body><div class="fg-red"></div>')
   })
@@ -86,12 +86,12 @@ describe('rc.87 Svelte server hook renderer', () => {
         }
       }
     }), [
-      '<html><head></head><body><div class="block"></div></body></html>'
+      "<html><head></head><body><div class=\"display:block\"></div></body></html>"
     ])
 
     expect(manifestHash).toMatch(/^[0-9a-f]{8}$/)
     expect(JSON.parse(manifestJSON).rules.map((rule: { className: string }) => rule.className))
-      .toEqual(['block'])
+      .toEqual(["display:block"])
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/master-css-hydration.${manifestHash}.json"`
     )
@@ -135,7 +135,7 @@ describe('rc.87 Svelte server hook renderer', () => {
           }
         }
       }), [
-        '<html><head></head><body><div class="block"></div></body></html>'
+        "<html><head></head><body><div class=\"display:block\"></div></body></html>"
       ])
       const source = html.match(
         new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`)
@@ -144,7 +144,7 @@ describe('rc.87 Svelte server hook renderer', () => {
 
       expect(source).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
       expect(existsSync(file)).toBe(true)
-      expect(readFileSync(file, 'utf8')).toContain('"className":"block"')
+      expect(readFileSync(file, 'utf8')).toContain('"className":"display:block"')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -153,10 +153,10 @@ describe('rc.87 Svelte server hook renderer', () => {
   test('replaces an existing master style in the current chunk', async () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
-      ['<html><head><style id="master-css"></style></head><body class="block"></body></html>']
+      ["<html><head><style id=\"master-css\"></style></head><body class=\"display:block\"></body></html>"]
     )
 
-    expect(html).toContain('<style id="master-css">@layer utilities{.block{display:block}}</style>')
+    expect(html).toContain("<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>")
     expect(html.match(/id="master-css"/g)).toHaveLength(1)
   })
 
@@ -166,12 +166,12 @@ describe('rc.87 Svelte server hook renderer', () => {
       [[
         '<html><head><style id="master-css"></style>',
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script>`,
-        '</head><body class="block"></body></html>'
+        "</head><body class=\"display:block\"></body></html>"
       ].join('')]
     )
 
     expect(html).not.toContain('"rules":[]')
-    expect(html).toContain('"className":"block"')
+    expect(html).toContain('"className":"display:block"')
     expect(countManifestScripts(html)).toBe(1)
   })
 })

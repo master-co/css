@@ -6,8 +6,8 @@ Use `p-md` for padding on every side. Its value comes from the active spacing na
 <DemoExample page="padding" section="quick-answer" />
 
 ```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <button id="target" class="p-md border-width:0" type="button"><span id="item-3" class="block w:2rem leading:20px">Save</span></button>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <button id="target" class="p-md border-width:0" type="button"><span id="item-3" class="display:block width:2rem line-height:20px">Save</span></button>
 </div>
 ```
 
@@ -26,28 +26,28 @@ Project theme declarations can override these values. See the complete [spacing 
 
 ## Examples \{#examples\}
 ### Combine values and logical sides \{#multiple-values\}
-Separate shorthand values with `|`: two values mean top/bottom, then left/right. Logical `pxs:*` means inline-start. The same start padding moves from left to right when text direction becomes RTL.
+Separate shorthand values with `|`: two values mean top/bottom, then left/right. Logical `padding-inline-start:*` means inline-start. The same start padding moves from left to right when text direction becomes RTL.
 
 <DemoExample page="padding" section="multiple-values" />
 
 ```html
 <!-- Two physical values -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content p:var(--spacing-md)|var(--spacing-lg)"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content padding:var(--spacing-md)|var(--spacing-lg)"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
 ```html
 <!-- Inline start · LTR -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content pxs-md"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content pxs-md"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
 ```html
 <!-- Inline start · RTL -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content pxs-md direction:rtl"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content pxs-md direction:rtl"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
@@ -59,21 +59,21 @@ Logical sides follow both writing mode and direction. Physical four-side shortha
 <DemoExample page="padding" section="add-padding-on-every-side" />
 
 ```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content p-md"><div id="item-3" class="grid place-items:center h:3rem w:10rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content p-md"><div id="item-3" class="display:grid place-items:center height:3rem width:10rem">Content</div></div>
 </div>
 ```
 
 With border-box sizing and an explicit width, padding uses space inside that width. Here the width is intrinsic, so the content and padding determine the final size together.
 
 ### Set one side \{#set-one-side\}
-Use `pt:*`, `pr:*`, `pb:*` and `pl:*` for physical sides. This box uses 24px top, 16px right, 32px bottom and 12px left padding around 120 × 48px content. The result is 148 × 104px.
+Use `padding-top:*`, `padding-right:*`, `padding-bottom:*` and `padding-left:*` for physical sides. This box uses 24px top, 16px right, 32px bottom and 12px left padding around 120 × 48px content. The result is 148 × 104px.
 
 <DemoExample page="padding" section="set-one-side" />
 
 ```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content pb-xl pl-sm pr-md pt-lg"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content pb-xl pl-sm pr-md pt-lg"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
@@ -82,34 +82,34 @@ Physical sides stay physical in every writing mode. Prefer logical properties wh
 <a id="set-horizontal-or-vertical-padding"></a>
 
 ### Set inline or block padding \{#set-inline-or-block-padding\}
-`px:*` sets inline padding and `py:*` sets block padding. With `px-md py-sm`, horizontal writing gets 16px left/right and 12px top/bottom. Vertical writing swaps those physical directions while preserving the same logical values.
+`padding-inline:*` sets inline padding and `padding-block:*` sets block padding. With `px-md py-sm`, horizontal writing gets 16px left/right and 12px top/bottom. Vertical writing swaps those physical directions while preserving the same logical values.
 
 <DemoExample page="padding" section="set-inline-or-block-padding" />
 
 ```html
 <!-- Horizontal writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content px-md py-sm"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content px-md py-sm"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
 ```html
 <!-- Vertical writing -->
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content px-md py-sm writing-mode:vertical-rl"><div id="item-3" class="grid place-items:center h:3rem w:7.5rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content px-md py-sm writing-mode:vertical-rl"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
-Use `p:0` to remove padding at a breakpoint or state. The next example keeps the content fixed so this reset can be measured directly.
+Use `padding:0` to remove padding at a breakpoint or state. The next example keeps the content fixed so this reset can be measured directly.
 
 ### Apply conditionally \{#apply-conditionally\}
-Resize past `sm` to apply `p:0`. The same 160 × 48px content remains; removing the 16px padding changes the border box from 192 × 80px to 160 × 48px.
+Resize past `sm` to apply `padding:0`. The same 160 × 48px content remains; removing the 16px padding changes the border box from 192 × 80px to 160 × 48px.
 
 <DemoExample page="padding" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <div id="target" class="w:fit-content p-md p:0@sm"><div id="item-3" class="grid place-items:center h:3rem w:10rem">Content</div></div>
+<div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <div id="target" class="width:fit-content p-md padding:0@sm"><div id="item-3" class="display:grid place-items:center height:3rem width:10rem">Content</div></div>
 </div>
 ```
 

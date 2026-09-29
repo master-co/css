@@ -14,7 +14,7 @@ const run = (cwd: string) => spawnSync(process.execPath, ['--import', pathToFile
 function prepare(cwd: string, color: string) {
   writeFileSync(join(cwd, 'entry.css'), `@import "@master/css";.example{color:${color};background-image:url('./image.svg')}`)
   writeFileSync(join(cwd, 'image.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><path fill="${color}"/></svg>`)
-  writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
+  writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block\"></div>")
 }
 // Windows chmod only changes the file read-only attribute, not directory ACLs.
 const permissionTarget = (directory: string) => process.platform === 'win32' ? join(directory, 'output.css') : directory
@@ -94,7 +94,7 @@ test('BH-0004 watch retries a publication failure without changing the previous 
     expect(stderr).toMatch(/EACCES|EPERM/)
     expect(snapshot(directory)).toEqual(before)
     chmodSync(permissionTarget(directory), 0o755)
-    writeFileSync(join(cwd, 'index.html'), '<div class="example block fg-blue"></div>')
+    writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block fg-blue\"></div>")
     await wait(() => stderr.includes('Restart watching source changes'))
     // A dependency retry may complete before the queued HTML change. Observe
     // publication of this source update rather than an earlier restart message.

@@ -5,26 +5,8 @@ jsxTester.run('sort classes', rule, {
   valid: [],
   invalid: [
     {
-      code: `
-          <div class="
-            m:0.5rem
-            bg-black
-            p:0.5rem
-            font-size:1.5rem
-            fg-white
-          ">
-            :)
-          </div>`,
-      output: `
-          <div class="
-            m:0.5rem
-            p:0.5rem
-            font-size:1.5rem
-            bg-black
-            fg-white
-          ">
-            :)
-          </div>`,
+      code: "\n          <div class=\"\n            margin:0.5rem\n            bg-black\n            padding:0.5rem\n            font-size:1.5rem\n            fg-white\n          \">\n            :)\n          </div>",
+      output: "\n          <div class=\"\n            margin:0.5rem\n            padding:0.5rem\n            font-size:1.5rem\n            bg-black\n            fg-white\n          \">\n            :)\n          </div>",
       errors: [{ messageId: 'invalidClassOrder' }],
       languageOptions: {
         parser: await import('@angular-eslint/template-parser')

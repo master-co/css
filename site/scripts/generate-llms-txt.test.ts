@@ -321,8 +321,8 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
     assert.doesNotMatch(content.markdown, /\[object Object\]|<Foundation\w+\s*\/>|MCSS_EXPRESSION_/)
   }
   const typography = await foundationGuideContent(root, 'typography')
-  assert.match(typography.markdown, /### Without vs with `text:<size>`/)
-  assert.ok(extractSearchNodesFromMdx(typography.searchMarkdown).some(node => node.id === 'without-vs-with-textsize'))
+  assert.match(typography.markdown, /### Without vs with `text-<token>`/)
+  assert.ok(extractSearchNodesFromMdx(typography.searchMarkdown).some(node => node.id === 'without-vs-with-text-token'))
 })
 
 test('foundation exports include all native token values and their visible table descriptions', async () => {

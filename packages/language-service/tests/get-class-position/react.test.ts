@@ -60,12 +60,12 @@ test.concurrent('template literal and newlines', () => {
 })
 
 test.concurrent('template literal expressions use quasi ranges', () => {
-  const doc = createDoc('tsx', 'export default () => <div className={`class-a ${active ? "class-b" : "hidden"} class-c`}></div>')
+  const doc = createDoc('tsx', 'export default () => <div className={`class-a ${active ? "class-b" : "display:none"} class-c`}></div>')
   const languageService = new CSSLanguageService()
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
     'class-a',
     'class-b',
-    'hidden',
+    "display:none",
     'class-c'
   ])
 })

@@ -20,7 +20,7 @@ it('loads its client manifest and handles new runtime classes', async () => {
         await page.evaluate(() => {
             const probe = document.createElement('div')
             probe.id = 'bh-0023-probe'
-            probe.className = 'hidden'
+            probe.className = "display:none"
             document.body.append(probe)
         })
         const styled = await page.waitForFunction(() => getComputedStyle(document.getElementById('bh-0023-probe')!).display === 'none', undefined, { timeout: 5000 }).then(() => true, () => false)

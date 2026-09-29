@@ -6,7 +6,7 @@ Master CSS classes select named styles or express CSS declarations directly in m
 <button type="button" class="fg-white:hover@md">Save</button>
 ```
 
-Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `p:1rem`). Full CSS properties retain native semantics; abbreviations replace only the property name. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
+Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `padding:1rem`). Full CSS properties retain native semantics; abbreviations replace only the property name. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
 
 
 ## Basic syntax \{#basic-syntax\}
@@ -48,8 +48,8 @@ Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct value
 ### Hexadecimal color \{#hexadecimal-color\}
 Change the text color of an element using the hexadecimal color code.
 ```html
-<!-- @MARK fg:#175fe9 -->
-<p class="fg:#175fe9">Aa</p>
+<!-- @MARK color:#175fe9 -->
+<p class="color:#175fe9">Aa</p>
 ```
 
 ### Value aliases and theme tokens \{#variable-alias\}
@@ -75,8 +75,8 @@ Change the text color of an element using the hexadecimal color code.
 ### rgb(), hsl(), oklch(), ... \{#rgb-hsl-oklch-\}
 Change the text color of an element using color functions like `rgb()`, `hsl()`, `oklch()`, and others.
 ```html
-<!-- @MARK fg:rgb(23,95,233) -->
-<p class="fg:rgb(23,95,233)">Aa</p>
+<!-- @MARK color:rgb(23,95,233) -->
+<p class="color:rgb(23,95,233)">Aa</p>
 ```
 
 

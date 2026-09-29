@@ -17,39 +17,19 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
 pub(crate) fn compile_manifest(
     manifest: &MasterCssManifest,
 ) -> Result<ManifestProjection, EngineError> {
-    let mut value = manifest.as_value().clone();
-    if let Some(utilities) = value.get_mut("utilities").and_then(Value::as_array_mut) {
-        *utilities = super::effective_utilities(utilities);
-    }
-    let mut projection: ManifestProjection = serde_json::from_value(value)
+    let mut projection: ManifestProjection = serde_json::from_value(manifest.as_value().clone())
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
+    let mut seen = std::collections::HashSet::new();
+    projection.mixins.reverse();
+    projection
+        .mixins
+        .retain(|definition| seen.insert(definition.name.clone()));
+    projection.mixins.reverse();
+    super::validate_mixins(&projection.mixins).map_err(EngineError::InvalidManifest)?;
     if projection.version != mastercss_schema::MANIFEST_VERSION {
         return Err(EngineError::InvalidManifest(
             "unsupported projection version".into(),
         ));
-    }
-    for utility in &projection.utilities {
-        validate_native_utility(utility)?;
-        for matcher in &utility.matchers {
-            let valid = match matcher {
-                UtilityMatcher::Static { name } => mastercss_lexer::valid_utility_name(name),
-                UtilityMatcher::Key { keys } => {
-                    !keys.is_empty()
-                        && keys
-                            .iter()
-                            .all(|key| mastercss_lexer::valid_utility_name(key))
-                }
-                UtilityMatcher::Token { prefix } => prefix
-                    .strip_suffix('-')
-                    .is_some_and(mastercss_lexer::valid_utility_name),
-            };
-            if !valid {
-                return Err(EngineError::InvalidManifest(format!(
-                    "Invalid decoded utility name in {}; recompile CSS identifiers without Master class delimiters",
-                    utility.id
-                )));
-            }
-        }
     }
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
@@ -96,6 +76,7 @@ pub(crate) fn compile_manifest(
             )));
         }
     }
+    super::mixin_matching::register(&mut projection);
     append_builtin_token_utilities(&mut projection.utilities);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
@@ -144,6 +125,9 @@ pub(crate) fn compile_manifest(
                             .push(index);
                     }
                 }
+                UtilityMatcher::Function { name } => {
+                    projection.function_utilities.insert(name.clone(), index);
+                }
                 UtilityMatcher::Static { name } => {
                     projection
                         .static_utilities
@@ -166,58 +150,6 @@ pub(crate) fn compile_manifest(
         }
     }
     Ok(projection)
-}
-
-fn validate_native_utility(utility: &super::UtilityDefinition) -> Result<(), EngineError> {
-    for matcher in &utility.matchers {
-        if let UtilityMatcher::Static { name } = matcher
-            && let Some((key, _)) = name.split_once(':')
-            && mastercss_schema::is_native_css_property(
-                super::builtin_key_alias(key).unwrap_or(key),
-            )
-        {
-            return Err(EngineError::InvalidManifest(format!(
-                "Native property {key}: cannot be reserved by a static class; use a distinct named utility"
-            )));
-        }
-        let keys: Vec<&str> = match matcher {
-            UtilityMatcher::Key { keys } => keys.iter().map(String::as_str).collect(),
-            _ => Vec::new(),
-        };
-        for key in keys {
-            let property = super::builtin_key_alias(key).unwrap_or(key);
-            if !mastercss_schema::is_native_css_property(property) {
-                continue;
-            }
-            let rules = super::emit_declarations(utility, Some("var(--migration-value)"), false);
-            let valid = rules.is_empty()
-                || rules.len() == 1
-                    && rules.iter().all(|(_, declarations, selector, conditions)| {
-                        selector.is_none()
-                            && conditions.is_empty()
-                            && declarations.split(';').any(|declaration| {
-                                declaration == format!("{property}:var(--migration-value)")
-                            })
-                            && declarations.split(';').all(|declaration| {
-                                declaration.split_once(':').is_some_and(|(key, value)| {
-                                    let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
-                                        .iter()
-                                        .find_map(|prefix| key.strip_prefix(prefix))
-                                        .unwrap_or(key);
-                                    value == "var(--migration-value)"
-                                        && (key == property || unprefixed == property)
-                                })
-                            })
-                    });
-            if !valid {
-                return Err(EngineError::InvalidManifest(format!(
-                    "Native property {property}: must preserve its property and value; rename managed utility {} to express another intent",
-                    utility.id
-                )));
-            }
-        }
-    }
-    Ok(())
 }
 
 pub(crate) fn compile_variables(
@@ -541,7 +473,7 @@ pub(crate) const BUILTIN_NATIVE_DECLARATION_PROPERTIES: &[&str] = &[
     "text-overflow",
 ];
 
-pub(crate) const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
+pub(crate) const BUILTIN_TOKEN_ALIASES: &[(&str, &str)] = &[
     ("fg", "color"),
     ("bg", "background"),
     ("gap-x", "column-gap"),
@@ -635,8 +567,8 @@ pub(crate) const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
 
 /// Returns the canonical built-in key alias registry for Rust tooling policy.
 /// Manifest-carried registry fields are intentionally not consulted.
-pub fn builtin_key_aliases() -> &'static [(&'static str, &'static str)] {
-    BUILTIN_KEY_ALIASES
+pub fn builtin_token_aliases() -> &'static [(&'static str, &'static str)] {
+    BUILTIN_TOKEN_ALIASES
 }
 
 /// Returns the canonical built-in named-token namespace registry.

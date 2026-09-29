@@ -8,37 +8,15 @@ withFixture('manifest', async (context) => {
     await context.server.onDidOpen({ document: textDocument })
 
     expect(context.rootWorkspace?.languageService?.settings.manifest).toMatchObject({
-      utilities: expect.arrayContaining([
-        expect.objectContaining({
-          name: 'fixture-card',
-          type: -2,
-          layer: 'utilities',
-          emit: expect.objectContaining({
-            type: 'static',
-            rules: expect.arrayContaining([
-              expect.objectContaining({
-                declarations: { display: 'block' }
-              })
-            ])
-          })
-        }),
-        expect.objectContaining({
-          name: 'fixture-button',
-          type: -2,
-          layer: 'utilities',
-          emit: expect.objectContaining({
-            type: 'static',
-            rules: expect.arrayContaining([
-              expect.objectContaining({
-                declarations: {
-                  display: 'inline-flex',
-                  color: 'oklch(100% 0 none)',
-                  'background-color': 'oklch(63.7% .237 25.331)'
-                }
-              })
-            ])
-          })
-        })
+      mixins: expect.arrayContaining([
+        expect.objectContaining({ name: '--fixture-card', body: expect.arrayContaining([
+          expect.objectContaining({ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] })
+        ]) }),
+        expect.objectContaining({ name: '--fixture-button', body: expect.arrayContaining([
+          expect.objectContaining({ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'inline-flex' }] }),
+          expect.objectContaining({ type: 'declaration', property: 'color' }),
+          expect.objectContaining({ type: 'declaration', property: 'background-color' })
+        ]) })
       ])
     })
 

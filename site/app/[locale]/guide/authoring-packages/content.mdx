@@ -53,7 +53,7 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
   }
 }
 
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -82,7 +82,7 @@ Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
 - Use `@custom-variant` for shared condition names.
-- Use `@utility` for low-level primitives that are useful across apps.
+- Use `@mixin` for low-level primitives that are useful across apps.
 - Use native `@layer components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 
 For token namespace behavior, see [Variables and Modes](/guide/variables-and-modes). For creating tokens, see [Theme Tokens](/guide/theme). For directive syntax, see [CSS directives](/reference#directives). For abstraction decisions, see [Global Styles](/guide/global-styles#shared-vocabulary).
@@ -138,7 +138,7 @@ Treat exported tokens, utilities and native class names like public API. Native 
 
 Removing or renaming a token, variant, utility, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, variants, utilities, or component classes is usually a minor change when it does not alter existing output.
 
-Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `text-action`, `content-auto`, or `btn` without reading the package source.
+Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `fg-text-action`, `content-auto`, or `btn` without reading the package source.
 
 ---
 

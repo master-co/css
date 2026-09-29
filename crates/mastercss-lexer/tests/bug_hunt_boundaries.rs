@@ -6,8 +6,8 @@ use mastercss_lexer::{
 #[test]
 fn audit_unicode_class_ranges_round_trip_utf16() {
     for token in [
-        "fg:red",
-        "w:10px:hover@sm",
+        "color:red",
+        "width:10px:hover@sm",
         "你好",
         "🦀",
         "e\u{301}",

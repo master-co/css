@@ -18,7 +18,7 @@ fn simple_query_diagnostics_and_selectors_are_shared_by_generation() {
 
 #[test]
 fn equivalent_conditions_sort_tokens_before_direct_values() {
-    let classes = ["p-md@media((width>=50rem))", "p:8px@media((min-width:50rem))"];
+    let classes = ["p-md@media((width>=50rem))", "padding:8px@media((min-width:50rem))"];
     for ordered in [classes.to_vec(), classes.into_iter().rev().collect()] {
         let mut engine = EngineSession::create(MANIFEST).unwrap();
         engine.ensure_class_rules(&ordered).unwrap();

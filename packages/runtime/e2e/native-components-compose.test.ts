@@ -4,17 +4,17 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const compiled = compileManifestSync("\n@utility fallback { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n@layer components {\n  .native { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n  .composed { @media all {color:red;} @media all {color:blue;} }\n  .same-list { @media all {color:blue;color:red;} }\n  .reversed-list { @media all {color:blue;color:red;} }\n  .unused { color:green; }\n  .z-first { color:red; } .a-last { color:blue; }\n  .override { height:10px; }\n}\n", {})
+const compiled = compileManifestSync("\n@mixin --fallback { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n@layer components {\n  .native { display:block; display:made-up-value; padding-left:20px; padding:10px; padding-left:30px; }\n  .composed { @media all {color:red;} @media all {color:blue;} }\n  .same-list { @media all {color:blue;color:red;} }\n  .reversed-list { @media all {color:blue;color:red;} }\n  .unused { color:green; }\n  .z-first { color:red; } .a-last { color:blue; }\n  .override { height:10px; }\n}\n", {})
 const classes = ['fallback', 'height:48px']
-for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
+for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: ordered fallbacks and native components retain the browser cascade`, async ({ page }) => {
     const html = `<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;${compiled.css}</style></head><body>
       <span id="fallback" class="fallback">Utility</span><span id="native" class="native">Native</span>
       <div id="composed" class="composed"></div><div id="same" class="same-list"></div><div id="reversed" class="reversed-list"></div>
       <div id="order" class="z-first a-last"></div><div id="override" class="override height:48px"></div><div id="later"></div></body></html>`
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
-    expect(rendered.hydrationManifest.rules.find(rule => rule.className === 'fallback')!.nodes!.length).toBeGreaterThan(1)
-    if (mode === 'static') await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
+    expect(rendered.hydrationManifest.rules.find(rule => rule.className === 'fallback')!.text).toContain('display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px')
+    if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {
       using server = createServerRenderer({ manifest: compiled.manifest })

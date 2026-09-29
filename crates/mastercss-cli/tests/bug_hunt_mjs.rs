@@ -20,7 +20,11 @@ fn bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path() {
         std::env::temp_dir().join(format!("master-css-bh-mjs-{}-{nonce}", std::process::id())),
     );
     fs::create_dir(&root.0).unwrap();
-    fs::write(root.0.join("entry.mjs"), "export const classes = 'block'").unwrap();
+    fs::write(
+        root.0.join("entry.mjs"),
+        "export const classes = 'display:block'",
+    )
+    .unwrap();
     fs::write(root.0.join("ignored.json"), r#"{"class":"hidden"}"#).unwrap();
     for paths in [vec![], vec!["**/*.mjs"], vec!["entry.mjs"]] {
         let result = Command::new(env!("CARGO_BIN_EXE_mcss"))
@@ -36,7 +40,10 @@ fn bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path() {
             String::from_utf8_lossy(&result.stderr)
         );
         let css = String::from_utf8(result.stdout).unwrap();
-        assert!(css.contains(".block{display:block}"), "{paths:?}: {css}");
+        assert!(
+            css.contains(".display\\:block{display:block}"),
+            "{paths:?}: {css}"
+        );
         assert!(!css.contains(".hidden{display:none}"), "{paths:?}: {css}");
         assert!(!root.0.join("master.css").exists());
     }

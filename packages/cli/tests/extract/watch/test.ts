@@ -29,7 +29,7 @@ const originHTMLText = dedent`
   </html>
 `
 
-const originConfigText = "@import \"@master/css\";\n\n@theme {:root, :host {\n  --color-primary: var(--color-blue);\n}}\n\n\n\n  @utility btn {\n    background-color: oklch(63.7% 0.237 25.331);\n  }\n\n"
+const originConfigText = "@import \"@master/css\";\n\n@theme {:root, :host {\n  --color-primary: var(--color-blue);\n}}\n\n\n\n  @mixin --btn {\n    background-color: oklch(63.7% 0.237 25.331);\n  }\n\n"
 
 let workspacePath: string
 let HTMLFilepath: string
@@ -111,16 +111,16 @@ it('change config file utilities and reset process', async () => {
       fs.writeFileSync(nextConfigFilepath, originConfigText.replace('oklch(63.7% 0.237 25.331)', 'oklch(55.1% 0.027 264.364)'))
       fs.renameSync(nextConfigFilepath, configFilepath)
     }),
-    waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% .027 264.364)'))
+    waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
   ])
-  const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% .027 264.364)'))
-  expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% .027 264.364)')
+  const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
+  expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% 0.027 264.364)')
 })
 
 it('change html file class attr and update', async () => {
-  fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'underline'))
-  const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape('underline')))
-  expect(fileCSSText).toContain(cssEscape('underline'))
+  fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', "text-decoration:underline"))
+  const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape("text-decoration:underline")))
+  expect(fileCSSText).toContain(cssEscape("text-decoration:underline"))
 })
 
 afterAll(async () => {

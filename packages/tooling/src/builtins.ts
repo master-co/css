@@ -5,10 +5,1786 @@ export interface MasterCSSBuiltinTokenNamespace {
   readonly variableAliasRefs: readonly string[]
 }
 
-export type MasterCSSBuiltinKeyAliases = Readonly<Record<string, string>>
+export interface MasterCSSBuiltinTokenFamily {
+  readonly prefix: string
+  readonly property: string
+  readonly namespaces: readonly string[]
+}
+
+export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Object.freeze(
+  [
+  {
+    "prefix": "background-position",
+    "property": "background-position",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "bottom",
+    "property": "bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "border-spacing",
+    "property": "border-spacing",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "column-gap",
+    "property": "column-gap",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "gap-x",
+    "property": "column-gap",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "gap",
+    "property": "gap",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset",
+    "property": "inset",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-block",
+    "property": "inset-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "iy",
+    "property": "inset-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-block-end",
+    "property": "inset-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "iye",
+    "property": "inset-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-block-start",
+    "property": "inset-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "iys",
+    "property": "inset-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-inline",
+    "property": "inset-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "ix",
+    "property": "inset-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-inline-end",
+    "property": "inset-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "ixe",
+    "property": "inset-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "inset-inline-start",
+    "property": "inset-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "ixs",
+    "property": "inset-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "left",
+    "property": "left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin",
+    "property": "margin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "m",
+    "property": "margin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-block",
+    "property": "margin-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "my",
+    "property": "margin-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-block-end",
+    "property": "margin-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mye",
+    "property": "margin-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-block-start",
+    "property": "margin-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mys",
+    "property": "margin-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-bottom",
+    "property": "margin-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mb",
+    "property": "margin-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-inline",
+    "property": "margin-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mx",
+    "property": "margin-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-inline-end",
+    "property": "margin-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mxe",
+    "property": "margin-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-inline-start",
+    "property": "margin-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mxs",
+    "property": "margin-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-left",
+    "property": "margin-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "ml",
+    "property": "margin-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-right",
+    "property": "margin-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mr",
+    "property": "margin-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "margin-top",
+    "property": "margin-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mt",
+    "property": "margin-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "mask-position",
+    "property": "mask-position",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "object-position",
+    "property": "object-position",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "outline-offset",
+    "property": "outline-offset",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding",
+    "property": "padding",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "p",
+    "property": "padding",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-block",
+    "property": "padding-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "py",
+    "property": "padding-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-block-end",
+    "property": "padding-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pye",
+    "property": "padding-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-block-start",
+    "property": "padding-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pys",
+    "property": "padding-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-bottom",
+    "property": "padding-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pb",
+    "property": "padding-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-inline",
+    "property": "padding-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "px",
+    "property": "padding-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-inline-end",
+    "property": "padding-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pxe",
+    "property": "padding-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-inline-start",
+    "property": "padding-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pxs",
+    "property": "padding-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-left",
+    "property": "padding-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pl",
+    "property": "padding-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-right",
+    "property": "padding-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pr",
+    "property": "padding-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "padding-top",
+    "property": "padding-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "pt",
+    "property": "padding-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "perspective",
+    "property": "perspective",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "perspective-origin",
+    "property": "perspective-origin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "right",
+    "property": "right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "row-gap",
+    "property": "row-gap",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "gap-y",
+    "property": "row-gap",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin",
+    "property": "scroll-margin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-m",
+    "property": "scroll-margin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-block",
+    "property": "scroll-margin-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-my",
+    "property": "scroll-margin-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-block-end",
+    "property": "scroll-margin-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mye",
+    "property": "scroll-margin-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-block-start",
+    "property": "scroll-margin-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mys",
+    "property": "scroll-margin-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-bottom",
+    "property": "scroll-margin-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mb",
+    "property": "scroll-margin-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-inline",
+    "property": "scroll-margin-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mx",
+    "property": "scroll-margin-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-inline-end",
+    "property": "scroll-margin-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mxe",
+    "property": "scroll-margin-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-inline-start",
+    "property": "scroll-margin-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mxs",
+    "property": "scroll-margin-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-left",
+    "property": "scroll-margin-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-ml",
+    "property": "scroll-margin-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-right",
+    "property": "scroll-margin-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mr",
+    "property": "scroll-margin-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-margin-top",
+    "property": "scroll-margin-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-mt",
+    "property": "scroll-margin-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding",
+    "property": "scroll-padding",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-p",
+    "property": "scroll-padding",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-block",
+    "property": "scroll-padding-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-py",
+    "property": "scroll-padding-block",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-block-end",
+    "property": "scroll-padding-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pye",
+    "property": "scroll-padding-block-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-block-start",
+    "property": "scroll-padding-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pys",
+    "property": "scroll-padding-block-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-bottom",
+    "property": "scroll-padding-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pb",
+    "property": "scroll-padding-bottom",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-inline",
+    "property": "scroll-padding-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-px",
+    "property": "scroll-padding-inline",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-inline-end",
+    "property": "scroll-padding-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pxe",
+    "property": "scroll-padding-inline-end",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-inline-start",
+    "property": "scroll-padding-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pxs",
+    "property": "scroll-padding-inline-start",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-left",
+    "property": "scroll-padding-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pl",
+    "property": "scroll-padding-left",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-right",
+    "property": "scroll-padding-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pr",
+    "property": "scroll-padding-right",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-padding-top",
+    "property": "scroll-padding-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "scroll-pt",
+    "property": "scroll-padding-top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "shape-margin",
+    "property": "shape-margin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "text-indent",
+    "property": "text-indent",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "text-underline-offset",
+    "property": "text-underline-offset",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "top",
+    "property": "top",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "translate",
+    "property": "translate",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "transform-origin",
+    "property": "transform-origin",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "word-spacing",
+    "property": "word-spacing",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "cx",
+    "property": "cx",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "cy",
+    "property": "cy",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "stroke-dashoffset",
+    "property": "stroke-dashoffset",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "x",
+    "property": "x",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "y",
+    "property": "y",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "background-size",
+    "property": "background-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "block-size",
+    "property": "block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "size-y",
+    "property": "block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "contain-intrinsic-block-size",
+    "property": "contain-intrinsic-block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "contain-intrinsic-inline-size",
+    "property": "contain-intrinsic-inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "flex-basis",
+    "property": "flex-basis",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "height",
+    "property": "height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "h",
+    "property": "height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "inline-size",
+    "property": "inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "size-x",
+    "property": "inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-block-size",
+    "property": "max-block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-size-y",
+    "property": "max-block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-height",
+    "property": "max-height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-h",
+    "property": "max-height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-inline-size",
+    "property": "max-inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-size-x",
+    "property": "max-inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-width",
+    "property": "max-width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "max-w",
+    "property": "max-width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-block-size",
+    "property": "min-block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-size-y",
+    "property": "min-block-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-height",
+    "property": "min-height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-h",
+    "property": "min-height",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-inline-size",
+    "property": "min-inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-size-x",
+    "property": "min-inline-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-width",
+    "property": "min-width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "min-w",
+    "property": "min-width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "mask-size",
+    "property": "mask-size",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "width",
+    "property": "width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "w",
+    "property": "width",
+    "namespaces": [
+      "container"
+    ]
+  },
+  {
+    "prefix": "border-bottom-left-radius",
+    "property": "border-bottom-left-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "rbl",
+    "property": "border-bottom-left-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-bottom-right-radius",
+    "property": "border-bottom-right-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "rbr",
+    "property": "border-bottom-right-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-end-end-radius",
+    "property": "border-end-end-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-end-start-radius",
+    "property": "border-end-start-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-radius",
+    "property": "border-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "r",
+    "property": "border-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-start-end-radius",
+    "property": "border-start-end-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-start-start-radius",
+    "property": "border-start-start-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-top-left-radius",
+    "property": "border-top-left-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "rtl",
+    "property": "border-top-left-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border-top-right-radius",
+    "property": "border-top-right-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "rtr",
+    "property": "border-top-right-radius",
+    "namespaces": [
+      "radius"
+    ]
+  },
+  {
+    "prefix": "border",
+    "property": "border",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block",
+    "property": "border-block",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block-color",
+    "property": "border-block-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block-end",
+    "property": "border-block-end",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block-end-color",
+    "property": "border-block-end-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block-start",
+    "property": "border-block-start",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-block-start-color",
+    "property": "border-block-start-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-bottom",
+    "property": "border-bottom",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-bottom-color",
+    "property": "border-bottom-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-color",
+    "property": "border-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline",
+    "property": "border-inline",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline-color",
+    "property": "border-inline-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline-end",
+    "property": "border-inline-end",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline-end-color",
+    "property": "border-inline-end-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline-start",
+    "property": "border-inline-start",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-inline-start-color",
+    "property": "border-inline-start-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-left",
+    "property": "border-left",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-left-color",
+    "property": "border-left-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-right",
+    "property": "border-right",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-right-color",
+    "property": "border-right-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-top",
+    "property": "border-top",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "border-top-color",
+    "property": "border-top-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "outline-color",
+    "property": "outline-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "accent-color",
+    "property": "accent-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "background-color",
+    "property": "background-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "fill",
+    "property": "fill",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "filter",
+    "property": "filter",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "caret-color",
+    "property": "caret-color",
+    "namespaces": [
+      "color-text",
+      "color"
+    ]
+  },
+  {
+    "prefix": "stroke",
+    "property": "stroke",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "color",
+    "property": "color",
+    "namespaces": [
+      "color",
+      "color-text"
+    ]
+  },
+  {
+    "prefix": "fg",
+    "property": "color",
+    "namespaces": [
+      "color",
+      "color-text"
+    ]
+  },
+  {
+    "prefix": "-webkit-text-fill-color",
+    "property": "-webkit-text-fill-color",
+    "namespaces": [
+      "color-text",
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-fill-color",
+    "property": "-webkit-text-fill-color",
+    "namespaces": [
+      "color-text",
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-decoration-color",
+    "property": "text-decoration-color",
+    "namespaces": [
+      "color-text",
+      "color"
+    ]
+  },
+  {
+    "prefix": "-webkit-text-stroke-color",
+    "property": "-webkit-text-stroke-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-stroke-color",
+    "property": "-webkit-text-stroke-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-shadow",
+    "property": "text-shadow",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "box-shadow",
+    "property": "box-shadow",
+    "namespaces": [
+      "shadow",
+      "color"
+    ]
+  },
+  {
+    "prefix": "shadow",
+    "property": "box-shadow",
+    "namespaces": [
+      "shadow",
+      "color"
+    ]
+  },
+  {
+    "prefix": "animation-delay",
+    "property": "animation-delay",
+    "namespaces": [
+      "duration"
+    ]
+  },
+  {
+    "prefix": "animation-duration",
+    "property": "animation-duration",
+    "namespaces": [
+      "duration"
+    ]
+  },
+  {
+    "prefix": "transition-delay",
+    "property": "transition-delay",
+    "namespaces": [
+      "duration"
+    ]
+  },
+  {
+    "prefix": "transition-duration",
+    "property": "transition-duration",
+    "namespaces": [
+      "duration"
+    ]
+  },
+  {
+    "prefix": "animation-timing-function",
+    "property": "animation-timing-function",
+    "namespaces": [
+      "easing"
+    ]
+  },
+  {
+    "prefix": "transition-timing-function",
+    "property": "transition-timing-function",
+    "namespaces": [
+      "easing"
+    ]
+  },
+  {
+    "prefix": "animation",
+    "property": "animation",
+    "namespaces": [
+      "duration",
+      "easing"
+    ]
+  },
+  {
+    "prefix": "transition",
+    "property": "transition",
+    "namespaces": [
+      "duration",
+      "easing"
+    ]
+  },
+  {
+    "prefix": "content",
+    "property": "content",
+    "namespaces": [
+      "content"
+    ]
+  },
+  {
+    "prefix": "font-feature-settings",
+    "property": "font-feature-settings",
+    "namespaces": [
+      "font-feature"
+    ]
+  },
+  {
+    "prefix": "font-family",
+    "property": "font-family",
+    "namespaces": [
+      "font-family"
+    ]
+  },
+  {
+    "prefix": "font-size",
+    "property": "font-size",
+    "namespaces": [
+      "font-size"
+    ]
+  },
+  {
+    "prefix": "font-weight",
+    "property": "font-weight",
+    "namespaces": [
+      "font-weight"
+    ]
+  },
+  {
+    "prefix": "letter-spacing",
+    "property": "letter-spacing",
+    "namespaces": [
+      "tracking"
+    ]
+  },
+  {
+    "prefix": "tracking",
+    "property": "letter-spacing",
+    "namespaces": [
+      "tracking"
+    ]
+  },
+  {
+    "prefix": "line-height",
+    "property": "line-height",
+    "namespaces": [
+      "leading"
+    ]
+  },
+  {
+    "prefix": "leading",
+    "property": "line-height",
+    "namespaces": [
+      "leading"
+    ]
+  },
+  {
+    "prefix": "order",
+    "property": "order",
+    "namespaces": [
+      "order"
+    ]
+  },
+  {
+    "prefix": "animate",
+    "property": "animation",
+    "namespaces": [
+      "animate"
+    ]
+  },
+  {
+    "prefix": "font",
+    "property": "font-size",
+    "namespaces": [
+      "font-size"
+    ]
+  },
+  {
+    "prefix": "font",
+    "property": "font-family",
+    "namespaces": [
+      "font-family"
+    ]
+  },
+  {
+    "prefix": "font",
+    "property": "font-weight",
+    "namespaces": [
+      "font-weight"
+    ]
+  },
+  {
+    "prefix": "bg",
+    "property": "background-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "surface",
+    "property": "background-color",
+    "namespaces": [
+      "color-surface"
+    ]
+  },
+  {
+    "prefix": "b",
+    "property": "border-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "bt",
+    "property": "border-top-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "br",
+    "property": "border-right-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "bb",
+    "property": "border-bottom-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "bl",
+    "property": "border-left-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "bx",
+    "property": "border-inline-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "by",
+    "property": "border-block-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "outline",
+    "property": "outline-color",
+    "namespaces": [
+      "color-line",
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-decoration",
+    "property": "text-decoration-color",
+    "namespaces": [
+      "color-text",
+      "color"
+    ]
+  },
+  {
+    "prefix": "text-underline",
+    "property": "text-underline-offset",
+    "namespaces": [
+      "spacing"
+    ]
+  },
+  {
+    "prefix": "text-stroke",
+    "property": "-webkit-text-stroke-color",
+    "namespaces": [
+      "color"
+    ]
+  },
+  {
+    "prefix": "backdrop-filter",
+    "property": "backdrop-filter",
+    "namespaces": [
+      "color"
+    ]
+  }
+].map((family) => Object.freeze({ ...family, namespaces: Object.freeze(family.namespaces) }))
+)
+
+export type MasterCSSBuiltinTokenAliases = Readonly<Record<string, string>>
 export type MasterCSSBuiltinTokenNamespaces = readonly MasterCSSBuiltinTokenNamespace[]
 
-export const builtinKeyAliases = Object.freeze({
+export const builtinTokenAliases = Object.freeze({
   "b": "border",
   "bb": "border-bottom",
   "bg": "background",
@@ -98,7 +1874,7 @@ export const builtinKeyAliases = Object.freeze({
   "tracking": "letter-spacing",
   "w": "width",
   "z": "z-index"
-}) as MasterCSSBuiltinKeyAliases
+}) as MasterCSSBuiltinTokenAliases
 
 export const builtinTokenNamespaces = Object.freeze(
   [

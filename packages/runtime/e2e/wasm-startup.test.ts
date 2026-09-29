@@ -15,7 +15,7 @@ async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
   const blankURL = new URL('/__master-css-runtime-wasm-startup.html', loaderURL).href
   await page.route(blankURL, route => route.fulfill({
     contentType: 'text/html',
-    body: '<!doctype html><html hidden><head></head><body><p class="block"></p></body></html>'
+    body: '<!doctype html><html hidden><head></head><body><p class="display:block"></p></body></html>'
   }))
   await page.goto(blankURL, { waitUntil: 'domcontentloaded' })
 }
@@ -67,7 +67,7 @@ test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', 
   expect(result).toEqual({
     binding: 'wasm',
     hidden: false,
-    text: '@layer utilities{.block{display:block}}'
+    text: "@layer utilities{.display\\:block{display:block}}"
   })
 })
 

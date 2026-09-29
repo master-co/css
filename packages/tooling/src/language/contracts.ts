@@ -7,6 +7,7 @@ export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
+  | 'mixin'
   | 'declaration'
   | 'token'
 
@@ -59,7 +60,7 @@ export interface MasterCSSFormatDirectivesResult {
 export interface MasterCSSLanguageClass {
   readonly className: string
   readonly kind: MasterCSSLanguageClassKind
-  readonly matcherTypes: readonly ('static' | 'key' | 'token')[]
+  readonly matcherTypes: readonly ('static' | 'key' | 'token' | 'function')[]
   readonly keyToken?: string
   readonly valueToken?: string
   readonly stateToken?: string
@@ -89,6 +90,7 @@ export interface MasterCSSLanguageClassVariable {
 export interface MasterCSSLanguageInspection {
   readonly version: 5
   readonly className: string
+  readonly definitionSource?: BindingInspection['definitionSource']
   readonly matchStatus: BindingInspection['matchStatus']
   readonly declarations: readonly import('../value-validation').DeclarationValidation[]
   readonly checks: readonly (typeof import('../value-validation').CSS_VALUE_CHECK | typeof import('../syntax-validation').CSS_SYNTAX_CHECK)[]
@@ -104,7 +106,7 @@ export interface MasterCSSLanguageInspection {
   readonly valueToken?: string
   readonly stateToken?: string
   readonly important: boolean
-  readonly matcherTypes: readonly ('static' | 'key' | 'token')[]
+  readonly matcherTypes: readonly ('static' | 'key' | 'token' | 'function')[]
   readonly variables: readonly MasterCSSLanguageClassVariable[]
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly diagnostics?: BindingInspection['diagnostics']
@@ -119,6 +121,7 @@ export interface MasterCSSLanguageCompletionEntry {
   readonly detail?: string
   readonly documentationText?: string
   readonly sortText?: string
+  readonly insertText?: string
   readonly triggerSuggest: boolean
 }
 

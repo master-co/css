@@ -9,7 +9,7 @@ function getModeRows(namespace: string, utilities: (key: string) => string[], pr
     value: String(variable.value),
   }))
 }
-const textRows = getModeRows('color-text', key => [`text-${key}`], 'text')
+const textRows = getModeRows('color-text', key => [`fg-text-${key}`], 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'disabled', 'inverse', 'link', 'link-hover'])
 export const rowsByGroup = {
   surfaces: getModeRows('color-surface', key => [`surface-${key}`], 'background'),
@@ -34,7 +34,7 @@ const lineRoleDescriptions: Record<string, string> = {
 const textRoleDescriptions: Record<string, string> = {
   body: 'Default readable foreground text.',
   strong: 'Headings, labels, and emphasized foreground text.',
-  muted: 'Secondary text on base, inset, or raised; use text-body on floating.',
+  muted: 'Secondary text on base, inset, or raised; use fg-text-body on floating.',
   disabled: 'Unavailable actions and disabled controls.',
   inverse: 'Text on inverse surfaces.',
   link: 'Default inline links.',

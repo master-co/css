@@ -10,14 +10,14 @@ Use the patterned source to compare all four edge-fitting modes. Corners remain 
 ```html
 <!-- Stretch · one stretched tile -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -26,14 +26,14 @@ Use the patterned source to compare all four edge-fitting modes. Corners remain 
 ```html
 <!-- Repeat · natural tiles, clipped ends -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:repeat
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -42,14 +42,14 @@ Use the patterned source to compare all four edge-fitting modes. Corners remain 
 ```html
 <!-- Round · whole tiles resized to fit -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:round
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -58,14 +58,14 @@ Use the patterned source to compare all four edge-fitting modes. Corners remain 
 ```html
 <!-- Space · whole tiles with gaps -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:space
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -88,14 +88,14 @@ With two values, the first controls horizontal edges (top and bottom); the secon
 ```html
 <!-- Horizontal round · vertical stretch -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:round|stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -111,16 +111,16 @@ At `sm`, switch from stretch to round while preserving source, slices and border
 ```html
 <!-- Stretch → round at sm -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          border-image-repeat:stretch@print
          border-image-repeat:round@screen@sm">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>

@@ -1,7 +1,7 @@
 const syntaxes = [
-  'bg-fixed',
-  'bg-local',
-  'bg-scroll',
+  "background-attachment:fixed",
+  "background-attachment:local",
+  "background-attachment:scroll",
   ['background-attachment:`value`'],
 ]
 

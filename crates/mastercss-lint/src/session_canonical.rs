@@ -160,6 +160,7 @@ impl LintSession {
         }
 
         if let (Some(source_key), Some(source_value)) = (&parts.key, &parts.value)
+            && semantics.kind == mastercss_engine::ClassSemanticKind::Token
             && options.prefer_property_aliases
             && let Some(source_rule) = source.rules.first()
         {

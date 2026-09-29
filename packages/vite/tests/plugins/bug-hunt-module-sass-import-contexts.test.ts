@@ -8,7 +8,7 @@ import masterCSS from '../../src/core'
 
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
-const cases = (['static', 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => ['css', 'scss'].flatMap(extension => ['scss', 'sass'].flatMap(syntax => (['expanded', 'compressed'] as const).map(style => ({ mode, extension, syntax, style })))))
+const cases = (["static", 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => ['css', 'scss'].flatMap(extension => ['scss', 'sass'].flatMap(syntax => (['expanded', 'compressed'] as const).map(style => ({ mode, extension, syntax, style })))))
 test.each(cases)('equal Sass outputs retain root scope and resource owners in $mode / $extension / $syntax / $style', async ({ mode, extension, syntax, style }) => {
   const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'module-sass-import-contexts-'))

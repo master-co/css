@@ -4,7 +4,7 @@ use crate::{ClassConflictIr, PartialClassConflictIr};
 fn analysis() -> LintBatchIr {
     LintBatchIr {
         version: 1,
-        sorted_class_names: vec!["m:2x".into(), "fg:white".into()],
+        sorted_class_names: vec!["margin:2x".into(), "color:white".into()],
         conflicts: Vec::new(),
         partial_conflicts: Vec::new(),
     }
@@ -13,8 +13,12 @@ fn analysis() -> LintBatchIr {
 #[test]
 fn preserves_raw_tokens_and_whitespace_while_sorting() {
     let ir = create_class_list_ir(
-        "fg:white  m:2x\tfg:white",
-        &["fg:white".into(), "m:2x".into(), "fg:white".into()],
+        "color:white  margin:2x\tcolor:white",
+        &[
+            "color:white".into(),
+            "margin:2x".into(),
+            "color:white".into(),
+        ],
         analysis(),
         ClassListPolicy {
             matches: &[true, true, true],
@@ -24,19 +28,19 @@ fn preserves_raw_tokens_and_whitespace_while_sorting() {
             raw_value_policy: None,
         },
     );
-    assert_eq!(ir.sort_edit.unwrap().text, "m:2x  fg:white");
+    assert_eq!(ir.sort_edit.unwrap().text, "margin:2x  color:white");
 }
 
 #[test]
 fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
     let mut full = analysis();
     full.conflicts.push(ClassConflictIr {
-        class_name: "m:1x".into(),
-        conflicts: vec!["m:2x".into()],
+        class_name: "margin:1x".into(),
+        conflicts: vec!["margin:2x".into()],
     });
     let ir = create_class_list_ir(
-        "😀 m:1x  m:2x",
-        &["😀".into(), "m:1x".into(), "m:2x".into()],
+        "😀 margin:1x  margin:2x",
+        &["😀".into(), "margin:1x".into(), "margin:2x".into()],
         full,
         ClassListPolicy {
             matches: &[false, true, true],
@@ -46,18 +50,18 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
             raw_value_policy: None,
         },
     );
-    assert_eq!(ir.conflict_range, Some(SourceRange { start: 3, end: 7 }));
-    assert_eq!(ir.conflict_edit.unwrap().text, "😀  m:2x");
+    assert_eq!(ir.conflict_range, Some(SourceRange { start: 3, end: 12 }));
+    assert_eq!(ir.conflict_edit.unwrap().text, "😀  margin:2x");
 
     let mut partial = analysis();
     partial.partial_conflicts.push(PartialClassConflictIr {
-        class_name: "mx:md".into(),
-        replacement: "mr:md".into(),
-        conflict: "ml:lg".into(),
+        class_name: "margin-inline:md".into(),
+        replacement: "margin-right:md".into(),
+        conflict: "margin-left:lg".into(),
     });
     let ir = create_class_list_ir(
-        "mx:md ml:lg",
-        &["mx:md".into(), "ml:lg".into()],
+        "margin-inline:md margin-left:lg",
+        &["margin-inline:md".into(), "margin-left:lg".into()],
         partial,
         ClassListPolicy {
             matches: &[true, true],
@@ -67,7 +71,10 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
             raw_value_policy: None,
         },
     );
-    assert_eq!(ir.conflict_edit.unwrap().text, "mr:md ml:lg");
+    assert_eq!(
+        ir.conflict_edit.unwrap().text,
+        "margin-right:md margin-left:lg"
+    );
 }
 
 #[test]

@@ -8,7 +8,7 @@
 <DemoExample page="grid-auto-rows" section="size-implicit-rows" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-auto-rows:64px grid-template-rows:48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-cols(2) grid-auto-rows:64px grid-template-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="peer" class="p-sm">01</div>
   <div id="item-2" class="p-sm">02</div>
   <div id="target" class="p-sm">03</div>
@@ -25,7 +25,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-auto-rows" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-auto-rows:56px grid-template-rows:48px gap-md w:17.5rem max-w:100% grid-auto-rows:80px@sm">
+<div id="layout" class="display:grid grid-cols(2) grid-auto-rows:56px grid-template-rows:48px gap-md width:17.5rem max-width:100% grid-auto-rows:80px@sm">
   <div id="peer" class="p-sm">01</div>
   <div id="item-2" class="p-sm">02</div>
   <div id="target" class="p-sm">03</div>

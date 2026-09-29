@@ -1,5 +1,12 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { UtilityType } from './utility-type.js'
+import type { MasterCSSMixinDefinition } from './mixin.js'
+export type {
+  MasterCSSMixinDefinition,
+  MasterCSSMixinParameter,
+  MasterCSSMixinParameterSyntax,
+  MasterCSSMixinNode,
+  MasterCSSMixinValue
+} from './mixin.js'
 
 export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
@@ -94,49 +101,6 @@ export interface MasterCSSManifestVariant {
 
 export type MasterCSSManifestVariants = MasterCSSManifestVariant[]
 
-export type MasterCSSManifestUtilityMatcher =
-  | { type: 'static'; name: string }
-  | { type: 'key'; keys: string[] }
-  | { type: 'token'; prefix: string }
-
-export type MasterCSSManifestVariableAlias = [key: string, name: string]
-export type MasterCSSManifestVariableAliasSet = MasterCSSManifestVariableAlias[]
-
-export type MasterCSSManifestUtilityEmit =
-  | { type: 'declarations'; declarations: string[] }
-  | { type: 'template'; declarations: MasterCSSManifestCSSDeclarations }
-  | { type: 'property'; property: string }
-  | { type: 'static'; rules: MasterCSSManifestUtilityRule[] }
-
-export interface MasterCSSManifestUtilityRule<TDeclarations = MasterCSSManifestCSSDeclarations> {
-  declarations: TDeclarations
-  conditions?: string[]
-  selector?: string
-}
-
-export interface MasterCSSManifestUtility {
-  id: string
-  name?: string
-  type: UtilityType
-  order?: number
-  layer?: MasterCSSManifestUtilityLayerName
-  key?: string
-  subkey?: string
-  keys?: string[]
-  aliasGroups?: string[]
-  namespaces?: string[]
-  implicitNamespace?: boolean
-  separators?: string[]
-  conditions?: string[]
-  variableAliases?: MasterCSSManifestVariableAliasSet
-  variableAliasRefs?: string[]
-  emit: MasterCSSManifestUtilityEmit
-  matchers: MasterCSSManifestUtilityMatcher[]
-  debug?: Record<string, unknown>
-}
-
-export type MasterCSSManifestUtilities = MasterCSSManifestUtility[]
-
 export interface MasterCSSScopedThemeValue {
   path: string[]
   value: string
@@ -159,8 +123,8 @@ export interface MasterCSSManifest {
    * This is not a legacy Config compatibility marker; engines must reject
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
-  version: 2
-  languageVersion: 4
+  version: 3
+  languageVersion: 5
   theme?: MasterCSSThemeNode[]
   customMedia?: Record<string, MasterCSSMediaQueryExpression>
   variables?: MasterCSSManifestVariables
@@ -168,7 +132,7 @@ export interface MasterCSSManifest {
   conditions?: MasterCSSManifestConditions
   containerConditions?: MasterCSSManifestConditions
   selectors?: MasterCSSManifestSelectors
-  utilities?: MasterCSSManifestUtilities
+  mixins?: MasterCSSMixinDefinition[]
   debug?: Record<string, unknown>
 }
 

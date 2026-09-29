@@ -3,10 +3,10 @@ import React from 'react'
 export default function Componennt() {
   return (
     <div className={`
-      block
+      display:block
       fg-blue
       font-size:1rem
-      text-center
+      text-align:center
     `}></div>
   )
 }

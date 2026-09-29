@@ -11,17 +11,17 @@ const surfaces = ['base', 'inset', 'raised', 'floating']
 const textTokens = flattenMasterCSSManifestVariables(manifest.variables)
   .filter(({ namespace, key }) => namespace === 'color-text' && !['muted', 'disabled', 'inverse'].includes(key))
   .map(({ key }) => key)
-const classes = ['text-body', 'surface-base', 'shadow-sm', 'surface-floating/.8', 'fg-blue', 'fg:red@dark',
-  'b-control', 'text-muted', ...surfaces.map(key => `surface-${key}`), ...textTokens.map(key => `text-${key}`)]
+const classes = ['fg-text-body', 'surface-base', 'shadow-sm', 'surface-floating/.8', 'fg-blue', "color:red@dark",
+  'b-control', 'fg-text-muted', ...surfaces.map(key => `surface-${key}`), ...textTokens.map(key => `fg-text-${key}`)]
 const rendered = renderClassNamesSync(classes, { manifest })
 
 for (const mode of ['light', 'dark'] as const) {
   test(`native ${mode} color scheme, nesting, shadow inheritance and contrast`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: mode })
     await page.setContent(`<style>${nativeCSS}${rendered.cssText}</style>
-      <div id="sample" class="surface-base text-body shadow-sm">Body</div>
-      <div data-theme="light"><div id="nested" data-theme="dark" class="surface-base text-body">Nested</div><div id="host"></div></div>
-      <div id="variant" class="fg:red@dark">System variant</div>`)
+      <div id="sample" class="surface-base fg-text-body shadow-sm">Body</div>
+      <div data-theme="light"><div id="nested" data-theme="dark" class="surface-base fg-text-body">Nested</div><div id="host"></div></div>
+      <div id="variant" class="color:red@dark">System variant</div>`)
     const data = await page.evaluate(({ surfaces, textTokens, css }) => {
       const sample = document.querySelector<HTMLElement>('#sample')!
       const read = (element: Element) => { const s = getComputedStyle(element); return { fg: s.color, bg: s.backgroundColor, shadow: s.boxShadow, scheme: s.colorScheme } }
@@ -33,7 +33,7 @@ for (const mode of ['light', 'dark'] as const) {
       const nested = read(document.querySelector('#nested')!)
       const host = document.querySelector<HTMLElement>('#host')!
       const root = host.attachShadow({ mode: 'open' })
-      root.innerHTML = `<style>${css}</style><div class="surface-base text-body shadow-sm">Shadow</div>`
+      root.innerHTML = `<style>${css}</style><div class="surface-base fg-text-body shadow-sm">Shadow</div>`
       const inherited = read(root.querySelector('div')!)
       host.dataset.theme = 'dark'
       const explicitHost = read(root.querySelector('div')!)
@@ -53,7 +53,7 @@ for (const mode of ['light', 'dark'] as const) {
         probe.style.colorScheme = scheme
         for (const token of [...textTokens, 'muted', 'control']) {
           if (token === 'muted' && surface === 'floating') continue
-          probe.className = `surface-${surface} ${token === 'control' ? 'b-control' : `text-${token}`}`
+          probe.className = `surface-${surface} ${token === 'control' ? 'b-control' : `fg-text-${token}`}`
           const s = getComputedStyle(probe), a = luminance(token === 'control' ? s.borderTopColor : s.color), b = luminance(s.backgroundColor)
           matrix.push({ scheme, surface, token, ratio: (Math.max(a, b) + .05) / (Math.min(a, b) + .05) })
         }
@@ -77,8 +77,8 @@ for (const mode of ['light', 'dark'] as const) {
 }
 
 test('SSR hydration and runtime use the same CSS through manual theme switches', async ({ page }) => {
-  await page.setContent(`<style>${nativeCSS}</style><p id="sample" class="surface-base text-body shadow-sm">Hydrated</p>`)
-  const ssr = renderClassNamesSync(['surface-base', 'text-body', 'shadow-sm'], { manifest })
+  await page.setContent(`<style>${nativeCSS}</style><p id="sample" class="surface-base fg-text-body shadow-sm">Hydrated</p>`)
+  const ssr = renderClassNamesSync(['surface-base', 'fg-text-body', 'shadow-sm'], { manifest })
   await init(page, ssr.cssText, undefined, ssr.hydrationManifest)
   const before = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   const colors = await page.evaluate(() => {

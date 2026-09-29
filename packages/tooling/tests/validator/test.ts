@@ -17,9 +17,9 @@ it('validates classes through a Rust session with independent CSS value checks',
   const validator = createTestToolingSession(defaultManifest)
   try {
     const classNames = [
-      'text-center',
+      "text-align:center",
       'font-size:.75rem@media(print)',
-      'mt:var(--top)',
+      "margin-top:var(--top)",
       'right:max(0px,calc(50%-45.3125rem))',
       '{text-wrap:pretty}',
       'display:block',

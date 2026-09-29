@@ -2,13 +2,28 @@ import { expect, test } from 'vitest'
 import { createCompiler } from '../src/index'
 import type { MasterCSSCompileStylesheetsRequest } from '../src/index'
 
-const entry = '@import "./child.css" layer;@utility paint {padding:2rem}/* 😀 */\n.after{margin:1px}'
+const entry = '@import "./child.css" layer;@mixin --paint {padding:2rem}/* 😀 */\n.after{margin:1px}'
 const child = ".image{background:url(\"./dot.svg\")}/* 😀 */\n@layer{.card{@variant all {padding:2rem;}}.card{padding:3rem}}"
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] },
   urls: { '/entry.css': '/entry.css', '/child.css': '/assets/very-long-child-😀.css?version=abcdef' },
   resourceURLs: { '/child.css': { './dot.svg': 'https://cdn.test/very-long-resource.svg' } },
-  baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }
+  baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 }
 
 test('graph output mappings retain original anchors across import, resource and compose output', async () => {
@@ -28,8 +43,23 @@ test('graph output mappings retain original anchors across import, resource and 
 for (const binding of ['native', 'wasm'] as const) {
   test(`graph ${binding} preserves quoted compose marker text and renders the actual rule`, async () => {
     using compiler = await createCompiler({ binding })
-    const source = "@utility paint {padding:2rem}.label::before{content:\"@--master-css-style-slot-0;\"}.card{@variant all {padding:2rem;}}"
-    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } })
+    const source = "@mixin --paint {padding:2rem}.label::before{content:\"@--master-css-style-slot-0;\"}.card{@variant all {padding:2rem;}}"
+    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} })
     expect(result.css).toContain('content: "@--master-css-style-slot-0;"')
     expect(result.css).toContain('.card{padding:2rem}')
     const sheet = result.stylesheets[0]
@@ -40,8 +70,23 @@ for (const binding of ['native', 'wasm'] as const) {
 for (const binding of ['native', 'wasm'] as const) {
   test(`graph ${binding} native suppression preserves composed conditions and their source anchors`, async () => {
     using compiler = await createCompiler({ binding })
-    const source = "@utility paint {padding:2rem}.plain{margin:1px}@media print{@layer{.card{@variant all {padding:2rem;}}.other{@variant all {padding:2rem;}}}}"
-    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, options: { preserveNativeCSS: false } })
+    const source = "@mixin --paint {padding:2rem}.plain{margin:1px}@media print{@layer{.card{@variant all {padding:2rem;}}.other{@variant all {padding:2rem;}}}}"
+    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, options: { preserveNativeCSS: false } })
     expect(result.css).toContain('@media print')
     expect(result.css.match(/@layer/g)).toHaveLength(1)
     expect(result.css).not.toContain('.plain')

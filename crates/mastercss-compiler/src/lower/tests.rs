@@ -15,7 +15,7 @@ fn lower_for_test(
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 2,"languageVersion":4, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 3,"languageVersion":5, "mixins": [] })),
             resolution_manifest: None,
         },
     )
@@ -125,7 +125,7 @@ fn keeps_source_order_for_non_numeric_conditions_and_distinct_targets() {
 }
 
 #[test]
-fn preserves_utility_body_order_without_moving_layers() {
+fn preserves_native_body_order_without_registering_classes() {
     let result = lower_for_test(
         CssDirectiveManifestInput::default(),
         json!([
@@ -148,15 +148,9 @@ fn preserves_utility_body_order_without_moving_layers() {
             }
         ]),
     );
-    let utility = &result.input.utilities.unwrap()[0];
+    assert!(result.input.mixins.is_none());
     assert_eq!(
-        utility,
-        &json!({
-            "name":"prose", "type":"static", "layer":"defaults",
-            "rules":[
-                {"declarations":{"margin-top":"2rem"},"selector":"& :is(h1,h2)","conditions":["@media (width>=52rem)"]},
-                {"declarations":{"margin-top":"1rem"},"selector":"& :is(h1,h2)"}
-            ]
-        })
+        result.generated_css,
+        "@media (width>=52rem){& :is(h1,h2){margin-top:2rem}}& :is(h1,h2){margin-top:1rem}"
     );
 }

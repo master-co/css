@@ -1,5 +1,6 @@
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { MasterCSSRuntime } from '../src'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
@@ -7,6 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 interface RuntimeLoaderOptions {
   manifest?: MasterCSSManifest
+  emittedGlobals?: MasterCSSEmittedGlobals
   hydrationManifest?: MasterCSSHydrationManifest
   startupTimeoutMs?: number
 }
@@ -37,6 +39,7 @@ export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
   const runtime = await MasterCSSRuntime.start({
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest,
+    emittedGlobals: options.emittedGlobals,
     startupTimeoutMs: options.startupTimeoutMs
   })
   globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(runtime)
@@ -47,6 +50,7 @@ export async function startCSSRuntimeAsync(options: RuntimeLoaderOptions = {}) {
   const cssRuntime = await MasterCSSRuntime.start({
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest,
+    emittedGlobals: options.emittedGlobals,
     startupTimeoutMs: options.startupTimeoutMs
   })
   globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(cssRuntime)

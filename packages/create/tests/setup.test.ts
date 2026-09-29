@@ -330,11 +330,11 @@ export default defineConfig([
       }
     })
 
-    const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', 'static'])
+    const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', "static"])
     const plan = JSON.parse(result.stdout)
 
     expect(result.status).toBe(0)
-    expect(plan.mode).toBe('static')
+    expect(plan.mode).toBe("static")
     expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("await withMasterCSS({}, { mode: 'static' })")
     expect(existsSync(join(root, 'next.config.js'))).toBe(false)
   })
@@ -604,7 +604,7 @@ export default defineConfig({
 })
 `)
     writeProjectFile(root, 'src/assets/main.css', 'body { margin: 0; }\n')
-    writeProjectFile(root, 'src/App.vue', '<template><h1 class="block">Hello</h1></template>\n')
+    writeProjectFile(root, 'src/App.vue', "<template><h1 class=\"display:block\">Hello</h1></template>\n")
 
     const plan = planMasterCSSSetup({ root })
 

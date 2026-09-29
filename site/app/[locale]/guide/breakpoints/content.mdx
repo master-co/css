@@ -58,12 +58,12 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 | Navigation | Switch from bottom tabs to top navigation | A single card changing layout inside a sidebar |
 | App shell | Add a persistent sidebar at `@md` | Button padding that only belongs to one component |
 | Page grid | Move from 4 columns to 8 or 12 columns | A gallery that depends on its rendered container |
-| Typography | Increase heading scale when line length and hierarchy need it | Local text measure such as `max-w:72ch` |
+| Typography | Increase heading scale when line length and hierarchy need it | Local text measure such as `max-width:72ch` |
 | Density | Increase section rhythm and outer margins | Hard-coded spacing values repeated in markup |
 
 ```html
-<!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@sm --><!-- @MARK grid-cols:12@md -->
-<section class="grid-cols:4 gap-md grid-cols:8@sm grid-cols:12@md gap-lg@md">
+<!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@sm --><!-- @MARK grid-cols(12)@md -->
+<section class="grid-cols(4) gap-md grid-cols(8)@sm grid-cols(12)@md gap-lg@md">
   ...
 </section>
 ```
@@ -71,7 +71,7 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid-cols:4', 'grid-cols:8@sm', 'grid-cols:12@md', 'gap-md', 'gap-lg@md']}
+    {['grid-cols(4)', 'grid-cols(8)@sm', 'grid-cols(12)@md', 'gap-md', 'gap-lg@md']}
   </Class2CSS>
 </details>
 
@@ -81,14 +81,14 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 Use a complete [native media query](/reference/rules/conditions#media-queries) when a style belongs to a range instead of every larger viewport.
 
 ```html
-<!-- @MARK hidden@media((52.125rem<=width<=64rem)) -->
-<aside class="hidden@media((52.125rem<=width<=64rem))">...</aside>
+<!-- @MARK display:none@media((52.125rem<=width<=64rem)) -->
+<aside class="display:none@media((52.125rem<=width<=64rem))">...</aside>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@media((52.125rem<=width<=64rem))']}
+    {['display:none@media((52.125rem<=width<=64rem))']}
   </Class2CSS>
 </details>
 
@@ -101,7 +101,7 @@ Viewport breakpoints decide when the page changes. Container size values decide 
 
 ```html
 <!-- @MARK max-w-4xl@sm --><!-- @MARK max-w-5xl@md --><!-- @MARK max-w-7xl@lg -->
-<main class="w:100% mx:auto px-md max-w-4xl@sm max-w-5xl@md px-xl@md max-w-7xl@lg">
+<main class="width:100% margin-inline:auto px-md max-w-4xl@sm max-w-5xl@md px-xl@md max-w-7xl@lg">
   ...
 </main>
 ```
@@ -137,15 +137,15 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 (x) A reusable card responds to the viewport, so it breaks when placed in a narrow sidebar.
 
 ```html
-<article class="grid-cols:2@md">...</article>
+<article class="grid-cols(2)@md">...</article>
 ```
 
 (o) Page structure uses breakpoints, while reusable components use container queries.
 
 ```html
-<main class="grid-cols:12@md">
-  <section class="container">
-    <article class="grid-cols:2@container((width>=28rem))">...</article>
+<main class="grid-cols(12)@md">
+  <section class="container-type:inline-size">
+    <article class="grid-cols(2)@container((width>=28rem))">...</article>
   </section>
 </main>
 ```

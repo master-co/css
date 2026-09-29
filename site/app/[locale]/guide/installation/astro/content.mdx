@@ -41,7 +41,20 @@
 </StepSection>
 
 ```astro name=src/pages/index.astro
-<h1 class="m-2xl italic font-5xl font-heavy text-neutral">
+<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
+```
+
+Keep the Master CSS entry in a standalone CSS file, and import it from Astro frontmatter so the integration processes mixins before Astro optimizes CSS. Scoped `<style>` blocks can reference that entry and use `@apply`.
+
+```css name=src/styles/master.css
+@import "@master/css";
+```
+
+```astro name=src/layouts/Layout.astro
+---
+import "../styles/master.css";
+---
+<slot />
 ```

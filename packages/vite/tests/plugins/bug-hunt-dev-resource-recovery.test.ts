@@ -5,7 +5,7 @@ import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('resource deletion and restoration recover development CSS in %s', async mode => {
+test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('resource deletion and restoration recover development CSS in %s', async mode => {
   const parent = join(process.cwd(), 'tmp')
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'dev-resource-recovery-')), file = join(root, 'pixel.svg')

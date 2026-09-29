@@ -2,11 +2,11 @@ import clsx from 'clsx'
 
 export default function Aa(props: any) {
   return <span {...props} className={clsx(
-    'mr-sm font-weight:460 font-md user-select:none vertical-align:top',
+    'mr-sm font-md font-weight:460 user-select:none vertical-align:top',
     props.className,
     {
-      'background:var(--tiny)': props.className.includes('text-fill-color:transparent'),
-      'text-stroke:1px|currentColor': props.className.includes('text-inverse')
+      'background:var(--tiny)': props.className.includes('-webkit-text-fill-color:transparent'),
+      '-webkit-text-stroke:1px|currentColor': props.className.includes('fg-text-inverse')
     }
-  )} style={{ paintOrder: props.className.includes('text-inverse') ? 'stroke fill' : undefined }}>Aa</span>
+  )} style={{ paintOrder: props.className.includes('fg-text-inverse') ? 'stroke fill' : undefined }}>Aa</span>
 }

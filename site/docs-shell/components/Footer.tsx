@@ -36,12 +36,12 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
   return (
-    <div {...props} className={clsx('py-2xl bt:1px|solid|var(--color-line-subtle)', className)}>
-      <div className='container max-w:100rem mx:auto'>
-        <div className="grid-cols:2 flex:1 justify-between gap:2.5rem font-sm text-muted grid-cols:4@container((width>=18rem)) grid-cols:5@container((width>=28rem))">
+    <div {...props} className={clsx('py-2xl border-top:1px|solid|var(--color-line-subtle)', className)}>
+      <div className='container-type:inline-size max-width:100rem margin-inline:auto'>
+        <div className="grid-cols(2) flex:1 justify-content:space-between gap:2.5rem font-sm fg-text-muted grid-cols(4)@container((width>=18rem)) grid-cols(5)@container((width>=28rem))">
           {navGroups.map((group) => (
-            <ul className='flex flex-col gap-lg' key={group.name}>
-              <li><h4 className='text-strong'>{$(group.name)}</h4></li>
+            <ul className='display:flex flex-direction:column gap-lg' key={group.name}>
+              <li><h4 className='fg-text-strong'>{$(group.name)}</h4></li>
               {group.links.map((link) => (
                 <li key={link.href || link.name}>
                   <Link href={link.href} disabled={link.disabled}>{$(link.name)}</Link>
@@ -49,31 +49,31 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
               ))}
             </ul>
           ))}
-          <div className='hidden@container((width<28rem))'>
-            <SearchButton className="flex items-center h:36px w:100% px-md r-lg font-sm bg-surface-base text-muted" />
+          <div className='display:none@container((width<28rem))'>
+            <SearchButton className="display:flex align-items:center height:36px width:100% px-md r-lg font-sm bg-surface-base fg-text-muted" />
           </div>
         </div>
       </div>
       <hr className='hr' />
-      <div className="flex gap-md max-w:100rem mx:auto font-xs text-muted">
+      <div className="display:flex gap-md max-width:100rem margin-inline:auto font-xs fg-text-muted">
         {copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}
         {legalLinks.map((link, index) => (
           <Fragment key={link.href || link.name}>
-            <Link href={link.href} className={clsx(index === 0 && 'ml:auto')}>{$(link.name)}</Link>
-            {index < legalLinks.length - 1 && <div className='bl:1px|solid|var(--color-line-subtle)'></div>}
+            <Link href={link.href} className={clsx(index === 0 && 'margin-left:auto')}>{$(link.name)}</Link>
+            {index < legalLinks.length - 1 && <div className='border-left:1px|solid|var(--color-line-subtle)'></div>}
           </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='bl:1px|solid|var(--color-line-subtle) hidden@media((width<64rem))'></div>}
-        <label className='rel hidden@media((width<64rem))'>
-          <span className='pr-xs capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
+        {legalLinks.length > 0 && <div className='border-left:1px|solid|var(--color-line-subtle) display:none@media((width<64rem))'></div>}
+        <label className='position:relative display:none@media((width<64rem))'>
+          <span className='pr-xs text-transform:capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
           <ThemeSelect />
-          <IconChevronDown className='inline-block width:1em height:1em vertical-align:middle' />
+          <IconChevronDown className='display:inline-block height:1em width:1em vertical-align:middle' />
         </label>
-        <div className='bl:1px|solid|var(--color-line-subtle) hidden@media((width<64rem))'></div>
-        <label className='rel hidden@media((width<64rem))'>
-          <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
+        <div className='border-left:1px|solid|var(--color-line-subtle) display:none@media((width<64rem))'></div>
+        <label className='position:relative display:none@media((width<64rem))'>
+          <span className='pr-xs text-transform:capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />
-          <IconChevronDown className='inline-block width:1em height:1em vertical-align:middle' />
+          <IconChevronDown className='display:inline-block height:1em width:1em vertical-align:middle' />
         </label>
       </div>
     </div>

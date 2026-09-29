@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- native list longhands preserve the other marker properties */}
+{ }
 
 ## Examples \{#examples\}
 ### Set type and position together \{#set-type-and-position-together\}
@@ -10,7 +10,7 @@ Use the `list-style` shorthand when marker type and position belong together. Co
 
 ```html
 <!-- disc · inside -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|inside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -20,7 +20,7 @@ Use the `list-style` shorthand when marker type and position belong together. Co
 
 ```html
 <!-- decimal · inside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:decimal|inside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -44,7 +44,7 @@ Supply a real image URL. The image takes precedence over the specified disc type
 
 ```html
 <!-- Local SVG · disc fallback -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|outside list-style-image:url(/demo/marker.svg)">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -61,7 +61,7 @@ Resize past `sm` to move decimal markers inside while preserving their type. Use
 
 ```html
 <!-- Decimal retained · outside to inside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:decimal|outside list-style-position:inside@screen@sm">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -78,7 +78,7 @@ Resize past `sm` to replace the whole marker treatment: disc outside becomes squ
 
 ```html
 <!-- Whole shorthand · real viewport -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|outside list-style:disc|outside@print
     list-style:square|inside@screen@sm">
   <li class="mb-2xs">Collect references</li>
@@ -87,4 +87,4 @@ Resize past `sm` to replace the whole marker treatment: disc outside becomes squ
 </ul>
 ```
 
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

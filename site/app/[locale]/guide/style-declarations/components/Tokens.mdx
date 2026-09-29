@@ -1,6 +1,6 @@
-Named tokens use a hyphen: `p-md`, `font-mono`, and `fg-red`. Direct values use a colon: `p:1rem`, `font-family:mono`, and `fg:red`.
+Named tokens use a hyphen: `p-md`, `font-mono`, and `fg-red`. Direct values use a colon: `padding:1rem`, `font-family:mono`, and `color:red`.
 
-These forms have different identities. `fg:red` uses CSS red, while `fg-red` selects the configured color token. `font-family:mono` names the native font family `mono`; it does not look up a token. Direct declarations do not resolve token names inside functions or compound values either.
+These forms have different identities. `color:red` uses CSS red, while `fg-red` selects the configured color token. `font-family:mono` names the native font family `mono`; it does not look up a token. Direct declarations do not resolve token names inside functions or compound values either.
 
 Define project tokens in CSS:
 
@@ -21,9 +21,9 @@ Then use their names:
 Use `var(--name)` to combine tokens in a direct value:
 
 ```html
-<div class="m:var(--spacing-sm)|var(--spacing-md)">...</div>
+<div class="margin:var(--spacing-sm)|var(--spacing-md)">...</div>
 ```
 
 There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, important, and group syntax apply to both forms.
 
-Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md p:8px` and `p:8px p-md` therefore use `8px`. Shorthand/longhand and important priorities still apply; HTML class order does not decide the winner.
+Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md padding:8px` and `padding:8px p-md` therefore use `8px`. Shorthand/longhand and important priorities still apply; HTML class order does not decide the winner.

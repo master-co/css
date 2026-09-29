@@ -49,8 +49,8 @@ describe('CSS validation reports knowledge without changing declarations', () =>
   })
 
   it('checks every declaration in managed and conditional rules', () => {
-    const rules = [{ text: '@media (width>1px){.grid{display:grid;grid-template-columns:repeat(2.5,minmax(0,1fr))}}' }]
-    const result = withCSSValueValidation({ className: 'grid-cols:2.5', rules })
+    const rules = [{ text: "@media (width>1px){.display\\:grid{display:grid;grid-template-columns:repeat(2.5,minmax(0,1fr))}}" }]
+    const result = withCSSValueValidation({ className: "grid-cols(2).5", rules })
     expect(result.rules).toBe(rules)
     expect(result.declarations.map(declaration => declaration.status)).toEqual(['valid', 'invalid'])
     expect(result.cssValueStatus).toBe('invalid')

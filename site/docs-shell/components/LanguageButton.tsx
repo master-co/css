@@ -6,7 +6,7 @@ import { useTranslation } from '../contexts/i18n'
 export default function LanguageButton({ className }: { className?: string }) {
   const $ = useTranslation()
   return (
-    <div className={clsx('rel', className)}>
+    <div className={clsx('position:relative', className)}>
       <button aria-label={$('Language switch')}>
         <IconLanguage width="22" height="22" strokeWidth="1.2" />
       </button>

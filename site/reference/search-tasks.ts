@@ -1,10 +1,10 @@
 /** Fixed acceptance queries: names, aliases, properties, examples, tokens, rules and tools. */
 export const searchTasks = [
   ['opacity', 'opacity'], ['opacity:.5', 'opacity'], ['padding', 'padding'],
-  ['p:', 'padding'], ['px:', 'padding'], ['py:', 'padding'], ['pxs:', 'padding'],
-  ['pxe:', 'padding'], ['pys:', 'padding'], ['pye:', 'padding'],
+  ['padding:', 'padding'], ['padding-inline:', 'padding'], ['padding-block:', 'padding'], ['padding-inline-start:', 'padding'],
+  ['padding-inline-end:', 'padding'], ['padding-block-start:', 'padding'], ['padding-block-end:', 'padding'],
   ['padding-inline-start', 'padding'], ['padding-block', 'padding'], ['padding-right', 'padding'],
-  ['p:var(--spacing-md)|var(--spacing-lg)', 'padding'], ['按鈕內距', 'padding'], ['行內起點內距', 'padding'],
+  ['padding:var(--spacing-md)|var(--spacing-lg)', 'padding'], ['按鈕內距', 'padding'], ['行內起點內距', 'padding'],
   ['--spacing-md', 'tokens/spacing'], ['spacing', 'tokens/spacing'],
   ['fg-red:hover@sm', 'rules/conditions'], ['Conditions', 'rules/conditions'],
   ['Variables & modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],

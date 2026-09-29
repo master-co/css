@@ -9,7 +9,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
 
 ```html
 <!-- No delay · begin immediately -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -17,11 +17,11 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms
              transition-property:transform
@@ -36,7 +36,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
 
 ```html
 <!-- 300ms delay · wait, then move -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -44,11 +44,11 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -77,7 +77,7 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
 
 ```html
 <!-- One native trigger · two independent timelines -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
               transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move both layers"
     class="mr-xs accent-color-blue
@@ -85,18 +85,18 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
            outline-offset:3px:focus-visible">
   Move both layers
   <span aria-hidden="true"
-    class="block mt-md p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="display:block mt-md p-xs outline:1px|dashed|var(--color-line-subtle)">
     <span id="first"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              fg-blue-80 transform:none
              transition:none@print
              transition:transform|var(--duration-slowest)|linear@screen@motion">
       First · no delay
     </span>
     <span id="target"
-      class="grid place-items:center h:48px w:128px mt-sm
-             b:1px|solid|var(--color-violet-60) r-sm bg-violet-10
+      class="display:grid place-items:center height:48px width:128px mt-sm
+             border:1px|solid|var(--color-violet-60) r-sm bg-violet-10
              fg-violet-80 transform:none
              transition:none@print
              transition:transform|var(--duration-slowest)|linear@screen@motion
@@ -123,7 +123,7 @@ Define a named duration when a delay is shared across related interactions. This
 
 ```html
 <!-- Local duration token · 80ms delay -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -131,11 +131,11 @@ Define a named duration when a delay is shared across related interactions. This
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
              transition:transform|var(--duration-slower)|var(--easing-smooth)@screen@motion
@@ -155,7 +155,7 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
 
 ```html
 <!-- 300ms → no delay at sm -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -163,11 +163,11 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
              transition:transform|var(--duration-slowest)|linear@screen@motion
@@ -189,7 +189,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
 ```html
 <!-- Checked · wait outward, return immediately -->
 <label
-  class="block w:280px max-w:100% font-sm
+  class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen
          transition-delay-slow:has(input:checked)>span>span@screen@motion">
   <input type="checkbox" aria-label="Move layer"
@@ -198,11 +198,11 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms transition:none@print
              transition:transform|var(--duration-slowest)|linear@screen@motion">

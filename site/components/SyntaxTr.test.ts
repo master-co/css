@@ -6,8 +6,8 @@ import { createSyntaxTrPlaceholderContext, type SyntaxTrHastNode } from './synta
 
 test('proxies size with a px value and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('w:`size`')
-  assert.equal(proxy, 'w:100000000px')
+  const proxy = placeholders.proxy('width:`size`')
+  assert.equal(proxy, 'width:100000000px')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.width, '100000000px')
@@ -19,8 +19,8 @@ test('proxies size with a px value and restores the placeholder in generated dec
 
 test('restores syntax placeholders without styling the whole text token', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('mt:`size`')
-  assert.equal(proxy, 'mt:100000000px')
+  const proxy = placeholders.proxy('margin-top:`size`')
+  assert.equal(proxy, 'margin-top:100000000px')
 
   const root: SyntaxTrHastNode = {
     type: 'root',
@@ -37,19 +37,19 @@ test('restores syntax placeholders without styling the whole text token', () => 
   const token = root.children?.[0]
   const placeholder = token?.children?.[1]
 
-  assert.equal(collectText(root), 'mt:<size>')
+  assert.equal(collectText(root), 'margin-top:<size>')
   assert.equal(token?.properties?.class, 'syntax-token')
-  assert.deepEqual(token?.children?.[0], { type: 'text', value: 'mt:' })
+  assert.deepEqual(token?.children?.[0], { type: 'text', value: 'margin-top:' })
   assert.equal(placeholder?.type, 'element')
   assert.equal(placeholder?.tagName, 'span')
-  assert.equal(placeholder?.properties?.class, 'text-muted italic mr:0.125rem:not(:last)')
+  assert.equal(placeholder?.properties?.class, 'fg-text-muted font-style:italic margin-right:0.125rem:not(:last)')
   assert.equal(collectText(placeholder ?? {}), '<size>')
 })
 
 test('proxies length without a unit and restores length and color placeholders', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('text-stroke:`length`|`color`')
-  assert.equal(proxy, 'text-stroke:123456789|#12345678')
+  const proxy = placeholders.proxy('-webkit-text-stroke:`length`|`color`')
+  assert.equal(proxy, '-webkit-text-stroke:123456789|#12345678')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations['-webkit-text-stroke'], '123456789 #12345678')
@@ -61,8 +61,8 @@ test('proxies length without a unit and restores length and color placeholders',
 
 test('proxies integer without a unit and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('grid-cols:`integer`')
-  assert.equal(proxy, 'grid-cols:987654321')
+  const proxy = placeholders.proxy('grid-cols(`integer`)')
+  assert.equal(proxy, 'grid-cols(987654321)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.display, 'grid')

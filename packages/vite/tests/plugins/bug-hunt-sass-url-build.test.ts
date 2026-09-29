@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 for (const managed of [false, true]) {
-  test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)(`Sass URL build retains stylesheet identity with plugin=${managed}/%s`, async mode => {
+  test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`Sass URL build retains stylesheet identity with plugin=${managed}/%s`, async mode => {
     const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
     const root = mkdtempSync(join(parent, 'sass-url-build-'))
     try {
@@ -23,7 +23,7 @@ for (const managed of [false, true]) {
       const css = result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css')).map(asset => asset.type === 'asset' ? String(asset.source) : '').join('\n')
       const js = result.output.filter(asset => asset.type === 'chunk').map(asset => asset.code).join('\n')
       expect(css).toMatch(/padding:\s*2rem/)
-      expect(css).toContain('inline-flex')
+      expect(css).toMatch(/display:\s*inline-flex/)
       expect(css).not.toContain('@compose')
       expect(css).not.toContain('#master-css-local-')
       expect(js).not.toContain('__VITE_CSS_URL__')

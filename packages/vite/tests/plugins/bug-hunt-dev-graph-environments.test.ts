@@ -6,7 +6,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const cases = (['static', 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => [false, true].map(perEnvironment => ({ mode, perEnvironment })))
+const cases = (["static", 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => [false, true].map(perEnvironment => ({ mode, perEnvironment })))
 
 async function readGraph(css: string, origin: string) {
   const assets = new Map<string, { body: string, mime: string | null }>(), sources = [css]
@@ -83,7 +83,7 @@ test.each(cases)('retained graphs survive idle environment replacement mode=$mod
   }
 })
 
-const restartCases = (['static', 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => [false, true].map(middleware => ({ mode, middleware })))
+const restartCases = (["static", 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => [false, true].map(middleware => ({ mode, middleware })))
 test.each(restartCases)('retained graph restart mode=$mode middleware=$middleware', async ({ mode, middleware }) => {
   const root = makeRoot(), copies = new Set<string>()
   let server: Awaited<ReturnType<typeof createServer>> | undefined

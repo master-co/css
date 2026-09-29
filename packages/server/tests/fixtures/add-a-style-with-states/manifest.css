@@ -20,7 +20,7 @@
 
 
 
-  @utility btn {
+  @mixin --btn {
     &:focus {
     outline: 0.125rem var(--color-focus) solid;
     }

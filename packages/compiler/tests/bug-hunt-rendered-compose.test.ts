@@ -3,7 +3,22 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { expect, test } from 'vitest'
 import { compileRenderedStylesheet, compileStylesheet } from '../src/stylesheet/index-public'
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 
 test('rendered stylesheet includes lowered native compose declarations', async () => {
   const source = "@theme {:root, :host {--paint-padding:2rem}}\n\n.card{@variant all {padding:var(--paint-padding);}}"

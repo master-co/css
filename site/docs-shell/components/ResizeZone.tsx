@@ -3,9 +3,9 @@ import Resizable from './Resizable'
 
 export default function ResizeZone(props: any) {
   return (
-    <div className={clsx('flex', {
-      'items-center': props.originY === 'center',
-      'justify-center': props.originX === 'center',
+    <div className={clsx('display:flex', {
+      'align-items:center': props.originY === 'center',
+      'justify-content:center': props.originX === 'center',
     })}>
       <Resizable {...props} />
     </div>

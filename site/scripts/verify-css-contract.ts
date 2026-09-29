@@ -40,8 +40,8 @@ type CSSContract = {
 
 type SiteCSSContractSnapshot = {
     version: 2
-    semanticBaseline: 'language-v4'
-    publicBaseline: 'v2-utility-contract'
+    semanticBaseline: 'language-v5'
+    publicBaseline: 'v2-static-mixin-contract'
     approval?: {
         reference: string
     }
@@ -116,7 +116,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     const files = await listFiles(outDir)
     // Static delivery does not ship a runtime manifest asset. Use the same
     // project compiler to capture the authored theme tree, and inspect delivered CSS below.
-    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 2, languageVersion: 4 } }).manifest as unknown as JSONValue
+    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 3, languageVersion: 5 } }).manifest as unknown as JSONValue
     const projectManifestText = JSON.stringify(projectManifest)
     const legacyManifestAssets = files.filter(file => /[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file))
     if (legacyManifestAssets.length) throw new Error('Site still contains legacy runtime manifest media assets; rebuild the output.')
@@ -150,8 +150,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         assertRouteStylesheetBoundary(route, css)
         const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
         const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
-        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 2, languageVersion: 4, rules: [], resourceOrder: [] }
-        if (hydration.version !== 2 || hydration.languageVersion !== 4 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder)) {
+        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 2, languageVersion: 5, rules: [], resourceOrder: [] }
+        if (hydration.version !== 2 || hydration.languageVersion !== 5 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder)) {
             throw new Error(`${route} references an invalid Master CSS hydration manifest.`)
         }
         let segments: string[]
@@ -183,8 +183,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
 
     return {
         version: 2,
-        semanticBaseline: 'language-v4',
-        publicBaseline: 'v2-utility-contract',
+        semanticBaseline: 'language-v5',
+        publicBaseline: 'v2-static-mixin-contract',
         projectManifest: {
             bytes: Buffer.byteLength(projectManifestText),
             sha256: sha256(projectManifestText),
@@ -399,7 +399,7 @@ function firstSnapshotDifference(
             'projectManifest.value'
         )
         return [
-            `Project Manifest v2 / language v4 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
+            `Project Manifest v3 / language v5 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
             valueDifference || 'Parsed Manifest JSON is equal; only exact serialization bytes changed.'
         ].join('\n')
     }

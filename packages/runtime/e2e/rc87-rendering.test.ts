@@ -49,7 +49,7 @@ test('does not expose tooling-only engine inspection helpers', async ({ page }) 
 test('destroy on progressive', async ({ page }) => {
   await init(page, '@layer utilities{}')
   await page.evaluate(() => {
-    document.body.classList.add('text-center')
+    document.body.classList.add("text-align:center")
   })
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() =>
@@ -71,12 +71,12 @@ test('destroy on progressive', async ({ page }) => {
   await page.evaluate(async (manifest) => {
     const runtime = await globalThis.MasterCSSRuntime.start({ manifest })
     runtime.observe()
-    document.body.classList.add('block', 'font-bold')
+    document.body.classList.add("display:block", 'font-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime?.snapshot().classRules))
     .toMatchObject({
-      block: expect.anything(),
+      'display:block': expect.anything(),
       'font-bold': expect.anything()
     })
 })
@@ -84,7 +84,7 @@ test('destroy on progressive', async ({ page }) => {
 test('disconnect and destroy clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -107,7 +107,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
   const disposed = await page.evaluate(async (manifest) => {
-    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -140,10 +140,10 @@ test('preserves the strict Rust contract when an external hydration manifest imp
     body: 'not found'
   }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
-    document.body.innerHTML = '<p class="block"></p>'
+    document.body.innerHTML = "<p class=\"display:block\"></p>"
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = '@layer utilities{.block{display:block}}'
+    style.textContent = "@layer utilities{.display\\:block{display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {

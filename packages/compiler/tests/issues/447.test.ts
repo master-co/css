@@ -16,47 +16,47 @@ const source = `
 }
 @custom-variant audit-wide { @media (width >= 40rem) { @slot; } }
 @custom-variant audit-card { @container card (width >= 30rem) { @slot; } }
-@utility audit-align-start { text-align: start; }
-@utility audit-align-end { text-align: end; }
+@mixin --audit-align-start { text-align: start; }
+@mixin --audit-align-end { text-align: end; }
 `
 
 const valid = [
-  ['flex', ['display:flex']],
+  ["display:flex", ['display:flex']],
   ['flex:1', ['flex:1']],
   ['flex:hover', ['{flex:hover}']],
   ['display:flex:hover', [':hover{display:flex}']],
   ['color:red', ['color:red']],
   ['fg-red', ['color:var(--color-red)']],
-  ['p:8px', ['padding:8px']],
+  ["padding:8px", ['padding:8px']],
   ['p-probe', ['padding:var(--spacing-probe)']],
   ['-m-probe', ['margin:calc(var(--spacing-probe) * -1)']],
   ['audit-align-start', ['text-align:start']],
   ['audit-align-end:hover', [':hover{text-align:end}']],
   ['font-family-probe', ['font-family:var(--font-family-probe)']],
   ['font:16px', ['{font:16px}']],
-  ['{p-probe;pt:12px}:hover', [':hover{', 'padding:var(--spacing-probe)', 'padding-top:12px']],
-  ['block[data-state=":first"]:first', ['[data-state=":first"]:first-child']],
-  [String.raw`block[data-state="escaped\":first"]:last`, [String.raw`[data-state="escaped\":first"]:last-child`]],
-  ['block:is(:first,[data-state=":last"])::before', [':is(:first-child,[data-state=":last"])::before']],
-  ['p:8px@media((width>=800px))', ['@media (width>=800px)']],
-  ['p:8px@media((40rem<=width<64rem))', ['@media (40rem<=width<64rem)']],
-  ['p:8px@media((resolution>=2x))', ['@media (resolution>=2x)']],
-  ['p:8px@supports((display:grid))', ['@supports (display:grid)']],
-  ['p:8px@container(card|(width>=40rem))', ['@container card (width>=40rem)']],
-  ['p:8px@container(style(--density:compact))', ['@container style(--density:compact)']],
-  ['p:8px@audit-card', ['@container card (width>=30rem)']],
-  ['p:8px@audit-dark@audit-wide', ['prefers-color-scheme:dark', 'width>=40rem']],
-  ['p:8px@audit-wide@audit-dark', ['prefers-color-scheme:dark', 'width>=40rem']],
-  ['p:8px@media((width>=800px))@supports((display:grid))@container(card|(width>=40rem))', ['@media (width>=800px){@supports (display:grid){@container card (width>=40rem)']]
+  ["{p-probe;padding-top:12px}:hover", [':hover{', 'padding:var(--spacing-probe)', 'padding-top:12px']],
+  ['display:block[data-state=":first"]:first', ['[data-state=":first"]:first-child']],
+  [String.raw`display:block[data-state="escaped\":first"]:last`, [String.raw`[data-state="escaped\":first"]:last-child`]],
+  ['display:block:is(:first,[data-state=":last"])::before', [':is(:first-child,[data-state=":last"])::before']],
+  ["padding:8px@media((width>=800px))", ['@media (width>=800px)']],
+  ["padding:8px@media((40rem<=width<64rem))", ['@media (40rem<=width<64rem)']],
+  ["padding:8px@media((resolution>=2x))", ['@media (resolution>=2x)']],
+  ["padding:8px@supports((display:grid))", ['@supports (display:grid)']],
+  ["padding:8px@container(card|(width>=40rem))", ['@container card (width>=40rem)']],
+  ["padding:8px@container(style(--density:compact))", ['@container style(--density:compact)']],
+  ["padding:8px@audit-card", ['@container card (width>=30rem)']],
+  ["padding:8px@audit-dark@audit-wide", ['prefers-color-scheme:dark', 'width>=40rem']],
+  ["padding:8px@audit-wide@audit-dark", ['prefers-color-scheme:dark', 'width>=40rem']],
+  ["padding:8px@media((width>=800px))@supports((display:grid))@container(card|(width>=40rem))", ['@media (width>=800px){@supports (display:grid){@container card (width>=40rem)']]
 ] as const
 
 const invalid = [
   ['ordinary-audit-class', 'unmatched', undefined],
   ['font-probe', 'ambiguous', 'AMBIGUOUS_TOKEN'],
   ['font-family-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
-  ['block@audit-undefined', 'syntax-error', 'UNKNOWN_CONDITION'],
-  ['block@media(width>=800px)', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
-  ['block@supports(selector([lang|=en]))', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
+  ["display:block@audit-undefined", 'syntax-error', 'UNKNOWN_CONDITION'],
+  ['display:block@media(width>=800px)', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
+  ['display:block@supports(selector([lang|=en]))', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
   ['padding:1px.<br', 'syntax-error', 'CLASS_SYNTAX_ERROR']
 ] as const
 
@@ -84,7 +84,10 @@ test('447: compiler and engine binding combinations agree on the language contra
         for (const fragment of fragments) expect(css, className).toContain(fragment)
         if (className.includes('@')) {
           const parsed = compiler.compileManifest(css, {
-            baseManifest: { version: 2, languageVersion: 4 }, preserveNativeCSS: true
+            baseManifest: {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')
         }
@@ -133,10 +136,10 @@ test('447: saved media mode settings migrate to explicit, executable variant def
     from: 'rc-named',
     sourceVersion: '2.0.0-rc.named',
     manifest: {
-      version: 1,
+      version: 1 as const,
       settings: { modeTrigger: 'media', modes: ['light', 'dark'] },
       conditions: {
-        sm: { id: 'media', nodes: [{ type: 'number', value: 52.125, unit: 'rem' }] }
+        sm: { id: 'media', nodes: [{ type: 'number' as const, value: 52.125, unit: 'rem' }] }
       },
       utilities: []
     },

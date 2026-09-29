@@ -8,7 +8,7 @@ import { createPresetManifest } from '../language/helpers/create-preset-manifest
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
   const scanner = await new MasterCSSScanner({}, __dirname).init()
-  expect(scanner.manifest.version).toBe(2)
+  expect(scanner.manifest.version).toBe(3)
 })
 
 test('reject string scanner options', async () => {
@@ -19,18 +19,38 @@ test('reject string scanner options', async () => {
 
 test('uses explicit compiled manifests', async () => {
   const manifest = createPresetManifest({
-    utilities: [
+    mixins: [
+  {
+    "name": "--blue-btn",
+    "body": [
       {
-        name: 'blue-btn',
-        layer: 'components',
-        declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' }
-      },
-      {
-        name: 'btn',
-        layer: 'components',
-        declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' }
+        "type": "declaration" as const,
+        "property": "background-color",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "oklch(63.7% 0.237 25.331)"
+          }
+        ]
       }
     ]
+  },
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "background-color",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "oklch(55.1% 0.027 264.364)"
+          }
+        ]
+      }
+    ]
+  }
+]
   })
   const scanner = await new MasterCSSScanner({
     manifest
@@ -39,12 +59,12 @@ test('uses explicit compiled manifests', async () => {
     scanner.collectCandidates('test.tsx',
       `
       <>
-        <h1 className={'rel ' + styles.title} />
+        <h1 className={'position:relative ' + styles.title} />
         <h1 className={styles.title + ' ' + ' blue-btn'} />
         <button className="test btn" />
       </>
     `)
-  ).resolves.toEqual(['rel', 'blue-btn', 'test', 'btn'])
+  ).resolves.toEqual(["position:relative", 'blue-btn', 'test', 'btn'])
   await scanner.reset({ manifest })
   await scanner.scan('button.html', '<button class="blue-btn"></button>')
   expect(scanner.css.text).toContain('background-color:oklch')

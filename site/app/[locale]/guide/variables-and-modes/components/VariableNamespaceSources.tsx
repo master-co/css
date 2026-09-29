@@ -1,23 +1,13 @@
 import InlineCode from '~/site/docs-shell/components/InlineCode'
-import { builtinTokenNamespaces } from '@master/css-tooling/builtins'
-import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
+import { tokenFamilies } from '~/site/utils/manifest-utilities'
 
-const utilities = manifestUtilities
 const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = (() => {
   const entries = new Map<string, string[]>()
-  for (const namespace of builtinTokenNamespaces) {
-    for (const ref of namespace.variableAliasRefs || []) {
-      const variableNamespace = ref.replace(/^[=~]/, '')
-      for (const property of namespace.properties) {
-        addNamespaceSource(entries, variableNamespace, property)
-      }
-    }
-  }
-  for (const utility of utilities) {
-    for (const namespace of getUtilityVariableNamespaces(utility)) {
-      addNamespaceSource(entries, namespace, utility.name || utility.id)
+  for (const family of tokenFamilies) {
+    for (const namespace of family.namespaces) {
+      addNamespaceSource(entries, namespace, `${family.prefix}-`)
     }
   }
   return Array.from(entries).sort(([a], [b]) => a.localeCompare(b))

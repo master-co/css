@@ -19,21 +19,21 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
       avatarSize = 36
   }
   return (
-    <div className={clsx('flex', className)}>
+    <div className={clsx('display:flex', className)}>
       {children.map((eachAuthor: any) => {
         const author = authors.find((x: any) => x.name === eachAuthor.name) as any
         const Wrapper = isLink ? Link : 'div'
         return (
           <Wrapper
             key={author.name}
-            className={clsx('flex items-center', {
+            className={clsx('display:flex align-items:center', {
               'gap-sm': size === 'md',
               'gap-xs': size === 'sm' || size === 'xs',
             })}
             {...(isLink ? { href: author?.url } : {})}
           >
             <Image
-              className={clsx('round object-cover', {
+              className={clsx('round object-fit:cover', {
                 'outline:1px|solid|var(--color-line-subtle) outline-offset-3xs': size === 'md'
               })}
               src={author.image}
@@ -41,15 +41,15 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
               height={avatarSize}
               alt={author.name}
             />
-            <div className="flex flex-col gap-3xs">
+            <div className="display:flex flex-direction:column gap-3xs">
               <div className={clsx('', {
-                'font-weight:460 font-sm text-strong': size === 'md',
+                'font-sm font-weight:460 fg-text-strong': size === 'md',
                 'font-xs': size === 'sm' || size === 'xs',
               })}
               >
                 {author.name}
               </div>
-              {size === 'md' && <div className="font-2xs text-muted">{author.twitter}</div>}
+              {size === 'md' && <div className="font-2xs fg-text-muted">{author.twitter}</div>}
             </div>
           </Wrapper>
         )

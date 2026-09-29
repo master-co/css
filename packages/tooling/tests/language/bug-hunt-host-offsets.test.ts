@@ -11,10 +11,10 @@ for (const binding of ['native', 'wasm'] as const) {
     })
     try {
       for (const prefix of ['é', '中', '😀', 'e\u0301']) {
-        const source = `${prefix.repeat(300)}clsx("block")`
+        const source = `${prefix.repeat(300)}clsx("display:block")`
         const result = session.analyzeDocument({ source, languageId: 'typescript' })
-        expect(result.classPositions.map(position => position.token)).toEqual(['block'])
-        expect(result.classPositions[0].range.start).toBe(source.indexOf('block'))
+        expect(result.classPositions.map(position => position.token)).toEqual(["display:block"])
+        expect(result.classPositions[0].range.start).toBe(source.indexOf("display:block"))
       }
       for (const source of [
         String.raw`clsx("content:\"x\":hover")`,

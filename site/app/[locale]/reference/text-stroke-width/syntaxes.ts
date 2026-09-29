@@ -1,6 +1,6 @@
 const syntaxes = [
-  'text-stroke-width:0',
-  ['text-stroke-width:`size`'],
+  "-webkit-text-stroke-width:0",
+  ["-webkit-text-stroke-width:`size`"],
 ]
 
 export default syntaxes

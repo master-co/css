@@ -72,7 +72,7 @@ export default function createPage({
             metadata={metadata}
             toc={noTOC ? null : toc}
           >
-            {subtitle && <p className='italic'>{subtitle}</p>}
+            {subtitle && <p className='font-style:italic'>{subtitle}</p>}
             {children}
           </Layout>
         )

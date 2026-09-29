@@ -26,7 +26,7 @@ it('resolves relative runtime assets from each emitted HTML directory', async ()
                                 name: 'Fixture', stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
                             }, () => {
                                 for (const name of ['index.html', 'pages/nested.html']) {
-                                    compilation.emitAsset(name, new compiler.webpack.sources.RawSource('<!doctype html><html><head></head><body class="block"></body></html>'))
+                                    compilation.emitAsset(name, new compiler.webpack.sources.RawSource("<!doctype html><html><head></head><body class=\"display:block\"></body></html>"))
                                 }
                             })
                         })

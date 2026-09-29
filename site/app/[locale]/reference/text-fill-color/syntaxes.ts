@@ -1,7 +1,7 @@
 const syntaxes = [
-  'text-fill-color:currentColor',
-  'text-fill-color:transparent',
-  ['text-fill-color:`color`'],
+  "-webkit-text-fill-color:currentColor",
+  "-webkit-text-fill-color:transparent",
+  ["-webkit-text-fill-color:`color`"],
 ]
 
 export default syntaxes

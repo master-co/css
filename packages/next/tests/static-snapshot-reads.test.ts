@@ -17,19 +17,19 @@ test('one immutable read supplies both extraction and fingerprint; later snapsho
   const source = join(root, 'page.tsx'), binary = join(root, 'binary.bin')
   const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
   try {
-    await writeFile(source, '<div className="p:11px"/>')
+    await writeFile(source, "<div className=\"padding:11px\"/>")
     await writeFile(binary, Buffer.from([0xff, 0xfe]))
     await scanner.init()
     vi.mocked(readFile).mockClear()
     const first = await captureStaticSnapshot(root, scanner, [source, binary])
     expect(vi.mocked(readFile).mock.calls.filter(([file]) => file === source)).toHaveLength(1)
     expect(first.hashes.get(source)).toBe(bytesFingerprint(first.contents.get(source)!))
-    await writeFile(source, '<div className="p:12px"/>')
+    await writeFile(source, "<div className=\"padding:12px\"/>")
     await writeFile(binary, Buffer.from([0xfe, 0xff]))
     const second = await captureStaticSnapshot(root, scanner, [source, binary])
     expect(second.fingerprint).not.toBe(first.fingerprint)
     expect(second.hashes.get(binary)).not.toBe(first.hashes.get(binary))
-    expect(first.contents.get(source)!.toString()).toContain('p:11px')
+    expect(first.contents.get(source)!.toString()).toContain("padding:11px")
   } finally { await scanner.dispose(); await rm(root, { recursive: true, force: true }) }
 })
 
@@ -38,9 +38,9 @@ test('a stable edit keeps four verification snapshots but reads each TSX only on
   try {
     await writeFile(join(root, 'app.css'), "@import url(\"@master/css\");")
     const files = Array.from({ length: 100 }, (_, index) => join(root, `page-${index}.tsx`))
-    await Promise.all(files.map((file, index) => writeFile(file, `<div className="p:${index}px"/>`)))
+    await Promise.all(files.map((file, index) => writeFile(file, `<div className="padding:${index}px"/>`)))
     const state = (await prepareNextStatic({}, { projectDir: root }))!
-    await writeFile(files[0], '<div className="p:999px"/>')
+    await writeFile(files[0], "<div className=\"padding:999px\"/>")
     vi.mocked(readFile).mockClear()
     await scanStaticModule(state.statePath, files[0], '')
     expect(vi.mocked(readFile).mock.calls.filter(([file]) => String(file).endsWith('.tsx'))).toHaveLength(400)
@@ -63,8 +63,8 @@ test('does not walk the actual bundler output tree during complete input discove
   const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest, outputDirectories: [output] }, root)
   try {
     await mkdir(join(output, 'nested'), { recursive: true })
-    await writeFile(join(output, 'nested/generated.tsx'), '<div className="p:999px"/>')
-    await writeFile(join(root, 'page.tsx'), '<div className="p:11px"/>')
+    await writeFile(join(output, 'nested/generated.tsx'), "<div className=\"padding:999px\"/>")
+    await writeFile(join(root, 'page.tsx'), "<div className=\"padding:11px\"/>")
     await scanner.init()
     const allowed = vi.spyOn(scanner, 'isModuleAllowed')
     const snapshot = await captureStaticSnapshot(root, scanner, [])

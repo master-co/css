@@ -1,7 +1,7 @@
 const syntaxes = [
-  'flex-wrap',
-  'flex-wrap-reverse',
-  'flex-nowrap',
+  "flex-wrap:wrap",
+  "flex-wrap:wrap-reverse",
+  "flex-wrap:nowrap",
   ['flex-wrap:`value`'],
 ]
 

@@ -8,8 +8,8 @@ Use `invisible` to hide an element while preserving its space. Compare the gap b
 <DemoExample page="visibility" section="hide-but-preserve-layout" />
 
 ```html
-<!-- @MARK invisible -->
-<div class="invisible">
+<!-- @MARK visibility:hidden -->
+<div class="visibility:hidden">
   Hidden placeholder
 </div>
 ```
@@ -17,7 +17,7 @@ Use `invisible` to hide an element while preserving its space. Compare the gap b
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['invisible']}
+    {['visibility:hidden']}
   </Class2CSS>
 </details>
 
@@ -27,8 +27,8 @@ Use `visible` to restore visibility. Widen the preview to `sm` to reveal item 02
 <DemoExample page="visibility" section="make-an-element-visible-again" />
 
 ```html
-<!-- @MARK visible -->
-<div class="invisible visible@sm">
+<!-- @MARK visibility:visible -->
+<div class="visibility:hidden visibility:visible@sm">
   Visible on larger screens
 </div>
 ```
@@ -51,5 +51,5 @@ Hide item 02 initially and reveal it at `sm` or in print. The layout space stays
 <DemoExample page="visibility" section="apply-conditionally" />
 
 ```html
-<div class="invisible visible@print visible@sm">02 · Target</div>
+<div class="visibility:hidden visibility:visible@print visibility:visible@sm">02 · Target</div>
 ```

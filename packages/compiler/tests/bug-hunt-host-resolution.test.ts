@@ -11,7 +11,22 @@ function fixture() {
   mkdirSync(join(root, 'styles'))
   const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css')
   writeFileSync(child, "@preserve native;.example{@variant all {color:red;}}")
-  const scanner = { cwd: root, options: {}, css: { text: '', manifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
+  const scanner = { cwd: root, options: {}, css: { text: '', manifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, entry, child, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }
 }
@@ -21,7 +36,7 @@ test('BH-0004 async host classification and registration preserve transitive def
   try {
     const calls: string[] = []
     const resolveImport = async (specifier: string, importer: string) => { calls.push(importer); return specifier === '@theme' ? f.child : undefined }
-    const source = '@import "@theme" layer(shared) print;@utility paint {color:blue}'
+    const source = '@import "@theme" layer(shared) print;@mixin --paint {color:blue}'
     const resolution = await resolveStylesheet(f.entry, source, { preserveImports: true, resolveImport })
     expect(resolution).toMatchObject({ kind: 'local', source, compilationSource: source, dependencies: [f.entry, f.child] })
     using collection = createStylesheetCollection()

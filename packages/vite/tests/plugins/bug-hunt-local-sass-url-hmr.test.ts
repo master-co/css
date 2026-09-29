@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 for (const base of ['/', '/nested/']) {
-  test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)(`local Sass URL reloads retained child and resource under ${base}/%s`, async mode => {
+  test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`local Sass URL reloads retained child and resource under ${base}/%s`, async mode => {
     const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-local-sass-url-')))
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     try {

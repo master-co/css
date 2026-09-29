@@ -16,7 +16,7 @@ test('BH-0004 CLI records only assets it created and separates output ownership'
   try {
     fs.writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";.example{color:red;background:url(./image.svg)}")
     fs.writeFileSync(join(cwd, 'image.svg'), '<svg/>')
-    fs.writeFileSync(join(cwd, 'index.html'), '<div class="example block"></div>')
+    fs.writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block\"></div>")
     const first = run(cwd, 'dist/a.css'); expect(first.status, first.stderr).toBe(0)
     const statePath = join(cwd, 'dist/.a.css.master-css.json')
     expect(fs.existsSync(statePath)).toBe(true)

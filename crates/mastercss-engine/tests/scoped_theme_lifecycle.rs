@@ -17,7 +17,7 @@ fn manifest(cycle: bool) -> String {
         .push(json!("color-c"));
     variables.push(json!({"key":"c","values":[{"path":[root],"value":"blue"}],"dependencies":[]}));
     let theme = variables.iter().flat_map(|variable| variable["values"].as_array().unwrap().iter().map(|value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("color-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]}))).collect::<Vec<_>>();
-    json!({"version":2,"languageVersion":4,"variables":{"color":variables},"theme":theme,"utilities":[]}).to_string()
+    json!({"version":3,"languageVersion":5,"variables":{"color":variables},"theme":theme,"mixins":[]}).to_string()
 }
 fn counts(engine: &EngineSession) -> Vec<(String, u32)> {
     let mut values = engine
@@ -128,7 +128,7 @@ fn native_light_dark_keeps_both_branches_until_the_last_consumer_is_removed() {
     let source = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut engine = EngineSession::create(source).unwrap();
     engine
-        .ensure_class_rules(["surface-base", "text-body"])
+        .ensure_class_rules(["surface-base", "fg-text-body"])
         .unwrap();
     let css = engine.css_text();
     assert!(css.contains("light-dark(var(--color-neutral-0), var(--color-gray-95))"));
@@ -143,6 +143,6 @@ fn native_light_dark_keeps_both_branches_until_the_last_consumer_is_removed() {
     engine.delete_class_rules(["surface-base"]).unwrap();
     assert!(!engine.css_text().contains("--color-gray-95:"));
     assert!(engine.css_text().contains("--color-gray-30:"));
-    engine.delete_class_rules(["text-body"]).unwrap();
+    engine.delete_class_rules(["fg-text-body"]).unwrap();
     assert!(engine.css_text().is_empty());
 }

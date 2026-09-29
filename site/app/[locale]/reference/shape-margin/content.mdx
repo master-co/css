@@ -9,8 +9,8 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
 
 ```html
 <!-- No shape margin · text near the circle -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -19,7 +19,7 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -31,8 +31,8 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
 
 ```html
 <!-- Margin md · expanded wrap boundary -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -41,7 +41,7 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -67,8 +67,8 @@ Compare 16px and 32px shape margins while preserving the artwork. The larger wra
 
 ```html
 <!-- Margin md · 16px around the circle -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -77,7 +77,7 @@ Compare 16px and 32px shape margins while preserving the artwork. The larger wra
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -89,8 +89,8 @@ Compare 16px and 32px shape margins while preserving the artwork. The larger wra
 
 ```html
 <!-- Margin xl · 32px around the circle -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -99,7 +99,7 @@ Compare 16px and 32px shape margins while preserving the artwork. The larger wra
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -118,16 +118,16 @@ Shape-margin needs a shape on a float. Compare the same 16px value with shape-no
 
 ```html
 <!-- No shape · ordinary float margin box -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
            outline:1px|solid|var(--color-line-subtle) fill-blue-60
-           shape-none shape-margin-md">
+           shape-outside:none shape-margin-md">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -139,8 +139,8 @@ Shape-margin needs a shape on a float. Compare the same 16px value with shape-no
 
 ```html
 <!-- Circle · shape margin changes wrapping -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -149,7 +149,7 @@ Shape-margin needs a shape on a float. Compare the same 16px value with shape-no
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -168,8 +168,8 @@ Widen to `sm` to increase the shape margin from `md` to `xl`. Print uses no addi
 
 ```html
 <!-- Margin md → xl at sm -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left mb-xl mr-xl
@@ -180,7 +180,7 @@ Widen to `sm` to increase the shape margin from `md` to `xl`. Print uses no addi
            shape-margin-xl@screen@sm">
     <circle cx="60" cy="60" r="40" />
   </svg>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.

@@ -1,6 +1,6 @@
 const syntaxes = [
-  'italic',
-  'oblique',
+  "font-style:italic",
+  "font-style:oblique",
   'font-style:normal',
   ['font-style:`style`'],
 ]

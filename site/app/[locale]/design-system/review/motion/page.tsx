@@ -14,18 +14,18 @@ export const metadata = {
 const original = <OriginalDemo><div className="review-motion-originalScene">
   <div className="review-motion-originalCard">
     <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-    <div className="width:3.5rem height:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion" />
+    <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion" />
   </div>
   <div className="review-motion-originalCard">
     <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-    <div className="width:3.5rem height:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion" />
+    <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion" />
   </div>
 </div></OriginalDemo>
 
 function Preview({ candidate = false }: { candidate?: boolean }) {
   return <Demo padding="none"><div className={candidate ? 'review-motion-candidate' : 'review-motion-current'}>
     <DemoMotion><div className="review-motion-scene">
-      <DemoItem tone="blue" className="grid place-content:center width:4rem height:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
+      <DemoItem tone="blue" className="display:grid place-content:center height:4rem width:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
     </div></DemoMotion>
   </div></Demo>
 }

@@ -10,11 +10,11 @@ The shorthand sets the source, slice, width, outset and repeat behavior. A 12px 
 ```html
 <!-- Gradient image · complete shorthand -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image:linear-gradient(135deg,#2563eb,#7c3aed)|1
-         font-md bg-surface-base text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         font-md bg-surface-base fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -37,11 +37,11 @@ A slash introduces the painted width; the following repeat keyword controls the 
 ```html
 <!-- Width 2 · 24px paint -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image:url('/demo/border-grid.svg')|24/2|round
-         font-md bg-surface-base text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         font-md bg-surface-base fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -50,11 +50,11 @@ A slash introduces the painted width; the following repeat keyword controls the 
 ```html
 <!-- Width 16px · explicit paint -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image:url('/demo/border-grid.svg')|24/16px|round
-         font-md bg-surface-base text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         font-md bg-surface-base fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -70,12 +70,12 @@ At `sm`, a patterned image replaces the regular blue border. Print removes the i
 ```html
 <!-- Fallback → patterned image at sm -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image:none font-md bg-surface-base
-         text-body box-border border-image:none@print
+         fg-text-body box-sizing:border-box border-image:none@print
          border-image:url('/demo/border-grid.svg')|24/1|round@screen@sm">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>

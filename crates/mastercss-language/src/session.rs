@@ -190,6 +190,18 @@ impl LanguageSession {
                 "class",
                 &["declaration", "component"],
             ),
+            ClassSemanticKind::Mixin => {
+                if let (Some(key), Some(value)) = (
+                    semantics.key_token.as_deref(),
+                    semantics.value_token.as_deref(),
+                ) {
+                    let end = token_start + utf16_len(key);
+                    push_semantic_token(tokens, token_start, end, "function", &[]);
+                    push_semantic_token(tokens, end, end + 1, "operator", &[]);
+                    push_value_semantic_tokens(tokens, value, end + 1);
+                    push_semantic_token(tokens, base_end - 1, base_end, "operator", &[]);
+                }
+            }
             ClassSemanticKind::Semantic => {
                 push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
             }
@@ -406,6 +418,9 @@ impl LanguageSession {
             state_token: semantics.state_token,
             important: semantics.important,
             matcher_types: semantics.matcher_types,
+            definition_source: engine
+                .class_mixin_definition(class_name)?
+                .and_then(|definition| definition.source),
             variables,
             rules: inspection.rules,
             diagnostics: inspection.diagnostics,
@@ -429,8 +444,51 @@ impl LanguageSession {
         let mut class_entries = candidates
             .into_iter()
             .map(|candidate| LanguageCompletionEntryIr {
+                insert_text: if candidate.kind == EngineClassCompletionKind::Function {
+                    self.engine
+                        .class_mixin_definition(&candidate.label)
+                        .ok()
+                        .flatten()
+                        .map(|definition| {
+                            let arguments = definition
+                                .parameters
+                                .iter()
+                                .enumerate()
+                                .map(|(index, parameter)| {
+                                    let value = parameter.default.as_deref().unwrap_or(
+                                        match parameter.syntax {
+                                            Some(
+                                                mastercss_schema::MixinParameterSyntax::Integer
+                                                | mastercss_schema::MixinParameterSyntax::Number,
+                                            ) => "1",
+                                            Some(
+                                                mastercss_schema::MixinParameterSyntax::String,
+                                            ) => "\"\"",
+                                            _ => "value",
+                                        },
+                                    );
+                                    format!(
+                                        "${{{}:{}}}",
+                                        index + 1,
+                                        value
+                                            .replace('\\', "\\\\")
+                                            .replace('$', "\\$")
+                                            .replace('}', "\\}")
+                                    )
+                                })
+                                .collect::<Vec<_>>()
+                                .join(",");
+                            format!(
+                                "{}({arguments})$0",
+                                definition.name.trim_start_matches("--")
+                            )
+                        })
+                } else {
+                    None
+                },
                 label: candidate.label,
                 kind: match candidate.kind {
+                    EngineClassCompletionKind::Function => LanguageCompletionKind::Function,
                     EngineClassCompletionKind::Property => LanguageCompletionKind::Property,
                     EngineClassCompletionKind::Value => LanguageCompletionKind::Value,
                 },

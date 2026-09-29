@@ -20,5 +20,5 @@ test('comprehensive', async ({ page }) => {
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.native?.cssRules.length)).toEqual(1)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.native?.cssRules.length)).toEqual(1)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules.length)).toEqual(2)
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules.length)).toEqual(2)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules.length)).toEqual(1)
 })

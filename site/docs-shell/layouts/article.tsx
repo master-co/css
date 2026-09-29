@@ -6,8 +6,8 @@ import type { FooterProps } from '../components/Footer'
 export default async function Layout({ footerProps, ...props }: any & { footerProps?: FooterProps }) {
   return <>
     <HeroHeader metadata={props.metadata} />
-    <main className='mx:auto px:1.25rem pt:3.75rem w:100%@print max-w:none@print p:3.75rem|1.875rem@print px-xl@md'>
-      <article className="max-w:674px mx:auto mb:5rem mt:0>:first prose">
+    <main className='margin-inline:auto padding-inline:1.25rem padding-top:3.75rem width:100%@print max-width:none@print padding:3.75rem|1.875rem@print px-xl@md'>
+      <article className="max-width:674px margin-inline:auto margin-bottom:5rem margin-top:0>:first prose">
         {props.children}
       </article>
     </main>

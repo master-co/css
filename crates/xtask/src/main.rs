@@ -133,7 +133,7 @@ struct CompilerParityCase {
     #[serde(default)]
     expected_error: Option<String>,
     #[serde(default)]
-    expected_utilities: Vec<Value>,
+    expected_mixins: Vec<Value>,
 }
 
 #[derive(Deserialize)]

@@ -7,12 +7,12 @@ Named styles and direct declarations have separate spellings:
 | Direct font size | `font-size:16px` | `font-size: 16px` |
 | Native font shorthand | `font:italic|16px|serif` | `font: italic 16px serif` |
 | Background color only | `background-color:#fff` | `background-color: #fff` |
-| Native background shorthand | `bg:#fff` | `background: #fff` |
+| Native background shorthand | `background:#fff` | `background: #fff` |
 | Border width only | `border-width:2px` | `border-width: 2px` |
-| Native border shorthand | `b:2px` | `border: 2px` |
+| Native border shorthand | `border:2px` | `border: 2px` |
 
 A property abbreviation replaces only the property name. Values never select a different subproperty: `font:16px` remains a native `font` declaration and is not a valid complete font shorthand.
 
-CSS shorthands reset omitted subproperties. Choose an explicit longhand when that reset is not intended. `outline:2px`, `stroke:2px`, and `line-clamp:3` also retain their native properties. Use `outline-width:2px`, `stroke-width:2px`, or the composite utility `clamp-lines:3` for those distinct intentions.
+CSS shorthands reset omitted subproperties. Choose an explicit longhand when that reset is not intended. `outline:2px`, `stroke:2px`, and `line-clamp:3` also retain their native properties. Use `outline-width:2px`, `stroke-width:2px`, or the composite utility `clamp-lines(3)` for those distinct intentions.
 
 Static names such as `text-center` and `bg-cover` remain reserved. If a project defines both a font family and a font size named `brand`, `font-brand` is ambiguous: use `font-family-brand` or `font-size-brand`. Qualified names use the longest registered prefix and never fall back to a shorter prefix when the token is missing.

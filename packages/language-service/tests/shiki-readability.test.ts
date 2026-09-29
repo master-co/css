@@ -47,7 +47,7 @@ test('colors every complete Master directive like a native CSS at-rule', async (
     ['preserve', '@preserve native;'],
     ['reference', '@reference "./tokens.css";'],
     ['theme', "@theme {}\n"],
-    ['utility', '@utility box {}'],
+    ['mixin', '@mixin --box {}'],
     ['custom-variant', '@custom-variant motion-safe {}'],
     ['variant', '@variant sm {}'],
     ['slot', '@slot;'],
@@ -74,14 +74,14 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
     const nativeKeyword = highlighter.codeToTokens('@media (width > 1px) {}', options).tokens[0].find((token) => token.content === '@media')
     expect(nativeKeyword).toBeDefined()
 
-    const compose = highlighter.codeToTokens("@utility btn { @safelist \"fg-red:hover@md\"; }", options).tokens[0]
+    const compose = highlighter.codeToTokens("@mixin --btn { @safelist \"fg-red:hover@md\"; }", options).tokens[0]
     const query = compose.find((token) => token.content === '@md')
     expect(query).toBeDefined()
     expect(hasScope(query, 'keyword.control.at-rule.master-css.query')).toBe(true)
     expect(colors(query)).toEqual(colors(nativeKeyword))
     expect(compose.some((token) => token.content === '@' && hasScope(token, 'punctuation.definition.keyword.master-css'))).toBe(false)
 
-    const tokens = highlighter.codeToTokens('@utility card { @variant sm { color: red; } }', options).tokens[0]
+    const tokens = highlighter.codeToTokens('@mixin --card { @variant sm { color: red; } }', options).tokens[0]
     const name = tokens.find(token => token.content === 'sm')
     expect(name).toBeDefined()
     expect(hasScope(name, 'support.constant.property-value.master-css.query')).toBe(true)
@@ -101,7 +101,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 
-    const managed = highlighter.codeToTokens("@utility btn { @media (width > 30rem) { @safelist \"block\"; } }", options).tokens[0]
+    const managed = highlighter.codeToTokens("@mixin --btn { @media (width > 30rem) { @safelist \"display:block\"; } }", options).tokens[0]
     expect(colors(managed.find((token) => token.content === '@media'))).toEqual(colors(nativeKeyword))
     expect(managed.some((token) => token.content === '@safelist' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
   } finally {
@@ -116,7 +116,7 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 
   try {
     for (const [lang, source] of [
-      ['css', "@utility btn { @safelist \"fg-red@md\"; }"],
+      ['css', "@mixin --btn { @safelist \"fg-red@md\"; }"],
       ['html', '<div class="fg-red@md"></div>'],
       ['tsx', '<div className="fg-red@md" />']
     ] as const) {

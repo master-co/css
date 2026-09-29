@@ -1,6 +1,6 @@
 const syntaxes = [
-  'box-content',
-  'box-border',
+  "box-sizing:content-box",
+  "box-sizing:border-box",
   ['box-sizing:`value`'],
 ]
 

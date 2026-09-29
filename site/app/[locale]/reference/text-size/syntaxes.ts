@@ -15,7 +15,7 @@ const syntaxes = [
   'text-8xl',
   'text-9xl',
   'text-10xl',
-  ['text:`size`'],
+
 ]
 
 export default syntaxes

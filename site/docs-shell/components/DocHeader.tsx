@@ -25,23 +25,23 @@ export default function DocHeader(props: any) {
   return (
     <Header {...headerProps}>
       <HeaderContent>
-        <DocMenuButton className="ml:-1.25rem hidden@md app-header-icon" locale={props.locale} />
-        <Link href={'/'} className="mx:auto@media((width<64rem))" onContextMenu={(e: any) => {
+        <DocMenuButton className="margin-left:-1.25rem display:none@md app-header-icon" locale={props.locale} />
+        <Link href={'/'} className="margin-inline:auto@media((width<64rem))" onContextMenu={(e: any) => {
           e.preventDefault()
           router.push('/brand')
         }}>
           {<app.Logotype style={{ height: 20, width: 'auto' }} />}
         </Link>
-        <label className={clsx('rel gap:0.313rem ml:1.875rem font-weight:460 hidden@media((width<64rem)) app-header-nav', !app.versions.length && 'text-body:hover!')}>
+        <label className={clsx('position:relative gap:0.313rem margin-left:1.875rem font-weight:460 display:none@media((width<64rem)) app-header-nav', !app.versions.length && 'fg-text-body:hover!')}>
           {app.versions.length
             ? <>
               v{process.env.NEXT_PUBLIC_VERSION}
               <DocVersionSelect />
-              <IconChevronDown className="width:1em height:1em mr:-0.188rem stroke-width:1.5" />
+              <IconChevronDown className="height:1em width:1em margin-right:-0.188rem stroke-width:1.5" />
             </>
             : <>v{process.env.NEXT_PUBLIC_VERSION}</>}
         </label>
-        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('hidden@media((width<64rem))', primaryNavClassName)} key={eachLink.name} {...eachLink}>
+        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('display:none@media((width<64rem))', primaryNavClassName)} key={eachLink.name} {...eachLink}>
           {$(eachLink.name)}
           {eachLink.date && isDateWithinSevenDays(eachLink.date) && <DocBadge className="ml-3xs" $color="primary" $size="xs">New</DocBadge>}
         </HeaderNav>)}
@@ -49,16 +49,16 @@ export default function DocHeader(props: any) {
           <Link
             {...eachLink}
             aria-label={fullName || eachLink.name}
-            className={clsx(index === 0 && 'ml:auto', 'hidden@media((width<64rem)) app-header-icon', { 'text-disabled': disabled })}
+            className={clsx(index === 0 && 'margin-left:auto', 'display:none@media((width<64rem)) app-header-icon', { 'fg-text-disabled': disabled })}
             disabled={disabled}
             key={eachLink.name}
           >
             {Icon && <Icon width="22" height="22" strokeWidth="1.2" />}
           </Link>
         ))}
-        {app.communityNavs?.length ? <div className='h:1em w:1px mx-md bg-line-divider hidden@media((width<64rem))'></div> : null}
-        <LanguageButton className="mr:-0.188rem hidden@media((width<64rem)) app-header-icon" />
-        <SearchButton id="sidebar-toggle" className="mr:-1.25rem hidden@md app-header-icon">
+        {app.communityNavs?.length ? <div className='height:1em width:1px mx-md bg-line-divider display:none@media((width<64rem))'></div> : null}
+        <LanguageButton className="margin-right:-0.188rem display:none@media((width<64rem)) app-header-icon" />
+        <SearchButton id="sidebar-toggle" className="margin-right:-1.25rem display:none@md app-header-icon">
           <IconListSearch width="22" height="22" strokeWidth="1.2" />
         </SearchButton>
       </HeaderContent>

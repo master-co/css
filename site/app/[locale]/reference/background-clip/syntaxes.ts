@@ -1,8 +1,8 @@
 const syntaxes = [
-  'bg-clip-border',
-  'bg-clip-content',
-  'bg-clip-padding',
-  'bg-clip-text',
+  "background-clip:border-box",
+  "background-clip:content-box",
+  "background-clip:padding-box",
+  "background-clip:text",
   ['background-clip:`origin`'],
 ]
 

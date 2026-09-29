@@ -48,7 +48,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
 
 describe('@master/css-astro integration', () => {
   it('defaults to static mode', () => {
-    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe('static')
+    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe("static")
   })
 
   it('adds Astro middleware and runtime script in progressive mode', async () => {
@@ -175,9 +175,9 @@ describe('@master/css-astro integration', () => {
     try {
       writeFileSync(htmlFile, [
         '<html><head>',
-        '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
-        '</head><body><div class="block"></div></body></html>'
+        "</head><body><div class=\"display:block\"></div></body></html>"
       ].join(''))
 
       const files = await externalizeAstroHydrationManifests(dir)
@@ -204,9 +204,9 @@ describe('@master/css-astro integration', () => {
     try {
       writeFileSync(htmlFile, [
         '<html><head>',
-        '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
-        '</head><body><div class="block"></div></body></html>'
+        "</head><body><div class=\"display:block\"></div></body></html>"
       ].join(''))
       const integration = masterCSS({ mode: 'progressive' })
 

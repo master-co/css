@@ -12,8 +12,8 @@ An alpha mask multiplies the element’s painted opacity. Compare the original i
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:150px w:240px max-w:100%
-         mask-image:none object-cover" />
+  class="display:block height:150px width:240px max-width:100%
+         mask-image:none object-fit:cover" />
 ```
 
 ```html
@@ -21,9 +21,9 @@ An alpha mask multiplies the element’s painted opacity. Compare the original i
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:150px w:240px max-w:100%
+  class="display:block height:150px width:240px max-width:100%
          mask-image:linear-gradient(black,transparent)
-         mask-mode:alpha object-cover" />
+         mask-mode:alpha object-fit:cover" />
 ```
 
 <details>
@@ -42,16 +42,16 @@ Scroll this real region with touch or a pointer. Keyboard users can focus it and
 
 ```html
 <!-- Scrollable list · fixed lower fade -->
-<div class="w:240px max-w:100%">
+<div class="width:240px max-width:100%">
   <div class="outline:2px|solid|var(--color-blue):focus-within
               outline-offset:3px:focus-within">
     <div id="target" role="region" tabindex="0"
       aria-label="Layer list"
       aria-describedby="scroll-help"
-      class="overflow:auto h:160px bg-surface-base
+      class="overflow:auto height:160px bg-surface-base
              mask-image:linear-gradient(to|bottom,black|60%,transparent)
              mask-mode:alpha outline:none:focus-visible">
-      <ol class="m:0 pb-3xl pl-lg pr-sm font-sm text-body">
+      <ol class="margin:0 pb-3xl pl-lg pr-sm font-sm fg-text-body">
         <li id="first-layer" class="py-xs">Outline</li>
         <li class="py-xs">Surface</li>
         <li class="py-xs">Foreground</li>
@@ -63,11 +63,11 @@ Scroll this real region with touch or a pointer. Keyboard users can focus it and
       </ol>
     </div>
   </div>
-  <p id="scroll-help" class="mb:0 mt-sm font-sm text-body">
+  <p id="scroll-help" class="margin-bottom:0 mt-sm font-sm fg-text-body">
     Eight layers. Scroll or follow the links below.
   </p>
   <nav aria-label="Layer navigation"
-    class="flex flex-wrap gap-md mt-sm font-sm">
+    class="display:flex flex-wrap:wrap gap-md mt-sm font-sm">
     <a href="#first-layer">First layer</a>
     <a href="#last-layer">Last layer</a>
   </nav>
@@ -86,8 +86,8 @@ Widen to `sm` to fade the image. Print removes the mask and keeps all of the sou
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:150px w:240px max-w:100%
-         mask-image:none mask-mode:alpha object-cover
+  class="display:block height:150px width:240px max-width:100%
+         mask-image:none mask-mode:alpha object-fit:cover
          mask-image:none@print
          mask-image:linear-gradient(black,transparent)@screen@sm" />
 ```

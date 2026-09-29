@@ -7,7 +7,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
 function fixture(resource = false) {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
@@ -93,7 +93,7 @@ test('BH-0004 unchanged failures are not retried continuously and corrected cont
   try {
     result = await start(f)
     await delay(350);expect(result.transform).not.toHaveBeenCalled()
-    mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '@utility paint {@compose definitely-missing-class;}')
+    mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '@mixin --paint {@compose definitely-missing-class;}')
     await vi.waitFor(() => expect(result!.transform).toHaveBeenCalled(), { timeout: watchDeadline })
     await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('@compose has been removed'), { timeout: watchDeadline })
     await result.server.environments.client.waitForRequestsIdle()

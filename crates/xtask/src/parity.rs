@@ -20,8 +20,8 @@ pub(crate) fn validate_semantic_parity_corpus(
     root: &Path,
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
-    if corpus.version != 2
-        || corpus.semantic_baseline != "v2-final-semantics-contract"
+    if corpus.version != 3
+        || corpus.semantic_baseline != "language-5-static-mixins"
         || corpus.public_baseline != "Master CSS v2"
     {
         return Err("Language corpus has an unsupported version or contract.".into());
@@ -400,14 +400,14 @@ pub(crate) fn validate_semantic_parity_corpus(
                 case.id, expected_manifest, lowered.manifest
             ));
         }
-        for expected in &case.expected_utilities {
+        for expected in &case.expected_mixins {
             let name = expected
                 .get("name")
                 .and_then(Value::as_str)
-                .ok_or_else(|| format!("Parity case {} expected utility has no name.", case.id))?;
+                .ok_or_else(|| format!("Parity case {} expected mixin has no name.", case.id))?;
             let actual = lowered
                 .manifest
-                .get("utilities")
+                .get("mixins")
                 .and_then(Value::as_array)
                 .and_then(|utilities| {
                     utilities
@@ -416,7 +416,7 @@ pub(crate) fn validate_semantic_parity_corpus(
                 });
             if actual != Some(expected) {
                 return Err(format!(
-                    "Parity case {} utility {name} mismatch.\nexpected: {}\nactual:   {}",
+                    "Parity case {} mixin {name} mismatch.\nexpected: {}\nactual:   {}",
                     case.id,
                     expected,
                     actual.map_or_else(|| "<missing>".into(), Value::to_string)

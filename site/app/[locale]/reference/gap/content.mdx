@@ -8,7 +8,7 @@
 <DemoExample page="gap" section="add-the-same-gap-on-both-axes" />
 
 ```html
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%" role="group" aria-label="Available space">
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%" role="group" aria-label="Available space">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -19,13 +19,13 @@
 ```
 
 ### Set row and column gaps separately \{#set-row-and-column-gaps-separately\}
-`gap-y:*` sets row-gap; `gap-x:*` sets column-gap. Both grids below use 24px between rows and 12px between columns. The two-value shorthand puts row-gap first.
+`row-gap:*` sets row-gap; `column-gap:*` sets column-gap. Both grids below use 24px between rows and 12px between columns. The two-value shorthand puts row-gap first.
 
 <DemoExample page="gap" section="set-row-and-column-gaps-separately" />
 
 ```html
 <!-- Separate row and column gaps -->
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px w:17.5rem max-w:100% gap-x-sm gap-y-lg" role="group" aria-label="Available space">
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px width:17.5rem max-width:100% gap-x-sm gap-y-lg" role="group" aria-label="Available space">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -37,7 +37,7 @@
 
 ```html
 <!-- Two-value shorthand -->
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:var(--spacing-lg)|var(--spacing-sm) w:17.5rem max-w:100%" role="group" aria-label="Available space">
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px gap:var(--spacing-lg)|var(--spacing-sm) width:17.5rem max-width:100%" role="group" aria-label="Available space">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -55,8 +55,8 @@ Gap works on the actual component layout. This flex row places a 32px avatar bes
 <DemoExample page="gap" section="use-gap-for-component-internals" />
 
 ```html
-<div id="layout" class="flex items-center gap-sm w:17.5rem max-w:100%" role="group" aria-label="Available space">
-  <img id="target" class="block flex-shrink:0 width:2rem height:2rem round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="display:flex align-items:center gap-sm width:17.5rem max-width:100%" role="group" aria-label="Available space">
+  <img id="target" class="display:block flex-shrink:0 width:2rem height:2rem round object-fit:cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
   <span id="peer">Aron · Design systems</span>
 </div>
 ```
@@ -67,7 +67,7 @@ Resize past `sm` to increase the grid’s gaps from 8px to 24px. The container s
 <DemoExample page="gap" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap-xs w:17.5rem max-w:100% gap-lg@sm" role="group" aria-label="Available space">
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px gap-xs width:17.5rem max-width:100% gap-lg@sm" role="group" aria-label="Available space">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

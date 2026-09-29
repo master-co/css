@@ -1,9 +1,8 @@
 use super::{
     EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashMap, HashSet,
     NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
-    UtilityLayerName, builtin_key_alias, find_group_close, is_valid_native_property,
-    resolve_value_components, single_native_declaration, split_dynamic_value_state,
-    split_top_level,
+    UtilityLayerName, find_group_close, is_valid_native_property, resolve_value_components,
+    single_native_declaration, split_dynamic_value_state, split_top_level,
 };
 
 impl EngineSession {
@@ -87,10 +86,13 @@ impl EngineSession {
         }
         let colon = semantic_class_name.find(':')?;
         let source_property = &semantic_class_name[..colon];
-        if !is_valid_native_property(source_property) {
+        if !is_valid_native_property(source_property)
+            || super::token_registry::removed_raw_alias(source_property).is_some()
+            || super::token_registry::removed_recipe(source_property).is_some()
+        {
             return None;
         }
-        let property = builtin_key_alias(source_property).unwrap_or(source_property);
+        let property = source_property;
         if !is_valid_native_property(property) {
             return None;
         }

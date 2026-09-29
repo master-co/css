@@ -3,7 +3,7 @@
 mod class_list;
 
 use mastercss_engine::{
-    ClassSemanticInspection, EngineError, EngineSession, builtin_key_aliases, natural_compare,
+    ClassSemanticInspection, EngineError, EngineSession, builtin_token_aliases, natural_compare,
 };
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,

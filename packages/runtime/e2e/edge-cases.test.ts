@@ -75,11 +75,11 @@ async function waitForRuntimeRuleFlush(page: Page) {
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
   await init(page)
   await page.evaluate(async () => {
-    document.body.innerHTML = '<div class="block"></div>'
+    document.body.innerHTML = "<div class=\"display:block\"></div>"
     await new Promise(resolve => setTimeout(resolve, 0))
   })
   expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toEqual({
-    block: 1
+    'display:block': 1
   })
 
   const disconnected = await page.evaluate(async () => {
@@ -109,7 +109,7 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
   })
   expect(reconnected.text).toContain(':root,:host{--font-weight-bold:700}')
   expect(reconnected.text).toContain('.font-bold{font-weight:var(--font-weight-bold)}')
-  expect(reconnected.text).not.toContain('.block{display:block}')
+  expect(reconnected.text).not.toContain(".display\\:block{display:block}")
 })
 test('mutation removals keep counts immediate and retain CSSOM rules after settle', async ({ page }) => {
   await init(page)
@@ -237,7 +237,7 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
 
   const afterDirectMutation = await page.evaluate(() => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-    runtime.ensureClassRules(['block'])
+    runtime.ensureClassRules(["display:block"])
     runtime.deleteClassRules(['fg-blue-60'])
     const sheetText = Array.from(runtime.style!.sheet!.cssRules)
       .map((cssRule) => cssRule.cssText)
@@ -249,10 +249,10 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
       sheetText
     }
   })
-  expect(afterDirectMutation.classUtilities).toEqual(['block'])
+  expect(afterDirectMutation.classUtilities).toEqual(["display:block"])
   expect(afterDirectMutation.themeCounts).toEqual({})
-  expect(afterDirectMutation.text).toBe('@layer utilities{.block{display:block}}')
-  expect(afterDirectMutation.sheetText).toContain('.block')
+  expect(afterDirectMutation.text).toBe("@layer utilities{.display\\:block{display:block}}")
+  expect(afterDirectMutation.sheetText).toContain(".display\\:block")
   expect(afterDirectMutation.sheetText).not.toContain('.fg-blue-60')
 })
 
@@ -355,7 +355,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
       const wrapper = document.createElement('section')
       for (let index = 0; index < 520; index++) {
         const element = document.createElement('p')
-        element.className = `z:${index}`
+        element.className = `z-index:${index}`
         wrapper.append(element)
       }
       document.body.innerHTML = '<p class="fg-blue-60"></p>'
@@ -367,19 +367,19 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
       const beforeHardLimitCleanup = {
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has("z-index:0"),
         queuedIdleCount: idleCallbacks.size
       }
 
       const reused = document.createElement('p')
-      reused.className = 'z:0'
+      reused.className = "z-index:0"
       document.body.append(reused)
       await new Promise(resolve => setTimeout(resolve, 0))
       const afterReuseBeforeCleanup = {
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
-        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has("z-index:0"),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("z-index:0"),
         hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         queuedIdleCount: idleCallbacks.size
       }
@@ -388,8 +388,8 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
       const afterHardLimitCleanup = {
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
-        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has("z-index:0"),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("z-index:0"),
         hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text,
         queuedIdleCount: idleCallbacks.size
@@ -399,7 +399,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
         removedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(),
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("z-index:0"),
         hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
@@ -424,7 +424,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
 
   expect(result.afterReuseBeforeCleanup.counts).toEqual({
     'fg-blue-60': 1,
-    'z:0': 1
+    "z-index:0": 1
   })
   expect(result.afterReuseBeforeCleanup.retainedCount).toBe(519)
   expect(result.afterReuseBeforeCleanup.retainedHasReusedClass).toBe(false)
@@ -434,7 +434,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
 
   expect(result.afterHardLimitCleanup.counts).toEqual({
     'fg-blue-60': 1,
-    'z:0': 1
+    "z-index:0": 1
   })
   expect(result.afterHardLimitCleanup.retainedCount).toBeLessThanOrEqual(128)
   expect(result.afterHardLimitCleanup.retainedCount).toBeGreaterThan(0)
@@ -442,20 +442,20 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
   expect(result.afterHardLimitCleanup.hasReusedClassUtility).toBe(true)
   expect(result.afterHardLimitCleanup.hasActiveClassUtility).toBe(true)
   expect(result.afterHardLimitCleanup.text).toContain('.fg-blue-60')
-  expect(result.afterHardLimitCleanup.text).toContain('.z\\:0')
+  expect(result.afterHardLimitCleanup.text).toContain(".z-index\\:0")
   expect(result.afterHardLimitCleanup.queuedIdleCount).toBe(0)
 
   expect(result.afterForcedCleanup.removedCount).toBe(result.afterHardLimitCleanup.retainedCount)
   expect(result.afterForcedCleanup.retainedCount).toBe(0)
   expect(result.afterForcedCleanup.counts).toEqual({
     'fg-blue-60': 1,
-    'z:0': 1
+    "z-index:0": 1
   })
   expect(result.afterForcedCleanup.hasReusedClassUtility).toBe(true)
   expect(result.afterForcedCleanup.hasActiveClassUtility).toBe(true)
   expect(result.afterForcedCleanup.text).toContain('.fg-blue-60')
-  expect(result.afterForcedCleanup.text).toContain('.z\\:0')
-  expect(result.afterForcedCleanup.text).not.toContain('.z\\:1')
+  expect(result.afterForcedCleanup.text).toContain(".z-index\\:0")
+  expect(result.afterForcedCleanup.text).not.toContain(".z-index\\:1")
 })
 
 test('mutation removals are canceled when a class returns before flush', async ({ page }) => {
@@ -657,7 +657,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
 
     try {
       const target = document.createElement('p')
-      target.className = 'z:1234'
+      target.className = "z-index:1234"
       document.body.append(target)
       await new Promise(resolve => setTimeout(resolve, 0))
       target.remove()
@@ -666,7 +666,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
       const beforeFlush = {
         queuedFrameCount: queuedFrames.size,
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:1234'),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("z-index:1234"),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
@@ -679,7 +679,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
         beforeFlush,
         afterFlush: {
           counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-          hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:1234'),
+          hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("z-index:1234"),
           text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
         }
       }
@@ -705,7 +705,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
 test('disconnect and dispose clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -727,7 +727,7 @@ test('disconnect and dispose clear pending mutation additions and removals', asy
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
   const disposed = await page.evaluate(async (manifest) => {
-    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -756,7 +756,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
   const result = await page.evaluate(async (manifest) => {
     const host = document.createElement('section')
     const shadow = host.attachShadow({ mode: 'open' })
-    shadow.innerHTML = '<p class="block"></p>'
+    shadow.innerHTML = "<p class=\"display:block\"></p>"
     document.body.append(host)
 
     const shadowRuntime = await globalThis.MasterCSSRuntime.start({
@@ -775,7 +775,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
 
     return {
       documentCounts: documentSnapshot.usageCounts,
-      documentHasBlockRule: documentSnapshot.cssText.includes('.block{display:block}'),
+      documentHasBlockRule: documentSnapshot.cssText.includes(".display\\:block{display:block}"),
       shadowCounts: shadowSnapshot.usageCounts,
       shadowHasStyle,
       shadowStyleRemoved: !shadow.querySelector('style#master-css'),
@@ -787,10 +787,10 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
   expect(result).toEqual({
     documentCounts: {},
     documentHasBlockRule: false,
-    shadowCounts: { block: 1 },
+    shadowCounts: { 'display:block': 1 },
     shadowHasStyle: true,
     shadowStyleRemoved: true,
-    shadowText: '@layer utilities{.block{display:block}}',
+    shadowText: "@layer utilities{.display\\:block{display:block}}",
     instanceRegistered: true
   })
 })

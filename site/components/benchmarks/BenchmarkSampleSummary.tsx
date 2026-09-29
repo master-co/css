@@ -19,11 +19,11 @@ export default function BenchmarkSampleSummary(props: BenchmarkSampleSummaryProp
   ] as const
 
   return (
-    <dl className="grid grid-cols:2 gap-xs grid-cols:5@sm">
+    <dl className="grid-cols(2) display:grid gap-xs grid-cols(5)@sm">
       {entries.map(([label, value]) => (
         <div key={label} className="p-sm r-sm bg-surface-inset">
-          <dt className="font-xs text-muted"><Translate>{label}</Translate></dt>
-          <dd className="mx:0 mb:0 mt-2xs font-weight:460 font-sm text-strong">{value}</dd>
+          <dt className="font-xs fg-text-muted"><Translate>{label}</Translate></dt>
+          <dd className="margin-inline:0 mt-2xs margin-bottom:0 font-sm font-weight:460 fg-text-strong">{value}</dd>
         </div>
       ))}
     </dl>

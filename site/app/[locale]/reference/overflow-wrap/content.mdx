@@ -9,22 +9,22 @@
 
 ```html
 <!-- wrap-normal -->
-<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="wrap-normal w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
+  <p id="target" class="overflow-wrap:normal width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
 ```html
 <!-- wrap-break-word -->
-<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="wrap-break-word w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
+  <p id="target" class="overflow-wrap:break-word width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['wrap-break-word']}
+    {['overflow-wrap:break-word']}
   </Class2CSS>
 </details>
 
@@ -35,15 +35,15 @@
 
 ```html
 <!-- wrap-break-word -->
-<code id="target" class="block wrap-break-word w:min-content m:0 font-md leading:24px">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-md line-height:24px">PREVIEW</code>
 ```
 
 ```html
 <!-- wrap-anywhere -->
-<code id="target" class="block wrap-anywhere w:min-content m:0 font-md leading:24px">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:anywhere width:min-content margin:0 font-md line-height:24px">PREVIEW</code>
 ```
 
-These boxes deliberately use `w:min-content`. Compare the measured widths as well as the visible wrapping.
+These boxes deliberately use `width:min-content`. Compare the measured widths as well as the visible wrapping.
 
 ### Restore normal wrapping \{#restore-normal-wrapping\}
 `wrap-normal` removes the emergency-break allowance. This child resets an inherited `wrap-anywhere`; the parent retains its own wrapping rule.
@@ -52,9 +52,9 @@ These boxes deliberately use `w:min-content`. Compare the measured widths as wel
 
 ```html
 <!-- Inherited anywhere · local normal reset -->
-<div class="wrap-anywhere">
-  <div id="scrollport" role="region" aria-label="Reset wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-    <p id="target" class="wrap-normal w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+<div class="overflow-wrap:anywhere">
+  <div id="scrollport" role="region" aria-label="Reset wrapping" tabindex="0" class="overflow:auto width:200px max-width:100%">
+    <p id="target" class="overflow-wrap:normal width:200px margin:0 font-md line-height:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
   </div>
 </div>
 ```
@@ -68,7 +68,7 @@ Resize the viewport to change the intrinsic width of the same min-content box. I
 
 ```html
 <!-- One token · native intrinsic sizing -->
-<code id="target" class="block wrap-break-word w:min-content m:0 font-md leading:24px wrap-normal@print wrap-anywhere@screen@sm">PREVIEW</code>
+<code id="target" class="display:block overflow-wrap:break-word width:min-content margin:0 font-md line-height:24px overflow-wrap:normal@print overflow-wrap:anywhere@screen@sm">PREVIEW</code>
 ```
 
 Print restores normal wrapping. Use [text-overflow](/reference/text-overflow) when the design needs clipping instead of wrapping.

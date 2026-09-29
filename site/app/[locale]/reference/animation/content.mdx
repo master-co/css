@@ -11,9 +11,9 @@ Use the `ping` token for a repeating ring. Keep the status in visible text so th
 
 ```html
 <!-- Ping ring · stable status text -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40"
-    class="text-blue fill-current">
+    class="fg-text-blue fill-current">
     <circle id="target" cx="20" cy="20" r="8"
       class="animate-ping transform-origin:center
              animation:none@print
@@ -38,10 +38,10 @@ Use `animate-rotate` for a steady full turn, and `animation-direction:reverse` t
 
 ```html
 <!-- Restoring data -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animate-rotate
+    class="fg-text-blue animate-rotate
            animation-direction:reverse
            animation:none@print
            animation-play-state:paused@reduce-motion">
@@ -64,9 +64,9 @@ Offset eight SVG strokes through the preset one-second `fade` cycle. Negative de
 
 ```html
 <!-- Eight segments · one-second cycle -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg aria-hidden="true" width="48" height="48" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="text-blue">
+    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="fg-text-blue">
     <path id="target" d="M7.75 7.75l-2.15-2.15"
       class="animate-fade animation-delay:-.875s
              animation:none@print
@@ -113,10 +113,10 @@ Keep the indicator static below `sm`, then enable `animate-rotate` at that break
 
 ```html
 <!-- Syncing resources -->
-<div class="flex items-center gap-md p-sm">
+<div class="display:flex align-items:center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text-blue animation:none
+    class="fg-text-blue animation:none
            animation-iteration-count:infinite
            animation-timing-function:linear
            animation:none@print

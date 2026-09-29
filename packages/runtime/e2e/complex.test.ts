@@ -15,15 +15,15 @@ test('complex', async ({ page }) => {
    */
   await page.evaluate(() => {
     const p1 = document.createElement('p')
-    p1.classList.add('block', 'font-bold')
+    p1.classList.add("display:block", 'font-bold')
     document.body.append(p1)
-    p1.classList.add('italic')
+    p1.classList.add("font-style:italic")
   })
 
   expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toEqual({
-    'block': 1,
+    "display:block": 1,
     'font-bold': 1,
-    'italic': 1
+    "font-style:italic": 1
   })
 
   expect(

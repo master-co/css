@@ -43,7 +43,7 @@ export interface MasterCSSHydrationRule {
 
 export interface MasterCSSHydrationManifest {
   readonly version: 2
-  readonly languageVersion: 4
+  readonly languageVersion: 5
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resourceOrder: readonly string[]
 }

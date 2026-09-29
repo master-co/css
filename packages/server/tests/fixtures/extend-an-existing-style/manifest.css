@@ -1,8 +1,8 @@
 
-  @utility a {
+  @mixin --a {
     color: oklch(0% 0 none);
   }
-  @utility b {
+  @mixin --b {
     text-decoration-line: underline;
     color: oklch(0% 0 none);
   }

@@ -6,14 +6,17 @@ import { afterEach, expect, test } from 'vitest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
 
-const baseManifest: MasterCSSManifest = { version: 2, languageVersion: 4 }
+const baseManifest: MasterCSSManifest = {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const roots: string[] = []
 function fixture() {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-project-context-')))
   roots.push(root)
   mkdirSync(join(root, 'theme'))
   const entry = join(root, 'theme', 'tokens #.css')
-  writeFileSync(entry, "\n    @custom-variant night { &:where([data-theme=\"night\"], [data-theme=\"night\"] *) { @slot; } }\n    @theme { :root, :host { --color-brand: red; --color-action: var(--color-brand);  } }\n@keyframes pop { to { opacity: .5; } }\n\n    @theme { [data-theme=\"night\"] { --color-brand: blue; } }\n\n     @utility action { color: var(--color-action); } \n    @source \"./never.html\";\n    .never { color: lime; }\n  ")
+  writeFileSync(entry, "\n    @custom-variant night { &:where([data-theme=\"night\"], [data-theme=\"night\"] *) { @slot; } }\n    @theme { :root, :host { --color-brand: red; --color-action: var(--color-brand);  } }\n@keyframes pop { to { opacity: .5; } }\n\n    @theme { [data-theme=\"night\"] { --color-brand: blue; } }\n\n     @mixin --action { color: var(--color-action); } \n    @source \"./never.html\";\n    .never { color: lime; }\n  ")
   return { root, entry, file: join(root, 'card.css'), options: { baseManifest, projectDir: root, referenceFiles: [entry], transformNativeStylesheets: true } }
 }
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })

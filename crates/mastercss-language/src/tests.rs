@@ -61,11 +61,19 @@ fn executes_rc87_language_lexer_parity_corpus() {
     ))
     .unwrap();
     let mut executed = 0;
-    for case in corpus
+    for mut case in corpus
         .parser_cases
         .into_iter()
         .filter(|case| case.kind == "lexer" && source_ids.contains(&case.source_id.as_str()))
     {
+        // Exercise current spellings while retaining the frozen corpus as provenance.
+        if source_ids[6..].contains(&case.source_id.as_str()) {
+            case.input = case
+                .input
+                .replace("fg:", "color:")
+                .replace("bg:", "background:")
+                .replace("block", "display:block");
+        }
         executed += 1;
         match case.source_id.as_str() {
             "rc87-56bd470c266dafff" => assert_eq!(
@@ -175,7 +183,17 @@ fn executes_rc87_language_lexer_parity_corpus() {
                         .into_iter()
                         .map(|(text, _, _)| text)
                         .collect::<Vec<_>>(),
-                    ["{", "fg", ":", "red", ";", "bg", ":", "blue", "}"]
+                    [
+                        "{",
+                        "color",
+                        ":",
+                        "red",
+                        ";",
+                        "background",
+                        ":",
+                        "blue",
+                        "}"
+                    ]
                 );
             }
             "rc87-26f2db55b217f0d5" => {
@@ -190,7 +208,8 @@ fn executes_rc87_language_lexer_parity_corpus() {
                         .map(|(text, _, _)| text.as_str())
                         .collect::<Vec<_>>(),
                     [
-                        "{", "fg", ":", "red", ";", "block", "}", ">", "li", ":", "hover", "@sm"
+                        "{", "color", ":", "red", ";", "display", ":", "block", "}", ">", "li",
+                        ":", "hover", "@sm"
                     ]
                 );
                 assert!(
@@ -209,7 +228,7 @@ fn executes_rc87_language_lexer_parity_corpus() {
                         .iter()
                         .map(|(text, _, _)| text.as_str())
                         .collect::<Vec<_>>(),
-                    ["{", "block", "}", "@sm"]
+                    ["{", "display", ":", "block", "}", "@sm"]
                 );
             }
             "rc87-eb118a232c54e6de" => {
@@ -222,7 +241,7 @@ fn executes_rc87_language_lexer_parity_corpus() {
                         .iter()
                         .map(|(text, _, _)| text.as_str())
                         .collect::<Vec<_>>(),
-                    ["{", "fg", ":", "red", ";", "bg", ":", "blue"]
+                    ["{", "color", ":", "red", ";", "background", ":", "blue"]
                 );
             }
             "rc87-af4d2924300d54db" => {
@@ -235,7 +254,7 @@ fn executes_rc87_language_lexer_parity_corpus() {
                         .iter()
                         .map(|(text, _, _)| text.as_str())
                         .collect::<Vec<_>>(),
-                    ["fg", ":", "red", ";", "bg", ":", "blue"]
+                    ["color", ":", "red", ";", "background", ":", "blue"]
                 );
             }
             source_id => panic!("unhandled language-owned lexer case {source_id}"),
@@ -246,12 +265,11 @@ fn executes_rc87_language_lexer_parity_corpus() {
 
 #[test]
 fn keeps_class_positions_and_semantic_tokens_in_utf16() {
-    let source = "😀 <div class=\"fg:red  m:1x\">\r\nnext</div>";
-    let class_start = source
+    let source = "😀 <div class=\"color:red  margin:1x\">\r\nnext</div>";
+    let class_start = source[..source.find("color:").unwrap()]
         .encode_utf16()
-        .position(|unit| unit == 'f' as u16)
-        .unwrap() as u32;
-    let class_end = class_start + "fg:red  m:1x".encode_utf16().count() as u32;
+        .count() as u32;
+    let class_end = class_start + "color:red  margin:1x".encode_utf16().count() as u32;
     let class_positions = collect_class_positions(
         source,
         &[ClassListContextIr {
@@ -266,29 +284,29 @@ fn keeps_class_positions_and_semantic_tokens_in_utf16() {
         &[
             SemanticTokenInputIr {
                 start: class_start,
-                end: class_start + 6,
+                end: class_start + 9,
                 token_type: "property".into(),
                 modifiers: vec!["declaration".into()],
             },
             SemanticTokenInputIr {
-                start: class_start + 8,
+                start: class_start + 11,
                 end: class_end,
                 token_type: "variable".into(),
                 modifiers: Vec::new(),
             },
         ],
     );
-    assert_eq!(class_positions[0].token, "fg:red");
-    assert_eq!(class_positions[1].token, "m:1x");
+    assert_eq!(class_positions[0].token, "color:red");
+    assert_eq!(class_positions[1].token, "margin:1x");
     assert_eq!(
         semantic_token_data,
-        [0, class_start, 6, 2, 1, 0, 8, 4, 3, 0]
+        [0, class_start, 9, 2, 1, 0, 11, 9, 3, 0]
     );
 }
 
 #[test]
 fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
-    let class_list = "fg-brand:hover@sm {bg:blue;fg:white}";
+    let class_list = "fg-brand:hover@sm {background:blue;color:white}";
     let contexts = collect_document_contexts(
         class_list,
         "plaintext",
@@ -300,10 +318,10 @@ fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["fg-brand:hover@sm", "{bg:blue;fg:white}"]
+        ["fg-brand:hover@sm", "{background:blue;color:white}"]
     );
 
-    let html = "<!-- <div class=\"fg:red\"></div> --><div class=\"fg:blue\"></div>";
+    let html = "<!-- <div class=\"color:red\"></div> --><div class=\"color:blue\"></div>";
     let contexts = collect_document_contexts(html, "html", &LanguageDocumentSettingsIr::default());
     assert_eq!(
         collect_class_positions(html, &contexts)
@@ -311,13 +329,13 @@ fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["fg:blue"]
+        ["color:blue"]
     );
 }
 
 #[test]
 fn applies_document_context_settings_in_rust() {
-    let markup = r#"<div data-class="fg:red"></div>"#;
+    let markup = r#"<div data-class="color:red"></div>"#;
     let contexts = collect_document_contexts(
         markup,
         "html",
@@ -332,10 +350,10 @@ fn applies_document_context_settings_in_rust() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["fg:red"]
+        ["color:red"]
     );
 
-    let script = r#"twMerge("fg:blue"); const styles = "block";"#;
+    let script = r#"twMerge("color:blue"); const styles = "block";"#;
     let contexts = collect_document_contexts(
         script,
         "typescript",
@@ -351,33 +369,17 @@ fn applies_document_context_settings_in_rust() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["fg:blue", "block"]
+        ["color:blue", "block"]
     );
 }
 
 #[test]
 fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
     let session = LanguageSession::create(
-        r#"{
-              "version":2,"languageVersion":4,
-              "utilities":[
-                {
-                  "id":"block",
-                  "type":-1,
-                  "emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},
-                  "matchers":[{"type":"static","name":"block"}]
-                },
-                {
-                  "id":"foreground-color",
-                  "type":0,
-                  "emit":{"type":"property","property":"color"},
-                  "matchers":[{"type":"key","keys":["fg"]}]
-                }
-              ]
-            }"#,
+        r#"{"version":3,"languageVersion":5,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
-    let source = "<div class=\"{fg:red;block}>li:hover@sm\"></div>";
+    let source = "<div class=\"{color:red;block}>li:hover@sm\"></div>";
     let result = session
         .analyze_document(&AnalyzeDocumentRequestIr {
             source: source.into(),
@@ -407,7 +409,7 @@ fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
                     start: token.start,
                     end: token.end,
                 },
-            ) == Some("fg")
+            ) == Some("color")
     }));
 }
 
@@ -445,19 +447,19 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"card","name":"card","type":-2,"layer":"components","emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"card"}]},{"id":"width","type":0,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"width"},"matchers":[{"type":"key","keys":["w"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
+            r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
-        .classify_class_names(["card:hover", "w:10px", "w-md", "unknown"], None)
+        .classify_class_names(["card:hover", "width:10px", "p-md", "unknown"], None)
         .unwrap();
     assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
     assert_eq!(
         batch.classes[0].kind,
-        mastercss_engine::ClassSemanticKind::Component
+        mastercss_engine::ClassSemanticKind::Semantic
     );
     assert_eq!(batch.classes[0].state_token.as_deref(), Some(":hover"));
-    assert_eq!(batch.classes[1].key_token.as_deref(), Some("w:"));
+    assert_eq!(batch.classes[1].key_token.as_deref(), Some("width:"));
     assert_eq!(batch.classes[1].value_token.as_deref(), Some("10px"));
     assert_eq!(batch.variable_names, ["spacing-md"]);
     assert_eq!(
@@ -469,10 +471,24 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":2,"languageVersion":4,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"utilities":[{"id":"width","type":0,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"width"},"matchers":[{"type":"key","keys":["w"]}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
+            r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
+
+    for label in [
+        "display:",
+        "position:",
+        "object-fit:",
+        "position:absolute",
+        "object-fit:cover",
+        "r:",
+    ] {
+        assert!(entries.iter().any(|entry| entry.label == label), "{label}");
+    }
+    for label in ["p:", "fg:", "bg:", "block", "hidden"] {
+        assert!(!entries.iter().any(|entry| entry.label == label), "{label}");
+    }
 
     assert!(entries.iter().any(|entry| {
         entry.label == ":has()" && entry.sort_text.as_deref() == Some("yyyhas()")
@@ -488,7 +504,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_modes_variants_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":2,"languageVersion":4,"variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]},{"token":"@ocean","branches":[{"selector":"&:where(.ocean,.ocean *)"}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":3,"languageVersion":5,"variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]},{"token":"@ocean","branches":[{"selector":"&:where(.ocean,.ocean *)"}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@ocean",
@@ -508,8 +524,7 @@ fn completion_owns_modes_variants_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session =
-        LanguageSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -543,25 +558,25 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":2,"languageVersion":4,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"utilities":[{"id":"card","name":"card","type":-2,"layer":"components","emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"card"}]},{"id":"foreground-color","type":0,"variableAliases":[["brand","color-brand"]],"emit":{"type":"property","property":"color"},"matchers":[{"type":"token","prefix":"fg-"}]}],"variants":[{"token":"@dark","branches":[{"selector":"&:where(.dark,.dark *)"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}]}"#,
+        r#"{"version":3,"languageVersion":5,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"variants":[{"token":"@dark","branches":[{"selector":"&:where(.dark,.dark *)"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();
     assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
     assert!(inspection.match_status == mastercss_schema::MatchStatus::Matched);
-    assert_eq!(inspection.kind, ClassSemanticKind::Component);
+    assert_eq!(inspection.kind, ClassSemanticKind::Semantic);
     assert_eq!(inspection.base, "card");
     assert_eq!(inspection.suffix, ":hover");
     assert_eq!(inspection.state_token.as_deref(), Some(":hover"));
     assert_eq!(inspection.rules.len(), 1);
     assert_eq!(
         inspection.text,
-        "@layer components{.card\\:hover:hover{display:block}}"
+        "@layer utilities{.card\\:hover:hover{display:block}}"
     );
     let named_variant = session.inspect_class_name("card@dark", None).unwrap();
     assert_eq!(
         named_variant.text,
-        "@layer components{.card\\@dark:where(.dark,.dark *){display:block}}"
+        "@layer utilities{.card\\@dark:where(.dark,.dark *){display:block}}"
     );
     let variable = session.inspect_class_name("fg-brand:hover", None).unwrap();
     assert_eq!(variable.base, "fg-brand");
@@ -580,9 +595,8 @@ fn renders_isolated_hover_inspection_css() {
     assert!(completion_index.class_entries.iter().any(|entry| {
         entry.label == "card"
             && entry.kind == LanguageCompletionKind::Value
-            && entry.detail.as_deref() == Some("component")
-            && entry.documentation_text.as_deref()
-                == Some("@layer components{.card{display:block}}")
+            && entry.detail.as_deref() == Some("mixin")
+            && entry.documentation_text.as_deref() == Some("@layer utilities{.card{display:block}}")
     }));
     assert!(completion_index.class_entries.iter().any(|entry| {
         entry.label == "filter:blur()"
@@ -622,7 +636,7 @@ fn renders_isolated_hover_inspection_css() {
                 start: 2,
             },
             LanguageColorCandidateInputIr {
-                class_name: "fg:linear-gradient(#000,var(--color-brand))".into(),
+                class_name: "color:linear-gradient(#000,var(--color-brand))".into(),
                 start: 20,
             },
         ])
@@ -639,14 +653,14 @@ fn renders_isolated_hover_inspection_css() {
                 },
             },
             LanguageColorTokenIr {
-                range: SourceRange { start: 39, end: 43 },
+                range: SourceRange { start: 42, end: 46 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "#000".into(),
                     alpha: None,
                 },
             },
             LanguageColorTokenIr {
-                range: SourceRange { start: 44, end: 62 },
+                range: SourceRange { start: 47, end: 65 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "oklch(50% .1 20)".into(),
                     alpha: None,
@@ -655,9 +669,8 @@ fn renders_isolated_hover_inspection_css() {
         ]
     );
     assert!(completion_index.class_entries.iter().any(|entry| {
-        entry.label == "fg:"
+        entry.label == "color:"
             && entry.kind == LanguageCompletionKind::Property
-            && entry.detail.as_deref() == Some("color")
             && entry.trigger_suggest
     }));
 }
@@ -732,4 +745,23 @@ fn named_tokens_keep_their_full_name_and_split_only_opacity() {
             assert_eq!(tokens[1].modifiers, ["valueSeparator"]);
         }
     }
+}
+
+#[test]
+fn comparisons_inside_class_expressions_are_not_class_positions() {
+    let source = "const view = <div className={side === 'left' ? 'display:block' : clsx('right' !== side && 'display:none')} />;";
+    let contexts =
+        crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert!(
+        !values.contains(&"left") && !values.contains(&"right"),
+        "{values:?}"
+    );
+    assert!(
+        values.contains(&"display:block") && values.contains(&"display:none"),
+        "{values:?}"
+    );
 }

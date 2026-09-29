@@ -8,38 +8,38 @@ import { MasterCSSScanner } from '../../src/scanner'
 const cases = [
   {
     name: 'if, else-if and else',
-    markup: '{#if enabled}<div class="block"/>{:else if other}<div class="hidden"/>{:else}<div class="flex"/>{/if}',
-    classes: ['block', 'hidden', 'flex']
+    markup: '{#if enabled}<div class="display:block"/>{:else if other}<div class="display:none"/>{:else}<div class="display:flex"/>{/if}',
+    classes: ["display:block", "display:none", "display:flex"]
   },
   {
     name: 'each body and empty fallback',
-    markup: '{#each items as item}<div class="grid"/>{:else}<div class="inline"/>{/each}',
-    classes: ['grid', 'inline']
+    markup: '{#each items as item}<div class="display:grid"/>{:else}<div class="display:inline"/>{/each}',
+    classes: ["display:grid", "display:inline"]
   },
   {
     name: 'await pending, resolved and rejected',
-    markup: '{#await promise}<div class="block"/>{:then value}<div class="flex"/>{:catch error}<div class="hidden"/>{/await}',
-    classes: ['block', 'flex', 'hidden']
+    markup: '{#await promise}<div class="display:block"/>{:then value}<div class="display:flex"/>{:catch error}<div class="display:none"/>{/await}',
+    classes: ["display:block", "display:flex", "display:none"]
   },
   {
     name: 'await shorthand then',
-    markup: '{#await promise then value}<div class="block"/>{:catch error}<div class="hidden"/>{/await}',
-    classes: ['block', 'hidden']
+    markup: '{#await promise then value}<div class="display:block"/>{:catch error}<div class="display:none"/>{/await}',
+    classes: ["display:block", "display:none"]
   },
   {
     name: 'await shorthand catch',
-    markup: '{#await promise catch error}<div class="flex"/>{/await}',
-    classes: ['flex']
+    markup: '{#await promise catch error}<div class="display:flex"/>{/await}',
+    classes: ["display:flex"]
   },
   {
     name: 'nested alternate blocks and class directives',
-    markup: '{#if enabled}<div class="block"/>{:else}{#each items as item}<div class="hidden"/>{:else}{#await promise}<div class="grid"/>{:then value}<div class="inline"/>{:catch error}<div class:flex={enabled}/>{/await}{/each}{/if}',
-    classes: ['block', 'hidden', 'grid', 'inline', 'flex']
+    markup: '{#if enabled}<div class="display:block"/>{:else}{#each items as item}<div class="display:none"/>{:else}{#await promise}<div class="display:grid"/>{:then value}<div class="display:inline"/>{:catch error}<div class:active={enabled}/>{/await}{/each}{/if}',
+    classes: ["display:block", "display:none", "display:grid", "display:inline", "active"]
   },
   {
     name: 'snippet body nested in alternate',
-    markup: '{#if enabled}<div class="block"/>{:else}{#snippet fallback()}<div class="hidden"/>{/snippet}{@render fallback()}{/if}',
-    classes: ['block', 'hidden']
+    markup: '{#if enabled}<div class="display:block"/>{:else}{#snippet fallback()}<div class="display:none"/>{/snippet}{@render fallback()}{/if}',
+    classes: ["display:block", "display:none"]
   }
 ]
 
@@ -55,10 +55,10 @@ test('BH-0011 scanner emits classes from nested Svelte alternatives', async () =
   const scanner = await new MasterCSSScanner({ manifest: defaultManifest as unknown as MasterCSSManifest, verbose: 0 }).init()
   try {
     await scanner.scanModule('App.svelte', cases[5].markup)
-    for (const value of ['block', 'hidden', 'grid', 'inline', 'flex']) {
+    for (const value of ["display:block", "display:none", "display:grid", "display:inline"]) {
       expect(scanner.validClasses.has(value)).toBe(true)
     }
-    for (const declaration of ['display:block', 'display:none', 'display:grid', 'display:inline', 'display:flex']) {
+    for (const declaration of ['display:block', 'display:none', 'display:grid', 'display:inline']) {
       expect(scanner.css.text).toContain(declaration)
     }
   } finally {

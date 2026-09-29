@@ -75,6 +75,16 @@ pub struct CssDeclaration {
     rename_all_fields = "camelCase"
 )]
 pub enum CssDirectiveStyleDefinition {
+    Apply {
+        order: u32,
+        selector: String,
+        name: String,
+        arguments: Vec<MixinValue>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        source: Option<CssDirectiveSourceReference>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        condition_path: Option<Vec<CssDirectiveConditionPathEntry>>,
+    },
     Native {
         order: u32,
         selector: String,
@@ -198,11 +208,11 @@ impl ErrorCode {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub mixins: Option<Vec<MixinDefinition>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub variants: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<Vec<ThemeNode>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub utilities: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_media: Option<Vec<CustomMediaDefinition>>,
 }
@@ -416,7 +426,7 @@ fn css_blocklist_pattern_matches(source: &str, value: &str) -> bool {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CssUtilitySource {
+pub struct CssMixinSource {
     pub name: String,
     #[serde(default)]
     pub identity: String,

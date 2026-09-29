@@ -8,7 +8,22 @@ import { analyzeCSSDependencies } from '../src/node-compiler'
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-virtual-sources-'))
-  const scanner = { cwd: root, options: {}, css: { text: '', manifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn(), removeOwner: vi.fn() } as any
+  const scanner = { cwd: root, options: {}, css: { text: '', manifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn(), removeOwner: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }
 }
@@ -18,7 +33,7 @@ test('BH-0004 virtual identities and supplied resource bases survive classificat
   try {
     writeFileSync(join(f.root, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
     const id = '\0virtual:entry.css?entry=2', child = '\0virtual:child.css?part=1'
-    const source = '@import "virtual:child.css" layer(shared) print;@utility paint {color:blue}'
+    const source = '@import "virtual:child.css" layer(shared) print;@mixin --paint {color:blue}'
     const resolveImport = vi.fn(async () => ({ id: child, source: "@preserve native;.example{@variant all {color:#00f;}background:url(\"./image.svg?v=1#icon\")}", baseFile: join(f.root, 'owner.css') }))
     const resolution = await resolveStylesheet(id, source, { preserveImports: true, resolveImport })
     expect(resolution).toMatchObject({ id, kind: 'local', dependencies: [id, child] })

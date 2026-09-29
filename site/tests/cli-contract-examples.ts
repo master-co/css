@@ -11,7 +11,7 @@ import { cliEditorial } from '../reference/cli-editorial'
 const quote = (text: string) => "'" + text.replaceAll("'", "'\\''") + "'"
 const bin = fileURLToPath(new URL('../../packages/cli/dist/bin/index.js', import.meta.url))
 const command = (source: string) => source.replace('master-css', `${quote(process.execPath)} ${quote(bin)}`)
-const source = '<button class="p-md flex">Save</button>'
+const source = "<button class=\"p-md display:flex\">Save</button>"
 
 export async function verifyCLIContractExamples() {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-doc-cli-')))
@@ -60,11 +60,11 @@ export async function verifyCLIContractExamples() {
     const fixed = run(apply)
     assert.equal(fixed.status, 0, fixed.stderr)
     assert.equal(JSON.parse(fixed.stdout).summary.diagnostics, 0)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="flex p-md">Save</button>')
+    assert.equal(readFileSync(file, 'utf8'), "<button class=\"display:flex p-md\">Save</button>")
     const buffer = run(stdin)
     assert.equal(buffer.status, 0, buffer.stderr)
     assert.equal(JSON.parse(buffer.stdout).summary.warnings, 1)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="flex p-md">Save</button>')
+    assert.equal(readFileSync(file, 'utf8'), "<button class=\"display:flex p-md\">Save</button>")
     const [inspect, stylish, save] = cliEditorial.inspect.examples.map(example => example.command)
     const inspected = run(inspect)
     assert.equal(inspected.status, 0, inspected.stderr)
@@ -82,7 +82,7 @@ export async function verifyCLIContractExamples() {
     assert.equal(saved.stdout, '')
     assert.equal(JSON.parse(readFileSync(join(root, 'inspection.json'), 'utf8')).version, 5)
     writeFileSync(join(root, 'app.css'), '@master entry; @settings { root-size:16; }')
-    const rcSource = '<button class="font:mono p:4x">Save</button>'
+    const rcSource = "<button class=\"font:mono padding:4x\">Save</button>"
     writeFileSync(file, rcSource)
     writeFileSync(join(root, 'master.rc.manifest.json'), readFileSync(new URL('../../crates/mastercss-compiler/tests/fixtures/v2-rc-before-named-tokens.manifest.json', import.meta.url)))
     writeFileSync(join(root, 'master.v2.manifest.json'), JSON.stringify(preset))
@@ -95,7 +95,7 @@ export async function verifyCLIContractExamples() {
     }
     const migrated = run(migrationWrite)
     assert.equal(migrated.status, 0, migrated.stderr)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="font-mono p:1rem">Save</button>')
+    assert.equal(readFileSync(file, 'utf8'), "<button class=\"font-mono padding:1rem\">Save</button>")
     const repeated = run(migrationPreview)
     assert.equal(repeated.status, 0, repeated.stderr)
     assert.ok(JSON.parse(repeated.stdout).files.every((file: any) => file.edits.length === 0))

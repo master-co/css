@@ -18,9 +18,9 @@ test.each(['native', 'wasm'] as const)('%s skips extraction, validation and snap
   const change = vi.fn()
   scanner.on('change', change)
   try {
-    const content = '<div class="block unknown"></div>'
+    const content = "<div class=\"display:block unknown\"></div>"
     const first = await scanner.scanSource('a.html', content)
-    expect(first).toEqual({ changed: true, sourceChanged: true, candidates: ['block', 'unknown'] })
+    expect(first).toEqual({ changed: true, sourceChanged: true, candidates: ["display:block", 'unknown'] })
     expect(snapshot).not.toHaveBeenCalled()
     expect(await scanner.scanSource('a.html', content)).toEqual({ ...first, changed: false, sourceChanged: false })
     expect(extract).toHaveBeenCalledTimes(1)
@@ -38,7 +38,7 @@ test.each(['native', 'wasm'] as const)('%s skips extraction, validation and snap
     scanner.registerNativeClasses('stylesheet', ['unknown'])
     expect([...scanner.usedNativeClasses]).toEqual(['unknown'])
     expect(change).toHaveBeenCalledTimes(2)
-    await scanner.reset({ manifest, binding, wasm, safelist: ['flex'], verbose: 0 })
+    await scanner.reset({ manifest, binding, wasm, safelist: ["display:flex"], verbose: 0 })
     expect(scanner.state.cachedSources).toBe(1)
     expect(scanner.css.text).toContain('display:flex')
     expect((await scanner.scanSource('a.html', content)).changed).toBe(true)
@@ -56,11 +56,11 @@ test.each(['html', 'tsx', 'vue', 'svelte'])('caches %s extraction including comp
   const resolve = vi.spyOn(internals, 'resolveSourceAdapter')
   const source = `a.${extension}`
   const content = extension === 'tsx'
-    ? 'export const A = () => <div className="block" />'
-    : extension === 'vue' ? '<template><div class="block" /></template>' : '<div class="block" />'
+    ? "export const A = () => <div className=\"display:block\" />"
+    : extension === 'vue' ? "<template><div class=\"display:block\" /></template>" : "<div class=\"display:block\" />"
   try {
     const first = await scanner.scanSource(source, content)
-    expect(first.candidates).toContain('block')
+    expect(first.candidates).toContain("display:block")
     expect(await scanner.scanSource(source, content)).toEqual({ ...first, changed: false, sourceChanged: false })
     expect(resolve).toHaveBeenCalledTimes(1)
     await scanner.scanSource(source, ' ')
@@ -85,7 +85,7 @@ test('adapter failure leaves the source retryable', async () => {
   const extract = vi.spyOn(adapter, 'extract')
   extract.mockRejectedValueOnce(new Error('adapter failed'))
   try {
-    const content = '<template><div class="block" /></template>'
+    const content = "<template><div class=\"display:block\" /></template>"
     await expect(scanner.scanSource('a.vue', content)).rejects.toThrow('adapter failed')
     expect(scanner.state.cachedSources).toBe(0)
     expect((await scanner.scanSource('a.vue', content)).changed).toBe(true)

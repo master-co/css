@@ -1,5 +1,4 @@
 use super::{CompilerError, CssDeclaration, DeclarationBlock, PrinterOptions, Value};
-use serde_json::Map;
 
 /// CSS declarations are a sequence, not a property-to-value dictionary. In
 /// particular, an unrecognized later value must not erase an earlier fallback.
@@ -32,23 +31,6 @@ pub(crate) fn collect_ordered_declarations(
         }
     }
     Ok(output)
-}
-
-/// Manifest v1 already has ordered rules. Start another rule at a repeated
-/// property instead of changing its map-based declaration representation.
-pub(crate) fn declaration_runs(declarations: Vec<CssDeclaration>) -> Vec<Map<String, Value>> {
-    let mut runs = Vec::new();
-    let mut run = Map::new();
-    for declaration in declarations {
-        if run.contains_key(&declaration.property) {
-            runs.push(std::mem::take(&mut run));
-        }
-        run.insert(declaration.property, declaration.value);
-    }
-    if !run.is_empty() {
-        runs.push(run);
-    }
-    runs
 }
 
 pub(crate) fn preserve_ordered_literal_spelling(

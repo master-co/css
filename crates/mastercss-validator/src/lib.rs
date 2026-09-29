@@ -76,7 +76,7 @@ impl ValidatorSession {
 mod tests {
     use super::*;
 
-    const MANIFEST: &str = r#"{"version":2,"languageVersion":4,"utilities":[{"id":"display-block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]}]}"#;
+    const MANIFEST: &str = r#"{"version":3,"languageVersion":5,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
 
     #[test]
     fn generates_batches_without_retaining_class_rules() {
@@ -95,9 +95,7 @@ mod tests {
 
     #[test]
     fn preserves_native_declarations_regardless_of_host_support() {
-        let mut session =
-            ValidatorSession::create(r#"{"version":2,"languageVersion":4,"utilities":[]}"#)
-                .unwrap();
+        let mut session = ValidatorSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block", "display:banana"])
             .unwrap();

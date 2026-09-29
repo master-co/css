@@ -5,7 +5,7 @@ export declare const RESOLVED_VIRTUAL_MANIFEST_ID = "\0virtual:master-css-manife
 export declare const MASTER_CSS_MANIFEST_QUERY = "?master-css-manifest";
 export declare const VIRTUAL_MANIFEST_FILE = "master-css-manifest.js";
 export declare const VIRTUAL_MANIFEST_ASSET_FILE = "master-css-manifest.json";
-export declare const EMPTY_MANIFEST_JSON = "{\"version\":2,\"languageVersion\":4}";
+export declare const EMPTY_MANIFEST_JSON = "{\"version\":3,\"languageVersion\":5}";
 export interface CSSManifestLoadResult {
     manifest: MasterCSSManifest;
     dependencies: string[];

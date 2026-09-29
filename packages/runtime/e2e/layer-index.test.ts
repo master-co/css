@@ -15,7 +15,7 @@ test('1,000 single-node insertions avoid repeated key searches and prefix reads'
         return Reflect.get(target, property, receiver)
       }
     }) })
-    const classes = Array.from({ length: 1000 }, (_, index) => `w:${1000 + index}px`)
+    const classes = Array.from({ length: 1000 }, (_, index) => `width:${1000 + index}px`)
     runtime.ensureClassRules(classes)
     const result = { indexedReads, linearSearches, rules: layer.rules.length }
     runtime.deleteClassRules(classes.slice(-1))
@@ -29,16 +29,14 @@ test('1,000 single-node insertions avoid repeated key searches and prefix reads'
 
 test('mixed node counts preserve CSSOM order across middle and tail changes, refresh and reset', async ({ page }) => {
   await init(page, undefined, {
-    utilities: ['base', 'defaults', 'components', 'utilities'].flatMap((layer) =>
+    variants: ['base', 'defaults', 'components', 'utilities'].map(layer => ({ token: `@${layer}` as const, branches: [{ layer: layer as 'base' | 'defaults' | 'components' | 'utilities' }] })),
+    mixins: ['base', 'defaults', 'components', 'utilities'].flatMap((layer) =>
       ['a', 'b', 'c', 'd'].map((suffix, order) => ({
-        name: `${layer}-${suffix}`,
-        layer: layer as 'base' | 'defaults' | 'components' | 'utilities',
-        order,
-        rules: order % 2 ? [{ declarations: { display: 'block' } }] : [
-          { selector: '&', declarations: { color: 'red' } },
-          { selector: '&:hover', declarations: { color: 'blue' } },
-          { selector: '&:focus', declarations: { color: 'green' } }
-        ]
+        name: `--${layer}-${suffix}`,
+        body: order % 2 ? [{ type: 'declaration' as const, property: 'display', value: [{ type: 'text' as const, value: 'block' }] }] :
+          ['&', '&:hover', '&:focus'].map((selector, index) => ({ type: 'rule' as const, selector, body: [
+            { type: 'declaration' as const, property: 'color', value: [{ type: 'text' as const, value: ['red', 'blue', 'green'][index] }] }
+          ] }))
       }))
     )
   })
@@ -46,7 +44,7 @@ test('mixed node counts preserve CSSOM order across middle and tail changes, ref
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     const states: boolean[] = []
     const names = (suffixes: string[]) => ['base', 'defaults', 'components', 'utilities']
-      .flatMap(layer => suffixes.map(suffix => `${layer}-${suffix}`))
+      .flatMap(layer => suffixes.map(suffix => `${layer}-${suffix}@${layer}`))
     const check = () => {
       const expected = document.createElement('style')
       expected.media = 'not all'
@@ -87,19 +85,19 @@ test('shared rule ownership only updates referring classes', async ({ page }) =>
       utilitiesLayer: { get(key: string): Rule }
       syncClassReferences(classes: { className: string, references: { layer: string, key: string }[] }[]): void
     }
-    runtime.ensureClassRules(['block', 'hidden'])
+    runtime.ensureClassRules(["display:block", "display:none"])
     // Exercise the host contract for bindings whose classes share stored rules.
-    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'block' }] }])
+    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'display:block' }] }])
     host.syncClassReferences([{ className: 'shared', references: [] }])
-    const singleOwnerPreserved = host.classUtilities.get('block')?.[0] === host.utilitiesLayer.get('block')
-    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'block' }] }])
-    const unrelated = host.classUtilities.get('hidden')
-    runtime.deleteClassRules(['block'])
+    const singleOwnerPreserved = host.classUtilities.get("display:block")?.[0] === host.utilitiesLayer.get("display:block")
+    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'display:block' }] }])
+    const unrelated = host.classUtilities.get("display:none")
+    runtime.deleteClassRules(["display:block"])
     return {
-      removed: !host.classUtilities.has('shared') && !host.classUtilities.has('block'),
+      removed: !host.classUtilities.has('shared') && !host.classUtilities.has("display:block"),
       singleOwnerPreserved,
-      unrelatedPreserved: host.classUtilities.get('hidden') === unrelated,
-      hiddenIndexed: host.utilitiesLayer.get('hidden') === unrelated?.[0]
+      unrelatedPreserved: host.classUtilities.get("display:none") === unrelated,
+      hiddenIndexed: host.utilitiesLayer.get("display:none") === unrelated?.[0]
     }
   })
   expect(result).toEqual({ removed: true, singleOwnerPreserved: true, unrelatedPreserved: true, hiddenIndexed: true })

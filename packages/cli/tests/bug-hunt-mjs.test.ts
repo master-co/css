@@ -13,14 +13,14 @@ const tsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url
 test.each(['default', 'glob', 'explicit'])('BH-0018 Node CLI discovers .mjs with %s sources', mode => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-mjs-'))
   try {
-    writeFileSync(join(cwd, 'entry.mjs'), 'export const classes = "block"')
+    writeFileSync(join(cwd, 'entry.mjs'), 'export const classes = "display:block"')
     writeFileSync(join(cwd, 'ignored.json'), '{"class":"hidden"}')
     const paths = mode === 'default' ? [] : [mode === 'glob' ? '**/*.mjs' : 'entry.mjs']
     const output = execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--no-export', ...paths], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
-    expect(output).toContain('.block{display:block}')
-    expect(output).not.toContain('.hidden{display:none}')
+    expect(output).toContain(".display\\:block{display:block}")
+    expect(output).not.toContain(".display\\:none{display:none}")
     expect(existsSync(join(cwd, 'master.css'))).toBe(false)
   } finally {
     rmSync(cwd, { recursive: true, force: true })

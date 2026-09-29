@@ -1,8 +1,8 @@
 const syntaxes = [
-  'bg-repeat',
-  'bg-no-repeat',
-  'bg-repeat-x',
-  'bg-repeat-y',
+  "background-repeat:repeat",
+  "background-repeat:no-repeat",
+  "background-repeat:repeat-x",
+  "background-repeat:repeat-y",
   ['background-repeat:`mode`'],
 ]
 

@@ -7,7 +7,7 @@ import { createTranslation } from '../utils/i18n'
 import PackageBadges from './PackageBadges'
 import brands from '../data/brands'
 
-const headerIconClassName = 'block full max-w:100% max-h:100%'
+const headerIconClassName = 'display:block full max-width:100% max-height:100%'
 const headerIconStyle = {
   display: 'block',
   width: '100%',
@@ -29,18 +29,18 @@ export default async function ArticleHeader(props: any) {
   let { h1ClassName, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc } = props
   const $ = await createTranslation(locale, dictionaries)
   const Category = ({ children }: any) => {
-    const categoryClasses = clsx('mb-sm font-weight:460 font-sm tracking:.01em', { 'fg-accent': !categoryLink })
+    const categoryClasses = clsx('mb-sm font-sm font-weight:460 letter-spacing:.01em', { 'fg-accent': !categoryLink })
     return (
       categoryLink
         ? (
           <Link href={typeof categoryLink === 'string' ? categoryLink : './'} className={clsx(
-            'block w:fit-content text-muted',
-            date ? 'mb:1.25rem' : categoryClasses,
-            center && 'mx:auto'
+            'display:block width:fit-content fg-text-muted',
+            date ? 'margin-bottom:1.25rem' : categoryClasses,
+            center && 'margin-inline:auto'
           )}>
             <ChevronLeftSvg className={clsx(
-              'inline-block ml:-0.313rem mr:0.313rem stroke-text-muted stroke-width:2',
-              date ? 'width:20px height:20px my:-0.25rem' : 'width:16px height:16px my:-0.188rem'
+              'display:inline-block margin-left:-0.313rem margin-right:0.313rem stroke-text-muted stroke-width:2',
+              date ? 'height:20px width:20px margin-block:-0.25rem' : 'height:16px width:16px margin-block:-0.188rem'
             )} />
             {children}
           </Link>
@@ -57,39 +57,39 @@ export default async function ArticleHeader(props: any) {
   }
   return (
     <>
-      <div className="flex flex-nowrap gap-xl flex-col@media((width<37.5rem))">
+      <div className="display:flex flex-wrap:nowrap gap-xl flex-direction:column@media((width<37.5rem))">
         <div className='flex:1'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'max-w:52.125rem mt:0 font-size:28px leading-xs tracking-tight text-wrap text-strong font-3xl@sm',
+            'max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
             h1ClassName,
             {
               'font-4xl@md': metadata.type !== 'entity' && !toc
             }
           )}>
             {$(metadata.title.absolute || metadata.title)}
-            {metadata.type === 'entity' && locale !== 'en' && <span className='ml:.25em'>{metadata.title}</span>}
-            {metadata.unfinished && <span className='ml:.5em font-size:.5em vertical-align:top'>🚧</span>}
+            {metadata.type === 'entity' && locale !== 'en' && <span className='margin-left:.25em'>{metadata.title}</span>}
+            {metadata.unfinished && <span className='margin-left:.5em font-size:.5em vertical-align:top'>🚧</span>}
           </h1>
         </div >
-        <div className={clsx('flex gap-xs hidden:empty', center ? 'items-center' : 'items-start')}>
+        <div className={clsx('display:flex gap-xs display:none:empty', center ? 'align-items:center' : 'align-items:start')}>
           {end}
         </div>
-        {icon && <div className='grid flex:0|0|auto place-content:center mx:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
-          <div className="grid place-content:center width:4.5rem height:4.5rem width:5rem@sm height:5rem@sm" style={headerIconSlotStyle}>
+        {icon && <div className='display:grid flex:0|0|auto place-content:center margin-inline:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
+          <div className="display:grid place-content:center height:4.5rem width:4.5rem height:5rem@sm width:5rem@sm" style={headerIconSlotStyle}>
             {icon}
           </div>
         </div>}
       </div >
       {metadata.package && <PackageBadges {...metadata.package} translate={$} />}
-      <p className={clsx('max-w:48rem text-md text-pretty', {
+      <p className={clsx('max-width:48rem text-md text-wrap:pretty', {
         'text-lg@sm': metadata.type !== 'entity' && !toc,
       })}>{$(metadata.description)}</p>
       {
         (metadata.unfinished || metadata.disabled) &&
-        <div className="my:1.25rem p:0.797rem|1.25rem r-lg text-xs font-weight:460 bg-accent/.1 fg-accent">
-          <span className='mr:0.625rem'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
+        <div className="margin-block:1.25rem padding:0.797rem|1.25rem r-lg text-xs font-weight:460 bg-accent/.1 fg-accent">
+          <span className='margin-right:0.625rem'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
         </div>
       }
     </>

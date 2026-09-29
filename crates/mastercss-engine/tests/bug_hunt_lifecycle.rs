@@ -65,11 +65,11 @@ fn audit_transition_replay_matches_snapshot_through_256_operations() {
     let classes = [
         "block",
         "hidden",
-        "fg:red-60",
-        "bg:red-60",
-        "m:md",
-        "p:md",
-        "w:10px:hover@sm",
+        "color:red-60",
+        "background:red-60",
+        "margin:md",
+        "padding:md",
+        "width:10px:hover@sm",
         "animate:spin",
         "block@base",
         "block@default",
@@ -118,12 +118,14 @@ fn audit_transition_replay_matches_snapshot_through_256_operations() {
 #[test]
 fn audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    engine.ensure_class_rules(["block", "fg:red-60"]).unwrap();
+    engine
+        .ensure_class_rules(["block", "color:red-60"])
+        .unwrap();
     let before = engine.snapshot().unwrap();
     for invalid in [
         "{",
         r#"{"version":999}"#,
-        r#"{"version":2,"languageVersion":4,"utilities":null}"#,
+        r#"{"version":3,"languageVersion":5,"utilities":null}"#,
     ] {
         assert!(engine.refresh(invalid).is_err());
         assert_eq!(engine.snapshot().unwrap(), before);

@@ -113,6 +113,22 @@ pub(crate) fn push_byte_context(
     if start > end || end > source.len() {
         return;
     }
+    // Comparisons inside a class expression control its branch; their string
+    // operands are not classes and must never receive editor/migration fixes.
+    if start > 0
+        && end < source.len()
+        && matches!(source.as_bytes()[start - 1], b'\'' | b'"' | b'`')
+        && source.as_bytes()[start - 1] == source.as_bytes()[end]
+    {
+        let before = source[..start - 1].trim_end();
+        let after = source[end + 1..].trim_start();
+        if ["==", "!=", "===", "!=="]
+            .iter()
+            .any(|operator| before.ends_with(operator) || after.starts_with(operator))
+        {
+            return;
+        }
+    }
     let (Some(start), Some(end)) = (positions.byte_to_utf16(start), positions.byte_to_utf16(end))
     else {
         return;

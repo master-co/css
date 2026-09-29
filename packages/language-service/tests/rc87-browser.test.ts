@@ -9,15 +9,29 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest = createPresetManifest({
   variables: [{ namespace: 'color', key: 'brand', values: [{ path: [':root,:host'], value: '#123456' }] }],
-  utilities: [
-    {
-      name: 'btn',
-      layer: 'utilities',
-      rules: [
-        { selector: '&', declarations: { display: 'block' } }
-      ]
-    }
-  ]
+  mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "block"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
 })
 
 function tokenText(source: string, token: { start: number, end: number }) {
@@ -44,7 +58,7 @@ function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<n
 }
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
-  const source = '<div class="text-align:center fg-brand block btn"></div>'
+  const source = "<div class=\"text-align:center fg-brand center btn\"></div>"
   const tokens = collectBrowserSemanticTokenItems(source, 'html', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -53,35 +67,35 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
   }))
 
   expect(mapped).toEqual(expect.arrayContaining([
-    { text: 'text-align', type: 'property', modifiers: [] },
-    { text: 'center', type: 'enumMember', modifiers: [] },
-    { text: 'fg-brand', type: 'enumMember', modifiers: [] },
-    { text: 'block', type: 'enumMember', modifiers: [] },
-    { text: 'btn', type: 'enumMember', modifiers: [] }
+    { text: 'text-align', type: 'property' as const, modifiers: [] },
+    { text: 'center', type: 'enumMember' as const, modifiers: [] },
+    { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] },
+    { text: "center", type: 'enumMember' as const, modifiers: [] },
+    { text: 'btn', type: 'enumMember' as const, modifiers: [] }
   ]))
 })
 
 test.concurrent('encodes browser role-derived semantic token modifiers', () => {
-  const source = '<div class="{fg-red;block}>li:hover@sm"></div>'
+  const source = "<div class=\"{fg-red;center}>li:hover@sm\"></div>"
   const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
   const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
   const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
   const selectorCombinatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('selectorCombinator')
 
   expect(tokens).toEqual(expect.arrayContaining([
-    { text: '{', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
-    { text: 'fg-red', type: 'enumMember', modifiers: [], modifierBits: 0 },
-    { text: ';', type: 'operator', modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
-    { text: '}', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
-    { text: '>', type: 'operator', modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
-    { text: ':', type: 'operator', modifiers: ['pseudoClass', 'selector', 'pseudoClassDelimiter'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClass')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClassDelimiter')) }
+    { text: '{', type: 'operator' as const, modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
+    { text: 'fg-red', type: 'enumMember' as const, modifiers: [], modifierBits: 0 },
+    { text: ';', type: 'operator' as const, modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
+    { text: '}', type: 'operator' as const, modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
+    { text: '>', type: 'operator' as const, modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
+    { text: ':', type: 'operator' as const, modifiers: ['pseudoClass', 'selector', 'pseudoClassDelimiter'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClass')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClassDelimiter')) }
   ]))
   expect(declarationTerminatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
   expect(selectorCombinatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
 })
 
 test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
-  const source = "\n    @safelist \"hidden fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @utility btn {\n        @safelist \"block fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
+  const source = "\n    @safelist \"sr-only fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --btn {\n        @safelist \"center fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -90,22 +104,22 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
   }))
 
   expect(mapped).toEqual(expect.arrayContaining([
-    { text: 'hidden', type: 'enumMember', modifiers: [] },
-    { text: 'fg-red', type: 'enumMember', modifiers: [] },
-    { text: 'block', type: 'enumMember', modifiers: [] },
-    { text: 'fg-brand', type: 'enumMember', modifiers: [] }
+    { text: "sr-only", type: 'enumMember' as const, modifiers: [] },
+    { text: 'fg-red', type: 'enumMember' as const, modifiers: [] },
+    { text: "center", type: 'enumMember' as const, modifiers: [] },
+    { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] }
   ]))
-  expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
-  expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable', modifiers: [] })
-  expect(mapped).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
-  expect(mapped).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(mapped).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
-  expect(mapped).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
-  expect(mapped).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })
+  expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable' as const, modifiers: [] })
+  expect(mapped).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(mapped).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
+  expect(mapped).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(mapped).not.toContainEqual({ text: 'var', type: 'function' as const, modifiers: [] })
+  expect(mapped).not.toContainEqual({ text: '@keyframes', type: 'keyword' as const, modifiers: [] })
 })
 
 test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
-  const source = "\n    @custom-variant motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @slot;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: --master-value();\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
+  const source = "\n    @custom-variant motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @slot;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
 
   expect(tokens).toEqual([])

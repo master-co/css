@@ -117,7 +117,7 @@ describe('style CSS extraction helpers', () => {
     const homePath = join(root, 'app/home.css')
     writeFileSync(homePath, [
       "@theme {:root, :host { --color-active: #ff0000; }}\n",
-      ' @utility active-card { animation: active-spin 1s infinite; } ',
+      ' @mixin --active-card { animation: active-spin 1s infinite; } ',
       '@keyframes active-spin { to { opacity: .5; } }',
       '.native-card { color: var(--color-active); }'
     ].join('\n'))
@@ -205,7 +205,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const tokenPath = join(root, 'app/tokens.css')
-    writeFileSync(tokenPath, ' @utility card { display: block; } ')
+    writeFileSync(tokenPath, ' @mixin --card { display: block; } ')
     writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./tokens.css\";")
 
     expect(collectStylesheetDependencies(entryPath, undefined, root)).toEqual([
@@ -227,7 +227,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('locally lowers @compose using the provided project context', async () => {
-    const { manifest } = compileCSSManifest(' @utility brand { color: #fff; } ', {
+    const { manifest } = compileCSSManifest(' @mixin --brand { color: #fff; } ', {
       baseManifest: defaultManifest
     })
     const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @variant all {color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
@@ -245,7 +245,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@utility brand { background-color: #123456; }\n.referenced-native { color: red; }")
+    writeFileSync(tokenPath, "@mixin --brand { background-color: #123456; }\n.referenced-native { color: red; }")
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .button {\n        @variant all {background-color:#123456;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -264,7 +264,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -285,7 +285,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@utility panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }")
+    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }")
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -354,7 +354,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Empty.module.css')
-    writeFileSync(tokenPath, ' @utility brand { display: block; } ')
+    writeFileSync(tokenPath, ' @mixin --brand { display: block; } ')
 
     const result = await transformLocalStylesheet(modulePath, '@reference "./tokens.css";', {
       baseManifest: defaultManifest,

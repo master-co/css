@@ -7,7 +7,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
 test('versioned RegExp transport preserves flags and changes the configuration fingerprint', () => {
-  const original = { blocklist: [/^debug:/gi, 'hidden'] }
+  const original = { blocklist: [/^debug:/gi, "display:none"] }
   const result = deserializeStaticOptions<typeof original>(serializeStaticOptions(original))
   expect(result.blocklist[0]).toEqual(/^debug:/gi)
   expect(staticFingerprint(result)).toBe(staticFingerprint(original))

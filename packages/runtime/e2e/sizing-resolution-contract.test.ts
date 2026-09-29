@@ -5,15 +5,17 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const manifest = { ...preset, utilities: [...preset.utilities,
-  { id: 'aliases', type: -1, emit: { type: 'property', property: 'width' }, matchers: [{ type: 'key', keys: ['tile', 'box'] }] },
-  { id: 'replaced-tile', type: -1, emit: { type: 'property', property: 'height' }, matchers: [{ type: 'key', keys: ['tile'] }] }
+const parameterMixin = (name: string, property: string) => ({
+  name: `--${name}`, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property, value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }]
+})
+const manifest = { ...preset, mixins: [...preset.mixins,
+  parameterMixin('tile', 'width'), parameterMixin('box', 'width'), parameterMixin('tile', 'height')
 ] } as unknown as MasterCSSManifest
-const classes = ['{width:20px;height:20px}', 'size:99px', 'tile:40px', 'box:30px', 'flex', 'flex:1', 'display:flex:hover']
+const classes = ['{width:20px;height:20px}', 'size:99px', 'tile(40px)', 'box(30px)', 'display:flex', 'flex:1', 'display:flex:hover']
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
-  test(`${mode}: independent alias replacement and explicit paired dimensions survive hydration and updates`, async ({ page }) => {
-    const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body><div id="pair" class="{width:20px;height:20px}"></div><div id="fallback" class="size:99px"></div><div id="native" style="size:99px"></div><div id="alias" class="tile:40px box:30px"></div><div id="display" class="flex flex:1"></div></body></html>'
+  test(`${mode}: independent mixin replacement and explicit paired dimensions survive hydration and updates`, async ({ page }) => {
+    const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body><div id="pair" class="{width:20px;height:20px}"></div><div id="fallback" class="size:99px"></div><div id="native" style="size:99px"></div><div id="alias" class="tile(40px) box(30px)"></div><div id="display" class="display:flex flex:1"></div></body></html>'
     const rendered = renderClassNamesSync(classes, { manifest })
     expect(rendered.cssText).toContain('size:99px')
     expect(rendered.cssText).not.toContain('width:99px')
@@ -39,7 +41,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
       await page.locator('#pair').evaluate(el => { el.className = '{width:28px;height:28px}' })
       await expect(page.locator('#pair')).toHaveCSS('width', '28px')
       await expect(page.locator('#pair')).toHaveCSS('height', '28px')
-      await page.locator('#alias').evaluate(el => { el.className = 'box:35px' })
+      await page.locator('#alias').evaluate(el => { el.className = 'box(35px)' })
       await expect(page.locator('#alias')).toHaveCSS('width', '35px')
       await expect(page.locator('#alias')).toHaveCSS('height', '0px')
     }

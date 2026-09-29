@@ -6,7 +6,7 @@ it('extract latent classes from js raw', () => {
         import { setupCounter } from './counter'
 
         const counterElement = document.querySelector<HTMLButtonElement>('#counter')
-        const syntax = 'block'
+        const syntax = 'display:block'
         counterElement?.classList.add('transition:transform|.3s', 'transform:translateY(-5):hover', syntax)
 
         setupCounter(counterElement!)
@@ -17,7 +17,7 @@ it('extract latent classes from js raw', () => {
             'const',
             'counterElement',
             'syntax',
-            'block',
+            "display:block",
             'transition:transform|.3s',
             'transform:translateY(-5):hover',
             'setupCounter(counterElement!)',
@@ -57,7 +57,7 @@ test('content', () => {
 })
 
 test('url', () => {
-    expect(extractClassCandidates(`<div class="bg:url('https://master.co/test_logo.png')"></div>`)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
+    expect(extractClassCandidates("<div class=\"background:url('https://master.co/test_logo.png')\"></div>")).toEqual(["background:url('https://master.co/test_logo.png')"])
 })
 
 test('comment', () => {
@@ -145,7 +145,7 @@ test('import', () => {
 })
 
 test('style tag', () => {
-    expect(extractClassCandidates(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media (min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
+    expect(extractClassCandidates(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media (min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
 /* fira-mono-cyrillic-ext-400-normal*/
 @font-face {
   font-family: 'Fira Mono';

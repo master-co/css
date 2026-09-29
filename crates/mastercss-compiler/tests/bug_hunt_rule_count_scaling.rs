@@ -50,7 +50,7 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                 }
                 Shape::Theme => format!("--v{index}:{index}px"),
                 Shape::Components => {
-                    format!("@utility c{index}{{padding:{}px;color:red}}", index % 9)
+                    format!("@mixin --c{index}{{padding:{}px;color:red}}", index % 9)
                 }
             })
             .collect::<Vec<_>>()
@@ -87,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: Some(serde_json::json!({"version":2,"languageVersion":4,"customMedia":{"--always":{"type":"true"}},"utilities":[]})),
+                    base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})),
                 },
             )
             .unwrap();
@@ -111,7 +111,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                             .sum()
                     })
             } else {
-                merged.manifest["utilities"].as_array().map_or(0, Vec::len)
+                merged.manifest["mixins"].as_array().map_or(0, Vec::len)
             };
             // Naming may group definitions under namespaces; every definition
             // must still survive both merges.

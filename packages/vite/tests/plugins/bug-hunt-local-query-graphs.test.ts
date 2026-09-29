@@ -6,7 +6,7 @@ import masterCSS from '../../src/core'
 
 for (const command of ['serve', 'build'] as const) {
   for (const query of ['url', 'theme=dark']) {
-    test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)(`local imported directives survive ${command}/?${query}/%s`, async mode => {
+    test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`local imported directives survive ${command}/?${query}/%s`, async mode => {
       const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
       const root = mkdtempSync(join(parent, 'local-query-graph-'))
       let server: Awaited<ReturnType<typeof createServer>> | undefined
@@ -42,7 +42,7 @@ for (const command of ['serve', 'build'] as const) {
           css = result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css')).map(asset => asset.type === 'asset' ? String(asset.source) : '').join('\n')
         }
         expect(css).toContain('padding:2rem')
-        expect(css).toContain('inline-flex')
+        expect(css).toContain("display:inline-flex")
         expect(css).toContain('external.test/style.css')
         expect(css).toMatch(/(?:min-width:\s*700px|width\s*>=\s*700px)/)
         expect(css).not.toContain('@compose')

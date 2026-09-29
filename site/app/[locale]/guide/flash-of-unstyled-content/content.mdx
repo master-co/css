@@ -2,7 +2,7 @@ import FOUCSvg from '~/site/public/fouc.svg'
 
 Upon accessing the page, the browser starts rendering the document. However, the page styles may not be loaded yet, causing a [FOUC (flash of unstyled content)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content).
 <figure>
-  <FOUCSvg className="h:auto aspect-ratio:16/9 surface-raised" />
+  <FOUCSvg className="height:auto aspect-ratio:16/9 surface-raised" />
   <figcaption>A simulated example of FOUC. At left is the front page without styles. At right is the same page with styles applied. ( [web.dev](https://web.dev/preload-scanner) )</figcaption>
 </figure>
 
@@ -13,7 +13,7 @@ When you [pre-render](/guide/rendering-modes#progressive-rendering) the page, th
 
 (o) Add `html <html hidden>` to avoid FOUC.
 ```html
-<!-- @MARK hidden -->
+<!-- @MARK display:none -->
 <html hidden>…</html>
 ```
 Once the style is injected, the engine will remove the above and notify the browser that the page can be displayed.

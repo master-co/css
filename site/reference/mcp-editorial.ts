@@ -52,7 +52,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_extract_classes: {
     purpose: 'Find exact class tokens and source positions in a buffer, or inspect extraction across selected project files.',
     fields: { context, content: 'Source buffer to inspect. When provided, it takes precedence over project patterns, including when the string is empty.', filePath: filePath + ' Defaults to `index.html` in content mode.', patterns, includeRules: 'Include generated rules in each class inspection. Defaults to false.' },
-    example: { content: '<button class="flex gap-sm p-md">Save</button>', filePath: 'src/button.html', includeRules: true }, exampleNote: 'This buffer is inspected without writing `src/button.html`.',
+    example: { content: "<button class=\"display:flex gap-sm p-md\">Save</button>", filePath: 'src/button.html', includeRules: true }, exampleNote: 'This buffer is inspected without writing `src/button.html`.',
     output: '`files` contains language IDs and class records with tokens, ranges, locations, matching, CSS-syntax and CSS-value statuses, diagnostics, and inspection data. `inputs.mode` distinguishes content from project mode. `summary` counts files and classes; project mode also includes scanner counts and diagnostics.',
     lifecycle: readOnly
   },
@@ -66,7 +66,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_render_css: {
     purpose: 'Generate CSS for a small literal class list or HTML fragment using the connected project context.',
     fields: { context, html: 'HTML fragment to extract classes from. A nonempty string takes precedence over `classList`.', classList: 'Whitespace-separated complete classes. Used when `html` is absent or empty.' },
-    example: { classList: 'flex gap-sm' }, exampleNote: 'Generate a small flex layout without creating a source file.',
+    example: { classList: 'display:flex gap-sm' }, exampleNote: 'Generate a small flex layout without creating a source file.',
     output: 'The result contains extracted `classes`, `invalid` class names, and `css.text` plus its UTF-8 byte count. Check the manifest status and invalid list as well as the CSS. Empty input produces no class request.',
     lifecycle: readOnly
   },
@@ -106,14 +106,14 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_lint_content: {
     purpose: 'Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest.',
     fields: { context, content: 'Complete source buffer to lint.', filePath, rules },
-    example: { content: '<button class="p-md flex">Save</button>', filePath: 'src/button.html', rules: 'sort-classes' }, exampleNote: 'The virtual HTML path selects the source language; no file is written.',
+    example: { content: "<button class=\"p-md display:flex\">Save</button>", filePath: 'src/button.html', rules: 'sort-classes' }, exampleNote: 'The virtual HTML path selects the source language; no file is written.',
     output: '`files` includes the buffer’s diagnostics and fix proposals, with a diagnostic `summary` and manifest status. Fix proposals are data in the result, not applied edits. Manifest-loading failures return the error envelope without selecting a preset.',
     lifecycle: readOnly
   },
   mastercss_suggest_syntax: {
     purpose: 'Request language-service completion candidates and hover information at a position in an unsaved document.',
     fields: { context, content: 'Complete source buffer.', filePath, position: 'Cursor position in the buffer.', 'position.line': 'Zero-based line index.', 'position.character': 'Zero-based UTF-16 code-unit offset on the line.', triggerCharacter: 'Character that triggered completion. Omit for an explicit completion request.', limit: 'Maximum completion items returned. Defaults to 50; `total` still reports the untruncated count.' },
-    example: { content: '<div class="p:"></div>', filePath: 'src/card.html', position: { line: 0, character: 14 }, limit: 5 }, exampleNote: 'The cursor follows `p:` in the class attribute.',
+    example: { content: "<div class=\"padding:\"></div>", filePath: 'src/card.html', position: { line: 0, character: 14 }, limit: 5 }, exampleNote: 'The cursor follows `p:` in the class attribute.',
     output: 'The result includes `completions`, their untruncated `total`, optional `hover`, and manifest status. A completion list is editor assistance; verify the selected class against the intended project and rendered UI.',
     lifecycle: readOnly
   },

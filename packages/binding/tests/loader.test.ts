@@ -40,7 +40,7 @@ describe('native target resolution', () => {
 
   it('keeps the browser loader error contract aligned with the Node entry', () => {
     expect(() => createNativeEngineSession({
-      manifest: { version: 1 } as never
+      manifest: { version: 1 as const } as never
     }, { required: true })).toThrowError(expect.objectContaining({
       code: 'NATIVE_UNAVAILABLE',
       domain: 'binding'
@@ -58,7 +58,7 @@ describe('native target resolution', () => {
     expect(assertNativeCLIInfo(executable)).toMatchObject({
       bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
       packageVersion: '0.0.0',
-      manifestVersion: 2,
+      manifestVersion: 3,
       hydrationManifestVersion: 2
     })
   })
@@ -88,10 +88,13 @@ describe('native target resolution', () => {
 
   it('rejects unsupported lint request versions with a structured error', () => {
     const lint = loadNativeToolingBinding({ required: true })!
-      .createLintSession({ version: 2, languageVersion: 4, utilities: [] } as never)
+      .createLintSession({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+} as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
-        version: 0,
+        version: 0 as const,
         classList: 'unknown',
         classNames: ['unknown']
       } as never)).toThrow('INVALID_LINT_REQUEST')
@@ -101,41 +104,60 @@ describe('native target resolution', () => {
   })
 
   it('loads raw value policy candidates and diagnostics', () => {
-    const lint = loadNativeToolingBinding({ required: true })!.createLintSession({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "spacing-md", value: '1rem' }] }],
-      version: 2, languageVersion: 4,
-      variables: {
-        spacing: [{ key: 'md', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }] }]
-      },
-      utilities: [{
-        id: 'margin',
-        name: 'm:',
-        type: -1,
-        variableAliasRefs: ['~spacing'],
-        emit: { type: 'property', property: 'margin' },
-        matchers: [{ type: 'key', keys: ['m'] }]
-      }]
-    } as never)
+    const lint = loadNativeToolingBinding({ required: true })!.createLintSession({
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "spacing-md",
+          "value": "1rem"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "spacing": [
+      {
+        "key": "md",
+        "type": "number" as const,
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "1rem"
+          }
+        ]
+      }
+    ]
+  }
+} as never)
     try {
       expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
-        version: 3,
+        version: 3 as const,
         suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
       })
-      expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
-        version: 3,
+      expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
+        version: 3 as const,
         candidates: [
-          { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+          { className: "margin:var(--spacing-md)|17px", key: 'margin', segments: ['17px'], properties: ['margin'] }
         ]
       })
       const result = lint.analyzeClassListPolicy({
-        version: 3,
-        classList: 'm:var(--spacing-md)|17px',
-        classNames: ['m:var(--spacing-md)|17px'],
+        version: 3 as const,
+        classList: "margin:var(--spacing-md)|17px",
+        classNames: ["margin:var(--spacing-md)|17px"],
         rawValuePolicy: { allowedPatterns: [] }
       }) as { diagnostics: unknown[] }
       expect(result.diagnostics).toContainEqual(expect.objectContaining({
         ruleId: 'no-unapproved-raw-values',
         code: 'unapproved-raw-value',
-        range: { start: 0, end: 24 }
+        range: { start: 0, end: 29 }
       }))
     } finally {
       lint.dispose()
@@ -144,47 +166,58 @@ describe('native target resolution', () => {
 
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
-      version: 2, languageVersion: 4,
-      utilities: [{
-        id: 'display-block',
-        name: 'block',
-        type: -2,
-        emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
-        matchers: [{ type: 'static', name: 'block' }]
-      }]
-    } as never)
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+} as never)
     try {
       expect(language.classifyClassNames(['block:hover', 'unknown'])).toMatchObject({
-        version: 5,
+        version: 5 as const,
         classes: [
           { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
           { className: 'unknown', kind: 'unknown' }
         ]
       })
       expect(language.inspectClassName('block:hover')).toMatchObject({
-        version: 5,
+        version: 5 as const,
         className: 'block:hover',
         kind: 'semantic',
         text: '@layer utilities{.block\\:hover:hover{display:block}}'
       })
       expect(language.completionIndex()).toMatchObject({
-        version: 5,
+        version: 5 as const,
         classEntries: expect.arrayContaining([
           expect.objectContaining({ label: 'block', kind: 'value' }),
-          expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
+          expect.objectContaining({ label: "color:", kind: 'property', triggerSuggest: true })
         ])
       })
       expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-        version: 5,
+        version: 5 as const,
         colorToken: 'rgba(0|0|0/.5)',
         editable: true,
-        sourceFormat: { syntax: 'rgb' }
+        sourceFormat: { syntax: 'rgb' as const }
       })
       expect(language.colorTokens([{
         className: 'color:#123',
         start: 2
       }])).toEqual({
-        version: 5,
+        version: 5 as const,
         tokens: [{
           range: { start: 8, end: 12 },
           expression: { kind: 'literal', value: '#123' }

@@ -1,7 +1,7 @@
 use super::{
     CompileManifestOptions, CompilerError, CssDirectiveConditionPathEntry,
-    CssDirectiveManifestInput, EngineCompositionRuleIr, EngineSession, Map, ResolvedStyleBranch,
-    UtilityLayerName, Value, json,
+    CssDirectiveManifestInput, EngineCompositionRuleIr, EngineSession, ResolvedStyleBranch,
+    UtilityLayerName, Value,
 };
 
 pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
@@ -26,24 +26,53 @@ pub(super) fn compile_with_base(
         .map(|result| result.manifest)
 }
 
-pub(super) fn condition_path(
-    value: &Map<String, Value>,
-) -> Result<Vec<CssDirectiveConditionPathEntry>, CompilerError> {
-    if let Some(path) = value.get("conditionPath") {
-        return serde_json::from_value(path.clone()).map_err(|error| {
-            directive_error(format!("Invalid directive condition path: {error}"))
-        });
+pub(super) fn delivered_mixins(
+    input: &CssDirectiveManifestInput,
+    resolution: &Value,
+) -> Result<Option<Vec<mastercss_schema::MixinDefinition>>, CompilerError> {
+    use mastercss_schema::{MixinDefinition, MixinNode};
+    let Some(local) = &input.mixins else {
+        return Ok(None);
+    };
+    let definitions: Vec<MixinDefinition> = serde_json::from_value(
+        resolution
+            .get("mixins")
+            .cloned()
+            .unwrap_or_else(|| serde_json::json!([])),
+    )
+    .map_err(|error| directive_error(error.to_string()))?;
+    let mut needed: std::collections::HashSet<String> =
+        local.iter().map(|item| item.name.clone()).collect();
+    fn dependencies(nodes: &[MixinNode], needed: &mut std::collections::HashSet<String>) {
+        for node in nodes {
+            match node {
+                MixinNode::Apply { name, .. } => {
+                    needed.insert(name.clone());
+                }
+                MixinNode::Rule { body, .. } | MixinNode::Condition { body, .. } => {
+                    dependencies(body, needed)
+                }
+                _ => {}
+            }
+        }
     }
-    Ok(value
-        .get("conditions")
-        .and_then(Value::as_array)
-        .into_iter()
-        .flatten()
-        .filter_map(Value::as_str)
-        .map(|value| CssDirectiveConditionPathEntry::Condition {
-            value: value.into(),
-        })
-        .collect())
+    loop {
+        let before = needed.len();
+        for definition in &definitions {
+            if needed.contains(&definition.name) {
+                dependencies(&definition.body, &mut needed);
+            }
+        }
+        if needed.len() == before {
+            break;
+        }
+    }
+    Ok(Some(
+        definitions
+            .into_iter()
+            .filter(|item| needed.contains(&item.name))
+            .collect(),
+    ))
 }
 
 pub(super) fn combine_selector_wrapper(selector: &str, wrapper: &str) -> String {
@@ -131,79 +160,4 @@ pub(super) fn resolve_configured_branches(
             .map_err(|error| directive_error(error.to_string()))?;
     }
     Ok(branches)
-}
-
-pub(super) fn value_object(value: &Value) -> Result<&Map<String, Value>, CompilerError> {
-    value
-        .as_object()
-        .ok_or_else(|| directive_error("CSS directive utility definition must be an object"))
-}
-
-pub(super) fn finalize_utility_definitions(
-    input: &mut CssDirectiveManifestInput,
-    engine: &mut EngineSession,
-) -> Result<(), CompilerError> {
-    let Some(utilities) = input.utilities.as_mut() else {
-        return Ok(());
-    };
-    for utility in utilities {
-        let definition = utility
-            .as_object_mut()
-            .ok_or_else(|| directive_error("CSS directive utility definition must be an object"))?;
-        let definition_path = condition_path(definition)?;
-        let definition_has_variants = definition_path
-            .iter()
-            .any(|entry| matches!(entry, CssDirectiveConditionPathEntry::Variant { .. }));
-        if definition_has_variants {
-            if let Some(declarations) = definition.shift_remove("declarations") {
-                let rules = definition
-                    .entry("rules")
-                    .or_insert_with(|| Value::Array(Vec::new()))
-                    .as_array_mut()
-                    .ok_or_else(|| directive_error("Managed utility rules must be an array"))?;
-                rules.push(json!({
-                    "declarations": declarations,
-                    "conditionPath": definition_path
-                }));
-            }
-            definition.shift_remove("conditions");
-            definition.shift_remove("conditionPath");
-        }
-        let Some(rules) = definition.shift_remove("rules") else {
-            continue;
-        };
-        let mut resolved_rules = Vec::new();
-        for rule in rules
-            .as_array()
-            .ok_or_else(|| directive_error("Managed utility rules must be an array"))?
-        {
-            let rule = value_object(rule)?;
-            let declarations = rule
-                .get("declarations")
-                .and_then(Value::as_object)
-                .cloned()
-                .ok_or_else(|| directive_error("Managed utility rule requires declarations"))?;
-            let selector = rule.get("selector").and_then(Value::as_str).unwrap_or("&");
-            for branch in
-                resolve_configured_branches(&condition_path(rule)?, engine, selector, None)?
-            {
-                let mut output = Map::new();
-                output.insert("declarations".into(), Value::Object(declarations.clone()));
-                if branch.selector != "&" {
-                    output.insert("selector".into(), Value::String(branch.selector));
-                }
-                if !branch.conditions.is_empty() {
-                    output.insert(
-                        "conditions".into(),
-                        Value::Array(branch.conditions.into_iter().map(Value::String).collect()),
-                    );
-                }
-                resolved_rules.push(Value::Object(output));
-            }
-        }
-        if !resolved_rules.is_empty() {
-            definition.insert("rules".into(), Value::Array(resolved_rules));
-        }
-    }
-    Ok(())
 }

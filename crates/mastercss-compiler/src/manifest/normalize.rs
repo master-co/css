@@ -1,4 +1,4 @@
-use super::utilities::{compile_utilities, compile_variants};
+use super::utilities::compile_variants;
 use super::variables::{
     compile_container_conditions, compile_variables, group_variables, manifest_error, object,
 };
@@ -212,22 +212,12 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
             .and_then(Value::as_str)
             .map(str::to_owned)
     });
-    let all_utilities = base
-        .get("utilities")
-        .and_then(Value::as_array)
-        .into_iter()
-        .flatten()
-        .chain(
-            fragment
-                .get("utilities")
-                .and_then(Value::as_array)
-                .into_iter()
-                .flatten(),
-        )
-        .cloned()
-        .collect::<Vec<_>>();
-    let utilities = (!all_utilities.is_empty())
-        .then(|| Value::Array(mastercss_engine::effective_utilities(&all_utilities)));
+    let mixins = merge_array_by(base.get("mixins"), fragment.get("mixins"), |definition| {
+        definition
+            .get("name")
+            .and_then(Value::as_str)
+            .map(str::to_owned)
+    });
     for (key, value) in [
         ("variables", variables),
         (
@@ -250,7 +240,7 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
             "selectors",
             merge_records(base.get("selectors"), fragment.get("selectors")),
         ),
-        ("utilities", utilities),
+        ("mixins", mixins),
         (
             "debug",
             merge_records(base.get("debug"), fragment.get("debug")),
@@ -267,25 +257,6 @@ pub fn compile_manifest_input(
     input: &CssDirectiveManifestInput,
     options: &CompileManifestOptions,
 ) -> Result<CompileManifestResult, CompilerError> {
-    if input
-        .utilities
-        .iter()
-        .flatten()
-        .any(|definition| definition.get("body").is_some())
-    {
-        let result = crate::lower_css_directives(
-            input,
-            &[],
-            &[],
-            &crate::LowerCssDirectivesOptions {
-                base_manifest: options.base_manifest.clone(),
-                resolution_manifest: None,
-            },
-        )?;
-        return Ok(CompileManifestResult {
-            manifest: result.manifest,
-        });
-    }
     compile_manifest_fragment(input, options)
 }
 
@@ -306,8 +277,7 @@ pub(crate) fn compile_manifest_fragment(
     let (variants, selectors, variant_conditions) =
         compile_variants(variant_definitions.as_ref().and_then(Value::as_array))?;
     let conditions = variant_conditions;
-    let mut utilities = compile_utilities(input.utilities.as_ref())?;
-    crate::custom_media::lower_records(&mut utilities, "rules", &registry)?;
+
     let mut fragment = Map::new();
     fragment.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
     fragment.insert(
@@ -345,10 +315,14 @@ pub(crate) fn compile_manifest_fragment(
     if !selectors.is_empty() {
         fragment.insert("selectors".into(), Value::Object(selectors));
     }
-    if let Some(utilities) = utilities {
-        fragment.insert("utilities".into(), utilities);
+    if let Some(mixins) = &input.mixins {
+        fragment.insert(
+            "mixins".into(),
+            serde_json::to_value(mixins).expect("mixin definitions"),
+        );
     }
-    let manifest = merge_manifest(options.base_manifest.as_ref(), &Value::Object(fragment));
+    let mut manifest = merge_manifest(options.base_manifest.as_ref(), &Value::Object(fragment));
+    crate::mixins::resolve_definitions(&mut manifest, &registry)?;
     MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))?;
     Ok(CompileManifestResult { manifest })
 }
@@ -387,21 +361,6 @@ pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerEr
         }
         manifest.insert("variables".into(), Value::Object(normalized_groups));
     }
-    if let Some(utilities) = manifest.get("utilities").and_then(Value::as_array) {
-        let mut normalized = Vec::new();
-        for utility in utilities {
-            let mut utility = object(utility)?.clone();
-            if utility.get("name") == utility.get("id") {
-                utility.shift_remove("name");
-            }
-            if utility.get("layer").and_then(Value::as_str) == Some("utilities") {
-                utility.shift_remove("layer");
-            }
-            utility.shift_remove("order");
-            normalized.push(Value::Object(utility));
-        }
-        manifest.insert("utilities".into(), Value::Array(normalized));
-    }
     Ok(Value::Object(manifest))
 }
 
@@ -423,11 +382,23 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         "breakpointConditions",
         "containerConditions",
         "selectors",
-        "utilities",
+        "mixins",
     ] {
         if let Some(value) = manifest.get(key) {
             preset.insert(key.into(), value.clone());
         }
+    }
+    for definition in preset
+        .get_mut("mixins")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        let mut parsed: mastercss_schema::MixinDefinition =
+            serde_json::from_value(definition.clone())
+                .map_err(|error| manifest_error(error.to_string()))?;
+        crate::mixins::visit_sources(&mut parsed, &mut |source| *source = None);
+        *definition = serde_json::to_value(parsed).expect("mixin");
     }
     normalize_manifest_for_json(&Value::Object(preset))
 }

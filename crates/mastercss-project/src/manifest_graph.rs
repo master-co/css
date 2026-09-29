@@ -41,7 +41,7 @@ pub(super) fn compile_manifest_graph_with_output(
     let mut stack = stack.to_vec();
     stack.push(request.entry.clone());
     let mut reference_manifest = None;
-    let mut reference_utility_sources = Vec::new();
+    let mut reference_mixin_sources = Vec::new();
     let mut reference_dependencies = Vec::new();
     let mut reference_warnings = Vec::new();
     for reference in &graph.references {
@@ -76,7 +76,7 @@ pub(super) fn compile_manifest_graph_with_output(
             project_dir,
             &chain,
         )?;
-        reference_utility_sources.extend(result.directives.utility_sources);
+        reference_mixin_sources.extend(result.directives.mixin_sources);
         reference_manifest = Some(result.manifest);
         push_unique(&mut reference_dependencies, result.directives.dependencies);
         push_unique(&mut reference_warnings, result.directives.warnings);
@@ -94,7 +94,7 @@ pub(super) fn compile_manifest_graph_with_output(
         inline_imports: emit_native_compose,
         request: CompileCssStylesheetGraphRequest {
             graph: request.clone(),
-            utility_sources: reference_utility_sources,
+            mixin_sources: reference_mixin_sources,
             urls,
             resource_urls: None,
             relative_resource_urls: false,

@@ -9,7 +9,7 @@ test('document features share analysis until the document or effective settings 
   const session = createToolingSessionSync({ manifest: defaultManifestJSON as unknown as MasterCSSManifest })
   const service = new MasterCSSLanguageService({ embeddedSyntaxHighlighting: 'always', classAttributes: ['data-css'] }, { session })
   const analyze = vi.spyOn(session, 'analyzeDocument')
-  const document = TextDocument.create('file:///cache.html', 'html', 1, '<div class="fg-red" data-next="block"/>')
+  const document = TextDocument.create('file:///cache.html', 'html', 1, '<div class="fg-red" data-next="display:block"/>')
   const position = document.positionAt(14)
   try {
     expect(service.getClassPosition(document, position)?.token).toBe('fg-red')
@@ -21,13 +21,13 @@ test('document features share analysis until the document or effective settings 
     expect(analyze).toHaveBeenCalledTimes(1)
 
     service.settings.classAttributes?.push('data-next')
-    expect(service.getClassPositions(document).map(({ token }) => token)).toContain('block')
+    expect(service.getClassPositions(document).map(({ token }) => token)).toContain("display:block")
     expect(analyze).toHaveBeenCalledTimes(2)
-    TextDocument.update(document, [{ text: '<div class="flex"/>' }], 2)
-    expect(service.getClassPositions(document).map(({ token }) => token)).toEqual(['flex'])
+    TextDocument.update(document, [{ text: "<div class=\"display:flex\"/>" }], 2)
+    expect(service.getClassPositions(document).map(({ token }) => token)).toEqual(["display:flex"])
     expect(analyze).toHaveBeenCalledTimes(3)
-    const replacement = TextDocument.create(document.uri, 'html', 2, '<div class="hidden"/>')
-    expect(service.getClassPositions(replacement).map(({ token }) => token)).toEqual(['hidden'])
+    const replacement = TextDocument.create(document.uri, 'html', 2, "<div class=\"display:none\"/>")
+    expect(service.getClassPositions(replacement).map(({ token }) => token)).toEqual(["display:none"])
     expect(analyze).toHaveBeenCalledTimes(4)
   } finally {
     service.dispose()

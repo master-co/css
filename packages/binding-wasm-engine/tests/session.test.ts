@@ -41,15 +41,26 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 2, languageVersion: 4,
-    utilities: [{
-      id: 'display-block',
-      name: 'block',
-      type: -2,
-      emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
-      matchers: [{ type: 'static', name: 'block' }]
-    }]
-  }))
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "mixins": [
+    {
+      "name": "--block",
+      "body": [
+        {
+          "type": "declaration" as const,
+          "property": "display",
+          "value": [
+            {
+              "type": "text" as const,
+              "value": "block"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}))
 
   expect(session.inspect('block')).toMatchObject({ matchStatus: 'matched', className: 'block' })
   expect(session.snapshot().text).toBe('')
@@ -58,22 +69,44 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   expect(session.snapshot().text).toBe('@layer utilities{.block{display:block}}')
   session.dispose()
 
-  const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }] }],
-    version: 2, languageVersion: 4,
-    variables: {
-      '': [{
-        name: 'stripe',
-        key: 'stripe',
-        type: 'string',
-        values: [{ path: [':root,:host'], value: 'linear-gradient(red,blue)' }]
-      }]
-    },
-    utilities: []
-  }))
-  nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
+  const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "stripe",
+          "value": "linear-gradient(red,blue)"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "": [
+      {
+        "name": "stripe",
+        "key": "stripe",
+        "type": "string" as const,
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "linear-gradient(red,blue)"
+          }
+        ]
+      }
+    ]
+  }
+}))
+  nativeDeclarationSession.ensureClassRules(["background:var(--stripe)"])
   expect(nativeDeclarationSession.snapshot().text).toBe(
     '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
-    + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
+    + "@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
   )
   nativeDeclarationSession.dispose()
 })
@@ -84,13 +117,38 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     '../artifacts/mastercss_binding_wasm_engine_bg.wasm',
     import.meta.url
   )))
-  const session = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "color-red-60", value: '#d00' }] }],
-    version: 2, languageVersion: 4,
-    variables: {
-      color: [{ key: 'red-60', values: [{ path: [':root,:host'], value: '#d00' }] }]
-    },
-    utilities: []
-  }), {
+  const session = await createWasmEngineSession(JSON.stringify({
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "color-red-60",
+          "value": "#d00"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "color": [
+      {
+        "key": "red-60",
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "#d00"
+          }
+        ]
+      }
+    ]
+  }
+}), {
     emittedGlobals: { variables: { 'color-red-60': 1 } }
   }, { input })
 
@@ -107,13 +165,38 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     '../artifacts/mastercss_binding_wasm_engine_bg.wasm',
     import.meta.url
   )))
-  const session = await createWasmEngineSession(JSON.stringify({ theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: "color-red-60", value: '#d00' }] }],
-    version: 2, languageVersion: 4,
-    variables: {
-      color: [{ key: 'red-60', values: [{ path: [':root,:host'], value: '#d00' }] }]
-    },
-    utilities: []
-  }), {}, { input })
+  const session = await createWasmEngineSession(JSON.stringify({
+  "theme": [
+    {
+      "type": "rule" as const,
+      "prelude": ":root,:host",
+      "children": [
+        {
+          "type": "declaration" as const,
+          "name": "color-red-60",
+          "value": "#d00"
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const,
+  "variables": {
+    "color": [
+      {
+        "key": "red-60",
+        "values": [
+          {
+            "path": [
+              ":root,:host"
+            ],
+            "value": "#d00"
+          }
+        ]
+      }
+    ]
+  }
+}), {}, { input })
 
   session.ensureClassRules(['fg-red-60'])
   expect(session.snapshot().text).toContain('--color-red-60:#d00')
@@ -135,7 +218,10 @@ it('preserves native declarations independently of browser CSS.supports', async 
     import.meta.url
   )))
   const session = await createWasmEngineSession(
-    JSON.stringify({ version: 2, languageVersion: 4, utilities: [] }),
+    JSON.stringify({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}),
     {},
     { input }
   )
@@ -148,7 +234,10 @@ it('preserves native declarations independently of browser CSS.supports', async 
   session.dispose()
 
   const renderSession = await createWasmRenderSession(
-    JSON.stringify({ version: 2, languageVersion: 4, utilities: [] }),
+    JSON.stringify({
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}),
     {},
     { input }
   )

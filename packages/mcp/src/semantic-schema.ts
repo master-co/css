@@ -34,26 +34,23 @@ export const versions = z.object({ languageVersion: z.number(), bindingAbiVersio
 export const metadata = z.object({ context: z.enum(['project', 'preset']), status: z.enum(['loaded', 'error']), fingerprint: z.string().nullable(), entries: strings, dependencies: strings, versions: versions.optional() }).passthrough()
 export const envelopeMetadata = z.object({ versions: versions.nullable(), context: z.enum(['project', 'preset']).nullable(), manifestFingerprint: z.string().nullable(), entries: strings, dependencies: strings })
 
-const declarationValue = z.union([z.string(), z.number(), z.null()])
-const declarations = z.record(z.string(), z.union([declarationValue, z.array(declarationValue)]))
-const matcher = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('static'), name: z.string() }),
-  z.object({ type: z.literal('key'), keys: strings }),
-  z.object({ type: z.literal('token'), prefix: z.string() })
-])
-const emit = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('declarations'), declarations: strings }),
-  z.object({ type: z.literal('template'), declarations }),
-  z.object({ type: z.literal('property'), property: z.string() }),
-  z.object({ type: z.literal('static'), rules: z.array(z.object({ declarations, selector: z.string().optional(), conditions: strings.optional() })) })
-])
-export const utility = z.object({
-  id: z.string(), type: z.number(), matchers: z.array(matcher), emit,
-  key: z.string().optional(), keys: strings.optional(), subkey: z.string().optional(), name: z.string().optional(),
-  order: z.number().optional(), layer: z.string().optional(), namespaces: strings.optional(),
-  variableAliases: z.array(z.tuple([z.string(), z.string()])).optional(), variableAliasRefs: strings.optional(), aliasGroups: strings.optional(), conditions: strings.optional(),
-  matcherTypes: strings, emitType: z.string()
-}).passthrough()
+const mixinSource = z.object({ file: z.string().optional(), range, loc: z.object({ start: z.object({ line: z.number(), column: z.number() }), end: z.object({ line: z.number(), column: z.number() }) }).optional() }).optional()
+const mixinValue: z.ZodType = z.lazy(() => z.array(z.discriminatedUnion('type', [
+  z.object({ type: z.literal('text'), value: z.string() }),
+  z.object({ type: z.literal('function'), name: z.string(), value: mixinValue })
+])))
+const mixinNode: z.ZodType = z.lazy(() => z.discriminatedUnion('type', [
+  z.object({ type: z.literal('declaration'), property: z.string(), value: mixinValue, source: mixinSource }),
+  z.object({ type: z.literal('rule'), selector: z.string(), body: z.array(mixinNode) }),
+  z.object({ type: z.literal('condition'), condition: z.string(), body: z.array(mixinNode) }),
+  z.object({ type: z.literal('apply'), name: z.string(), arguments: z.array(mixinValue), source: mixinSource })
+]))
+export const mixin = z.object({
+  name: z.string(),
+  parameters: z.array(z.object({ name: z.string(), syntax: z.enum(['integer', 'number', 'string', 'custom-ident']).optional(), default: z.string().optional(), source: mixinSource })),
+  body: z.array(mixinNode),
+  source: mixinSource
+})
 const conditionNode: z.ZodType = z.lazy(() => z.union([
   z.object({ type: z.literal('boolean'), name: z.string(), raw: z.string().optional() }),
   z.object({ type: z.literal('number'), value: z.number(), name: z.string().optional(), unit: z.string().optional(), operator: z.string().optional(), raw: z.string().optional() }),
@@ -68,15 +65,11 @@ const mediaQuery: z.ZodType = z.lazy(() => z.union([
   z.object({ type: z.enum(['and', 'or']), queries: z.array(mediaQuery) })
 ]))
 export const manifestResults = z.object({
-  tokens: z.array(variable), utilities: z.array(utility),
+  tokens: z.array(variable), mixins: z.array(mixin),
   variants: z.array(z.object({ token: z.string(), branches: z.number(), layers: strings })),
   customMedia: z.array(z.object({ name: z.string(), expression: mediaQuery })),
   conditions: z.array(z.object({ name: z.string(), id: z.string(), nodes: z.array(conditionNode), nodeCount: z.number() })),
-  aliases: z.array(z.discriminatedUnion('type', [
-    z.object({ type: z.literal('variable-alias'), utility: z.string(), key: z.string(), name: z.string() }),
-    z.object({ type: z.literal('variable-alias-ref'), utility: z.string(), ref: z.string() }),
-    z.object({ type: z.literal('alias-group'), utility: z.string(), group: z.string() })
-  ]))
+  aliases: z.array(z.object({ type: z.literal('token-alias'), alias: z.string(), property: z.string(), namespaces: strings }))
 })
 export const change = z.object({ filePath: z.string(), beforeHash: z.string().nullable(), afterHash: z.string(), beforeExists: z.boolean(), beforeBytes: z.number(), afterBytes: z.number(), afterText: z.string(), diff: z.string() })
 export const completion = z.object({ label: z.string(), kind: z.number().optional(), detail: z.string().optional(), insertText: z.string().optional(), sortText: z.string().optional(), documentation: z.union([z.string(), z.object({ kind: z.string(), value: z.string() })]).optional() }).passthrough()

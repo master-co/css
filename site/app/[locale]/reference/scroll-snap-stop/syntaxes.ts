@@ -1,6 +1,6 @@
 const syntaxes = [
-  'snap-always',
-  'snap-normal',
+  "scroll-snap-stop:always",
+  "scroll-snap-stop:normal",
   ['scroll-snap-stop:`value`'],
 ]
 

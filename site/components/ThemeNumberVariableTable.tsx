@@ -25,7 +25,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
   return (
     <figure>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Numeric tables scroll within the document column and need native keyboard access. */}
-      <div className="doc-table doc-number-variable-table" data-representation={hasSpacingRepresentation ? 'spacing' : undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
+      <div className="doc-number-variable-table doc-table" data-representation={hasSpacingRepresentation ? 'spacing' : undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
           <caption id={captionId} className="sr-only"><Translate>Numeric theme variables</Translate></caption>
           <thead>
@@ -34,7 +34,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
               <th scope="col"><Translate>Value</Translate></th>
               <th scope="col">{referenceUnit.toUpperCase()}</th>
               {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
-              {hasDescriptions && <th scope="col" className="min-w:12rem"><Translate>Description</Translate></th>}
+              {hasDescriptions && <th scope="col" className="min-width:12rem"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
@@ -58,8 +58,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
   return (
-    <div aria-hidden="true" className="inline-flex w:fit-content outline:1px|solid|var(--color-line-subtle) outline-offset:-1px background-color:var(--stripe-pink) v:middle" style={{ gap: value }}>
-      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block width:1.5em height:1.5em surface-raised"></div>)}
+    <div aria-hidden="true" className="display:inline-flex width:fit-content outline:1px|solid|var(--color-line-subtle) outline-offset:-1px background-color:var(--stripe-pink) vertical-align:middle" style={{ gap: value }}>
+      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="display:inline-block height:1.5em width:1.5em surface-raised"></div>)}
     </div>
   )
 }

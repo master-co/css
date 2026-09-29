@@ -41,23 +41,23 @@ it('validate an invalid CSS property value', () => {
 })
 
 it('validate valid classes', () => {
-  expectClassWithoutErrors('text-center')
+  expectClassWithoutErrors("text-align:center")
   expectClassWithoutErrors('font-size:.75rem@media(print)')
-  expectClassWithoutErrors('mt:var(--top)')
+  expectClassWithoutErrors("margin-top:var(--top)")
   expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
   expectClassWithoutErrors('{text-wrap:pretty}')
   expectClassWithoutErrors('{content:\'\';block}::after@light')
   expect(validate('background-color:light-dark(#333b3c,#efefec)').errors).toEqual([])
-  expectClassValid('text-center')
+  expectClassValid("text-align:center")
   expectClassValid('font-size:.75rem@media(print)')
-  expectClassValid('mt:var(--top)')
+  expectClassValid("margin-top:var(--top)")
   expectClassValid('right:max(0px,calc(50%-45.3125rem))')
   expectClassValid('{text-wrap:pretty}')
   expectClassValid('{content:\'\';block}::after@light')
 })
 
 it('create rules by class', () => {
-  expect(generateValidRules('text-center')).toHaveLength(1)
+  expect(generateValidRules("text-align:center")).toHaveLength(1)
   expect(generateValidRules('text:cente')).toHaveLength(0)
 })
 
@@ -74,7 +74,7 @@ it('validates native CSS declarations through @eslint/css-tree', () => {
   expect(generateValidRules('--foo:123')[0]?.text).toContain('{--foo:123}')
 
   expect(generateValidRules('$foo:123')).toHaveLength(0)
-  expect(generateValidRules('mt:$(top)')).toHaveLength(0)
+  expect(generateValidRules("margin-top:$(top)")).toHaveLength(0)
   expect(generateValidRules('made-up:left')).toHaveLength(0)
   expect(generateValidRules('float:banana')).toHaveLength(0)
   expect(generateValidRules('display:banana')).toHaveLength(0)
@@ -82,5 +82,5 @@ it('validates native CSS declarations through @eslint/css-tree', () => {
 })
 
 it('fairly irregular classes can be ignored very well', () => {
-  expect(generateValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
+  expect(generateValidRules("box-shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,")).toHaveLength(0)
 })

@@ -19,7 +19,7 @@ test('extractSearchNodesFromMdx reads markdown text, code, list items, and resol
     '- Second item',
     '',
     '```html',
-    '<div class="text-body">Hello</div>',
+    "<div class=\"fg-text-body\">Hello</div>",
     '```',
     '',
     '<Demo />'
@@ -30,7 +30,7 @@ test('extractSearchNodesFromMdx reads markdown text, code, list items, and resol
     { tag: 'p', text: 'Use text-body for readable copy.' },
     { tag: 'li', text: 'First item' },
     { tag: 'li', text: 'Second item' },
-    { tag: 'code', text: '<div class="text-body">Hello</div>' }
+    { tag: 'code', text: "<div class=\"fg-text-body\">Hello</div>" }
   ])
 })
 

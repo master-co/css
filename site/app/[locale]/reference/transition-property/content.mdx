@@ -9,7 +9,7 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
 
 ```html
 <!-- Opacity only · position changes immediately -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          opacity:.72:has(input:checked)>span>span@screen
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move and fade"
@@ -18,11 +18,11 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
            outline-offset:3px:focus-visible">
   Move and fade
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:opacity
              transition-timing-function:linear
@@ -36,7 +36,7 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
 
 ```html
 <!-- Opacity + transform · both interpolate -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          opacity:.72:has(input:checked)>span>span@screen
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move and fade"
@@ -45,11 +45,11 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
            outline-offset:3px:focus-visible">
   Move and fade
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:opacity,transform
              transition-timing-function:linear
@@ -79,8 +79,8 @@ Focus or hover this native button. A 200ms duration and the smooth easing token 
 <!-- Transform · 200ms smooth -->
 <div class="p-sm">
   <button id="target" type="button"
-    class="inline-grid place-items:center h:64px
-           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+    class="display:inline-grid place-items:center height:64px
+           width:160px p-sm border:1px|solid|var(--color-blue-60) r-sm
            font-sm bg-blue-10 fg-blue-80 transform:none
            transition-property:transform
            transition-timing-function-smooth
@@ -104,7 +104,7 @@ Compare the same movement with transform selected and with none. Both specimens 
 
 ```html
 <!-- Transform selected · interpolated movement -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -112,11 +112,11 @@ Compare the same movement with transform selected and with none. Both specimens 
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -130,7 +130,7 @@ Compare the same movement with transform selected and with none. Both specimens 
 
 ```html
 <!-- None selected · immediate movement -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
@@ -138,11 +138,11 @@ Compare the same movement with transform selected and with none. Both specimens 
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:none
              transition-timing-function:linear
@@ -163,7 +163,7 @@ Toggle the layer after resizing. Below `sm`, only opacity interpolates; at `sm`,
 
 ```html
 <!-- Opacity → opacity + transform at sm -->
-<label class="block w:280px max-w:100% font-sm
+<label class="display:block width:280px max-width:100% font-sm
          opacity:.72:has(input:checked)>span>span@screen
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move and fade"
@@ -172,11 +172,11 @@ Toggle the layer after resizing. Below `sm`, only opacity interpolates; at `sm`,
            outline-offset:3px:focus-visible">
   Move and fade
   <span aria-hidden="true"
-    class="block h:64px mt-md p-xs
+    class="display:block height:64px mt-md p-xs
            outline:1px|dashed|var(--color-line-subtle)">
     <span id="target"
-      class="grid place-items:center h:48px w:128px
-             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+      class="display:grid place-items:center height:48px width:128px
+             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:opacity
              transition-timing-function:linear

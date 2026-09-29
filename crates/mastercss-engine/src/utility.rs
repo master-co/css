@@ -1,51 +1,38 @@
 use super::{
-    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
-    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering,
-    StoredRule, UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
+    BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES, CompiledVariable,
+    ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering, StoredRule,
+    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
     UtilityMatcherType, collect_css_variable_names, format_standard_number,
     is_native_shorthand_property, normalize_css_math_functions,
 };
 
 pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    for (properties, variable_alias_refs) in BUILTIN_TOKEN_NAMESPACES {
-        for property in *properties {
-            let mut keys = vec![*property];
-            keys.extend(
-                BUILTIN_KEY_ALIASES
-                    .iter()
-                    .filter_map(|(alias, target)| (*target == *property).then_some(*alias)),
-            );
-            for key in keys {
-                utilities.push(UtilityDefinition {
-                    id: format!("token:{key}"),
-                    name: Some(format!("{key}-")),
-                    utility_type: if is_native_shorthand_property(property) {
-                        -1
-                    } else {
-                        0
-                    },
-                    order: Some(0),
-                    layer: UtilityLayerName::Utilities,
-                    keys: Vec::new(),
-                    alias_groups: Vec::new(),
-                    variable_aliases: Vec::new(),
-                    variable_alias_refs: variable_alias_refs
-                        .iter()
-                        .map(|value| (*value).to_owned())
-                        .collect(),
-                    variables: HashMap::new(),
-                    variable_entries: Vec::new(),
-                    native_fallback: false,
-                    builtin_token: true,
-                    emit: UtilityEmit::Property {
-                        property: (*property).into(),
-                    },
-                    matchers: vec![UtilityMatcher::Token {
-                        prefix: format!("{key}-"),
-                    }],
-                });
-            }
-        }
+    for (prefix, property, namespaces) in super::builtin_token_families() {
+        utilities.push(UtilityDefinition {
+            id: format!("token:{prefix}:{property}"),
+            name: Some(format!("{prefix}-")),
+            utility_type: if is_native_shorthand_property(property) {
+                -1
+            } else {
+                0
+            },
+            order: Some(0),
+            layer: UtilityLayerName::Utilities,
+            keys: Vec::new(),
+            alias_groups: Vec::new(),
+            variable_aliases: Vec::new(),
+            variable_alias_refs: namespaces.iter().map(|name| (*name).into()).collect(),
+            variables: Default::default(),
+            variable_entries: Vec::new(),
+            native_fallback: false,
+            builtin_token: true,
+            emit: UtilityEmit::Property {
+                property: property.into(),
+            },
+            matchers: vec![UtilityMatcher::Token {
+                prefix: format!("{prefix}-"),
+            }],
+        });
     }
 }
 
@@ -107,6 +94,7 @@ pub(crate) fn compile_utility_variables(
             };
             if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace)
                 && !utility.variables.contains_key(&key)
+                && !(matches!(utility.emit, UtilityEmit::Mixin { .. }) && key.contains("--"))
             {
                 utility.variables.insert(key.clone(), variable.name.clone());
                 utility.variable_entries.push((key, variable.name.clone()));
@@ -333,9 +321,12 @@ pub(crate) fn match_utility_filtered(
                     continue;
                 }
                 let token = if negative { format!("-{value}") } else { value };
-                let Some((value, variable_names)) =
+                let resolved = if matches!(utility.emit, UtilityEmit::Mixin { .. }) {
+                    super::mixin_matching::named_value(&token, utility)
+                } else {
                     resolve_utility_alias_value(&token, utility, manifest)
-                else {
+                };
+                let Some((value, variable_names)) = resolved else {
                     continue;
                 };
                 return Some(UtilityMatch {
@@ -350,19 +341,6 @@ pub(crate) fn match_utility_filtered(
         }
     }
     None
-}
-
-pub(crate) fn canonicalize_class_name(class_name: &str) -> Option<String> {
-    let colon = class_name.find(':')?;
-    let key = &class_name[..colon];
-    let canonical = builtin_key_alias(key)?;
-    Some(format!("{canonical}{}", &class_name[colon..]))
-}
-
-pub(crate) fn builtin_key_alias(key: &str) -> Option<&'static str> {
-    BUILTIN_KEY_ALIASES
-        .iter()
-        .find_map(|(alias, canonical)| (*alias == key).then_some(*canonical))
 }
 
 pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {

@@ -15,7 +15,7 @@ test('lints markup and leaves standalone stylesheets to CSS tooling', async () =
   const eslint = new ESLint({ cwd: __dirname })
   const [markup] = await eslint.lintFiles('./index.html')
   expect(markup.errorCount).toBe(0)
-  expect(markup.warningCount).toBe(4)
+  expect(markup.warningCount).toBe(3)
 
   const stylesheetESLint = new ESLint({
     cwd: __dirname,
@@ -34,13 +34,12 @@ test('ESLint Configuration is valid', async () => {
   const eslint = new ESLint({ cwd: __dirname })
   const result = await eslint.lintFiles('./index.html')
   expect(result[0].errorCount).toBe(0)
-  expect(result[0].warningCount).toBe(4)
+  expect(result[0].warningCount).toBe(3)
   expect(result[0].messages.map((eachMessage) => eachMessage.message)).toEqual(
     [
-      'Remove classes "m:0.625rem m:1.25rem m:2.5rem@sm"; they are overridden by classes "m:1.875rem m:3.125rem@sm" in generated CSS.',
-      'Sort classes into the expected order: "block m:2rem mb:3rem font-size:.75rem font-size:1.5rem@sm font-size:2rem@md".',
+      "Remove classes \"margin:0.625rem margin:1.25rem margin:2.5rem@sm\"; they are overridden by classes \"margin:1.875rem margin:3.125rem@sm\" in generated CSS.",
+      "Sort classes into the expected order: \"display:block margin:2rem margin-bottom:3rem font-size:.75rem font-size:1.5rem@sm font-size:2rem@md\".",
       'Sort classes into the expected order: "width:error bg-indigo".',
-      'Use canonical class "w:error" instead of "width:error".',
     ]
   )
 })

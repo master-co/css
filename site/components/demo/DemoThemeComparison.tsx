@@ -18,7 +18,7 @@ export interface DemoThemeComparisonProps {
 
 /** Independent documents keep mode variables and native state inside each specimen. */
 export default function DemoThemeComparison({ name, title, html, css = '', caption, height = 240, print = false }: DemoThemeComparisonProps) {
-  const document = demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md bg-surface-base text-body', caption: '' })
+  const document = demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md bg-surface-base fg-text-body', caption: '' })
   return <Demo title={title} background="plain" padding="md" caption={caption} data-foundation-paint={name}>
     <DemoComparison>
       {(['light', 'dark'] as const).map(mode => <div key={mode} data-theme-specimen={mode}>

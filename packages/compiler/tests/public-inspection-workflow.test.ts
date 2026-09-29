@@ -15,12 +15,16 @@ test('public project, codec, query and validation APIs preserve execution contex
   try {
     writeFileSync(join(root, 'app.css'), `@import "@master/css";
 @theme { :root { --color-brand: red; } }
-@utility paint-* from(--color-*) { color: --master-value(); }
+@theme { :root { --paint-brand: var(--color-brand); } }
+@mixin --paint(--name <string>) { color: var(ident("--paint-" var(--name))); }
 `)
     const project = await loadProjectManifest({
       root,
       entries: [join(root, 'app.css')],
-      baseManifest: { version: 2, languageVersion: 4 }
+      baseManifest: {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
     })
     const manifest: MasterCSSManifest = JSON.parse(serializeMasterCSSManifest(project.manifest))
     expect(flattenMasterCSSManifestVariables(manifest.variables).map(token => token.name)).toContain('color-brand')
@@ -48,7 +52,7 @@ test('public project, codec, query and validation APIs preserve execution contex
 
 test('canonical suggestions do not replace raw display with a different cascade identity', async () => {
   using tooling = await createToolingSession({ manifest: defaultManifest as unknown as MasterCSSManifest })
-  expect(tooling.canonicalClassNames(['display:block', 'flex'])).toEqual([])
+  expect(tooling.canonicalClassNames(['display:block', "display:flex"])).toEqual([])
 })
 
 test('public inspection example distinguishes an empty result, validation states and a failed project', async () => {

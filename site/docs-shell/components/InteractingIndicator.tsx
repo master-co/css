@@ -2,9 +2,9 @@ import { IconHandClick, IconHandMove, IconTestPipe, IconForms, IconWand, IconRes
 import clsx from 'clsx'
 
 export default function InteractingIndicator({ children, icon }: any) {
-  const iconClass = 'app-icon flex:0|0|auto mr:0.5rem stroke-width:1 vertical-align:middle'
+  const iconClass = 'app-icon flex:0|0|auto margin-right:0.5rem stroke-width:1 vertical-align:middle'
   return (
-    <p className="pl:2.2em text-md! font-weight:460 text-indent:-2.2em text-strong">
+    <p className="padding-left:2.2em text-md! font-weight:460 text-indent:-2.2em fg-text-strong">
       {icon === 'wand' && <IconWand width="1.25em" height="1.25em" className={clsx(iconClass, 'stroke-accent>:is(:nth-child(3),:nth-child(4))')} />}
       {icon === 'hover' && <IconHandMove width="1.25em" height="1.25em" className={iconClass} />}
       {icon === 'click' && <IconHandClick width="1.25em" height="1.25em" className={clsx(iconClass, 'stroke-accent>:is(:nth-child(5),:nth-child(6),:nth-child(7),:nth-child(8))')} />}

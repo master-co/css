@@ -9,15 +9,15 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .2 Â· includes the outer ring -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
     class="float:left outline:1px|solid|var(--color-line-subtle)
            shape-image-threshold:.2
            shape-outside:url(/demo/mask.svg)" />
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -29,15 +29,15 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .5 Â· follows the opaque center -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
     class="float:left outline:1px|solid|var(--color-line-subtle)
            shape-image-threshold:.5
            shape-outside:url(/demo/mask.svg)" />
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -63,8 +63,8 @@ A continuous alpha gradient makes threshold differences visible along the floatâ
 
 ```html
 <!-- Threshold .2 Â· includes more of the fade -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
     class="float:left width:120px height:120px
@@ -73,7 +73,7 @@ A continuous alpha gradient makes threshold differences visible along the floatâ
            shape-image-threshold:.2
            shape-outside:linear-gradient(to|bottom,black,transparent)
            background-image:linear-gradient(to|bottom,var(--color-blue-80),transparent)@dark"></div>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -85,8 +85,8 @@ A continuous alpha gradient makes threshold differences visible along the floatâ
 
 ```html
 <!-- Threshold .8 Â· includes only the opaque end -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
     class="float:left width:120px height:120px
@@ -95,7 +95,7 @@ A continuous alpha gradient makes threshold differences visible along the floatâ
            shape-image-threshold:.8
            shape-outside:linear-gradient(to|bottom,black,transparent)
            background-image:linear-gradient(to|bottom,var(--color-blue-80),transparent)@dark"></div>
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -114,15 +114,15 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Image shape Â· threshold selects the center -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
     class="float:left outline:1px|solid|var(--color-line-subtle)
            shape-image-threshold:.5
            shape-outside:url(/demo/mask.svg)" />
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -134,15 +134,15 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Basic circle Â· threshold has no effect -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
     class="float:left outline:1px|solid|var(--color-line-subtle)
            shape-image-threshold:.8
            shape-outside:circle(36px)|border-box" />
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.
@@ -161,8 +161,8 @@ Widen to `sm` to lower the threshold from .5 to .2, including the translucent ri
 
 ```html
 <!-- Opaque center â†’ outer ring at sm -->
-<article class="flow-root w:280px max-w:100% font-sm
-         leading:24px text-body">
+<article class="display:flow-root width:280px max-width:100% font-sm
+         line-height:24px fg-text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
@@ -171,7 +171,7 @@ Widen to `sm` to lower the threshold from .5 to .2, including the translucent ri
            shape-outside:url(/demo/mask.svg)
            shape-image-threshold:.5@print
            shape-image-threshold:.2@screen@sm" />
-  <p class="m:0">
+  <p class="margin:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
     Their starting positions change with the available space.

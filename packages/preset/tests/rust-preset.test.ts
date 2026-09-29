@@ -34,7 +34,7 @@ describe('Rust-owned default preset', () => {
     expect(variables.some(({ name }) => name === 'color-blue-60')).toBe(true)
     expect(variables.some(({ name }) => name === 'spacing-md')).toBe(true)
     expect(readFileSync(resolve(import.meta.dirname, '../src/default-native.css'), 'utf8')).toContain('@keyframes fade')
-    expect(defaultManifest.utilities?.some(({ name }) => name === 'block')).toBe(true)
+    expect(defaultManifest.mixins?.some(({ name }) => name === '--center')).toBe(true)
   })
 
   it('renders representative classes through the native Rust engine', () => {
@@ -43,10 +43,10 @@ describe('Rust-owned default preset', () => {
     })
     try {
       engine.ensureClassRules([
-        'block',
+        'display:block',
         'fg-red-60',
         'surface-base',
-        'grid-cols:3',
+        'grid-cols(3)',
         'text-2xl'
       ])
       const snapshot = engine.snapshot()
@@ -54,7 +54,7 @@ describe('Rust-owned default preset', () => {
       expect(snapshot.text).toContain('color:var(--color-red-60)')
       expect(snapshot.text).toContain('background-color:var(--color-surface-base)')
       expect(snapshot.text).toContain('grid-template-columns:repeat(3, minmax(0, 1fr))')
-      expect(snapshot.text).toContain('font-size:var(--font-size-2xl)')
+      expect(snapshot.text).toContain('font-size:var(--text-2xl)')
     } finally {
       engine.dispose()
     }

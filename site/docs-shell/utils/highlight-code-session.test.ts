@@ -5,16 +5,12 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import highlightCode from './highlight-code'
 
 const manifest: MasterCSSManifest = {
-  version: 2, languageVersion: 4,
-  utilities: [{
-    id: '.brand', name: 'brand', type: -2,
-    emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
-    matchers: [{ type: 'static', name: 'brand' }]
-  }]
+  version: 3, languageVersion: 5,
+  mixins: [{ name: '--brand', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
 }
 
 test('reused default sessions return independent trees and retain custom transformers', async () => {
-  const code = '<div class="block fg-red invalid block"></div>'
+  const code = "<div class=\"display:block fg-red invalid display:block\"></div>"
   const options = { lang: 'html' }
   const first = await highlightCode(code, options)
   const expected = structuredClone(first)
@@ -32,7 +28,7 @@ test('custom manifests are isolated and caller-owned sessions remain usable', as
   const code = '<div class="brand"></div>'
   const options = { lang: 'html', masterCSS: { manifest } }
   const custom = await highlightCode(code, options)
-  const empty = await highlightCode(code, { lang: 'html', masterCSS: { manifest: { version: 2, languageVersion: 4 } } })
+  const empty = await highlightCode(code, { lang: 'html', masterCSS: { manifest: { version: 3, languageVersion: 5 } } })
   assert.notDeepEqual(custom, empty)
   assert.deepEqual(await highlightCode(code, options), custom)
   const session = createLanguageSessionSync({ manifest })

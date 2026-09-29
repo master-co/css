@@ -32,10 +32,10 @@ describe('Rust-backed language service', () => {
 
   test('uses the Rust completion index', () => {
     const service = createService()
-    expect(service.session.completionIndex().classEntries.some(({ label }) => label === 'fg:')).toBe(true)
+    expect(service.session.completionIndex().classEntries.some(({ label }) => label === "color:")).toBe(true)
 
-    const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="fg:"></div>')
-    const items = service.suggestSyntax(document, document.positionAt(15), {
+    const document = TextDocument.create('file:///index.html', 'html', 1, "<div class=\"color:\"></div>")
+    const items = service.suggestSyntax(document, document.positionAt(18), {
       triggerKind: CompletionTriggerKind.Invoked
     })
 
@@ -56,7 +56,23 @@ describe('Rust-backed language service', () => {
 
   test('uses the injected runtime default manifest for completions', () => {
     const service = createService(createPresetManifest({
-      utilities: [{ name: 'runtime-card', layer: 'components', declarations: { display: 'block' } }]
+      mixins: [
+  {
+    "name": "--runtime-card",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
     }))
     const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="runtime-"></div>')
     const items = service.suggestSyntax(document, document.positionAt('<div class="runtime-'.length), {
@@ -68,7 +84,23 @@ describe('Rust-backed language service', () => {
 
   test('uses the injected runtime for hover CSS previews', () => {
     const service = createService(createPresetManifest({
-      utilities: [{ name: 'runtime-card', layer: 'components', declarations: { display: 'block' } }]
+      mixins: [
+  {
+    "name": "--runtime-card",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
     }))
     const document = TextDocument.create(
       'file:///index.html',
@@ -79,7 +111,7 @@ describe('Rust-backed language service', () => {
     const hover = service.inspectSyntax(document, document.positionAt('<div class="runtime'.length))
 
     expect(JSON.stringify(hover?.contents)).toContain('display')
-    expect(JSON.stringify(hover?.contents)).toContain('block')
+    expect(JSON.stringify(hover?.contents)).toContain('display: block')
   })
 
   test('uses the injected runtime variables for document colors', async () => {

@@ -67,7 +67,7 @@ test('host Sass callback receives preparation options and keeps host importers',
         return { async compileStringAsync(source, options) {
           expect(options.url.href).toBe(pathToFileURL(file).href)
           expect(options.style).toBe('expanded')
-          return sass.compileStringAsync(source, { ...options, importers: [{ canonicalize: () => canonical, load: () => ({ contents: '$space: 3rem; .host { margin: $space; }', syntax: 'scss', sourceMapUrl: canonical }) }] })
+          return sass.compileStringAsync(source, { ...options, importers: [{ canonicalize: () => canonical, load: () => ({ contents: '$space: 3rem; .host { margin: $space; }', syntax: 'scss' as const, sourceMapUrl: canonical }) }] })
         } }
       }
     })
@@ -118,7 +118,22 @@ test('prepared Sass maps resolve relative references from an imported partial', 
     writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host { --paint-padding: 99rem; }}\n\n")
     const prepared = await stylesheets.prepareStylesheet(file, '@use "parts/rules";', { projectDir: root })
     const result = await stylesheets.transformStylesheet('\0prepared:entry.css', prepared.source, {
-      baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, projectDir: root,
+      baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, projectDir: root,
       delivery: { baseFile: prepared.baseFile, sourceMap: prepared.sourceMap,
         entryURL: '/entry.css', stylesheetURL: id => '/' + Buffer.from(id).toString('hex') + '.css', resourceURL: id => id }
     })

@@ -13,24 +13,24 @@ Compare `accent-color:auto` with `accent-color-blue` on a fieldset. Its checkbox
 <!-- Platform accent -->
 <form>
   <fieldset id="target"
-    class="grid gap-md min-w:0 m:0 p:0 border-width:0
+    class="display:grid gap-md min-width:0 margin:0 padding:0 border-width:0
            accent-color:auto">
     <legend class="sr-only">Platform accent</legend>
-    <label class="flex items-center gap-sm">
+    <label class="display:flex align-items:center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap-md">
-      <label class="flex items-center gap-sm">
+    <div class="display:flex flex-wrap:wrap gap-md">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap-sm">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap-xs w:240px max-w:100%">
+    <label class="display:grid gap-xs width:240px max-width:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:100%">
+        class="width:100%">
     </label>
   </fieldset>
 </form>
@@ -40,24 +40,24 @@ Compare `accent-color:auto` with `accent-color-blue` on a fieldset. Its checkbox
 <!-- Blue accent -->
 <form>
   <fieldset id="target"
-    class="grid gap-md min-w:0 m:0 p:0 border-width:0
+    class="display:grid gap-md min-width:0 margin:0 padding:0 border-width:0
            accent-color-blue">
     <legend class="sr-only">Blue accent</legend>
-    <label class="flex items-center gap-sm">
+    <label class="display:flex align-items:center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap-md">
-      <label class="flex items-center gap-sm">
+    <div class="display:flex flex-wrap:wrap gap-md">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap-sm">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap-xs w:240px max-w:100%">
+    <label class="display:grid gap-xs width:240px max-width:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:100%">
+        class="width:100%">
     </label>
   </fieldset>
 </form>
@@ -80,25 +80,25 @@ Change a real control group from blue to violet at `sm`. Resize the viewport and
 <form>
   <fieldset id="target"
 
-  class="grid gap-md min-w:0 m:0 p:0 border-width:0
+  class="display:grid gap-md min-width:0 margin:0 padding:0 border-width:0
          accent-color-blue accent-color:auto@print
          accent-color-violet@screen@sm">
     <legend class="sr-only">Responsive accent</legend>
-    <label class="flex items-center gap-sm">
+    <label class="display:flex align-items:center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap-md">
-      <label class="flex items-center gap-sm">
+    <div class="display:flex flex-wrap:wrap gap-md">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap-sm">
+      <label class="display:flex align-items:center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap-xs w:240px max-w:100%">
+    <label class="display:grid gap-xs width:240px max-width:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:100%">
+        class="width:100%">
     </label>
   </fieldset>
 </form>

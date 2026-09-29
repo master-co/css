@@ -1,9 +1,9 @@
 use super::{
-    BUILTIN_KEY_ALIASES, BUILTIN_TOKEN_NAMESPACES, CompiledVariable,
-    EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken, EngineError,
-    EngineSession, HashSet, ManifestProjection, UtilityDefinition, UtilityEmit, UtilityLayerName,
-    UtilityMatcher, Value, add_unique_string, find_matching_parenthesis,
-    selector_token_to_template, split_dynamic_value_state, utf16_len,
+    BUILTIN_TOKEN_NAMESPACES, CompiledVariable, EngineClassCompletionCandidate,
+    EngineClassCompletionKind, EngineColorToken, EngineError, EngineSession, HashSet,
+    ManifestProjection, UtilityDefinition, UtilityLayerName, UtilityMatcher, Value,
+    add_unique_string, find_matching_parenthesis, selector_token_to_template,
+    split_dynamic_value_state, utf16_len,
 };
 
 pub(crate) fn utility_completion_metadata(
@@ -18,38 +18,12 @@ pub(crate) fn utility_completion_metadata(
                     add_unique_string(&mut keys, key);
                 }
             }
-            UtilityMatcher::Static { .. } | UtilityMatcher::Token { .. } => {}
+            UtilityMatcher::Static { .. }
+            | UtilityMatcher::Token { .. }
+            | UtilityMatcher::Function { .. } => {}
         }
     }
     (keys, alias_groups)
-}
-
-pub(crate) fn javascript_string(value: &Value) -> String {
-    match value {
-        Value::Null => "null".into(),
-        Value::Bool(value) => value.to_string(),
-        Value::Number(value) => value.to_string(),
-        Value::String(value) => value.clone(),
-        Value::Array(values) => values
-            .iter()
-            .map(javascript_string)
-            .collect::<Vec<_>>()
-            .join(","),
-        Value::Object(_) => "[object Object]".into(),
-    }
-}
-
-pub(crate) fn static_utility_detail(utility: &UtilityDefinition) -> Option<String> {
-    let declarations = match &utility.emit {
-        UtilityEmit::Static { rules } => rules.first().map(|rule| &rule.declarations),
-        UtilityEmit::Template { declarations } => Some(declarations),
-        UtilityEmit::Property { .. } | UtilityEmit::Declarations { .. } => None,
-    }?;
-    if declarations.len() != 1 {
-        return None;
-    }
-    let (property, value) = declarations.iter().next()?;
-    Some(format!("{property}: {}", javascript_string(value)))
 }
 
 pub(crate) fn push_class_completion_candidate(
@@ -201,10 +175,15 @@ pub(crate) fn collect_class_completion_candidates(
     let mut labels = HashSet::new();
     let mut ambiguous_keys = Vec::new();
 
+    // Native declarations are independent of the preset and token namespaces.
+    for property in mastercss_schema::NATIVE_CSS_PROPERTIES {
+        push_property_completion_candidate(&mut candidates, &mut labels, property, None);
+    }
+
     for utility in &manifest.utilities {
         if utility.utility_type == -2 {
             let is_component = utility.layer == UtilityLayerName::Components;
-            let static_detail = static_utility_detail(utility);
+            let static_detail = Some("mixin".into());
             for matcher in &utility.matchers {
                 match matcher {
                     UtilityMatcher::Static { name } => {
@@ -227,9 +206,44 @@ pub(crate) fn collect_class_completion_candidates(
                             );
                         }
                     }
+                    UtilityMatcher::Function { name } => {
+                        if !utility
+                            .matchers
+                            .iter()
+                            .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))
+                        {
+                            let detail = manifest.mixins.iter().find(|definition| definition.name == format!("--{name}")).map(|definition| definition.parameters.iter().map(|parameter| {
+                                let syntax = parameter.syntax.map(|syntax| match syntax {
+                                    mastercss_schema::MixinParameterSyntax::Integer => " <integer>",
+                                    mastercss_schema::MixinParameterSyntax::Number => " <number>",
+                                    mastercss_schema::MixinParameterSyntax::String => " <string>",
+                                    mastercss_schema::MixinParameterSyntax::CustomIdent => " <custom-ident>",
+                                }).unwrap_or_default();
+                                format!("{}{syntax}{}", parameter.name, parameter.default.as_ref().map(|value| format!(": {value}")).unwrap_or_default())
+                            }).collect::<Vec<_>>().join(", "));
+                            push_class_completion_candidate(
+                                &mut candidates,
+                                &mut labels,
+                                EngineClassCompletionCandidate {
+                                    label: format!("{name}()"),
+                                    kind: EngineClassCompletionKind::Function,
+                                    detail,
+                                    documentation_class_name: None,
+                                    sort_text: Some(format!("zzzzz-mixin-{name}")),
+                                    trigger_suggest: true,
+                                },
+                            );
+                        }
+                    }
                     UtilityMatcher::Key { .. } | UtilityMatcher::Token { .. } => {}
                 }
             }
+            push_utility_value_completion_candidates(
+                &mut candidates,
+                &mut labels,
+                manifest,
+                utility,
+            );
             continue;
         }
 
@@ -248,29 +262,6 @@ pub(crate) fn collect_class_completion_candidates(
         }
     }
 
-    let canonical_value_candidates = candidates.clone();
-    for (key, canonical_key) in BUILTIN_KEY_ALIASES {
-        let prefix = format!("{canonical_key}:");
-        for candidate in canonical_value_candidates.iter().filter(|candidate| {
-            candidate.kind == EngineClassCompletionKind::Value
-                && candidate.label.starts_with(&prefix)
-        }) {
-            let label = format!("{key}:{}", &candidate.label[prefix.len()..]);
-            let mut alias_candidate = candidate.clone();
-            alias_candidate.label = label.clone();
-            alias_candidate.documentation_class_name = Some(label);
-            push_class_completion_candidate(&mut candidates, &mut labels, alias_candidate);
-        }
-    }
-
-    for (key, canonical_key) in BUILTIN_KEY_ALIASES {
-        push_property_completion_candidate(
-            &mut candidates,
-            &mut labels,
-            key,
-            Some((*canonical_key).to_owned()),
-        );
-    }
     for (properties, _) in BUILTIN_TOKEN_NAMESPACES {
         for property in *properties {
             push_property_completion_candidate(&mut candidates, &mut labels, property, None);

@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { documentHeadings } from './headings'
 import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
-import { builtinKeyAliases, builtinTokenNamespaces } from '@master/css-tooling/builtins'
+import { builtinTokenFamilies, builtinTokenNamespaces } from '@master/css-tooling/builtins'
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
@@ -49,7 +49,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const file = path.join(directory, 'content.mdx')
     const extracted = await extractReferenceMdx(file, rows)
     const properties = new Set(rows.flatMap(row => row.identifiers.filter(id => !id.endsWith(':'))))
-    const aliases = [...new Set([...extracted.examples.flatMap(example => example.classes), ...rows.flatMap(row => row.identifiers), ...Object.entries(builtinKeyAliases).filter(([, property]) => properties.has(property)).map(([alias]) => `${alias}:`)])]
+    const aliases = [...new Set([...extracted.examples.flatMap(example => example.classes), ...rows.flatMap(row => row.identifiers), ...builtinTokenFamilies.filter(family => properties.has(family.property)).map(family => `${family.prefix}-`)])]
     const doc: ReferenceDocument = {
       id: entry.name, kind: metadata.referenceKind ?? 'utility', ...(metadata.guide ? { guide: metadata.guide } : {}), title: metadata.title, description: metadata.description,
       category: metadata.category, url: `/reference/${entry.name}`, source: relative(file), sourceDigest: digest(await readFile(file, 'utf8')),
@@ -132,7 +132,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     sourceState = execFileSync('git', ['status', '--porcelain', '--', 'site', 'packages'], { cwd: path.dirname(siteRoot), encoding: 'utf8' }).trim() ? 'working-tree' : 'revision'
   } catch { /* source archives have no git metadata */ }
   const version = process.env.NEXT_PUBLIC_VERSION ?? JSON.parse(await readFile(path.join(siteRoot, '.generated/public-env.json'), 'utf8').catch(() => '{}')).NEXT_PUBLIC_VERSION ?? `workspace-${revision.slice(0, 7)}`
-  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, builtinKeyAliases, builtinTokenNamespaces })), documents }
+  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, builtinTokenFamilies, builtinTokenNamespaces })), documents }
 }
 
 export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: ReferenceCatalog, locale = 'en') {

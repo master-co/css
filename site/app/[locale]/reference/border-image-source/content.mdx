@@ -10,14 +10,14 @@ A source can be a gradient or an image file. Both panels keep their own slice, w
 ```html
 <!-- Gradient · continuous color -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -26,14 +26,14 @@ A source can be a gradient or an image file. Both panels keep their own slice, w
 ```html
 <!-- SVG · distinct corners and edges -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -49,14 +49,14 @@ The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border 
 ```html
 <!-- Image source · patterned border -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
@@ -65,20 +65,20 @@ The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border 
 ```html
 <!-- No source · regular blue border -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:none
          border-image-width:1 font-md bg-surface-base
-         text-body box-border">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+         fg-text-body box-sizing:border-box">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>
 ```
 
-The blue fallback is authored as `b:12px|solid|var(--color-blue-60)`. Slice and width values remain declared when the source is absent.
+The blue fallback is authored as `border:12px|solid|var(--color-blue-60)`. Slice and width values remain declared when the source is absent.
 
 ### Apply conditionally \{#apply-conditionally\}
 Widen to `sm` to replace the gradient with the SVG source. Print uses no image and retains the solid border.
@@ -88,16 +88,16 @@ Widen to `sm` to replace the gradient with the SVG source. Print uses no image a
 ```html
 <!-- Gradient → SVG at sm -->
 <div id="target"
-  class="flex items-center justify-center h:130px
-         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
+  class="display:flex align-items:center justify-content:center height:130px
+         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
          border-image-width:1 font-md bg-surface-base
-         text-body box-border
+         fg-text-body box-sizing:border-box
          border-image-source:none@print
          border-image-source:url('/demo/border-grid.svg')@screen@sm">
-  <span class="px-xs py-3xs bg-surface-base text-body">
+  <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>
 </div>

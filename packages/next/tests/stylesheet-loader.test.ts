@@ -39,9 +39,9 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     // An immutable output must remain loadable even while the author is editing
     // an invalid entry. The source entry loader owns that error and its watches.
-    writeFileSync(join(root, 'app/globals.css'), '@import "@master/css"; @utility broken:<number> { width:--master-value(); }')
+    writeFileSync(join(root, 'app/globals.css'), '@import "@master/css"; @utility broken:<number> { width:var(--value); }')
     const file = join(root, '.master', `next-style-${'a'.repeat(64)}-${'b'.repeat(64)}.css`)
-    const source = '@layer utilities{.p\\:11px{padding:11px}}'
+    const source = "@layer utilities{.padding\\:11px{padding:11px}}"
     const result = await runStylesheetLoader(root, file, source)
     expect(result.code).toBe(source)
     expect(result.dependencies).toEqual([])
@@ -112,7 +112,7 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const homePath = join(root, 'app/home.css')
-    writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @utility active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
+    writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @mixin --active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
 
     const result = await runStylesheetLoader(root, entryPath, [
       '@import url("@master/css");',
@@ -139,7 +139,7 @@ describe('Next style CSS loader', () => {
 
   it('locally preserves native declarations in CSS Modules without importing package CSS', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      \n        @utility brand {\n          background-color: #123456;\n        }\n      \n    ")
+    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      \n        @mixin --brand {\n          background-color: #123456;\n        }\n      \n    ")
     const result = await runStylesheetLoader(
       root,
       join(root, 'app/Button.module.css'),
@@ -160,7 +160,7 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, ' @utility brand { color: #123456; } ')
+    writeFileSync(tokenPath, ' @mixin --brand { color: #123456; } ')
     const result = await runStylesheetLoader(
       root,
       modulePath,

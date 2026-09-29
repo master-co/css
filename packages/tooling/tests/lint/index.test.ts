@@ -28,7 +28,7 @@ describe('Rust lint session', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       const result = lint.analyzeLintClassList('fg-red block fg-blue unknown', [
-        'fg-red', 'block', 'fg-blue', 'unknown'
+        'fg-red', "display:block", 'fg-blue', 'unknown'
       ], { disallowUnknownClass: true })
       expect(result.diagnostics.map(({ ruleId }) => ruleId)).toEqual(expect.arrayContaining([
         'sort-classes',
@@ -61,15 +61,31 @@ describe('Rust lint session', () => {
 
   it('ignores token, static, invalid, unknown, and component classes', () => {
     const lint = createTestToolingSession(createPresetManifest({
-      utilities: [{ name: 'btn', layer: 'components', declarations: { display: 'block' } }]
+      mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
     }))
     try {
       expect(lint.rawValueCandidates([
         'font-md',
         'm-md',
-        'm:var(--spacing-md)|var(--spacing-lg)',
+        "margin:var(--spacing-md)|var(--spacing-lg)",
         'fg-red-60',
-        'text-center',
+        "text-align:center",
         'font:16px',
         'unknown-class',
         'btn'
@@ -94,7 +110,7 @@ describe('Rust lint session', () => {
     }
   })
 
-  it('keeps native values and only shortens equivalent property names', () => {
+  it('keeps full native declarations without alias recommendations', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       expect(lint.canonicalClassNames([
@@ -104,10 +120,7 @@ describe('Rust lint session', () => {
         'height:100vh',
         'width:100vw',
         'aspect-ratio:1/1'
-      ])).toEqual([
-        { className: 'height:100vh', recommended: 'h:100vh' },
-        { className: 'width:100vw', recommended: 'w:100vw' }
-      ])
+      ])).toEqual([])
     } finally {
       lint.dispose()
     }
@@ -116,7 +129,7 @@ describe('Rust lint session', () => {
   it('lints and fixes source files without a TypeScript engine', () => {
     const lintSession = createTestToolingSession(createPresetManifest())
     const options = {
-      content: '<div class="fg-red block fg-blue"></div>',
+      content: '<div class="fg-red display:block fg-blue"></div>',
       filePath: '/workspace/index.html',
       lintSession
     }
@@ -133,7 +146,7 @@ describe('Rust lint session', () => {
 it('does not autofix entity-decoded MDX class lists using decoded offsets', () => {
   const session = createTestToolingSession(createPresetManifest())
   try {
-    const content = '<div className="p:2px&#32;flex" />'
+    const content = "<div className=\"padding:2px&#32;flex\" />"
     const options = { content, filePath: 'page.mdx', lintSession: session }
     expect(fixMasterCSSContent(options)).toBe(content)
     const diagnostics = lintMasterCSSContent(options).diagnostics

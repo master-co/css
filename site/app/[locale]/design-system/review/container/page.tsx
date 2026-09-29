@@ -13,8 +13,8 @@ export const metadata = {
 }
 
 function QuerySpecimen() {
-  return <section className="overflow:hidden container w:100% b:1px|solid|var(--color-line-divider) r-lg surface-raised">
-    <div className="flex flex-col@container((width<=18rem))">
+  return <section className="overflow:hidden container-type:inline-size width:100% r-lg border:1px|solid|var(--color-line-divider) surface-raised">
+    <div className="display:flex flex-direction:column@container((width<=18rem))">
       <div className="flex:1 p-md surface-inset"><strong>Media</strong><p className="review-container-specimenCopy">A visual region</p></div>
       <div className="flex:1 p-md"><strong>Content</strong><p className="review-container-specimenCopy">Stacks when this wrapper narrows.</p></div>
     </div>
@@ -49,7 +49,7 @@ export default function Page() {
 
     <section aria-labelledby="container-options">
       <h2 id="container-options">Change the query boundary</h2>
-      <p className="review-container-sectionCopy">Shrink each specimen past the <code>2xs</code> container threshold. The child switches direction through the same <code>flex-col@container(&lt;=2xs)</code> class in all three versions.</p>
+      <p className="review-container-sectionCopy">Shrink each specimen past the <code>2xs</code> container threshold. The child switches direction through the same <code>flex-direction:column@container((width&lt;=18rem))</code> class in all three versions.</p>
       <div className="review-container-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-container-option" key={number}>
           <div className="review-container-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

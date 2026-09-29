@@ -19,7 +19,7 @@ test('BH-0004 CLI emits a referenced resource and native declarations without em
     writeFileSync(join(cwd, 'tokens/theme.css'), "@theme {:root, :host {--image-icon:url('./icon%23one.svg?q=1#mark')}}\n.reference-only{color:blue}")
     const bytes = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
     writeFileSync(join(cwd, 'tokens/icon#one.svg'), bytes)
-    writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
+    writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block\">test</div>")
     execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/樣式 main.css', '--verbose', '0'], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
@@ -43,7 +43,7 @@ test('BH-0004 CLI preserves shared native imports by default', () => {
     writeFileSync(join(cwd, 'a.css'), "@import './shared.css' print;@import \"@master/css\";@preserve native;")
     writeFileSync(join(cwd, 'b.css'), "@import './shared.css' screen;@import \"@master/css\";")
     writeFileSync(join(cwd, 'shared.css'), '.unscanned{color:red}')
-    writeFileSync(join(cwd, 'index.html'), '<div class="block">test</div>')
+    writeFileSync(join(cwd, 'index.html'), "<div class=\"display:block\">test</div>")
     execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
@@ -57,7 +57,7 @@ test('BH-0004 CLI preserves shared native imports by default', () => {
 test('BH-0004 CLI watch republishes changed resources and ignores its output files', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-watch-'))
   writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";.example{background-image:url('./image.svg')}")
-  writeFileSync(join(cwd, 'index.html'), '<div class="example block">test</div>')
+  writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block\">test</div>")
   writeFileSync(join(cwd, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><path fill="red"/></svg>')
   const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], {
     cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }

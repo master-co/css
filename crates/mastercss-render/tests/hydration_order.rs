@@ -5,7 +5,7 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version": 2,"languageVersion":4,
+        "version":3,"languageVersion":5,
         "variables": { "": [
             { "name": "x", "key": "x", "values":[{"path":[":root,:host"],"value":"red"}] },
             { "name": "y", "key": "y", "values":[{"path":[":root,:host"],"value":"blue"}] },
@@ -13,14 +13,13 @@ fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
             { "name": "z", "key": "z", "values":[{"path":[":root,:host"],"value":"green"}] }
         ]},
         "theme": [{"type":"rule","prelude":":root,:host","children":([("x","red"),("y","blue"),("a","linear-gradient(var(--x),var(--y))"),("z","green")].map(|(name,value)|json!({"type":"declaration","name":name,"value":value})))}],
-        "utilities": ([
+        "mixins": ([
             ("a", json!({"background-image":"var(--a)"})),
             ("b", json!({"color":"var(--x)", "border-color":"var(--z)"})),
             ("c", json!({"color":"var(--x)"}))
         ].map(|(name, declarations)| json!({
-            "id": name, "name": name, "type": 0,
-            "matchers": [{ "type": "static", "name": name }],
-            "emit": {"type": "static", "rules": [{"declarations": declarations}]}
+            "name":format!("--{name}"),
+            "body":declarations.as_object().unwrap().iter().map(|(property,value)|json!({"type":"declaration","property":property,"value":[{"type":"text","value":value}]})).collect::<Vec<_>>()
         })))
     }).to_string();
     let mut expected = None;
@@ -58,13 +57,15 @@ fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let classes = [
         "animation:rotate|1s",
-        "bg:blue-60",
+        "background:blue-60",
         "animation:fade|1s",
-        "fg:red-60",
+        "color:red-60",
     ];
     for emitted in [None, Some(r#"{"variables":{"color-red-60":1}}"#)] {
         let mut renderer = RenderSession::create(manifest, emitted).unwrap();
-        renderer.ensure_classes(["fg:green-60", "hidden"]).unwrap();
+        renderer
+            .ensure_classes(["color:green-60", "hidden"])
+            .unwrap();
         for class_name in classes.iter().rev() {
             renderer.ensure_classes([class_name]).unwrap();
         }

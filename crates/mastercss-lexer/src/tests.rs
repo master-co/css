@@ -58,7 +58,11 @@ fn executes_rc87_lexer_parity_corpus() {
     let corpus_source = include_str!("../../../parity/rust-semantic-corpus.json");
     let corpus = LexerParityCorpus {
         parser_cases: vec![
-            lexer_parity_case("rc87-f388e6c161004b97", "  block\tfg:red\nm:1x ", "ranges"),
+            lexer_parity_case(
+                "rc87-f388e6c161004b97",
+                "  block\tcolor:red\nmargin:1x ",
+                "ranges",
+            ),
             lexer_parity_case("rc87-6d5d386f580d29af", "block\u{3000}fg:red", "one token"),
             lexer_parity_case(
                 "rc87-167ae2709f22cd6d",
@@ -172,12 +176,12 @@ fn executes_rc87_lexer_parity_corpus() {
                             token: "block".into()
                         },
                         ClassListTokenRange {
-                            range: SourceRange { start: 8, end: 14 },
-                            token: "fg:red".into()
+                            range: SourceRange { start: 8, end: 17 },
+                            token: "color:red".into()
                         },
                         ClassListTokenRange {
-                            range: SourceRange { start: 15, end: 19 },
-                            token: "m:1x".into()
+                            range: SourceRange { start: 18, end: 27 },
+                            token: "margin:1x".into()
                         },
                     ]
                 );
@@ -360,14 +364,8 @@ fn executes_rc87_lexer_parity_corpus() {
                 assert!(find_css_directive_ranges(&case.input).is_empty());
             }
             "rc87-2f3cc1f8149e5aac" => {
-                let ranges = find_css_directive_ranges(&case.input);
-                assert_eq!(
-                    ranges
-                        .iter()
-                        .map(|range| range.name.as_str())
-                        .collect::<Vec<_>>(),
-                    ["utility"]
-                );
+                // Removed authoring directives are no longer highlighted as active syntax.
+                assert!(find_css_directive_ranges(&case.input).is_empty());
             }
             "rc87-0200c9f8cb24fb9e" => {
                 let start = utf16_len(&case.input[..case.input.find('{').unwrap() + 1]);
@@ -511,7 +509,7 @@ fn entry_imports_use_css_token_boundaries_and_utf16_offsets() {
 
 #[test]
 fn parses_and_removes_top_level_extraction_policy_directives() {
-    let source = "/*😀*/ @source not \"vendor/**\"; @safelist \"flex fg:red\"; .x{@source \"nested\";} @preserve native;";
+    let source = "/*😀*/ @source not \"vendor/**\"; @safelist \"flex color:red\"; .x{@source \"nested\";} @preserve native;";
     let statements = find_standalone_css_directive_statements(source);
     assert_eq!(
         statements
@@ -547,17 +545,17 @@ fn extracts_only_top_level_keyframe_blocks_without_losing_lines() {
 }
 
 #[test]
-fn extracts_many_singular_utilities_with_utf16_ranges_and_untouched_gaps() {
+fn extracts_many_mixins_with_utf16_ranges_and_untouched_gaps() {
     let mut source = String::from("/*😀*/\n");
     let mut expected = Vec::new();
     for index in 0..256 {
-        let block = format!("@utility item-{index} {{ content: '漢😀'; }}");
+        let block = format!("@mixin --item-{index} {{ content: '漢😀'; }}");
         let start = super::utf16_len(&source);
         source.push_str(&block);
         expected.push((start, super::utf16_len(&source), block));
         source.push_str("\n.native { content: '𐀀'; }\n");
     }
-    let (remaining, blocks) = extract_top_level_at_rule_blocks(&source, &["utility"]);
+    let (remaining, blocks) = extract_top_level_at_rule_blocks(&source, &["mixin"]);
     assert_eq!(blocks.len(), expected.len());
     for (block, (start, end, text)) in blocks.iter().zip(expected) {
         assert_eq!((block.start, block.end), (start, end));
@@ -565,5 +563,5 @@ fn extracts_many_singular_utilities_with_utf16_ranges_and_untouched_gaps() {
     }
     assert_eq!(remaining.matches(".native { content: '𐀀'; }").count(), 256);
     assert_eq!(remaining.lines().count(), source.lines().count());
-    assert!(!remaining.contains("@utility"));
+    assert!(!remaining.contains("@mixin"));
 }

@@ -6,7 +6,22 @@ import { pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 import { compileRenderedStylesheet, compileStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 function origin(result: { css: string, sourceMap?: string }, text: string) {
   expect(result.sourceMap).toBeTypeOf('string')
   const offset = result.css.indexOf(text)
@@ -18,7 +33,7 @@ function origin(result: { css: string, sourceMap?: string }, text: string) {
 
 test('final CSS maps native selectors and lowered compose to authored UTF-16 locations', async () => {
   const file = '/project/entry.css'
-  const source = "/* 😀 */\n@utility paint {padding:2rem}\n.plain{color:red}\n.card{@variant all {padding:2rem;}}"
+  const source = "/* 😀 */\n@mixin --paint {padding:2rem}\n.plain{color:red}\n.card{@variant all {padding:2rem;}}"
   const result = await compileStylesheet(file, source, { baseManifest, preserveNativeCSS: true })
   expect(origin(result, '.plain').entry).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: 0 })
   expect(origin(result, 'padding:2rem').entry).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 3, originalColumn: 20 })
@@ -31,7 +46,7 @@ test('rendered graph maps imported compose and native selectors after reference 
     const file = join(root, 'entry.css'), child = join(root, 'child.css')
     const text = "/* child */\n@reference \"./tokens.css\";\n.card{@variant all {padding:3rem;}}\n.plain{color:red}"
     writeFileSync(child, text)
-    writeFileSync(join(root, 'tokens.css'), '@utility paint {padding:3rem}')
+    writeFileSync(join(root, 'tokens.css'), '@mixin --paint {padding:3rem}')
     const result = await compileRenderedStylesheet(file, '@import "./child.css";\n.root{display:block}', { baseManifest, projectDir: root, preserveNativeCSS: true })
     expect(origin(result, '.card').entry).toMatchObject({ originalSource: pathToFileURL(child).href, originalLine: 2, originalColumn: 0 })
     expect(origin(result, 'padding:3rem').entry).toMatchObject({ originalSource: pathToFileURL(child).href, originalLine: 2, originalColumn: 20 })
@@ -44,7 +59,8 @@ test('raw Sass output map chains imported partial sources through native printin
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-sass-output-map-')))
   try {
     const file = join(root, 'entry.scss'), partial = join(root, '_card.scss')
-    const source = '@use "card";\n@utility paint {padding:2rem}'
+    const source = `@use "card";
+@#{'mixin'} --paint {padding:2rem}`
     const child = ".card {\n  @media all {padding:2rem;}\n}\n.plain {color:red}"
     writeFileSync(partial, child)
     const result = await compileRenderedStylesheet(file, source, { baseManifest, projectDir: root, preserveNativeCSS: true })
@@ -69,7 +85,7 @@ test('native and Wasm transports retain identical rule, compose and copied graph
   const native = await createCompilerBindingSession({ binding: 'native' })
   const wasm = await createCompilerBindingSession({ binding: 'wasm' })
   try {
-    const source = "@utility paint {padding:2rem}\n.card{@variant all {padding:2rem;}}\n.plain{color:red}"
+    const source = "@mixin --paint {padding:2rem}\n.card{@variant all {padding:2rem;}}\n.plain{color:red}"
     const parsed = native.compileCSS(source, { from: '/entry.css' })
     expect(wasm.compileCSS(source, { from: '/entry.css' })).toEqual(parsed)
     expect(parsed.nativeMappings?.length).toBeGreaterThan(0)

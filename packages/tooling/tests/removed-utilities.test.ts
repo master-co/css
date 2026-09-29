@@ -14,13 +14,13 @@ test('validator and editor report removed builtins without changing generation',
   } finally { session.dispose() }
 })
 
-test.each([{ rules: [] }, { rules: [{ declarations: { width: null, height: null } }] }])('custom size definitions including empty ones have no removed-builtin hint', ({ rules }) => {
-  const manifest = { ...preset, utilities: [...preset.utilities, { id: 'project-size', type: -1, emit: { type: 'static', rules }, matchers: [{ type: 'key', keys: ['size'] }] }] } as unknown as MasterCSSManifest
+test.each([[], ['width', 'height']])('custom size definitions including empty ones have no removed-builtin hint', (...properties) => {
+  const manifest = { ...preset, mixins: [...preset.mixins, { name: '--size', parameters: [{ name: '--value' }], body: properties.map(property => ({ type: 'declaration', property, value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] })) }] } as unknown as MasterCSSManifest
   const session = createToolingSessionSync({ manifest })
   try {
-    expect(session.validateClassNames(['size:20px']).classes[0].diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
-    expect(session.inspectClassName('size:20px').diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
-    expect(session.completionIndex().classEntries.some(entry => entry.label === 'size:')).toBe(true)
+    expect(session.validateClassNames(['size(20px)']).classes[0].diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+    expect(session.inspectClassName('size(20px)').diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+    expect(session.completionIndex().classEntries.some(entry => entry.label === 'size()')).toBe(true)
   } finally { session.dispose() }
 })
 

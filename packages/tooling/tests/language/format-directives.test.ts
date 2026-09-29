@@ -42,7 +42,7 @@ test('leaves removed compose directives unchanged', () => {
 })
 
 test('preserves safelist quote style', () => {
-  expect(format("@safelist  'block  bg-blue !' ;")).toBe("@safelist 'block bg-blue!';")
+  expect(format("@safelist  'display:block  bg-blue !' ;")).toBe("@safelist 'display:block bg-blue!';")
 })
 
 test('normalizes directive spacing without changing block contents', () => {

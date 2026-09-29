@@ -1,6 +1,6 @@
 const syntaxes = [
-  'visible',
-  'invisible',
+  "visibility:visible",
+  "visibility:hidden",
   'visibility:collapse',
   ['visibility:`value`'],
 ]

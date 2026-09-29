@@ -7,7 +7,7 @@ const COLOR_PROXY = '#12345678'
 const HEX_PROXY = '123456'
 const ANGLE_PROXY = '45deg'
 const TIME_PROXY = '1s'
-const PLACEHOLDER_CLASS = 'text-muted italic mr:0.125rem:not(:last)'
+const PLACEHOLDER_CLASS = 'fg-text-muted font-style:italic margin-right:0.125rem:not(:last)'
 
 export type SyntaxTrHastNode = {
   type?: string

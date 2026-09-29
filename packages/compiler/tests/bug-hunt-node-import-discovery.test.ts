@@ -20,7 +20,22 @@ for (const [name, statement, filename] of [
       const child = join(root, filename!)
       writeFileSync(entry, statement!)
       writeFileSync(child, '.example{color:red}')
-      const result = compileManifestFileSync(entry, { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, preserveNativeCSS: true })
+      const result = compileManifestFileSync(entry, { baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, preserveNativeCSS: true })
       expect(result.dependencies).toEqual([entry, child])
       expect(result.css).toMatch(/color:\s*red/)
       expect(result.css).not.toMatch(/@import/i)
@@ -51,8 +66,23 @@ test('BH-0004 actual referenced CSS with encoded filename and query keeps contex
     const entry = join(root, 'entry #.css')
     const reference = join(root, 'tokens #.css')
     writeFileSync(entry, "@reference \"./tokens%20%23.css?version=1#context\";.example{@variant all {color:red;}}")
-    writeFileSync(reference, '@utility paint {color:red}.reference-only{color:blue}')
-    const result = compileManifestFileSync(entry, { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, preserveNativeCSS: true })
+    writeFileSync(reference, '@mixin --paint {color:red}.reference-only{color:blue}')
+    const result = compileManifestFileSync(entry, { baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, preserveNativeCSS: true })
     expect(result.dependencies).toContain(reference)
     expect(result.css).toContain('color:red')
     expect(result.css).not.toContain('reference-only')
@@ -66,7 +96,22 @@ test('BH-0004 unresolved bare package CSS remains available to the host resolver
   try {
     const entry = join(root, 'entry.css')
     writeFileSync(entry, '@import "another-package/theme.css";')
-    const result = compileManifestFileSync(entry, { baseManifest: { variants: [{ token: '@all' as const, branches: [{ conditions: ['@media all'] }] }], version: 2, languageVersion: 4, utilities: [] }, preserveNativeCSS: true })
+    const result = compileManifestFileSync(entry, { baseManifest: {
+  "variants": [
+    {
+      "token": "@all" as const,
+      "branches": [
+        {
+          "conditions": [
+            "@media all"
+          ]
+        }
+      ]
+    }
+  ],
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}, preserveNativeCSS: true })
     expect(result.dependencies).toEqual([entry])
     expect(result.css).toContain('another-package/theme.css')
   } finally { rmSync(root, { recursive: true, force: true }) }

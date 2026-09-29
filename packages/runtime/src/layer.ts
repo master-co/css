@@ -5,12 +5,13 @@ export interface RuntimeResourceRule {
   readonly name: string
   readonly text: string
   native?: CSSRule
+  nativeNodeCount?: number
 }
 
 export type RuntimeLayerRule = HydratedGeneratedRule | RuntimeResourceRule
 
 export function getRuleNodeCount(rule: RuntimeLayerRule) {
-  return 'nodeCount' in rule ? rule.nodeCount : 1
+  return rule.nativeNodeCount ?? ('nodeCount' in rule ? rule.nodeCount : 1)
 }
 
 type MutateNativeRule = (layer: RuntimeLayer, rule: RuntimeLayerRule, nativeIndex: number) => void
@@ -47,7 +48,7 @@ export default class RuntimeLayer {
   private track(rule: RuntimeLayerRule, index: number) {
     const count = getRuleNodeCount(rule)
     const nativeIndex = this.nativeIndex(index)
-    if (count > 1) {
+    if (count !== 1) {
       this.offsets ??= Array.from({ length: this.rules.length }, (_, index) => index)
     }
     if (this.offsets) {
@@ -70,8 +71,9 @@ export default class RuntimeLayer {
   insert(rule: RuntimeLayerRule, index = this.rules.length) {
     if (this.byKey.has(rule.key)) return
     const boundedIndex = Math.max(0, Math.min(index, this.rules.length))
-    const nativeIndex = this.track(rule, boundedIndex)
+    const nativeIndex = this.nativeIndex(boundedIndex)
     this.insertRule(this, rule, nativeIndex)
+    this.track(rule, boundedIndex)
     return boundedIndex
   }
 

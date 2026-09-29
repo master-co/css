@@ -13,7 +13,10 @@ interface Root {
   walkRules(selector: string, callback: (root: Root) => void): void
   toString(): string
 }
-const baseManifest = { version: 2 as const, languageVersion: 4 as const, utilities: [] }
+const baseManifest = {
+  "version": 3 as const,
+  "languageVersion": 5 as const
+}
 const source = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old)}"
 function declarations(root: Root) {
   const values: [string, string][] = []

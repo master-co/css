@@ -39,7 +39,7 @@ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} output map retains o
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax)
     const source = syntax === 'sass' ? '.card\n  @media all\n    padding: var(--paint-padding)\n' : ".card {\n  @media all {padding:var(--paint-padding);}\n}"
-    const result = await compile(root, file, source, { sassOptions: { implementation: sassFile, additionalData: syntax === 'sass' ? '$a: 1\n$b: 2' : '$a:1;\n$b:2;' } })
+    const result = await compile(root, file, source, { sassOptions: { implementation: sassFile, additionalData: syntax === 'sass' ? "$a: 1\n$border: 2" : "$a:1;\n$border:2;" } })
     expect(origin(result, '.card')).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 0 })
     expect(origin(result, /padding:\s*var\(--paint-padding\)/)).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: syntax === 'sass' ? 2 : 1 })
     expect(result.sourceMap.sourcesContent).toContain(source)

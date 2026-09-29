@@ -1,7 +1,7 @@
 const syntaxes = [
-  'bg-origin-border',
-  'bg-origin-content',
-  'bg-origin-padding',
+  "background-origin:border-box",
+  "background-origin:content-box",
+  "background-origin:padding-box",
   ['background-origin:`origin`'],
 ]
 

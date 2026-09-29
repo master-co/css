@@ -56,7 +56,7 @@ const surfaceRows = getModeRows(
   (key) => key === 'base' ? 'bg-surface-base' : `surface-${key}`,
   'background'
 )
-const textRows = getModeRows('color-text', (key) => [`text-${key}`], (key) => `text-${key}`, 'text')
+const textRows = getModeRows('color-text', (key) => [`fg-text-${key}`], (key) => `fg-text-${key}`, 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'disabled', 'inverse', 'link', 'link-hover'])
 const textRoleRows = textRows.filter(({ key }) => textRoleKeys.has(key))
 const textHueRows = textRows.filter(({ key }) => !textRoleKeys.has(key))
@@ -89,7 +89,7 @@ const lineRoleDescriptions: Record<string, string> = {
 const textRoleDescriptions: Record<string, string> = {
   body: 'Default readable foreground text.',
   strong: 'Headings, labels, and emphasized foreground text.',
-  muted: 'Secondary text on base, inset, or raised; use text-body on floating.',
+  muted: 'Secondary text on base, inset, or raised; use fg-text-body on floating.',
   disabled: 'Unavailable actions and disabled controls.',
   inverse: 'Text on inverse surfaces.',
   link: 'Default inline links.',
@@ -113,10 +113,10 @@ export function SurfacesDemo() {
   return (
     <Demo $py={0} $px={0}>
       <DemoLight>
-        <div className="grid place-content:center h:3rem w:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
       </DemoLight>
       <DemoDark>
-        <div className="grid place-content:center h:3rem w:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
       </DemoDark>
     </Demo>
   )
@@ -125,7 +125,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
   function renderPreview() {
     return (
-      <div className="width:6rem height:6rem b:1.25rem|solid|var(--color-line-divider) r-sm"></div>
+      <div className="height:6rem width:6rem r-sm border:1.25rem|solid|var(--color-line-divider)"></div>
     )
   }
 
@@ -141,10 +141,10 @@ export function BaseHueDemo() {
   return (
     <Demo $py={0} $px={0}>
       <DemoLight>
-        <div className="grid place-content:center h:3rem w:100% aspect-ratio:2/1 r-sm bg-yellow"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-yellow"></div>
       </DemoLight>
       <DemoDark>
-        <div className="grid place-content:center h:3rem w:100% aspect-ratio:2/1 r-sm bg-yellow"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-yellow"></div>
       </DemoDark>
     </Demo>
   )
@@ -154,10 +154,10 @@ export function TextHueDemo() {
   return (
     <Demo $py={0} $px={0}>
       <DemoLight>
-        <div className="font-9xl font-heavy text-yellow">M</div>
+        <div className="font-9xl font-heavy fg-text-yellow">M</div>
       </DemoLight>
       <DemoDark>
-        <div className="font-9xl font-heavy text-yellow">M</div>
+        <div className="font-9xl font-heavy fg-text-yellow">M</div>
       </DemoDark>
     </Demo>
   )
@@ -166,14 +166,14 @@ export function TextHueDemo() {
 export function TextRolesDemo() {
   function renderPreview() {
     return (
-      <div className="grid gap-xs w:100% max-w-3xs p-lg r-sm font-semibold text-center surface-raised text-body shadow-lg">
-        <div className="font-md font-semibold text-strong">Quarterly report</div>
-        <p className="m:0 text-body">Revenue is on track for the current cycle.</p>
-        <p className="m:0 text-sm text-muted">Updated 12 minutes ago</p>
-        <button className="text-sm text-disabled" disabled>Archived export unavailable</button>
+      <div className="display:grid gap-xs width:100% max-w-3xs p-lg r-sm font-semibold text-align:center surface-raised fg-text-body shadow-lg">
+        <div className="font-md font-semibold fg-text-strong">Quarterly report</div>
+        <p className="margin:0 fg-text-body">Revenue is on track for the current cycle.</p>
+        <p className="margin:0 text-sm fg-text-muted">Updated 12 minutes ago</p>
+        <button className="text-sm fg-text-disabled" disabled>Archived export unavailable</button>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a className="underline text-link text-link-hover:hover" href="#">Open report</a>
-        <div className="w:fit-content mx:auto mt-sm px-sm py-xs r-sm surface-inverse text-inverse">Private note</div>
+        <a className="text-decoration:underline fg-text-link fg-text-link-hover:hover" href="#">Open report</a>
+        <div className="width:fit-content margin-inline:auto mt-sm py-xs px-sm r-sm surface-inverse fg-text-inverse">Private note</div>
       </div>
     )
   }
@@ -207,7 +207,7 @@ export default function PresetThemeColors({ group }: { group: PresetThemeColorGr
               <tr key={token}>
                 <td className="white-space:nowrap"><PresetThemeColorPreviewCell previewClassName={previewClassName} previewType={previewType} /><InlineCode className="white-space:nowrap">{token}</InlineCode></td>
                 <td>
-                  <div className="flex flex-wrap gap-xs">
+                  <div className="display:flex flex-wrap:wrap gap-xs">
                     {utilities.map((utility) => (
                       <InlineCode key={utility} className="white-space:nowrap">{utility}</InlineCode>
                     ))}

@@ -38,13 +38,13 @@ export default function DocSidebar({ pageCategories, includeNestedPages = false 
 
   return (
     <aside id="sidebar" ref={sidebarRef} className={clsx(
-      'sticky top overflow-y:auto flex:0|0|auto h:100dvh w:252px pb-2xl pt:3.813rem br:1px|solid|var(--color-line-subtle) overscroll-behavior:contain hidden@print pr-xl@sm z:1050@media((width<64rem)) surface-raised/.8@media((width<64rem)) backdrop-filter:blur(25px)@media((width<64rem)) px:1.25rem@media((width<52.125rem)) scrollbar scrollbar-concealed',
-      { 'hidden@media((width<64rem))': !opened }
+      'position:sticky top:0 overflow-y:auto flex:0|0|auto height:100dvh width:252px pb-2xl padding-top:3.813rem border-right:1px|solid|var(--color-line-subtle) overscroll-behavior:contain display:none@print pr-xl@sm z-index:1050@media((width<64rem)) surface-raised/.8@media((width<64rem)) backdrop-filter:blur(25px)@media((width<64rem)) padding-inline:1.25rem@media((width<52.125rem)) scrollbar scrollbar-concealed',
+      { 'display:none@media((width<64rem))': !opened }
     )}>
-      <div className="top:20px z:1 flex items-center mx:-1rem mb:-1.875rem px-md pb:1.875rem pt:1.25rem untouchable sticky@md top@md background-image:linear-gradient(180deg,var(--color-surface-base)|0%,var(--color-surface-base)|calc(100%-2rem),transparent|100%)@md">
-        <SearchButton className="flex items-center w:100% font-sm leading:2.25rem text-left text-muted pointer-events:auto" />
+      <div className="top:20px z-index:1 display:flex align-items:center margin-inline:-1rem margin-bottom:-1.875rem px-md padding-bottom:1.875rem padding-top:1.25rem pointer-events:none position:sticky@md top:0@md background-image:linear-gradient(180deg,var(--color-surface-base)|0%,var(--color-surface-base)|calc(100%-2rem),transparent|100%)@md">
+        <SearchButton className="display:flex align-items:center width:100% font-sm line-height:2.25rem text-align:left fg-text-muted pointer-events:auto" />
       </div>
-      <div className="{flex;min-h:2rem;rel;align-items:center}_:is(h4,.app-nav)@default {pt:0;fg:var(--color-text-strong);mt:1.5rem;text:12px}_:is(h4)@default {fg:var(--color-text-muted);pl:1rem;bl:1px|solid|var(--color-line-subtle)}_.app-nav@default bg-text-muted_.app-nav:hover_svg@default {w:2px;h:calc(100%-0.75rem);abs;inset:0;my:auto;margin-left:-1px}_svg contain:content:is(.app-nav,h4)">
+      <div className="{display:flex;min-height:2rem;position:relative;align-items:center}_:is(h4,.app-nav)@default {padding-top:0;color:var(--color-text-strong);margin-top:1.5rem;font-size:12px}_:is(h4)@default {color:var(--color-text-muted);padding-left:1rem;border-left:1px|solid|var(--color-line-subtle)}_.app-nav@default bg-text-muted_.app-nav:hover_svg@default {width:2px;height:calc(100%-0.75rem);position:absolute;inset:0;margin-block:auto;margin-left:-1px}_svg contain:content:is(.app-nav,h4)">
         {pageCategories
           .filter((eachPageCategory: any) => eachPageCategory.name !== 'Overview')
           .map((eachPageCategory: any) => {
@@ -68,7 +68,7 @@ export default function DocSidebar({ pageCategories, includeNestedPages = false 
                         <div>
                           {!metadata.disabled && <svg></svg>}
                           {$(translatedTitle)}
-                          {metadata.type === 'entity' && locale !== 'en' && translatedTitle !== metadata.title && <span className='ml:.5em font-xs vertical-align:top' translate='no'>{metadata.title}</span>}
+                          {metadata.type === 'entity' && locale !== 'en' && translatedTitle !== metadata.title && <span className='margin-left:.5em font-xs vertical-align:top' translate='no'>{metadata.title}</span>}
                         </div>
                       </Link>
                     )

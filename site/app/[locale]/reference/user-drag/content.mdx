@@ -3,7 +3,7 @@
 
 `user-drag:*` emits the vendor `-webkit-user-drag` declaration as well as its unprefixed spelling. This is a nonstandard, platform-dependent feature. Prefer the HTML [`draggable` attribute](https://html.spec.whatwg.org/multipage/dnd.html#the-draggable-attribute) for explicit native drag intent.
 
-{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
+{ }
 
 ## Examples \{#examples\}
 ### Prevent dragging media \{#prevent-dragging-media\}
@@ -14,19 +14,19 @@ In supporting browsers, `user-drag:none` prevents the image from starting a nati
 ```html
 <!-- CSS · native image drag disabled -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:none">
+  width="240" height="144" class="display:block height:auto width:240px max-width:100% r-sm user-drag:none">
 ```
 
 ```html
 <!-- Default image · native drag allowed -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:auto">
+  width="240" height="144" class="display:block height:auto width:240px max-width:100% r-sm user-drag:auto">
 ```
 
 ```html
 <!-- HTML · explicit false -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm " draggable="false">
+  width="240" height="144" class="display:block height:auto width:240px max-width:100% r-sm " draggable="false">
 ```
 
 <details>
@@ -44,7 +44,7 @@ The artwork is the same loaded image in every specimen. Try dragging with a poin
 ```html
 <!-- Vendor CSS request -->
 <div id="target"
-  class="p-md b:1px|solid|var(--color-line-divider) r-sm user-select:none
+  class="p-md border:1px|solid|var(--color-line-divider) r-sm user-select:none
          user-drag:element">
   Canvas asset
 </div>
@@ -53,7 +53,7 @@ The artwork is the same loaded image in every specimen. Try dragging with a poin
 ```html
 <!-- Standard HTML request -->
 <div id="target" draggable="true"
-  class="p-md b:1px|solid|var(--color-line-divider) r-sm user-select:none">
+  class="p-md border:1px|solid|var(--color-line-divider) r-sm user-select:none">
   Canvas asset
 </div>
 ```
@@ -68,7 +68,7 @@ Use `user-drag:auto` to return to the browser’s normal drag rules. Resize from
 ```html
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
   width="240" height="144"
-  class="block h:auto w:240px max-w:100% r-sm
+  class="display:block height:auto width:240px max-width:100% r-sm
          user-drag:none user-drag:auto@screen@sm">
 ```
 
@@ -81,14 +81,14 @@ Use a stable native checkbox to change the image’s drag policy. When Lock imag
 
 ```html
 <div class="user-drag:none:has(>label>input:checked)>img">
-  <label class="flex items-center gap-sm mb-md">
+  <label class="display:flex align-items:center gap-sm mb-md">
     <input type="checkbox"> Lock image dragging
   </label>
   <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-    width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:auto">
+    width="240" height="144" class="display:block height:auto width:240px max-width:100% r-sm user-drag:auto">
 </div>
 ```
 
 The checkbox remains available to keyboard users. Toggle it before starting a drag; the lesson changes an actual CSS property rather than canceling a synthetic drag event.
 
-{/* eslint-enable @master/css/no-invalid-classes */}
+{ }

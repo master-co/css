@@ -162,7 +162,7 @@ fn import_layer_name(statement: &str) -> Option<String> {
 
 /// Definition directives an imported stylesheet may declare at its top level.
 pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 4] =
-    ["theme", "custom-variant", "utility", "custom-media"];
+    ["theme", "custom-variant", "mixin", "custom-media"];
 
 pub(crate) fn default_filename() -> String {
     "master.css".into()

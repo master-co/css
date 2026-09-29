@@ -22,7 +22,7 @@ const groups: NamespaceUtilityGroup[] = [
   {
     label: 'Text roles',
     namespace: 'color-text',
-    keys: ['text', 'fg', 'color', 'caret-color', 'text-fill-color', '-webkit-text-fill-color', 'text-decoration', 'text-decoration-color'],
+    keys: ['fg', 'color', 'caret-color', 'text-fill-color', '-webkit-text-fill-color', 'text-decoration', 'text-decoration-color'],
     description: 'Use text roles for readable foreground hierarchy and interaction states.'
   },
   {

@@ -22,9 +22,6 @@ export const agentStyleExample = {
     &:disabled { opacity: .5; cursor: not-allowed; }
   }
 }`,
-  html: `<div class="flex flex-wrap gap-md">
-  <button type="button" class="btn">Save changes</button>
-  <button type="button" class="btn" disabled>Saving…</button>
-</div>`,
+  html: "<div class=\"display:flex flex-wrap:wrap gap-md\">\n  <button type=\"button\" class=\"btn\">Save changes</button>\n  <button type=\"button\" class=\"btn\" disabled>Saving…</button>\n</div>",
   caption: 'The same btn class provides hover, keyboard focus, and native disabled states. These buttons demonstrate styling; they do not save data.'
 }

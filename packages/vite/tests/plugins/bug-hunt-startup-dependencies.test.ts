@@ -6,7 +6,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['local', 'entry'].flatMap(kind => ['reference-directory', 'resource-file', 'resource-directory'].map(missing => ({ mode, kind, missing }))))
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" data-owner="restored"/>'
 function fixture(kind: string, missing: string) {

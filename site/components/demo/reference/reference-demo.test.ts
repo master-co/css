@@ -15,6 +15,11 @@ test('every authored utility teaching section has its own demo and compilable sc
   for (const page of pages) {
     const source = await readFile(new URL(`${page.name}/content.mdx`, root), 'utf8').catch(() => '')
     if (!source) continue
+    // Retired sizing routes document migration and intentionally have no live utility demo.
+    if (['size', 'min-size', 'max-size'].includes(page.name)) {
+      assert.doesNotMatch(source, /<DemoExample\b/)
+      continue
+    }
     assert.ok(referenceScenes[page.name], `No scene family for ${page.name}`)
     const sections = await referenceDemoSections(page.name)
     const mounted = [...source.matchAll(/<DemoExample page="[\w-]+" section="([\w-]+)" \/>/g)].map(match => match[1])
@@ -41,8 +46,8 @@ test('every authored utility teaching section has its own demo and compilable sc
     }
   }
   assert.deepEqual(failures, [])
-  assert.equal(Object.keys(referenceDemoCoverage).length, 183)
-  assert.equal(count, 711)
+  assert.equal(Object.keys(referenceDemoCoverage).length, 180)
+  assert.equal(count, 695)
 })
 
 test('clear uses different float heights and real side-specific clearing', async () => {

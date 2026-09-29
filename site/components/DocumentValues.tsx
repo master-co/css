@@ -40,7 +40,7 @@ export function DocumentKeyList({ keys, previewCount = keys.length }: { keys: st
 
 /** Native disclosure keeps large registry rows readable; every key remains in the HTML. */
 export function DocumentNamespaceTable({ rows }: { rows: { namespace: string, consumers: string[] }[] }) {
-  return <div className="doc-table doc-namespace-table"><table>
+  return <div className="doc-namespace-table doc-table"><table>
     <thead><tr><th>Namespace</th><th>Consumers</th></tr></thead>
     <tbody>{rows.map(({ namespace, consumers }) => <tr key={namespace}>
       <th scope="row"><code>{namespace}-*</code></th>
@@ -51,7 +51,7 @@ export function DocumentNamespaceTable({ rows }: { rows: { namespace: string, co
 
 /** Preserve short syntax tokens while allowing native CSS to wrap at its spaces. */
 export function DocumentCodeTable({ label = 'Syntax', rows }: { label?: string, rows: { syntax: string, css: string }[] }) {
-  return <div className="doc-table doc-code-table"><table>
+  return <div className="doc-code-table doc-table"><table>
     <thead><tr><th scope="col">{label}</th><th scope="col">CSS</th></tr></thead>
     <tbody>{rows.map(({ syntax, css }) => <tr key={syntax}>
       <th scope="row"><code>{syntax}</code></th><td><code>{css}</code></td>

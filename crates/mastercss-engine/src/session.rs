@@ -4,12 +4,21 @@ use super::{
     EngineInspectionIr, EngineSession, EngineSnapshotIr, EngineTransitionIr, HashMap, HashSet,
     ManifestProjection, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
-    canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
-    compare_stored_rules, compile_manifest, emit_declarations, engine_variable_ir, layer_index,
-    layer_name, normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
+    collect_class_completion_candidates, collect_engine_color_tokens, compare_stored_rules,
+    compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
+    normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
 };
 
 impl EngineSession {
+    /// Shared compiler/native-CSS expansion; does not register a class or resources.
+    pub fn expand_mixin(
+        &self,
+        name: &str,
+        arguments: &[String],
+    ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
+        crate::expand_mixin(&self.compiled.mixins, name, arguments)
+    }
+
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
         Self::create_with_emitted_globals(manifest_json, None)
     }
@@ -334,8 +343,7 @@ impl EngineSession {
     /// Resolve registered definitions independently of emitted rule count.
     pub fn matched_utility_names(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
         self.ensure_active()?;
-        let class_name =
-            canonicalize_class_name(class_name).unwrap_or_else(|| class_name.to_owned());
+        let class_name = class_name.to_owned();
         if !super::named::diagnostics(&class_name, &self.compiled).is_empty() {
             return Ok(Vec::new());
         }
@@ -432,14 +440,44 @@ impl EngineSession {
         })
     }
 
+    /// Tooling metadata for the selected explicit mixin. Native declarations and
+    /// built-in tokens have no mixin source; no semantic matching is duplicated by hosts.
+    pub fn class_mixin_definition(
+        &self,
+        class_name: &str,
+    ) -> Result<Option<mastercss_schema::MixinDefinition>, EngineError> {
+        self.ensure_active()?;
+        let source = class_name.strip_suffix('!').unwrap_or(class_name);
+        if let Some(Ok(head)) = mastercss_lexer::parse_functional_class(source) {
+            return Ok(self
+                .compiled
+                .mixins
+                .iter()
+                .find(|definition| definition.name == format!("--{}", head.name))
+                .cloned());
+        }
+        Ok(super::named::matching_utilities(source, &self.compiled)
+            .iter()
+            .find_map(|(index, _)| {
+                let super::UtilityEmit::Mixin { name } = &self.compiled.utilities[*index].emit
+                else {
+                    return None;
+                };
+                self.compiled
+                    .mixins
+                    .iter()
+                    .find(|definition| &definition.name == name)
+                    .cloned()
+            }))
+    }
+
     pub fn inspect_class_semantics(
         &self,
         class_name: &str,
     ) -> Result<ClassSemanticInspection, EngineError> {
         self.ensure_active()?;
         let rules = self.generate_class_rules(class_name);
-        let canonical =
-            canonicalize_class_name(class_name).unwrap_or_else(|| class_name.to_owned());
+        let canonical = class_name.to_owned();
         let empty_matches = if rules.is_empty()
             && super::named::diagnostics(&canonical, &self.compiled).is_empty()
         {
@@ -489,10 +527,12 @@ impl EngineSession {
         });
         let kind = if component {
             ClassSemanticKind::Component
-        } else if first_type == Some(-2) {
-            ClassSemanticKind::Semantic
+        } else if matcher_types.contains(&UtilityMatcherType::Function) {
+            ClassSemanticKind::Mixin
         } else if matcher_types.contains(&UtilityMatcherType::Token) {
             ClassSemanticKind::Token
+        } else if first_type == Some(-2) {
+            ClassSemanticKind::Semantic
         } else {
             ClassSemanticKind::Declaration
         };
@@ -515,6 +555,18 @@ impl EngineSession {
                 Some(semantic_class_name[..prefix_length].to_owned()),
                 Some(semantic_class_name[prefix_length..value_end].to_owned()),
             )
+        } else if kind == ClassSemanticKind::Mixin {
+            let end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            semantic_class_name[..end]
+                .find('(')
+                .map_or((None, None), |open| {
+                    (
+                        Some(semantic_class_name[..open].into()),
+                        Some(semantic_class_name[open + 1..end - 1].into()),
+                    )
+                })
         } else if kind == ClassSemanticKind::Declaration {
             let value_end = semantic_class_name
                 .len()
@@ -605,8 +657,7 @@ impl EngineSession {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let matching_class_names = [canonicalize_class_name(semantic_class_name)
-            .unwrap_or_else(|| semantic_class_name.to_owned())];
+        let matching_class_names = [semantic_class_name.to_owned()];
         let mut variable_aliases = Vec::new();
         let mut seen_aliases = HashSet::new();
         let mut seen = HashSet::new();
@@ -632,8 +683,13 @@ impl EngineSession {
                         .into_iter()
                         .enumerate()
                 {
-                    if emit_declarations(utility, resolved_value.as_deref(), branch.important)
-                        .is_empty()
+                    if emit_declarations(
+                        utility,
+                        resolved_value.as_deref(),
+                        branch.important,
+                        &self.compiled,
+                    )
+                    .is_empty()
                     {
                         continue;
                     }

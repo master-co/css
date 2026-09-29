@@ -7,7 +7,7 @@ import masterCSS from '../../src/core'
 for (const command of ['serve', 'build'] as const) {
   for (const rootCompose of [false, true]) {
     for (const composeChild of [false, true]) {
-      test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)(`BH-0004 local compose retains qualified child imports in ${command}/root-compose=${rootCompose}/child-compose=${composeChild}/%s`, async mode => {
+      test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`BH-0004 local compose retains qualified child imports in ${command}/root-compose=${rootCompose}/child-compose=${composeChild}/%s`, async mode => {
         const parent = join(process.cwd(), 'tmp')
         mkdirSync(parent, { recursive: true })
         const root = mkdtempSync(join(parent, 'local-compose-graph-'))

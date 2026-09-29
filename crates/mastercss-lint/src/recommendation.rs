@@ -1,6 +1,6 @@
 use super::{
     CanonicalCandidate, CanonicalClassParts, CanonicalRecommendationIndex, ClassSemanticInspection,
-    EngineError, EngineSession, GeneratedRuleIr, UtilityLayerName, Value, builtin_key_aliases,
+    EngineError, EngineSession, GeneratedRuleIr, UtilityLayerName, Value, builtin_token_aliases,
     collect_rule_declarations, push_index_value,
 };
 
@@ -9,60 +9,45 @@ pub(crate) fn build_canonical_recommendation_index(
     engine: &EngineSession,
 ) -> Result<CanonicalRecommendationIndex, EngineError> {
     let mut index = CanonicalRecommendationIndex::default();
-    for (alias, property) in builtin_key_aliases() {
+    for (alias, property) in builtin_token_aliases() {
         push_index_value(&mut index.preferred_aliases_by_property, property, alias);
     }
     for aliases in index.preferred_aliases_by_property.values_mut() {
         aliases.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
     }
-    for utility in manifest
-        .get("utilities")
+    for mixin in manifest
+        .get("mixins")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-        .filter_map(Value::as_object)
     {
-        for matcher in utility
-            .get("matchers")
+        if mixin
+            .get("parameters")
             .and_then(Value::as_array)
-            .into_iter()
-            .flatten()
-            .filter_map(Value::as_object)
+            .is_some_and(|parameters| !parameters.is_empty())
         {
-            let matcher_type = matcher.get("type").and_then(Value::as_str);
-            if utility.get("type").and_then(Value::as_i64) != Some(-2)
-                || utility
-                    .get("layer")
-                    .and_then(Value::as_str)
-                    .is_some_and(|layer| layer != "utilities")
-            {
-                continue;
-            }
-            let mut names = Vec::new();
-            if matcher_type == Some("static")
-                && let Some(name) = matcher.get("name").and_then(Value::as_str)
-            {
-                names.push(name.to_owned());
-            }
-            for name in names {
-                if name.contains(':') {
-                    continue;
-                }
-                let rules = engine.inspect(&name)?.rules;
-                if rules.is_empty()
-                    || rules
-                        .iter()
-                        .any(|rule| rule.layer != UtilityLayerName::Utilities)
-                {
-                    continue;
-                }
-                push_index_value(
-                    &mut index.static_candidates_by_signature,
-                    &rules_declaration_signature(&rules),
-                    &name,
-                );
-            }
+            continue;
         }
+        let Some(name) = mixin
+            .get("name")
+            .and_then(Value::as_str)
+            .and_then(|name| name.strip_prefix("--"))
+        else {
+            continue;
+        };
+        let rules = engine.inspect(name)?.rules;
+        if rules.is_empty()
+            || rules
+                .iter()
+                .any(|rule| rule.layer != UtilityLayerName::Utilities)
+        {
+            continue;
+        }
+        push_index_value(
+            &mut index.static_candidates_by_signature,
+            &rules_declaration_signature(&rules),
+            name,
+        );
     }
     for values in index.static_candidates_by_signature.values_mut() {
         values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));

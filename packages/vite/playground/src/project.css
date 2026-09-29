@@ -25,7 +25,7 @@
 @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
 
-  @utility content-auto {
+  @mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 28rem;
   }

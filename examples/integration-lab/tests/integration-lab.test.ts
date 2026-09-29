@@ -98,7 +98,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
       '<html>',
       '<head><title>Rspack fixture</title></head>',
       '<body>',
-      '    <main id="root" class="block fg-primary">Rspack fixture</main>',
+      "    <main id=\"root\" class=\"display:block fg-primary\">Rspack fixture</main>",
       '</body>',
       '</html>',
       ''
@@ -165,7 +165,7 @@ function createRsbuildFixture(mode: 'runtime' | 'static') {
       "import './app.css'",
       '',
       'createRoot(document.getElementById("root")).render(',
-      '    <main className="block fg-primary">Rsbuild fixture</main>',
+      "    <main className=\"display:block fg-primary\">Rsbuild fixture</main>",
       ')',
       ''
     ].join('\n'),
@@ -293,7 +293,7 @@ function createTanStackStartFixture() {
       '})',
       '',
       'function Home() {',
-      '    return <main className="block fg-primary">TanStack Start fixture</main>',
+      "    return <main className=\"display:block fg-primary\">TanStack Start fixture</main>",
       '}',
       ''
     ].join('\n'),

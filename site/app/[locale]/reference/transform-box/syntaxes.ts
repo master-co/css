@@ -1,9 +1,9 @@
 const syntaxes = [
-  'transform-content',
-  'transform-border',
-  'transform-fill',
-  'transform-stroke',
-  'transform-view',
+  "transform-box:content-box",
+  "transform-box:border-box",
+  "transform-box:fill-box",
+  "transform-box:stroke-box",
+  "transform-box:view-box",
   ['transform-box:`box`'],
 ]
 

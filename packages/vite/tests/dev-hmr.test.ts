@@ -20,7 +20,7 @@ function reportBrowserErrors(page: import('@playwright/test').Page) {
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
     "@import url(\"@master/css\");",
-    '@utility probe {' ,
+    '@mixin --probe {' ,
     `        display: ${displayClass === 'hidden' ? 'none' : displayClass};`,
     '        width: 4px;',
     '        height: 4px;',
@@ -49,7 +49,7 @@ describe('Vite dev HMR', () => {
       '<html>',
       '<head><title>Master CSS Vite runtime layer order</title></head>',
       '<body>',
-      '<main id="probe" class="box block"></main>',
+      "<main id=\"probe\" class=\"box display:block\"></main>",
       '<script type="module" src="/src/main.ts"></script>',
       '</body>',
       '</html>'
@@ -171,7 +171,7 @@ describe('Vite dev HMR', () => {
     expect(await page.evaluate(() => (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER))
       .toBe('preserve')
 
-    writeStyle(fixtureDir, 'bg:neutral-120')
+    writeStyle(fixtureDir, "background:neutral-120")
     await page.waitForTimeout(300)
     writeStyle(fixtureDir, 'block')
     await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'block')

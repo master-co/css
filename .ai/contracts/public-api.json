@@ -833,15 +833,8 @@
           "MasterCSSManifestSelectorNode",
           "MasterCSSManifestSelectorSeparatorNode",
           "MasterCSSManifestSelectors",
-          "MasterCSSManifestUtilities",
-          "MasterCSSManifestUtility",
-          "MasterCSSManifestUtilityEmit",
           "MasterCSSManifestUtilityLayerName",
-          "MasterCSSManifestUtilityMatcher",
-          "MasterCSSManifestUtilityRule",
           "MasterCSSManifestVariable",
-          "MasterCSSManifestVariableAlias",
-          "MasterCSSManifestVariableAliasSet",
           "MasterCSSManifestVariableEntry",
           "MasterCSSManifestVariableNumericValue",
           "MasterCSSManifestVariableType",
@@ -852,6 +845,11 @@
           "MasterCSSManifestVariantToken",
           "MasterCSSManifestVariants",
           "MasterCSSMediaQueryExpression",
+          "MasterCSSMixinDefinition",
+          "MasterCSSMixinNode",
+          "MasterCSSMixinParameter",
+          "MasterCSSMixinParameterSyntax",
+          "MasterCSSMixinValue",
           "MasterCSSScopedThemeValue",
           "MasterCSSThemeNode",
           "flattenMasterCSSManifestVariables",
@@ -887,22 +885,18 @@
           "CSSDirectiveSourceLocation",
           "CSSDirectiveSourceRange",
           "CSSDirectiveSourceReference",
+          "CSSDirectiveStyleApplyDefinition",
           "CSSDirectiveStyleDefinition",
           "CSSDirectiveStyleNativeDefinition",
-          "CSSDirectiveUtilityDefinition",
-          "CSSDirectiveUtilityDynamicDefinition",
-          "CSSDirectiveUtilityRuleDefinition",
-          "CSSDirectiveUtilityTokenDefinition",
           "CSSDirectiveVariableValue",
           "CSSDirectiveVariantDefinitions",
+          "CSSMixinSource",
           "CSSNativeOutput",
           "CSSOrderedDeclaration",
           "CSSOutputMapping",
-          "CSSUtilitySource",
           "createCSSDirectiveSourceReference"
         ],
         "./css-syntax": [
-          "DefinedUtility",
           "ExplicitUtilityLayerName",
           "FunctionValueComponent",
           "MediaFeatureComponent",
@@ -951,7 +945,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "4ac49e0924a33638"
+      "surface": "c5a8f9d92ae88b62"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1041,10 +1035,12 @@
           "validateRuleDeclarations"
         ],
         "./builtins": [
-          "MasterCSSBuiltinKeyAliases",
+          "MasterCSSBuiltinTokenAliases",
+          "MasterCSSBuiltinTokenFamily",
           "MasterCSSBuiltinTokenNamespace",
           "MasterCSSBuiltinTokenNamespaces",
-          "builtinKeyAliases",
+          "builtinTokenAliases",
+          "builtinTokenFamilies",
           "builtinTokenNamespaces"
         ],
         "./lexer": [
@@ -1216,7 +1212,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "d425486d425e92f7"
+      "surface": "ca16efe011e530d6"
     },
     "@master/css-vite": {
       "directory": "vite",

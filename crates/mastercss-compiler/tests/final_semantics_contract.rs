@@ -216,7 +216,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":2,"languageVersion":4,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":3,"languageVersion":5,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

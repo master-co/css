@@ -6,7 +6,7 @@ export default () => {
       <table>
         <thead>
           <tr>
-            <th className='w:0'>Layer</th>
+            <th className='width:0'>Layer</th>
             <th>Description</th>
             <th>CSS</th>
           </tr>

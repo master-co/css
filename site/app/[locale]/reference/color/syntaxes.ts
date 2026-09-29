@@ -5,10 +5,10 @@ import { getThemeVariables } from '~/site/utils/theme-variables'
 const textColors = getThemeVariables('color-text').map(({ key }) => key)
 
 const syntaxes = [
-  ...baseColors.map(color => color === 'transparent' ? 'fg:transparent' : `fg-${color}`),
-  ...colors.map(color => color === 'transparent' ? 'fg:transparent' : `fg-${color}`),
-  ...textColors.map(color => `text-${color}`),
-  ['fg:`color`'],
+  ...baseColors.map(color => color === 'transparent' ? "color:transparent" : `fg-${color}`),
+  ...colors.map(color => color === 'transparent' ? "color:transparent" : `fg-${color}`),
+  ...textColors.map(color => `fg-text-${color}`),
+  ["color:`color`"],
 ]
 
 export default syntaxes

@@ -43,7 +43,7 @@ function classCompletionItem(
         ? CompletionItemKind.Function
         : CompletionItemKind.Value,
     insertText: entry.kind === 'function'
-      ? `${label.slice(0, -2)}($0)`
+      ? entry.insertText ?? `${label.slice(0, -2)}($0)`
       : undefined,
     insertTextFormat: entry.kind === 'function' ? InsertTextFormat.Snippet : undefined,
     detail: entry.detail,
@@ -147,8 +147,8 @@ export default function suggestSyntax(
         start: document.positionAt(classPosition.range.start),
         end: position
       })
-  const fields = query.split(' ')
-  let field = fields[fields.length - 1] || ''
+  // Class boundaries, including quoted arguments, come from the Rust document analysis.
+  let field = query
   const entries = this.session.completionIndex().classEntries
   if (!field || context?.triggerCharacter === ' ') {
     return rootCompletionItems(this, entries, '')
@@ -161,10 +161,11 @@ export default function suggestSyntax(
   }
   if (field.startsWith('@') || field.startsWith('~')) return []
 
-  const component = entries.find(({ label, detail }) => label === field.slice(0, -1) && detail === 'component')
-  if (field.endsWith(':') && component) return
-
-  const atIndex = field.lastIndexOf('@')
+  const inspection = this.session.inspectClassName(field)
+  const state = inspection.stateToken ?? ''
+  const atIndex = inspection.kind === 'mixin'
+    ? state.includes('@') ? field.length - state.length + state.lastIndexOf('@') : -1
+    : field.lastIndexOf('@')
   if (atIndex > 0) {
     if (isGroup) return
     if (field.endsWith('@')) return queryCompletionItems(entries)
@@ -176,6 +177,10 @@ export default function suggestSyntax(
   const key = keyMatch?.[1]
   const property = key && entries.some(({ label }) => label.startsWith(`${key}:`))
   const hasSelectorSuffix = Boolean(keyMatch && field.slice(keyMatch[0].length).includes(':'))
+  if (/[:_>+~]$/u.test(field) && inspection.stateToken) {
+    if (isGroup) return
+    return selectorCompletionItems(this, entries, field)
+  }
   if (key && property && !hasSelectorSuffix && atIndex < 0) {
     const values = valueCompletionItems(this, entries, key, field.slice(keyMatch?.[0].length))
     return values.length ? values : rootCompletionItems(this, entries, '')

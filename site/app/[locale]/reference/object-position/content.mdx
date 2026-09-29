@@ -12,8 +12,8 @@
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-center object-cover" />
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-position:center object-fit:cover" />
 ```
 
 ```html
@@ -21,14 +21,14 @@
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-cover object-top" />
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-fit:cover object-position:top" />
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['object-center']}
+    {['object-position:center']}
   </Class2CSS>
 </details>
 
@@ -44,8 +44,8 @@ The class positions the content inside a replaced element. It does not align the
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-cover object-top" />
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-fit:cover object-position:top" />
 ```
 
 ```html
@@ -53,8 +53,8 @@ The class positions the content inside a replaced element. It does not align the
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-bottom object-cover" />
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-position:bottom object-fit:cover" />
 ```
 
 Choose the edge that contains the important subject. Positioning only becomes visible on an axis where content and box dimensions differ; changing horizontal alignment would have no effect in this example.
@@ -69,8 +69,8 @@ Two values specify horizontal then vertical position. Percentages distribute the
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-cover
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-fit:cover
          object-position:50%|25%" />
 ```
 
@@ -79,8 +79,8 @@ Two values specify horizontal then vertical position. Percentages distribute the
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-cover
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-fit:cover
          object-position:left|12px|top|8px" />
 ```
 
@@ -96,9 +96,9 @@ Widen to `sm` to pin the top edge. Print returns to centered cropping.
 <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
-  class="block h:100px w:240px max-w:100%
-         bg-surface-base object-center object-cover
-         object-center@print object-top@screen@sm" />
+  class="display:block height:100px width:240px max-width:100%
+         bg-surface-base object-position:center object-fit:cover
+         object-position:center@print object-position:top@screen@sm" />
 ```
 
 The native viewport condition changes the image content’s position. The element’s box and source scaling stay fixed.

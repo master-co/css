@@ -93,19 +93,19 @@ test('keeps shared grammar asset in sync with the language Shiki registration', 
   expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
 })
 
-test('highlights class lists and singular utility parameters', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@safelist "fg-red/0.5 fg-blue/.5 block:hover@sm color:red";
-@utility font-* from(--font-family-*) { font-family: --master-value(); }
-@utility size:* { width: --master-value(); }`)
+test('highlights class lists and static mixin parameters', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@safelist "fg-red/0.5 fg-blue/.5 center:hover@sm color:red";
+@mixin --size(--value <integer>) { width: var(--value); }
+.card { @apply --size(3); }`)
   expectScope(tokens, 'fg-red', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, '/', 'keyword.operator.master-css')
   expectScope(tokens, '0.5', 'constant.numeric.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
   expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'size', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, '*', 'keyword.operator.master-css')
-  expectScope(tokens, 'from', 'support.function.misc.master-css')
-  expectScope(tokens, '--font-family-', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--size', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--value', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '<integer>', 'support.function.misc.master-css')
+  expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
 })
 
 test('does not change native CSS TextMate scopes when injected', () => {
@@ -276,12 +276,12 @@ test('highlights all retained directive keywords', () => {
 @prune native;
 @reference "./tokens.css";
 @theme { :root { --color: red; } }
-@utility box { display: block; }
+@mixin --box { display: block; }
 @custom-media --wide (width >= 48rem);
 @custom-variant hocus { &:hover { @slot; } }
 .box { @variant wide { display: grid; } }`
   const tokens = tokenizeWith(injectedCSSGrammar, source)
-  for (const name of ['source', 'safelist', 'blocklist', 'preserve', 'prune', 'reference', 'theme', 'utility', 'custom-variant', 'variant', 'slot']) {
+  for (const name of ['source', 'safelist', 'blocklist', 'preserve', 'prune', 'reference', 'theme', 'mixin', 'custom-variant', 'variant', 'slot']) {
     expectScope(tokens, `@${name}`, 'keyword.control.at-rule.master-css')
   }
 })
@@ -298,15 +298,15 @@ test('keeps source and reference paths separate from class lists', () => {
 
 test('highlights explicit custom-variant slots and native wrappers', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, `@custom-variant hocus { &:is(:hover,:focus) { @slot; } }
-@utility card { @variant hocus { color: red; } @media print { display: block; } }`)
+@mixin --card { @variant hocus { color: red; } @media print { display: block; } }`)
   expectScope(tokens, 'hocus', 'variable.parameter.master-css')
   expectScope(tokens, 'hocus', 'support.constant.property-value.master-css.query')
   expectScope(tokens, '@slot', 'keyword.control.at-rule.master-css')
-  expectScope(tokens, 'card', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '--card', 'variable.css.custom-property.master-css')
 })
 
 test('colors named conditions and delegates native at-rules', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@utility card { @variant wide { display: block; } }
+  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --card { @variant wide { display: block; } }
 @custom-variant supported { @supports (display: grid) { @slot; } }
 @custom-variant contained { @container (width > 30rem) { @slot; } }`)
   expectScope(tokens, 'wide', 'support.constant.property-value.master-css.query')

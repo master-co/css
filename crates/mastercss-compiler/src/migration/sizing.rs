@@ -5,19 +5,24 @@ use mastercss_engine::EngineSession;
 use serde_json::{Value, json};
 
 fn has_entry(manifest: &Value, key: &str) -> bool {
-    manifest["utilities"]
+    manifest["mixins"]
         .as_array()
         .into_iter()
         .flatten()
-        .any(|u| {
-            u["matchers"].as_array().into_iter().flatten().any(|m| {
-                (m["type"] == "static" && m["name"] == key)
-                    || (matches!(m["type"].as_str(), Some("key" | "value" | "variable"))
-                        && m["keys"]
-                            .as_array()
-                            .is_some_and(|keys| keys.iter().any(|k| k == key)))
+        .any(|mixin| mixin["name"] == format!("--{key}"))
+        || manifest["utilities"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .any(|u| {
+                u["matchers"].as_array().into_iter().flatten().any(|m| {
+                    (m["type"] == "static" && m["name"] == key)
+                        || (matches!(m["type"].as_str(), Some("key" | "value" | "variable"))
+                            && m["keys"]
+                                .as_array()
+                                .is_some_and(|keys| keys.iter().any(|k| k == key)))
+                })
             })
-        })
 }
 
 pub(super) fn add_helpers(original: &Value, target: &mut Value) -> Vec<String> {
@@ -66,6 +71,11 @@ pub(super) fn add_helpers(original: &Value, target: &mut Value) -> Vec<String> {
                         || id == format!("{key}:<~container|number|*>")
                         || id == format!("{key}-<~container>")
                 })
+                || target["mixins"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .any(|mixin| mixin["name"] == format!("--{key}"))
                 || target["utilities"]
                     .as_array()
                     .into_iter()
@@ -85,6 +95,9 @@ pub(super) fn add_helpers(original: &Value, target: &mut Value) -> Vec<String> {
             if token {
                 utility["variableAliasRefs"] = json!(["~container"]);
             }
+            if !target["utilities"].is_array() {
+                target["utilities"] = json!([]);
+            }
             target["utilities"].as_array_mut().unwrap().push(utility);
             if include_alias {
                 helpers.push(format!("{alias}:"));
@@ -103,6 +116,7 @@ impl Migration {
             .find(|prefix| source.starts_with(prefix.as_str()))
         else {
             // Matching and ambiguity must not depend on current token values.
+            let source = super::mixins::class(&source, &self.original)?;
             let inspection = self
                 .target
                 .borrow()
@@ -167,11 +181,9 @@ impl Migration {
         current_helper(&mut saved);
         let engine = EngineSession::create(&saved.to_string()).map_err(|e| e.to_string())?;
         let resources = |class: &str| -> Result<Value, String> {
-            let mut probe =
-                EngineSession::create(&engine.manifest_json().map_err(|e| e.to_string())?)
-                    .map_err(|e| e.to_string())?;
+            let (mut probe, class, _) = super::saved_rules::prepare(&engine, class)?;
             probe
-                .ensure_class_rules([class])
+                .ensure_class_rules([class.as_str()])
                 .map_err(|e| e.to_string())?;
             let mut resources = probe.snapshot().map_err(|e| e.to_string())?.resources;
             // Splitting a declaration changes ownership counts, never resource

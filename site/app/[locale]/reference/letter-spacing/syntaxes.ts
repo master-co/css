@@ -6,7 +6,7 @@ const syntaxes = [
   'tracking-wide',
   'tracking-wider',
   'tracking-widest',
-  ['tracking:`value`']
+  ["letter-spacing:`value`"]
 ]
 
 export default syntaxes

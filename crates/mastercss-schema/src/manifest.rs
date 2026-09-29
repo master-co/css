@@ -35,10 +35,10 @@ pub enum DiagnosticSeverity {
 
 #[derive(Debug, Error)]
 pub enum SchemaError {
-    #[error("Unsupported MasterCSSManifest version. Expected version 2.")]
+    #[error("Unsupported MasterCSSManifest version. Expected version 3.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 4; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 5; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
@@ -55,18 +55,6 @@ pub enum SchemaError {
     InvalidJson(#[from] serde_json::Error),
     #[error("Invalid MasterCSSManifest. Expected an object.")]
     InvalidManifest,
-    #[error(
-        "Master length x units and settings.baseUnit were removed; migrate to CSS units or named tokens."
-    )]
-    RemovedBaseUnit,
-    #[error(
-        "The variable matcher was removed; migrate colon token patterns to a token matcher with a hyphen prefix."
-    )]
-    RemovedVariableMatcher,
-    #[error(
-        "Typed raw utility matchers, kinds, segments and =namespace were removed; recompile using @utility key:* and @utility prefix-* from(--namespace-*)."
-    )]
-    RemovedUtilityMatcher,
 }
 
 impl SchemaError {
@@ -79,15 +67,12 @@ impl SchemaError {
             | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
             | Self::InvalidManifest
-            | Self::RemovedField(_)
-            | Self::RemovedBaseUnit
-            | Self::RemovedVariableMatcher
-            | Self::RemovedUtilityMatcher => ErrorCode::InvalidManifest,
+            | Self::RemovedField(_) => ErrorCode::InvalidManifest,
         }
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v2 wire format.
+/// Validated, order-preserving representation of the public Manifest v3 wire format.
 ///
 /// The domain crates deliberately keep the original JSON object intact while individual
 /// subsystems progressively replace `Value` access with strongly typed projections. This
@@ -110,6 +95,7 @@ impl MasterCssManifest {
             return Err(SchemaError::UnsupportedLanguageVersion);
         }
         for field in [
+            "utilities",
             "settings",
             "modes",
             "animations",
@@ -119,6 +105,9 @@ impl MasterCssManifest {
             if object.contains_key(field) {
                 return Err(SchemaError::RemovedField(field.into()));
             }
+        }
+        if let Some(mixins) = object.get("mixins") {
+            serde_json::from_value::<Vec<MixinDefinition>>(mixins.clone())?;
         }
         if let Some(theme) = object.get("theme") {
             serde_json::from_value::<Vec<ThemeNode>>(theme.clone())?;
@@ -155,54 +144,6 @@ impl MasterCssManifest {
         }
         if object.contains_key("utilityBuckets") {
             return Err(SchemaError::UnsupportedUtilityBuckets);
-        }
-        if object
-            .get("utilities")
-            .and_then(Value::as_array)
-            .into_iter()
-            .flatten()
-            .flat_map(|utility| {
-                utility
-                    .get("matchers")
-                    .and_then(Value::as_array)
-                    .into_iter()
-                    .flatten()
-            })
-            .any(|matcher| matcher.get("type").and_then(Value::as_str) == Some("variable"))
-        {
-            return Err(SchemaError::RemovedVariableMatcher);
-        }
-        for utility in object
-            .get("utilities")
-            .and_then(Value::as_array)
-            .into_iter()
-            .flatten()
-        {
-            if utility.get("kind").is_some()
-                || utility.get("segments").is_some()
-                || utility
-                    .get("variableAliasRefs")
-                    .and_then(Value::as_array)
-                    .into_iter()
-                    .flatten()
-                    .any(|reference| {
-                        reference
-                            .as_str()
-                            .is_some_and(|reference| reference.starts_with('='))
-                    })
-                || utility
-                    .get("matchers")
-                    .and_then(Value::as_array)
-                    .into_iter()
-                    .flatten()
-                    .any(|matcher| {
-                        matcher.get("type").and_then(Value::as_str) == Some("value")
-                            || matcher.get("segments").is_some()
-                            || matcher.get("type").and_then(Value::as_str) == Some("pattern")
-                    })
-            {
-                return Err(SchemaError::RemovedUtilityMatcher);
-            }
         }
         Ok(Self(value))
     }

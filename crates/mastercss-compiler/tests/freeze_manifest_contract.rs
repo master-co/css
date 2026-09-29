@@ -22,8 +22,8 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
             @media (prefers-color-scheme: dark) { @slot; }
         }
         @custom-variant sm { @media (width >= 40rem) { @slot; } }
-        @theme { :root { --color-brand: red; } }
-        @utility paint-* from(--color-*) { color: --master-value(); }
+        @theme { :root { --color-brand: red; --paint-brand: var(--color-brand); } }
+        @mixin --paint(--key <string>) { color: var(ident("--paint-" var(--key))); }
         "#,
     );
     let encoded = original.to_json().unwrap();
@@ -60,7 +60,7 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
 
 #[test]
 fn execution_rejects_missing_or_unsupported_versions_before_matching() {
-    let original = manifest("@utility probe { color:red; }");
+    let original = manifest("@mixin --probe { color:red; }");
     for field in ["version", "languageVersion"] {
         for value in [None, Some(serde_json::json!(999))] {
             let mut invalid = original.as_value().clone();

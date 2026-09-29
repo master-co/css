@@ -11,15 +11,15 @@ export default function HeroHeader({ metadata }: any) {
   const formattedDate = dayjs(metadata.date).format('ddd, MMMM D, YYYY')
   return (
     <>
-      <GridsBg className="abs left top z:-2 h:450px w:100%" />
-      <div className='max-w:64rem mx:auto px:1.25rem pt:7.5rem pt:11.25rem@sm'>
-        {metadata.date && <div className='flex justify-center gap-xs mb-sm fg-accent'>
+      <GridsBg className="position:absolute left:0 top:0 z-index:-2 height:450px width:100%" />
+      <div className='max-width:64rem margin-inline:auto padding-inline:1.25rem padding-top:7.5rem padding-top:11.25rem@sm'>
+        {metadata.date && <div className='display:flex justify-content:center gap-xs mb-sm fg-accent'>
           <span>{formattedDate}</span>
         </div>}
-        <h1 className='max-w:52.125rem mx:auto font-weight:normal font-3xl tracking-tight text-center text-pretty text-gradient background-image:linear-gradient(180deg,var(--color-gray-60),var(--color-gray-90)) surface-raised text-fill-color:transparent background-image:linear-gradient(180deg,oklch(100%|0|none),var(--color-gray-40))@site-dark font-size:64px@sm'>
+        <h1 className='max-width:52.125rem margin-inline:auto font-3xl font-weight:normal tracking-tight text-wrap:pretty text-align:center text-gradient surface-raised background-image:linear-gradient(180deg,var(--color-gray-60),var(--color-gray-90)) -webkit-text-fill-color:transparent background-image:linear-gradient(180deg,oklch(100%|0|none),var(--color-gray-40))@site-dark font-size:64px@sm'>
           {$(metadata.title.absolute || metadata.title)}
         </h1>
-        {metadata.authors && <AuthorList className="items-center justify-center gap-xl mt-2xl" isLink>{metadata.authors}</AuthorList>}
+        {metadata.authors && <AuthorList className="align-items:center justify-content:center gap-xl mt-2xl" isLink>{metadata.authors}</AuthorList>}
       </div>
     </>
   )

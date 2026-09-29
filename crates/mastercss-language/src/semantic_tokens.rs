@@ -3,6 +3,14 @@ use super::*;
 pub(crate) fn inspect_class_name_parts(
     class_name: &str,
 ) -> (String, String, Option<String>, Option<String>) {
+    if let Some(Ok(head)) = mastercss_lexer::parse_functional_class(class_name) {
+        return (
+            class_name[..head.suffix_start].into(),
+            class_name[head.suffix_start..].into(),
+            Some(head.name),
+            Some(class_name[head.arguments_range].into()),
+        );
+    }
     if let Some(colon) = class_name.find(':').filter(|colon| *colon > 0) {
         let end = find_class_modifier_index(class_name, colon + 1);
         return (

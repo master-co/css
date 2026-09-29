@@ -68,7 +68,7 @@ test('highlightCode leaves guide theme native values to TextMate without marking
 })
 
 test('highlightCode renders Master CSS semantic spans in HTML class attributes', async () => {
-  const hast = await highlightCode('<div class="text-red:hover@md block"></div>', { lang: 'html' })
+  const hast = await highlightCode("<div class=\"fg-text-red:hover@md display:block\"></div>", { lang: 'html' })
   const hostWrapper = collectElementsByClass(hast, 'mcss-host-role-class-attribute-value')[0]
 
   assert.ok(hostWrapper)
@@ -82,11 +82,11 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
 
 test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
   const source = [
-    '<main class="bg-surface-base text-body">',
-    '  <section class="b:1px|solid|var(--color-line-divider) surface-raised">',
-    '    <h2 class="text-strong">Project updates</h2>',
-    '    <p class="text-muted">Three milestones changed this week.</p>',
-    '    <a class="text-link" href="#">Continue</a>',
+    "<main class=\"bg-surface-base fg-text-body\">",
+    "  <section class=\"border:1px|solid|var(--color-line-divider) surface-raised\">",
+    "    <h2 class=\"fg-text-strong\">Project updates</h2>",
+    "    <p class=\"fg-text-muted\">Three milestones changed this week.</p>",
+    "    <a class=\"fg-text-link\" href=\"#\">Continue</a>",
     '  </section>',
     '</main>'
   ].join('\n')
@@ -103,7 +103,7 @@ test('highlightCode keeps every named class in the colors guide whole and copyab
 })
 
 test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
-  const hast = await highlightCode('<div className="text-red:hover@md block" />', { lang: 'tsx' })
+  const hast = await highlightCode("<div className=\"fg-text-red:hover@md display:block\" />", { lang: 'tsx' })
 
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
@@ -172,8 +172,8 @@ test('copy text follows rendered indentation, formatting, and removed mark direc
   const formatted = await highlightCode('a{color:red}', { lang: 'css', beautify: true })
   assert.equal(highlightedCodeText(formatted), 'a {\n  color: red\n}')
 
-  const marked = await highlightCode('<!-- @MARK text-red -->\n<div class="text-red">Text</div>', { lang: 'html' })
-  assert.equal(highlightedCodeText(marked), '<div class="text-red">Text</div>')
+  const marked = await highlightCode("<!-- @MARK text-red -->\n<div class=\"fg-text-red\">Text</div>", { lang: 'html' })
+  assert.equal(highlightedCodeText(marked), "<div class=\"fg-text-red\">Text</div>")
 
   const diff = await highlightCode('color: red; /* [!code ++] */', { lang: 'css' })
   assert.equal(highlightedCodeText(diff), 'color: red;')

@@ -8,7 +8,7 @@
 <DemoExample page="grid-template-rows" section="define-explicit-rows" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap-md w:17.5rem max-w:100%">
+<div id="layout" class="display:grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap-md width:17.5rem max-width:100%">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
@@ -23,15 +23,15 @@ The track list alone does not enable Grid; include `grid` on the parent. More it
 <DemoExample page="grid-template-rows" section="use-minmax" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap-md h:14rem w:17.5rem max-w:100%">
-  <div id="target" class="p-sm leading:20px">One line</div>
+<div id="layout" class="display:grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap-md height:14rem width:17.5rem max-width:100%">
+  <div id="target" class="p-sm line-height:20px">One line</div>
   <div id="peer" class="p-sm">Remaining height</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap-md h:14rem w:17.5rem max-w:100%">
-  <div id="target" class="p-sm leading:20px">Content<br>can grow<br>across<br>four lines.</div>
+<div id="layout" class="display:grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap-md height:14rem width:17.5rem max-width:100%">
+  <div id="target" class="p-sm line-height:20px">Content<br>can grow<br>across<br>four lines.</div>
   <div id="peer" class="p-sm">Remaining height</div>
 </div>
 ```
@@ -44,7 +44,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-template-rows" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap-md w:17.5rem max-w:100% grid-template-rows:80px|48px|80px@sm">
+<div id="layout" class="display:grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap-md width:17.5rem max-width:100% grid-template-rows:80px|48px|80px@sm">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

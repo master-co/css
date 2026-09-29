@@ -29,36 +29,54 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const css = createCSSWithNativeDeclarations(createPresetManifest())
 const customManifest = createPresetManifest({
-  customMedia: { '--tablet': { type: 'feature', value: '(width>=48rem)' } },
+  customMedia: { '--tablet': { type: 'feature' as const, value: '(width>=48rem)' } },
   variables: [
-    { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', values: [{ path: [':root,:host'], value: '48rem' }], numeric: { value: 48, unit: 'rem' } },
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number' as const, values: [{ path: [':root,:host'], value: '48rem' }], numeric: { value: 48, unit: 'rem' } },
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   variants: [
-    { token: '@midnight', branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
-    { token: '@wide', branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
+    { token: '@midnight' as const, branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
+    { token: '@wide' as const, branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
   ],
-  utilities: [
-    {
-      name: 'content-auto',
-      type: UtilityType.Semantic,
-      layer: 'utilities',
-      declarations: { 'content-visibility': 'auto' }
-    },
-    {
-      name: 'btn',
-      type: UtilityType.Semantic,
-      layer: 'components',
-      declarations: { display: 'block' }
-    }
-  ]
+  mixins: [
+  {
+    "name": "--content-auto",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "content-visibility",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "auto"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
 })
 const customCSS = createCSSWithNativeDeclarations(customManifest)
 
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
 const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
   variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
+    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
   keyAliases: { space: 'margin' },
   nativeValueNamespaces: [{
@@ -72,99 +90,99 @@ const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
 
 describe('class sorting', () => {
   test('sorts known classes and keeps unknown classes last', () => {
-    expect(sortClassNames(['font-size:1.5rem', 'fg-white', 'm:0.5rem', 'p:0.5rem', 'bg-black'], css))
-      .toEqual(['m:0.5rem', 'p:0.5rem', 'font-size:1.5rem', 'bg-black', 'fg-white'])
-    expect(sortClassNames(['mt:0', 'hello:world', 'a', 'font:error'], css))
-      .toEqual(['mt:0', 'font:error', 'hello:world', 'a'])
+    expect(sortClassNames(['font-size:1.5rem', 'fg-white', "margin:0.5rem", "padding:0.5rem", 'bg-black'], css))
+      .toEqual(["margin:0.5rem", "padding:0.5rem", 'font-size:1.5rem', 'bg-black', 'fg-white'])
+    expect(sortClassNames(["margin-top:0", 'hello:world', 'a', 'font:error'], css))
+      .toEqual(["margin-top:0", 'font:error', 'hello:world', 'a'])
   })
 
   test('sorts generated classes into readable property groups', () => {
     const classNames = [
       'font-heavy',
       'bg-black:hover',
-      'px:0.75rem@sm',
-      'rel',
-      'grid-cols:2@md',
+      "padding-inline:0.75rem@sm",
+      "position:relative",
+      "grid-cols(2)@md",
       'opacity:.8',
-      'z:10',
+      "z-index:10",
       'fg-white',
       'hidden@<md',
-      'text-center',
-      'm:0',
-      'flex',
-      'p:1rem',
+      "text-align:center",
+      "margin:0",
+      "display:flex",
+      "padding:1rem",
       'unknown-app-class',
-      'w:100%',
+      "width:100%",
       'r-lg',
       'bg-blue-60',
       'gap:0.5rem',
       'overflow:hidden',
-      'h:100%',
+      "height:100%",
       'transition:opacity|.2s',
-      'b:1px|solid|var(--color-gray-30)',
-      'block@dark',
+      "border:1px|solid|var(--color-gray-30)",
+      "display:block@dark",
       'align-items:center',
-      'mt:0.5rem',
+      "margin-top:0.5rem",
       'box-shadow:0|2px|8px|#0003',
       'font-size:2.5rem@xs',
-      '{content:``;block;h:100%;w:100%;abs}::after'
+      "{content:``;block;height:100%;width:100%;abs}::after"
     ]
 
     expect(sortClassNames(classNames, css)).toEqual([
-      'rel',
-      'z:10',
-      'flex',
+      "position:relative",
+      "z-index:10",
+      "display:flex",
       'overflow:hidden',
       'align-items:center',
       'gap:0.5rem',
-      'h:100%',
-      'w:100%',
-      'm:0',
-      'mt:0.5rem',
-      'p:1rem',
+      "height:100%",
+      "width:100%",
+      "margin:0",
+      "margin-top:0.5rem",
+      "padding:1rem",
       'r-lg',
-      'b:1px|solid|var(--color-gray-30)',
+      "border:1px|solid|var(--color-gray-30)",
       'font-heavy',
-      'text-center',
+      "text-align:center",
       'bg-blue-60',
       'fg-white',
       'opacity:.8',
       'box-shadow:0|2px|8px|#0003',
       'transition:opacity|.2s',
-      '{content:``;block;h:100%;w:100%;abs}::after',
+      "{content:``;block;height:100%;width:100%;abs}::after",
       'bg-black:hover',
-      'block@dark',
+      "display:block@dark",
       'font-size:2.5rem@xs',
-      'px:0.75rem@sm',
-      'grid-cols:2@md',
+      "padding-inline:0.75rem@sm",
+      "grid-cols(2)@md",
       'hidden@<md',
       'unknown-app-class'
     ])
   })
 
   test('deduplicates repeated classes', () => {
-    expect(sortClassNames(['w:0.75rem', 'w:0.375rem@lg', 'w:0.75rem'], css))
-      .toEqual(['w:0.75rem', 'w:0.375rem@lg'])
+    expect(sortClassNames(["width:0.75rem", "width:0.375rem@lg", "width:0.75rem"], css))
+      .toEqual(["width:0.75rem", "width:0.375rem@lg"])
   })
 
   test('generates each unique class once while sorting', () => {
     const generate = vi.fn((className: string) => css.generate(className))
     const cssWithGenerateSpy = { generate } as unknown as typeof css
 
-    expect(sortClassNames(['w:0.75rem', 'w:0.375rem@lg', 'w:0.75rem'], cssWithGenerateSpy))
-      .toEqual(['w:0.75rem', 'w:0.375rem@lg'])
+    expect(sortClassNames(["width:0.75rem", "width:0.375rem@lg", "width:0.75rem"], cssWithGenerateSpy))
+      .toEqual(["width:0.75rem", "width:0.375rem@lg"])
     expect(generate).toHaveBeenCalledTimes(2)
   })
 })
 
 describe('class list edits', () => {
   test('sorts class-list text while preserving useful whitespace and raw tokens', () => {
-    expect(sortClassList('fg-white  m:0.5rem\tfg-white', css))
-      .toBe('m:0.5rem  fg-white')
-    expect(sortClassList('fg-white\nm:0.5rem\nfg-white', css))
-      .toBe('m:0.5rem\nfg-white')
-    expect(sortClassList('content:\\`\\` block', css, { unescape: '`' }))
-      .toBe('block content:\\`\\`')
+    expect(sortClassList("fg-white  margin:0.5rem\tfg-white", css))
+      .toBe("margin:0.5rem  fg-white")
+    expect(sortClassList("fg-white\nmargin:0.5rem\nfg-white", css))
+      .toBe("margin:0.5rem\nfg-white")
+    expect(sortClassList("content:\\`\\` display:block", css, { unescape: '`' }))
+      .toBe("display:block content:\\`\\`")
   })
 
   test('removes and replaces class-list tokens with adjacent whitespace', () => {
@@ -176,12 +194,12 @@ describe('class list edits', () => {
       .toBe('b')
     expect(removeClassNamesFromClassList('a\n  b\n  c', ['b']))
       .toBe('a\n  c')
-    expect(replaceClassNameInClassList('content:\\\'\\\' block', 'content:\'\'', 'content:""', { unescape: '\'' }))
-      .toBe('content:"" block')
-    expect(replaceClassNameInClassList('content:\\`\\` block', 'content:``', 'content:none', { unescape: '`' }))
-      .toBe('content:none block')
-    expect(replaceClassNameInClassList('m-md block', 'm-md', 'mx-md mb-md'))
-      .toBe('mx-md mb-md block')
+    expect(replaceClassNameInClassList("content:\\'\\' display:block", 'content:\'\'', 'content:""', { unescape: '\'' }))
+      .toBe("content:\"\" display:block")
+    expect(replaceClassNameInClassList("content:\\`\\` display:block", 'content:``', 'content:none', { unescape: '`' }))
+      .toBe("content:none display:block")
+    expect(replaceClassNameInClassList("m-md display:block", 'm-md', 'mx-md mb-md'))
+      .toBe("mx-md mb-md display:block")
     expect(replaceClassNameInClassList('a a b', 'a', 'c'))
       .toBe('c a b')
   })
@@ -195,27 +213,27 @@ describe('class list edits', () => {
       .toBe('size-md w-md')
     expect(replaceClassGroupInClassList('h-md fg-red-60', ['w-md', 'h-md'], 'size-md'))
       .toBe('h-md fg-red-60')
-    expect(replaceClassGroupInClassList('content:\\`\\` block', ['content:``', 'block'], 'content:none', { unescape: '`' }))
+    expect(replaceClassGroupInClassList("content:\\`\\` display:block", ['content:``', "display:block"], 'content:none', { unescape: '`' }))
       .toBe('content:none')
   })
 })
 
 describe('lint diagnostics', () => {
   test('reports sort diagnostics with a machine-readable fix', () => {
-    expect(createSortClassesReport('fg-white m:0.5rem', css)).toEqual({
+    expect(createSortClassesReport("fg-white margin:0.5rem", css)).toEqual({
       diagnostics: [{
         ruleId: 'sort-classes',
         code: 'invalid-class-order',
-        message: 'Sort classes into the expected order: "m:0.5rem fg-white".',
+        message: "Sort classes into the expected order: \"margin:0.5rem fg-white\".",
         severity: 'warning',
-        range: { start: 0, end: 17 },
+        range: { start: 0, end: 22 },
         data: {
-          actual: 'fg-white m:0.5rem',
-          expected: 'm:0.5rem fg-white'
+          actual: "fg-white margin:0.5rem",
+          expected: "margin:0.5rem fg-white"
         },
         fix: {
-          range: { start: 0, end: 17 },
-          text: 'm:0.5rem fg-white',
+          range: { start: 0, end: 22 },
+          text: "margin:0.5rem fg-white",
           scope: 'class-list'
         }
       }]
@@ -223,8 +241,8 @@ describe('lint diagnostics', () => {
   })
 
   test('reports conflict diagnostics with token-relative ranges', () => {
-    expect(createConflictingClassesReport('m:10px m:20px m:30px', css).diagnostics[0]?.message)
-      .toBe('Remove classes "m:10px m:20px"; they are overridden by class "m:30px" in generated CSS.')
+    expect(createConflictingClassesReport("margin:10px margin:20px margin:30px", css).diagnostics[0]?.message)
+      .toBe("Remove classes \"margin:10px margin:20px\"; they are overridden by class \"margin:30px\" in generated CSS.")
 
     const report = createConflictingClassesReport('mx-md ml-lg', css)
     // Logical axes cannot be split into physical sides without changing behavior.
@@ -274,7 +292,7 @@ describe('source content linting', () => {
 
   test('maps class diagnostics and safe fixes onto source ranges', () => {
     const result = lintMasterCSSContent({
-      content: '<div class="fg-white m:0.5rem"></div>',
+      content: "<div class=\"fg-white margin:0.5rem\"></div>",
       filePath: '/project/index.html',
       css
     })
@@ -286,19 +304,19 @@ describe('source content linting', () => {
       sourceKind: 'class-attribute',
       loc: {
         start: { line: 1, column: 13 },
-        end: { line: 1, column: 30 }
+        end: { line: 1, column: 35 }
       },
       fixes: [expect.objectContaining({
         kind: 'class-list',
         safety: 'safe',
-        text: 'm:0.5rem fg-white'
+        text: "margin:0.5rem fg-white"
       })]
     }))
     expect(fixMasterCSSContent({
-      content: '<div class="fg-white m:0.5rem"></div>',
+      content: "<div class=\"fg-white margin:0.5rem\"></div>",
       filePath: '/project/index.html',
       css
-    })).toBe('<div class="m:0.5rem fg-white"></div>')
+    })).toBe("<div class=\"margin:0.5rem fg-white\"></div>")
     expect(summarizeMasterCSSLintFiles([result])).toMatchObject({
       files: 1,
       warnings: result.diagnostics.length,
@@ -307,13 +325,13 @@ describe('source content linting', () => {
   })
 
   test('leaves MDX fenced examples untouched', () => {
-    const content = '```html\n<button class="fg-white p:1rem">Save</button>\n```'
+    const content = "```html\n<button class=\"fg-white padding:1rem\">Save</button>\n```"
     expect(lintMasterCSSContent({ content, filePath: '/project/content.mdx', css }).diagnostics).toEqual([])
     expect(fixMasterCSSContent({ content, filePath: '/project/content.mdx', css })).toBe(content)
   })
 
   test('passes rule options to source content diagnostics', () => {
-    const content = '<div class="btn font-size:15px w:17px"></div>'
+    const content = "<div class=\"btn font-size:15px width:17px\"></div>"
     const result = lintMasterCSSContent({
       content,
       filePath: '/project/content.mdx',
@@ -355,22 +373,22 @@ describe('source content linting', () => {
 
   test('applies source fixes until class lists are stable', () => {
     expect(fixMasterCSSContent({
-      content: '<div class="w-md h-md block"></div>',
+      content: '<div class="w-md h-md display:block"></div>',
       filePath: '/project/index.html',
       css
-    })).toBe('<div class="block h-md w-md"></div>')
+    })).toBe("<div class=\"display:block h-md w-md\"></div>")
   })
 
   test('uses script language ids for cjs and typescript module files', () => {
     expect(lintMasterCSSContent({
-      content: 'const cls = "fg-white m:0.5rem"',
+      content: "const cls = \"fg-white margin:0.5rem\"",
       filePath: '/project/component.cjs',
       css
     })).toMatchObject({
       languageId: 'javascript'
     })
     expect(lintMasterCSSContent({
-      content: 'const cls = "fg-white m:0.5rem"',
+      content: "const cls = \"fg-white margin:0.5rem\"",
       filePath: '/project/component.mts',
       css
     })).toMatchObject({
@@ -388,16 +406,16 @@ describe('source content linting', () => {
 
 describe('class conflicts', () => {
   test('finds classes with matching declarations and variants', () => {
-    expect(findClassConflicts(['m:10px', 'm:20px', 'm:30px:hover', 'm:40px@dark'], css))
+    expect(findClassConflicts(["margin:10px", "margin:20px", "margin:30px:hover", "margin:40px@dark"], css))
       .toEqual([
-        { className: 'm:10px', conflicts: ['m:20px'] }
+        { className: "margin:10px", conflicts: ["margin:20px"] }
       ])
   })
 
   test('ignores invalid classes', () => {
-    expect(findClassConflicts(['a', 'hello:world', 'm:10px', 'm:20px'], css))
+    expect(findClassConflicts(['a', 'hello:world', "margin:10px", "margin:20px"], css))
       .toEqual([
-        { className: 'm:10px', conflicts: ['m:20px'] }
+        { className: "margin:10px", conflicts: ["margin:20px"] }
       ])
   })
 
@@ -456,7 +474,7 @@ describe('partial class conflicts', () => {
   })
 
   test('does not automatically split border style shorthands when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['b-solid', 'bt-dashed'], css)).toEqual([])
+    expect(findPartialClassConflicts(["border-style:solid", "border-top-style:dashed"], css)).toEqual([])
     expect(findPartialClassConflicts(['border-style:solid', 'border-bottom-style:dotted'], css)).toEqual([])
   })
 
@@ -504,36 +522,36 @@ describe('class validation issues', () => {
 
 describe('raw value policy', () => {
   test('reports raw values in token-backed utilities', () => {
-    expect(findUnapprovedRawValueClasses(['font-size:15px', 'm:17px', 'fg:#123456'], css)).toEqual([
+    expect(findUnapprovedRawValueClasses(['font-size:15px', "margin:17px", "color:#123456"], css)).toEqual([
       { className: 'font-size:15px', key: 'font-size', value: '15px', properties: ['font-size'] },
-      { className: 'm:17px', key: 'm', value: '17px', properties: ['margin'] },
-      { className: 'fg:#123456', key: 'fg', value: '#123456', properties: ['color'] }
+      { className: "margin:17px", key: 'margin', value: '17px', properties: ['margin'] },
+      { className: "color:#123456", key: 'color', value: '#123456', properties: ['color'] }
     ])
   })
 
   test('allows raw values by property, key, pattern, or full opt-out', () => {
-    expect(findUnapprovedRawValueClasses(['w:50%'], css, { allowProperties: ['width'] })).toEqual([])
-    expect(findUnapprovedRawValueClasses(['w:50%'], css, { allowProperties: ['w'] })).toEqual([])
-    expect(findUnapprovedRawValueClasses(['m:calc(1rem+1px)'], css, { allowedPatterns: ['^calc\\('] })).toEqual([])
+    expect(findUnapprovedRawValueClasses(["width:50%"], css, { allowProperties: ['width'] })).toEqual([])
+    expect(findUnapprovedRawValueClasses(["width:50%"], css, { allowProperties: ['width'] })).toEqual([])
+    expect(findUnapprovedRawValueClasses(["margin:calc(1rem+1px)"], css, { allowedPatterns: ['^calc\\('] })).toEqual([])
     expect(findUnapprovedRawValueClasses(['font-size:15px'], css, { allowRawValues: true })).toEqual([])
   })
 
   test('applies raw value allowed patterns to individual multi-value segments', () => {
-    expect(findUnapprovedRawValueClasses(['m:var(--spacing-md)|calc(1rem+1px)', 'm:calc(1rem+1px)|var(--spacing-md)'], css, {
+    expect(findUnapprovedRawValueClasses(["margin:var(--spacing-md)|calc(1rem+1px)", "margin:calc(1rem+1px)|var(--spacing-md)"], css, {
       allowedPatterns: ['^calc\\(']
     })).toEqual([])
-    expect(findUnapprovedRawValueClasses(['m:var(--spacing-md)|17px', 'm:calc(1rem+1px)|18px', 'm:19px|20px'], css, {
+    expect(findUnapprovedRawValueClasses(["margin:var(--spacing-md)|17px", "margin:calc(1rem+1px)|18px", "margin:19px|20px"], css, {
       allowedPatterns: ['^calc\\(']
     })).toEqual([
-      { className: 'm:var(--spacing-md)|17px', key: 'm', value: '17px', properties: ['margin'] },
-      { className: 'm:calc(1rem+1px)|18px', key: 'm', value: '18px', properties: ['margin'] },
-      { className: 'm:19px|20px', key: 'm', value: '19px|20px', properties: ['margin'] }
+      { className: "margin:var(--spacing-md)|17px", key: 'margin', value: '17px', properties: ['margin'] },
+      { className: "margin:calc(1rem+1px)|18px", key: 'margin', value: '18px', properties: ['margin'] },
+      { className: "margin:19px|20px", key: 'margin', value: '19px|20px', properties: ['margin'] }
     ])
   })
 
   test('uses active manifest tokens without treating registry fields as token namespaces', () => {
-    expect(findUnapprovedRawValueClasses(['m-card', 'm:17px'], customCSS)).toEqual([
-      { className: 'm:17px', key: 'm', value: '17px', properties: ['margin'] }
+    expect(findUnapprovedRawValueClasses(['m-card', "margin:17px"], customCSS)).toEqual([
+      { className: "margin:17px", key: 'margin', value: '17px', properties: ['margin'] }
     ])
     expect(findUnapprovedRawValueClasses(['--space:17px'], registryFieldCSS)).toEqual([])
   })
@@ -541,21 +559,21 @@ describe('raw value policy', () => {
 
 describe('canonical class suggestions', () => {
   test('preserves literal multi-value declarations', () => {
-    expect(suggestCanonicalClassName('m:1rem|1.5rem', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('p:.5rem|1rem', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:1rem|1.5rem", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("padding:.5rem|1rem", css)).toBeUndefined()
     expect(suggestCanonicalClassName('r:.25rem|.375rem', css)).toBeUndefined()
   })
 
   test('preserves explicit variable references and their priority', () => {
-    expect(suggestCanonicalClassName('m:var(--spacing-md)', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:var(--spacing-md)", css)).toBeUndefined()
     expect(suggestCanonicalClassName('r:var(--radius-md)', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('fg:var(--color-red-60)', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("color:var(--color-red-60)", css)).toBeUndefined()
   })
 
   test('preserves condition suffix order when reordering changes rule priority', () => {
-    expect(suggestCanonicalClassName('block@dark@sm', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@dark@sm", css)).toBeUndefined()
     expect(suggestCanonicalClassName('block:hover@dark@sm', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('block!@dark@sm', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block!@dark@sm", css)).toBeUndefined()
     expect(suggestCanonicalClassName('font-size:16px@dark@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('text-align:center@dark@sm', css)).toBeUndefined()
   })
@@ -576,23 +594,23 @@ describe('canonical class suggestions', () => {
       ...defaultCanonicalClassNameOptions,
       preferPropertyAliases: false
     })).toBeUndefined()
-    expect(suggestCanonicalClassName('m:var(--spacing-md)@dark@sm', css, {
+    expect(suggestCanonicalClassName("margin:var(--spacing-md)@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
-    expect(suggestCanonicalClassName('m:1rem|1.5rem@dark@sm', css, {
+    expect(suggestCanonicalClassName("margin:1rem|1.5rem@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
   })
 
   test('uses custom manifest modes, breakpoints, tokens, and utilities', () => {
-    expect(suggestCanonicalClassName('block@midnight@tablet', customCSS)).toBeUndefined()
-    expect(suggestCanonicalClassName('m:1.25rem@midnight@tablet', customCSS)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@midnight@tablet", customCSS)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:1.25rem@midnight@tablet", customCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('content-visibility:auto', customCSS)).toBeUndefined()
   })
 
   test('does not treat custom variants or component utilities as utilities-only canonical targets', () => {
-    expect(customCSS.generate('block@midnight@wide')).toHaveLength(1)
-    expect(suggestCanonicalClassName('block@midnight@wide', customCSS)).toBeUndefined()
+    expect(customCSS.generate("display:block@midnight@wide")).toHaveLength(1)
+    expect(suggestCanonicalClassName("display:block@midnight@wide", customCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('btn@midnight@tablet', customCSS)).toBeUndefined()
   })
 
@@ -602,16 +620,16 @@ describe('canonical class suggestions', () => {
   })
 
   test('does not suggest partial multi-value or unknown variable tokens', () => {
-    expect(suggestCanonicalClassName('m:1rem|1.125rem', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('m:var(--spacing-unknown)', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:1rem|1.125rem", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:var(--spacing-unknown)", css)).toBeUndefined()
   })
 
   test('does not suggest unsafe condition or selector suffix order', () => {
-    expect(suggestCanonicalClassName('block@sm:hover', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@sm:hover", css)).toBeUndefined()
     expect(suggestCanonicalClassName('block:focus:hover', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('block@starting-style@sm', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('block@print@sm', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('block@supports(display:grid)@sm', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@starting-style@sm", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@print@sm", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@supports(display:grid)@sm", css)).toBeUndefined()
     expect(suggestCanonicalClassName('font:error@dark@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('unknown-class@dark@sm', css)).toBeUndefined()
   })
@@ -628,13 +646,13 @@ describe('canonical class suggestions', () => {
       ...defaultCanonicalClassNameOptions,
       preferPropertyAliases: false
     })).toBeUndefined()
-    expect(suggestCanonicalClassName('m:var(--spacing-md)', css, {
+    expect(suggestCanonicalClassName("margin:var(--spacing-md)", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
-    expect(suggestCanonicalClassName('m:1rem|1.5rem', css, {
+    expect(suggestCanonicalClassName("margin:1rem|1.5rem", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
-    expect(suggestCanonicalClassName('block@dark@sm', css, {
+    expect(suggestCanonicalClassName("display:block@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
 
     })).toBeUndefined()
@@ -642,14 +660,23 @@ describe('canonical class suggestions', () => {
 
   test('does not suggest component-layer semantic utilities', () => {
     const componentCSS = createCSSWithNativeDeclarations(createPresetManifest({
-      utilities: [
-        {
-          name: 'btn',
-          type: UtilityType.Semantic,
-          layer: 'components',
-          declarations: { display: 'block' }
-        }
-      ]
+      mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
     }))
     expect(suggestCanonicalClassName('btn', componentCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('btn@dark@sm', componentCSS)).toBeUndefined()
@@ -660,7 +687,7 @@ describe('canonical class group suggestions', () => {
   test('does not automatically merge size composition utilities', () => {
     expect(suggestCanonicalClassGroups(['w-md', 'h-md'], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['width-md', 'height-md'], css)).toEqual([])
-    expect(suggestCanonicalClassGroups(['w:1rem', 'h:1rem'], css)).toEqual([])
+    expect(suggestCanonicalClassGroups(["width:1rem", "height:1rem"], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['w-md:hover', 'h-md:hover'], css)).toEqual([])
   })
 
@@ -686,10 +713,10 @@ describe('canonical class group suggestions', () => {
   test('does not suggest unsafe composition groups', () => {
     expect(suggestCanonicalClassGroups(['w-md', 'h-lg'], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['w-md', 'h-md@sm'], css)).toEqual([])
-    expect(suggestCanonicalClassGroups(['w:error', 'h-md'], css)).toEqual([])
+    expect(suggestCanonicalClassGroups(["width:error", 'h-md'], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['mt-md', 'mb-lg'], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['mt-md', 'mb-md@sm'], css)).toEqual([])
-    expect(suggestCanonicalClassGroups(['mt:error', 'mb-md'], css)).toEqual([])
+    expect(suggestCanonicalClassGroups(["margin-top:error", 'mb-md'], css)).toEqual([])
     expect(suggestCanonicalClassGroups(['w-md', 'h-md'], css, {
       ...defaultCanonicalClassNameOptions,
       preferCompositionUtilities: false

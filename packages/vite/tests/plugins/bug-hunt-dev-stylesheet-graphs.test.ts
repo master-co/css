@@ -4,7 +4,7 @@ import { createServer } from 'vite'
 import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
 
-test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 dev delivers qualified child CSS and resources in %s', async mode => {
+test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 dev delivers qualified child CSS and resources in %s', async mode => {
   const parent = join(process.cwd(), 'tmp')
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'dev-graphs-'))

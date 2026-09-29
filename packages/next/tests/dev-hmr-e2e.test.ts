@@ -40,7 +40,7 @@ function createGlobalsCSS(display: string) {
     '',
     '@layer components {',
     '    .probe {',
-    `        display: ${display === 'hidden' ? 'none' : display};`,
+    `        display: ${display === "display:none" ? 'none' : display};`,
     '        width: 40px;',
     '        height: 40px;',
     '    }',
@@ -52,7 +52,7 @@ function createGlobalsCSS(display: string) {
   ].join('\n')
 }
 
-function writeFixture(fixtureDir: string, compose = 'inline-flex') {
+function writeFixture(fixtureDir: string, compose = "display:inline-flex") {
   mkdirSync(join(fixtureDir, 'app'), { recursive: true })
   writeFileSync(join(fixtureDir, 'package.json'), JSON.stringify({
     private: true,
@@ -106,14 +106,14 @@ function writePage(fixtureDir: string, padding: number) {
     `export default function Page() {`,
     `  const [hydrated, setHydrated] = useState(false)`,
     `  useEffect(() => setHydrated(true), [])`,
-    `  return <main data-hydrated={hydrated}><div id="cascade" className="box block">Cascade</div><div id="probe" className="probe">Probe</div>`,
-    `<div id="incremental" className="p:${padding}px">Incremental</div>`,
+    "  return <main data-hydrated={hydrated}><div id=\"cascade\" className=\"box display:block\">Cascade</div><div id=\"probe\" className=\"probe\">Probe</div>",
+    `<div id="incremental" className="padding:${padding}px">Incremental</div>`,
     ...Array.from({ length: 10 }, (_, index) => `<div id="module-${index}" className={value${index}}>Module</div>`),
     `</main>`, `}`
   ].join('\n'))
 }
 function writeModules(fixtureDir: string, padding: number) {
-  for (let index = 0; index < 10; index++) writeFileSync(join(fixtureDir, `app/value-${index}.jsx`), `export const value = 'p:${padding + index}px'`)
+  for (let index = 0; index < 10; index++) writeFileSync(join(fixtureDir, `app/value-${index}.jsx`), `export const value = 'padding:${padding + index}px'`)
 }
 
 function buildPackage() {
@@ -230,11 +230,11 @@ describe('Next dev HMR', () => {
       writePage(fixture, 77)
       await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '77px')
       const added = join(fixture, 'app/unimported.jsx')
-      writeFileSync(added, `export const hidden = 'm:37px'`)
+      writeFileSync(added, "export const hidden = 'margin:37px'")
       await page.evaluate(() => {
         const probe = document.createElement('div')
         probe.id = 'new-source-probe'
-        probe.className = 'm:37px'
+        probe.className = "margin:37px"
         document.body.append(probe)
       })
       await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '37px')
@@ -309,20 +309,20 @@ describe('Next dev HMR', () => {
     try {
       await waitForServer(url, child, output)
       browser = await chromium.launch()
-      const page = await expectDisplay(browser, url, 'inline-flex')
+      const page = await expectDisplay(browser, url, "display:inline-flex")
       await page.waitForFunction(() => {
         const cascade = document.getElementById('cascade')
-        return cascade && getComputedStyle(cascade).display === 'block'
+        return cascade && getComputedStyle(cascade).display === "display:block"
       })
       await page.evaluate(() => {
         const markerWindow = window as unknown as { __MASTER_CSS_HMR_MARKER?: string }
         markerWindow.__MASTER_CSS_HMR_MARKER = 'preserve'
       })
 
-      writeFileSync(globalsPath, createGlobalsCSS('flex'))
+      writeFileSync(globalsPath, createGlobalsCSS("display:flex"))
       await page.waitForFunction(() => {
         const probe = document.getElementById('probe')
-        return probe && getComputedStyle(probe).display === 'flex'
+        return probe && getComputedStyle(probe).display === "display:flex"
       })
       const samples: { singleMs: number, burstMs: number, singleStarted: number, burstStarted: number, finished: number }[] = []
       for (let round = 0; round < 4; round++) {

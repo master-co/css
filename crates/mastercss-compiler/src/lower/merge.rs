@@ -43,12 +43,76 @@ pub(super) fn create_merged_style_definitions(
 ) -> Result<Vec<MergedStyleDefinition>, CompilerError> {
     let mut definitions = definitions.iter().collect::<Vec<_>>();
     definitions.sort_by_key(|definition| match definition {
-        CssDirectiveStyleDefinition::Native { order, .. } => *order,
+        CssDirectiveStyleDefinition::Native { order, .. }
+        | CssDirectiveStyleDefinition::Apply { order, .. } => *order,
     });
     let mut output = Vec::new();
     let mut index = 0;
     while index < definitions.len() {
         match definitions[index] {
+            CssDirectiveStyleDefinition::Apply {
+                selector,
+                name,
+                arguments,
+                source,
+                condition_path,
+                ..
+            } => {
+                let fail = |message: String| CompilerError::Directive {
+                    message,
+                    filename: source
+                        .as_ref()
+                        .and_then(|source| source.file.clone())
+                        .unwrap_or_else(|| "stylesheet.css".into()),
+                    range: source.as_ref().map(|source| source.range.clone()),
+                };
+                let arguments = arguments
+                    .iter()
+                    .map(|value| mastercss_engine::evaluate_mixin_value(value, &Default::default()))
+                    .collect::<Result<Vec<_>, _>>()
+                    .map_err(fail)?;
+                let rules = engine.expand_mixin(name, &arguments).map_err(fail)?;
+                for rule in rules {
+                    let selector =
+                        mastercss_lexer::replace_nesting_selector(&rule.selector, selector)
+                            .unwrap_or_else(|| rule.selector.clone());
+                    let mut path = condition_path.clone().unwrap_or_default();
+                    path.extend(rule.conditions.into_iter().map(|condition| {
+                        if let Some(variant) = condition.strip_prefix("@variant ") {
+                            CssDirectiveConditionPathEntry::Variant {
+                                token: format!("@{}", variant.trim().trim_start_matches('@')),
+                            }
+                        } else {
+                            CssDirectiveConditionPathEntry::Condition { value: condition }
+                        }
+                    }));
+                    for branch in
+                        resolve_configured_branches(&path, engine, &selector, target_layer)?
+                    {
+                        append_style(
+                            &mut output,
+                            MergedStyleDefinition {
+                                selector_source: source.clone(),
+                                selector: branch.selector,
+                                conditions: branch.conditions,
+                                declarations: rule
+                                    .declarations
+                                    .iter()
+                                    .map(|declaration| CssDeclaration {
+                                        property: declaration.property.clone(),
+                                        value: declaration.value.clone().into(),
+                                        source: declaration
+                                            .source
+                                            .clone()
+                                            .or_else(|| source.clone()),
+                                    })
+                                    .collect(),
+                            },
+                        );
+                    }
+                }
+                index += 1;
+            }
             CssDirectiveStyleDefinition::Native {
                 selector,
                 declarations,

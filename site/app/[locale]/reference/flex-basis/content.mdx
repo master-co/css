@@ -8,9 +8,9 @@
 <DemoExample page="flex-basis" section="set-the-starting-size-of-a-flex-item" />
 
 ```html
-<div id="layout" class="flex gap-md">
-  <div id="target" class="flex-basis:6rem flex-shrink:0 h:6rem p-sm">Sidebar</div>
-  <div id="peer" class="flex:1 h:6rem min-w:0 p-sm">Main content</div>
+<div id="layout" class="display:flex gap-md">
+  <div id="target" class="flex-basis:6rem flex-shrink:0 height:6rem p-sm">Sidebar</div>
+  <div id="peer" class="flex:1 height:6rem min-width:0 p-sm">Main content</div>
 </div>
 ```
 
@@ -29,19 +29,19 @@ In horizontal writing, a row uses the basis as a starting width and a column use
 <DemoExample page="flex-basis" section="use-content-or-parent-sized-basis-values" />
 
 ```html
-<div id="layout" class="flex">
-  <div id="target" class="flex-basis:100% flex-shrink:0 min-w:0 p-sm">Design library</div>
+<div id="layout" class="display:flex">
+  <div id="target" class="flex-basis:100% flex-shrink:0 min-width:0 p-sm">Design library</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex">
+<div id="layout" class="display:flex">
   <div id="target" class="flex-basis:fit-content flex-shrink:0 p-sm">Design library</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex">
+<div id="layout" class="display:flex">
   <div id="target" class="flex-basis:max-content flex-shrink:0 p-sm">Design library</div>
 </div>
 ```
@@ -54,9 +54,9 @@ Fit-content is bounded by the available space and the content’s minimum size. 
 <DemoExample page="flex-basis" section="use-container-basis-values" />
 
 ```html
-<div id="layout" class="flex gap-md">
-  <div id="target" class="flex-basis-md h:6rem min-w:0 p-sm">Container basis</div>
-  <div id="peer" class="flex:none h:6rem w:5rem p-sm">Main content</div>
+<div id="layout" class="display:flex gap-md">
+  <div id="target" class="flex-basis-md height:6rem min-width:0 p-sm">Container basis</div>
+  <div id="peer" class="flex:none height:6rem width:5rem p-sm">Main content</div>
 </div>
 ```
 
@@ -68,9 +68,9 @@ Use [flex](/reference/flex) when growth, shrinkage and the basis belong together
 <DemoExample page="flex-basis" section="prefer-shorthand-for-complete-flex-behavior" />
 
 ```html
-<div id="layout" class="flex flex-col gap-md h:15rem">
+<div id="layout" class="display:flex flex-direction:column gap-md height:15rem">
   <div id="target" class="flex:0|0|4.5rem p-sm">72px header</div>
-  <div id="peer" class="flex:1 min-h:0 p-sm">Remaining height</div>
+  <div id="peer" class="flex:1 min-height:0 p-sm">Remaining height</div>
 </div>
 ```
 
@@ -80,8 +80,8 @@ Use [conditional queries](/reference/rules/conditions) to switch the basis at a 
 <DemoExample page="flex-basis" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex flex-wrap gap-md">
-  <div id="target" class="flex-basis:100% flex-shrink:0 h:6rem p-sm flex-basis:6rem@sm">Sidebar</div>
-  <div id="peer" class="flex:1|1|8rem h:6rem min-w:0 p-sm">Main content</div>
+<div id="layout" class="display:flex flex-wrap:wrap gap-md">
+  <div id="target" class="flex-basis:100% flex-shrink:0 height:6rem p-sm flex-basis:6rem@sm">Sidebar</div>
+  <div id="peer" class="flex:1|1|8rem height:6rem min-width:0 p-sm">Main content</div>
 </div>
 ```

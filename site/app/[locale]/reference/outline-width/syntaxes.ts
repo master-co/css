@@ -1,7 +1,7 @@
 const syntaxes = [
-  'outline-medium',
-  'outline-thick',
-  'outline-thin',
+  "outline-width:medium",
+  "outline-width:thick",
+  "outline-width:thin",
   ['outline-width:`size`'],
 ]
 

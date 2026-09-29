@@ -1,7 +1,7 @@
 const syntaxes = [
-  'capitalize',
-  'uppercase',
-  'lowercase',
+  "text-transform:capitalize",
+  "text-transform:uppercase",
+  "text-transform:lowercase",
   'text-transform:none',
   ['text-transform:`transform`'],
 ]

@@ -25,7 +25,7 @@ Inspect the Tailwind surface before changing files.
 | --- | --- | --- |
 | CSS entry | `@import "tailwindcss"` and any imported theme files | Add `@import "@master/css"` beside it during migration. |
 | Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
-| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@utility`. |
+| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@mixin`. |
 | Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
 | Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
 | Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
@@ -94,7 +94,7 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```
 
 ```html
-<article class="r-card grid-cols:3@md bg-brand p-card">
+<article class="r-card grid-cols(3)@md bg-brand p-card">
   ...
 </article>
 ```
@@ -109,7 +109,7 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 | `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
 | `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
 | `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | Defines viewport suffixes such as `@md`; custom properties do not register conditions. |
-| `@theme inline` | Scoped `@theme` or a fixed `@utility` | Tokens retain `var()` references. Use a fixed utility for a literal declaration. |
+| `@theme inline` | Scoped `@theme` or a fixed `@mixin` | Tokens retain `var()` references. Use a fixed utility for a literal declaration. |
 | `@theme static` | Native `@layer theme` | Native custom properties and top-level keyframes ship with their stylesheet. |
 
 Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme switch. Define custom variants separately when markup uses `@manual-light` or `@manual-dark` suffixes.
@@ -133,7 +133,7 @@ Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme s
 ```
 
 ```html
-<section class="text-body bg-panel">
+<section class="fg-text-body bg-panel">
   ...
 </section>
 ```
@@ -162,23 +162,23 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 Example conversion:
 
 ```html
-<section class="grid gap-lg w:100% max-w-5xl mx:auto px-md py-2xl grid-cols:3@md">
+<section class="display:grid gap-lg width:100% max-w-5xl margin-inline:auto px-md py-2xl grid-cols(3)@md">
   <article class="p-lg r-lg bg-white shadow-sm">
-    <h2 class="m:0 font-2xl font-semibold text-neutral">Account</h2>
-    <p class="mt-xs text-muted">Review profile settings.</p>
+    <h2 class="margin:0 font-2xl font-semibold fg-text-neutral">Account</h2>
+    <p class="mt-xs fg-text-muted">Review profile settings.</p>
   </article>
 </section>
 ```
 
 When a Tailwind class does not have a short Master CSS alias, use the CSS property directly:
 
-{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native declaration example */}
+{ }
 ```html
 <div class="scroll-margin-top:4rem text-wrap:balance">
   ...
 </div>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }
 
 ---
 
@@ -198,7 +198,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
 
 ```html
-<button class="inline-flex items-center h:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
+<button class="display:inline-flex align-items:center height:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```
@@ -216,19 +216,19 @@ Use `@custom-variant` when a Tailwind custom variant represents shared condition
 
 ```
 
-{/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
+{ }
 ```html
 <button class="bg-blue-70:hover px-sm@compact">
   Save
 </button>
 ```
-{/* eslint-enable @master/css/no-invalid-classes */}
+{ }
 
 For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, `:has()`, and `:of()`, but it does not implement Tailwind's group and peer variant naming.
 
 ```html
 <article class="bg-blue-5:hover_h2">
-  <h2 class="text-neutral">Project</h2>
+  <h2 class="fg-text-neutral">Project</h2>
 </article>
 ```
 
@@ -290,7 +290,7 @@ Keep quoted strings, complex content values, and unusual selectors as ordinary C
 ---
 
 ## Migrate custom utilities and components
-Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utility` for reusable primitives and `@layer components` for product roles.
+Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@mixin` for reusable primitives and `@layer components` for product roles.
 
 ```css name=tailwind.css
 @utility content-auto {
@@ -302,7 +302,7 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 ```css name=app.css
 @import "@master/css";
 
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -359,7 +359,7 @@ Tailwind and Master CSS static rendering both depend on class names that can be 
 (x) Avoid fragment assembly.
 
 ```ts
-const className = 'bg:' + tone
+const className = 'background:' + tone
 ```
 
 (o) Use complete class maps.
@@ -377,9 +377,9 @@ When only the value is dynamic, keep the class static and pass the runtime value
 ```tsx
 function Progress({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:1rem r:100% bg-gray-10">
+    <div className="overflow:hidden height:1rem border-radius:100% bg-gray-10">
       <div
-        className="h:100% w:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
+        className="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--progress': `${value}%` } as React.CSSProperties}
       />
     </div>
@@ -452,7 +452,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind capability | Master CSS status | Migration path |
 | --- | --- | --- |
 | Tailwind class syntax and drop-in compatibility | Master CSS does not read Tailwind class syntax. | Rewrite classes to Master CSS syntax or keep Tailwind loaded until each area is migrated. |
-| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utility`, or `@layer components`; keep plugin CSS temporarily when needed. |
+| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@mixin`, or `@layer components`; keep plugin CSS temporarily when needed. |
 | Tailwind CSS-first theme resolver behavior | Master CSS has its own token namespaces and utility matching. | Move shared values into Master CSS `@theme` directives and review generated class names. |
 | Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use native selectors to scope styles to an app root. |
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |

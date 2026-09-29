@@ -4,6 +4,8 @@ This guide covers `.scss` and `.sass` projects that use variables, maps, mixins,
 
 ---
 
+CSS `@mixin` and Sass `@mixin` share a keyword. Keep Master CSS definitions in `.css` files, or use the [SCSS interpolation pattern](/reference/directives#sass-interoperability) when emitting them from Sass. Current Sass rejects a direct `@mixin --name` declaration.
+
 ## Migration strategy
 Start from the Sass entry files your app already builds.
 
@@ -11,7 +13,7 @@ Start from the Sass entry files your app already builds.
 2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
 3. Move shared design values into Master CSS `@theme`.
 4. Convert local visual rules to markup classes when the markup stays readable.
-5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@utility` when they are reusable primitives.
+5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@mixin` when they are reusable primitives.
 6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
 7. Remove Sass only after converted screens no longer depend on it.
 
@@ -27,7 +29,7 @@ Inspect the Sass surface before changing files.
 | Entry files | `.scss` and `.sass` entries, partials, `@use`, `@forward`, and app imports | Add Master CSS beside the current entry first. |
 | Variables and maps | Colors, spacing, radius, typography, shadows, breakpoints, and z-index scales | Move product-owned values into `@theme`. |
 | Mixins and functions | Responsive helpers, fluid calculations, color helpers, and repeated declarations | Replace with utilities, tokens, native CSS functions, or keep in CSS when clearer. |
-| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@utility`. |
+| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@mixin`. |
 | Nesting | Component states, descendant selectors, media queries, and structural selectors | Move simple states into classes; keep complex selectors as CSS. |
 | Generated CSS | Loops, maps, vendor output, icon fonts, and theme packages | Keep generated output until a deliberate replacement exists. |
 
@@ -70,7 +72,7 @@ $radius-card: .75rem;
 ```
 
 ```html
-<article class="b:1px|solid|var(--color-line-divider) r-card bg-white fg-body p-card">
+<article class="border:1px|solid|var(--color-line-divider) r-card bg-white fg-body p-card">
   ...
 </article>
 ```
@@ -95,7 +97,7 @@ Move local visual rules into markup when the style belongs to one element or one
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap-md r-card bg-white p-card">
+    <section className="display:grid gap-md r-card bg-white p-card">
       {children}
     </section>
   )
@@ -144,10 +146,10 @@ Use `@layer components` for product roles:
 <button class="btn">Save</button>
 ```
 
-Use `@utility` for reusable primitives:
+Use `@mixin` for reusable primitives:
 
 ```css name=app.css
-@utility content-auto {
+@mixin --content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -208,6 +210,6 @@ Project theme variables are available automatically after Sass preprocessing in 
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utility`, and `@reference`.
+- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@mixin`, and `@reference`.
 - [Route-level styles](/guide/route-level-styles) for local CSS files that use project definitions and native declarations.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.

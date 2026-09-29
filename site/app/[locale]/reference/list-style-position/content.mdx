@@ -1,6 +1,6 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- native list longhands preserve the other marker properties */}
+{ }
 
 ## Examples \{#examples\}
 ### Place markers inside the content box \{#place-markers-inside-the-content-box\}
@@ -10,7 +10,7 @@ An inside marker occupies the first inline box of each item. Wrapped lines begin
 
 ```html
 <!-- Outside · hanging marker -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|outside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -20,7 +20,7 @@ An inside marker occupies the first inline box of each item. Wrapped lines begin
 
 ```html
 <!-- Inside · marker on first line -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|outside list-style-position:inside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -44,7 +44,7 @@ An outside marker hangs beside the item’s principal box. Wrapped text aligns w
 
 ```html
 <!-- Outside · aligned text lines -->
-<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:disc|inside list-style-position:outside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -59,7 +59,7 @@ Use a shorthand to set position and type together. These ordered lists keep deci
 
 ```html
 <!-- decimal · outside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:decimal|outside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -69,7 +69,7 @@ Use a shorthand to set position and type together. These ordered lists keep deci
 
 ```html
 <!-- decimal · inside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:decimal|inside">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
@@ -84,7 +84,7 @@ Resize past `sm` to place decimal markers inside. The dedicated position propert
 
 ```html
 <!-- Real viewport · position only -->
-<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
+<ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:decimal|outside list-style-position:outside@print
     list-style-position:inside@screen@sm">
   <li class="mb-2xs">Collect references</li>
@@ -93,4 +93,4 @@ Resize past `sm` to place decimal markers inside. The dedicated position propert
 </ol>
 ```
 
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+{ }

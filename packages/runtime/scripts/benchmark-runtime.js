@@ -22,12 +22,12 @@ const cpuThrottleRate = Number(args.get('cpu-throttle') || process.env.MASTER_CS
 const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
 
 const utilityKeys = [
-  'w',
-  'h',
-  'min-w',
-  'max-w',
-  'm',
-  'p',
+  'width',
+  'height',
+  'min-width',
+  'max-width',
+  'margin',
+  'padding',
   'top',
   'right',
   'bottom',

@@ -1,7 +1,7 @@
 use super::utility::match_utility_filtered;
 use super::{
     ManifestProjection, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher,
-    builtin_key_alias, emit_declarations,
+    emit_declarations,
 };
 
 /// Select a family before looking up a token. Missing qualified tokens never
@@ -10,6 +10,9 @@ pub(crate) fn matching_utilities(
     source: &str,
     manifest: &ManifestProjection,
 ) -> Vec<(usize, UtilityMatch)> {
+    if let Some(found) = super::mixin_matching::matching(source, manifest) {
+        return found;
+    }
     let native = is_native_declaration(source, manifest);
     if !native {
         for entries in [&manifest.static_utilities] {
@@ -123,6 +126,24 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         }),
         notes: Vec::new(),
     };
+    if let Some((property, _)) = source.split_once(':')
+        && let Some(message) = super::token_registry::removed_recipe(property)
+    {
+        return vec![error(super::ErrorCode::ClassSyntaxError, message)];
+    }
+    if let Some((property, _)) = source.split_once(':')
+        && let Some(target) = super::token_registry::removed_raw_alias(property)
+    {
+        return vec![error(
+            super::ErrorCode::ClassSyntaxError,
+            format!(
+                "Raw property alias {property}: was removed; use {target}: (named token aliases remain available)"
+            ),
+        )];
+    }
+    if let Some(message) = super::mixin_matching::diagnostic(source, manifest) {
+        return vec![error(super::ErrorCode::CssDirectiveError, message)];
+    }
     if mastercss_lexer::decode_native_content(source).is_none() {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
@@ -204,9 +225,12 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         .strip_prefix(prefix)
         .unwrap_or_default();
     for (index, matched) in &candidates {
-        for (_, declarations, _, _) in
-            emit_declarations(&manifest.utilities[*index], matched.value.as_deref(), false)
-        {
+        for (_, declarations, _, _) in emit_declarations(
+            &manifest.utilities[*index],
+            matched.value.as_deref(),
+            false,
+            manifest,
+        ) {
             for declaration in declarations.split(';') {
                 if let Some((property, _)) = declaration.split_once(':') {
                     let alternative = format!(
@@ -267,11 +291,10 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
 pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -> Option<&'a str> {
     // A registered declaration key owns its colon, even if a shorter named
     // family exists (font-family:mono must never mean font-family:hover).
-    if let Some((key, _)) = source.split_once(':') {
-        let key = builtin_key_alias(key).unwrap_or(key);
-        if is_native_declaration(source, manifest) || manifest.declaration_keys.contains(key) {
-            return None;
-        }
+    if let Some((key, _)) = source.split_once(':')
+        && (is_native_declaration(source, manifest) || manifest.declaration_keys.contains(key))
+    {
+        return None;
     }
     [source, source.strip_prefix('-').unwrap_or(source)]
         .into_iter()
@@ -290,7 +313,6 @@ fn is_native_declaration(source: &str, manifest: &ManifestProjection) -> bool {
     let Some((key, _)) = source.split_once(':') else {
         return false;
     };
-    let key = builtin_key_alias(key).unwrap_or(key);
     mastercss_schema::is_native_css_property(key)
         || manifest.utilities.iter().any(|utility| {
             utility.native_fallback
@@ -301,11 +323,15 @@ fn is_native_declaration(source: &str, manifest: &ManifestProjection) -> bool {
         })
 }
 
-pub(crate) fn sort_key(utility: &UtilityDefinition, matched: &UtilityMatch) -> String {
+pub(crate) fn sort_key(
+    utility: &UtilityDefinition,
+    matched: &UtilityMatch,
+    manifest: &ManifestProjection,
+) -> String {
     if utility.utility_type == -2 && matched.matcher_type != super::UtilityMatcherType::Token {
         return String::new(); // Static/enum identities retain their existing semantic order.
     }
-    emit_declarations(utility, matched.value.as_deref(), false)
+    emit_declarations(utility, matched.value.as_deref(), false, manifest)
         .into_iter()
         .map(|(_, declarations, _, _)| declarations)
         .collect::<Vec<_>>()
@@ -314,16 +340,8 @@ pub(crate) fn sort_key(utility: &UtilityDefinition, matched: &UtilityMatch) -> S
 
 pub(crate) fn allows_negative_token(utility: &UtilityDefinition) -> bool {
     let properties = match &utility.emit {
+        UtilityEmit::Mixin { .. } => return false,
         UtilityEmit::Property { property } => vec![property.as_str()],
-        UtilityEmit::Static { rules } => rules
-            .iter()
-            .flat_map(|rule| rule.declarations.keys().map(String::as_str))
-            .collect(),
-        UtilityEmit::Template { declarations } => declarations.keys().map(String::as_str).collect(),
-        UtilityEmit::Declarations { declarations } => declarations
-            .iter()
-            .filter_map(|declaration| declaration.split_once(':').map(|(property, _)| property))
-            .collect(),
     };
     !properties.is_empty()
         && properties.iter().all(|property| {

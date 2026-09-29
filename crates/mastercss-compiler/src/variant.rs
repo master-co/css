@@ -1,9 +1,9 @@
 use super::{
-    CompilerError, Component, CssDirectiveManifestInput, CssDirectiveSourceReference, CssRule,
-    ErrorCode, HashMap, ParserOptions, PrinterOptions, Selector, SourceLocation,
-    SourceLocationRange, SourceRange, StyleSheet, ThemeAtRule, ToCss, UtilityLayerName, Value,
-    byte_to_utf16_offset, collect_declarations, css_comment_end, css_quote_end, directive_error,
-    minified_css, next_char_end, ranged_directive_diagnostic,
+    CompilerError, CssDirectiveManifestInput, CssDirectiveSourceReference, CssRule, ErrorCode,
+    HashMap, ParserOptions, PrinterOptions, Selector, SourceLocation, SourceLocationRange,
+    SourceRange, StyleSheet, ThemeAtRule, ToCss, UtilityLayerName, Value, byte_to_utf16_offset,
+    collect_declarations, css_comment_end, css_quote_end, directive_error, minified_css,
+    next_char_end, ranged_directive_diagnostic,
 };
 
 pub(crate) fn custom_variant_branch(
@@ -359,41 +359,6 @@ pub(crate) fn source_reference_from_bytes(
     })
 }
 
-pub(crate) fn managed_selector_definition(
-    selectors: &[Selector<'_>],
-    filename: &str,
-) -> Result<(String, String), CompilerError> {
-    let selector_text = selectors
-        .iter()
-        .map(|selector| {
-            selector.to_css_string(PrinterOptions {
-                minify: true,
-                ..PrinterOptions::default()
-            })
-        })
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.to_owned(),
-        })?
-        .join(",");
-    let name = if let [selector] = selectors {
-        let mut components = selector.iter_raw_match_order();
-        match (components.next(), components.next()) {
-            (Some(Component::LocalName(name)), None) => Some(name.name.0.to_string()),
-            _ => None,
-        }
-    } else {
-        None
-    };
-    name.map(|name| (name, "&".to_owned()))
-        .ok_or_else(|| CompilerError::Directive {
-            message: format!("Managed definition names must be bare identifiers: {selector_text}"),
-            filename: filename.to_owned(),
-            range: None,
-        })
-}
-
 pub(crate) fn printed_selectors(
     selectors: &[Selector<'_>],
     filename: &str,
@@ -501,7 +466,7 @@ pub(crate) fn validate_condition_variant_syntax(
                             "@theme requires native conditions; @variant is not supported inside @theme",
                         ));
                     }
-                    CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("utility") => {
+                    CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("mixin") => {
                         style = true
                     }
                     CssSyntaxKind::AtKeyword(_) => {}
@@ -514,7 +479,7 @@ pub(crate) fn validate_condition_variant_syntax(
                     source,
                     filename,
                     first.bytes.start,
-                    "@variant must be inside a style rule or @utility",
+                    "@variant must be inside a style rule or @mixin",
                 ));
             }
         }
@@ -540,9 +505,7 @@ pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<
                 "mode" => Some(
                     "@mode has been removed; author explicit native selectors and conditions in @theme and use @custom-variant for named conditions",
                 ),
-                "utilities" => Some(
-                    "@utilities has been removed; use one @utility name { ... } per definition",
-                ),
+                "utilities" => Some("@utilities has been removed; use @mixin --name { ... }"),
                 "dark" | "light" => Some(
                     "@dark and @light blocks have been removed; use @variant dark or @variant light with a named custom variant",
                 ),
