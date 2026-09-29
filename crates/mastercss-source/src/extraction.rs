@@ -1,4 +1,5 @@
 use super::*;
+use mastercss_lexer::Utf16Index;
 use mastercss_schema::{Diagnostic, DiagnosticPhase, DiagnosticSeverity, ErrorCode, SourceRange};
 use std::ops::Range;
 
@@ -25,8 +26,10 @@ pub fn extract_source_result(input: &SourceExtractionInputIr) -> SourceExtractio
         occurrences: Vec::new(),
         diagnostics: Vec::new(),
     };
+    let offsets = Utf16Index::new(&input.content);
     let mut collector = Collector {
         input,
+        offsets: &offsets,
         output: &mut output,
         seen: HashSet::new(),
     };
@@ -72,7 +75,7 @@ pub fn extract_source_result(input: &SourceExtractionInputIr) -> SourceExtractio
         // A failed parse is never a successful empty-file update.
         output.candidates.clear();
         output.occurrences.clear();
-        output.diagnostics.push(Diagnostic { code: ErrorCode::SourceParseError, phase: DiagnosticPhase::Compiler, severity: DiagnosticSeverity::Error, message, source: Some(input.source.clone()), range: Some(utf16_range(&input.content, range)), notes: vec!["Previous successful source contributions must be retained; use kind: 'raw' only for deliberate text extraction.".into()] });
+        output.diagnostics.push(Diagnostic { code: ErrorCode::SourceParseError, phase: DiagnosticPhase::Compiler, severity: DiagnosticSeverity::Error, message, source: Some(input.source.clone()), range: Some(utf16_range(&offsets, range)), notes: vec!["Previous successful source contributions must be retained; use kind: 'raw' only for deliberate text extraction.".into()] });
     }
     output
 }
@@ -106,14 +109,19 @@ impl Collector<'_> {
 type ExtractionResult = Result<(), (String, Range<usize>)>;
 struct Collector<'a> {
     input: &'a SourceExtractionInputIr,
+    offsets: &'a Utf16Index,
     output: &'a mut SourceExtractionIr,
     seen: HashSet<String>,
 }
 
-fn utf16_range(source: &str, range: Range<usize>) -> SourceRange {
+fn utf16_range(offsets: &Utf16Index, range: Range<usize>) -> SourceRange {
     SourceRange {
-        start: source[..range.start].encode_utf16().count() as u32,
-        end: source[..range.end].encode_utf16().count() as u32,
+        start: offsets
+            .byte_to_utf16(range.start)
+            .expect("source range start is a character boundary"),
+        end: offsets
+            .byte_to_utf16(range.end)
+            .expect("source range end is a character boundary"),
     }
 }
 
@@ -128,6 +136,7 @@ impl Collector<'_> {
         candidates: Option<Vec<String>>,
     ) {
         let original = &self.input.content[range.clone()];
+        let context_range = utf16_range(self.offsets, range.clone());
         for candidate in candidates.unwrap_or_else(|| extract_class_candidates(value)) {
             let url = source_url_literal(&candidate);
             let included = included && !url;
@@ -144,8 +153,8 @@ impl Collector<'_> {
                 self.output.occurrences.push(SourceOccurrenceIr {
                     candidate: candidate.clone(),
                     source: self.input.source.clone(),
-                    range: utf16_range(&self.input.content, matched),
-                    context_range: utf16_range(&self.input.content, range.clone()),
+                    range: utf16_range(self.offsets, matched),
+                    context_range: context_range.clone(),
                     range_kind: if precise { "token" } else { "expression" }.into(),
                     extractor: extractor.into(),
                     content_kind: content_kind.into(),
@@ -206,7 +215,8 @@ impl Collector<'_> {
 
     fn html_attribute(&mut self, raw: &str, start: usize) {
         let decoded = decode_html_attribute(raw);
-        let base = self.input.content[..start].encode_utf16().count() as u32;
+        let context_range = utf16_range(self.offsets, start..start + raw.len());
+        let base = context_range.start;
         for token in mastercss_lexer::collect_class_list_token_ranges(&decoded.value) {
             let included = !source_url_literal(&token.token);
             let spans = decoded
@@ -224,7 +234,7 @@ impl Collector<'_> {
                         start: base + first.source_range.start,
                         end: base + last.source_range.end,
                     },
-                    context_range: utf16_range(&self.input.content, start..start + raw.len()),
+                    context_range: context_range.clone(),
                     range_kind: "token".into(),
                     extractor: "html".into(),
                     content_kind: "class-attribute".into(),

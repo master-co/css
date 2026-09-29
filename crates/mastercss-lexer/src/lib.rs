@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 
+mod utf16_index;
+pub use utf16_index::Utf16Index;
+
 mod functional_class;
 pub use functional_class::{FunctionalClassHead, parse_functional_class, parse_mixin_call};
 

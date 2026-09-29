@@ -1,16 +1,15 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import { MasterCSSManifest, defaultManifest } from './master-css'
-import {
-  discoverManifestEntriesSync,
-  loadProjectManifestSync
-} from '@master/css-compiler/project/sync'
-import { discoverBuildWorkspaceDirectoriesSync } from '@master/css-internal/workspace-directories'
+import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
 import path from 'node:path'
-import { existsSync, statSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import isSameOrChildPath from './is-same-or-child-path'
 import type { MasterCSSToolingSession } from '@master/css-tooling'
 import { createToolingSessionSync } from '@master/css-tooling/node'
+import { isDependencyCurrent, stampDependency, type DependencyStamp } from './dependency-stamp'
+import { acquireWorkspaceSnapshot, releaseWorkspaceSnapshot, type WorkspaceSnapshot } from './workspace-cache'
+import { createSourceTooling } from './source-tooling'
 
 declare interface CSSCache {
   cwd: string
@@ -18,39 +17,27 @@ declare interface CSSCache {
   tooling: MasterCSSToolingSession
   configuredManifestSignature?: string
   dependencies: readonly DependencyStamp[]
+  discovery?: WorkspaceSnapshot
   references: number
   disposeTimer?: ReturnType<typeof setTimeout>
-}
-
-declare interface DependencyStamp {
-  path: string
-  mtimeNs: bigint
-  size: bigint
 }
 
 declare interface SourceCache {
   cssCaches: CSSCache[]
   references: number
-  workspaceDirectoriesByCwd: Map<string, string[]>
+  workspaces: Map<string, WorkspaceSnapshot>
+  tooling: {
+    cwd: string
+    filename?: string
+    manifest?: MasterCSSManifest
+    session: MasterCSSToolingSession
+    clear(): void
+  }[]
 }
 
 const sourceCaches = new WeakMap<object, SourceCache>()
 const cssCaches: CSSCache[] = []
 const CACHE_IDLE_DISPOSE_DELAY = 1_000
-
-function stampDependency(dependency: string): DependencyStamp {
-  try {
-    const stat = statSync(dependency, { bigint: true })
-    return { path: dependency, mtimeNs: stat.mtimeNs, size: stat.size }
-  } catch {
-    return { path: dependency, mtimeNs: -1n, size: -1n }
-  }
-}
-
-function isDependencyCurrent(stamp: DependencyStamp) {
-  const current = stampDependency(stamp.path)
-  return current.mtimeNs === stamp.mtimeNs && current.size === stamp.size
-}
 
 function disposeCSSCache(cache: CSSCache) {
   if (cache.disposeTimer) clearTimeout(cache.disposeTimer)
@@ -81,16 +68,13 @@ function getContextFilename(context: RuleContext<any, any[]>) {
   return path.isAbsolute(filename) ? filename : path.resolve(context.cwd, filename)
 }
 
-function getWorkspaceDirectories(sourceCache: SourceCache, cwd: string) {
-  let directories = sourceCache.workspaceDirectoriesByCwd.get(cwd)
-  if (!directories) {
-    directories = [...discoverBuildWorkspaceDirectoriesSync(
-      cwd,
-      discoverManifestEntriesSync({ root: cwd })
-    )]
-    sourceCache.workspaceDirectoriesByCwd.set(cwd, directories)
+function getWorkspaceSnapshot(sourceCache: SourceCache, cwd: string) {
+  let snapshot = sourceCache.workspaces.get(cwd)
+  if (!snapshot) {
+    snapshot = acquireWorkspaceSnapshot(cwd)
+    sourceCache.workspaces.set(cwd, snapshot)
   }
-  return directories
+  return snapshot
 }
 
 function findNearestPackageDirectory(filename: string) {
@@ -116,8 +100,9 @@ function resolveWorkspaceDirectory(
   filename: string
 ) {
   const cwd = resolveSearchDirectory(context, filename)
+  const discovery = getWorkspaceSnapshot(sourceCache, cwd)
   let closestDirectory: string | undefined
-  for (const directory of getWorkspaceDirectories(sourceCache, cwd)) {
+  for (const directory of discovery.directories) {
     if (
       isSameOrChildPath(directory, filename)
       && (!closestDirectory || directory.length > closestDirectory.length)
@@ -125,7 +110,7 @@ function resolveWorkspaceDirectory(
       closestDirectory = directory
     }
   }
-  return closestDirectory || cwd
+  return { workspaceDir: closestDirectory || cwd, discovery }
 }
 
 function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
@@ -139,24 +124,11 @@ function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
   }
 }
 
-export default function resolveContext(context: RuleContext<any, any[]>) {
-  const sourceCode = context.sourceCode
-  let sourceCache = sourceCaches.get(sourceCode)
-  if (!sourceCache) {
-    sourceCache = {
-      cssCaches: [],
-      references: 0,
-      workspaceDirectoriesByCwd: new Map()
-    }
-    sourceCaches.set(sourceCode, sourceCache)
-  }
-  sourceCache.references++
-
-  const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
+function resolveTooling(context: RuleContext<any, any[]>, sourceCache: SourceCache, resolvedSettings: Settings) {
   const filename = getContextFilename(context)
-  const workspaceDir = filename
+  const { workspaceDir, discovery } = filename
     ? resolveWorkspaceDirectory(context, sourceCache, filename)
-    : context.cwd || process.cwd()
+    : { workspaceDir: context.cwd || process.cwd(), discovery: undefined }
   const configuredManifestSignature = resolvedSettings.manifest
     ? JSON.stringify(resolvedSettings.manifest)
     : undefined
@@ -168,6 +140,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
       cache.cwd === workspaceDir)
     if (cache && (
       cache.configuredManifestSignature !== configuredManifestSignature
+      || cache.discovery !== discovery
       || !cache.dependencies.every(isDependencyCurrent)
     )) {
       if (cache.references) {
@@ -192,27 +165,63 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
       tooling,
       configuredManifestSignature,
       dependencies: plan.dependencies.map(stampDependency),
+      discovery,
       references: 0
     }
     cssCaches.push(cache)
   }
-  retainCSSCache(cache)
-  if (!sourceCache.cssCaches.includes(cache)) sourceCache.cssCaches.push(cache)
+  if (!sourceCache.cssCaches.includes(cache)) {
+    retainCSSCache(cache)
+    sourceCache.cssCaches.push(cache)
+  }
+  return cache.tooling
+}
+
+export default function resolveContext(context: RuleContext<any, any[]>) {
+  const sourceCode = context.sourceCode
+  let sourceCache = sourceCaches.get(sourceCode)
+  if (!sourceCache) {
+    sourceCache = { cssCaches: [], references: 0, workspaces: new Map(), tooling: [] }
+    sourceCaches.set(sourceCode, sourceCache)
+  }
+  sourceCache.references++
+  const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
+  const cwd = context.cwd || process.cwd()
+  const filename = getContextFilename(context)
+  let facade = sourceCache.tooling.find(item => item.cwd === cwd && item.filename === filename
+    && item.manifest === resolvedSettings.manifest)
+  if (!facade) {
+    let session: MasterCSSToolingSession | undefined
+    const source = sourceCache
+    facade = {
+      cwd, filename, manifest: resolvedSettings.manifest,
+      ...createSourceTooling(() => {
+        if (!source.references) throw new Error('The ESLint source context has been released.')
+        return session ??= resolveTooling(context, source, resolvedSettings)
+      })
+    }
+    sourceCache.tooling.push(facade)
+  }
 
   let released = false
 
   return {
     settings: resolvedSettings,
     options: context.options[0] || {},
-    tooling: cache.tooling,
+    tooling: facade.session,
     release() {
       if (released) return
       released = true
-      cache.references--
-      scheduleCSSCacheDisposal(cache)
       if (--sourceCache.references !== 0) return
+      for (const cache of sourceCache.cssCaches) {
+        cache.references--
+        scheduleCSSCacheDisposal(cache)
+      }
+      for (const snapshot of sourceCache.workspaces.values()) releaseWorkspaceSnapshot(snapshot)
+      for (const facade of sourceCache.tooling) facade.clear()
       sourceCache.cssCaches.length = 0
-      sourceCache.workspaceDirectoriesByCwd.clear()
+      sourceCache.workspaces.clear()
+      sourceCache.tooling.length = 0
       sourceCaches.delete(sourceCode)
     }
   }

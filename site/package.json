@@ -31,7 +31,9 @@
     "test:syntax-migration": "tsx --test scripts/verify-syntax-migration.test.ts",
     "test:reference": "NODE_OPTIONS=--conditions=react-server tsx --test reference/reference.test.ts utils/legacy-syntax.test.ts",
     "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
-    "lint": "eslint .",
+    "lint": "node scripts/lint.mjs",
+    "lint:full": "node scripts/lint.mjs --no-cache",
+    "test:lint-cache": "node --test scripts/lint-cache.test.mjs",
     "type-check": "tsc --noEmit",
     "test:assets": "tsx scripts/verify-public-assets.ts",
     "test:atomic-classes": "tsx --test scripts/atomic-class-authoring.test.ts"

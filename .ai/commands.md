@@ -58,8 +58,15 @@ For site-local checks, stay in the repository root and let pnpm set the workspac
 ```sh
 pnpm --filter site prepare-app
 pnpm --filter site lint
+pnpm --filter site lint:full
+pnpm --filter site test:lint-cache
 pnpm --filter site type-check
 ```
+
+Site `lint` uses ESLint's content cache, namespaced by CSS/project inputs, config,
+lockfile, built workspace packages, and native artifact bytes. Build changed
+packages before linting. `lint:full` bypasses the cache and is the CI check; both
+commands retain the full configured file scope and rules.
 
 ## High-Value Scoped Checks
 
@@ -81,7 +88,14 @@ pnpm --filter @master/css-cli test
 ```sh
 pnpm --filter @master/css bench
 pnpm --filter @master/css-runtime bench
+node scripts/benchmark-site-lint.mjs --output /tmp/lint-before.json
+node scripts/benchmark-site-lint.mjs --output /tmp/lint-after.json --baseline /tmp/lint-before.json
 ```
+
+The site lint benchmark records uncached per-rule timings and native artifact
+identity. Passing a baseline fixes the file list and asserts identical diagnostics
+and fixes. Compare the same build profile and use repeated runs for timing; keep
+reports outside source control.
 
 Use `pnpm --filter @master/css bench` for engine session startup and execution. Rust engine benchmarks remain authoritative for matching, parsing, priority, layer insertion, and resource behavior.
 

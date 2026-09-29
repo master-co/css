@@ -24,3 +24,22 @@ test('ignores generated Master CSS directories when discovering workspaces', asy
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('reports topology and candidate inputs without classifying CSS in the host', () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-css-workspace-inputs-'))
+  try {
+    const styles = join(root, 'styles')
+    mkdirSync(styles)
+    mkdirSync(join(root, 'node_modules'))
+    const css = join(styles, 'not-yet-an-entry.css')
+    writeFileSync(css, ':root { color: red; }')
+    writeFileSync(join(root, 'package.json'), '{}')
+    writeFileSync(join(root, 'index.tsx'), '')
+    writeFileSync(join(root, 'node_modules', 'hidden.css'), '')
+    const inputs: string[] = []
+    expect(discoverBuildWorkspaceDirectoriesSync(root, [], file => inputs.push(file))).toEqual([root])
+    expect(inputs.sort()).toEqual([root, styles, css, join(root, 'package.json')].sort())
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})

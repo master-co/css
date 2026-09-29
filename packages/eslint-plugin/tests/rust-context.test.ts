@@ -1,4 +1,5 @@
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
+import * as nativeTooling from '@master/css-tooling/node'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveContext from '../src/utils/resolve-context'
 
@@ -25,6 +26,7 @@ test('uses the shared Rust-backed tooling session', () => {
 })
 
 test('reuses a tooling session across source files in one lint run', () => {
+  const create = vi.spyOn(nativeTooling, 'createToolingSessionSync')
   const first = resolveContext({
     cwd: process.cwd(),
     filename: '<input>',
@@ -33,6 +35,8 @@ test('reuses a tooling session across source files in one lint run', () => {
     sourceCode: {},
     settings: {}
   } as unknown as RuleContext<any, any[]>)
+  expect(first.tooling.binding).toBe('native')
+  const creations = create.mock.calls.length
   first.release()
 
   const second = resolveContext({
@@ -44,6 +48,8 @@ test('reuses a tooling session across source files in one lint run', () => {
     settings: {}
   } as unknown as RuleContext<any, any[]>)
 
-  expect(second.tooling).toBe(first.tooling)
+  expect(second.tooling.binding).toBe('native')
+  expect(create.mock.calls.length).toBe(creations)
   second.release()
+  create.mockRestore()
 })

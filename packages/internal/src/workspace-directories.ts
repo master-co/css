@@ -53,15 +53,20 @@ async function collectPackageDirectories(directory: string, directories: Set<str
   }
 }
 
-function collectPackageDirectoriesSync(directory: string, directories: Set<string>) {
+function collectPackageDirectoriesSync(directory: string, directories: Set<string>, onInput?: (file: string) => void) {
+  onInput?.(directory)
   try {
     for (const dirent of readdirSync(directory, { withFileTypes: true })) {
       const file = join(directory, dirent.name)
       if (dirent.isDirectory()) {
         if (!IGNORED_DIRECTORIES.has(dirent.name)) {
-          collectPackageDirectoriesSync(file, directories)
+          collectPackageDirectoriesSync(file, directories, onInput)
         }
-      } else if (dirent.isFile() && dirent.name === 'package.json') {
+      } else if (dirent.isFile()) {
+        // These inputs also detect new/removed CSS entries and workspace packages.
+        // CSS classification itself remains with the compiler's Rust discovery.
+        if (dirent.name.endsWith('.css') || dirent.name === 'package.json') onInput?.(file)
+        if (dirent.name !== 'package.json') continue
         try {
           if (hasMasterCSSDependency(JSON.parse(readFileSync(file, 'utf8')) as PackageJSON)) {
             directories.add(dirname(file))
@@ -124,10 +129,11 @@ export async function discoverBuildWorkspaceDirectories(
 
 export function discoverBuildWorkspaceDirectoriesSync(
   rootDirectory: string,
-  manifestEntries: readonly string[] = []
+  manifestEntries: readonly string[] = [],
+  onInput?: (file: string) => void
 ): readonly string[] {
   const root = resolve(rootDirectory)
   const packageDirectories = new Set<string>()
-  collectPackageDirectoriesSync(root, packageDirectories)
+  collectPackageDirectoriesSync(root, packageDirectories, onInput)
   return finalizeWorkspaceDirectories(root, packageDirectories, manifestEntries)
 }

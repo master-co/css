@@ -1,22 +1,23 @@
+use mastercss_lexer::Utf16Index;
+
 /// Character boundaries and line starts built once for a document. Offsets inside
 /// surrogate pairs are absent; the interior of CRLF is not an LSP position.
 #[derive(Debug)]
 pub(crate) struct DocumentIndex {
-    boundaries: Vec<(u32, u32)>,
+    offsets: Utf16Index,
     lines: Vec<u32>,
     crlf_interiors: Vec<u32>,
 }
 
 impl DocumentIndex {
     pub(crate) fn new(source: &str) -> Self {
-        let mut boundaries = Vec::with_capacity(source.len() + 1);
+        let offsets = Utf16Index::new(source);
         let mut lines = vec![0];
         let mut crlf_interiors = Vec::new();
         let mut utf16 = 0;
         let mut chars = source.char_indices().peekable();
         let mut after_cr = false;
-        while let Some((byte, character)) = chars.next() {
-            boundaries.push((byte as u32, utf16));
+        while let Some((_, character)) = chars.next() {
             utf16 += character.len_utf16() as u32;
             if character == '\r' {
                 if chars.peek().is_some_and(|(_, next)| *next == '\n') {
@@ -30,31 +31,23 @@ impl DocumentIndex {
             }
             after_cr = character == '\r';
         }
-        boundaries.push((source.len() as u32, utf16));
         Self {
-            boundaries,
+            offsets,
             lines,
             crlf_interiors,
         }
     }
 
     pub(crate) fn utf16_len(&self) -> u32 {
-        self.boundaries.last().unwrap().1
+        self.offsets.utf16_len()
     }
 
     pub(crate) fn byte_to_utf16(&self, byte: usize) -> Option<u32> {
-        let byte = u32::try_from(byte).ok()?;
-        self.boundaries
-            .binary_search_by_key(&byte, |entry| entry.0)
-            .ok()
-            .map(|index| self.boundaries[index].1)
+        self.offsets.byte_to_utf16(byte)
     }
 
     pub(crate) fn utf16_to_byte(&self, utf16: u32) -> Option<usize> {
-        self.boundaries
-            .binary_search_by_key(&utf16, |entry| entry.1)
-            .ok()
-            .map(|index| self.boundaries[index].0 as usize)
+        self.offsets.utf16_to_byte(utf16)
     }
 
     pub(crate) fn cursor(&self) -> PositionCursor<'_> {
@@ -77,7 +70,7 @@ impl PositionCursor<'_> {
         if offset > self.index.utf16_len() {
             return None;
         }
-        let boundaries = &self.index.boundaries;
+        let boundaries = self.index.offsets.boundaries();
         if boundaries[self.boundary].1 > offset {
             // Rejected overlapping/multiline tokens can move the next request back.
             self.boundary = boundaries.partition_point(|entry| entry.1 < offset);

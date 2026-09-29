@@ -178,7 +178,8 @@ jobs:
           pnpm --filter site build
           pnpm --filter site test:css-contract
           pnpm --filter site test:play
-          pnpm --filter site lint
+          pnpm --filter site test:lint-cache
+          pnpm --filter site lint:full
           pnpm --filter site type-check
       - name: Build examples
         shell: bash

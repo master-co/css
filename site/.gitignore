@@ -4,6 +4,7 @@
 .pages.json
 .generated
 .master
+/.cache/eslint/
 
 # dependencies
 /node_modules
