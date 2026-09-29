@@ -4,6 +4,7 @@ use mastercss_engine::{EngineCompositionRuleIr, EngineSession};
 use serde_json::{Value, json};
 
 pub(super) fn freeze(manifest: &mut Value) {
+    super::variants::lower(manifest);
     if let Some(utilities) = manifest
         .as_object_mut()
         .and_then(|object| object.remove("utilities"))
@@ -243,6 +244,7 @@ pub(super) fn prepare(
             debug.remove("migrationUtilities");
         }
     }
+    invocation = super::variants::class(&manifest, &invocation)?;
     Ok((
         EngineSession::create(&manifest.to_string()).map_err(|error| error.to_string())?,
         invocation,

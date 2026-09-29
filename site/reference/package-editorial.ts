@@ -16,7 +16,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './index.css': 'Complete preset stylesheet entry.',
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
-      './variants.css': 'Preset reusable conditions.',
+      './media.css': 'Preset reusable conditions.',
       './utilities.css': 'Preset mixin recipes.'
     }
   },
@@ -92,7 +92,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './index.css': 'Complete preset stylesheet entry.',
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
-      './variants.css': 'Preset reusable conditions.',
+      './media.css': 'Preset reusable conditions.',
       './utilities.css': 'Preset mixin recipes.'
     }
   },

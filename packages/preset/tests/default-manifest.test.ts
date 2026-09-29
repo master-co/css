@@ -30,19 +30,6 @@ const retainedRadiusKeyAliases = {
   rtr: 'border-top-right-radius'
 }
 
-function stripRaw<T>(value: T): T {
-  if (Array.isArray(value)) return value.map(stripRaw) as T
-  if (value && typeof value === 'object') {
-    const next: Record<string, unknown> = {}
-    for (const [key, child] of Object.entries(value)) {
-      if (key === 'raw') continue
-      next[key] = stripRaw(child)
-    }
-    return next as T
-  }
-  return value
-}
-
 const retainedMatcherAliases = new Set([
   'b',
   'bb',
@@ -205,7 +192,7 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(4)
- expect(manifest.languageVersion).toBe(6)
+ expect(manifest.languageVersion).toBe(7)
  expect(manifest.mixins).toHaveLength(10)
  expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(10)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
@@ -231,24 +218,20 @@ describe('@master/css-preset defaultManifest', () => {
     const compiledManifest = getCompiledDefaultManifest()
     expect(variablesOf(compiledManifest)).toEqual(variablesOf(defaultManifest))
     expect(compiledManifest.theme).toEqual(defaultManifest.theme)
-    expect(stripRaw(compiledManifest.variants)).toEqual(stripRaw(defaultManifest.variants))
-    expect(compiledManifest.conditions).toEqual(defaultManifest.conditions)
     expect(compiledManifest.customMedia).toEqual(defaultManifest.customMedia)
-    expect(compiledManifest.containerConditions).toEqual(defaultManifest.containerConditions)
-    expect(compiledManifest.selectors).toEqual(defaultManifest.selectors)
-    expect(defaultManifest.selectors).toBeUndefined()
-    expect(defaultManifest.variants?.every((variant) => variant.token.startsWith('@'))).toBe(true)
+    expect(Object.keys(defaultManifest.customMedia ?? {})).toHaveLength(17)
+    for (const removed of ['variants', 'conditions', 'selectors', 'containerConditions']) {
+      expect(defaultManifest).not.toHaveProperty(removed)
+    }
   })
 
   it('does not publish the removed px inline alias', () => {
     expect(variablesOf(defaultManifest).some((variable) => variable.name === 'px')).toBe(false)
   })
 
-  it('only publishes the full starting-style variant', () => {
+  it('supports built-in starting-style without a preset definition', () => {
     const css = createTestCSS(defaultManifest)
 
-    expect(defaultManifest.variants?.some((variant) => variant.token === '@start')).toBe(false)
-    expect(defaultManifest.variants?.some((variant) => variant.token === '@starting-style')).toBe(true)
     expect(css.createRule('opacity:0@start')).toBeUndefined()
     expect(css.createRule('opacity:0@starting-style')?.text).toBe(
       '@starting-style{.opacity\\:0\\@starting-style{opacity:0}}'
@@ -270,7 +253,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(defaultManifest).not.toHaveProperty('settings')
     expect(css.createRule("margin:0.25rem")?.text).toBe(".margin\\:0\\.25rem{margin:0.25rem}")
     expect(css.createRule('fg-blue-60@dark')?.text).toBe(
-      "@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}"
+      "@media (prefers-color-scheme: dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}"
     )
   })
 

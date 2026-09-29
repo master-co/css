@@ -55,13 +55,13 @@
       filter: grayscale(1);
     }
 
-    @variant site-dark {
+    @apply --site-dark {
       &:hover {
         background-color: var(--color-gray-80);
       }
     }
 
-    @variant site-light {
+    @apply --site-light {
       &:hover {
         background-color: var(--color-neutral-5);
       }

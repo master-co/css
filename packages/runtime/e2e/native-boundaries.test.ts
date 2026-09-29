@@ -7,17 +7,17 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
-@custom-variant ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @slot; } }
+@mixin --ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @contents; } }
 @theme {:root, :host { --color-probe: white; }}
 @theme { .ocean, .blue { --color-probe: blue; } }
-@custom-variant amp { &[data-label="&"] { @slot; } }
+@mixin --amp { &[data-label="&"] { @contents; } }
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })
 const manifest = compiled.manifest
-const classes = ['p-md@media((width>=1px))', "padding:8px@media((min-width:1px))", 'color:red@amp', 'bg-probe', 'margin:3px@ocean']
+const classes = ['p-md@media((width>=1px))', "padding:8px@media((min-width:1px))", 'color:red@apply(--amp)', 'bg-probe', 'margin:3px@apply(--ocean)']
 const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body>'
   + `<div id="probe" class="native ${classes.slice(0, 3).join(' ')}" data-label="&">Probe</div>`
-  + '<section class="blue bg-probe margin:3px@ocean" id="mode"><div class="bg-probe margin:3px@ocean" id="child">Child</div></section>'
+  + '<section class="blue bg-probe margin:3px@apply(--ocean)" id="mode"><div class="bg-probe margin:3px@apply(--ocean)" id="child">Child</div></section>'
   + '</body></html>'
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {

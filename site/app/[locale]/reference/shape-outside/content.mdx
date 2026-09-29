@@ -119,7 +119,7 @@ Open print preview to replace the circular wrap area with the ordinary float mar
     class="float:left outline:1px|solid|var(--color-line-subtle)
            fill-blue-60
            shape-outside:circle(48px)|border-box
-           shape-outside:none@print">
+           shape-outside:none@media(print)">
     <circle cx="60" cy="60" r="48" />
   </svg>
   <p class="margin:0">
@@ -146,8 +146,8 @@ Widen the real preview viewport to `sm` to wrap around the circle. Print uses th
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
     class="float:left outline:1px|solid|var(--color-line-subtle)
-           fill-blue-60 shape-outside:none shape-outside:none@print
-           shape-outside:circle(48px)|border-box@screen@sm">
+           fill-blue-60 shape-outside:none shape-outside:none@media(print)
+           shape-outside:circle(48px)|border-box@media(screen)@sm">
     <circle cx="60" cy="60" r="48" />
   </svg>
   <p class="margin:0">

@@ -3,7 +3,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const manifest = {
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } satisfies MasterCSSManifest
 
 class RuntimeElement extends HTMLElement {

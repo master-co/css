@@ -113,7 +113,6 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
         "@custom-media --a (--b);",
         "@custom-media --a (--b); @custom-media --b (--a);",
         "@custom-media --a (--b: 1);",
-        "@custom-media --a true; @custom-variant a { @media print { @slot; } }",
     ] {
         let directives =
             compile_css_directives(invalid, &CompileNativeCssOptions::default()).unwrap();
@@ -166,12 +165,12 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
         @custom-media --a (width >= 30em), (orientation: landscape);
         @custom-media --b screen and (--a);
         @custom-media --off false;
-        @custom-variant named { @media (--b) { @slot; } }
-        @mixin --box { @variant off { color: red; } display: block; }
+        @mixin --named { @media (--b) { @contents; } }
+        @mixin --box { @media (--off) { color: red; } display: block; }
     "#,
     );
     engine
-        .ensure_class_rules(["color:red@b", "color:blue@named", "box"])
+        .ensure_class_rules(["color:red@b", "color:blue@apply(--named)", "box"])
         .unwrap();
     let text = engine.css_text();
     assert!(
@@ -183,7 +182,7 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
         "{text}"
     );
     assert!(text.contains(".box{display:block}"), "{text}");
-    assert!(!text.contains("(--"), "{text}");
+    assert!(!text.contains("@media (--"), "{text}");
 }
 
 #[test]
@@ -203,10 +202,10 @@ fn theme_dependencies_handle_css_escapes_comments_and_nested_fallbacks() {
 #[test]
 fn same_category_condition_redefinitions_replace_the_entire_definition() {
     let mut engine = engine(
-        "@custom-media --wide false;@custom-media --wide (width>1px);@custom-variant named{@media print{@slot;}}@custom-variant named{&:hover{@slot;}}",
+        "@custom-media --wide false;@custom-media --wide (width>1px);@mixin --named{@media print{@contents;}}@mixin --named{&:hover{@contents;}}",
     );
     engine
-        .ensure_class_rules(["color:red@wide", "color:blue@named"])
+        .ensure_class_rules(["color:red@wide", "color:blue@apply(--named)"])
         .unwrap();
     let text = engine.css_text();
     assert!(text.contains("@media (width>1px)"), "{text}");
@@ -244,8 +243,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":4,"languageVersion":6,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":4,"languageVersion":6,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":4,"languageVersion":7,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":4,"languageVersion":7,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

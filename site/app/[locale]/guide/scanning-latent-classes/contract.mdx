@@ -184,7 +184,7 @@ Use the same pattern for a data-driven progress value. Keep an accessible numeri
 <div id="progress" role="progressbar" aria-label="Upload progress"
   aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
   class="overflow:hidden height:1rem border-radius:100% bg-gray-10">
-  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)@motion"
+  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)@motion-safe"
     style="--progress: 25%"></div>
 </div>
 ```
@@ -197,7 +197,7 @@ function setProgress(value) {
 }
 ```
 
-Only the CSS variable and accessible value change. The width class remains static, and `@motion` limits the transition to users without a reduced-motion preference.
+Only the CSS variable and accessible value change. The width class remains static, and `@motion-safe` limits the transition to users without a reduced-motion preference.
 
 If the class name itself only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering). The browser runtime can observe the DOM and generate rules for classes that appear later.
 

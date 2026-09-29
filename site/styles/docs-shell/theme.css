@@ -1,5 +1,5 @@
-@custom-variant site-light { &:where(.light, .light *) { @slot; } }
-@custom-variant site-dark { &:where(.dark, .dark *) { @slot; } }
+@mixin --site-light { &:where(.light, .light *) { @contents; } }
+@mixin --site-dark { &:where(.dark, .dark *) { @contents; } }
 
 .light { color-scheme: light; }
 .dark { color-scheme: dark; }

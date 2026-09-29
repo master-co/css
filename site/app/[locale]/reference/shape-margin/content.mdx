@@ -176,8 +176,8 @@ Widen to `sm` to increase the shape margin from `md` to `xl`. Print uses no addi
            outline:1px|solid|var(--color-line-subtle) fill-blue-60
            shape-margin-md
            shape-outside:circle(40px)|border-box
-           shape-margin:0@print
-           shape-margin-xl@screen@sm">
+           shape-margin:0@media(print)
+           shape-margin-xl@media(screen)@sm">
     <circle cx="60" cy="60" r="40" />
   </svg>
   <p class="margin:0">

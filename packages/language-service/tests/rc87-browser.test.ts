@@ -119,7 +119,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 })
 
 test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
-  const source = "\n    @custom-variant motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @slot;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
+  const source = "\n    @mixin --motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @contents;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
 
   expect(tokens).toEqual([])

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readFile } from 'node:fs/promises'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from '../helpers/contents-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileBrowserStylesheet } from '../../src/stylesheet/browser'
 
@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStylesheet("\n      @mixin --btn {\n          @variant all {display:flex;}\n          color: red;\n        }\n    ", {
+    const result = await compileBrowserStylesheet("\n      @mixin --btn {\n          @apply --all {display:flex;}\n          color: red;\n        }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['btn']
     })

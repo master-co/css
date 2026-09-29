@@ -96,8 +96,8 @@ Widen the preview to `sm` to switch from cover to contain. Print also uses conta
   alt="Blue and violet mountains beneath a yellow sun"
   class="display:block width:220px height:220px max-width:100%
          bg-surface-base object-fit:cover object-position:right
-         object-fit:contain@print
-         object-fit:contain@screen@sm" />
+         object-fit:contain@media(print)
+         object-fit:contain@media(screen)@sm" />
 ```
 
 The responsive rule uses the iframe’s real viewport. The authored square stays the same size; only the way its source fits changes.

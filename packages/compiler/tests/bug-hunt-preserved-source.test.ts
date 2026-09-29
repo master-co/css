@@ -7,20 +7,25 @@ import { compileStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
 const baseManifest = {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = "@theme {:root, :host {--color-unused:red}}\n\n" + native

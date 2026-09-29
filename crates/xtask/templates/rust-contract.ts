@@ -833,6 +833,8 @@ export interface MasterCSSDependencyImport {
 }
 
 export interface MasterCSSDependencyAnalysis {
+  /** Native query aliases require project definitions during local stylesheet delivery. */
+  usesCustomMedia?: boolean
   sourceWithoutReferences: string
   imports: MasterCSSDependencyImport[]
   /** Original-source UTF-16 ranges, including URLs inside authoring directives. */
@@ -938,7 +940,7 @@ export interface MasterCSSCompileStylesheetGraphRequest {
   relativeResourceURLs?: boolean
   /** Per-file pruning override; null preserves native rules in that stylesheet. */
   classesByStylesheet?: Record<string, string[] | null>
-  /** Select native rules/variants and external imports; local links retain reachability. */
+  /** Select native rules/applications and external imports; local links retain reachability. */
   nativeStylesheets?: string[]
   pruneNativeStylesheets?: string[]
   options?: MasterCSSDirectiveCompileOptions

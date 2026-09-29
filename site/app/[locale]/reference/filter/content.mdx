@@ -76,7 +76,7 @@ Use `filter:none` to remove the entire chain. Open print preview to restore this
   alt="Blue and violet mountains beneath a yellow sun"
   class="display:block height:137.5px width:220px max-width:100% m-md
          filter:blur(4px)|brightness(.8) object-fit:cover
-         filter:none@print" />
+         filter:none@media(print)" />
 ```
 
 The print rule resets blur and brightness together. To keep one effect, provide the desired complete filter list instead of none.
@@ -91,9 +91,9 @@ Hover or keyboard-focus the native button to restore its colors. The filter incl
 <button id="target" type="button"
   class="display:block padding:0 border:1px|solid|var(--color-line-divider) r-sm
          bg-surface-base fg-text-body
-         filter:grayscale(1) filter:none@print
-         filter:none:hover@screen
-         filter:none:focus-visible@screen">
+         filter:grayscale(1) filter:none@media(print)
+         filter:none:hover@media(screen)
+         filter:none:focus-visible@media(screen)">
   <img src="/demo/landscape.svg"
   width="320" height="200"
   alt=""

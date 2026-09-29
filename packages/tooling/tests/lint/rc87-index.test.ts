@@ -34,11 +34,9 @@ const customManifest = createPresetManifest({
     { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number' as const, values: [{ path: [':root,:host'], value: '48rem' }], numeric: { value: 48, unit: 'rem' } },
     { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
-  variants: [
-    { token: '@midnight' as const, branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
-    { token: '@wide' as const, branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
-  ],
   mixins: [
+    { name: '--midnight', body: [{ type: 'rule', selector: '&:where(.midnight,.midnight *)', body: [{ type: 'contents', fallback: [] }] }] },
+    { name: '--wide', body: [{ type: 'condition', condition: '@media (min-width: 80rem)', body: [{ type: 'contents', fallback: [] }] }] },
   {
     "name": "--content-auto",
     "body": [
@@ -603,15 +601,15 @@ describe('canonical class suggestions', () => {
   })
 
   test('uses custom manifest modes, breakpoints, tokens, and utilities', () => {
-    expect(suggestCanonicalClassName("display:block@midnight@tablet", customCSS)).toBeUndefined()
-    expect(suggestCanonicalClassName("margin:1.25rem@midnight@tablet", customCSS)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@apply(--midnight)@tablet", customCSS)).toBeUndefined()
+    expect(suggestCanonicalClassName("margin:1.25rem@apply(--midnight)@tablet", customCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('content-visibility:auto', customCSS)).toBeUndefined()
   })
 
   test('does not treat custom variants or component utilities as utilities-only canonical targets', () => {
-    expect(customCSS.generate("display:block@midnight@wide")).toHaveLength(1)
-    expect(suggestCanonicalClassName("display:block@midnight@wide", customCSS)).toBeUndefined()
-    expect(suggestCanonicalClassName('btn@midnight@tablet', customCSS)).toBeUndefined()
+    expect(customCSS.generate("display:block@apply(--midnight)@apply(--wide)")).toHaveLength(1)
+    expect(suggestCanonicalClassName("display:block@apply(--midnight)@apply(--wide)", customCSS)).toBeUndefined()
+    expect(suggestCanonicalClassName('btn@apply(--midnight)@tablet', customCSS)).toBeUndefined()
   })
 
   test('ignores manifest-carried key alias and native namespace registry fields', () => {
@@ -628,7 +626,7 @@ describe('canonical class suggestions', () => {
     expect(suggestCanonicalClassName("display:block@sm:hover", css)).toBeUndefined()
     expect(suggestCanonicalClassName('block:focus:hover', css)).toBeUndefined()
     expect(suggestCanonicalClassName("display:block@starting-style@sm", css)).toBeUndefined()
-    expect(suggestCanonicalClassName("display:block@print@sm", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("display:block@media(print)@sm", css)).toBeUndefined()
     expect(suggestCanonicalClassName("display:block@supports(display:grid)@sm", css)).toBeUndefined()
     expect(suggestCanonicalClassName('font:error@dark@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('unknown-class@dark@sm', css)).toBeUndefined()

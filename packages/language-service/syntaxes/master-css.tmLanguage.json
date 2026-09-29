@@ -145,51 +145,7 @@
           ]
         },
         {
-          "begin": "(?i)(@)(custom-variant)\\b",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.control.at-rule.master-css"
-            }
-          },
-          "end": "(;)|(?<=\\})|$",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#master-block"
-            },
-            {
-              "include": "#master-custom-variant-prelude"
-            }
-          ]
-        },
-        {
-          "begin": "(?i)(@)(variant)\\b",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.control.at-rule.master-css"
-            }
-          },
-          "end": "(;)|(?<=\\})|$",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.master-css"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#master-block"
-            },
-            {
-              "include": "#master-variant-prelude"
-            }
-          ]
-        },
-        {
-          "begin": "(?i)(@)(slot)\\b",
+          "begin": "(?i)(@)(contents)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -210,30 +166,6 @@
               "name": "punctuation.section.master-css"
             }
           ]
-        }
-      ]
-    },
-    "master-custom-variant-prelude": {
-      "patterns": [
-        {
-          "match": "(?<![:@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
-          "name": "variable.parameter.master-css"
-        },
-        {
-          "match": "[;{}]",
-          "name": "punctuation.section.master-css"
-        }
-      ]
-    },
-    "master-variant-prelude": {
-      "patterns": [
-        {
-          "match": "(?<![@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
-          "name": "support.constant.property-value.master-css.query"
-        },
-        {
-          "match": "[;{}]",
-          "name": "punctuation.section.master-css"
         }
       ]
     },

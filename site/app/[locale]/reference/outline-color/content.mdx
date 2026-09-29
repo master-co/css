@@ -57,8 +57,8 @@
          outline-current font-md bg-surface-base
          fg-text-blue box-sizing:border-box
          bg-surface-inset:focus-visible
-         fg-text-violet:hover@screen
-         fg-text-violet:focus-visible@screen">
+         fg-text-violet:hover@media(screen)
+         fg-text-violet:focus-visible@media(screen)">
   Current color
 </button>
 ```
@@ -80,8 +80,8 @@ Keyboard focus changes the outline from transparent to blue. Print uses the curr
          outline-color:transparent font-md bg-surface-base
          fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
-         outline-current@print
-         outline-blue:focus-visible@screen">
+         outline-current@media(print)
+         outline-blue:focus-visible@media(screen)">
   Preview details
 </button>
 ```

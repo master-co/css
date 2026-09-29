@@ -6,7 +6,7 @@
 
 ## Owns
 
-- CSS directive parsing and lowering for `@theme`, `@custom-media`, `@custom-variant`, `@mixin`, `@apply` and rule-local `@variant`.
+- CSS directive parsing and lowering for `@theme`, `@custom-media`, `@mixin`, `@apply` and `@contents`.
 - Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
@@ -81,4 +81,6 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-Top-level unconditional `@mixin --name(...) { ... }` defines a static recipe; later definitions replace the entire name. `@apply --name(...)` calls only mixins, never class lists. Rust engine expansion is shared by class generation and native CSS lowering. Preserve ordered declarations, duplicates, source positions and URL owners. Supported types are untyped, `<integer>`, `<number>`, `<string>` and `<custom-ident>`; typed numbers are literals. Fold static `ident()` after lexical parameter binding; retain ordinary theme `var()` values. Reject dynamic arguments, cross-element parameter uses, prelude interpolation, recursive calls, contents/private syntax and nested registration. `@utility`, `from()`, `--master-value()`, `@defaults`, `@components` and `@compose` are removed. Native defaults/components use `@layer`. Changes must update `site/app/[locale]/guide/directives/contract.mdx`.
+Top-level unconditional `@mixin --name(...) { ... }` defines a static recipe; later definitions replace the entire name. `@apply --name(...)` calls only mixins, never class lists. Rust engine expansion is shared by class generation and native CSS lowering. Contents blocks retain caller parameter bindings; fallbacks use the defining mixin scope. Preserve ordered declarations, duplicates, source positions and URL owners. Supported types are untyped, `<integer>`, `<number>`, `<string>` and `<custom-ident>`; typed numbers are literals. Fold static `ident()` after lexical parameter binding; retain ordinary theme `var()` values. Reject dynamic arguments, cross-element parameter uses, prelude interpolation, recursive calls, `@private` and nested registration. `@utility`, `from()`, `--master-value()`, `@defaults`, `@components` and `@compose` are removed. Native defaults/components use `@layer`. Changes must update `site/app/[locale]/guide/directives/contract.mdx`.
+
+Named conditions use `@custom-media`; selector and other conditional wrappers use the same mixin IR with optional `Apply.contents` and `Contents.fallback`. Omitted and empty contents differ. Class `@apply(--name(...))` wraps a whole group once, leftmost suffix outermost. `@starting-style` and `@layer(base|defaults|components|utilities)` are engine built-ins. Layer placement stays at the call site. Removed variant directives and executable manifest indexes are rejected.

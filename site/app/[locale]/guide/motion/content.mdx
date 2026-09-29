@@ -6,18 +6,18 @@ import { MotionNamespaceTable } from './components/MotionNamespaces'
 ## Overview [sr-only]
 Motion explains what changed, where attention should go, and whether an action is still in progress. In CSS, that often means [animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations), [transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/transition), and [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes), but the design decision comes first: use motion to give feedback, preserve continuity, clarify hierarchy, or reduce surprise.
 
-Master CSS keeps those decisions close to the element with `animate-*` recipes, native `animation:*` and `transition:*` shorthands, shared `duration` tokens, shared `easing` tokens, managed `@theme` keyframes, and motion preference conditions such as `@motion` and `@reduce-motion`.
+Master CSS keeps those decisions close to the element with `animate-*` recipes, native `animation:*` and `transition:*` shorthands, shared `duration` tokens, shared `easing` tokens, managed `@theme` keyframes, and motion preference conditions such as `@motion-safe` and `@motion-reduce`.
 
 <Demo>
   <div className="container-type:inline-size width:100%">
     <div className="grid-cols(1) display:grid gap-md width:100% grid-cols(2)@container((width>=16rem))">
       <div className="p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-        <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion"></div>
+        <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion-safe"></div>
       </div>
       <div className="p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-        <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion"></div>
+        <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion-safe"></div>
       </div>
     </div>
   </div>
@@ -81,7 +81,7 @@ Use native `animation:*` shorthand when the animation name, duration, easing, di
 <div class="animation:fade|var(--duration-fast)|var(--easing-smooth)"></div>
 
 <!-- @MARK animation:rotate|var(--duration-slowest)|linear|infinite -->
-<svg class="animation:rotate|var(--duration-slowest)|linear|infinite@motion">...</svg>
+<svg class="animation:rotate|var(--duration-slowest)|linear|infinite@motion-safe">...</svg>
 
 <!-- @MARK animation:zoom|var(--duration-faster)|var(--easing-overshoot)|both -->
 <div class="animation:zoom|var(--duration-faster)|var(--easing-overshoot)|both"></div>
@@ -90,7 +90,7 @@ Use native `animation:*` shorthand when the animation name, duration, easing, di
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['animation:fade|var(--duration-fast)|var(--easing-smooth)', 'animation:rotate|var(--duration-slowest)|linear|infinite@motion', 'animation:zoom|var(--duration-faster)|var(--easing-overshoot)|both']}
+    {['animation:fade|var(--duration-fast)|var(--easing-smooth)', 'animation:rotate|var(--duration-slowest)|linear|infinite@motion-safe', 'animation:zoom|var(--duration-faster)|var(--easing-overshoot)|both']}
   </Class2CSS>
 </details>
 
@@ -133,24 +133,24 @@ Duration and easing namespaces are shared across `animation-duration`, `animatio
 ---
 
 ## Respect motion preference
-Use `@motion` for non-essential motion so it only runs when the user has not asked the system to reduce motion.
+Use `@motion-safe` for non-essential motion so it only runs when the user has not asked the system to reduce motion.
 
 ```html
-<!-- @MARK animate-pulse@motion -->
-<span class="animate-pulse@motion"></span>
+<!-- @MARK animate-pulse@motion-safe -->
+<span class="animate-pulse@motion-safe"></span>
 ```
 
-Use `@reduce-motion` to replace motion-heavy effects with a simpler state.
+Use `@motion-reduce` to replace motion-heavy effects with a simpler state.
 
 ```html
-<!-- @MARK animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion --><!-- @MARK animation:none@reduce-motion --><!-- @MARK translate:0@reduce-motion -->
-<div class="translate:0@reduce-motion animation:none@reduce-motion animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion"></div>
+<!-- @MARK animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion-safe --><!-- @MARK animation:none@motion-reduce --><!-- @MARK translate:0@motion-reduce -->
+<div class="translate:0@motion-reduce animation:none@motion-reduce animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion-safe"></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['animate-pulse@motion', 'animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion', 'animation:none@reduce-motion', 'translate:0@reduce-motion']}
+    {['animate-pulse@motion-safe', 'animation:zoom|var(--duration-fast)|var(--easing-overshoot)@motion-safe', 'animation:none@motion-reduce', 'translate:0@motion-reduce']}
   </Class2CSS>
 </details>
 

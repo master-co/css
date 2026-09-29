@@ -11,6 +11,9 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Vec<EngineCompositionRuleIr> {
+        if let Some(result) = self.application_rules(class_name) {
+            return result.unwrap_or_default();
+        }
         if let Some((items, state)) = group_items(class_name) {
             if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
                 return Vec::new();
@@ -145,6 +148,9 @@ impl EngineSession {
     }
 
     pub(crate) fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
+        if let Some(result) = self.application_rules(class_name) {
+            return self.store_application(class_name, result.unwrap_or_default());
+        }
         if let Some(rules) = self.generate_group_rules(class_name) {
             return rules;
         }
@@ -338,7 +344,7 @@ impl EngineSession {
     }
 }
 
-fn group_items(class_name: &str) -> Option<(Vec<String>, &str)> {
+pub(crate) fn group_items(class_name: &str) -> Option<(Vec<String>, &str)> {
     let body = class_name.strip_prefix('{')?;
     let close = find_group_close(body)?;
     let items = split_top_level(&body[..close], ';')

@@ -30,7 +30,7 @@ fn preserves_unicode_comments_and_literal_directive_text() {
 
 #[test]
 fn preserves_siblings_and_containers_around_lowered_slots() {
-    let source = r###"@theme{:root, :host {--color-x:red}}@media screen{/* keep */.empty{} .composed{@variant always{padding:2rem;}} .other{color:rgb(0, 0, 255)}}"###;
+    let source = r###"@theme{:root, :host {--color-x:red}}@media screen{/* keep */.empty{} .composed{@apply --always{padding:2rem;}} .other{color:rgb(0, 0, 255)}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -52,7 +52,7 @@ fn preserves_siblings_and_containers_around_lowered_slots() {
 fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
     let source = r###"@theme{:root, :host {--color-x:red}}
 @mixin --brand {color:red}
-.button{@variant always{color:red;}}"###;
+.button{@apply --always{color:red;}}"###;
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {

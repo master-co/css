@@ -95,8 +95,8 @@ Widen to `sm` to replace the gradient with the SVG source. Print uses no image a
          border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
          border-image-width:1 font-md bg-surface-base
          fg-text-body box-sizing:border-box
-         border-image-source:none@print
-         border-image-source:url('/demo/border-grid.svg')@screen@sm">
+         border-image-source:none@media(print)
+         border-image-source:url('/demo/border-grid.svg')@media(screen)@sm">
   <span class="px-xs py-3xs bg-surface-base fg-text-body">
     Edge sample
   </span>

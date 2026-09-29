@@ -36,7 +36,7 @@ it('previews by default, writes safe files, and is idempotent', async () => {
   const entry = path.join(cwd, 'app.css')
   const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })
@@ -92,7 +92,7 @@ it('previews the named RC profile with the saved root size and blocks a mixed un
   fs.writeFileSync(path.join(cwd, 'unsafe.html'), unsafe)
   const result = runMigrate(['*.html'], { cwd, from: 'rc-named', write: true })
   expect(result).toMatchObject({ version: 2 as const, from: 'rc-named', sourceVersion: saved.packageVersion })
-  expect(result.configurationCSS).toContain('@custom-variant dark')
+  expect(result.configurationCSS).toContain('@custom-media --dark')
   expect(result.files.find(file => file.path === 'safe.html')?.edits).toEqual([
     expect.objectContaining({ before: 'p-md@>=800', after: 'p-md@media((width>=40rem))' })
   ])
@@ -123,11 +123,11 @@ it('migrates native RC queries and alpha into a unique entry and can be repeated
   const options = { cwd, from: 'rc-native' as const }
   const preview = runMigrate(['index.html', 'app.css'], options)
   expect(preview.files.every(file => !file.written)).toBe(true)
-  expect(preview.configurationCSS).toContain('@custom-variant migrated-query-')
+  expect(preview.configurationCSS).toContain('@mixin --migrated-query-')
   const written = runMigrate(['index.html', 'app.css'], { ...options, write: true })
   expect(written.files.flatMap(file => file.review)).toEqual([])
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toContain('color-mix(in oklab,red 50%,transparent)')
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toMatch(/@migrated-query-[a-f0-9]+/)
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toMatch(/@apply\(--migrated-query-[a-f0-9]+\)/)
   const repeated = runMigrate(['index.html', 'app.css'], { ...options, write: true })
   expect(repeated.files.every(file => !file.edits.length && !file.review.length && !file.written)).toBe(true)
   expect(repeated.configurationCSS).toBe('')
@@ -137,7 +137,7 @@ it('native RC requires an entry choice for multiple entries and preserves a batc
   fs.writeFileSync(path.join(cwd, 'second.css'), '@master entry;')
   const options = { cwd, from: 'rc-native' as const, write: true }
   const ambiguous = runMigrate(['index.html', '*.css'], options)
-  expect(ambiguous.configurationCSS).toContain('@custom-variant')
+  expect(ambiguous.configurationCSS).toContain('@mixin')
   expect(ambiguous.files.flatMap(file => file.review).some(item => item.notes.some(note => note.includes('--entry')))).toBe(true)
   expect(ambiguous.files.every(file => !file.written)).toBe(true)
   fs.writeFileSync(path.join(cwd, 'broken.mdx'), 'export const broken =' )

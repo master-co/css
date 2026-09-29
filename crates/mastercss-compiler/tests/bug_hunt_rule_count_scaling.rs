@@ -41,7 +41,7 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                 ),
                 Shape::Variant => {
                     format!(
-                        ".r{index}{{@variant always{{padding:{}px;}}content:\"ü😀\"}}",
+                        ".r{index}{{@apply --always{{padding:{}px;}}content:\"ü😀\"}}",
                         index % 9
                     )
                 }
@@ -87,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})),
+                    base_manifest: Some(serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})),
                 },
             )
             .unwrap();

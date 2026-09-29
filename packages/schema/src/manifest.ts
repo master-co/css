@@ -12,7 +12,6 @@ export type {
 
 export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
-export type MasterCSSManifestVariantToken = `:${string}` | `::${string}` | `@${string}`
 
 export type MasterCSSManifestCSSDeclarationPrimitive = string | number | null
 export type MasterCSSManifestCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSManifestCSSDeclarationPrimitive | MasterCSSManifestCSSDeclarationPrimitive[]>
@@ -22,54 +21,6 @@ export interface MasterCSSManifestVariableNumericValue {
   value: number
   unit?: string
 }
-
-export interface MasterCSSManifestConditionBooleanNode { raw?: string, name: string, type: 'boolean' }
-export interface MasterCSSManifestConditionNumberNode { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
-export interface MasterCSSManifestConditionStringNode { raw?: string, name?: string, type: 'string', value: string }
-export type MasterCSSManifestConditionValueNode = MasterCSSManifestConditionNumberNode | MasterCSSManifestConditionStringNode
-export interface MasterCSSManifestConditionComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
-export interface MasterCSSManifestConditionLogicalOperatorNode { type: 'logical', raw?: string, value: string }
-export type MasterCSSManifestConditionOperatorNode = MasterCSSManifestConditionComparisonOperatorNode | MasterCSSManifestConditionLogicalOperatorNode
-export interface MasterCSSManifestConditionGroupNode { type?: 'group', raw?: string, children: MasterCSSManifestConditionNode[] }
-export type MasterCSSManifestConditionNode =
-  | MasterCSSManifestConditionBooleanNode
-  | MasterCSSManifestConditionValueNode
-  | MasterCSSManifestConditionComparisonOperatorNode
-  | MasterCSSManifestConditionLogicalOperatorNode
-  | MasterCSSManifestConditionGroupNode
-
-export interface MasterCSSManifestCondition {
-  id: MasterCSSManifestConditionIdentifier
-  nodes: MasterCSSManifestConditionNode[]
-}
-
-export type MasterCSSManifestConditions = Record<string, MasterCSSManifestCondition>
-
-export interface MasterCSSManifestSelectorLiteralNode {
-  type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
-  raw?: string
-  value?: string
-  children?: MasterCSSManifestSelectorNode[]
-}
-
-export interface MasterCSSManifestSelectorSeparatorNode {
-  type: 'separator'
-  raw?: string
-  value: string
-}
-
-export interface MasterCSSManifestSelectorCombinatorNode {
-  type: 'combinator'
-  raw?: string
-  value: string
-}
-
-export type MasterCSSManifestSelectorNode =
-  | MasterCSSManifestSelectorLiteralNode
-  | MasterCSSManifestSelectorCombinatorNode
-  | MasterCSSManifestSelectorSeparatorNode
-
-export type MasterCSSManifestSelectors = Record<string, MasterCSSManifestSelectorNode[]>
 
 export interface MasterCSSManifestVariable {
   name?: string
@@ -87,21 +38,6 @@ export type MasterCSSManifestVariableEntry = MasterCSSManifestVariable & {
   namespace?: string
   type: MasterCSSManifestVariableType
 }
-
-export interface MasterCSSManifestVariantBranch {
-  selector?: string
-  selectorNodes?: MasterCSSManifestSelectorNode[]
-  conditions?: string[]
-  conditionNodes?: MasterCSSManifestCondition[]
-  layer?: MasterCSSManifestUtilityLayerName
-}
-
-export interface MasterCSSManifestVariant {
-  token: MasterCSSManifestVariantToken
-  branches: MasterCSSManifestVariantBranch[]
-}
-
-export type MasterCSSManifestVariants = MasterCSSManifestVariant[]
 
 export interface MasterCSSScopedThemeValue {
   path: string[]
@@ -126,16 +62,12 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 4
-  languageVersion: 6
+  languageVersion: 7
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: Record<string, MasterCSSMediaQueryExpression>
   variables?: MasterCSSManifestVariables
-  variants?: MasterCSSManifestVariants
-  conditions?: MasterCSSManifestConditions
-  containerConditions?: MasterCSSManifestConditions
-  selectors?: MasterCSSManifestSelectors
   mixins?: MasterCSSMixinDefinition[]
   debug?: Record<string, unknown>
 }

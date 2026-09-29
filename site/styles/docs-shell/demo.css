@@ -11,7 +11,7 @@
     color: var(--color-text-strong);
     font-size: var(--font-size-sm);
 
-    @variant site-dark {
+    @apply --site-dark {
       border-color: color-mix(in oklab,oklch(100% 0 none) 5%,transparent);
     }
   }

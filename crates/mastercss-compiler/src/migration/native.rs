@@ -31,25 +31,25 @@ impl Migration {
         });
         let name = format!("migrated-query-{hash:016x}");
         let mut manifest = self.target_manifest.borrow_mut();
-        let variants = manifest
+        let mixins = manifest
             .as_object_mut()
             .unwrap()
-            .entry("variants")
+            .entry("mixins")
             .or_insert_with(|| json!([]))
             .as_array_mut()
-            .ok_or("Invalid target variants")?;
-        let definition = json!({"token":format!("@{name}"),"branches":[{"conditions":[wrapper]}]});
-        if let Some(existing) = variants
+            .ok_or("Invalid target mixins")?;
+        let definition = json!({"name":format!("--{name}"),"body":[{"type":"condition","condition":wrapper,"body":[{"type":"contents","fallback":[]}]}]});
+        if let Some(existing) = mixins
             .iter()
-            .find(|variant| variant["token"] == definition["token"])
+            .find(|variant| variant["name"] == definition["name"])
         {
             if existing != &definition {
                 return Err(format!(
-                    "Generated variant {name} conflicts with an existing definition"
+                    "Generated mixin {name} conflicts with an existing definition"
                 ));
             }
         } else {
-            variants.push(definition);
+            mixins.push(definition);
             self.target
                 .borrow_mut()
                 .refresh(&manifest.to_string())
@@ -57,9 +57,9 @@ impl Migration {
         }
         self.query_definitions.borrow_mut().insert(
             name.clone(),
-            format!("@custom-variant {name}{{{wrapper}{{@slot;}}}}\n"),
+            format!("@mixin --{name}{{{wrapper}{{@contents;}}}}\n"),
         );
-        Ok(name)
+        Ok(format!("apply(--{name})"))
     }
 
     pub(super) fn native_profile(&self) -> bool {
@@ -124,9 +124,9 @@ pub(super) fn alpha(body: &str) -> Result<String, String> {
     Ok(format!("color-mix(in oklab,{color} {opacity},transparent)"))
 }
 
-/// Recover only migration-owned CSS variants on a subsequent run. The normal
+/// Recover only migration-owned CSS mixins on a subsequent run. The normal
 /// compiler lowers their authored CSS; no runtime legacy decoder is introduced.
-pub(super) fn restore_query_variants(
+pub(super) fn restore_query_mixins(
     stylesheets: &[String],
     manifest: &mut serde_json::Value,
 ) -> Result<(), crate::CompilerError> {
@@ -137,11 +137,10 @@ pub(super) fn restore_query_variants(
                 continue;
             }
             let start = statement.tokens.start;
-            if !matches!(&tokens[start].kind, CssSyntaxKind::AtKeyword(name) if name == "custom-variant")
-            {
+            if !matches!(&tokens[start].kind, CssSyntaxKind::AtKeyword(name) if name == "mixin") {
                 continue;
             }
-            if !matches!(tokens.get(start + 1).map(|token| &token.kind), Some(CssSyntaxKind::Ident(name)) if name.starts_with("migrated-query-"))
+            if !matches!(tokens.get(start + 1).map(|token| &token.kind), Some(CssSyntaxKind::Ident(name)) if name.starts_with("--migrated-query-"))
             {
                 continue;
             }
@@ -152,21 +151,15 @@ pub(super) fn restore_query_variants(
             let parsed = crate::compile_css_directives(definition, &Default::default())?;
             let compiled =
                 crate::compile_manifest_input(&parsed.manifest_input, &Default::default())?;
-            for variant in compiled.manifest["variants"]
-                .as_array()
-                .into_iter()
-                .flatten()
-            {
-                let variants = manifest
+            for variant in compiled.manifest["mixins"].as_array().into_iter().flatten() {
+                let mixins = manifest
                     .as_object_mut()
                     .unwrap()
-                    .entry("variants")
+                    .entry("mixins")
                     .or_insert_with(|| json!([]))
                     .as_array_mut()
-                    .ok_or_else(|| super::error("Invalid target variants"))?;
-                if let Some(existing) = variants
-                    .iter()
-                    .find(|entry| entry["token"] == variant["token"])
+                    .ok_or_else(|| super::error("Invalid target mixins"))?;
+                if let Some(existing) = mixins.iter().find(|entry| entry["name"] == variant["name"])
                 {
                     if existing != variant {
                         return Err(super::error(
@@ -174,7 +167,7 @@ pub(super) fn restore_query_variants(
                         ));
                     }
                 } else {
-                    variants.push(variant.clone());
+                    mixins.push(variant.clone());
                 }
             }
         }

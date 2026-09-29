@@ -32,8 +32,8 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -52,8 +52,8 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:ease-in
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -72,8 +72,8 @@ Compare linear, ease-in and ease-out over the same one-second path. Replay start
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:ease-out
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -99,8 +99,8 @@ Compare a constant-speed turn with ease-in-out. Both have a two-second duration 
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -117,8 +117,8 @@ Compare a constant-speed turn with ease-in-out. Both have a two-second duration 
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:ease-in-out
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -158,8 +158,8 @@ For a deliberately stepped movement, place a timing function on the starting key
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -196,8 +196,8 @@ Resize before replaying to switch from ease-out to linear at `sm`. The one-secon
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:ease-out
-             animation:none@print
-             animation-play-state:paused@reduce-motion
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce
              animation-timing-function:linear@sm">→</span>
   </div>
 </div>

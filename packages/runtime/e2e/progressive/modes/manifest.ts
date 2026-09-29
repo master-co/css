@@ -2,5 +2,5 @@ export default {
   variables: [
     { namespace: 'content', key: 'external', values: [{ path: [':root,:host'], value: '" ↗"' }] }
   ],
-  variants: ['light', 'dark'].map(name => ({ token: `@manual-${name}`, branches: [{ selector: `&:where(.${name},.${name} *)`, conditions: [] }] }))
+  mixins: ['light', 'dark'].map(name => ({ name: `--manual-${name}`, body: [{ type: 'rule' as const, selector: `&:where(.${name},.${name} *)`, body: [{ type: 'contents' as const, fallback: [] }] }] }))
 }

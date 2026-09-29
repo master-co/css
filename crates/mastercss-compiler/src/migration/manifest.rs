@@ -290,12 +290,20 @@ pub(super) fn css(manifest: &Value, original: &Value) -> String {
         {
             continue;
         }
-        output.push_str(&format!(
-            "@custom-variant {}{{",
-            mastercss_lexer::css_escape(name)
-        ));
+        if let Some(query) = variant["branches"]
+            .as_array()
+            .and_then(|branches| super::variants::media_definition(branches))
+            .filter(|_| name != "starting-style")
+        {
+            output.push_str(&format!(
+                "@custom-media --{} {query};\n",
+                mastercss_lexer::css_escape(name)
+            ));
+            continue;
+        }
+        output.push_str(&format!("@mixin --{}{{", mastercss_lexer::css_escape(name)));
         for branch in variant["branches"].as_array().into_iter().flatten() {
-            let mut body = "@slot;".to_owned();
+            let mut body = "@contents;".to_owned();
             if let Some(selector) = branch["selector"]
                 .as_str()
                 .filter(|selector| *selector != "&")

@@ -1,18 +1,11 @@
-use super::{
-    ConditionFeature, ManifestCondition, ManifestProjection, UtilityLayerName, Value,
-    natural_compare,
-};
+use super::{ConditionFeature, ManifestProjection, UtilityLayerName, natural_compare};
 
 pub(crate) fn resolve_layer_condition(
     token: &str,
     manifest: &ManifestProjection,
 ) -> Option<UtilityLayerName> {
-    let condition = manifest.conditions.get(token)?;
-    if condition.id != "layer" || condition.nodes.len() != 1 {
-        return None;
-    }
-    let value = condition.nodes[0].get("value")?.as_str()?;
-    match value {
+    let _ = manifest;
+    match token.strip_prefix("layer(")?.strip_suffix(')')? {
         "base" => Some(UtilityLayerName::Base),
         "defaults" => Some(UtilityLayerName::Defaults),
         "components" => Some(UtilityLayerName::Components),
@@ -23,11 +16,10 @@ pub(crate) fn resolve_layer_condition(
 
 pub(crate) fn render_condition_token(
     token: &str,
-    manifest: &ManifestProjection,
+    _manifest: &ManifestProjection,
 ) -> Option<(String, String)> {
-    if let Some(condition) = manifest.conditions.get(token) {
-        let wrapper = render_manifest_condition(condition, None);
-        return Some((condition.id.clone(), wrapper));
+    if token == "starting-style" {
+        return Some(("starting-style".into(), "@starting-style".into()));
     }
     let query = mastercss_lexer::parse_native_query(token)?;
     let wrapper = format!("@{} {}", query.kind, query.prelude);
@@ -277,94 +269,6 @@ pub fn condition_priority(wrappers: &[(String, String)]) -> (Vec<ConditionFeatur
         }
     }
     (features, conditions)
-}
-
-pub(crate) fn render_manifest_condition(
-    condition: &ManifestCondition,
-    operator: Option<&str>,
-) -> String {
-    let body = render_condition_nodes_body(&condition.id, &condition.nodes, operator);
-    if body.is_empty() {
-        format!("@{}", condition.id)
-    } else {
-        format!("@{} {body}", condition.id)
-    }
-}
-
-pub(crate) fn render_condition_nodes_body(
-    id: &str,
-    nodes: &[Value],
-    operator: Option<&str>,
-) -> String {
-    nodes
-        .iter()
-        .map(|node| render_condition_node(id, node, operator))
-        .filter(|node| !node.is_empty())
-        .collect::<Vec<_>>()
-        .join(if id == "layer" { "." } else { " " })
-}
-
-pub(crate) fn render_condition_node(id: &str, node: &Value, operator: Option<&str>) -> String {
-    let Some(object) = node.as_object() else {
-        return String::new();
-    };
-    if let Some(children) = object.get("children").and_then(Value::as_array) {
-        let body = render_condition_nodes_body(id, children, operator);
-        return if object.get("type").and_then(Value::as_str) == Some("group") {
-            format!("({body})")
-        } else {
-            body
-        };
-    }
-    let node_type = object
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
-    if node_type == "boolean" {
-        return object
-            .get("name")
-            .and_then(Value::as_str)
-            .map(|name| format!("({name})"))
-            .unwrap_or_default();
-    }
-    if node_type == "logical" || node_type == "comparison" {
-        return object
-            .get("value")
-            .and_then(Value::as_str)
-            .unwrap_or_default()
-            .to_owned();
-    }
-    let value = match object.get("value") {
-        Some(Value::Number(number)) => {
-            let mut value = number
-                .as_f64()
-                .map(format_standard_number)
-                .unwrap_or_else(|| number.to_string());
-            value.push_str(
-                object
-                    .get("unit")
-                    .and_then(Value::as_str)
-                    .unwrap_or_default(),
-            );
-            value
-        }
-        Some(Value::String(value)) => value.clone(),
-        _ => String::new(),
-    };
-    let name = object.get("name").and_then(Value::as_str);
-    if node_type == "number" && name.is_none() {
-        return format!("(width{}{value})", operator.unwrap_or(">="));
-    }
-    if let Some(name) = name {
-        if node_type == "number" {
-            let operator = operator
-                .or_else(|| object.get("operator").and_then(Value::as_str))
-                .unwrap_or(":");
-            return format!("({name}{operator}{value})");
-        }
-        return format!("({name}:{value})");
-    }
-    value
 }
 
 pub(crate) fn normalize_dynamic_value(value: &str) -> String {

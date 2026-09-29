@@ -56,7 +56,6 @@ pub struct CssDirectiveReferenceStatement {
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum CssDirectiveConditionPathEntry {
     Condition { value: String },
-    Variant { token: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -80,8 +79,12 @@ pub enum CssDirectiveStyleDefinition {
         selector: String,
         name: String,
         arguments: Vec<MixinValue>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        contents: Option<Vec<MixinNode>>,
         #[serde(skip_serializing_if = "Option::is_none")]
         source: Option<CssDirectiveSourceReference>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        selector_source: Option<CssDirectiveSourceReference>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         condition_path: Option<Vec<CssDirectiveConditionPathEntry>>,
     },
@@ -216,8 +219,6 @@ pub struct CssDirectiveManifestInput {
     pub keyframes: Option<Vec<KeyframeDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mixins: Option<Vec<MixinDefinition>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub variants: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<Vec<ThemeNode>>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -36,10 +36,6 @@ export function createPresetManifest(manifest: PresetManifestInput | MasterCSSMa
       ...flattenMasterCSSManifestVariables(defaultManifest.variables),
       ...variables
     ]),
-    variants: [
-      ...(defaultManifest.variants || []),
-      ...(manifest.variants || [])
-    ],
     mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])]
   }
 }

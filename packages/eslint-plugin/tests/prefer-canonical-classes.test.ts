@@ -8,11 +8,38 @@ const customManifest = createPresetManifest({
     variables: [
         { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
     ],
-    variants: [
-        { token: '@midnight' as const, branches: [{ selector: '&:where(.midnight,.midnight *)' }] },
-        { token: '@wide' as const, branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
-    ],
+
     mixins: [
+  {
+    "name": "--midnight",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&:where(.midnight,.midnight *)",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "--wide",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media (min-width: 80rem)",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  },
   {
     "name": "--content-auto",
     "body": [
@@ -83,7 +110,7 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="font-size:16px@dark@sm">Authored condition order preserves literals</div>`,
         },
 {
-            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@print@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
+            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@media(print)@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
         },
 {
 code: `<div class="text-align:center:hover@sm">Static pattern utility with variants</div>`
@@ -219,9 +246,9 @@ createTester({
     }
 }).run('prefer canonical classes custom manifest', rule, {
     valid: [
-{ code: `<div class="block@midnight@wide btn@midnight@tablet">Custom variants and components</div>` },
+{ code: `<div class="block@apply(--midnight)@apply(--wide) btn@apply(--midnight)@tablet">Custom variants and components</div>` },
 {
-code: "<div class=\"margin:1.25rem@midnight@tablet content-visibility:auto\">Custom manifest</div>"
+code: "<div class=\"margin:1.25rem@apply(--midnight)@tablet content-visibility:auto\">Custom manifest</div>"
 }
 ],
     invalid: [

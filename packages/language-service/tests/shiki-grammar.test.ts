@@ -45,7 +45,7 @@ test.concurrent('defines deterministic directive scopes with native blocks', () 
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
   const directive = grammarEntry('master-directive')
-  for (const name of ['theme', 'mixin|apply', 'safelist', 'custom-variant']) {
+  for (const name of ['theme', 'mixin|apply', 'safelist', 'contents']) {
     const pattern = findGrammarPattern(directive, pattern => pattern.begin === `(?i)(@)(${name})\\b`)
     expect(pattern.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   }

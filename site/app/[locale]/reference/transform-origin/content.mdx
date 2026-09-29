@@ -111,10 +111,10 @@ Focus or hover this native button to grow its preview from the top-left anchor. 
              transform-origin:top|left
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             transform:none@print
-             transition:transform|var(--duration-fast)|ease-out@motion
-             transform:scale(1):hover@screen
-             transform:scale(1):focus-visible@screen">
+             transform:none@media(print)
+             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             transform:scale(1):hover@media(screen)
+             transform:scale(1):focus-visible@media(screen)">
       Preview layer
     </button>
     <span aria-hidden="true"
@@ -140,8 +140,8 @@ Widen to `sm` to move the pivot from the center to the top-right corner. The sca
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 transform:scale(.75)
              transform-origin:center
-             transform-origin:center@print
-             transform-origin:top|right@screen@sm">
+             transform-origin:center@media(print)
+             transform-origin:top|right@media(screen)@sm">
       Same scale
     </div>
   </div>

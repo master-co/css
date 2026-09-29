@@ -49,7 +49,7 @@ test('BH-0007: unused theme tokens are absent when HTML has no class attributes'
     }
   ],
   "version": 4 as const,
-  "languageVersion": 6 as const,
+  "languageVersion": 7 as const,
   "variables": {
     "color": [
       {

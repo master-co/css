@@ -121,10 +121,10 @@ fn header(source: &str) -> Result<(String, Option<&str>), String> {
 }
 
 pub(crate) fn application(source: &str) -> Result<(String, Vec<MixinValue>), String> {
-    let (name, params) = header(source)?;
-    let args = arguments(params.unwrap_or_default())?
-        .into_iter()
-        .map(value)
+    let (name, arguments) = mastercss_lexer::parse_mixin_call(source)?;
+    let args = arguments
+        .iter()
+        .map(|argument| value(argument))
         .collect::<Result<_, _>>()?;
     Ok((name, args))
 }
@@ -228,15 +228,28 @@ pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition,
                 });
             } else if let Kind::AtKeyword(name) = &first.kind {
                 match name.as_ref() {
-                    "apply" if !statement.has_block => {
+                    "apply" => {
                         let (name, arguments) = application(source[first.bytes.end..end].trim())?;
                         output.push(MixinNode::Apply {
                             name,
                             arguments,
+                            contents: statement
+                                .has_block
+                                .then(|| nodes(source, tokens, statements, index, parameters))
+                                .transpose()?,
                             source: None,
                         });
                     }
-                    "media" | "supports" | "container" | "starting-style" | "variant"
+                    "contents" if source[first.bytes.end..end].trim().is_empty() => {
+                        output.push(MixinNode::Contents {
+                            fallback: if statement.has_block {
+                                nodes(source, tokens, statements, index, parameters)?
+                            } else {
+                                Vec::new()
+                            },
+                        });
+                    }
+                    "media" | "supports" | "container" | "starting-style"
                         if statement.has_block =>
                     {
                         if tokenize_css_syntax(prelude).iter().any(|token| matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("var") || name.eq_ignore_ascii_case("ident"))) { return Err("Mixin parameters cannot be substituted into condition preludes".into()); }
@@ -289,11 +302,8 @@ pub(crate) fn resolve_definitions(
     definitions.reverse();
     mastercss_engine::validate_mixins(&definitions).map_err(fail)?;
     manifest["mixins"] = serde_json::to_value(&definitions).expect("mixins");
-    let engine = mastercss_engine::EngineSession::create(&manifest.to_string())
-        .map_err(|error| fail(error.to_string()))?;
     fn resolve(
         nodes: &[MixinNode],
-        engine: &mastercss_engine::EngineSession,
         registry: &crate::custom_media::Registry,
     ) -> Result<Vec<MixinNode>, crate::CompilerError> {
         let mut output = Vec::new();
@@ -301,64 +311,48 @@ pub(crate) fn resolve_definitions(
             match node {
                 MixinNode::Rule { selector, body } => output.push(MixinNode::Rule {
                     selector: selector.clone(),
-                    body: resolve(body, engine, registry)?,
+                    body: resolve(body, registry)?,
                 }),
                 MixinNode::Condition { condition, body } => {
-                    let body = resolve(body, engine, registry)?;
-                    if let Some(variant) = condition.strip_prefix("@variant ") {
-                        let name = variant.trim().trim_start_matches('@');
-                        let branches = engine
-                            .composition_rules(&format!("display:block@{name}"))
-                            .map_err(|error| {
-                            crate::manifest::definition_error(error.to_string())
-                        })?;
-                        if branches.is_empty()
-                            && !engine.has_named_condition(name).map_err(|error| {
-                                crate::manifest::definition_error(error.to_string())
-                            })?
-                        {
-                            return Err(crate::manifest::definition_error(format!(
-                                "Unknown @variant {name}"
-                            )));
+                    let body = resolve(body, registry)?;
+                    for path in
+                        crate::custom_media::paths(std::slice::from_ref(condition), registry)?
+                    {
+                        let mut nodes = body.clone();
+                        for condition in path.into_iter().rev() {
+                            nodes = vec![MixinNode::Condition {
+                                condition,
+                                body: nodes,
+                            }];
                         }
-                        for branch in branches {
-                            let mut nodes = body.clone();
-                            if branch.selector != "&" {
-                                nodes = vec![MixinNode::Rule {
-                                    selector: branch.selector,
-                                    body: nodes,
-                                }];
-                            }
-                            for condition in branch.conditions.into_iter().rev() {
-                                nodes = vec![MixinNode::Condition {
-                                    condition,
-                                    body: nodes,
-                                }];
-                            }
-                            output.extend(nodes);
-                        }
-                    } else {
-                        for path in
-                            crate::custom_media::paths(std::slice::from_ref(condition), registry)?
-                        {
-                            let mut nodes = body.clone();
-                            for condition in path.into_iter().rev() {
-                                nodes = vec![MixinNode::Condition {
-                                    condition,
-                                    body: nodes,
-                                }];
-                            }
-                            output.extend(nodes);
-                        }
+                        output.extend(nodes);
                     }
                 }
+
+                MixinNode::Apply {
+                    name,
+                    arguments,
+                    contents,
+                    source,
+                } => output.push(MixinNode::Apply {
+                    name: name.clone(),
+                    arguments: arguments.clone(),
+                    source: source.clone(),
+                    contents: contents
+                        .as_ref()
+                        .map(|body| resolve(body, registry))
+                        .transpose()?,
+                }),
+                MixinNode::Contents { fallback } => output.push(MixinNode::Contents {
+                    fallback: resolve(fallback, registry)?,
+                }),
                 _ => output.push(node.clone()),
             }
         }
         Ok(output)
     }
     for definition in &mut definitions {
-        definition.body = resolve(&definition.body, &engine, registry)?;
+        definition.body = resolve(&definition.body, registry)?;
     }
     manifest["mixins"] = serde_json::to_value(definitions).expect("mixins");
     Ok(())
@@ -406,10 +400,20 @@ pub(crate) fn attach_sources(
             let start = body_start + tokens[statement.tokens.start].bytes.start - 2;
             let end = body_start + tokens[statement.tokens.end - 1].bytes.end - 2;
             match node {
-                MixinNode::Declaration { source, .. } | MixinNode::Apply { source, .. } => {
-                    *source = reference(start, end)
+                MixinNode::Declaration { source, .. } => {
+                    *source = reference(start, end);
                 }
-                MixinNode::Rule { body, .. } | MixinNode::Condition { body, .. } => {
+                MixinNode::Apply {
+                    source, contents, ..
+                } => {
+                    *source = reference(start, end);
+                    if let Some(body) = contents {
+                        attach(body, tokens, statements, index, body_start, reference);
+                    }
+                }
+                MixinNode::Rule { body, .. }
+                | MixinNode::Condition { body, .. }
+                | MixinNode::Contents { fallback: body } => {
                     attach(body, tokens, statements, index, body_start, reference)
                 }
             }
@@ -433,20 +437,50 @@ pub(crate) fn visit_sources(
     for parameter in &mut definition.parameters {
         visit(&mut parameter.source);
     }
-    fn nodes(
-        body: &mut [MixinNode],
-        visit: &mut impl FnMut(&mut Option<mastercss_schema::CssDirectiveSourceReference>),
-    ) {
-        for node in body {
-            match node {
-                MixinNode::Declaration { source, .. } | MixinNode::Apply { source, .. } => {
-                    visit(source)
-                }
-                MixinNode::Rule { body, .. } | MixinNode::Condition { body, .. } => {
-                    nodes(body, visit)
+    visit_node_sources(&mut definition.body, visit);
+}
+
+pub(crate) fn visit_node_sources(
+    body: &mut [MixinNode],
+    visit: &mut impl FnMut(&mut Option<mastercss_schema::CssDirectiveSourceReference>),
+) {
+    for node in body {
+        match node {
+            MixinNode::Declaration { source, .. } => visit(source),
+            MixinNode::Apply {
+                source, contents, ..
+            } => {
+                visit(source);
+                if let Some(body) = contents {
+                    visit_node_sources(body, visit);
                 }
             }
+            MixinNode::Rule { body, .. }
+            | MixinNode::Condition { body, .. }
+            | MixinNode::Contents { fallback: body } => visit_node_sources(body, visit),
         }
     }
-    nodes(&mut definition.body, visit);
+}
+
+/// Parse a call-site contents block using the same ordered body grammar as a mixin.
+pub(crate) fn contents(source: &str) -> Result<Vec<MixinNode>, String> {
+    let definition = definition("--contents-block", source)?;
+    fn validate(nodes: &[MixinNode]) -> Result<(), String> {
+        for node in nodes {
+            match node {
+                MixinNode::Contents { .. } => {
+                    return Err("@contents is only valid inside @mixin".into());
+                }
+                MixinNode::Rule { body, .. } | MixinNode::Condition { body, .. } => validate(body)?,
+                MixinNode::Apply {
+                    contents: Some(body),
+                    ..
+                } => validate(body)?,
+                _ => {}
+            }
+        }
+        Ok(())
+    }
+    validate(&definition.body)?;
+    Ok(definition.body)
 }

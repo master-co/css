@@ -47,11 +47,7 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
   --radius-action: 0.5rem;
 } }
 
-@custom-variant motion-safe {
-  @media (prefers-reduced-motion: no-preference) {
-    @slot;
-  }
-}
+@custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
 @mixin --content-auto {
     content-visibility: auto;
@@ -81,7 +77,7 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
-- Use `@custom-variant` for shared condition names.
+- Use `@custom-media` for media names and `@mixin` with `@contents` for other reusable wrappers.
 - Use `@mixin` for low-level primitives that are useful across apps.
 - Use native `@layer components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 

@@ -100,9 +100,9 @@ Hover or focus to increase the underline from 1px to 3px. Print uses the thinner
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
   class="font-2xl leading-xl text-decoration:underline text-decoration-thickness:1px
-         text-underline-3xs text-decoration-thickness:1px@print
-         text-decoration-thickness:3px:hover@screen
-         text-decoration-thickness:3px:focus-visible@screen"
+         text-underline-3xs text-decoration-thickness:1px@media(print)
+         text-decoration-thickness:3px:hover@media(screen)
+         text-decoration-thickness:3px:focus-visible@media(screen)"
 >
   Design together
 </button>

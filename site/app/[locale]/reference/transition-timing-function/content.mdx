@@ -10,7 +10,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 ```html
 <!-- Linear · constant progress -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -25,8 +25,8 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition:none@print
-             transition-duration-slowest@screen@motion">
+             transition:none@media(print)
+             transition-duration-slowest@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -36,7 +36,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 ```html
 <!-- Ease in · slower at the beginning -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -51,8 +51,8 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:ease-in
-             transition:none@print
-             transition-duration-slowest@screen@motion">
+             transition:none@media(print)
+             transition-duration-slowest@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -62,7 +62,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 ```html
 <!-- Ease out · slower at the end -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -77,8 +77,8 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:ease-out
-             transition:none@print
-             transition-duration-slowest@screen@motion">
+             transition:none@media(print)
+             transition-duration-slowest@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -102,7 +102,7 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
 ```html
 <!-- Linear · continuous progress -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -115,8 +115,8 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
       class="display:grid place-items:center height:48px width:128px
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
-             transition:none@print
-             transition:transform|1s|linear@screen@motion">
+             transition:none@media(print)
+             transition:transform|1s|linear@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -126,7 +126,7 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
 ```html
 <!-- Four steps · 24px per step -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -139,8 +139,8 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
       class="display:grid place-items:center height:48px width:128px
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
-             transition:none@print
-             transition:transform|1s|steps(4,end)@screen@motion">
+             transition:none@media(print)
+             transition:transform|1s|steps(4,end)@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -158,8 +158,8 @@ Check to move the layer out with ease-out. After it arrives, uncheck to return w
 <!-- Ease out → ease in on return -->
 <label
   class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen
-         transition-timing-function:ease-out:has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)
+         transition-timing-function:ease-out:has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -172,8 +172,8 @@ Check to move the layer out with ease-out. After it arrives, uncheck to return w
       class="display:grid place-items:center height:48px width:128px
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
-             transition:none@print
-             transition:transform|var(--duration-slowest)|ease-in@screen@motion">
+             transition:none@media(print)
+             transition:transform|var(--duration-slowest)|ease-in@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -190,7 +190,7 @@ Resize before toggling. Below `sm`, the layer uses ease-out; at `sm`, it uses li
 ```html
 <!-- Ease out → linear at sm -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -203,9 +203,9 @@ Resize before toggling. Below `sm`, the layer uses ease-out; at `sm`, it uses li
       class="display:grid place-items:center height:48px width:128px
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
-             transition:none@print
-             transition:transform|var(--duration-slowest)|ease-out@screen@motion
-             transition-timing-function:linear@screen@sm">
+             transition:none@media(print)
+             transition:transform|var(--duration-slowest)|ease-out@media(screen)@motion-safe
+             transition-timing-function:linear@media(screen)@sm">
       Layer 01
     </span>
   </span>

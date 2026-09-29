@@ -47,7 +47,7 @@ export async function verifyPackageAuthoringExamples() {
     assert.deepEqual(result.diagnostics.filter(d => d.severity === 'error'), [])
     assert.ok(result.dependencies.some(p => p.endsWith('/@acme/ui-theme/master.css')), packageFile)
     const css = result.stylesheets!.map(sheet => sheet.css).join('\n')
-    for (const text of ['--color-brand:#4f46e5', '&:hover', '&:focus-visible', '.content-auto{', 'prefers-reduced-motion:no-preference']) assert.ok(css.includes(text), text)
+    for (const text of ['--color-brand:#4f46e5', '&:hover', '&:focus-visible', '.content-auto{', 'prefers-reduced-motion: no-preference']) assert.ok(css.includes(text), text)
     assert.match(css, /\.btn\s*\{/)
     assert.doesNotMatch(css, /@compose|@custom-variant|@components|@utilities/)
 

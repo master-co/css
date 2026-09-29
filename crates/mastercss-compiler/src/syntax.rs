@@ -1,6 +1,6 @@
 use super::{
-    CompilerError, DeclarationBlock, ErrorCode, PrinterError, PrinterOptions, Property,
-    SourceRange, ToCss, Value, byte_to_utf16_offset,
+    CompilerError, ErrorCode, PrinterError, PrinterOptions, Property, SourceRange, ToCss,
+    byte_to_utf16_offset,
 };
 
 pub(crate) fn directive_range(source: &str, byte_offset: usize) -> Option<SourceRange> {
@@ -86,40 +86,6 @@ pub(crate) fn declaration_name(declaration: &Property<'_>) -> Result<String, Pri
     declaration
         .property_id()
         .to_css_string(PrinterOptions::default())
-}
-
-pub(crate) fn collect_declarations(
-    declarations: &DeclarationBlock<'_>,
-    filename: &str,
-) -> Result<serde_json::Map<String, Value>, CompilerError> {
-    let mut result = serde_json::Map::new();
-    for declaration in &declarations.declarations {
-        let name = declaration_name(declaration).map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.to_owned(),
-        })?;
-        let value = declaration
-            .value_to_css_string(PrinterOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: filename.to_owned(),
-            })?;
-        result.insert(name, Value::String(value));
-    }
-    for declaration in &declarations.important_declarations {
-        let name = declaration_name(declaration).map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.to_owned(),
-        })?;
-        let value = declaration
-            .value_to_css_string(PrinterOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: filename.to_owned(),
-            })?;
-        result.insert(name, Value::String(format!("{value} !important")));
-    }
-    Ok(result)
 }
 
 pub(crate) fn simple_ratio_literal(value: &str) -> bool {

@@ -6,26 +6,31 @@ import { createCompiler } from '../src/index'
 import { compileManifestSync, compileManifestFileSync } from '../src/node'
 
 const baseManifest = {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 const definitions = '@mixin --paint {color:red}'
 const cases = [
-  { name: 'compose before native', body: ".example{@variant all {color:red;}}.example{color:blue}", order: ['red', 'blue'] },
-  { name: 'compose after native', body: ".example{color:blue}.example{@variant all {color:red;}}", order: ['blue', 'red'] },
-  { name: 'one anonymous layer', body: "@layer{.example{@variant all {color:red;}}.example{color:blue!important}}", order: ['red', 'blue'] }
+  { name: 'compose before native', body: ".example{@apply --all {color:red;}}.example{color:blue}", order: ['red', 'blue'] },
+  { name: 'compose after native', body: ".example{color:blue}.example{@apply --all {color:red;}}", order: ['blue', 'red'] },
+  { name: 'one anonymous layer', body: "@layer{.example{@apply --all {color:red;}}.example{color:blue!important}}", order: ['red', 'blue'] }
 ]
 function check(css: string, entry: typeof cases[number]) {
   expect(css).not.toContain('@compose')

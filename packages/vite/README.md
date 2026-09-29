@@ -183,7 +183,7 @@ identify the preprocessed location.
 
 Development CSS and Sass modules retain their scoped exports and native rules.
 Editing the module or a resolved `composes` dependency updates both its CSS and
-exports through HMR, including modules that use local `@variant`.
+exports through HMR, including modules that use local `@apply`.
 
 During development, editing a CSS project entry updates ordinary stylesheet
 imports and its `?inline` and `?raw` consumers. Inline requests export processed
@@ -244,7 +244,7 @@ context's resource copies. Connected pages reload and reconnect to new asset URL
 subsequent child CSS and image edits update without another page reload.
 Local stylesheets compile imported local rules and retain qualified child imports
 and resources in development and production builds. This also applies when the
-root and intermediate stylesheets contain only native CSS, and `@variant` appears
+root and intermediate stylesheets contain only native CSS, and `@apply` appears
 only in an imported descendant. These graphs remain local stylesheets rather than
 becoming project entries or native CSS pruning roots.
 CSS Modules keep the root module's scoped exports; SSR inline requests return
@@ -257,7 +257,7 @@ asynchronous entry registration order.
 Local CSS and Sass imported through `?url` deliver their compiled stylesheet
 and retained child assets. When that URL is attached as a stylesheet link,
 editing a retained CSS child or its image updates the styles without reloading
-the page, including when only an imported descendant contains `@variant`.
+the page, including when only an imported descendant contains `@apply`.
 CSS Modules that import local CSS files expose the imported classes through the
 root module's exports, with the same scope as its own classes. Imports retain their
 conditions and layers, and relative resources keep their original file's directory.

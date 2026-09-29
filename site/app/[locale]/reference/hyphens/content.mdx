@@ -72,6 +72,6 @@ Resize this fluid column from 80px toward 100px. It starts with an explicit soft
 ```html
 <!-- Fluid column · native hyphenation reset -->
 <div id="scrollport" role="region" aria-label="Responsive hyphenation" tabindex="0" class="overflow:auto width:clamp(80px,10vw,100px) max-width:100%">
-  <p id="target" class="width:100% margin:0 font-md line-height:24px hyphens:manual hyphens:none@print hyphens:none@screen@sm">trans&shy;formation</p>
+  <p id="target" class="width:100% margin:0 font-md line-height:24px hyphens:manual hyphens:none@media(print) hyphens:none@media(screen)@sm">trans&shy;formation</p>
 </div>
 ```

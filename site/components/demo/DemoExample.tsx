@@ -13,7 +13,7 @@ export default async function DemoExample({ page, section }: { page: string, sec
   const scene = factory(source)
   const responsive = source.classes.some(value => /(?:@|&)(?:sm|md|lg|xl|[\d.]+(?:px|rem))\b/.test(value))
   const themed = source.classes.some(value => /@(?:dark|light)\b/.test(value))
-  const printable = source.classes.some(value => value.includes('@print'))
+  const printable = source.classes.some(value => value.includes('@media(print)'))
   return (
     <Demo title={source.title} padding="none" caption={scene.caption} data-demo-case={`${page}#${section}`}>
       <DemoViewport title={`${page}: ${source.title}`} document={demoDocument(source, scene)} responsive={scene.responsive ?? responsive}

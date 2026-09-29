@@ -19,35 +19,45 @@ for (const binding of ['native', 'wasm'] as const) {
           compiler.compileStylesheets({
             graph: { entry: 'entry.css', files: { 'entry.css': source }, edges: [] }, urls: { 'entry.css': '/entry.css' },
             baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, resolutionManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
           })
         } catch (error) { caught = error }
@@ -61,20 +71,25 @@ for (const binding of ['native', 'wasm'] as const) {
 test('BH-0004 local stylesheet lowering retains source text for diagnostics', async () => {
   const source = '/*😀*/\n.example {\n  @compose unknown-utility;\n}'
   await expect(transformStylesheet('local.css', source, { baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } })).rejects.toMatchObject({
     diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })

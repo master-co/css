@@ -12,30 +12,24 @@ Append a named condition or a simple native query to a class. The outer parenthe
 Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
 
 ## Named conditions \{#common-condition-variants\}
-`@sm` resolves the explicit `@custom-media --sm` definition. Names such as `@dark` resolve a `@custom-variant` definition. Custom variants resolve `@custom-variant` definitions. These names share one namespace: a collision is an error, and an unknown name never becomes a container query.
+`@sm` and `@dark` resolve `@custom-media` definitions. Unknown names are errors. Mixin names use the separate `@apply(--name)` syntax and can share a name with a custom media definition.
 
-The preset provides these named variants:
+The preset's `media.css` provides eleven breakpoints and six preference/orientation queries:
 
-| Name | Meaning |
+| Suffix | Meaning |
 | --- | --- |
-| `@print`, `@screen`, `@all`, `@speech` | Native media types |
 | `@landscape`, `@portrait` | Viewport orientation |
-| `@motion`, `@reduce-motion` | Reduced-motion preference |
-| `@base`, `@default`, `@component`, `@utility` | The corresponding existing CSS layer |
-| `@starting-style` | Native starting styles |
-
-These names come from preset definitions. A project can define its own descriptive entry:
+| `@motion-safe`, `@motion-reduce` | Reduced-motion preference |
+| `@light`, `@dark` | System color preference |
 
 ```css
-@custom-variant motion-safe {
-  @media (prefers-reduced-motion: no-preference) {
-    @slot;
-  }
-}
+@custom-media --wide-screen screen and (width >= 50rem);
 ```
 
+Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and `@layer(...)` are engine built-ins and work without a preset. The old `@all`, `@speech`, `@print`, `@screen`, `@motion`, and `@reduce-motion` names are removed.
+
 ### Breakpoints \{#sm--md--lg--and-more\}
-The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions.
+The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them.
 
 ```html
 <h2 class="font-lg font-2xl@sm font-3xl@md">Responsive heading</h2>
@@ -50,21 +44,21 @@ Selectors work with every condition:
 See [breakpoints](/guide/breakpoints) and [responsive design](/guide/responsive-design).
 
 ### Modes \{#light--dark--and-custom-modes\}
-`@light` and `@dark` use the preset's explicit system-preference definitions. A project's `@custom-variant` can replace either definition with manual activation or combined system and manual branches. `@theme` supplies the token values; it does not choose how a mode activates.
+`@light` and `@dark` use the preset's explicit system-preference definitions. Manual theme activation uses explicit selector mixins, for example `@apply(--manual-dark)`; the preset does not insert an ancestor selector. `@theme` supplies the token values; it does not choose how a mode activates.
 
 See [modes and activation](/reference/rules/modes#mode-triggers).
 
 ### Layers \{#base--default--component--utility\}
-The preset's layer variants keep the stable order `theme, base, defaults, components, utilities`. Use `@custom-variant` with an explicit `@layer` wrapper for a named sublayer. See [cascade layers](/guide/cascade-layers).
+Select the generated layer with `@layer(base)`, `@layer(defaults)`, `@layer(components)`, or `@layer(utilities)`. This places the whole class in that layer without creating a sublayer. Repeating the same layer is allowed; different layers conflict. Layers cannot wrap mixin bodies or contents. See [cascade layers](/guide/cascade-layers).
 
 ### Starting styles \{#starting-style\}
-Use the preset's `@starting-style` variant to define a transition's initial value.
+Use the built-in `@starting-style` suffix to define a transition's initial value.
 
 ```html
-<div popover class="opacity:0@starting-style transition:opacity|250ms@motion">Details</div>
+<div popover class="opacity:0@starting-style transition:opacity|250ms@motion-safe">Details</div>
 ```
 
-<Class2CSS>{['opacity:0@starting-style', 'transition:opacity|250ms@motion']}</Class2CSS>
+<Class2CSS>{['opacity:0@starting-style', 'transition:opacity|250ms@motion-safe']}</Class2CSS>
 
 ## Simple native queries \{#arbitrary-conditions-and-queries\}
 
@@ -117,7 +111,7 @@ Style queries use their native form:
 ```
 
 ## Ranges \{#comparison-operators\}
-Use native CSS comparisons, including chained ranges. Put `and`, `or` and `not` in a CSS custom variant. Do not abbreviate feature names or omit units.
+Use native CSS comparisons, including chained ranges. Put compound media queries in `@custom-media`, and other compound conditions in a mixin. Do not abbreviate feature names or omit units.
 
 ```html
 <div class="display:none@media((width<40rem))">Hidden below 40rem</div>
@@ -153,16 +147,14 @@ Classes accept one media type, one parenthesized media feature or range, one sup
 Define compound queries, query lists, negation, `selector()` and literal pipes in CSS. These class forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting a query does not enable additional syntax.
 
 ```css
-@custom-variant wide-screen {
-  @media screen and (width >= 50rem) { @slot; }
-}
-@custom-variant language-selector {
-  @supports selector([lang|=en]) { @slot; }
+@custom-media --wide-screen screen and (width >= 50rem);
+@mixin --language-selector {
+  @supports selector([lang|=en]) { @contents; }
 }
 ```
 
 ```html
-<div class="p-md@wide-screen display:block@language-selector"></div>
+<div class="p-md@wide-screen display:block@apply(--language-selector)"></div>
 ```
 
-The class encoding replaces `|` with a space only outside strings, comments and CSS escapes. Native CSS, custom variants and mode definitions do not use that encoding. Repeated simple suffixes preserve their wrapper order. Equivalent media ranges share ordering evidence, while container query domains remain distinct. Different units are never converted for sorting. Within equivalent conditions and the same property scope, direct values follow named tokens.
+The class encoding replaces `|` with a space only outside strings, comments and CSS escapes. Native CSS and mixin definitions do not use that encoding. Repeated simple suffixes preserve their wrapper order. Equivalent media ranges share ordering evidence, while container query domains remain distinct. Different units are never converted for sorting. Within equivalent conditions and the same property scope, direct values follow named tokens.

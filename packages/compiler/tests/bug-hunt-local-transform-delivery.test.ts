@@ -2,7 +2,7 @@ import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { expect, test } from 'vitest'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from './helpers/contents-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { transformStylesheet } from '../src/stylesheet/public'
 
@@ -11,16 +11,16 @@ test.each([false, true])('BH-0004 local transform delivers imported compose with
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'local-transform-')))
   const entry = join(root, 'entry.css'), child = join(root, 'child.css'), pixel = join(root, 'pixel.svg')
   try {
-    writeFileSync(child, "@import \"https://external.test/style.css\";.child{@variant all {padding:2rem;}background:url(pixel.svg?q=1#part)}")
+    writeFileSync(child, "@import \"https://external.test/style.css\";.child{@apply --all {padding:2rem;}background:url(pixel.svg?q=1#part)}")
     writeFileSync(pixel, '<svg/>')
-    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);@mixin --paint {color:blue}.root{@variant all{display:block;color:blue;}}`
+    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);@mixin --paint {color:blue}.root{@apply --all{display:block;color:blue;}}`
     const result = await transformStylesheet(entry, source, { baseManifest, projectDir: root, delivery: {
       entryURL: '/assets/entry.css', stylesheetURL: file => '/assets/' + basename(file), resourceURL: () => '/assets/pixel.svg',
       ...(custom ? { resolveImport: async (specifier: string) => specifier === 'child-alias' ? child : undefined } : {})
     } })
     expect(result.code).toContain('layer(guard)')
     expect(result.code).toContain('display:block')
-    expect(result.code).toContain('color:#00f')
+    expect(result.code).toContain('color:blue')
     expect(result.stylesheets?.[0].css).toContain('padding:2rem')
     expect(result.stylesheets?.[0].css).toContain('https://external.test/style.css')
     expect(result.stylesheets?.[0].css).toContain('/assets/pixel.svg?q=1#part')
@@ -38,7 +38,7 @@ test.each([false, true])('BH-0004 local graph keeps reference globals and dedupl
   const entry = join(root, 'entry.css'), reference = join(root, 'reference.css')
   try {
     writeFileSync(reference, "@theme {:root, :host {--spacing-local:3rem}}\n\n@mixin --pad {padding:var(--spacing-local)}.never{color:red}")
-    const result = await transformStylesheet(entry, "@reference \"./reference.css\";.root{@variant all {padding:var(--spacing-local);}}", { baseManifest, projectDir: root,
+    const result = await transformStylesheet(entry, "@reference \"./reference.css\";.root{@apply --all {padding:var(--spacing-local);}}", { baseManifest, projectDir: root,
       emittedGlobals: published ? { variables: { 'spacing-local': 1 } } : undefined,
       delivery: { entryURL: '/entry.css', stylesheetURL: file => '/' + basename(file), resourceURL: file => '/' + basename(file) }
     })

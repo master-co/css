@@ -15,24 +15,29 @@ for (const explicit of [false, true]) {
         const view = join(root, 'styles/views/view.html')
         mkdirSync(join(root, 'styles/views'), { recursive: true })
         writeFileSync(entry, `@import './styles/child.css'${qualifier};@import "@master/css";@reference './tokens.css';@mixin --button {color:var(--color-paint);}`)
-        writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@variant all {color:red;}}.ordinary{color:blue}")
+        writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@apply --all {color:red;}}.ordinary{color:blue}")
         writeFileSync(tokens, "@theme {:root, :host {--color-paint:red}}\n")
         writeFileSync(view, '<div class="button card"></div>')
         const result = binding.loadProjectManifest(root, {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, explicit ? [entry] : undefined)
         expect(result.sourcePlan.files.map(file => realpathSync.native(file))).toEqual([view])
         expect(result.dependencies.map(file => realpathSync.native(file)).sort()).toEqual([entry, child, tokens].sort())

@@ -18,7 +18,7 @@ fn native_profile_preserves_modes_and_moves_complex_queries_deterministically() 
     );
     let result = migrate_rc(&input).unwrap();
     assert!(!result.configuration_css.contains("@mode"));
-    assert!(result.configuration_css.contains("@custom-variant dark"));
+    assert!(result.configuration_css.contains("@mixin --dark"));
     assert!(
         result
             .configuration_css

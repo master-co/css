@@ -53,7 +53,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 6 as const,
+  "languageVersion": 7 as const,
   "mixins": [
     {
       "name": "--block",
@@ -86,7 +86,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 6 as const,
+  "languageVersion": 7 as const,
   "mixins": [
     {
       "name": "--block",
@@ -130,7 +130,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 6 as const,
+  "languageVersion": 7 as const,
   "variables": {
     "spacing": [
       {
@@ -270,7 +270,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 6 as const,
+  "languageVersion": 7 as const,
   "mixins": [
     {
       "name": "--block",

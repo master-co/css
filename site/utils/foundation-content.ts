@@ -2,8 +2,7 @@ import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { getThemeNumericVariableEntries, getThemeVariables } from './theme-variables'
 import { filterNamespaceKeys } from './manifest-utilities'
-import { presetBreakpointQueries, presetContainerConditions } from '../common/preset-css'
-import generateManifestCondition from './generate-manifest-condition'
+import { presetBreakpointQueries, presetContainerQueries } from '../common/preset-css'
 import { groups as spacingGroups } from '../app/[locale]/guide/spacing/components/namespace-groups'
 import { groups as containerGroups } from '../app/[locale]/guide/containers/components/namespace-groups'
 import { groups as radiusGroups } from '../app/[locale]/guide/corner-radius/components/namespace-groups'
@@ -62,8 +61,8 @@ function numericScale(namespace: string, descriptions: Record<string, string> = 
 
 function queryScale(namespace: 'breakpoint' | 'container') {
   return getThemeNumericVariableEntries(namespace).map(entry => {
-    const variant = namespace === 'breakpoint' ? `@${entry.key}` : `@container(${entry.key})`
-    return `- ${code(variant)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; ${code(namespace === 'breakpoint' ? presetBreakpointQueries[entry.key] : generateManifestCondition(presetContainerConditions[entry.key]))}.`
+    const variant = namespace === 'breakpoint' ? `@${entry.key}` : `@container((width>=${entry.value}))`
+    return `- ${code(variant)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; ${code(namespace === 'breakpoint' ? presetBreakpointQueries[entry.key] : presetContainerQueries[entry.key])}.`
   }).join('\n')
 }
 

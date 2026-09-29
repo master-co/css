@@ -127,7 +127,7 @@ fn executes_rc87_lexer_parity_corpus() {
             ),
             lexer_parity_case(
                 "rc87-bf007c1edf054a11",
-                "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }",
+                "@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }",
                 "directives",
             ),
             lexer_parity_case(
@@ -332,18 +332,7 @@ fn executes_rc87_lexer_parity_corpus() {
                 );
             }
             "rc87-cd1d137ee89e9efb" => {
-                let ranges = find_css_directive_ranges(&case.input);
-                assert_eq!(
-                    ranges
-                        .iter()
-                        .map(|range| range.name.as_str())
-                        .collect::<Vec<_>>(),
-                    ["variant"]
-                );
-                assert_eq!(
-                    slice_utf16(&case.input, &ranges[0].prelude_range).trim(),
-                    "<sm"
-                );
+                assert!(find_css_directive_ranges(&case.input).is_empty());
             }
             "rc87-0ecc38899002a5db" => {
                 // Frozen RC @dark/@light blocks are no longer directives.
@@ -356,9 +345,9 @@ fn executes_rc87_lexer_parity_corpus() {
                         .iter()
                         .map(|range| range.name.as_str())
                         .collect::<Vec<_>>(),
-                    ["custom-variant", "slot"]
+                    ["mixin", "contents"]
                 );
-                assert_eq!(slice_utf16(&case.input, &ranges[1].range), "@slot;");
+                assert_eq!(slice_utf16(&case.input, &ranges[1].range), "@contents;");
             }
             "rc87-8b8911fa6dc3e148" => {
                 assert!(find_css_directive_ranges(&case.input).is_empty());

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
-import { defaultBuildManifest } from '@master/css-internal/project'
+import { contentsManifest as defaultBuildManifest } from './helpers/contents-manifest'
 import { loadProjectManifest } from '../src/project/manifest'
 import { loadProjectManifestSync } from '../src/project/manifest-sync'
 
@@ -28,7 +28,7 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-before-read-')))
     const entries = [join(root, 'first.css'), join(root, 'second.css')], target = join(root, 'tokens.css'), observed: string[] = []
     try {
-      for (const entry of entries) writeFileSync(entry, "@import \"@master/css\";@reference \"./tokens.css\";@mixin --card {@variant all {padding:7rem;}}")
+      for (const entry of entries) writeFileSync(entry, "@import \"@master/css\";@reference \"./tokens.css\";@mixin --card {@apply --all {padding:7rem;}}")
       const result = await load({ root, entries, baseManifest: defaultBuildManifest, onDependency(file) {
         observed.push(file)
         if (file === target) writeFileSync(target, "@theme {:root, :host {--space:7rem}}\n\n")

@@ -56,14 +56,14 @@ const result = compiler.compileStylesheets({
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },
   urls: { app: '/styles/app.css', theme: '/styles/theme.css' },
-  baseManifest: { version: 4, languageVersion: 6, mixins: [] }
+  baseManifest: { version: 4, languageVersion: 7, mixins: [] }
 })
 ```
 
 Deliver every item in `result.stylesheets` at its `href`, and load the entry's
 stylesheet. `result.css` contains the entry CSS only. Imports without prepared
 edges remain external CSS imports. Imported authoring definitions share the
-manifest; native CSS and native `@variant` output retain their stylesheet scopes
+manifest; native CSS and native `@apply` output retain their stylesheet scopes
 and rule positions.
 
 The host supplies file contents, import resolution, and delivery URLs. Use `resourceURLs` to map each source file ID and decoded resource URL to a
@@ -100,14 +100,14 @@ Unreachable stylesheet assets are omitted; authoring definitions and dependencie
 still contribute to compilation. The low-level graph
 request exposes the same native selection through `nativeStylesheets` (file IDs).
 `preserveNativeCSS: false` omits raw native rules and unresolved external imports
-while retaining compiled native `@variant` in otherwise included stylesheets;
+while retaining compiled native `@apply` in otherwise included stylesheets;
 `includeNativeCSS: false` excludes both kinds of project-native output.
 Publish all returned assets together. References are
 resolved without emitting their native CSS, while their used resources retain
 the reference file's ownership.
 
 `transformStylesheet(id, source, { baseManifest, delivery })` also supports
-supplied local stylesheets. It compiles imported `@variant` rules and shared
+supplied local stylesheets. It compiles imported `@apply` rules and shared
 authoring definitions through the Rust graph compiler, including roots whose
 directives occur only in imported descendants. With `preserveImports: true`,
 stylesheet resolution classifies these graphs as local while preserving the
@@ -226,7 +226,7 @@ compiler; they do not contain a TypeScript semantic fallback.
 
 The native binding's filesystem project loader retains imported file boundaries
 when collecting managed definitions, resolving references and planning source
-scans. Native `@variant` output keeps import conditions and layer scopes, while
+scans. Native `@apply` output keeps import conditions and layer scopes, while
 the separate `generatedCSS` field remains a definition metadata view. Ordinary
 native CSS and asset publication belong to stylesheet delivery APIs. This does
 not extend the raw `resolveCSSImportGraph().source` flattening contract.
@@ -254,7 +254,7 @@ they prevent safe inlining.
 can prepare a file and its imports for publication as separate stylesheets. The
 Node host resolves local imports, package entries and references; the existing
 Rust graph compiler retains external import order, conditions and native
-`@variant` positions. `delivery` uses the same URL callbacks as standalone
+`@apply` positions. `delivery` uses the same URL callbacks as standalone
 stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
 Each stylesheet must have a distinct final URL.
 
@@ -266,7 +266,7 @@ and returns assets without writing output files. `css`, `nativeCSS` and
 Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
 Omitting `preserveNativeCSS` retains the file API's existing default of removing
-raw native CSS while preserving compiled native `@variant` and its conditions.
+raw native CSS while preserving compiled native `@apply` and its conditions.
 Omitting `delivery` continues to use the legacy single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.

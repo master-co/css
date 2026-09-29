@@ -55,15 +55,15 @@ const semanticParityCorpus = JSON.parse(readFileSync(
   new URL('../../../../parity/v2-language-corpus.json', import.meta.url),
   'utf8'
 )) as SemanticParityCorpus
-const selectorVariantClassName = '{display:flex;position:relative}_:is(h4,.app-nav)@default'
-const selectorVariantSelector = '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)'
+const selectorVariantClassName = '{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)'
+const selectorVariantSelector = '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)'
 const selectorVariantRuleTexts = [
   `${selectorVariantSelector}{display:flex}`,
   `${selectorVariantSelector}{position:relative}`
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
-  version: 4 as const, languageVersion: 6 as const,
+  version: 4 as const, languageVersion: 7 as const,
   variables: {
     color: [
       {
@@ -99,46 +99,25 @@ const scopedThemeCSS = [
 
 const manifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 6 as const,
-  "conditions": {
-    "sm": {
-      "id": "media",
-      "nodes": [
-        {
-          "type": "number" as const,
-          "value": 52.125,
-          "unit": "rem"
-        }
-      ]
-    }
-  },
-  "variants": [
-    {
-      "token": "@base" as const,
-      "branches": [
-        {
-          "layer": "base"
-        }
-      ]
-    }
-  ],
+  "languageVersion": 7 as const,
+  customMedia: { "--sm": { type: "feature", value: "(width>=52.125rem)" } },
   "mixins": [
-    {
-      "name": "--block",
-      "body": [
-        {
-          "type": "declaration" as const,
-          "property": "display",
-          "value": [
-            {
-              "type": "text" as const,
-              "value": "block"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+  {
+    "name": "--block",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
 }
 
 beforeAll(() => {

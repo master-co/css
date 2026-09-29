@@ -19,7 +19,8 @@ export type MasterCSSMixinNode =
   | { type: 'declaration'; property: string; value: MasterCSSMixinValue; source?: CSSDirectiveSourceReference }
   | { type: 'rule'; selector: string; body: MasterCSSMixinNode[] }
   | { type: 'condition'; condition: string; body: MasterCSSMixinNode[] }
-  | { type: 'apply'; name: string; arguments: MasterCSSMixinValue[]; source?: CSSDirectiveSourceReference }
+  | { type: 'apply'; name: string; arguments: MasterCSSMixinValue[]; contents?: MasterCSSMixinNode[]; source?: CSSDirectiveSourceReference }
+  | { type: 'contents'; fallback: MasterCSSMixinNode[] }
 
 export interface MasterCSSMixinDefinition {
   name: string

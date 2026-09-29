@@ -14,6 +14,7 @@ mod sizing;
 mod stylesheets;
 mod utilities;
 mod values;
+mod variants;
 
 use crate::CompilerError;
 use mastercss_engine::{
@@ -420,62 +421,22 @@ impl Migration {
         let mut target_manifest = request.target_manifest.clone();
         // Saved project resources retain their identities. Managed definitions
         // must be present in the migrated target manifest to prove equivalence.
-        for key in [
-            "variables",
-            "conditions",
-            "selectors",
-            "variants",
-            "theme",
-            "customMedia",
-        ] {
+        for key in ["variables", "mixins", "debug", "theme", "customMedia"] {
             if request.target_is_preset
                 && let Some(value) = helper_manifest.get(key)
             {
-                target_manifest[key] = value.clone();
+                if key == "mixins" {
+                    let mut definitions =
+                        target_manifest[key].as_array().cloned().unwrap_or_default();
+                    definitions.extend(value.as_array().into_iter().flatten().cloned());
+                    target_manifest[key] = json!(definitions);
+                } else {
+                    target_manifest[key] = value.clone();
+                }
             }
         }
         if request.from == RcMigrationProfile::RcNative {
-            native::restore_query_variants(&request.stylesheets, &mut target_manifest)?;
-        }
-        // Saved RC conditions override preset custom media during equivalence
-        // checks; class migration lowers their queries to explicit native forms.
-        if request.target_is_preset {
-            for name in helper_manifest["conditions"]
-                .as_object()
-                .into_iter()
-                .flat_map(|conditions| conditions.keys())
-            {
-                if let Some(media) = target_manifest
-                    .get_mut("customMedia")
-                    .and_then(Value::as_object_mut)
-                {
-                    media.remove(&format!("--{name}"));
-                }
-            }
-        }
-        // Remove stale preset indexes when a saved variant changes its category.
-        for variant in target_manifest["variants"]
-            .as_array()
-            .cloned()
-            .unwrap_or_default()
-        {
-            if let Some(name) = variant["token"]
-                .as_str()
-                .and_then(|token| token.strip_prefix('@'))
-            {
-                if let Some(conditions) = target_manifest
-                    .get_mut("conditions")
-                    .and_then(Value::as_object_mut)
-                {
-                    conditions.remove(name);
-                }
-                if let Some(media) = target_manifest
-                    .get_mut("customMedia")
-                    .and_then(Value::as_object_mut)
-                {
-                    media.remove(&format!("--{name}"));
-                }
-            }
+            native::restore_query_mixins(&request.stylesheets, &mut target_manifest)?;
         }
         let sizing_helpers = sizing::add_helpers(&request.manifest, &mut target_manifest);
         saved_rules::freeze(&mut target_manifest);
@@ -560,6 +521,8 @@ impl Migration {
     }
 
     fn convert_previous(&self, source: &str) -> Result<String, String> {
+        let migrated_wrappers = variants::class(&self.target_manifest.borrow(), source)?;
+        let source = migrated_wrappers.as_str();
         if source.starts_with('{') {
             return self.group(source);
         }
@@ -586,6 +549,9 @@ impl Migration {
         let mut migrated = source.to_owned();
         for (start, end) in conditions::suffixes(source).into_iter().rev() {
             let token = &source[start + 1..end];
+            if token.starts_with("apply(") || token.starts_with("layer(") {
+                continue;
+            }
             if self.unchanged_conditions.iter().any(|name| name == token)
                 || self.modes.iter().any(|mode| mode == token)
                 || self.original["variants"]

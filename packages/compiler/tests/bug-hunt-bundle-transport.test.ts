@@ -13,20 +13,25 @@ test('BH-0004 native/Wasm bundle transport reconnects compiled imports and reloc
     graph: { entry: 'entry', files: { entry: "@import './child.css' layer;", child: "@import 'https://remote.test/native.css';.example{color:blue}" }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
     urls: { entry: '/old/entry.css', child: '/old/child.css' },
     baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
   })
   const request = { source, from: 'bundle.css', slotCSSRule, managed }

@@ -81,8 +81,8 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
          border:2px|dashed|var(--color-blue) r-sm font-md
          bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
-         border-width:6px:hover@screen
-         border-width:6px:focus-visible@screen">
+         border-width:6px:hover@media(screen)
+         border-width:6px:focus-visible@media(screen)">
   Preview details
 </button>
 ```
@@ -95,8 +95,8 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
          border:2px|dashed|var(--color-blue) r-sm font-md
          bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
-         border:solid:hover@screen
-         border:solid:focus-visible@screen">
+         border:solid:hover@media(screen)
+         border:solid:focus-visible@media(screen)">
   Preview details
 </button>
 ```
@@ -115,9 +115,9 @@ Hover or keyboard-focus the button to change its complete border from a subtle s
          min-height:44px max-width:100% px-md py-sm
          border:1px|solid|var(--color-line-divider) r-sm font-md
          bg-surface-base fg-text-body box-sizing:border-box
-         bg-surface-inset:focus-visible border-width:0@print
-         border:2px|dashed|var(--color-blue):hover@screen
-         border:2px|dashed|var(--color-blue):focus-visible@screen">
+         bg-surface-inset:focus-visible border-width:0@media(print)
+         border:2px|dashed|var(--color-blue):hover@media(screen)
+         border:2px|dashed|var(--color-blue):focus-visible@media(screen)">
   Preview details
 </button>
 ```

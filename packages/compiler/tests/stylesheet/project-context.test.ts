@@ -8,7 +8,7 @@ import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } fro
 
 const baseManifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 const roots: string[] = []
 function fixture() {
@@ -16,10 +16,23 @@ function fixture() {
   roots.push(root)
   mkdirSync(join(root, 'theme'))
   const entry = join(root, 'theme', 'tokens #.css')
-  writeFileSync(entry, "\n    @custom-variant night { &:where([data-theme=\"night\"], [data-theme=\"night\"] *) { @slot; } }\n    @theme { :root, :host { --color-brand: red; --color-action: var(--color-brand);  } }\n@keyframes pop { to { opacity: .5; } }\n\n    @theme { [data-theme=\"night\"] { --color-brand: blue; } }\n\n     @mixin --action { color: var(--color-action); } \n    @source \"./never.html\";\n    .never { color: lime; }\n  ")
+  writeFileSync(entry, "\n    @mixin --night { &:where([data-theme=\"night\"], [data-theme=\"night\"] *) { @contents; } }\n    @theme { :root, :host { --color-brand: red; --color-action: var(--color-brand);  } }\n@keyframes pop { to { opacity: .5; } }\n\n    @theme { [data-theme=\"night\"] { --color-brand: blue; } }\n\n     @mixin --action { color: var(--color-action); } \n    @source \"./never.html\";\n    .never { color: lime; }\n  ")
   return { root, entry, file: join(root, 'card.css'), options: { baseManifest, projectDir: root, referenceFiles: [entry], transformNativeStylesheets: true } }
 }
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
+
+test('a local named media query receives project definitions without another directive', async () => {
+  const f = fixture()
+  writeFileSync(f.entry, '@custom-media --wide (width >= 40rem); .unrelated { color: red; }')
+  const result = await transformStylesheet(f.file, '.card { @media (--wide) { display: grid; } }', {
+    ...f.options, transformNativeStylesheets: false
+  })
+  expect(result.transformed).toBe(true)
+  expect(result.code).toContain('@media (width >= 40rem)')
+  expect(result.code).toContain('display: grid')
+  expect(result.code).not.toMatch(/--wide|unrelated/)
+  expect(result.dependencies).toContain(f.entry)
+})
 
 test('native styles receive project tokens, modes, fallbacks and managed animations without an entry or reference', async () => {
   const f = fixture()

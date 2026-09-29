@@ -3,10 +3,10 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 6 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 7 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v6 authoring contracts', () => {
+describe('directive language v7 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { :root { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green; } }
@@ -17,7 +17,7 @@ describe('directive language v6 authoring contracts', () => {
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(6)
+    expect(manifest.languageVersion).toBe(7)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
@@ -52,8 +52,8 @@ describe('directive language v6 authoring contracts', () => {
     const { manifest } = compile(`
       @custom-media --screen-card screen and (--card);
       @custom-media --card (width >= 40rem), (orientation: landscape);
-      @custom-variant focus-ring { &:focus-visible { @slot; } }
-      @mixin --panel { display: block; @variant screen-card { display: grid; } @variant focus-ring { outline: 2px solid; } }
+      @mixin --focus-ring { &:focus-visible { @contents; } }
+      @mixin --panel { display: block; @media (--screen-card) { display: grid; } @apply --focus-ring { outline: 2px solid; } }
     `)
     const css = createTestCSS(manifest)
     const text = css.createRule('panel')!.text
@@ -75,7 +75,7 @@ describe('directive language v6 authoring contracts', () => {
   })
 
   test.each([
-    '@master entry;', '@settings { important: true; }', '@mode dark { .dark { @slot; } }',
+    '@master entry;', '@settings { important: true; }', '@mode dark { .dark { @contents; } }',
     '@utilities { card { display: block; } }', '@dark { .card { color: red; } }',
     '.card { @variant media((width>=40rem)) { display: block; } }',
     '@theme inline { --color-brand: red; }', '@theme static { --color-brand: red; }',
@@ -86,7 +86,6 @@ describe('directive language v6 authoring contracts', () => {
     '@utility pair:* { width: --master-value(1px); }',
     '@utility card { width: --master-value(); }',
     '@custom-media --card (--missing);', '@custom-media --a (--b); @custom-media --b (--a);',
-    '@custom-media --card true; @custom-variant card { &:hover { @slot; } }'
   ])('rejects removed or invalid authoring syntax: %s', source => {
     expect(() => compile(source)).toThrow()
   })

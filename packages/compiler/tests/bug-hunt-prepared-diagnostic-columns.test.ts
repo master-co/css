@@ -15,20 +15,25 @@ for (const source of [
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
   try {
     await transformStylesheet(file, prepared.source, { baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, sourceMap: prepared.sourceMap, loadSass: identity })
     throw new Error('Expected invalid compose')
   } catch (error: any) {
@@ -48,19 +53,24 @@ test('rendered root diagnostics are mapped once through the Sass source map', as
   const file = resolve('/tmp/master-root-columns.scss'), source = '/* authored */\n\n\n.card{@compose "block";}'
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
   await expect(compileRenderedStylesheet(file, prepared.source, { baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, sourceMap: prepared.sourceMap, loadSass: identity })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: file, range: { start: expect.objectContaining({ line: 3 }), end: expect.objectContaining({ line: 3 }) } })] })
 })

@@ -5,12 +5,12 @@ Master CSS is a markup-driven CSS language and framework. It lets users write co
 Example:
 
 ```html
-<h1 class="fg:indigo fg:red:hover font:2rem font:2.5rem@sm font:heavy text-center">
+<h1 class="color:indigo color:red:hover font-size:2rem font-size:2.5rem@sm font-weight:700 text-align:center">
   Hello World
 </h1>
 ```
 
-The same syntax can express declarations, selectors, states, media queries, container queries, modes, variables, animations, and reusable components.
+The same syntax can express declarations, selectors, native conditions, scoped variables, animations, and reusable mixins.
 
 ## Positioning
 
@@ -34,10 +34,10 @@ Compared with native CSS:
 
 Compared with Tailwind:
 
-- Syntax is closer to CSS declarations, such as `font:1.5rem`, `fg:red`, `bg:blue:hover@sm`.
+- Direct declarations use native property names, such as `font-size:1.5rem`, `color:red`, and `background:blue:hover@sm`.
 - Selectors and conditions are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
-- CSS-first manifest entries define utilities, variables, variants, modes, and animations. Reusable component classes are static utilities in the `components` layer.
+- CSS entries define scoped tokens, custom media, mixins and managed keyframes. Native component rules use `@layer components`. Mixin contents provide reusable wrappers without a variant registry.
 
 Compared with CSS-in-JS:
 
@@ -48,13 +48,13 @@ Compared with CSS-in-JS:
 ## Core Concepts
 
 - Rule: An emitted CSS rule-like object with text and a key.
-- Utility: A parsed Master CSS class that maps to CSS declarations, selectors, conditions, mode, priority, and layer.
-- Static utility: A fixed class from the compiled manifest, such as `block` or `hidden`.
-- Variable: A manifest token that can be inlined or emitted as a CSS custom property.
-- Mode: A conditional variable/style context such as `light` or `dark`.
-- Component: A semantic static utility emitted in the `components` layer.
-- Selector token: A named selector suffix expression.
-- At token: A named `@` suffix expression for media, container, supports, layer, starting-style, and breakpoint conditions.
+- Utility: A parsed markup class with declarations, selectors, conditions, priority and layer.
+- Mixin: An ordered static recipe defined with `@mixin`, invoked by a recipe class or `@apply`. Optional `@contents` expands the caller's block or a definition fallback.
+- Variable: A scoped theme token emitted as a CSS custom property when used.
+- Theme: Native selectors and conditions determining custom-property values through the CSS cascade. Preset `@dark` and `@light` use system preferences.
+- Component: A native class rule authored in `@layer components`.
+- Selector suffix: Native selector syntax applied to a generated rule.
+- At suffix: Native conditions, named custom media, `@apply(--name(...))`, or whole-class `@layer(...)` placement. Wrappers retain left-to-right nesting order.
 
 ## Output Model
 
@@ -75,4 +75,4 @@ The layer statement is declared by `packages/preset/src/base.css` and exposed th
 @layer theme, base, defaults, components, utilities;
 ```
 
-Engine-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, defaults sit above base, and keyframes are not wrapped in layers.
+Engine-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities override ordinary component declarations, theme variables retain native scopes, defaults sit above base, and keyframes remain outside layers.

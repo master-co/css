@@ -17,10 +17,10 @@ Hover or keyboard-focus the native button to move it upward by 8px. The dashed o
              fg-blue-80 transform:none
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             transform:none@print
-             transition:transform|var(--duration-fast)|ease-out@motion
-             transform:translateY(-8px):hover@screen
-             transform:translateY(-8px):focus-visible@screen">
+             transform:none@media(print)
+             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             transform:translateY(-8px):hover@media(screen)
+             transform:translateY(-8px):focus-visible@media(screen)">
       Lift layer
     </button>
   </div>
@@ -51,9 +51,9 @@ Hold the button with a pointer, or focus it and hold Space. Its native active st
              fg-blue-80 transform:none
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             transform:none@print
-             transition:transform|var(--duration-fast)|ease-out@motion
-             transform:scale(.9):active@screen">
+             transform:none@media(print)
+             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             transform:scale(.9):active@media(screen)">
       Press and hold
     </button>
   </div>
@@ -135,8 +135,8 @@ Widen the actual viewport to `sm` to translate the layer 24px to the right. Prin
       class="display:grid place-items:center height:96px width:160px p-sm
              border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 transform:none
-             transform:none@print
-             transform:translateX(24px)@screen@sm">
+             transform:none@media(print)
+             transform:translateX(24px)@media(screen)@sm">
       Layer 01
     </div>
   </div>

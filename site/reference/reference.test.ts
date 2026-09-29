@@ -155,9 +155,9 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.ok(layers.headings.some(heading => heading.id === 'summary' && heading.title === 'Defaults stay below local decisions'))
   assert.ok(layers.headings.some(heading => heading.id === 'layer-checklist'))
   assert.match(layers.markdown, /!important` reverses the order between layers/)
-  const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@base'))!
+  const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@layer(base)'))!
   assert.match(base.css, /@layer base\{.*list-style:none/)
-  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@default'))!
+  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@layer(defaults)'))!
   assert.match(fonts.css, /--font-family-mono:/)
   assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
   assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])

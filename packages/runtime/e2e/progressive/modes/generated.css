@@ -1,1 +1,1 @@
-@layer utilities{.display\:none\@manual-light:where(.light,.light *){display:none}}
+@layer utilities{.display\:none\@apply\(--manual-light\):where(.light,.light *){display:none}}

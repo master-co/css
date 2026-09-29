@@ -32,8 +32,8 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -52,8 +52,8 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -80,8 +80,8 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -99,8 +99,8 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -123,8 +123,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
       class="display:inline-block height:32px width:64px
              border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              animation:fade|var(--duration-slowest)|linear|both
-             animation-delay:0ms animation:none@print
-             animation-play-state:paused@reduce-motion"></span>
+             animation-delay:0ms animation:none@media(print)
+             animation-play-state:paused@motion-reduce"></span>
     <span>Item 1 · 0ms</span>
   </li>
   <li class="display:flex align-items:center gap-sm font-sm">
@@ -132,8 +132,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
       class="display:inline-block height:32px width:64px
              border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              animation:fade|var(--duration-slowest)|linear|both
-             animation-delay:200ms animation:none@print
-             animation-play-state:paused@reduce-motion"></span>
+             animation-delay:200ms animation:none@media(print)
+             animation-play-state:paused@motion-reduce"></span>
     <span>Item 2 · 200ms</span>
   </li>
   <li class="display:flex align-items:center gap-sm font-sm">
@@ -141,8 +141,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
       class="display:inline-block height:32px width:64px
              border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              animation:fade|var(--duration-slowest)|linear|both
-             animation-delay:400ms animation:none@print
-             animation-play-state:paused@reduce-motion"></span>
+             animation-delay:400ms animation:none@media(print)
+             animation-play-state:paused@motion-reduce"></span>
     <span>Item 3 · 400ms</span>
   </li>
 </ul>
@@ -170,8 +170,8 @@ Define a duration token for a shared waiting interval. This example resolves `st
            bg-blue-10 opacity:1 animation-duration:1s
            animation-fill-mode:both animation-name:fade
            animation-timing-function-smooth
-           animation:none@print
-           animation-play-state:paused@reduce-motion
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce
            animation-delay-stagger"></span>
   <span class="font-sm">120ms delayed marker</span>
 </div>
@@ -209,8 +209,8 @@ Resize before replaying. The marker waits 600ms below `sm` and starts immediatel
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce
              animation-delay:0ms@sm">→</span>
   </div>
 </div>

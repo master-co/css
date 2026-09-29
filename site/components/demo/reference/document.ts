@@ -11,7 +11,7 @@ const tokenFile = path.join(siteRoot, 'styles/demo-theme.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
 let tokens = readFileSync(tokenFile, 'utf8')
 const frameCSS = readFileSync(frameFile, 'utf8')
-let shared = compileManifestSync(`@custom-variant light { &:where(.light, .light *) { @slot; } }\n@custom-variant dark { &:where(.dark, .dark *) { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest
+let shared = compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${tokens}`, { baseManifest: preset }).manifest
 
 export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
   // A srcdoc inherits the host URL as its base. Keep native fragment navigation
@@ -23,7 +23,7 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
     const nextTokens = readFileSync(tokenFile, 'utf8')
     if (nextTokens !== tokens) {
       tokens = nextTokens
-      shared = compileManifestSync(`@custom-variant light { &:where(.light, .light *) { @slot; } }\n@custom-variant dark { &:where(.dark, .dark *) { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest
+      shared = compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${tokens}`, { baseManifest: preset }).manifest
     }
   }
   const configuration = [section.css, scene.css].filter(Boolean).join('\n')

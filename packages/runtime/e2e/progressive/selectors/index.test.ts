@@ -30,27 +30,27 @@ test('selectors', async ({ page }) => {
 
   await page.evaluate(() => {
     const baseHost = document.createElement('div')
-    baseHost.className = "display:block_button@base"
+    baseHost.className = "display:block_button@layer(base)"
     baseHost.innerHTML = '<button id="selectorless-base-descendant">Base descendant</button>'
 
     const defaultsHost = document.createElement('div')
     defaultsHost.id = 'selectorless-default-host'
-    defaultsHost.className = '{display:flex;position:relative}_:is(h4,.app-nav)@default'
+    defaultsHost.className = '{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)'
     defaultsHost.innerHTML = '<h4 id="selectorless-default-descendant">Default descendant</h4>'
 
     document.body.append(baseHost, defaultsHost)
   })
 
   await expect.poll(() => page.evaluate(() => ({
-    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === "display:block_button@base")?.text,
+    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === "display:block_button@layer(base)")?.text,
     defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.filter(
-      (rule) => rule.name === '{display:flex;position:relative}_:is(h4,.app-nav)@default'
+      (rule) => rule.name === '{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)'
     ).map(rule => rule.text)
   }))).toEqual({
-    base: '.display\\:block_button\\@base button{display:block}',
+    base: '.display\\:block_button\\@layer\\(base\\) button{display:block}',
     defaults: [
-      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}',
-      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}'
+      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}',
+      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}'
     ]
   })
 

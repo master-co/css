@@ -29,7 +29,6 @@ test('1,000 single-node insertions avoid repeated key searches and prefix reads'
 
 test('mixed node counts preserve CSSOM order across middle and tail changes, refresh and reset', async ({ page }) => {
   await init(page, undefined, {
-    variants: ['base', 'defaults', 'components', 'utilities'].map(layer => ({ token: `@${layer}` as const, branches: [{ layer: layer as 'base' | 'defaults' | 'components' | 'utilities' }] })),
     mixins: ['base', 'defaults', 'components', 'utilities'].flatMap((layer) =>
       ['a', 'b', 'c', 'd'].map((suffix, order) => ({
         name: `--${layer}-${suffix}`,
@@ -44,7 +43,7 @@ test('mixed node counts preserve CSSOM order across middle and tail changes, ref
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     const states: boolean[] = []
     const names = (suffixes: string[]) => ['base', 'defaults', 'components', 'utilities']
-      .flatMap(layer => suffixes.map(suffix => `${layer}-${suffix}@${layer}`))
+      .flatMap(layer => suffixes.map(suffix => `${layer}-${suffix}@layer(${layer})`))
     const check = () => {
       const expected = document.createElement('style')
       expected.media = 'not all'

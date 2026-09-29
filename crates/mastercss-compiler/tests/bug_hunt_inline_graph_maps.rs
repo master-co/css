@@ -5,13 +5,13 @@ fn compile(entry: &str, child: &str, child_url: &str) -> Value {
     let input: CompileCssStylesheetGraphInput = serde_json::from_value(json!({
         "inlineImports":true,
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
-        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":4,"languageVersion":6, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
+        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":4,"languageVersion":7, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph_input(&input).unwrap()).unwrap()
 }
 #[test]
 fn inline_qualified_child_keeps_composition_and_original_anchors() {
-    let child = "\n.card{@variant always{padding:2rem;}}.card{padding:3rem}";
+    let child = "\n.card{@apply --always{padding:2rem;}}.card{padding:3rem}";
     let entry = "@import './child.css' layer supports(display:grid) screen;@mixin --paint {padding:2rem}/* 😀 */\n.after{margin:1px}";
     let result = compile(entry, child, "/child.css");
     assert_eq!(result["stylesheets"].as_array().unwrap().len(), 1);

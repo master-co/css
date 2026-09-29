@@ -82,6 +82,6 @@ The same unbroken word uses normal boundaries at the base viewport, then breaks 
 ```html
 <!-- Real breakpoint · unchanged text -->
 <div id="scrollport" role="region" aria-label="Responsive word breaking" tabindex="0" class="overflow:auto width:200px max-width:100%">
-  <p id="target" class="width:200px margin:0 font-md line-height:24px word-break:normal word-break:normal@print word-break:break-all@screen@sm">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="width:200px margin:0 font-md line-height:24px word-break:normal word-break:normal@media(print) word-break:break-all@media(screen)@sm">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```

@@ -34,7 +34,7 @@ The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer t
 
 Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports the authored scope paths and values, not a computed result.
 
-Keyframes are ordinary stylesheet rules. Keep them outside `@theme` and import their stylesheet. An animation name does not register or retain a keyframe resource in the engine, SSR manifest or runtime.
+Native keyframes outside `@theme` are delivered with their stylesheet. For on-demand keyframes, define them directly inside `@theme`; used animation names and declarations retain their dependencies through compilation, SSR and runtime.
 
 ## Namespace resolution \{#namespace-resolution\}
 Write custom properties as `--<namespace>-<key>`. Namespace lookup uses the longest registered prefix: `color-line-divider` belongs to `color-line` before `color`.
@@ -106,12 +106,12 @@ Derived values remain CSS functions, including `var()` fallbacks and `color-mix(
 }
 ```
 
-## Theme activation and named variants \{#mode-triggers\}
-`@mode` is removed. Theme selectors activate values. A separate `@custom-variant` defines where a markup suffix applies; it never changes the theme tree or inserts descendant selectors automatically.
+## Theme activation and mixin wrappers \{#mode-triggers\}
+`@mode` is removed. Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes the theme tree or inserts descendant selectors automatically.
 
 ```css
-@custom-variant ocean {
-  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @slot; }
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
 }
 @theme {
   :root, :host { --color-surface: white; }
@@ -119,7 +119,7 @@ Derived values remain CSS functions, including `var()` fallbacks and `color-mix(
 }
 ```
 
-`bg-surface` follows the variable wherever it inherits. `padding:1rem@ocean` uses the explicitly authored variant selector.
+`bg-surface` follows the variable wherever it inherits. `padding:1rem@apply(--ocean)` uses the explicitly authored mixin selector.
 
 ### System preference with a manual override
 The full preset uses native `light-dark()` and `color-scheme`. Choose `data-theme="light"` or `data-theme="dark"` on the root or a nested region; the preset's native stylesheet sets that region's scheme. A custom adaptive token needs only one declaration:

@@ -15,7 +15,7 @@ test('BH-0004 CLI emits a referenced resource and native declarations without em
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-reference-'))
   try {
     mkdirSync(join(cwd, 'tokens'))
-    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@import \"@master/css\";.example{@variant all {color:red;background-image:var(--image-icon);}}")
+    writeFileSync(join(cwd, 'entry.css'), "@reference './tokens/theme.css';@import \"@master/css\";@mixin --always{@contents;} .example{@apply --always {color:red;background-image:var(--image-icon);}}")
     writeFileSync(join(cwd, 'tokens/theme.css'), "@theme {:root, :host {--image-icon:url('./icon%23one.svg?q=1#mark')}}\n.reference-only{color:blue}")
     const bytes = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
     writeFileSync(join(cwd, 'tokens/icon#one.svg'), bytes)

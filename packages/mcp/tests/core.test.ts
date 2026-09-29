@@ -252,7 +252,7 @@ describe('@master/css-mcp', () => {
         build: 'master-css src/index.html -o master.css'
       }
     })
-    writeFileSync(join(root, 'master.css'), "@import \"@master/css\";\n@custom-variant ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @slot; } }\n@theme { :root, :host {\n  --color-brand: #123456;\n} }\n")
+    writeFileSync(join(root, 'master.css'), "@import \"@master/css\";\n@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }\n@theme { :root, :host {\n  --color-brand: #123456;\n} }\n")
 
     const connection = await connect(root)
     try {
@@ -299,7 +299,7 @@ describe('@master/css-mcp', () => {
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
-        expect.objectContaining({ name: 'custom-variant' })
+        expect.objectContaining({ name: 'mixin' })
       ]))
       expect(directives.manifest.counts.variables).toBeGreaterThan(0)
     } finally {

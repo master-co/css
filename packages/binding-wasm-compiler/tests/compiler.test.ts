@@ -90,7 +90,7 @@ test('loads the isolated compiler Wasm surface', async () => {
 ]
   }))).toMatchObject({
     manifest: {
-      version: 4 as const, languageVersion: 6 as const, theme,
+      version: 4 as const, languageVersion: 7 as const, theme,
       variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: ['.dark'], value: '#fff' }] }] },
       mixins: [
   {
@@ -126,13 +126,13 @@ test('loads the isolated compiler Wasm surface', async () => {
   )).toEqual(['fg-red'])
 
   const files = Object.fromEntries(await Promise.all(
-    ['index.css', 'base.css', 'theme.css', 'colors.css', 'variants.css', 'utilities.css']
+    ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'utilities.css']
       .map(async file => [`/${file}`, await readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')])
   ))
   const graph = compiler.resolveCSSImportGraph({
     entry: '/index.css', files,
     edges: [
-      ...['base.css', 'theme.css', 'variants.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
+      ...['base.css', 'theme.css', 'media.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
       { from: '/theme.css', specifier: './colors.css', resolved: '/colors.css' }
     ]
   }) as { source: string }

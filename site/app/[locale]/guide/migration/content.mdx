@@ -98,7 +98,7 @@ Review the migration as code and as UI.
 
 ## Custom engine and binding migration
 
-The current binding ABI is **17**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v4 / languageVersion 6 and hydration v3 data with the upgraded packages. Engine snapshots and transitions are v3; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+The current binding ABI is **18**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v4 / languageVersion 7 and hydration v3 data with the upgraded packages. Engine snapshots and transitions are v3; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
 
 `MasterCSSEngine` and its binding session also require `executionState(classNames)`.
 

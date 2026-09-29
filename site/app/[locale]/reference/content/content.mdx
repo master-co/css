@@ -53,9 +53,9 @@ Hover or focus this link to generate its arrow. The base pseudo-element has `con
 ```html
 <!-- Pointer and keyboard · same link -->
 <a id="target" class="font-md text-decoration:underline fg-text-blue content:none::after
-    content:none::after@print
-    content:'\00a0↗':hover::after@screen
-    content:'\00a0↗':focus-visible::after@screen" href="https://www.example.com">Project website</a>
+    content:none::after@media(print)
+    content:'\00a0↗':hover::after@media(screen)
+    content:'\00a0↗':focus-visible::after@media(screen)" href="https://www.example.com">Project website</a>
 ```
 
 The state selector comes before `::after`. Apply conditions to the originating element so pointer and keyboard interaction can actually trigger them.

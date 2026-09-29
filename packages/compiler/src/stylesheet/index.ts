@@ -386,7 +386,7 @@ export async function compileRenderedStylesheet(
   const { compileOptions, finalizedResult, result, outputMap } = await compileStylesheetResult(id, source, options, true)
   const renderedCSS = renderCompiledManifestCSS({
     manifest: finalizedResult.resolutionManifest,
-    // Include lowered native variants as well as parsed native CSS.
+    // Include expanded native mixin applications as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
     emittedGlobals: options.emittedGlobals

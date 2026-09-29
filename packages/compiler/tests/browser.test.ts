@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from './helpers/contents-manifest'
 import { compileManifest } from '../src'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
@@ -7,7 +7,7 @@ import { createTestCSS } from './helpers/rust-engine'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test.concurrent('universal compileManifest lowers directives with a base manifest', async () => {
-  const result = await compileManifest("\n    @mixin --btn {\n        @variant all {display:flex;}\n        color: red;\n      }\n  ", {
+  const result = await compileManifest("\n    @mixin --btn {\n        @apply --all {display:flex;}\n        color: red;\n      }\n  ", {
     baseManifest: defaultManifest
   })
   const css = createTestCSS(result.manifest)

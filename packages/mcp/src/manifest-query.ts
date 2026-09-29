@@ -6,7 +6,6 @@ import {
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import {
-  compactConditions,
   compactMixin,
   compactVariable,
   summarizeManifest
@@ -14,7 +13,7 @@ import {
 
 const MANIFEST_QUERY_VERSION = 3
 
-export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'variant' | 'custom-media' | 'condition' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'custom-media' | 'alias'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -65,20 +64,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     .filter((mixin) => matchesAny(mixinSearchValues(mixin), query))
     .map(compactMixin)
 
-  const variants = (activeManifest.variants || [])
-    .filter((variant) => includesQuery(variant.token, query))
-    .map((variant) => ({
-      token: variant.token,
-      branches: variant.branches.length,
-      layers: [...new Set(variant.branches.map((branch) => branch.layer).filter(Boolean))]
-    }))
-
   const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
-
-  const conditions = [
-    ...compactConditions(activeManifest.conditions),
-    ...compactConditions(activeManifest.containerConditions)
-  ].filter((rule) => matchesAny([rule.name, rule.id], query))
 
   const aliases = builtinTokenFamilies.filter(family => family.prefix !== family.property)
     .map(({ prefix: alias, property, namespaces }) => ({ type: 'token-alias' as const, alias, property, namespaces }))
@@ -88,17 +74,13 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
   const allResults = {
     tokens: kind === 'all' || kind === 'token' ? variables : [],
     mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
-    variants: kind === 'all' || kind === 'variant' ? variants : [],
     customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
-    conditions: kind === 'all' || kind === 'condition' ? conditions : [],
     aliases: kind === 'all' || kind === 'alias' ? aliases : []
   }
   const limitedResults = {
     tokens: limitResults(allResults.tokens, limit),
     mixins: limitResults(allResults.mixins, limit),
-    variants: limitResults(allResults.variants, limit),
     customMedia: limitResults(allResults.customMedia, limit),
-    conditions: limitResults(allResults.conditions, limit),
     aliases: limitResults(allResults.aliases, limit)
   }
   const total = Object.values(allResults).reduce((count, items) => count + items.length, 0)
@@ -125,9 +107,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       returned,
       tokens: variables.length,
       mixins: mixins.length,
-      variants: variants.length,
       customMedia: customMedia.length,
-      conditions: conditions.length,
       aliases: aliases.length,
       status: 'ok'
     }

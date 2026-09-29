@@ -43,7 +43,8 @@ const mixinNode: z.ZodType = z.lazy(() => z.discriminatedUnion('type', [
   z.object({ type: z.literal('declaration'), property: z.string(), value: mixinValue, source: mixinSource }),
   z.object({ type: z.literal('rule'), selector: z.string(), body: z.array(mixinNode) }),
   z.object({ type: z.literal('condition'), condition: z.string(), body: z.array(mixinNode) }),
-  z.object({ type: z.literal('apply'), name: z.string(), arguments: z.array(mixinValue), source: mixinSource })
+  z.object({ type: z.literal('apply'), name: z.string(), arguments: z.array(mixinValue), contents: z.array(mixinNode).optional(), source: mixinSource }),
+  z.object({ type: z.literal('contents'), fallback: z.array(mixinNode) })
 ]))
 export const mixin = z.object({
   name: z.string(),
@@ -51,12 +52,6 @@ export const mixin = z.object({
   body: z.array(mixinNode),
   source: mixinSource
 })
-const conditionNode: z.ZodType = z.lazy(() => z.union([
-  z.object({ type: z.literal('boolean'), name: z.string(), raw: z.string().optional() }),
-  z.object({ type: z.literal('number'), value: z.number(), name: z.string().optional(), unit: z.string().optional(), operator: z.string().optional(), raw: z.string().optional() }),
-  z.object({ type: z.enum(['string', 'logical', 'comparison']), value: z.string(), name: z.string().optional(), raw: z.string().optional() }),
-  z.object({ type: z.literal('group').optional(), children: z.array(conditionNode), raw: z.string().optional() })
-]))
 const mediaQuery: z.ZodType = z.lazy(() => z.union([
   z.object({ type: z.enum(['true', 'false']) }),
   z.object({ type: z.literal('feature'), value: z.string() }),
@@ -66,9 +61,7 @@ const mediaQuery: z.ZodType = z.lazy(() => z.union([
 ]))
 export const manifestResults = z.object({
   tokens: z.array(variable), mixins: z.array(mixin),
-  variants: z.array(z.object({ token: z.string(), branches: z.number(), layers: strings })),
   customMedia: z.array(z.object({ name: z.string(), expression: mediaQuery })),
-  conditions: z.array(z.object({ name: z.string(), id: z.string(), nodes: z.array(conditionNode), nodeCount: z.number() })),
   aliases: z.array(z.object({ type: z.literal('token-alias'), alias: z.string(), property: z.string(), namespaces: strings }))
 })
 export const change = z.object({ filePath: z.string(), beforeHash: z.string().nullable(), afterHash: z.string(), beforeExists: z.boolean(), beforeBytes: z.number(), afterBytes: z.number(), afterText: z.string(), diff: z.string() })

@@ -126,7 +126,7 @@ impl<'a> SourceIndex<'a> {
     ) -> Option<CssDirectiveSourceReference> {
         let local_start = body.byte_offset_for_location(line, column)?;
         let start = body_start_byte.checked_add(local_start)?;
-        let end = crate::variant::selector_end_byte(self.text, start)?;
+        let end = crate::native_selectors::selector_end_byte(self.text, start)?;
         self.reference(filename, start, end)
     }
 
@@ -148,7 +148,7 @@ impl<'a> SourceIndex<'a> {
 #[cfg(test)]
 mod tests {
     use super::SourceIndex;
-    use crate::variant::source_location;
+    use crate::native_selectors::source_location;
     use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
 
     /// The scanning conversion the index replaced; kept as the test oracle.

@@ -54,6 +54,8 @@ pub(super) fn create_merged_style_definitions(
                 selector,
                 name,
                 arguments,
+                contents,
+                selector_source,
                 source,
                 condition_path,
                 ..
@@ -71,20 +73,16 @@ pub(super) fn create_merged_style_definitions(
                     .map(|value| mastercss_engine::evaluate_mixin_value(value, &Default::default()))
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(fail)?;
-                let rules = engine.expand_mixin(name, &arguments).map_err(fail)?;
+                let rules = engine
+                    .expand_mixin_with_contents(name, &arguments, contents.as_deref())
+                    .map_err(fail)?;
                 for rule in rules {
                     let selector =
                         mastercss_lexer::replace_nesting_selector(&rule.selector, selector)
                             .unwrap_or_else(|| rule.selector.clone());
                     let mut path = condition_path.clone().unwrap_or_default();
                     path.extend(rule.conditions.into_iter().map(|condition| {
-                        if let Some(variant) = condition.strip_prefix("@variant ") {
-                            CssDirectiveConditionPathEntry::Variant {
-                                token: format!("@{}", variant.trim().trim_start_matches('@')),
-                            }
-                        } else {
-                            CssDirectiveConditionPathEntry::Condition { value: condition }
-                        }
+                        CssDirectiveConditionPathEntry::Condition { value: condition }
                     }));
                     for branch in
                         resolve_configured_branches(&path, engine, &selector, target_layer)?
@@ -92,7 +90,7 @@ pub(super) fn create_merged_style_definitions(
                         append_style(
                             &mut output,
                             MergedStyleDefinition {
-                                selector_source: source.clone(),
+                                selector_source: selector_source.clone().or_else(|| source.clone()),
                                 selector: branch.selector,
                                 conditions: branch.conditions,
                                 declarations: rule

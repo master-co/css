@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, custom variants, generated class vocabulary, and native CSS that belongs to the whole app.
+Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, named media and reusable mixins, generated class vocabulary, and native CSS that belongs to the whole app.
 
 Most applications should have exactly one app stylesheet that starts with the default Master CSS entry:
 
@@ -22,11 +22,7 @@ Use the app stylesheet for project-wide styling inputs:
   --spacing-action-x: 1rem;
 } }
 
-@custom-variant motion-safe {
-  @media (prefers-reduced-motion: no-preference) {
-    @slot;
-  }
-}
+@custom-media --motion-safe (prefers-reduced-motion: no-preference);
 ```
 
 Load this stylesheet once from the app root, framework layout, or build entry. Do not import it again from page-level CSS. A second import duplicates global native CSS and makes ownership harder to trace.
@@ -266,7 +262,7 @@ Use custom utilities for reusable primitives that are lower-level than product c
     contain-intrinsic-size: auto 32rem;
   }
 @mixin --print-hidden {
-    @variant print {
+    @media (--print) {
       display: none;
     }
   }

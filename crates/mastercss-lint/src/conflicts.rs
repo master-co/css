@@ -48,6 +48,7 @@ impl ClassDescriptor {
         } else {
             2
         };
+        let valid_for_conflicts = valid_for_conflicts && rule_count == 1 && rule.nodes.len() <= 1;
         Self {
             class_name: class_name.to_owned(),
             matched: true,
@@ -138,9 +139,7 @@ pub(crate) fn find_conflicts(descriptors: &[ClassDescriptor]) -> Vec<ClassConfli
             let Some(compare_rule) = compare.rule.as_ref() else {
                 continue;
             };
-            if descriptor.properties == compare.properties
-                && equal_variant_scope(rule, compare_rule)
-            {
+            if descriptor.properties == compare.properties && equal_rule_scope(rule, compare_rule) {
                 last_conflict = Some(compare.class_name.clone());
             }
         }
@@ -154,16 +153,33 @@ pub(crate) fn find_conflicts(descriptors: &[ClassDescriptor]) -> Vec<ClassConfli
     conflicts
 }
 
-pub(crate) fn equal_variant_scope(left: &GeneratedRuleIr, right: &GeneratedRuleIr) -> bool {
+pub(crate) fn equal_rule_scope(left: &GeneratedRuleIr, right: &GeneratedRuleIr) -> bool {
     left.layer == right.layer
-        && branch_key(&left.key) == branch_key(&right.key)
+        && rule_scope(left) == rule_scope(right)
         && left.sort_tier == right.sort_tier
         && left.priority.features == right.priority.features
         && left.priority.selector == right.priority.selector
 }
 
-pub(crate) fn branch_key(key: &str) -> &str {
-    key.split_once('\0').map_or("", |(_, branch)| branch)
+fn rule_scope(rule: &GeneratedRuleIr) -> String {
+    // Compare emitted selector/condition structure, independent of authoring aliases.
+    use mastercss_lexer::{collect_css_syntax_statements, tokenize_css_syntax};
+    let source = mastercss_lexer::replace_rule_class_selector(
+        &rule.text,
+        &format!(".{}", mastercss_lexer::css_escape(&rule.class_name)),
+        ".--scope",
+    );
+    let tokens = tokenize_css_syntax(&source);
+    collect_css_syntax_statements(&tokens)
+        .iter()
+        .filter(|statement| statement.has_block)
+        .map(|statement| {
+            source[tokens[statement.tokens.start].bytes.start
+                ..tokens[statement.tokens.end].bytes.start]
+                .trim()
+        })
+        .collect::<Vec<_>>()
+        .join("\0")
 }
 
 pub(crate) fn has_dynamic_value(class_name: &str) -> bool {

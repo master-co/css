@@ -46,8 +46,8 @@ Hover or focus the image to restore normal blending. The image and blue color st
   class="height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
          background-blend-mode:multiply bg-blue-30
          background-image:url(/demo/landscape.svg)
-         background-blend-mode:normal:hover@screen
-         background-blend-mode:normal:focus-visible@screen"
+         background-blend-mode:normal:hover@media(screen)
+         background-blend-mode:normal:focus-visible@media(screen)"
 ></div>
 ```
 
@@ -63,8 +63,8 @@ Resize the actual viewport to `sm` to apply multiply blending. Smaller screens a
 <div id="target" role="img" aria-label="Geometric landscape"
   class="height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat
          background-blend-mode:normal bg-blue-30
-         background-image:url(/demo/landscape.svg) background-blend-mode:normal@print
-         background-blend-mode:multiply@screen@sm"
+         background-image:url(/demo/landscape.svg) background-blend-mode:normal@media(print)
+         background-blend-mode:multiply@media(screen)@sm"
 ></div>
 ```
 

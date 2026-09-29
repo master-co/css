@@ -46,9 +46,9 @@ Transparent fill reveals this real background gradient clipped to the glyphs. Th
 <p id="target"
   class="display:inline-block max-width:100% margin:0 font-4xl font-semibold line-height:1.5
          background-clip:text text-fill-color-current
-         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports((background-clip:text))@screen
-         text-fill-color-current@print
-         -webkit-text-fill-color:transparent@supports((background-clip:text))@screen"
+         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports((background-clip:text))@media(screen)
+         text-fill-color-current@media(print)
+         -webkit-text-fill-color:transparent@supports((background-clip:text))@media(screen)"
 >
   Clear type
 </p>
@@ -79,8 +79,8 @@ Hover or focus to change the glyph fill independently of the button’s foregrou
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
   class="font-2xl leading-xl text-fill-color-current
-         text-fill-color-current@print text-fill-color-blue-50:hover@screen
-         text-fill-color-blue-50:focus-visible@screen"
+         text-fill-color-current@media(print) text-fill-color-blue-50:hover@media(screen)
+         text-fill-color-blue-50:focus-visible@media(screen)"
 >
   Clear type
 </button>

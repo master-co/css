@@ -28,7 +28,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
     '@import "base.css";',
     '@theme { :root { --color-brand: red; } }',
     '@safelist "fg-red@md"; @layer components { .btn { @media (width < 40rem) { color: red; } } }',
-    '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
+    '@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }'
   ].join('\n')
   const hast = await highlightCode(source, { lang: 'css' })
   const styleOf = (text: string, semantic = false) => {
@@ -44,7 +44,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   }
 
   assert.equal(highlightedCodeText(hast), source)
-  for (const keyword of ['@theme', '@layer', '@safelist', '@custom-variant', '@media', '@slot']) {
+  for (const keyword of ['@theme', '@layer', '@safelist', '@mixin', '@media', '@contents']) {
     assert.equal(styleOf(keyword), styleOf('@import'), keyword)
   }
   assert.equal(styleOf('@md', true), styleOf('@import'))

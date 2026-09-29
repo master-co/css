@@ -11,7 +11,7 @@ fn rejects_removed_compose_in_every_authoring_context() {
         r###" @mixin --box-a { @compose block; }@mixin --box-b { @compose block; } "###,
         r###" @utility box-* from(--spacing-*) { @compose block; } "###,
         r###"@media print { .card { @compose block; } }"###,
-        r###".card { @variant sm { @compose block; } }"###,
+        r###".card { @media (--sm) { @compose block; } }"###,
         ".card { @CoMpOsE block; }",
         r".card { @\63 ompose block; }",
         ".card { @compose { block } }",

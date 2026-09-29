@@ -1,6 +1,5 @@
 import type {
   MasterCSSManifest,
-  MasterCSSManifestConditions,
   MasterCSSMixinDefinition,
   MasterCSSManifestVariableEntry
 } from '@master/css-schema/manifest'
@@ -15,11 +14,7 @@ export function summarizeManifest(manifest: MasterCSSManifest) {
       variables: variables.length,
       variableNamespaces: Object.keys(manifest.variables || {}).length,
       mixins: manifest.mixins?.length ?? 0,
-      variants: manifest.variants?.length ?? 0,
-      conditions: Object.keys(manifest.conditions || {}).length,
       customMedia: Object.keys(manifest.customMedia || {}).length,
-      containerConditions: Object.keys(manifest.containerConditions || {}).length,
-      selectors: Object.keys(manifest.selectors || {}).length
     }
   }
 }
@@ -39,13 +34,4 @@ export function compactVariable(variable: MasterCSSManifestVariableEntry) {
 
 export function compactMixin(mixin: MasterCSSMixinDefinition) {
   return { ...mixin, parameters: mixin.parameters ?? [] }
-}
-
-export function compactConditions(conditions: MasterCSSManifestConditions | undefined) {
-  return Object.entries(conditions || {}).map(([name, rule]) => ({
-    name,
-    id: rule.id,
-    nodes: rule.nodes,
-    nodeCount: rule.nodes.length
-  }))
 }

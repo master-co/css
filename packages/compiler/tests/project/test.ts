@@ -230,7 +230,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
 
 
         @mixin --card {
-          @variant sm {
+          @media (--sm) {
             color: red;
           }
         }

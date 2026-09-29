@@ -1,7 +1,4 @@
-use super::utilities::compile_variants;
-use super::variables::{
-    compile_container_conditions, compile_variables, group_variables, manifest_error, object,
-};
+use super::variables::{compile_variables, group_variables, manifest_error, object};
 use super::{
     CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
     MANIFEST_VERSION, Map, MasterCssManifest, Value,
@@ -153,35 +150,6 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     let fragment = fragment
         .as_object()
         .expect("manifest fragment is an object");
-    let mut base = base.clone();
-    for variant in fragment
-        .get("variants")
-        .and_then(Value::as_array)
-        .into_iter()
-        .flatten()
-    {
-        let Some(token) = variant.get("token").and_then(Value::as_str) else {
-            continue;
-        };
-        if base
-            .get("variants")
-            .and_then(Value::as_array)
-            .is_some_and(|variants| {
-                variants
-                    .iter()
-                    .any(|previous| previous.get("token").and_then(Value::as_str) == Some(token))
-            })
-        {
-            let (field, key) = if let Some(name) = token.strip_prefix('@') {
-                ("conditions", name)
-            } else {
-                ("selectors", token)
-            };
-            if let Some(index) = base.get_mut(field).and_then(Value::as_object_mut) {
-                index.shift_remove(key);
-            }
-        }
-    }
     let mut manifest = Map::new();
     manifest.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
     manifest.insert(
@@ -253,12 +221,6 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     if !keyframes.is_empty() {
         manifest.insert("keyframes".into(), Value::Array(keyframes));
     }
-    let variants = merge_array_by(base.get("variants"), fragment.get("variants"), |variant| {
-        variant
-            .get("token")
-            .and_then(Value::as_str)
-            .map(str::to_owned)
-    });
     let mixins = merge_array_by(base.get("mixins"), fragment.get("mixins"), |definition| {
         definition
             .get("name")
@@ -270,22 +232,6 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
         (
             "customMedia",
             merge_records(base.get("customMedia"), fragment.get("customMedia")),
-        ),
-        ("variants", variants),
-        (
-            "conditions",
-            merge_records(base.get("conditions"), fragment.get("conditions")),
-        ),
-        (
-            "containerConditions",
-            merge_records(
-                base.get("containerConditions"),
-                fragment.get("containerConditions"),
-            ),
-        ),
-        (
-            "selectors",
-            merge_records(base.get("selectors"), fragment.get("selectors")),
         ),
         ("mixins", mixins),
         (
@@ -317,14 +263,7 @@ pub(crate) fn compile_manifest_fragment(
     }
     let registry = crate::custom_media::resolve(input, options.base_manifest.as_ref())?;
     let variables = compile_variables(input, options.base_manifest.as_ref())?;
-    let container_conditions = compile_container_conditions(&variables);
     let grouped_variables = group_variables(variables);
-    let mut variant_definitions = input.variants.clone().map(Value::Array);
-    crate::custom_media::lower_records(&mut variant_definitions, "branches", &registry)?;
-    let (variants, selectors, variant_conditions) =
-        compile_variants(variant_definitions.as_ref().and_then(Value::as_array))?;
-    let conditions = variant_conditions;
-
     let mut fragment = Map::new();
     fragment.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
     fragment.insert(
@@ -358,21 +297,6 @@ pub(crate) fn compile_manifest_fragment(
     }
     if let Some(variables) = grouped_variables {
         fragment.insert("variables".into(), variables);
-    }
-    if let Some(variants) = variants {
-        fragment.insert("variants".into(), variants);
-    }
-    if !conditions.is_empty() {
-        fragment.insert("conditions".into(), Value::Object(conditions));
-    }
-    if !container_conditions.is_empty() {
-        fragment.insert(
-            "containerConditions".into(),
-            Value::Object(container_conditions),
-        );
-    }
-    if !selectors.is_empty() {
-        fragment.insert("selectors".into(), Value::Object(selectors));
     }
     if let Some(mixins) = &input.mixins {
         fragment.insert(
@@ -425,6 +349,7 @@ pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerEr
 
 /// Produces the public default-preset artifact shape.
 pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, CompilerError> {
+    MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))?;
     let manifest = object(manifest)?;
     let mut preset = Map::new();
     preset.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
@@ -438,11 +363,6 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         "animationVariables",
         "customMedia",
         "variables",
-        "variants",
-        "conditions",
-        "breakpointConditions",
-        "containerConditions",
-        "selectors",
         "mixins",
     ] {
         if let Some(value) = manifest.get(key) {

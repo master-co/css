@@ -14,20 +14,20 @@ fn renders_selector_condition_layer_and_important_state() {
             "@layer utilities{.block_button button{display:block}}",
         ),
         (
-            "block_button@base",
-            "@layer base{.block_button\\@base button{display:block}}",
+            "block_button@layer(base)",
+            "@layer base{.block_button\\@layer\\(base\\) button{display:block}}",
         ),
         (
-            "block_button@screen",
-            "@layer utilities{@media screen{.block_button\\@screen button{display:block}}}",
+            "block_button@media(screen)",
+            "@layer utilities{@media screen{.block_button\\@media\\(screen\\) button{display:block}}}",
         ),
         (
-            "block_button@scope",
-            "@layer utilities{.scope .block_button\\@scope button{display:block}}",
+            "block_button@apply(--scope)",
+            "@layer utilities{.scope .block_button\\@apply\\(--scope\\) button{display:block}}",
         ),
         (
-            "{block}_:is(h4,.app-nav)@default",
-            "@layer defaults{.\\{block\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:block}}",
+            "{block}_:is(h4,.app-nav)@layer(defaults)",
+            "@layer defaults{.\\{block\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:block}}",
         ),
         (
             "block@sm",
@@ -69,7 +69,7 @@ fn renders_selector_condition_layer_and_important_state() {
             "block:of(.active~)",
             "@layer utilities{.active~.block\\:of\\(\\.active\\~\\){display:block}}",
         ),
-        ("block@base", "@layer base{.block\\@base{display:block}}"),
+        ("block@layer(base)", "@layer base{.block\\@layer\\(base\\){display:block}}"),
         (
             "block!",
             "@layer utilities{.block\\!{display:block!important}}",
@@ -145,7 +145,7 @@ fn animation_declarations_do_not_register_native_keyframes() {
 
 #[test]
 fn native_keyframe_values_retain_theme_dependencies_as_stylesheet_usage() {
-    let manifest = r##"{"version":4,"languageVersion":6,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"#ff0"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"#ff0"}]}]}"##;
+    let manifest = r##"{"version":4,"languageVersion":7,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"#ff0"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"#ff0"}]}]}"##;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine.ensure_stylesheet_resources("@keyframes fade{to{background:var(--color-primary)}}").unwrap();
     assert!(engine.css_text().contains("--color-primary:#ff0"));
@@ -157,12 +157,12 @@ fn native_keyframe_values_retain_theme_dependencies_as_stylesheet_usage() {
 fn parses_each_compound_condition_as_a_condition() {
     for (class_name, expected) in [
         (
-            "block@dark@sm",
-            "@layer utilities{@media (prefers-color-scheme:dark){@media (width>=52.125rem){.block\\@dark\\@sm:where(:root,:root *){display:block}}}}",
+            "block@apply(--dark)@sm",
+            "@layer utilities{@media (prefers-color-scheme:dark){@media (width>=52.125rem){.block\\@apply\\(--dark\\)\\@sm:where(:root,:root *){display:block}}}}",
         ),
         (
-            "block@sm@dark",
-            "@layer utilities{@media (width>=52.125rem){@media (prefers-color-scheme:dark){.block\\@sm\\@dark:where(:root,:root *){display:block}}}}",
+            "block@sm@apply(--dark)",
+            "@layer utilities{@media (width>=52.125rem){@media (prefers-color-scheme:dark){.block\\@sm\\@apply\\(--dark\\):where(:root,:root *){display:block}}}}",
         ),
     ] {
         let mut engine = EngineSession::create(MANIFEST).unwrap();
@@ -171,8 +171,8 @@ fn parses_each_compound_condition_as_a_condition() {
     }
 
     let engine = EngineSession::create(MANIFEST).unwrap();
-    let original = engine.inspect("block@dark@sm").unwrap();
-    let canonical = engine.inspect("block@sm@dark").unwrap();
+    let original = engine.inspect("block@apply(--dark)@sm").unwrap();
+    let canonical = engine.inspect("block@sm@apply(--dark)").unwrap();
     assert_ne!(original.rules[0].priority.features, canonical.rules[0].priority.features);
     assert_ne!(original.rules[0].priority.conditions, canonical.rules[0].priority.conditions);
 }
@@ -203,7 +203,7 @@ fn renders_the_compiled_condition_grammar() {
 
 #[test]
 fn separates_child_selectors_from_dynamic_values() {
-    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":6}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
     engine.ensure_class_rules(["margin-top:0>div"]).unwrap();
     assert_eq!(
         engine.css_text(),
@@ -222,7 +222,7 @@ fn separates_child_selectors_from_dynamic_values() {
 
 #[test]
 fn native_property_precedes_overlapping_enum_name_inside_groups() {
-    let manifest = r#"{"version":4,"languageVersion":6,"mixins":[{"name":"--text-wrap","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"wrap"}]}]},{"name":"--text-pretty","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"pretty"}]}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":7,"mixins":[{"name":"--text-wrap","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"wrap"}]}]},{"name":"--text-pretty","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"pretty"}]}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["{text-wrap:pretty}"])
@@ -247,14 +247,14 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 
 #[test]
 fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
-    let manifest = r#"{"version":4,"languageVersion":6,"mixins":[{"name":"--text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":7,"mixins":[{"name":"--text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.inspect("text-center").unwrap().rules[0].text,
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":4,"languageVersion":6}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
     assert!(engine.inspect("margin:$(spacing-x1)").unwrap().match_status != mastercss_schema::MatchStatus::Matched);
     assert!(
         engine
@@ -266,19 +266,15 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
 
 #[test]
 fn mixin_variants_keep_the_requested_layer() {
-    let manifest = r#"{
-      "version":4,"languageVersion":6,
-      "mixins":[{"name":"--demo","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"flex"}]}]}],
-      "variants":[{"token":"@defaults","branches":[{"layer":"defaults"}]},{"token":"@components","branches":[{"layer":"components"}]}]
-    }"#;
+    let manifest = r#"{"version":4,"languageVersion":7,"mixins":[{"name":"--demo","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"flex"}]}]}],"customMedia":{}}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
-    engine.ensure_class_rules(["demo@defaults", "demo@components"]).unwrap();
-    assert_eq!(engine.css_text(), "@layer defaults{.demo\\@defaults{display:flex}}@layer components{.demo\\@components{display:flex}}");
+    engine.ensure_class_rules(["demo@layer(defaults)", "demo@layer(components)"]).unwrap();
+    assert_eq!(engine.css_text(), "@layer defaults{.demo\\@layer\\(defaults\\){display:flex}}@layer components{.demo\\@layer\\(components\\){display:flex}}");
 }
 
 #[test]
 fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
-    let manifest = r#"{"version":4,"languageVersion":6,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":7,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.native_declaration_candidates(["background:var(--stripe)"]).unwrap(),
@@ -299,7 +295,7 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
 
 #[test]
 fn repeated_native_declarations_share_one_rule() {
-    let manifest = r#"{"version":4,"languageVersion":6,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":7,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["background:var(--stripe)"])

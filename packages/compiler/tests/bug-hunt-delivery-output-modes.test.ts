@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from './helpers/contents-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
@@ -18,7 +18,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
     writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ name: '@master/css', style: './index.css' }))
     writeFileSync(join(packageRoot, 'index.css'), "@import './base.css' layer(master);.from-master{border-top-width:7px}@mixin --package-custom {color:orange}")
     writeFileSync(join(packageRoot, 'base.css'), '.from-master-child{border-bottom-width:8px}')
-    writeFileSync(join(cwd, 'entry.css'), "@import '@master/css';@import './child.css' supports(display:grid) screen;@import 'https://remote.test/a.css';@import \"@master/css\";@mixin --custom {color:purple}.project{color:red}.composed{@variant all {display:block;}}")
+    writeFileSync(join(cwd, 'entry.css'), "@import '@master/css';@import './child.css' supports(display:grid) screen;@import 'https://remote.test/a.css';@import \"@master/css\";@mixin --custom {color:purple}.project{color:red}.composed{@apply --all {display:block;}}")
     writeFileSync(join(cwd, 'child.css'), '.nested{background-color:green}')
     const scanner = new MasterCSSScanner({ manifest: baseManifest }, cwd)
     const collection = createStylesheetCollection()
@@ -55,7 +55,7 @@ test('BH-0004 native/Wasm select native output without losing manifest definitio
   const { createCompiler } = await import('../src/index')
   const request = {
     graph: { entry: 'entry', files: {
-      entry: "@import './child.css' layer(base);@import 'https://remote.test/entry.css';@mixin --paint {color:red}.entry{@variant all {color:red;}}",
+      entry: "@import './child.css' layer(base);@import 'https://remote.test/entry.css';@mixin --paint {color:red}.entry{@apply --all {color:red;}}",
       child: "@import 'https://remote.test/child.css';.child{color:blue}"
     }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
     urls: { entry: '/output.css', child: '/child.css' },

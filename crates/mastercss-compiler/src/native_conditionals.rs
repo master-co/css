@@ -1,7 +1,7 @@
 use super::{
-    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashMap,
-    HashSet, NativeStyleContext, ThemeAtRule, condition_properties, lower_native_rule_list,
-    lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
+    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashSet,
+    NativeStyleContext, ThemeAtRule, condition_properties, lower_native_style_rule, minified_css,
+    native_rule_list_has_directives, printed_selectors,
 };
 use crate::directives::{NativeStyleSlot, native_style_slot};
 use crate::source_index::SourceIndex;
@@ -14,7 +14,6 @@ pub(crate) struct NativeConditionalLowerer<'a> {
     pub source: &'a SourceIndex<'a>,
     pub filename: &'a str,
     pub rewritten: &'a SourceIndex<'a>,
-    pub variants: &'a HashMap<usize, String>,
     pub definitions: &'a mut Vec<CssDirectiveStyleDefinition>,
     pub order: &'a mut u32,
     pub slots: Option<&'a mut Vec<NativeStyleSlot>>,
@@ -36,11 +35,7 @@ impl NativeConditionalLowerer<'_> {
                 range: None,
             });
         }
-        if !native_rule_list_has_directives(
-            self.rewritten,
-            std::slice::from_ref(&rule),
-            self.variants,
-        ) {
+        if !native_rule_list_has_directives(std::slice::from_ref(&rule)) {
             return Ok(Some(rule));
         }
         if let CssRule::Style(style) = &rule {
@@ -66,35 +61,6 @@ impl NativeConditionalLowerer<'_> {
                 style,
                 context,
                 path,
-                self.variants,
-                self.definitions,
-                self.order,
-            )?;
-            return Ok(self.slot(start, loc, path.len()));
-        }
-        if let CssRule::Media(media) = &rule
-            && let Some(token) = self
-                .rewritten
-                .byte_offset_for_location(media.loc.line, media.loc.column)
-                .and_then(|offset| self.variants.get(&offset))
-        {
-            let start = self.definitions.len();
-            let loc = media.loc;
-            let mut variant_path = path.to_vec();
-            variant_path.push(CssDirectiveConditionPathEntry::Variant {
-                token: token.clone(),
-            });
-            let CssRule::Media(media) = rule else {
-                unreachable!()
-            };
-            lower_native_rule_list(
-                self.source,
-                self.filename,
-                self.rewritten,
-                media.rules.0,
-                None,
-                &variant_path,
-                self.variants,
                 self.definitions,
                 self.order,
             )?;
@@ -156,7 +122,7 @@ impl NativeConditionalLowerer<'_> {
         let slots = self.slots.as_deref_mut()?;
         let mut definitions = self.definitions[start..].to_vec();
         // The graph slot remains inside its authored container. Only conditions
-        // introduced within the replaced style/variant belong in its replacement.
+        // introduced within the replaced style/application belong in its replacement.
         for definition in &mut definitions {
             if let CssDirectiveStyleDefinition::Apply { condition_path, .. } = definition {
                 let suffix =

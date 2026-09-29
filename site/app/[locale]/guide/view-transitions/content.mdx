@@ -230,10 +230,10 @@ if (!document.startViewTransition) {
 ---
 
 ## Reduced motion
-After the core transition works, add a motion preference layer. You can scope animation classes with `@motion`, which maps to `@media (prefers-reduced-motion: no-preference)`.
+After the core transition works, add a motion preference layer. You can scope animation classes with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`.
 
 ```html
-<html class="animation-duration:.42s::view-transition-group(root)@motion">
+<html class="animation-duration:.42s::view-transition-group(root)@motion-safe">
 ```
 
 Or skip the transition in JavaScript for motion-sensitive users:

@@ -38,7 +38,7 @@ pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
 
 pub(super) fn current_helper(manifest: &mut Value) {
     if manifest["version"] == 4
-        && manifest["languageVersion"] == 6
+        && manifest["languageVersion"] == mastercss_schema::LANGUAGE_VERSION
         && manifest.get("utilities").is_none()
     {
         return;
@@ -123,7 +123,7 @@ impl Migration {
             if translated {
                 // The preceding profile stage proved these query translations.
                 // Apply them around the saved utility body for comparison.
-                for field in ["variants", "conditions", "customMedia"] {
+                for field in ["mixins", "customMedia", "debug"] {
                     if let Some(value) = self.target_manifest.borrow().get(field) {
                         manifest[field] = value.clone();
                     }

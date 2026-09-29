@@ -68,8 +68,8 @@ Resize past `sm` to initialize this chapter counter at 4 on screen. The headings
 
 ```html
 <!-- Real viewport · initial 0 or 4 -->
-<article id="target" class="counter-reset:chapter counter-reset:chapter@print
-    counter-reset:chapter|4@screen@sm">
+<article id="target" class="counter-reset:chapter counter-reset:chapter@media(print)
+    counter-reset:chapter|4@media(screen)@sm">
   <h2 class="margin-inline:0 mb-2xs margin-top:0 font-md font-medium leading-lg
     counter-increment:chapter fg-text-blue::before
     content:counter(chapter)'.\00a0'::before">Setup</h2>

@@ -24,12 +24,12 @@ fn request(source: &str, preserve: bool) -> LowerCssDirectivesRequest {
     }
 }
 fn render(source: &str, preserve: bool) -> LowerCssDirectivesResult {
-    lower_css_directives_request(&request(source, preserve), &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None }).unwrap()
+    lower_css_directives_request(&request(source, preserve), &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).unwrap()
 }
 
 #[test]
 fn direct_slots_keep_repeated_selectors_separate_and_retain_important_order() {
-    let source = r###"@mixin --paint {padding:2rem}@mixin --low {padding:1rem}@layer{.a{@variant always{padding:2rem;}}.b{@variant always{padding:1rem;}}.a{padding:3rem!important}}"###;
+    let source = r###"@mixin --paint {padding:2rem}@mixin --low {padding:1rem}@layer{.a{@apply --always{padding:2rem;}}.b{@apply --always{padding:1rem;}}.a{padding:3rem!important}}"###;
     let result = render(source, true);
     let css = result.css.unwrap().replace([' ', '\n'], "");
     assert_eq!(css.matches("@layer").count(), 1);
@@ -45,7 +45,7 @@ fn ordered_maps_anchor_each_retained_and_composed_rule_after_replacement() {
 @mixin --paint {padding:2rem}
 @layer{
 .before{margin:1px}
-.card{@variant always{padding:2rem;}color:red}
+.card{@apply --always{padding:2rem;}color:red}
 .after{padding:3rem}
 }"###;
     let result = render(source, true);
@@ -75,7 +75,7 @@ fn ordered_maps_anchor_each_retained_and_composed_rule_after_replacement() {
 
 #[test]
 fn disabling_native_output_preserves_only_composed_rules_and_their_containers() {
-    let source = r###"@mixin --paint {padding:2rem}.plain{color:red}@media screen{@font-face{font-family:p;src:url(p.woff2)}.card{@variant always{padding:2rem;}}}"###;
+    let source = r###"@mixin --paint {padding:2rem}.plain{color:red}@media screen{@font-face{font-family:p;src:url(p.woff2)}.card{@apply --always{padding:2rem;}}}"###;
     let css = render(source, false).css.unwrap();
     assert!(
         !css.contains(".plain") && !css.contains("@font-face"),
@@ -89,7 +89,7 @@ fn disabling_native_output_preserves_only_composed_rules_and_their_containers() 
 
 #[test]
 fn slot_markers_cannot_collide_with_authored_rules_or_strings() {
-    let source = r###"@mixin --paint {padding:2rem}@--master-css-style-slot-0;.plain{content:'@--master-css-style-slot-1;'}.card{@variant always{padding:2rem;}}"###;
+    let source = r###"@mixin --paint {padding:2rem}@--master-css-style-slot-0;.plain{content:'@--master-css-style-slot-1;'}.card{@apply --always{padding:2rem;}}"###;
     let css = render(source, true).css.unwrap();
     assert!(css.contains("@--master-css-style-slot-0;"), "{css}");
     assert!(css.contains("@--master-css-style-slot-1;"), "{css}");
@@ -99,10 +99,10 @@ fn slot_markers_cannot_collide_with_authored_rules_or_strings() {
 #[test]
 fn stale_or_overlapping_serialized_slots_report_errors() {
     let mut request = request(
-        r###"@mixin --paint {padding:2rem}.card{@variant always{padding:2rem;}}"###,
+        r###"@mixin --paint {padding:2rem}.card{@apply --always{padding:2rem;}}"###,
         true,
     );
     let output = request.native_output.as_mut().unwrap();
     output.slots[0].end = u32::MAX;
-    assert!(lower_css_directives_request(&request, &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None }).is_err());
+    assert!(lower_css_directives_request(&request, &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).is_err());
 }

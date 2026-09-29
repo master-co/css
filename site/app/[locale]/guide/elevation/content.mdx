@@ -75,8 +75,8 @@ This lets elevation utilities use `sm`, `lg`, or project token names without rep
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
-<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK box-shadow:none@print -->
-<article class="shadow-sm shadow-md:hover box-shadow:none@print">
+<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK box-shadow:none@media(print) -->
+<article class="shadow-sm shadow-md:hover box-shadow:none@media(print)">
   ...
 </article>
 ```
@@ -84,7 +84,7 @@ State elevation should communicate interaction, not decoration. A hover shadow c
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@print']}
+    {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@media(print)']}
   </Class2CSS>
 </details>
 

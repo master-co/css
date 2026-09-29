@@ -11,7 +11,7 @@ export default function PageContentBlockMap() {
   const $ = useTranslation()
 
   return (
-    <nav aria-label={$('Page block map')} className="position:sticky top:0 overflow-y:auto flex:0|0|2rem order:-1 height:100dvh padding-block:8.75rem display:none@print display:none@media((width<80rem)) scrollbar scrollbar-concealed">
+    <nav aria-label={$('Page block map')} className="position:sticky top:0 overflow-y:auto flex:0|0|2rem order:-1 height:100dvh padding-block:8.75rem display:none@media(print) display:none@media((width<80rem)) scrollbar scrollbar-concealed">
       <div className="display:flex flex-direction:column align-items:center justify-content:center gap:1px width:100% min-height:100%">
         {items.map((item) => {
           const active = currentId === item.id

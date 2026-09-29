@@ -113,7 +113,7 @@ Use `backdrop-filter:none` to restore the unfiltered backdrop. Open print previe
            justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
            font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:blur(8px)
-           backdrop-filter:none@print">
+           backdrop-filter:none@media(print)">
     Preview layer
   </div>
 </div>
@@ -139,8 +139,8 @@ Widen the preview to `sm` to blur the backdrop. Print keeps the original sharp i
            justify-content:center p-sm border:1px|solid|var(--color-line-divider) r-sm
            font-md bg-surface-base/.64 fg-text-strong
            backdrop-filter:none
-           backdrop-filter:none@print
-           backdrop-filter:blur(8px)@screen@sm">
+           backdrop-filter:none@media(print)
+           backdrop-filter:blur(8px)@media(screen)@sm">
     Preview layer
   </div>
 </div>

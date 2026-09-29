@@ -297,12 +297,9 @@ describe.concurrent('@master/css-preset design token parity', () => {
     }
   })
 
-  test('precomputes default breakpoint and container at-rule aliases', () => {
+  test('publishes explicit custom media without container aliases', () => {
     expect(defaultManifest.customMedia?.['--sm']).toEqual({ type: 'feature', value: '(width >= 52.125rem)' })
-    expect(defaultManifest.containerConditions?.sm).toMatchObject({
-      id: 'container',
-      nodes: [expect.objectContaining({ type: 'number', value: 24, unit: 'rem' })]
-    })
+    expect(defaultManifest).not.toHaveProperty('containerConditions')
   })
 
   test('does not publish synthetic negative number tokens', () => {

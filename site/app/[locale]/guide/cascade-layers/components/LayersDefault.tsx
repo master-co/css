@@ -14,7 +14,7 @@ export default () => {
         <tbody>
           <tr>
             <th>Base</th>
-            <td>Where the styles with <code>@base</code> are generated.</td>
+            <td>Where the styles with <code>@layer(base)</code> are generated.</td>
             <td className="white-space:nowrap"><code>{'@layer base { … }'}</code></td>
           </tr>
           <tr>
@@ -24,7 +24,7 @@ export default () => {
           </tr>
           <tr>
             <th>Defaults</th>
-            <td>Where the styles with <code>@default</code> are generated.</td>
+            <td>Where the styles with <code>@layer(defaults)</code> are generated.</td>
             <td className="white-space:nowrap"><code>{'@layer defaults { … }'}</code></td>
           </tr>
           <tr>

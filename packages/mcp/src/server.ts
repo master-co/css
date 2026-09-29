@@ -423,11 +423,11 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_manifest_query',
     {
       title: 'Query Master CSS Manifest',
-      description: 'Query active manifest tokens, mixins, variants, custom media, conditions, and aliases.',
+      description: 'Query active manifest tokens, mixins, custom media, and aliases.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         query: z.string().optional(),
-        kind: z.enum(['all', 'token', 'mixin', 'variant', 'custom-media', 'condition', 'alias']).optional(),
+        kind: z.enum(['all', 'token', 'mixin', 'custom-media', 'alias']).optional(),
         namespace: z.string().optional(),
         limit: z.number().int().min(1).max(500).optional()
       },

@@ -8,20 +8,25 @@ import { prepareStylesheet, transformStylesheet } from '../src/stylesheet/index-
 const require = createRequire(new URL('../../vite/package.json', import.meta.url))
 const sass = createRequire(require.resolve('vite'))('sass')
 const baseManifest = {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 
 async function fixture(run: (root: string) => Promise<void>) {

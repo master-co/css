@@ -126,6 +126,7 @@ pub fn validate_mixins(definitions: &[MixinDefinition]) -> Result<(), String> {
                     MixinNode::Apply {
                         name: target,
                         arguments,
+                        contents,
                         ..
                     } => {
                         let target_definition = registry
@@ -150,11 +151,16 @@ pub fn validate_mixins(definitions: &[MixinDefinition]) -> Result<(), String> {
                             ));
                         }
                         visit(target, registry, visiting, done)?;
+                        if let Some(contents) = contents {
+                            pending.push((contents, same_element));
+                        }
                     }
                     MixinNode::Rule { selector, body } => {
                         pending.push((body, same_element && same_subject(selector)))
                     }
-                    MixinNode::Condition { body, .. } => pending.push((body, same_element)),
+                    MixinNode::Condition { body, .. } | MixinNode::Contents { fallback: body } => {
+                        pending.push((body, same_element))
+                    }
                     MixinNode::Declaration { property, .. } if names.contains(property) => {
                         return Err(format!("Mixin parameter {property} cannot be reassigned"));
                     }
@@ -312,11 +318,28 @@ fn validate_declaration(property: &str, value: &str) -> Result<(), String> {
     Ok(())
 }
 
+#[derive(Clone)]
+struct ContentsContext {
+    nodes: Vec<MixinNode>,
+    environment: HashMap<String, String>,
+    outer: Option<Box<ContentsContext>>,
+    stack: Vec<String>,
+    safe_subject: bool,
+    forbidden: HashSet<String>,
+}
+
+#[derive(Clone, Copy)]
+struct Placement<'a> {
+    selector: &'a str,
+    conditions: &'a [String],
+}
+
 struct Expansion<'a> {
     registry: HashMap<&'a str, &'a MixinDefinition>,
     stack: Vec<String>,
     output: Vec<ExpandedMixinRule>,
     steps: usize,
+    depth: usize,
 }
 
 impl Expansion<'_> {
@@ -325,11 +348,11 @@ impl Expansion<'_> {
         name: &str,
         arguments: &[String],
         outer: &HashMap<String, String>,
-        selector: &str,
-        conditions: &[String],
+        placement: Placement<'_>,
         forbidden: &HashSet<String>,
+        contents: Option<&ContentsContext>,
     ) -> Result<(), String> {
-        if self.stack.len() >= 64 {
+        if self.depth >= 64 {
             return Err("Mixin call depth exceeds 64".into());
         }
         if self.stack.iter().any(|value| value == name) {
@@ -340,6 +363,7 @@ impl Expansion<'_> {
             .get(name)
             .ok_or_else(|| format!("Unknown mixin {name}"))?;
         self.stack.push(name.into());
+        self.depth += 1;
         if arguments.len() > definition.parameters.len() {
             return Err(format!("Too many arguments for {name}"));
         }
@@ -359,12 +383,13 @@ impl Expansion<'_> {
         self.nodes(
             &definition.body,
             &environment,
-            selector,
-            conditions,
+            placement,
             true,
             &forbidden,
+            contents,
         )?;
         self.stack.pop();
+        self.depth -= 1;
         Ok(())
     }
 
@@ -372,11 +397,15 @@ impl Expansion<'_> {
         &mut self,
         nodes: &[MixinNode],
         environment: &HashMap<String, String>,
-        selector: &str,
-        conditions: &[String],
+        placement: Placement<'_>,
         safe_subject: bool,
         forbidden: &HashSet<String>,
+        contents: Option<&ContentsContext>,
     ) -> Result<(), String> {
+        let Placement {
+            selector,
+            conditions,
+        } = placement;
         for node in nodes {
             self.steps += 1;
             if self.steps > 100000 {
@@ -406,8 +435,11 @@ impl Expansion<'_> {
                                 .into(),
                         );
                     }
+                    let substituted = references_parameters(value, environment);
                     let value = evaluate_mixin_value(value, environment)?;
-                    validate_declaration(property, &value)?;
+                    if substituted {
+                        validate_declaration(property, &value)?;
+                    }
                     // One declaration per fragment preserves duplicates and all
                     // interleaving with nested rules. Adjacent runs are joined below.
                     if let Some(previous) = self
@@ -419,9 +451,10 @@ impl Expansion<'_> {
                             property: property.clone(),
                             value,
                             source: source.clone().or_else(|| {
-                                self.registry[self.stack.last().expect("active call").as_str()]
-                                    .source
-                                    .clone()
+                                self.stack
+                                    .last()
+                                    .and_then(|name| self.registry.get(name.as_str()))
+                                    .and_then(|definition| definition.source.clone())
                             }),
                         });
                     } else {
@@ -432,9 +465,10 @@ impl Expansion<'_> {
                                 property: property.clone(),
                                 value,
                                 source: source.clone().or_else(|| {
-                                    self.registry[self.stack.last().expect("active call").as_str()]
-                                        .source
-                                        .clone()
+                                    self.stack
+                                        .last()
+                                        .and_then(|name| self.registry.get(name.as_str()))
+                                        .and_then(|definition| definition.source.clone())
                                 }),
                             }],
                         });
@@ -449,19 +483,59 @@ impl Expansion<'_> {
                     self.nodes(
                         body,
                         environment,
-                        &next,
-                        conditions,
+                        Placement {
+                            selector: &next,
+                            conditions,
+                        },
                         safe_subject && same_subject(child),
                         forbidden,
+                        contents,
                     )?;
                 }
                 MixinNode::Condition { condition, body } => {
                     let mut next = conditions.to_vec();
                     next.push(condition.clone());
-                    self.nodes(body, environment, selector, &next, safe_subject, forbidden)?;
+                    self.nodes(
+                        body,
+                        environment,
+                        Placement {
+                            selector,
+                            conditions: &next,
+                        },
+                        safe_subject,
+                        forbidden,
+                        contents,
+                    )?;
+                }
+                MixinNode::Contents { fallback } => {
+                    if let Some(context) = contents {
+                        let stack = std::mem::replace(&mut self.stack, context.stack.clone());
+                        let result = self.nodes(
+                            &context.nodes,
+                            &context.environment,
+                            placement,
+                            safe_subject && context.safe_subject,
+                            &context.forbidden,
+                            context.outer.as_deref(),
+                        );
+                        self.stack = stack;
+                        result?;
+                    } else {
+                        self.nodes(
+                            fallback,
+                            environment,
+                            placement,
+                            safe_subject,
+                            forbidden,
+                            None,
+                        )?;
+                    }
                 }
                 MixinNode::Apply {
-                    name, arguments, ..
+                    name,
+                    arguments,
+                    contents: body,
+                    ..
                 } => {
                     if arguments.iter().any(|argument| {
                         (!safe_subject && references_parameters(argument, environment))
@@ -486,13 +560,21 @@ impl Expansion<'_> {
                     if !safe_subject {
                         forbidden.extend(environment.keys().cloned());
                     }
+                    let passed = body.as_ref().map(|nodes| ContentsContext {
+                        nodes: nodes.clone(),
+                        environment: environment.clone(),
+                        outer: contents.cloned().map(Box::new),
+                        stack: self.stack.clone(),
+                        safe_subject,
+                        forbidden: forbidden.clone(),
+                    });
                     self.call(
                         name,
                         &arguments,
                         environment,
-                        selector,
-                        conditions,
+                        placement,
                         &forbidden,
+                        passed.as_ref(),
                     )?;
                 }
             }
@@ -506,6 +588,15 @@ pub fn expand_mixin(
     name: &str,
     arguments: &[String],
 ) -> Result<Vec<ExpandedMixinRule>, String> {
+    expand_mixin_with_contents(definitions, name, arguments, None)
+}
+
+pub fn expand_mixin_with_contents(
+    definitions: &[MixinDefinition],
+    name: &str,
+    arguments: &[String],
+    contents: Option<&[MixinNode]>,
+) -> Result<Vec<ExpandedMixinRule>, String> {
     let mut expansion = Expansion {
         registry: definitions
             .iter()
@@ -514,10 +605,27 @@ pub fn expand_mixin(
         stack: Vec::new(),
         output: Vec::new(),
         steps: 0,
+        depth: 0,
     };
-    if let Err(message) =
-        expansion.call(name, arguments, &HashMap::new(), "&", &[], &HashSet::new())
-    {
+    let contents = contents.map(|nodes| ContentsContext {
+        nodes: nodes.to_vec(),
+        environment: HashMap::new(),
+        outer: None,
+        stack: Vec::new(),
+        safe_subject: true,
+        forbidden: HashSet::new(),
+    });
+    if let Err(message) = expansion.call(
+        name,
+        arguments,
+        &HashMap::new(),
+        Placement {
+            selector: "&",
+            conditions: &[],
+        },
+        &HashSet::new(),
+        contents.as_ref(),
+    ) {
         let definition = expansion.stack.last().map(String::as_str).unwrap_or(name);
         let location = expansion
             .registry
@@ -532,5 +640,34 @@ pub fn expand_mixin(
             None => message,
         });
     }
+    Ok(expansion.output)
+}
+
+/// Execute an already compiled caller body without inventing a named definition.
+pub(crate) fn expand_body(
+    definitions: &[MixinDefinition],
+    body: &[MixinNode],
+) -> Result<Vec<ExpandedMixinRule>, String> {
+    let mut expansion = Expansion {
+        registry: definitions
+            .iter()
+            .map(|definition| (definition.name.as_str(), definition))
+            .collect(),
+        stack: Vec::new(),
+        output: Vec::new(),
+        steps: 0,
+        depth: 0,
+    };
+    expansion.nodes(
+        body,
+        &HashMap::new(),
+        Placement {
+            selector: "&",
+            conditions: &[],
+        },
+        true,
+        &HashSet::new(),
+        None,
+    )?;
     Ok(expansion.output)
 }

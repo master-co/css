@@ -38,7 +38,7 @@ Use `float:none` to return the object to normal flow. This example removes the f
 
 ```html
 <!-- @MARK float:none -->
-<img class="float:left width:8rem mr-md float:none@print" src="/demo/landscape.svg" alt="Sun above layered mountains">
+<img class="float:left width:8rem mr-md float:none@media(print)" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -47,5 +47,5 @@ Keep the image in normal flow on narrow screens and float it to the right on scr
 <DemoExample page="float" section="apply-conditionally" />
 
 ```html
-<img class="float:none width:8rem ml-md float:none@print float:right@screen@sm" src="/demo/landscape.svg" alt="Sun above layered mountains">
+<img class="float:none width:8rem ml-md float:none@media(print) float:right@media(screen)@sm" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```

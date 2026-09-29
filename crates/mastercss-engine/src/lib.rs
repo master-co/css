@@ -71,12 +71,6 @@ struct ManifestProjection {
     #[serde(skip)]
     function_utilities: HashMap<String, usize>,
     #[serde(default)]
-    variants: Vec<ManifestVariant>,
-    #[serde(default)]
-    conditions: HashMap<String, ManifestCondition>,
-    #[serde(default)]
-    selectors: HashMap<String, Vec<ManifestSelectorNode>>,
-    #[serde(default)]
     variables: Map<String, Value>,
     #[serde(skip)]
     compiled_variables: HashMap<String, CompiledVariable>,
@@ -90,46 +84,6 @@ struct ManifestProjection {
     raw_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
     declaration_keys: HashSet<String>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-struct ManifestCondition {
-    id: String,
-    #[serde(default)]
-    nodes: Vec<Value>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ManifestSelectorNode {
-    #[serde(default, rename = "type")]
-    node_type: Option<String>,
-    #[serde(default)]
-    value: Option<String>,
-    #[serde(default)]
-    children: Vec<ManifestSelectorNode>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-struct ManifestVariant {
-    token: String,
-    #[serde(default)]
-    branches: Vec<ManifestVariantBranch>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ManifestVariantBranch {
-    #[serde(default)]
-    selector: Option<String>,
-    #[serde(default)]
-    selector_nodes: Vec<ManifestSelectorNode>,
-    #[serde(default)]
-    conditions: Vec<String>,
-    #[serde(default)]
-    condition_nodes: Vec<ManifestCondition>,
-    #[serde(default)]
-    layer: Option<UtilityLayerName>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -365,12 +319,14 @@ mod condition;
 mod custom_media;
 mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
+mod class_apply;
 mod execution_state;
 mod generation;
 mod manifest;
 mod mixin;
 pub use mixin::{
-    ExpandedMixinRule, evaluate_mixin_value, expand_mixin, validate_mixin_argument, validate_mixins,
+    ExpandedMixinRule, evaluate_mixin_value, expand_mixin, expand_mixin_with_contents,
+    validate_mixin_argument, validate_mixins,
 };
 mod mixin_matching;
 mod named;
@@ -387,8 +343,7 @@ mod value_syntax;
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
     add_condition_wrapper, format_standard_number, normalize_dynamic_value,
-    parse_raw_condition_wrapper, render_condition_token, render_manifest_condition,
-    resolve_layer_condition,
+    parse_raw_condition_wrapper, render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::{
     BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_ALIASES, BUILTIN_TOKEN_NAMESPACES,
@@ -399,8 +354,7 @@ pub(crate) use render::{
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
 };
 pub(crate) use state::{
-    find_group_close, resolve_state_branches, resolve_style_selector_aliases,
-    selector_token_to_template, split_top_level,
+    find_group_close, resolve_state_branches, resolve_style_selector_aliases, split_top_level,
 };
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
@@ -421,3 +375,6 @@ pub use utility::{compare_rule_priority, natural_compare};
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+use state::selector_token_to_template;

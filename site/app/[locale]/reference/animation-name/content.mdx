@@ -16,8 +16,8 @@ Select the preset fade or rotate keyframes while keeping the same duration and l
            animation-fill-mode:forwards
            animation-name:fade
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -34,8 +34,8 @@ Select the preset fade or rotate keyframes while keeping the same duration and l
            animation-fill-mode:forwards
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -64,8 +64,8 @@ Compare the same timing settings with rotate selected and with none. The second 
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -82,8 +82,8 @@ Compare the same timing settings with rotate selected and with none. The second 
            animation-iteration-count:infinite
            animation-name:none
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -124,8 +124,8 @@ Pair the name with an explicit one-second duration, 300ms delay, linear easing a
              animation-iteration-count:1
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -146,9 +146,9 @@ Resize to select no animation below `sm` or rotate at `sm`. Then press Play to i
            animation-iteration-count:infinite
            animation-name:none
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion
-           animation-name:rotate@screen@sm">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce
+           animation-name:rotate@media(screen)@sm">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>

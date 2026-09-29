@@ -55,7 +55,7 @@ This diagnostic comparison switches the same mixed-direction line from LTR to RT
 
 ```html
 <!-- Mixed scripts · actual base direction -->
-<p id="target" class="width:240px max-width:100% margin:0 font-md line-height:24px text-align:start direction:ltr direction:ltr@print direction:rtl@screen@sm">Design · <span lang="ar">مرحبًا</span> · 2026</p>
+<p id="target" class="width:240px max-width:100% margin:0 font-md line-height:24px text-align:start direction:ltr direction:ltr@media(print) direction:rtl@media(screen)@sm">Design · <span lang="ar">مرحبًا</span> · 2026</p>
 ```
 
 Print restores LTR for this comparison. Use semantic `dir` for language-dependent content in production.

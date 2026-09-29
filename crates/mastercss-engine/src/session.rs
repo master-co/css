@@ -19,6 +19,15 @@ impl EngineSession {
         crate::expand_mixin(&self.compiled.mixins, name, arguments)
     }
 
+    pub fn expand_mixin_with_contents(
+        &self,
+        name: &str,
+        arguments: &[String],
+        contents: Option<&[mastercss_schema::MixinNode]>,
+    ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
+        crate::expand_mixin_with_contents(&self.compiled.mixins, name, arguments, contents)
+    }
+
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
         Self::create_with_emitted_globals(manifest_json, None)
     }
@@ -463,13 +472,7 @@ impl EngineSession {
         Ok(self
             .compiled
             .custom_media
-            .contains_key(&format!("--{name}"))
-            || self.compiled.conditions.contains_key(name)
-            || self
-                .compiled
-                .variants
-                .iter()
-                .any(|variant| variant.token == format!("@{name}")))
+            .contains_key(&format!("--{name}")))
     }
 
     pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
@@ -485,6 +488,19 @@ impl EngineSession {
             .map(|rule| rule.ir)
             .collect::<Vec<_>>();
         let mut diagnostics = super::named::diagnostics(class_name, &self.compiled);
+        if diagnostics.is_empty()
+            && let Some(Err(message)) = self.application_rules(class_name)
+        {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::ClassSyntaxError,
+                phase: mastercss_schema::DiagnosticPhase::Match,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
+                message,
+                source: Some(class_name.into()),
+                range: None,
+                notes: Vec::new(),
+            });
+        }
         if rules.iter().any(|rule| rule.retain_all_keyframes) && !self.compiled.keyframes.is_empty()
         {
             diagnostics.push(mastercss_schema::Diagnostic {

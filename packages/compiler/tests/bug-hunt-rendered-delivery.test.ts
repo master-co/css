@@ -14,22 +14,27 @@ for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) scr
       mkdirSync(join(root, 'nested'))
       const entry = join(root, 'entry.css'), child = join(root, 'nested/child.css'), resource = join(root, 'nested/dot.svg')
       const source = `@import "./nested/child.css"${qualifier};@import "https://remote.test/last.css";@mixin --paint {padding:2rem}\n.after{margin:1px}`
-      const childSource = "/* child */\n.card{@variant all {padding:2rem;}}\n.card{background:url(\"./dot.svg\")}";writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
+      const childSource = "/* child */\n.card{@apply --all {padding:2rem;}}\n.card{background:url(\"./dot.svg\")}";writeFileSync(child, childSource);writeFileSync(resource, '<svg/>')
       const result = await compileRenderedStylesheet(entry, source, { projectDir: root, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, delivery: { entryURL: '/built/main.css', stylesheetURL: file => `/built/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` } })
       expect(result.css.indexOf('/built/child.css')).toBeLessThan(result.css.indexOf('https://remote.test/last.css'))
       const asset = result.stylesheets!.find(asset => asset.id === child)!
@@ -51,24 +56,29 @@ test('rendered delivery preserves host maps, supplied references, native pruning
     const entry = join(root, 'entry.css'), original = join(root, 'original.scss'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
     writeFileSync(child, '.used{color:red}.unused{color:blue}')
     writeFileSync(tokens, '@mixin --paint {padding:2rem}')
-    const source = "@import \"./child.css\";\n.card{@variant all {padding:2rem;}}"
+    const source = "@import \"./child.css\";\n.card{@apply --all {padding:2rem;}}"
     const dependencies: string[] = [], deliveryDependencies: string[] = []
     const result = await compileRenderedInternal(entry, source, { projectDir: root,
       baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, classes: ['used', 'card'], pruneNativeCSS: true,
       references: [{ source: './tokens.css', file: entry }],
       sourceMap: JSON.stringify({ version: 3 as const, sources: [pathToFileURL(original).href], sourcesContent: [source], names: [], mappings: 'AAAA;AACA' }),
@@ -96,20 +106,25 @@ test('rendered delivery retains real Sass dependencies and original output maps'
     const sass = createRequire(require.resolve('vite'))('sass')
     const result = await compileRenderedStylesheet(entry, source, { projectDir: root, loadSass: () => sass,
       baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })
@@ -128,20 +143,25 @@ test('rendered delivery maps invalid composed tokens back to their Sass partial'
     const sass = createRequire(require.resolve('vite'))('sass')
     await expect(compileRenderedStylesheet(entry, '@use "./rules";', { projectDir: root, loadSass: () => sass,
       baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })] })
@@ -155,20 +175,25 @@ test('rendered delivery emits generated classes once in the entry and leaves the
     writeFileSync(child, '.paint{color:red}')
     const result = await compileRenderedStylesheet(entry, '@import "./child.css";@mixin --paint {padding:2rem}', { projectDir: root,
       baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, classes: ['paint'],
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })

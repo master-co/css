@@ -1,7 +1,7 @@
 use super::{
     ClassDescriptor, EngineError, EngineSession, GeneratedRuleIr, HashMap, HashSet,
-    PartialClassConflictIr, UtilityLayerName, Value, collect_rule_declarations,
-    equal_variant_scope, split_top_level,
+    PartialClassConflictIr, UtilityLayerName, Value, collect_rule_declarations, equal_rule_scope,
+    split_top_level,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -403,7 +403,10 @@ pub(crate) fn has_top_level_multi_value(value: &str) -> bool {
 
 pub(crate) fn create_partial_entry(descriptor: &ClassDescriptor) -> Option<PartialConflictEntry> {
     let rule = descriptor.rule.as_ref()?;
-    if descriptor.rule_count != 1 || rule.layer != UtilityLayerName::Utilities {
+    if descriptor.rule_count != 1
+        || !rule.nodes.is_empty()
+        || rule.layer != UtilityLayerName::Utilities
+    {
         return None;
     }
     let parsed = parse_class_parts(&descriptor.class_name);
@@ -468,7 +471,7 @@ pub(crate) fn canonicalize_partial_value(
         }
         let candidate_rule = &inspection.rules[0];
         if candidate_rule.layer == UtilityLayerName::Utilities
-            && equal_variant_scope(&entry.rule, candidate_rule)
+            && equal_rule_scope(&entry.rule, candidate_rule)
             && candidate_rule.utility_type == entry.rule.utility_type
             && candidate_rule.priority.value_priority == entry.rule.priority.value_priority
             && collect_rule_declarations(&candidate_rule.text) == entry.declarations
@@ -543,7 +546,7 @@ pub(crate) fn validate_partial_replacement(
         let inspection = engine.inspect(class_name)?;
         if inspection.rules.len() != 1
             || inspection.rules[0].layer != UtilityLayerName::Utilities
-            || !equal_variant_scope(&source.rule, &inspection.rules[0])
+            || !equal_rule_scope(&source.rule, &inspection.rules[0])
             || source.rule.utility_type != inspection.rules[0].utility_type
             || source.rule.priority.value_priority != inspection.rules[0].priority.value_priority
             || source.rule.priority.sort_key != inspection.rules[0].priority.sort_key
@@ -561,7 +564,7 @@ pub(crate) fn partial_conflict_replacement(
 ) -> Result<Option<String>, EngineError> {
     if source.family.name() != conflict.family.name()
         || source.suffix != conflict.suffix
-        || !equal_variant_scope(&source.rule, &conflict.rule)
+        || !equal_rule_scope(&source.rule, &conflict.rule)
         || conflict.parts.len() >= source.parts.len()
         || !conflict
             .parts

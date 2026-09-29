@@ -18,10 +18,10 @@ This visible native button declares an upcoming transform. Press and hold it, or
              will-change:transform
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             transform:none@print
-             transition:transform|var(--duration-fast)|ease-out@motion
-             will-change:auto@print
-             transform:translateY(-8px):active@screen">
+             transform:none@media(print)
+             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             will-change:auto@media(print)
+             transform:translateY(-8px):active@media(screen)">
       Move preview
     </button>
   </div>
@@ -52,10 +52,10 @@ Press this visible button to lower its opacity. The hint names opacity; a separa
              fg-blue-80 opacity:1 will-change:opacity
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             opacity:1@print
-             transition:opacity|var(--duration-fast)|ease-out@motion
-             will-change:auto@print
-             opacity:.64:active@screen">
+             opacity:1@media(print)
+             transition:opacity|var(--duration-fast)|ease-out@motion-safe
+             will-change:auto@media(print)
+             opacity:.64:active@media(screen)">
       Preview overlay
     </button>
   </div>
@@ -79,12 +79,12 @@ Hover or focus to prepare a transform hint before pressing. Move away and remove
              fg-blue-80 transform:none will-change:auto
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             transform:none@print
-             transition:transform|var(--duration-fast)|ease-out@motion
-             will-change:auto@print
-             will-change:transform:hover@screen
-             will-change:transform:focus-visible@screen
-             transform:translateY(-8px):active@screen">
+             transform:none@media(print)
+             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             will-change:auto@media(print)
+             will-change:transform:hover@media(screen)
+             will-change:transform:focus-visible@media(screen)
+             transform:translateY(-8px):active@media(screen)">
       Prepare and press
     </button>
   </div>
@@ -108,11 +108,11 @@ Widen the actual viewport to `sm` to declare an opacity hint. Pressing the nativ
              fg-blue-80 opacity:1 will-change:auto
              outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
-             opacity:1@print
-             transition:opacity|var(--duration-fast)|ease-out@motion
-             will-change:auto@print
-             opacity:.64:active@screen
-             will-change:opacity@screen@sm">
+             opacity:1@media(print)
+             transition:opacity|var(--duration-fast)|ease-out@motion-safe
+             will-change:auto@media(print)
+             opacity:.64:active@media(screen)
+             will-change:opacity@media(screen)@sm">
       Press to preview
     </button>
   </div>

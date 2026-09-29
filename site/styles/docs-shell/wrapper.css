@@ -3,7 +3,7 @@
     margin-inline: auto;
     padding-inline: 1.25rem;
 
-    @variant sm {
+    @media (--sm) {
       padding-inline: 2.5rem;
     }
   }

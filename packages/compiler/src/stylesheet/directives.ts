@@ -20,7 +20,7 @@ export type StylesheetDirectiveStatement = StandaloneCSSDirectiveStatement
 
 export function hasLocalStyleDirectives(source: string, from?: string) {
   const result = compileCSS(source, { preserveNativeCSS: false, from })
-  return Boolean(result.generatedCSS || result.styleDefinitions?.length || result.references?.length)
+  return Boolean(result.generatedCSS || result.styleDefinitions?.length || result.references?.length || analyzeCSSDependencies(source).usesCustomMedia)
 }
 
 export interface StylesheetSourceOptions {

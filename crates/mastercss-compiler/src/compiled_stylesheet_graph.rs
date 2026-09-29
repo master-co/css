@@ -29,7 +29,7 @@ pub struct CompileCssStylesheetGraphRequest {
     pub classes_by_stylesheet: HashMap<String, Option<Vec<String>>>,
     #[serde(default)]
     pub prune_native_stylesheets: Option<Vec<String>>,
-    /// Only these files emit native rules/variants and unresolved external imports.
+    /// Only these files emit native rules/applications and unresolved external imports.
     /// Local links from suppressed files only retain selected output descendants.
     #[serde(default)]
     pub native_stylesheets: Option<Vec<String>>,
@@ -122,7 +122,7 @@ fn append_unique(target: &mut Vec<String>, values: &[String]) {
     }
 }
 
-/// Compile the whole manifest while retaining native CSS and native @variant
+/// Compile the whole manifest while retaining native CSS and native @apply
 /// output in their original stylesheet scopes. Import conditions belong to those
 /// stylesheets; authoring definitions form the graph's shared manifest.
 pub fn compile_css_stylesheet_graph(

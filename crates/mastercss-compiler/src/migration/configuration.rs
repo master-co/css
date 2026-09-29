@@ -68,13 +68,19 @@ pub(super) fn convert(original: &Value) -> Result<Configuration, CompilerError> 
             conditions
                 .iter()
                 .rev()
-                .fold("@slot;".to_owned(), |body, condition| {
+                .fold("@contents;".to_owned(), |body, condition| {
                     format!("{condition}{{{body}}}")
                 })
         } else {
-            format!("&:where({selector},{selector} *){{@slot;}}")
+            format!("&:where({selector},{selector} *){{@contents;}}")
         };
-        css.push_str(&format!("@custom-variant {name}{{{variant_branch}}}\n"));
+        if trigger == "media" {
+            css.push_str(&format!(
+                "@custom-media --{name} (prefers-color-scheme:{name});\n"
+            ));
+        } else {
+            css.push_str(&format!("@mixin --{name}{{{variant_branch}}}\n"));
+        }
         if trigger != "media" && matches!(name.as_str(), "light" | "dark") {
             css.push_str(&format!(
                 "@layer theme{{{selector}{{color-scheme:{name}}}}}\n"

@@ -13,9 +13,7 @@ pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
         "mixin",
         "apply",
         "custom-media",
-        "custom-variant",
-        "variant",
-        "slot",
+        "contents",
     ];
     let tokens = tokenize_css_syntax(source);
     let units = |byte| byte_to_utf16_offset(source, byte).unwrap_or_default();

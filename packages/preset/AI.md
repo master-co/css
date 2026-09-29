@@ -6,10 +6,10 @@
 
 ## Owns
 
-- Default token, mixin, native keyframe, variant, and layer-statement source.
+- Default token, mixin, native keyframe, custom media, and layer-statement source.
 - `src/default-manifest.json`.
 - `src/default-native.css`.
-- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
+- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `media.css`, and `utilities.css`.
 
 ## Does Not Own
 
@@ -31,7 +31,7 @@
 - `src/colors.css` (internal color source imported by `theme.css`)
 - `src/base.css`
 - `src/utilities.css`
-- `src/variants.css`
+- `src/media.css`
 - `src/index.css`
 - `src/default-manifest.json`
 - `src/default-native.css`
@@ -72,3 +72,7 @@ The runtime keeps unused IR definitions for future DOM classes. Compiler-only pa
 ## Refined preset contract
 
 The preset contains ten mixins. `fit`, `full`, `center`, `middle`, and `round` are removed; projects may author these names themselves. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; do not restore implicit role lookups or a `surface` prefix. Ten animations are direct children of `@theme` and absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
+
+## Conditions and wrappers
+
+`src/media.css` owns eleven breakpoints and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.

@@ -65,8 +65,8 @@ test('route-level native CSS retains referenced tokens and one shared utility', 
   assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
   assert.match(css, /--color-surface-raised:/)
   assert.match(css, /--spacing-5xl:/)
-  assert.match(css, /@media \(prefers-color-scheme:dark\)\{\.home-cta/)
-  assert.match(css, /@media \(width<52\.125rem\)\{\.home-cta\{width:100%\}/)
+  assert.match(css, /\.home-cta\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*background-color:/)
+  assert.match(css, /@media \(width\s*<\s*52\.125rem\)\s*\{\s*width:\s*100%/)
   assert.doesNotMatch(css, /@compose|@reference/)
 })
 
@@ -787,10 +787,8 @@ function isLocallyDefinedClass(candidate: string, context: string): boolean {
 }
 
 function usesLocallyDefinedVariant(candidate: string, context: string): boolean {
-  for (const eachVariant of candidate.match(/@[a-z][\w-]*/g) ?? []) {
-    if (!context.includes(`@custom-variant ${eachVariant.slice(1)}`)) return false
-  }
-  return /@[a-z][\w-]*/.test(candidate)
+  const calls = [...candidate.matchAll(/@apply\((--[\w-]+)/g)]
+  return calls.length > 0 && calls.every(([, name]) => new RegExp(`@mixin\\s+${escapeRegExp(name)}(?:\\s|\\(|\\{)`).test(context))
 }
 
 function usesLocallyDefinedToken(candidate: string, context: string): boolean {

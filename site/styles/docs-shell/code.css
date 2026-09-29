@@ -103,11 +103,11 @@
       color: var(--color-text-success)!important;
     }
 
-    @variant site-light {
+    @apply --site-light {
       background-color: var(--color-beryl-0);
     }
 
-    @variant site-dark {
+    @apply --site-dark {
       background-color: color-mix(in oklab,var(--color-beryl-50) 10%,transparent);
     }
   }
@@ -126,11 +126,11 @@
       color: var(--color-text-danger)!important;
     }
 
-    @variant site-light {
+    @apply --site-light {
       background-color: var(--color-crimson-0);
     }
 
-    @variant site-dark {
+    @apply --site-dark {
       background-color: color-mix(in oklab,var(--color-crimson-50) 10%,transparent);
     }
   }
@@ -138,11 +138,11 @@
   .code-line-active {
     display: block;
 
-    @variant site-dark {
+    @apply --site-dark {
       background-color: var(--color-gray-80);
     }
 
-    @variant site-light {
+    @apply --site-light {
       background-color: var(--color-neutral-5);
     }
   }
@@ -181,11 +181,11 @@
       border-top-left-radius: 0px;
     }
 
-    @variant site-dark {
+    @apply --site-dark {
       color: var(--shiki-dark);
     }
 
-    @variant site-light {
+    @apply --site-light {
       background-color: var(--color-neutral-10);
       color: var(--shiki-light);
     }
@@ -261,13 +261,13 @@
 
 @layer defaults {
   .shiki {
-    @variant site-dark {
+    @apply --site-dark {
       span {
         color: var(--shiki-dark);
       }
     }
 
-    @variant site-light {
+    @apply --site-light {
       span {
         color: var(--shiki-light);
       }

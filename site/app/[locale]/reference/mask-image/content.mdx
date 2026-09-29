@@ -88,8 +88,8 @@ Widen to `sm` to fade the image. Print removes the mask and keeps all of the sou
   alt="Blue and violet mountains beneath a yellow sun"
   class="display:block height:150px width:240px max-width:100%
          mask-image:none mask-mode:alpha object-fit:cover
-         mask-image:none@print
-         mask-image:linear-gradient(black,transparent)@screen@sm" />
+         mask-image:none@media(print)
+         mask-image:linear-gradient(black,transparent)@media(screen)@sm" />
 ```
 
 The actual media condition changes mask paint. The element remains the same size in every state.

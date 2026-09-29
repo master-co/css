@@ -43,7 +43,7 @@ pub(crate) fn collect(
         definitions.push(CustomMediaDefinition {
             name: name.to_string(),
             query: source[header[2].bytes.start..last.bytes.end].into(),
-            source: crate::variant::source_reference_from_bytes(
+            source: crate::native_selectors::source_reference_from_bytes(
                 source,
                 filename,
                 first.bytes.start,
@@ -134,22 +134,10 @@ pub(crate) fn resolve(
                 .map(|source| source.range.clone()),
         })?;
     }
-    let base_variants = base
-        .and_then(|value| value.get("variants"))
-        .and_then(Value::as_array)
-        .into_iter()
-        .flatten();
-    for variant in input.variants.iter().flatten().chain(base_variants) {
-        if let Some(name) = variant
-            .get("token")
-            .and_then(Value::as_str)
-            .and_then(|token| token.strip_prefix('@'))
-            && resolved.contains_key(&format!("--{name}"))
-        {
-            return Err(crate::manifest::definition_error(format!(
-                "Condition name {name} conflicts between @custom-media and @custom-variant"
-            )));
-        }
+    if resolved.contains_key("--starting-style") {
+        return Err(crate::manifest::definition_error(
+            "Custom media --starting-style conflicts with the native @starting-style suffix",
+        ));
     }
     Ok(resolved)
 }
@@ -209,6 +197,15 @@ fn has_alias(query: &str) -> bool {
         .any(|token| matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")))
 }
 
+pub(crate) fn uses_native_alias(source: &str) -> bool {
+    let tokens = tokenize_css_syntax(source);
+    collect_css_syntax_statements(&tokens).iter().any(|statement| {
+        let header = &tokens[statement.tokens.clone()];
+        matches!(header.first().map(|token| &token.kind), Some(Kind::AtKeyword(name)) if name.eq_ignore_ascii_case("media"))
+            && header.iter().any(|token| matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")))
+    })
+}
+
 pub(crate) fn lower_theme(
     nodes: &[ThemeNode],
     registry: &Registry,
@@ -240,50 +237,6 @@ pub(crate) fn lower_theme(
         }
     }
     Ok(output)
-}
-
-/// Expand compiled native wrappers in variants and utility emit rules. No alias
-/// or authoring parser is required for those runtime paths.
-pub(crate) fn lower_records(
-    records: &mut Option<Value>,
-    member: &str,
-    registry: &Registry,
-) -> Result<(), CompilerError> {
-    for record in records.iter_mut().filter_map(Value::as_array_mut).flatten() {
-        let rules = if member == "branches" {
-            record.get_mut(member)
-        } else {
-            record
-                .get_mut("emit")
-                .and_then(|emit| emit.get_mut("rules"))
-        };
-        let Some(rules) = rules.and_then(Value::as_array_mut) else {
-            continue;
-        };
-        let mut output = Vec::new();
-        for rule in rules.drain(..) {
-            let conditions: Vec<String> = rule
-                .get("conditions")
-                .and_then(Value::as_array)
-                .into_iter()
-                .flatten()
-                .filter_map(Value::as_str)
-                .map(str::to_owned)
-                .collect();
-            for path in paths(&conditions, registry)? {
-                let mut rule = rule.clone();
-                if !conditions.is_empty() {
-                    rule["conditions"] = serde_json::json!(path);
-                    rule.as_object_mut()
-                        .expect("rule")
-                        .shift_remove("conditionNodes");
-                }
-                output.push(rule);
-            }
-        }
-        *rules = output;
-    }
-    Ok(())
 }
 
 pub(crate) fn lower_css(
@@ -348,7 +301,7 @@ pub(crate) fn lower_css(
             .max_by_key(|mapping| mapping.generated_start)
             .map(|mapping| mapping.source.clone())
             .or_else(|| {
-                crate::variant::source_reference_from_bytes(
+                crate::native_selectors::source_reference_from_bytes(
                     source,
                     filename,
                     first.bytes.start,

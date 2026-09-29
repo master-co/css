@@ -155,7 +155,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
-  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @theme { .static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    } }\n\n\n    @custom-variant headings { @variant all { @slot; } }\n\n    @mixin --btn {\n        @safelist \"text-gradient align-items:center fg-primary:hover@md\";\n\n        @variant h>=sm&h<lg {\n          @safelist \"sr-only\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @theme { .static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    } }\n\n\n    @mixin --headings { @media (--all) { @contents; } }\n\n    @mixin --btn {\n        @safelist \"text-gradient align-items:center fg-primary:hover@md\";\n\n        @media (--h)>=sm&h<lg {\n          @safelist \"sr-only\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -177,7 +177,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'headings', type: 'variable', modifiers: ['directive', 'query'] })
-  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
@@ -290,14 +290,14 @@ test.concurrent('renders active semantic tokens for CSS directive class-list spa
 
 test.concurrent('does not render active semantic tokens for custom variant blocks', () => {
   const content = [
-    '@custom-variant motion-safe {',
+    '@mixin --motion-safe {',
     '    @media (prefers-reduced-motion: no-preference) {',
-    '        @slot;',
+    '        @contents;',
     '    }',
     '}',
-    '@custom-variant print-only {',
+    '@mixin --print-only {',
     '    @media print {',
-    '        @slot;',
+    '        @contents;',
     '    }',
     '}'
   ].join('\n')

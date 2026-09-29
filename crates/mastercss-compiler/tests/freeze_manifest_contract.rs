@@ -18,10 +18,10 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
     // joining media features with a space creates invalid CSS.
     let original = manifest(
         r#"
-        @custom-variant dark {
-            @media (prefers-color-scheme: dark) { @slot; }
+        @mixin --dark {
+            @media (prefers-color-scheme: dark) { @contents; }
         }
-        @custom-variant sm { @media (width >= 40rem) { @slot; } }
+        @mixin --sm { @media (width >= 40rem) { @contents; } }
         @theme { :root { --color-brand: red; --paint-brand: var(--color-brand); } }
         @mixin --paint(--key <string>) { color: var(ident("--paint-" var(--key))); }
         "#,
@@ -29,7 +29,10 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
     let encoded = original.to_json().unwrap();
     let reloaded = MasterCssManifest::parse(&encoded).unwrap();
     assert_eq!(original, reloaded);
-    let classes = ["paint-brand@dark@sm", "padding:8px@sm@dark"];
+    let classes = [
+        "paint-brand@apply(--dark)@apply(--sm)",
+        "padding:8px@apply(--sm)@apply(--dark)",
+    ];
     let mut batched = EngineSession::create(&encoded).unwrap();
     let mut incremental = EngineSession::create(&reloaded.to_json().unwrap()).unwrap();
     for class in classes {
@@ -39,7 +42,9 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
         for rule in inspection.rules {
             assert_eq!(rule.text.matches("@media").count(), 2, "{}", rule.text);
             assert!(
-                rule.text.contains("prefers-color-scheme:dark"),
+                rule.text
+                    .replace(' ', "")
+                    .contains("prefers-color-scheme:dark"),
                 "{}",
                 rule.text
             );

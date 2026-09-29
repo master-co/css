@@ -57,7 +57,7 @@ Open print preview to remove multiply with `mix-blend-mode:normal`. The blue for
     aria-label="Blue foreground across two backdrops"
     class="position:absolute left:72px top-xl width:96px height:96px r-lg
            background-color:#2563eb mix-blend-mode:multiply
-           mix-blend-mode:normal@print"></div>
+           mix-blend-mode:normal@media(print)"></div>
 </div>
 ```
 
@@ -78,8 +78,8 @@ Widen to `sm` to enable multiply. Print always uses normal blending.
     aria-label="Blue foreground across two backdrops"
     class="position:absolute left:72px top-xl width:96px height:96px r-lg
            background-color:#2563eb mix-blend-mode:normal
-           mix-blend-mode:normal@print
-           mix-blend-mode:multiply@screen@sm"></div>
+           mix-blend-mode:normal@media(print)
+           mix-blend-mode:multiply@media(screen)@sm"></div>
 </div>
 ```
 

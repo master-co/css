@@ -48,9 +48,8 @@ test('colors every complete Master directive like a native CSS at-rule', async (
     ['reference', '@reference "./tokens.css";'],
     ['theme', "@theme {}\n"],
     ['mixin', '@mixin --box {}'],
-    ['custom-variant', '@custom-variant motion-safe {}'],
-    ['variant', '@variant sm {}'],
-    ['slot', '@slot;'],
+    ['apply', '.a { @apply --wrap {} }'],
+    ['contents', '@contents;'],
   ] as const
 
   try {
@@ -81,10 +80,11 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
     expect(colors(query)).toEqual(colors(nativeKeyword))
     expect(compose.some((token) => token.content === '@' && hasScope(token, 'punctuation.definition.keyword.master-css'))).toBe(false)
 
-    const tokens = highlighter.codeToTokens('@mixin --card { @variant sm { color: red; } }', options).tokens[0]
-    const name = tokens.find(token => token.content === 'sm')
+    const tokens = highlighter.codeToTokens('@mixin --card { @media (--sm) { color: red; } }', options).tokens[0]
+    const name = tokens.find(token => token.content.includes('--sm'))
     expect(name).toBeDefined()
-    expect(hasScope(name, 'support.constant.property-value.master-css.query')).toBe(true)
+    const nativeName = highlighter.codeToTokens('@media (--sm) {}', { ...options, lang: 'css' }).tokens[0].find(token => token.content.includes('--sm'))
+    expect(colors(name)).toEqual(colors(nativeName))
 
     for (const [atRule, condition] of [
       ['@media', '(prefers-reduced-motion: no-preference)'],
@@ -92,12 +92,12 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       ['@container', '(min-width: 30rem)']
     ] as const) {
       const native = highlighter.codeToTokens(`${atRule} ${condition} {}`, options).tokens[0].find((token) => token.content === atRule)
-      const tokens = highlighter.codeToTokens(`@custom-variant motion-safe { ${atRule} ${condition} { @slot; } }`, options).tokens[0]
+      const tokens = highlighter.codeToTokens(`@mixin --motion-safe { ${atRule} ${condition} { @contents; } }`, options).tokens[0]
       const nested = tokens.find((token) => token.content === atRule)
       expect(nested, atRule).toBeDefined()
       expect(colors(nested), atRule).toEqual(colors(native))
       expect(hasScope(nested, 'keyword.control.at-rule.master-css.query'), atRule).toBe(false)
-      expect(tokens.some((token) => token.content === '@slot' && hasScope(token, 'keyword.control.at-rule.master-css')), atRule).toBe(true)
+      expect(tokens.some((token) => token.content === '@contents' && hasScope(token, 'keyword.control.at-rule.master-css')), atRule).toBe(true)
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 

@@ -8,7 +8,38 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":4,"languageVersion":6,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":4,"languageVersion":7,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+
+#[test]
+fn wrapper_conflicts_compare_expanded_selectors_and_keep_branch_order() {
+    let manifest = serde_json::json!({"version":4,"languageVersion":7,"mixins":[
+        {"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
+        {"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
+        {"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},
+        {"name":"--multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}
+    ]});
+    let mut session = LintSession::create(&manifest.to_string()).unwrap();
+    let equivalent = session
+        .analyze(
+            ["color:red@apply(--a)", "color:blue@apply(--b)"],
+            None,
+            &HashSet::new(),
+        )
+        .unwrap();
+    assert_eq!(equivalent.conflicts.len(), 1);
+    for classes in [
+        ["color:red@apply(--a)", "color:blue@apply(--c)"],
+        ["color:red@apply(--multiple)", "color:blue@apply(--a)"],
+        [
+            "color:red@apply(--a)@apply(--c)",
+            "color:blue@apply(--c)@apply(--a)",
+        ],
+    ] {
+        let result = session.analyze(classes, None, &HashSet::new()).unwrap();
+        assert!(result.conflicts.is_empty(), "{classes:?}");
+        assert!(result.partial_conflicts.is_empty(), "{classes:?}");
+    }
+}
 
 #[test]
 fn classifies_host_rule_validation_results_in_rust() {

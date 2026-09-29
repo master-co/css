@@ -1,1 +1,1 @@
-@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-black:oklch(0% 0 none)}}@layer utilities{@media (prefers-color-scheme:dark){.bg-black\@dark{background-color:var(--color-black)}}@media (prefers-color-scheme:light){.bg-white\@light{background-color:var(--color-white)}}}
+@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-black:oklch(0% 0 none)}}@layer utilities{@media (prefers-color-scheme: dark){.bg-black\@dark{background-color:var(--color-black)}}@media (prefers-color-scheme: light){.bg-white\@light{background-color:var(--color-white)}}}

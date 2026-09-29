@@ -1,9 +1,8 @@
 import type { MasterCSSKeyframeDefinition } from './keyframes.js'
-import type { MasterCSSMixinDefinition, MasterCSSMixinValue } from './mixin.js'
+import type { MasterCSSMixinDefinition, MasterCSSMixinValue, MasterCSSMixinNode } from './mixin.js'
 import type {
   MasterCSSThemeNode,
-  MasterCSSManifestUtilityLayerName,
-  MasterCSSManifestVariant
+  MasterCSSManifestUtilityLayerName
 } from './manifest.js'
 
 export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
@@ -14,7 +13,6 @@ export type CSSDirectiveLayerName = MasterCSSManifestUtilityLayerName
 
 
 
-export type CSSDirectiveVariantDefinitions = Pick<MasterCSSManifestVariant, 'token' | 'branches'>[]
 
 export interface CSSDirectiveSourceRange {
   start: number
@@ -103,12 +101,10 @@ export interface CSSCustomMediaDefinition {
 
 export type CSSDirectiveConditionPathEntry =
   | { type: 'condition'; value: string }
-  | { type: 'variant'; token: string }
 
 export interface CSSDirectiveManifestInput {
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
-  variants?: CSSDirectiveVariantDefinitions
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
   mixins?: MasterCSSMixinDefinition[]
@@ -153,6 +149,8 @@ export interface CSSDirectiveStyleApplyDefinition {
   selector: string
   name: string
   arguments: MasterCSSMixinValue[]
+  contents?: MasterCSSMixinNode[]
+  selectorSource?: CSSDirectiveSourceReference
   source?: CSSDirectiveSourceReference
   conditionPath?: CSSDirectiveConditionPathEntry[]
 }

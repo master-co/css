@@ -23,7 +23,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     .addOption(new Option('--from <profile>', 'Saved RC language profile.').choices(['rc-legacy', 'rc-named', 'rc-native', 'rc-managed', 'rc-utilities', 'rc-sizing', 'rc-mixins', 'rc-preset']).makeOptionMandatory())
     .option('--source-version <version>', 'Actual saved RC package version, unless present in the manifest metadata.')
     .option('--manifest <path>', 'Original resolved RC manifest, saved before upgrading.', 'master.rc.manifest.json')
-    .option('--entry <path>', 'Master CSS entry for generated migration variants; required when multiple entries exist.')
+    .option('--entry <path>', 'Master CSS entry for generated migration mixins; required when multiple entries exist.')
     .option('--target-manifest <path>', 'Compiled migrated project manifest for custom utilities.')
     .option('--write', 'Apply safe edits only when the selected files have no review diagnostics.')
     .action(async (sourcePaths: string[], options: import('./migrate').MigrateOptions) => {

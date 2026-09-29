@@ -3,9 +3,8 @@ use super::{
     CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashSet,
     MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
-    extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
-    lower_theme_rule, reject_removed_directives, rewrite_managed_variant_directives,
-    validate_condition_variant_syntax,
+    extraction_policy_from_statements, filter_native_css_rules, lower_theme_rule,
+    reject_removed_directives,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -56,7 +55,6 @@ fn compile_css_directives_impl(
         Some(slots) => slots,
         None => &mut local_slots,
     });
-    validate_condition_variant_syntax(source, &options.from)?;
     reject_removed_directives(source, &options.from)?;
     crate::mixins::reject_placeholder(source, &options.from)?;
     let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
@@ -104,11 +102,10 @@ fn compile_css_directives_impl(
         })
         .collect::<Vec<_>>();
     let extraction_policy = extraction_policy_from_statements(&standalone_directives);
-    let (rewritten_source, stylesheet_variant_rule_offsets) =
-        rewrite_managed_variant_directives(&source_without_entry);
+    let rewritten_source = &source_without_entry;
     let mut parser = ThemeAtRuleParser::default();
     let mut stylesheet = StyleSheet::parse_with(
-        &rewritten_source,
+        rewritten_source,
         ParserOptions {
             filename: options.from.clone(),
             ..ParserOptions::default()
@@ -159,12 +156,8 @@ fn compile_css_directives_impl(
     let mut consumed = Vec::new();
     let mut occupied_names = HashSet::new();
     let source_index = crate::source_index::SourceIndex::new(source);
-    let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
-    if super::native_rule_list_has_directives(
-        &rewritten_index,
-        &stylesheet.rules.0,
-        &stylesheet_variant_rule_offsets,
-    ) {
+    let rewritten_index = crate::source_index::SourceIndex::new(rewritten_source);
+    if super::native_rule_list_has_directives(&stylesheet.rules.0) {
         for token in mastercss_lexer::tokenize_css_syntax(source) {
             if let mastercss_lexer::CssSyntaxKind::AtKeyword(name) = token.kind {
                 occupied_names.insert(name.into_owned());
@@ -187,12 +180,6 @@ fn compile_css_directives_impl(
                 DirectiveName::Theme => {
                     lower_theme_rule(source, &options.from, directive, &mut manifest_input)?
                 }
-                DirectiveName::CustomVariant => lower_custom_variant_rule(
-                    source,
-                    &options.from,
-                    directive,
-                    &mut manifest_input,
-                )?,
                 DirectiveName::Defaults | DirectiveName::Components => {
                     let name = if matches!(directive.name, DirectiveName::Defaults) {
                         "defaults"
@@ -275,7 +262,7 @@ fn compile_css_directives_impl(
                     source: &source_index,
                     filename: &options.from,
                     rewritten: &rewritten_index,
-                    variants: &stylesheet_variant_rule_offsets,
+
                     definitions: &mut style_definitions,
                     order: &mut style_order,
                     slots: slots.as_deref_mut(),
@@ -301,7 +288,7 @@ fn compile_css_directives_impl(
         Some(crate::native_source::preserve_native_source(
             &source_without_entry,
             source,
-            &rewritten_source,
+            rewritten_source,
             &options.from,
             &consumed,
             slots.as_deref().map(Vec::as_slice).unwrap_or_default(),
@@ -329,7 +316,7 @@ fn compile_css_directives_impl(
         } else {
             crate::output_mappings::native_output_mappings(
                 source,
-                &rewritten_source,
+                rewritten_source,
                 &options.from,
                 &stylesheet.rules.0,
                 &css,
@@ -377,7 +364,7 @@ fn compile_css_directives_impl(
     } else {
         crate::output_mappings::native_output_mappings(
             source,
-            &rewritten_source,
+            rewritten_source,
             &options.from,
             &stylesheet.rules.0,
             &native_css,

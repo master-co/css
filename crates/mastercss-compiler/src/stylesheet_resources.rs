@@ -81,7 +81,7 @@ impl RelocatedStylesheet {
         reference.loc = utf16_to_byte_offset(original, reference.range.start)
             .zip(utf16_to_byte_offset(original, reference.range.end))
             .and_then(|(start, end)| {
-                crate::variant::source_reference_from_bytes(
+                crate::native_selectors::source_reference_from_bytes(
                     original,
                     reference.file.as_deref().unwrap_or_default(),
                     start,
@@ -93,7 +93,22 @@ impl RelocatedStylesheet {
 
     pub fn restore_definition(&self, original: &str, definition: &mut CssDirectiveStyleDefinition) {
         match definition {
-            CssDirectiveStyleDefinition::Apply { source, .. } => {
+            CssDirectiveStyleDefinition::Apply {
+                source,
+                contents,
+                selector_source,
+                ..
+            } => {
+                if let Some(reference) = selector_source {
+                    self.restore_reference(original, reference);
+                }
+                if let Some(contents) = contents {
+                    crate::mixins::visit_node_sources(contents, &mut |source| {
+                        if let Some(reference) = source {
+                            self.restore_reference(original, reference);
+                        }
+                    });
+                }
                 if let Some(reference) = source {
                     self.restore_reference(original, reference);
                 }

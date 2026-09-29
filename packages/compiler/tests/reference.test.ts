@@ -7,19 +7,24 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 6 as const,
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ]
+  "languageVersion": 7 as const,
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+]
 }
 
 function createFixture() {
@@ -34,13 +39,13 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, "\n        @theme {:root, :host {\n          --color-brand: #123456;\n        }}\n\n\n        @custom-variant wide {\n          @media (width >= 640px) {\n            @slot;\n          }\n        }\n\n        \n          @mixin --brand {\n            color: var(--color-brand);\n          }\n        \n\n        .referenced-native {\n          color: red;\n        }\n      ")
-      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @variant all {color:var(--color-brand);}\n\n          @variant wide {\n            @variant all {color:var(--color-brand);}\n          }\n        }\n      ")
+      writeFileSync(tokensPath, "\n        @theme {:root, :host {\n          --color-brand: #123456;\n        }}\n\n\n        @mixin --wide {\n          @media (width >= 640px) {\n            @contents;\n          }\n        }\n\n        \n          @mixin --brand {\n            color: var(--color-brand);\n          }\n        \n\n        .referenced-native {\n          color: red;\n        }\n      ")
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @apply --all {color:var(--color-brand);}\n\n          @apply --wide {\n            @apply --all {color:var(--color-brand);}\n          }\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath, { baseManifest })
 
       expect(result.css).toContain('.button{color:var(--color-brand)}')
-      expect(result.css).toContain('@media (width>=640px)')
+      expect(result.css).toContain('@media (width >= 640px)')
       expect(result.css).not.toContain('referenced-native')
       expect(result.css).not.toContain('@reference')
       expect(result.manifest.mixins?.some((utility) => utility.name === '--brand') ?? false).toBe(false)
@@ -57,7 +62,7 @@ describe('CSS @reference', () => {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
       writeFileSync(tokensPath, ' @mixin --brand { color: red; } ')
-      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @mixin --brand {\n            color: blue;\n          }\n\n        .button {\n          @variant all {color:#00f;}\n        }\n      ")
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @mixin --brand {\n            color: blue;\n          }\n\n        .button {\n          @apply --all {color:#00f;}\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath, { baseManifest })
 
@@ -76,7 +81,7 @@ describe('CSS @reference', () => {
       writeFileSync(aPath, [
         '@import "@master/css";',
         '@reference "./b.css";',
-        ".a { @variant all{display:block;} }"
+        "@mixin --all{@contents;} .a { @apply --all{display:block;} }"
       ].join('\n'))
       writeFileSync(bPath, ' @mixin --b { display: block; } ')
 
@@ -130,7 +135,7 @@ test('references exported CSS authoring packages with compiler-only definition l
     writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/theme', exports: { '.': './master.css' } }))
     writeFileSync(join(packageDir, 'master.css'), '@mixin --paint {color:red}@layer components{.button{display:flex}}')
     const file = join(root, 'src', 'local.css')
-    writeFileSync(file, "@reference \"@acme/theme\";.local{@variant all {color:red;}}")
+    writeFileSync(file, "@reference \"@acme/theme\";.local{@apply --all {color:red;}}")
     const result = compileCSSManifestFile(file, { baseManifest })
     expect(result.css).toContain('.local{color:red}')
     expect(result.css).not.toContain('.button')

@@ -60,6 +60,7 @@ export interface CSSDependencyAnalysis {
   sourceWithoutReferences: string
   imports: CSSDependencyImport[]
   resources: { start: number, end: number, url: string }[]
+  usesCustomMedia?: boolean
 }
 
 export interface InspectCSSResult {

@@ -308,7 +308,7 @@ fn named_rc_profile_preserves_old_numeric_queries_and_native_dimensions() {
         result.class_lists[2][0]
     );
     assert_eq!(result.from, mastercss_compiler::RcMigrationProfile::RcNamed);
-    assert!(result.configuration_css.contains("@custom-variant dark"));
+    assert!(result.configuration_css.contains("@custom-media --dark"));
     let encoded = serde_json::to_value(&result).unwrap();
     assert_eq!(encoded["configurationCSS"], result.configuration_css);
     assert!(encoded.get("configurationCss").is_none());
@@ -330,7 +330,7 @@ fn named_rc_settings_become_explicit_modes_base_values_and_scheme() {
     assert!(
         result
             .configuration_css
-            .contains("@custom-variant dark{&:where(.dark,.dark *){@slot;}}")
+            .contains("@mixin --dark{&:where(.dark,.dark *){@contents;}}")
     );
     assert!(
         result

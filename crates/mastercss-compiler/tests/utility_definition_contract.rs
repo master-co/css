@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}}),
+                serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
             ),
             resolution_manifest: None,
         },
@@ -139,7 +139,7 @@ fn identifiers_preserve_case_unicode_and_decoded_escapes() {
 
 #[test]
 fn public_manifest_compilation_resolves_mixin_conditions() {
-    let parsed=compile_css_directives("@custom-media --always true;@mixin --pair(--value){@variant always{display:block}width:var(--value)}",&Default::default()).unwrap();
+    let parsed=compile_css_directives("@mixin --always{@contents;}@mixin --pair(--value){@apply --always{display:block}width:var(--value)}",&Default::default()).unwrap();
     let result =
         mastercss_compiler::compile_manifest_input(&parsed.manifest_input, &Default::default())
             .unwrap();
@@ -181,6 +181,6 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
 
 #[test]
 fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":4,"languageVersion":6,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
+    let old = serde_json::json!({"version":4,"languageVersion":7,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
     assert!(EngineSession::create(&old.to_string()).is_err());
 }

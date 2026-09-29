@@ -9,25 +9,30 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) print
     const root = mkdtempSync(join(tmpdir(), 'master-css-file-delivery-'))
     try {
       const entry = join(root, 'entry.css'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
-      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@mixin --button {@variant all{color:red;}}.example{color:green}`)
-      writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@variant all {color:red;}}")
+      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@mixin --button {@apply --all{color:red;}}.example{color:green}`)
+      writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@apply --all {color:red;}}")
       writeFileSync(tokens, '@mixin --paint {color:red}.reference-only{color:blue}')
       const options = {
         root, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, preserveNativeCSS: true,
         delivery: { entryURL: '/output/main.css', stylesheetURL: (file: string) => `/output/${basename(file)}`, resourceURL: (file: string) => `/output/${basename(file)}` }
       }
@@ -55,25 +60,30 @@ for (const preserveNativeCSS of [undefined, true]) {
       mkdirSync(join(root, 'styles'))
       const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'styles/tokens.css'), resource = join(root, 'styles/pixel.svg')
       writeFileSync(entry, "@import './styles/child.css' print;")
-      writeFileSync(child, "@reference './tokens.css';.example{@variant all {color:red;background-image:url(\"./pixel.svg?version=1#icon\");}}.raw{color:blue}")
+      writeFileSync(child, "@reference './tokens.css';.example{@apply --all {color:red;background-image:url(\"./pixel.svg?version=1#icon\");}}.raw{color:blue}")
       writeFileSync(tokens, "@mixin --paint {color:red;background-image:url('./pixel.svg?version=1#icon')}")
       writeFileSync(resource, '<svg xmlns="http://www.w3.org/2000/svg"/>')
       const result = compileManifestFileSync('entry.css', {
         root, preserveNativeCSS, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 },
         delivery: { entryURL: '/published/main.css', stylesheetURL: file => `/published/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
       })
@@ -99,20 +109,25 @@ test('BH-0004 file delivery rejects missing resources and URL collisions before 
     writeFileSync(child, ".example{background:url('./missing.svg')}")
     const dependencies: string[] = []
     const options = { root, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, delivery: {
       entryURL: '/entry.css', stylesheetURL: () => '/entry.css', resourceURL: () => '/resource.svg', onDependency: (file: string) => dependencies.push(file)
     } }

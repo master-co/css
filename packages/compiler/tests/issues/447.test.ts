@@ -11,11 +11,11 @@ const source = `
   --font-family-probe: monospace;
   --font-size-probe: 2rem;
 } }
-@custom-variant audit-dark {
-  @media (prefers-color-scheme: dark) { @slot; }
+@mixin --audit-dark {
+  @media (prefers-color-scheme: dark) { @contents; }
 }
-@custom-variant audit-wide { @media (width >= 40rem) { @slot; } }
-@custom-variant audit-card { @container card (width >= 30rem) { @slot; } }
+@mixin --audit-wide { @media (width >= 40rem) { @contents; } }
+@mixin --audit-card { @container card (width >= 30rem) { @contents; } }
 @mixin --audit-align-start { text-align: start; }
 @mixin --audit-align-end { text-align: end; }
 `
@@ -44,9 +44,9 @@ const valid = [
   ["padding:8px@supports((display:grid))", ['@supports (display:grid)']],
   ["padding:8px@container(card|(width>=40rem))", ['@container card (width>=40rem)']],
   ["padding:8px@container(style(--density:compact))", ['@container style(--density:compact)']],
-  ["padding:8px@audit-card", ['@container card (width>=30rem)']],
-  ["padding:8px@audit-dark@audit-wide", ['prefers-color-scheme:dark', 'width>=40rem']],
-  ["padding:8px@audit-wide@audit-dark", ['prefers-color-scheme:dark', 'width>=40rem']],
+  ["padding:8px@apply(--audit-card)", ['@container card (width >= 30rem)']],
+  ["padding:8px@apply(--audit-dark)@apply(--audit-wide)", ['prefers-color-scheme: dark', 'width >= 40rem']],
+  ["padding:8px@apply(--audit-wide)@apply(--audit-dark)", ['prefers-color-scheme: dark', 'width >= 40rem']],
   ["padding:8px@media((width>=800px))@supports((display:grid))@container(card|(width>=40rem))", ['@media (width>=800px){@supports (display:grid){@container card (width>=40rem)']]
 ] as const
 
@@ -86,7 +86,7 @@ test('447: compiler and engine binding combinations agree on the language contra
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')
@@ -131,7 +131,7 @@ test('447: legacy mode settings are rejected consistently by both engine binding
   }
 })
 
-test('447: saved media mode settings migrate to explicit, executable variant definitions', async () => {
+test('447: saved media mode settings migrate to executable custom media', async () => {
   const migrated = await migrateRC({
     from: 'rc-named',
     sourceVersion: '2.0.0-rc.named',
@@ -147,8 +147,7 @@ test('447: saved media mode settings migrate to explicit, executable variant def
     targetIsPreset: true,
     classLists: [['padding:8px@dark@sm']]
   })
-  expect(migrated.configurationCSS).toContain('@custom-variant dark')
-  expect(migrated.configurationCSS).toContain('@media (prefers-color-scheme:dark)')
+  expect(migrated.configurationCSS).toContain('@custom-media --dark (prefers-color-scheme:dark);')
   expect(migrated.classLists[0][0].status).not.toBe('review')
   const className = migrated.classLists[0][0].after!
   for (const binding of ['native', 'wasm'] as const) {

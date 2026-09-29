@@ -7,7 +7,7 @@ fn definition(name: &str, property: &str, value: &str) -> Value {
 }
 fn engine(mixins: Vec<Value>, variables: Value) -> EngineSession {
     let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, entries)| entries.as_array().unwrap().iter().flat_map(move |entry| entry["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",entry["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
-    EngineSession::create(&json!({"version":4,"languageVersion":6,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":4,"languageVersion":7,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
 }
 
 #[test]

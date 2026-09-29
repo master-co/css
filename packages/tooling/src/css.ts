@@ -18,7 +18,7 @@ export function validateCSS(text: string, parseOptions = {
   walk(ast, {
     visit: 'Atrule',
     enter(node: any) {
-      errors.push(...validateAtrule(node))
+      errors.push(...validateAtrule(node, !!this.rule))
     }
   })
 
@@ -64,7 +64,7 @@ export function isTargetError(error: SyntaxError | null) {
   return error
 }
 
-export function validateAtrule(node: { name: any; prelude: any; block: { children: any[] } }) {
+export function validateAtrule(node: { name: any; prelude: any; block: { children: any[] } }, nestedInRule = false) {
   const atrule = node.name
   const errors = []
   let error
@@ -85,11 +85,11 @@ export function validateAtrule(node: { name: any; prelude: any; block: { childre
   if (node.block && node.block.children) {
     node.block.children.forEach((child: { type: string; property: any; value: any }) => {
       if (child.type === 'Declaration') {
-        errors.push(...validateAtruleDescriptor(
-          atrule,
-          child.property,
-          child.value
-        ))
+        // Native conditional group rules inherit their enclosing style context.
+        // Descriptor rules such as @font-face keep descriptor validation.
+        errors.push(...(nestedInRule && ['media', 'supports', 'container', 'layer', 'scope', 'starting-style'].includes(atrule.toLowerCase())
+          ? validateDeclaration(child.property, child.value)
+          : validateAtruleDescriptor(atrule, child.property, child.value)))
       }
     })
   }

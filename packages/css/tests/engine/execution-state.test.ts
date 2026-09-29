@@ -10,7 +10,7 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
   try {
     expect(engine.inspect("display:block").matchStatus).toBe('matched')
     expect(engine.executionState(["display:block"]).classes).toEqual([{ className: "display:block", references: [] }])
-    const classes = ["display:block", 'fg-red-60', "display:block@base", 'unknown', "display:block"]
+    const classes = ["display:block", 'fg-red-60', "display:block@layer(base)", 'unknown', "display:block"]
     engine.ensureClassRules(classes)
     const snapshot = engine.snapshot()
     const state = engine.executionState(classes)
@@ -30,9 +30,9 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     expect(engine.executionState(["display:block"]).classes[0].references).toEqual([])
     engine.refresh({
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 })
-    expect(engine.executionState(["display:block@base"]).classes[0].references).toEqual([])
+    expect(engine.executionState(["display:block@layer(base)"]).classes[0].references).toEqual([{ layer: 'base', key: 'display:block@layer(base)\0@layer(base)' }])
   } finally {
     engine.dispose()
   }

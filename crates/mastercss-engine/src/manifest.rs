@@ -40,47 +40,13 @@ pub(crate) fn compile_manifest(
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
     projection.compiled_variable_order = compiled_variable_order;
-    let mut names = HashMap::new();
-    for name in projection.conditions.keys() {
-        names.insert(name.as_str(), "condition");
-    }
     for (name, query) in &projection.custom_media {
-        let Some(name) = name.strip_prefix("--").filter(|name| !name.is_empty()) else {
-            return Err(EngineError::InvalidManifest(
-                "Custom media names must begin with --".into(),
-            ));
-        };
-        if names.insert(name, "custom media").is_some() {
+        if !name.starts_with("--") || name.len() == 2 || name == "--starting-style" {
             return Err(EngineError::InvalidManifest(format!(
-                "Condition name {name} is defined more than once"
+                "Invalid or reserved custom media name {name}"
             )));
         }
         crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
-    }
-    for variant in &projection.variants {
-        let Some(name) = variant.token.strip_prefix('@') else {
-            continue;
-        };
-        // A variant may project its first condition into the completion index.
-        // That projection must agree with the branch, never hide a second definition.
-        let is_projection = projection.conditions.get(name).is_some_and(|condition| {
-            let indexed = super::condition::render_manifest_condition(condition, None);
-            variant.branches.iter().any(|branch| {
-                branch.conditions.first().is_some_and(|query| {
-                    mastercss_lexer::canonical_native_content(query)
-                        == mastercss_lexer::canonical_native_content(&indexed)
-                }) || branch
-                    .layer
-                    .is_some_and(|layer| indexed == format!("@layer {}", layer_name(layer)))
-            })
-        });
-        if let Some(kind) = names.insert(name, "variant")
-            && (kind != "condition" || !is_projection)
-        {
-            return Err(EngineError::InvalidManifest(format!(
-                "Condition name {name} is defined more than once"
-            )));
-        }
     }
     super::mixin_matching::register(&mut projection);
     append_builtin_token_utilities(&mut projection.utilities);

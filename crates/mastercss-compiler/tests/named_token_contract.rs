@@ -27,7 +27,7 @@ fn engine() -> EngineSession {
             --text-sm: var(--font-size-sm); --font-size-sm: .875rem; --font-size-brand: 2rem; --font-weight-bold: 700;
             --color-red: #e00; --color-brand: #123; --color-cover: #456;
         }} }}
-        @custom-variant sm {{ @media (width >= 40rem) {{ @slot; }} }}
+        @custom-media --sm (width >= 40rem);
         {}
     "#,
         include_str!("../../../packages/preset/src/utilities.css")
@@ -290,7 +290,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":6,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":4,"languageVersion":7,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -326,7 +326,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":6,"utilities":[utility]}).to_string();
+        let source = json!({"version":4,"languageVersion":7,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()

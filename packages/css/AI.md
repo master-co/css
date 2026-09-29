@@ -12,7 +12,7 @@ entrypoints.
 - Bound engine state and transition application.
 - Public schema/type exports required by engine consumers.
 - Ambient virtual-module declarations exposed through `./client`.
-- CSS proxies for `index.css`, `base.css`, `theme.css`, `variants.css`, and
+- CSS proxies for `index.css`, `base.css`, `theme.css`, `media.css`, and
   `utilities.css`.
 
 ## Does Not Own

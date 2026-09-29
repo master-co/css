@@ -38,11 +38,13 @@ pub enum SchemaError {
     #[error("Unsupported MasterCSSManifest version. Expected version 4.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 6; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 7; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
     RemovedField(String),
+    #[error("Custom media --starting-style conflicts with the native @starting-style suffix.")]
+    ReservedCustomMediaName,
     #[error(
         "Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables."
     )]
@@ -67,6 +69,7 @@ impl SchemaError {
             | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
             | Self::InvalidManifest
+            | Self::ReservedCustomMediaName
             | Self::RemovedField(_) => ErrorCode::InvalidManifest,
         }
     }
@@ -96,6 +99,10 @@ impl MasterCssManifest {
         }
         for field in [
             "utilities",
+            "variants",
+            "conditions",
+            "selectors",
+            "containerConditions",
             "settings",
             "modes",
             "animations",
@@ -116,7 +123,10 @@ impl MasterCssManifest {
             serde_json::from_value::<Vec<ThemeNode>>(theme.clone())?;
         }
         if let Some(media) = object.get("customMedia") {
-            serde_json::from_value::<BTreeMap<String, MediaQueryExpr>>(media.clone())?;
+            let media = serde_json::from_value::<BTreeMap<String, MediaQueryExpr>>(media.clone())?;
+            if media.contains_key("--starting-style") {
+                return Err(SchemaError::ReservedCustomMediaName);
+            }
         }
         if let Some(variables) = object.get("variables") {
             let groups = variables

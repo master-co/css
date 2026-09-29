@@ -22,7 +22,7 @@ fn css(engine: &mut EngineSession, classes: &[&str]) -> String {
 
 #[test]
 fn native_queries_preserve_dimensions_and_wrapper_nesting() {
-    let mut e = engine("@custom-media --sm (width>=800px); @custom-variant has-selector { @supports selector(:has(*)) { @slot; } }").unwrap();
+    let mut e = engine("@custom-media --sm (width>=800px); @mixin --has-selector { @supports selector(:has(*)) { @contents; } }").unwrap();
     let output = css(
         &mut e,
         &[
@@ -30,7 +30,7 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
             "width:20px@media((width>=800px))",
             "width:30px@media((aspect-ratio>=1.5))",
             "width:40px@media((resolution>=2x))",
-            "width:50px@has-selector@supports((display:grid))",
+            "width:50px@apply(--has-selector)@supports((display:grid))",
             "width:60px@container(card|(width>=40rem))",
             "width:70px@container(style(--density:compact))",
         ],
@@ -75,7 +75,7 @@ fn legacy_conditions_and_unknown_names_do_not_generate() {
 fn scoped_theme_and_variant_activation_are_independent() {
     let mut e = engine(
         r#"
-        @custom-variant ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @slot; } }
+        @mixin --ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } }
         @theme {
             :root, :host { --color-surface: white; }
             @supports (display: grid) { [data-theme="ocean"] { --color-surface: #082f49; } }
@@ -84,7 +84,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
     "#,
     )
     .unwrap();
-    let output = css(&mut e, &["color-surface", "padding:1px@ocean"]);
+    let output = css(&mut e, &["color-surface", "padding:1px@apply(--ocean)"]);
     assert!(
         output.contains(":root,:host{--color-surface:white}"),
         "{output}"
@@ -98,7 +98,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
         "{output}"
     );
     assert!(
-        output.contains(":where([data-theme=ocean],[data-theme=ocean] *)"),
+        output.contains(":where([data-theme=\"ocean\"],[data-theme=\"ocean\"] *)"),
         "{output}"
     );
     assert!(!output.contains("color-scheme"), "{output}");
@@ -106,8 +106,8 @@ fn scoped_theme_and_variant_activation_are_independent() {
 
 #[test]
 fn variant_redefinition_preserves_authored_theme_order() {
-    let mut e = engine("@custom-variant a { &.old { @slot; } } @custom-variant a { &.new { @slot; } } @theme { .b { --color-x: blue; } .a { --color-x: red; } }").unwrap();
-    let output = css(&mut e, &["color-x", "padding:1px@a"]);
+    let mut e = engine("@mixin --a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @theme { .b { --color-x: blue; } .a { --color-x: red; } }").unwrap();
+    let output = css(&mut e, &["color-x", "padding:1px@apply(--a)"]);
     assert!(!output.contains(".old"));
     assert!(output.contains(".new"), "{output}");
     assert!(
@@ -119,13 +119,13 @@ fn variant_redefinition_preserves_authored_theme_order() {
 #[test]
 fn invalid_modes_and_removed_settings_are_rejected() {
     for source in [
-        "@mode a { @slot; }",
-        "@mode a { .a::before { @slot; } }",
-        "@mode a { .a { color: red; @slot; } }",
-        "@mode a { @container (width>1px) { .a { @slot; } } }",
-        "@mode a { @layer utilities { .a { @slot; } } }",
+        "@mode a { @contents; }",
+        "@mode a { .a::before { @contents; } }",
+        "@mode a { .a { color: red; @contents; } }",
+        "@mode a { @container (width>1px) { .a { @contents; } } }",
+        "@mode a { @layer utilities { .a { @contents; } } }",
         "@theme missing { --color-x: red; }",
-        "@mode sm { .sm { @slot; } } @theme {:root, :host { --breakpoint-sm: 1rem; }}",
+        "@mode sm { .sm { @contents; } } @theme {:root, :host { --breakpoint-sm: 1rem; }}",
         "@settings { root-size: 20; }",
         "@settings { default-mode: dark; }",
         "@settings { mode-trigger: class; }",
@@ -216,7 +216,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":6,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":4,"languageVersion":7,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

@@ -2,8 +2,7 @@ use super::{
     BUILTIN_TOKEN_NAMESPACES, CompiledVariable, EngineClassCompletionCandidate,
     EngineClassCompletionKind, EngineColorToken, EngineError, EngineSession, HashSet,
     ManifestProjection, UtilityDefinition, UtilityLayerName, UtilityMatcher, Value,
-    add_unique_string, find_matching_parenthesis, selector_token_to_template,
-    split_dynamic_value_state, utf16_len,
+    add_unique_string, find_matching_parenthesis, split_dynamic_value_state, utf16_len,
 };
 
 pub(crate) fn utility_completion_metadata(
@@ -324,43 +323,30 @@ pub(crate) fn collect_class_completion_candidates(
             },
         );
     }
-    for token in manifest.selectors.keys() {
-        if !token.starts_with(':') {
-            continue;
-        }
-        push_class_completion_candidate(
-            &mut candidates,
-            &mut labels,
-            EngineClassCompletionCandidate {
-                label: token.clone(),
-                kind: EngineClassCompletionKind::Value,
-                detail: selector_token_to_template(token, manifest).map(|selector| {
-                    mastercss_lexer::replace_nesting_selector(&selector, "")
-                        .unwrap_or_else(|| selector.to_owned())
-                }),
-                documentation_class_name: None,
-                sort_text: None,
-                trigger_suggest: false,
-            },
-        );
-    }
-    for token in manifest
-        .conditions
+    let mut suffixes = manifest
+        .custom_media
         .keys()
-        .map(String::as_str)
-        .chain(
-            manifest
-                .custom_media
-                .keys()
-                .filter_map(|name| name.strip_prefix("--")),
-        )
-        .chain(
-            manifest
-                .variants
-                .iter()
-                .filter_map(|variant| variant.token.strip_prefix('@')),
-        )
-    {
+        .filter_map(|name| name.strip_prefix("--"))
+        .map(str::to_owned)
+        .collect::<Vec<_>>();
+    suffixes.extend(
+        [
+            "starting-style",
+            "layer(base)",
+            "layer(defaults)",
+            "layer(components)",
+            "layer(utilities)",
+        ]
+        .map(str::to_owned),
+    );
+    suffixes.extend(manifest.mixins.iter().map(|definition| {
+        if definition.parameters.is_empty() {
+            format!("apply({})", definition.name)
+        } else {
+            format!("apply({}())", definition.name)
+        }
+    }));
+    for token in suffixes {
         push_class_completion_candidate(
             &mut candidates,
             &mut labels,

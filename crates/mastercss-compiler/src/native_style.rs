@@ -1,8 +1,8 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssRule, HashMap, StyleRule, ThemeAtRule,
-    collect_ordered_declarations, combine_managed_selectors, condition_properties,
-    css_statement_delimiter, minified_css, preserve_ordered_literal_spelling, printed_selectors,
+    CssDirectiveStyleDefinition, CssRule, StyleRule, ThemeAtRule, collect_ordered_declarations,
+    combine_managed_selectors, condition_properties, css_statement_delimiter, minified_css,
+    preserve_ordered_literal_spelling, printed_selectors,
 };
 use crate::source_index::SourceIndex;
 
@@ -12,35 +12,16 @@ pub(crate) struct NativeStyleContext {
     pub(crate) selector_source: Option<CssDirectiveSourceReference>,
 }
 
-pub(crate) fn native_rule_list_has_directives(
-    source: &SourceIndex<'_>,
-    rules: &[CssRule<'_, ThemeAtRule>],
-    variant_rule_offsets: &HashMap<usize, String>,
-) -> bool {
+pub(crate) fn native_rule_list_has_directives(rules: &[CssRule<'_, ThemeAtRule>]) -> bool {
     rules.iter().any(|rule| match rule {
         CssRule::Custom(rule) if rule.name == super::DirectiveName::Apply => true,
         CssRule::Unknown(_) => false,
-        CssRule::Style(rule) => {
-            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
-        CssRule::Media(rule) => {
-            source
-                .byte_offset_for_location(rule.loc.line, rule.loc.column)
-                .is_some_and(|offset| variant_rule_offsets.contains_key(&offset))
-                || native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
-        CssRule::Supports(rule) => {
-            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
-        CssRule::Container(rule) => {
-            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
-        CssRule::LayerBlock(rule) => {
-            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
-        CssRule::StartingStyle(rule) => {
-            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
-        }
+        CssRule::Style(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::Media(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::Supports(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::Container(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::LayerBlock(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::StartingStyle(rule) => native_rule_list_has_directives(&rule.rules.0),
         _ => false,
     })
 }
@@ -79,7 +60,6 @@ pub(crate) fn lower_native_style_rule(
     style: StyleRule<'_, ThemeAtRule>,
     context: NativeStyleContext,
     condition_path: &[CssDirectiveConditionPathEntry],
-    variant_rule_offsets: &HashMap<usize, String>,
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
@@ -118,7 +98,6 @@ pub(crate) fn lower_native_style_rule(
         style.rules.0,
         Some(context),
         condition_path,
-        variant_rule_offsets,
         style_definitions,
         style_order,
     )
@@ -132,7 +111,6 @@ pub(crate) fn lower_native_rule_list(
     rules: Vec<CssRule<'_, ThemeAtRule>>,
     context: Option<NativeStyleContext>,
     condition_path: &[CssDirectiveConditionPathEntry],
-    variant_rule_offsets: &HashMap<usize, String>,
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
@@ -147,14 +125,37 @@ pub(crate) fn lower_native_rule_list(
                         "@apply requires a style rule",
                     )
                 })?;
-                if rule.body.is_some() {
-                    return Err(super::directive_error(
-                        source.text(),
-                        filename,
-                        rule.start_byte,
-                        "@apply contents blocks are not supported",
-                    ));
-                }
+                let contents = rule
+                    .body
+                    .as_deref()
+                    .map(|body| {
+                        let body = rule
+                            .body_start_byte
+                            .and_then(|start| source.text().get(start..start + body.len()))
+                            .unwrap_or(body);
+                        let nodes = crate::mixins::contents(body)?;
+                        let mut definition = mastercss_schema::MixinDefinition {
+                            name: "--contents-block".into(),
+                            parameters: Vec::new(),
+                            body: nodes,
+                            source: None,
+                        };
+                        if let Some(start) = rule.body_start_byte {
+                            crate::mixins::attach_sources(
+                                &mut definition,
+                                source,
+                                filename,
+                                rule.start_byte,
+                                start,
+                                body,
+                            );
+                        }
+                        Ok::<_, String>(definition.body)
+                    })
+                    .transpose()
+                    .map_err(|message| {
+                        super::directive_error(source.text(), filename, rule.start_byte, message)
+                    })?;
                 let (name, arguments) = crate::mixins::application(
                     rule.prelude
                         .parts
@@ -171,6 +172,8 @@ pub(crate) fn lower_native_rule_list(
                     selector: context.selectors.join(","),
                     name,
                     arguments,
+                    contents,
+                    selector_source: context.selector_source.clone(),
                     source: source.reference(filename, rule.start_byte, rule.start_byte + 6),
                     condition_path: (!condition_path.is_empty()).then(|| condition_path.to_vec()),
                 });
@@ -204,7 +207,6 @@ pub(crate) fn lower_native_rule_list(
                     child,
                     next_context,
                     condition_path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;
@@ -212,7 +214,7 @@ pub(crate) fn lower_native_rule_list(
             CssRule::NestedDeclarations(child) => {
                 let Some(context) = &context else {
                     return Err(CompilerError::Directive {
-                        message: "Native @variant blocks only accept style rules, declarations, and nested at-rules".into(),
+                        message: "Native condition blocks only accept style rules, declarations, and nested at-rules".into(),
                         filename: filename.to_owned(),
                         range: None,
                     });
@@ -230,19 +232,9 @@ pub(crate) fn lower_native_rule_list(
             }
             CssRule::Media(media) => {
                 let mut path = condition_path.to_vec();
-                let local_offset =
-                    rewritten.byte_offset_for_location(media.loc.line, media.loc.column);
-                if let Some(token) =
-                    local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
-                {
-                    path.push(CssDirectiveConditionPathEntry::Variant {
-                        token: token.clone(),
-                    });
-                } else {
-                    path.push(CssDirectiveConditionPathEntry::Condition {
-                        value: format!("@media {}", minified_css(&media.query, filename)?),
-                    });
-                }
+                path.push(CssDirectiveConditionPathEntry::Condition {
+                    value: format!("@media {}", minified_css(&media.query, filename)?),
+                });
                 lower_native_rule_list(
                     source,
                     filename,
@@ -250,7 +242,6 @@ pub(crate) fn lower_native_rule_list(
                     media.rules.0,
                     context.clone(),
                     &path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;
@@ -267,7 +258,6 @@ pub(crate) fn lower_native_rule_list(
                     supports.rules.0,
                     context.clone(),
                     &path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;
@@ -291,7 +281,6 @@ pub(crate) fn lower_native_rule_list(
                     container.rules.0,
                     context.clone(),
                     &path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;
@@ -310,7 +299,6 @@ pub(crate) fn lower_native_rule_list(
                     layer.rules.0,
                     context.clone(),
                     &path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;
@@ -327,7 +315,6 @@ pub(crate) fn lower_native_rule_list(
                     starting_style.rules.0,
                     context.clone(),
                     &path,
-                    variant_rule_offsets,
                     style_definitions,
                     style_order,
                 )?;

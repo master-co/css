@@ -19,6 +19,7 @@ export interface CSSDependencyAnalysis {
         end: number;
         url: string;
     }[];
+    usesCustomMedia?: boolean;
 }
 export interface InspectCSSResult {
     hasMasterCSSImport: boolean;

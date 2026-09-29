@@ -477,11 +477,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
     to { opacity: 1; }
   }
 
-@custom-variant motion-safe {
-  @media (prefers-reduced-motion: no-preference) {
-    @slot;
-  }
-}
+@custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
 @layer components {
   .btn {
@@ -497,16 +493,16 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 @custom-media --md (width >= 48rem);
 ```
 
-These CSS-first directives are manifest inputs. The compiler lowers tokens, managed keyframes, settings, variants, utilities and native variant blocks into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are manifest inputs. The compiler lowers scoped tokens, managed keyframes, custom media, mixins and native CSS into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
-| CSS entry graph | Project stylesheets with `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for scoped tokens, custom media, variants, utilities, source directives, and native CSS roots. |
+| CSS entry graph | Project stylesheets with `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for scoped tokens, custom media, mixins, source directives, and native CSS roots. |
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-compiler/project` | Engine, runtime, server renderer, scanner, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework integrations | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may import an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
-| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master-css` back into runtime-managed rule objects. |
+| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 3`, used to map `style#master-css` back into runtime-managed rule objects. |
 | Next build report | `@master/css-next` when `buildReport` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
 
 ---

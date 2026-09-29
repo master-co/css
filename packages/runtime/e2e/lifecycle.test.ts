@@ -161,7 +161,7 @@ test('prevent attach layer twice', async ({ page }) => {
 ]
   })
   await page.evaluate(() => {
-    document.body.classList.add('app-wrapper@component')
+    document.body.classList.add('app-wrapper@layer(components)')
   })
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules?.length)).toBe(3)

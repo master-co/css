@@ -122,7 +122,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
   const { tokens } = renderTokens(
-    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@base font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
+    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@layer(base) font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -160,7 +160,7 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
   expectToken(tokens, 'h4', 'type', ['selector'])
   expectToken(tokens, 'h5', 'type', ['selector'])
   expectToken(tokens, 'h6', 'type', ['selector'])
-  expectToken(tokens, '@base', 'keyword', ['query'])
+  expectToken(tokens, '@layer', 'keyword', ['query'])
 })
 
 test.concurrent('renders semantic tokens for vendor-prefixed native declarations', () => {
@@ -282,7 +282,7 @@ test.concurrent('renders native-aligned semantic tokens for grouped classes with
 })
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
-  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @mixin --reset {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"sr-only\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"sr-only\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@utility font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@utility bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }\n\n    @mixin --reset {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"sr-only\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"sr-only\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@layer(utilities) bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@layer(utilities) text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -301,8 +301,8 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable' as const, modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable' as const, modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword' as const, modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword' as const, modifiers: ['query'] })
-  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@apply(--motion-safe)', type: 'keyword' as const, modifiers: ['query'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
@@ -324,7 +324,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@utility btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@layer(utilities) btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
 
   expectToken(tokens, "text-gradient", 'enumMember')
   expectToken(tokens, "sr-only", 'enumMember')
@@ -348,7 +348,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
-  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"sr-only fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"sr-only fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @mixin --quoted { @media (x: \"a;b\") { @contents; } }\n  ", 'css')
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -361,8 +361,8 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
   expect(tokens).not.toContainEqual({ text: 'native', type: 'enumMember' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword' as const, modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@quoted', type: 'keyword' as const, modifiers: ['query'] })
-  expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@apply(--quoted)', type: 'keyword' as const, modifiers: ['query'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'debug-*', type: 'string' as const, modifiers: ['quoted'] })
 })
 
@@ -374,29 +374,29 @@ test.concurrent('does not tokenize quoted compose preludes as class lists', () =
 
 test.concurrent('does not render semantic tokens for custom variant directive syntax', () => {
   const { tokens } = renderTokens(`
-    @custom-variant supports-backdrop {
+    @mixin --supports-backdrop {
       @supports (backdrop-filter: blur(0)) {
-        @slot;
+        @contents;
       }
     }
-    @custom-variant card-wide {
+    @mixin --card-wide {
       @container card (width >= 42rem) {
-        @slot;
+        @contents;
       }
     }
-    @custom-variant component {
+    @mixin --component {
       @layer utilities {
-        @slot;
+        @contents;
       }
     }
-    @custom-variant starting-style {
+    @mixin --starting-style {
       @starting-style {
-        @slot;
+        @contents;
       }
     }
-    @custom-variant scrollbars {
+    @mixin --scrollbars {
       @media all {
-        @slot;
+        @contents;
       }
     }
   `, 'css')

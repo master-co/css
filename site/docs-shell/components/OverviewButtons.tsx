@@ -10,7 +10,7 @@ export default ({ children, className }: any) => {
   const $ = useTranslation()
   const locale = useLocale()
   return (
-    <section className={clsx(className, 'mt-md@default grid-cols(1) border-left:1px|solid|var(--color-line-subtle) border-top:1px|solid|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@lg')}>{
+    <section className={clsx(className, 'mt-md@layer(defaults) grid-cols(1) border-left:1px|solid|var(--color-line-subtle) border-top:1px|solid|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@lg')}>{
       children.map((definedMetadata: DefinedMetadata) =>
         <Link key={definedMetadata.pathname}
           className={clsx(

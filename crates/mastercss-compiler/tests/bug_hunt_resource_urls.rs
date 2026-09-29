@@ -50,12 +50,12 @@ fn opaque_url_payloads_and_invalid_values_do_not_create_nested_resources() {
 fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
     let request = serde_json::from_value(json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './child.css';.example{@variant always{background-image:var(--hero);}}",
+            "entry":"@import './child.css';.example{@apply --always{background-image:var(--hero);}}",
             "child":"@theme{:root, :host {--hero:url(image.png)}}.native{background:image-set('small.png' 1x,url(big.png) 2x)}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"/output/main.css","child":"/output/child.css"},
         "resourceURLs":{"child":{"image.png":"/original/child/image.png","small.png":"/original/child/small.png","big.png":"/original/child/big.png"}},
-        "baseManifest":{"version":4,"languageVersion":6, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
+        "baseManifest":{"version":4,"languageVersion":7, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     })).unwrap();
     let result = compile_css_stylesheet_graph(&request).unwrap();
     assert!(
@@ -85,7 +85,7 @@ fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
 fn relocation_requires_complete_independent_mappings_and_preserves_local_fragments() {
     let base = json!({
         "graph":{"entry":"entry","files":{"entry":".a{background:url(image.png);mask:url(#mask);cursor:url(''),auto}"},"edges":[]},
-        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":6, "customMedia":{"--always":{"type":"true"}},"mixins":[]},
+        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":7, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{}
     });
     for (map, expected) in [
@@ -117,7 +117,7 @@ fn relocation_requires_complete_independent_mappings_and_preserves_local_fragmen
 fn theme_urls_are_resolved_before_manifest_merging_and_unmapped_absolute_urls_survive() {
     let request = serde_json::from_value(json!({
         "graph":{"entry":"entry","files":{"entry":"@theme{:root, :host {--hero:url(images/hero.svg);--remote:url(https://assets.test/remote.svg)}}.a{background:url(data:image/svg+xml,%3Csvg%3E);filter:url(#filter)}"},"edges":[]},
-        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":6, "customMedia":{"--always":{"type":"true"}},"mixins":[]},
+        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":7, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{"entry":{"images/hero.svg":"/original/images/hero.svg"}}
     })).unwrap();
     let output = compile_css_stylesheet_graph(&request).unwrap();

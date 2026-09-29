@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-5-static-mixins",
+  "semanticBaseline": "language-7-mixin-contents",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -10,21 +10,24 @@
       "sourceId": "rc87-885ce94a18bfa418",
       "kind": "condition",
       "input": "print",
-      "expectedCanonical": "@media print"
+      "expectedCanonical": "@media print",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-cc61ba98b35b45c8",
       "sourceId": "rc87-cc61ba98b35b45c8",
       "kind": "condition",
       "input": "base",
-      "expectedCanonical": "@layer base"
+      "expectedCanonical": "@layer base",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-1734f5d7bb822911",
       "sourceId": "rc87-1734f5d7bb822911",
       "kind": "condition",
       "input": "default",
-      "expectedCanonical": "@layer defaults"
+      "expectedCanonical": "@layer defaults",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-28504c7efc2294a1",
@@ -440,7 +443,7 @@
       "id": "rc87-lexer-6d5d386f580d29af",
       "sourceId": "rc87-6d5d386f580d29af",
       "kind": "lexer",
-      "input": "block　fg:red",
+      "input": "block\u3000fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -467,7 +470,7 @@
       "id": "rc87-lexer-9548ae64df5ed481",
       "sourceId": "rc87-9548ae64df5ed481",
       "kind": "lexer",
-      "input": " block  fg:red　m:1x ",
+      "input": " block  fg:red\u3000m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -648,7 +651,7 @@
       "sourceId": "rc87-cd1d137ee89e9efb",
       "kind": "lexer",
       "input": "@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }",
-      "expectedCanonical": "variant",
+      "expectedCanonical": "",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -657,7 +660,7 @@
       "sourceId": "rc87-0ecc38899002a5db",
       "kind": "lexer",
       "input": ".card { @dark { @compose fg:white; } @light { color: black; } }",
-      "expectedCanonical": "variant|variant",
+      "expectedCanonical": "",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -666,7 +669,7 @@
       "sourceId": "rc87-bf007c1edf054a11",
       "kind": "lexer",
       "input": "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }",
-      "expectedCanonical": "custom-variant|slot",
+      "expectedCanonical": "",
       "targetPackage": "tooling",
       "runner": "cargo-test"
     },
@@ -787,11 +790,11 @@
           "op": "ensure",
           "classes": [
             "display:block:hover",
-            "display:block_button@base",
-            "{display:flex;position:relative}_:is(h4,.app-nav)@default",
+            "display:block_button@layer(base)",
+            "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
             "display:block@starting-style"
           ],
-          "expectedCss": "@layer base{.display\\:block_button\\@base button{display:block}}@layer defaults{.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
+          "expectedCss": "@layer base{.display\\:block_button\\@layer\\(base\\) button{display:block}}@layer defaults{.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
         }
       ]
     },
@@ -801,15 +804,15 @@
       "steps": [
         {
           "op": "inspect",
-          "className": "{display:flex;position:relative}_:is(h4,.app-nav)@default",
+          "className": "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
           "expectedValid": true,
           "expectedRuleTexts": [
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}",
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}"
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}",
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}"
           ],
           "expectedSelectorTexts": [
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)",
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)"
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)",
+            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)"
           ],
           "expectedLayers": [
             "defaults",
@@ -925,7 +928,7 @@
             }
           ]
         },
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -970,7 +973,8 @@
               }
             ]
           }
-        ]
+        ],
+        "customMedia": {}
       },
       "steps": [
         {
@@ -1024,7 +1028,7 @@
             "fg-blue-60@dark",
             "bg-white@light"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}@media (prefers-color-scheme:light){.bg-white\\@light{background-color:var(--color-white)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{@media (prefers-color-scheme: dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}@media (prefers-color-scheme: light){.bg-white\\@light{background-color:var(--color-white)}}}"
         }
       ]
     },
@@ -1139,7 +1143,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "mixins": [
           {
             "name": "--float-left",
@@ -1186,7 +1190,8 @@
               }
             ]
           }
-        ]
+        ],
+        "customMedia": {}
       },
       "steps": [
         {
@@ -1310,7 +1315,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "mixins": [
           {
             "name": "--card",
@@ -1344,28 +1349,18 @@
             ]
           }
         ],
-        "variants": [
-          {
-            "token": "@component",
-            "branches": [
-              {
-                "layer": "components",
-                "selector": "&"
-              }
-            ]
-          }
-        ]
+        "customMedia": {}
       },
       "steps": [
         {
           "op": "inspect",
-          "className": "card@component",
+          "className": "card@layer(components)",
           "expectedValid": true,
           "expectedRuleTexts": [
-            ".card\\@component{display:grid}.card\\@component:hover{color:red}"
+            ".card\\@layer\\(components\\){display:grid}.card\\@layer\\(components\\):hover{color:red}"
           ],
           "expectedSelectorTexts": [
-            ".card\\@component"
+            ".card\\@layer\\(components\\)"
           ],
           "expectedLayers": [
             "components"
@@ -1374,9 +1369,9 @@
         {
           "op": "ensure",
           "classes": [
-            "card@component"
+            "card@layer(components)"
           ],
-          "expectedCss": "@layer components{.card\\@component{display:grid}.card\\@component:hover{color:red}}"
+          "expectedCss": "@layer components{.card\\@layer\\(components\\){display:grid}.card\\@layer\\(components\\):hover{color:red}}"
         }
       ]
     },
@@ -1384,7 +1379,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1417,35 +1412,16 @@
             ]
           }
         ],
-        "variants": [
-          {
-            "token": "@default",
-            "branches": [
-              {
-                "layer": "defaults",
-                "selector": "&"
-              }
-            ]
-          },
-          {
-            "token": "@component",
-            "branches": [
-              {
-                "layer": "components",
-                "selector": "&"
-              }
-            ]
-          }
-        ]
+        "customMedia": {}
       },
       "steps": [
         {
           "op": "ensure",
           "classes": [
-            "demo-default@default",
-            "demo@component"
+            "demo-default@layer(defaults)",
+            "demo@layer(components)"
           ],
-          "expectedCss": "@layer defaults{.demo-default\\@default{background:var(--stripe)}}@layer components{.demo\\@component{display:flex}}"
+          "expectedCss": "@layer defaults{.demo-default\\@layer\\(defaults\\){background:var(--stripe)}}@layer components{.demo\\@layer\\(components\\){display:flex}}"
         }
       ]
     },
@@ -1470,7 +1446,7 @@
             }
           ]
         },
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -1483,7 +1459,8 @@
               }
             ]
           }
-        ]
+        ],
+        "customMedia": {}
       },
       "steps": [
         {
@@ -1516,7 +1493,7 @@
             }
           ]
         },
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -1529,7 +1506,8 @@
               }
             ]
           }
-        ]
+        ],
+        "customMedia": {}
       },
       "steps": [
         {
@@ -2669,7 +2647,7 @@
   "compilerCases": [
     {
       "id": "compiler-prose-base-responsive-order",
-      "source": "@mixin --prose { @variant sm { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
+      "source": "@mixin --prose { @media (--sm) { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedMixins": [
@@ -2702,17 +2680,17 @@
                       "source": {
                         "file": "parity/compiler-prose-base-responsive-order.css",
                         "range": {
-                          "start": 44,
-                          "end": 73
+                          "start": 46,
+                          "end": 75
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 45
+                            "column": 47
                           },
                           "end": {
                             "line": 1,
-                            "column": 74
+                            "column": 76
                           }
                         }
                       }
@@ -2729,17 +2707,17 @@
                       "source": {
                         "file": "parity/compiler-prose-base-responsive-order.css",
                         "range": {
-                          "start": 74,
-                          "end": 97
+                          "start": 76,
+                          "end": 99
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 75
+                            "column": 77
                           },
                           "end": {
                             "line": 1,
-                            "column": 98
+                            "column": 100
                           }
                         }
                       }
@@ -2770,17 +2748,17 @@
                   "source": {
                     "file": "parity/compiler-prose-base-responsive-order.css",
                     "range": {
-                      "start": 116,
-                      "end": 144
+                      "start": 118,
+                      "end": 146
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 117
+                        "column": 119
                       },
                       "end": {
                         "line": 1,
-                        "column": 145
+                        "column": 147
                       }
                     }
                   }
@@ -2797,17 +2775,17 @@
                   "source": {
                     "file": "parity/compiler-prose-base-responsive-order.css",
                     "range": {
-                      "start": 145,
-                      "end": 167
+                      "start": 147,
+                      "end": 169
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 146
+                        "column": 148
                       },
                       "end": {
                         "line": 1,
-                        "column": 168
+                        "column": 170
                       }
                     }
                   }
@@ -2819,7 +2797,7 @@
             "file": "parity/compiler-prose-base-responsive-order.css",
             "range": {
               "start": 0,
-              "end": 172
+              "end": 174
             },
             "loc": {
               "start": {
@@ -2828,7 +2806,7 @@
               },
               "end": {
                 "line": 1,
-                "column": 173
+                "column": 175
               }
             }
           }
@@ -2837,13 +2815,13 @@
     },
     {
       "id": "compiler-native-condition-order",
-      "source": ".card { @media (width>=40rem) { @variant all {display:grid;} } @variant all {display:block;} @container panel (inline-size>30rem) { @variant all {display:flex;} } @starting-style { @variant all {display:none;} } }",
+      "source": "@mixin --always { @contents; } .card { @media (width>=40rem) { @apply --always {display:grid;} } @apply --always {display:block;} @container panel (inline-size>30rem) { @apply --always {display:flex;} } @starting-style { @apply --always {display:none;} } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": "@media (width>=40rem){@media all{.card{display:grid}}}@media all{.card{display:block}}@container panel (inline-size>30rem){@media all{.card{display:flex}}}@starting-style{@media all{.card{display:none}}}"
+      "expectedGeneratedCss": "@media (width>=40rem){.card{display:grid}}.card{display:block}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
     },
     {
       "id": "compiler-managed-compose-order",
-      "source": "@mixin --btn { @variant sm { display:grid; } display:block; }",
+      "source": "@mixin --btn { @media (--sm) { display:grid; } display:block; }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedMixins": [
@@ -2866,17 +2844,17 @@
                   "source": {
                     "file": "parity/compiler-managed-compose-order.css",
                     "range": {
-                      "start": 29,
-                      "end": 41
+                      "start": 31,
+                      "end": 43
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 30
+                        "column": 32
                       },
                       "end": {
                         "line": 1,
-                        "column": 42
+                        "column": 44
                       }
                     }
                   }
@@ -2895,17 +2873,17 @@
               "source": {
                 "file": "parity/compiler-managed-compose-order.css",
                 "range": {
-                  "start": 45,
-                  "end": 58
+                  "start": 47,
+                  "end": 60
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 46
+                    "column": 48
                   },
                   "end": {
                     "line": 1,
-                    "column": 59
+                    "column": 61
                   }
                 }
               }
@@ -2915,7 +2893,7 @@
             "file": "parity/compiler-managed-compose-order.css",
             "range": {
               "start": 0,
-              "end": 61
+              "end": 63
             },
             "loc": {
               "start": {
@@ -2924,7 +2902,7 @@
               },
               "end": {
                 "line": 1,
-                "column": 62
+                "column": 64
               }
             }
           }
@@ -2933,21 +2911,22 @@
     },
     {
       "id": "compiler-root-size-condition-order",
-      "source": ".card { @media (width>=42rem) { @variant all {display:grid;} } @media (width>=800px) { @variant all {display:flex;} } }",
+      "source": "@mixin --always { @contents; } .card { @media (width>=42rem) { @apply --always {display:grid;} } @media (width>=800px) { @apply --always {display:flex;} } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": "@media (width>=42rem){@media all{.card{display:grid}}}@media (width>=800px){@media all{.card{display:flex}}}"
+      "expectedGeneratedCss": "@media (width>=42rem){.card{display:grid}}@media (width>=800px){.card{display:flex}}"
     },
     {
       "id": "rc87-compiler-variables-modes-dependencies",
       "sourceId": "rc87-5ae87bddfc5f375d",
-      "source": "@custom-variant light { &:where(.light, .light *) { @slot; } } @custom-variant dark { &:where(.dark, .dark *) { @slot; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
+      "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -3042,66 +3021,70 @@
             }
           ]
         },
-        "variants": [
+        "mixins": [
           {
-            "token": "@light",
-            "branches": [
+            "name": "--light",
+            "body": [
               {
-                "selector": "&:where(.light,.light *)",
-                "selectorNodes": [
+                "type": "rule",
+                "selector": "&:where(.light, .light *)",
+                "body": [
                   {
-                    "value": "where",
-                    "type": "pseudo-class"
-                  },
-                  {
-                    "value": "light",
-                    "type": "class"
-                  },
-                  {
-                    "value": ",",
-                    "type": "separator"
-                  },
-                  {
-                    "value": "light",
-                    "type": "class"
-                  },
-                  {
-                    "value": " ",
-                    "type": "combinator"
+                    "type": "contents",
+                    "fallback": []
                   }
                 ]
               }
-            ]
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-variables-modes-dependencies.css",
+              "range": {
+                "start": 0,
+                "end": 59
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 60
+                }
+              }
+            }
           },
           {
-            "token": "@dark",
-            "branches": [
+            "name": "--dark",
+            "body": [
               {
-                "selector": "&:where(.dark,.dark *)",
-                "selectorNodes": [
+                "type": "rule",
+                "selector": "&:where(.dark, .dark *)",
+                "body": [
                   {
-                    "value": "where",
-                    "type": "pseudo-class"
-                  },
-                  {
-                    "value": "dark",
-                    "type": "class"
-                  },
-                  {
-                    "value": ",",
-                    "type": "separator"
-                  },
-                  {
-                    "value": "dark",
-                    "type": "class"
-                  },
-                  {
-                    "value": " ",
-                    "type": "combinator"
+                    "type": "contents",
+                    "fallback": []
                   }
                 ]
               }
-            ]
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-variables-modes-dependencies.css",
+              "range": {
+                "start": 60,
+                "end": 116
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 61
+                },
+                "end": {
+                  "line": 1,
+                  "column": 117
+                }
+              }
+            }
           }
         ]
       }
@@ -3112,11 +3095,12 @@
       "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -3156,11 +3140,12 @@
       "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -3204,11 +3189,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7
       }
     },
     {
@@ -3230,11 +3216,12 @@
             ]
           }
         ],
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7
       }
     },
     {
@@ -3243,11 +3230,12 @@
       "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -3307,18 +3295,6 @@
               }
             }
           ]
-        },
-        "containerConditions": {
-          "panel": {
-            "id": "container",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 333,
-                "unit": "px"
-              }
-            ]
-          }
         }
       }
     },
@@ -3328,11 +3304,12 @@
       "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "theme": [
           {
             "type": "rule",
@@ -3463,69 +3440,54 @@
               "type": "string"
             }
           ]
-        },
-        "containerConditions": {
-          "panel": {
-            "id": "container",
-            "nodes": [
-              {
-                "type": "number",
-                "value": 512,
-                "unit": "px"
-              }
-            ]
-          }
         }
       }
     },
     {
       "id": "rc87-compiler-variant-branches",
       "sourceId": "rc87-2763794c2aab6ae8",
-      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } }",
+      "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
-        "variants": [
+        "languageVersion": 7,
+        "mixins": [
           {
-            "token": "@motion-safe",
-            "branches": [
+            "name": "--motion-safe",
+            "body": [
               {
-                "conditions": [
-                  "@media (prefers-reduced-motion:no-preference)"
-                ],
-                "conditionNodes": [
+                "type": "condition",
+                "condition": "@media (prefers-reduced-motion:no-preference)",
+                "body": [
                   {
-                    "id": "media",
-                    "nodes": [
-                      {
-                        "type": "string",
-                        "name": "prefers-reduced-motion",
-                        "value": "no-preference"
-                      }
-                    ]
+                    "type": "contents",
+                    "fallback": []
                   }
                 ]
               }
-            ]
-          }
-        ],
-        "conditions": {
-          "motion-safe": {
-            "id": "media",
-            "nodes": [
-              {
-                "type": "string",
-                "name": "prefers-reduced-motion",
-                "value": "no-preference"
+            ],
+            "source": {
+              "file": "parity/rc87-compiler-variant-branches.css",
+              "range": {
+                "start": 0,
+                "end": 85
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 86
+                }
               }
-            ]
-          }
-        },
-        "mixins": [
+            }
+          },
           {
             "name": "--hocus",
             "body": [
@@ -3545,17 +3507,17 @@
                     "source": {
                       "file": "parity/rc87-compiler-variant-branches.css",
                       "range": {
-                        "start": 128,
-                        "end": 142
+                        "start": 125,
+                        "end": 139
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 129
+                          "column": 126
                         },
                         "end": {
                           "line": 1,
-                          "column": 143
+                          "column": 140
                         }
                       }
                     }
@@ -3563,9 +3525,10 @@
                 ]
               },
               {
-                "type": "condition",
-                "condition": "@media (prefers-reduced-motion:no-preference)",
-                "body": [
+                "type": "apply",
+                "name": "--motion-safe",
+                "arguments": [],
+                "contents": [
                   {
                     "type": "declaration",
                     "property": "display",
@@ -3578,38 +3541,55 @@
                     "source": {
                       "file": "parity/rc87-compiler-variant-branches.css",
                       "range": {
-                        "start": 169,
-                        "end": 182
+                        "start": 166,
+                        "end": 179
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 170
+                          "column": 167
                         },
                         "end": {
                           "line": 1,
-                          "column": 183
+                          "column": 180
                         }
                       }
                     }
                   }
-                ]
+                ],
+                "source": {
+                  "file": "parity/rc87-compiler-variant-branches.css",
+                  "range": {
+                    "start": 143,
+                    "end": 163
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 144
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 164
+                    }
+                  }
+                }
               }
             ],
             "source": {
               "file": "parity/rc87-compiler-variant-branches.css",
               "range": {
-                "start": 89,
-                "end": 187
+                "start": 86,
+                "end": 184
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 90
+                  "column": 87
                 },
                 "end": {
                   "line": 1,
-                  "column": 188
+                  "column": 185
                 }
               }
             }
@@ -3623,11 +3603,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "mixins": [
           {
             "name": "--card",
@@ -3720,11 +3701,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 6
+        "languageVersion": 7,
+        "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 6,
+        "languageVersion": 7,
         "mixins": [
           {
             "name": "--btn",
@@ -3820,7 +3802,8 @@
     "Preserve breakpoint and container units; reject historical inferred condition syntax.",
     "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field.",
     "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged.",
-    "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered."
+    "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered.",
+    "Language 7 removes executable variant definitions and their manifest indexes. Current cases use native custom media, explicit layer suffixes and ordered mixin contents; the frozen RC oracle remains unchanged."
   ],
-  "languageVersion": 6
+  "languageVersion": 7
 }

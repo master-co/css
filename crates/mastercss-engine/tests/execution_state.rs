@@ -20,7 +20,7 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
     let classes = [
         "fg-red-60",
         "display:block",
-        "display:block@base",
+        "display:block@layer(base)",
         "unknown",
         "display:block",
     ];
@@ -54,11 +54,11 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
             .is_empty()
     );
     engine
-        .refresh(r#"{"version":4,"languageVersion":6}"#)
+        .refresh(r#"{"version":4,"languageVersion":7}"#)
         .unwrap();
     assert!(
-        engine
-            .execution_state(["display:block@base"])
+        !engine
+            .execution_state(["display:block@layer(base)"])
             .unwrap()
             .classes[0]
             .references
@@ -71,7 +71,7 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
 #[test]
 fn execution_state_tracks_resource_counts_without_css_mutations() {
     let mut engine = EngineSession::create(
-        r#"{"version":4,"languageVersion":6,"variables":{"":[{"name":"x","key":"x","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"x","value":"red"}]}]}"#,
+        r#"{"version":4,"languageVersion":7,"variables":{"":[{"name":"x","key":"x","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"x","value":"red"}]}]}"#,
     )
     .unwrap();
     engine

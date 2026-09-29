@@ -148,7 +148,6 @@ fn supported_subset_rejects_unsupported_authoring() {
         "@utility grid-cols:*{display:grid}",
         "@mixin --x(--n <length>){width:var(--n)}",
         "@mixin --x{@private{--n:1}color:red}",
-        "@mixin --x{@contents;}",
         "@mixin --x(--n){--n:1}",
         "@mixin --x(--n,--n){}",
         "@layer utilities{@mixin --x{color:red}}",
@@ -341,7 +340,7 @@ fn explicit_mixin_families_reserve_the_longest_prefix() {
 
 #[test]
 fn custom_media_and_variants_inside_mixins_are_lowered_once() {
-    let source = "@custom-media --sm (width>=40rem);@custom-variant active{&:hover{@slot;}}@mixin --card(--n <integer>){@media (--sm){@variant active{order:var(--n)}}}";
+    let source = "@custom-media --sm (width>=40rem);@mixin --active{&:hover{@contents;}}@mixin --card(--n <integer>){@media (--sm){@apply --active{order:var(--n)}}}";
     let output = css(source, &["card(3)"]);
     assert!(output.contains("@media (width>=40rem)"), "{output}");
     assert!(output.contains(":hover{order:3}"), "{output}");
@@ -538,7 +537,7 @@ fn apply_uses_definition_and_argument_url_origins() {
 #[test]
 fn same_element_selector_lists_and_ancestor_variants_keep_parameters() {
     let result = css(
-        "@custom-variant dark{.dark &{@slot;}}@mixin --gap(--n){&:hover,&:focus{gap:var(--n)}@variant dark{gap:var(--n)}}",
+        "@mixin --dark{.dark &{@contents;}}@mixin --gap(--n){&:hover,&:focus{gap:var(--n)}@apply --dark{gap:var(--n)}}",
         &["gap(2rem)"],
     );
     assert!(result.contains("gap:2rem"), "{result}");

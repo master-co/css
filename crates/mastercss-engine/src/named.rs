@@ -150,7 +150,53 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             format!("Unbalanced or invalid Master class structure: {source}"),
         )];
     }
+    let mut explicit_layer = None;
     for token in super::state::split_state_token(source).1 {
+        if !manifest.custom_media.contains_key(&format!("--{token}")) {
+            let replacement = match token.as_str() {
+                "base" => Some("@layer(base)"),
+                "default" => Some("@layer(defaults)"),
+                "component" => Some("@layer(components)"),
+                "utility" => Some("@layer(utilities)"),
+                "motion" => Some("@motion-safe"),
+                "reduce-motion" => Some("@motion-reduce"),
+                "print" => Some("@media(print)"),
+                "screen" => Some("@media(screen)"),
+                "all" => Some("@media(all)"),
+                _ => None,
+            };
+            if let Some(replacement) = replacement {
+                return vec![error(
+                    super::ErrorCode::UnknownCondition,
+                    format!("@{token} was removed; use {replacement}"),
+                )];
+            }
+            if token == "speech" {
+                return vec![error(
+                    super::ErrorCode::UnknownCondition,
+                    "@speech was removed; speech is an obsolete CSS media type".into(),
+                )];
+            }
+        }
+        if let Some(call) = super::class_apply::invocation(&token) {
+            let result = call.and_then(|(name, arguments)| {
+                super::expand_mixin_with_contents(&manifest.mixins, &name, &arguments, Some(&[]))
+            });
+            if let Err(message) = result {
+                return vec![error(super::ErrorCode::CssDirectiveError, message)];
+            }
+            continue;
+        }
+        if let Some(layer) = super::resolve_layer_condition(&token, manifest) {
+            if explicit_layer.is_some_and(|current| current != layer) {
+                return vec![error(
+                    super::ErrorCode::ClassSyntaxError,
+                    "A class cannot select multiple layers".into(),
+                )];
+            }
+            explicit_layer = Some(layer);
+            continue;
+        }
         if mastercss_lexer::query_requires_css(&token) {
             let (kind, body) = token.split_once('(').expect("recognized query");
             let prelude =
@@ -159,14 +205,15 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             let mut diagnostic = error(
                 super::ErrorCode::MasterQueryRequiresCss,
                 format!(
-                    "Complex @{kind} queries belong in CSS; define @custom-variant and use its name"
+                    "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
                 ),
             );
             diagnostic.notes.push(format!(
-                "@custom-variant query-name {{ @{kind} {prelude} {{ @slot; }} }}"
+                "@mixin --query-name {{ @{kind} {prelude} {{ @contents; }} }}"
             ));
             diagnostic.notes.push(
-                "Use @query-name. Verify literal pipes in the CSS query before copying.".into(),
+                "Use @apply(--query-name). Verify literal pipes in the CSS query before copying."
+                    .into(),
             );
             return vec![diagnostic];
         }
@@ -184,10 +231,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             return vec![error(super::ErrorCode::UnknownCondition, message)];
         }
         if !manifest.custom_media.contains_key(&format!("--{token}"))
-            && !manifest
-                .variants
-                .iter()
-                .any(|variant| variant.token == format!("@{token}"))
             && super::render_condition_token(&token, manifest).is_none()
             && super::resolve_layer_condition(&token, manifest).is_none()
         {

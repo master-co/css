@@ -1,4 +1,4 @@
-@layer theme{@media (prefers-color-scheme:light){:root,:host{--primary:#000000}}@media (prefers-color-scheme:dark){:root,:host{--primary:#ffffff}}}@layer base{.list-style\:none_ul\@base ul{list-style:none}}@layer defaults{.font-size\:1rem_p\@default p{font-size:1rem}}@layer components{.btn\@component{display:inline-flex;background-color:var(--primary)}}@layer utilities{.animation\:fade\|1s{animation:fade 1s}.display\:flex{display:flex}}@keyframes fade {
+@layer theme{@media (prefers-color-scheme:light){:root,:host{--primary:#000000}}@media (prefers-color-scheme:dark){:root,:host{--primary:#ffffff}}}@layer base{.list-style\:none_ul\@layer\(base\) ul{list-style:none}}@layer defaults{.font-size\:1rem_p\@layer\(defaults\) p{font-size:1rem}}@layer components{.btn\@layer\(components\){display:inline-flex;background-color:var(--primary)}}@layer utilities{.animation\:fade\|1s{animation:fade 1s}.display\:flex{display:flex}}@keyframes fade {
     0% {
       opacity: 0;
     }

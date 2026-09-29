@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile, mkdir, rm } from 'node:fs/promises'
 import path from 'node:path'
-import generateManifestCondition from '../utils/generate-manifest-condition'
+import { presetBreakpointQueries, presetContainerQueries } from '../common/preset-css'
 import { pathToFileURL } from 'node:url'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
@@ -90,27 +90,27 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const identifierAnchors = Object.fromEntries(entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`].map(name => [name, anchors.get(variable.key)!])))
     documents.push({ id: `tokens/${namespace}`, kind: 'tokens', title: namespace, description: `Preset ${namespace} values and their consumers.`, category: 'Tokens & namespaces', url: `/reference/tokens/${namespace}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(entries)), language: 'en', aliases: entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`]), identifierAnchors, terms: [namespace, ...consumers], rows: [], examples: [], related: ['rules/modes', 'directives/theme'], markdown, headings, extractionNotes: [] })
   }
-  for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', Object.fromEntries(Object.keys(preset.customMedia || {}).map(name => [name.slice(2), undefined]))], ['containers', 'Containers', preset.containerConditions] ] as const) {
+  for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', presetBreakpointQueries], ['containers', 'Containers', presetContainerQueries] ] as const) {
     const usage = id === 'containers'
       ? 'Append a condition such as `@container((width>=28rem))` to a class. It measures an eligible ancestor query container; establish that container with `container` or a named container declaration.'
       : 'Append a condition such as `@md` to a class. It measures the viewport width, independently of a component’s available width.'
-    const markdown = `## Conditions\n\nThese thresholds come from the current preset. Breakpoints have named entrances; container thresholds use complete native queries. Project @custom-media definitions override breakpoint queries; container tokens retain their authored dimensions.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name, condition]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${generateManifestCondition(condition).replace(/^@container /, '').replaceAll(' ', '|')})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
-    documents.push({ id: `tokens/${id}`, kind: 'tokens', title, description: `Named ${id} conditions in the current preset.`, category: 'Tokens & namespaces', url: `/reference/tokens/${id}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(conditions)), language: 'en', aliases: Object.entries(conditions ?? {}).map(([key, condition]) => id === 'containers' ? `@container(${generateManifestCondition(condition).replace(/^@container /, '').replaceAll(' ', '|')})` : `@${key}`), terms: [], rows: [], examples: [], related: ['rules/conditions'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
+    const markdown = `## Conditions\n\nThese thresholds come from the current preset. Breakpoints have named entrances; container thresholds use complete native queries. Project @custom-media definitions override breakpoint queries; container tokens retain their authored dimensions.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name, condition]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${condition.replace(/^@container /, '').replaceAll(' ', '|')})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
+    documents.push({ id: `tokens/${id}`, kind: 'tokens', title, description: `Named ${id} conditions in the current preset.`, category: 'Tokens & namespaces', url: `/reference/tokens/${id}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(conditions)), language: 'en', aliases: Object.entries(conditions ?? {}).map(([key, condition]) => id === 'containers' ? `@container(${condition.replace(/^@container /, '').replaceAll(' ', '|')})` : `@${key}`), terms: [], rows: [], examples: [], related: ['rules/conditions'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
   }
   // Directive sections are maintained once, in the existing directive source during migration.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives & settings')
   const sections = directive.markdown.split(/(?=^## )/m)
-  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and variants': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Removed utility composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
+  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and conditions': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Removed utility composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
     'settings': 'Migrate removed global settings to native CSS and per-class importance.',
-    'theme': 'Declare scoped custom properties, custom media and reusable named variants.',
+    'theme': 'Declare scoped custom properties, custom media and reusable mixins.',
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',
     'compose': 'Migrate removed @compose statements to native CSS declarations and selectors.',
-    'variant': 'Apply a Master CSS condition inside a native rule or managed definition.',
+    'variant': 'Use native conditions and explicit mixin wrappers inside style rules.',
     'preserve': 'Keep a stylesheet’s native class rules when source-based pruning would remove them.'
 }
   for (const section of sections) {

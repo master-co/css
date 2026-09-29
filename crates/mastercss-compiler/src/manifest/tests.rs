@@ -32,18 +32,12 @@ fn compiles_scoped_variables_custom_media_and_utilities() {
 }
 
 #[test]
-fn compiles_variant_nodes() {
-    let input: CssDirectiveManifestInput = serde_json::from_value(json!({
-        "variants":[{"token":":hocus","branches":[{"selector":"&:hover,&:focus"}]},
-        {"token":"@motion-safe","branches":[{"conditions":["@media (prefers-reduced-motion:no-preference)"]}]}]
-    })).unwrap();
-    let manifest = compile_manifest_input(&input, &CompileManifestOptions::default())
-        .unwrap()
-        .manifest;
-    assert_eq!(manifest["selectors"][":hocus"][0]["value"], "hover");
-    assert_eq!(
-        manifest["conditions"]["motion-safe"]["nodes"][0]["name"],
-        "prefers-reduced-motion"
+fn rejects_removed_variant_input() {
+    assert!(
+        serde_json::from_value::<CssDirectiveManifestInput>(json!({
+            "variants":[{"token":"@hocus","branches":[{"selector":"&:hover,&:focus"}]}]
+        }))
+        .is_err()
     );
 }
 

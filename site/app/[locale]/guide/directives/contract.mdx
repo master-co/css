@@ -52,7 +52,7 @@ combining files must preserve those boundaries and the URLs of their images and
 fonts. A resource used by an imported managed definition retains that definition's
 source location when the compiled stylesheet uses it.
 
-Native CLI project scanning reads global definitions from unqualified imports before lowering native variants. A qualified import may contain native CSS, including native rules with `@variant`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
+Native CLI project scanning reads global definitions from unqualified imports before lowering native mixin applications. A qualified import may contain native CSS, including native rules with `@apply`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
 Relative `@source` patterns are resolved from the file that declares them, and
 `@reference` supplies definition context without adding its scanning sources or
 exporting its managed classes. Reading this metadata does not publish stylesheet
@@ -78,7 +78,7 @@ original URL bases. See [CSS imports](/guide/css-imports) for the delivery bound
 
 Compiler hosts can opt into `preserveNativeSource: true` when another transformer
 needs the untouched native portions of a stylesheet. Master definitions are still
-consumed and native `@variant` rules are still lowered, while unrelated comments,
+consumed and native `@apply` rules are still lowered, while unrelated comments,
 empty rules, value spelling, and rule boundaries are retained. The option defaults
 to `false`, preserving the compiler's normal native CSS normalization.
 
@@ -114,11 +114,11 @@ Use a reference when compilation needs definitions from another stylesheet witho
 
 .button {
   padding: var(--spacing-md);
-  @variant manual-dark { color: white; }
+  @apply --manual-dark { color: white; }
 }
 ```
 
-A reference supplies `@theme`, `@mixin`, `@custom-media`, and `@custom-variant` definitions. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used tokens and managed keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native keyframes outside `@theme` need an actual `@import` or another delivered stylesheet.
+A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used tokens and managed keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native keyframes outside `@theme` need an actual `@import` or another delivered stylesheet.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
@@ -130,7 +130,7 @@ The standalone API accepts absolute `referenceFiles` and `transformNativeStylesh
 ### Removed `@settings` \{#settings\}
 The entire directive and manifest `settings` field are removed. Use the `!` suffix on a particular class for importance. Use native selectors, nesting, or `@scope` to define where stylesheet rules apply. Master CSS does not apply a global important or selector-scope setting.
 
-## Theme and variants \{#theme-and-variants\}
+## Theme and conditions \{#theme-and-variants\}
 ### `@theme` \{#theme\}
 Declare custom properties under explicit native selectors. A theme block must be top-level and has no prelude or modifiers.
 
@@ -157,21 +157,21 @@ The compiler preserves selector order, declaration order, repeated declarations,
 
 Theme declarations are emitted in the `theme` layer. A used token retains every authored declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values; it does not claim to know the value for a particular DOM element.
 
-The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` variants continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting, browser support and migration.
+The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` media conditions continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting, browser support and migration.
 
 ### Native selectors replace theme modes \{#theme-mode\}
 `@theme dark` and other mode preludes are removed. Put the selectors and conditions inside `@theme`, as in the example above. No implicit `:root` or `:host` selector is inserted.
 
 ### Native activation replaces `@mode` \{#mode\}
-`@mode` is removed. Theme activation comes from native selectors and queries. Define a separate `@custom-variant` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
+`@mode` is removed. Theme activation comes from native selectors and queries. Define a selector `@mixin` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
 
 ```css
-@custom-variant ocean {
-  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @slot; }
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
 }
 ```
 
-This enables `color:white@ocean`. Theme declarations can independently use `[data-theme="ocean"]`. Add explicit `:host(...)` selectors where a shadow tree requires them.
+This enables `color:white@apply(--ocean)`. Theme declarations can independently use `[data-theme="ocean"]`. Add explicit `:host(...)` selectors where a shadow tree requires them.
 
 ### Native custom properties replace inline expansion \{#theme-inline\}
 `@theme inline` is removed. Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
@@ -221,30 +221,25 @@ Define named media queries using the [CSS Media Queries specification](https://d
 @media (--reading) { .article { max-width: 70ch; } }
 ```
 
-Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@variant name`. The same registry is used in native CSS, theme scopes, custom variants, utility definitions, and markup queries.
+Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, theme scopes, mixin definitions, and markup queries.
 
 Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
 
-Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. A `@custom-media --name` and `@custom-variant name` cannot share a name. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
+Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. Media and mixin names are independent: `@name` selects media, while `@apply(--name)` invokes a mixin. `--starting-style` is reserved because `@starting-style` is built in. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
 
-### `@custom-variant` \{#custom-variant\}
-Define a named selector or condition with an explicit `@slot;`:
+### Removed variants \{#custom-variant\}
+`@custom-variant`, `@variant`, and `@slot` are removed and report migration diagnostics. Use `@custom-media` for named media queries. Use a mixin with `@contents` for selector, supports, container, or combined wrappers.
 
 ```css
-@custom-variant hocus {
-  &:hover, &:focus-visible { @slot; }
+@mixin --hocus() {
+  &:is(:hover, :focus-visible) { @contents; }
 }
-
-@custom-variant motion-safe {
-  @media (prefers-reduced-motion: no-preference) { @slot; }
+.button {
+  @apply --hocus { color: red; }
 }
 ```
 
-Use `bg-blue-60@hocus` or `opacity:1@motion-safe` in markup, or `@variant hocus` in a stylesheet rule. Native selector and condition wrappers express the transformation; supported Master layer wrappers use the established layer names. Every branch must reach a bare `@slot;`. Parameters, declarations in the variant definition, implicit slots, and mixin invocation are not supported. Later same-name definitions replace the complete earlier definition.
-
-<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
-
-<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />
+Markup uses `color:red@apply(--hocus)`. There is no `@hocus` or `@hocus()` shorthand. Move layer branches out of former variants to the stylesheet's outer `@layer` or the class's explicit `@layer(components)` suffix; a mixin body cannot select a layer.
 
 ## Utilities and native styles \{#managed-definitions\}
 ### Native defaults \{#defaults\}
@@ -340,23 +335,51 @@ Apply a mixin inside a native style rule or another mixin:
 
 Expansion occurs at the original declaration position, preserving duplicates, importance, nested selectors and conditions. It does not generate a separate `.text-sm` rule. `@apply` accepts one mixin call, not a utility class list. `@compose` remains removed.
 
-Parameters may be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursion, overloads, `@private`, `@contents`, contents blocks and unsupported parameter types report compilation errors. Unknown mixins and invalid arity or types include source diagnostics. Relative URLs preserve the defining or calling file's ownership.
+Parameters may be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported parameter types report compilation errors. Unknown mixins and invalid arity or types include source diagnostics. Relative URLs preserve the defining or calling file's ownership.
+
+### Contents and class wrappers \{#contents\}
+Master compiles a static subset of the [CSS mixin draft](https://drafts.csswg.org/css-mixins-1/); it does not implement the complete browser proposal.
+
+```css
+@mixin --card-wide() {
+  @container card (width >= 40rem) { @contents { display: grid; } }
+}
+.card { @apply --card-wide { gap: 1rem; } }
+```
+
+`@contents;` inserts supplied content. `@contents { … }` supplies fallback content only when the call omits its block. An explicit empty `@apply --card-wide {}` suppresses fallback. Each contents position inserts the block once, preserving declarations, duplicates and nested rules. A mixin without `@contents` ignores the supplied block.
+
+Supplied content retains the caller's parameter bindings, including when forwarded through nested applications. Fallback uses the defining mixin's bindings. Ordinary custom properties retain native CSS cascade behavior. Finite nested calls are allowed; recursive definitions and expansion depth/node limit violations are errors.
+
+```html
+<button class="color:red@apply(--hocus)">Save</button>
+<div class="grid-cols(3)@apply(--card-wide)"></div>
+<div class="{color:red;display:block}@apply(--hocus)!"></div>
+```
+
+`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A declaration group is supplied as one block, so a wrapper's own declarations are not repeated per member. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
+
+Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
 
 ### Whole-definition replacement \{#whole-definition-replacement\}
 The last definition with the same decoded name replaces the entire previous mixin, including parameters, body, dependencies and cached expansion. An empty definition remains registered. Forward nested calls resolve against the final registry. There is no parameter overloading.
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
-`@theme`, `@mixin`, `@custom-media`, and `@custom-variant` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain supported native conditions and named `@variant` blocks.
+`@theme`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
 
 Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve every authored scope and transitive dependency. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 6 and binding ABI 17. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 7 and binding ABI 18. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
+
+<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />
 
 <StylesheetExample title="A parameter mixin" source={"@mixin --pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
 
-<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @variant card { display: grid; } }"} />
+<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
 
 ## Source boundaries \{#source-boundaries\}
 ### `@source` \{#source\}
@@ -420,7 +443,7 @@ Write native declarations, selectors and conditions in stylesheets. Share design
 }
 ```
 
-When migrating an existing statement, preserve its expanded declarations, nested selectors, conditions, importance and destination layer. Replacing it with declarations preserves the current style but removes the dependency on the original utility: future utility changes no longer update that rule. Do not rename it to `@apply`; Master CSS does not provide a replacement composition directive or a native mixin polyfill.
+When migrating an existing statement, preserve its expanded declarations, nested selectors, conditions, importance and destination layer. Replacing it with declarations preserves the current style but removes the dependency on the original utility: future utility changes no longer update that rule. Do not rename it to `@apply`; The supported `@apply` subset consumes mixins, not markup utility classes.
 
 The compiler no longer exposes compose IR or composition traces. Tooling removes compose canonicalization and structural directive fixes, including `composeDirective`, `includeDirectiveFixes`, `preferNativeDeclarationsInCompose`, `preferVariantBlocksInCompose`, and CLI `--fix-directives`. ESLint removes `configs.stylesheet`; its recommended config still handles classes in markup and class builders. `preferCompositionUtilities` continues to apply to markup class lists.
 
@@ -429,24 +452,24 @@ The RC migration command reports an occurrence for manual migration and leaves t
 ---
 
 ## Conditional blocks \{#conditional-blocks\}
-### `@variant` \{#variant\}
-Use one named condition inside a native style rule or utility definition:
+### Native conditions and mixin wrappers \{#variant\}
+Use native conditions directly, and name reusable wrappers with mixins:
 
 ```css
 @custom-media --wide (width >= 60rem);
-@custom-variant manual-dark {
-  @media (prefers-color-scheme: dark) { @slot; }
+@mixin --manual-dark {
+  &:where(.dark, .dark *) { @contents; }
 }
 
 .notice {
-  @variant manual-dark { color: white; }
-  @variant wide { padding: 2rem; }
+  @apply --manual-dark { color: white; }
+  @media (--wide) { padding: 2rem; }
   @supports (display: grid) { display: grid; }
   &:hover { opacity: .8; }
 }
 ```
 
-`@dark`, `@light`, and query-form `@variant media(...)` blocks are removed. Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
+`@dark`, `@light`, and query-form `@media (--media)(...)` blocks are removed. Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
 
 ## CLI stylesheet assets \{#cli-stylesheet-assets\}
 
@@ -468,7 +491,7 @@ authored definitions available to used utilities. Local imports still connect
 selected output; imports to empty excluded branches are omitted so they do not
 establish cascade layers. External imports from excluded stylesheets are omitted.
 The compiler option `preserveNativeCSS: false` removes raw native CSS and external
-imports while keeping compiled native `@variant` in included stylesheets.
+imports while keeping compiled native `@apply` in included stylesheets.
 
 When resource URLs are rewritten for delivery, ranged compiler diagnostics still
 refer to the original stylesheet and source position, including imported files.
@@ -584,7 +607,7 @@ identify the preprocessed location.
 
 Development CSS and Sass modules retain their scoped exports and native rules.
 Editing the module or a resolved `composes` dependency updates both its CSS and
-exports through HMR, including modules that use local `@variant`.
+exports through HMR, including modules that use local `@apply`.
 
 During development, editing a CSS project entry updates ordinary stylesheet
 imports and its `?inline` and `?raw` consumers. Inline requests export processed
@@ -645,7 +668,7 @@ context's resource copies. Connected pages reload and reconnect to new asset URL
 subsequent child CSS and image edits update without another page reload.
 Local stylesheets compile imported local rules and retain qualified child imports
 and resources in development and production builds. This also applies when the
-root and intermediate stylesheets contain only native CSS, and `@variant` appears
+root and intermediate stylesheets contain only native CSS, and `@apply` appears
 only in an imported descendant. These graphs remain local stylesheets rather than
 becoming project entries or native CSS pruning roots.
 CSS Modules keep the root module's scoped exports; SSR inline requests return
@@ -658,7 +681,7 @@ asynchronous entry registration order.
 Local CSS and Sass imported through `?url` deliver their compiled stylesheet
 and retained child assets. When that URL is attached as a stylesheet link,
 editing a retained CSS child or its image updates the styles without reloading
-the page, including when only an imported descendant contains `@variant`.
+the page, including when only an imported descendant contains `@apply`.
 CSS Modules that import local CSS files expose the imported classes through the
 root module's exports, with the same scope as its own classes. Imports retain their
 conditions and layers, and relative resources keep their original file's directory.
@@ -787,7 +810,7 @@ Stylesheet declarations and `@theme` values use native CSS token streams. Master
 } }
 ```
 
-For conditions outside the [simple class query subset](/guide/conditional-queries), define a named `@custom-variant` in CSS. Native media and custom-variant queries keep their native query syntax and do not decode class whitespace.
+For queries outside the [simple class query subset](/guide/conditional-queries), define a `@custom-media` or a mixin wrapper in CSS. Authored CSS queries retain native syntax and do not decode class whitespace.
 
 Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report` as the default. Report mode preserves declarations and returns diagnostics. Error mode rejects the entire result for definite syntax or value errors; unknown capabilities alone do not fail the build. The former `cssValuePolicy` option produces a configuration error.
 

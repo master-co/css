@@ -23,7 +23,7 @@ test('public project, codec, query and validation APIs preserve execution contex
       entries: [join(root, 'app.css')],
       baseManifest: {
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
     })
     const manifest: MasterCSSManifest = JSON.parse(serializeMasterCSSManifest(project.manifest))

@@ -31,20 +31,25 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
       writeFileSync(join(root, 'child.css'), '@source "./views/*.html";@safelist "display:flex";.sentinel{display:grid}')
       const result = await compileRenderedStylesheet(join(root, 'entry.css'), `@import './child.css' ${qualifier};@import "@master/css";`, {
         baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)

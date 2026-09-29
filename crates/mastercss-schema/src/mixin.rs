@@ -55,7 +55,12 @@ pub enum MixinNode {
         name: String,
         arguments: Vec<MixinValue>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
+        contents: Option<Vec<MixinNode>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         source: Option<crate::CssDirectiveSourceReference>,
+    },
+    Contents {
+        fallback: Vec<MixinNode>,
     },
 }
 

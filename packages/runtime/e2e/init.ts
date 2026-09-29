@@ -56,7 +56,6 @@ export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInp
     ...defaultManifest, ...manifest,
     theme: [...(defaultManifest.theme || []), ...(manifest.theme || []), ...nodes],
     variables: groupMasterCSSManifestVariables([...merged.values()]),
-    variants: [...new Map([...(defaultManifest.variants || []), ...(manifest.variants || [])].map(variant => [variant.token, variant])).values()],
     mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])]
   }
 }

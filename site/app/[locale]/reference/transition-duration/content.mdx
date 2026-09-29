@@ -10,7 +10,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
 ```html
 <!-- Fast · 150ms -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -25,8 +25,8 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration-fast@screen@motion">
+             transition-duration:0ms@media(print)
+             transition-duration-fast@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -36,7 +36,7 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
 ```html
 <!-- Slower · 500ms -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -51,8 +51,8 @@ Toggle each layer to compare the same 96px movement over 150ms and 500ms. The di
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration-slower@screen@motion">
+             transition-duration:0ms@media(print)
+             transition-duration-slower@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -76,7 +76,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
 ```html
 <!-- 48px / 300ms · 160px per second -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(48px):has(input:checked)>span>span@screen">
+         transform:translateX(48px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move short distance"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -91,8 +91,8 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration-slow@screen@motion">
+             transition-duration:0ms@media(print)
+             transition-duration-slow@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -102,7 +102,7 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
 ```html
 <!-- 96px / 600ms · 160px per second -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move long distance"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -117,8 +117,8 @@ Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives 
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration:600ms@screen@motion">
+             transition-duration:0ms@media(print)
+             transition-duration:600ms@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -135,7 +135,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
 ```html
 <!-- 500ms · native transition -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -150,8 +150,8 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration-slower@screen@motion">
+             transition-duration:0ms@media(print)
+             transition-duration-slower@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>
@@ -161,7 +161,7 @@ Toggle both specimens. One uses 500ms and the other uses zero, so the same endpo
 ```html
 <!-- 0ms · immediate update -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -193,7 +193,7 @@ Resize before toggling the layer. Its duration changes from 150ms to 500ms at `s
 ```html
 <!-- 150ms → 500ms at sm -->
 <label class="display:block width:280px max-width:100% font-sm
-         transform:translateX(96px):has(input:checked)>span>span@screen">
+         transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -208,9 +208,9 @@ Resize before toggling the layer. Its duration changes from 150ms to 500ms at `s
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
-             transition-duration:0ms@print
-             transition-duration-fast@screen@motion
-             transition-duration-slower@screen@motion@sm">
+             transition-duration:0ms@media(print)
+             transition-duration-fast@media(screen)@motion-safe
+             transition-duration-slower@media(screen)@motion-safe@sm">
       Layer 01
     </span>
   </span>

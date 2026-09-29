@@ -5,7 +5,7 @@ fn simple_query_diagnostics_and_selectors_are_shared_by_generation() {
         let inspection = engine.inspect(class).unwrap();
         assert!(inspection.rules.is_empty());
         assert_eq!(inspection.diagnostics[0].code, super::ErrorCode::MasterQueryRequiresCss);
-        assert!(inspection.diagnostics[0].notes[0].contains("@custom-variant"));
+        assert!(inspection.diagnostics[0].notes[0].contains("@mixin"));
         assert!(engine.generate_composition_rules(class).is_empty());
     }
     for class in ["padding:1px.<br", "padding:1px.foo()"] {
@@ -51,26 +51,26 @@ fn priority_intersects_media_but_preserves_container_domains_and_exclusive_bound
 }
 
 #[test]
-fn explicit_variant_selector_lists_cover_every_authored_branch() {
+fn mixin_selector_lists_cover_every_authored_branch() {
     let mut manifest: serde_json::Value = serde_json::from_str(MANIFEST).unwrap();
-    manifest["variants"].as_array_mut().unwrap().push(serde_json::json!({"token":"@night","branches":[{"selector":"&:where(.a,.a *)"},{"selector":"&:where(.b,.b *)"}]}));
+    manifest["mixins"].as_array_mut().unwrap().push(serde_json::json!({"name":"--night","parameters":[],"body":[{"type":"rule","selector":"&:where(.a,.a *)","body":[{"type":"contents","fallback":[]}]},{"type":"rule","selector":"&:where(.b,.b *)","body":[{"type":"contents","fallback":[]}]}]}));
     let engine = EngineSession::create(&manifest.to_string()).unwrap();
-    let inspection = engine.inspect("block@night").unwrap();
-    assert_eq!(inspection.rules.len(), 2);
+    let inspection = engine.inspect("block@apply(--night)").unwrap();
+    assert_eq!(inspection.rules.len(), 1);
     assert!(inspection.rules[0].text.contains(":where(.a,.a *)"));
-    assert!(inspection.rules[1].text.contains(":where(.b,.b *)"));
+    assert!(inspection.rules[0].text.contains(":where(.b,.b *)"));
 }
 
 #[test]
-fn selectors_replace_only_nesting_tokens_through_variant_composition() {
+fn selectors_replace_only_nesting_tokens_through_mixin_composition() {
     let mut manifest: serde_json::Value = serde_json::from_str(MANIFEST).unwrap();
-    manifest["variants"].as_array_mut().unwrap().push(serde_json::json!({
-        "token":"@literal", "branches":[{"selector": "&[data-x='&']/*&*/ .escaped\\&name"}]
+    manifest["mixins"].as_array_mut().unwrap().push(serde_json::json!({
+        "name":"--literal", "parameters":[], "body":[{"type":"rule","selector": "&[data-x='&']/*&*/ .escaped\\&name", "body":[{"type":"contents","fallback":[]}]}]
     }));
     let engine = EngineSession::create(&manifest.to_string()).unwrap();
-    let inspection = engine.inspect("block@literal@scope").unwrap();
+    let inspection = engine.inspect("block@apply(--literal)@apply(--scope)").unwrap();
     assert!(inspection.rules[0].text.contains("[data-x='&']/*&*/ .escaped\\&name"));
-    let composed = engine.generate_composition_rules("block@literal@scope");
+    let composed = engine.generate_composition_rules("block@apply(--literal)@apply(--scope)");
     assert!(composed[0].selector.contains("[data-x='&']/*&*/ .escaped\\&name"));
 }
 

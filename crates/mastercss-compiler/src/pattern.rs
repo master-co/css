@@ -87,7 +87,6 @@ pub(crate) fn condition_properties(
         .iter()
         .map(|entry| match entry {
             CssDirectiveConditionPathEntry::Condition { value } => Some(value.clone()),
-            CssDirectiveConditionPathEntry::Variant { .. } => None,
         })
         .collect::<Option<Vec<_>>>();
     (conditions, Some(path.to_vec()))

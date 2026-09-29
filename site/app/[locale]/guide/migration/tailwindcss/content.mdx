@@ -26,7 +26,7 @@ Inspect the Tailwind surface before changing files.
 | CSS entry | `@import "tailwindcss"` and any imported theme files | Add `@import "@master/css"` beside it during migration. |
 | Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
 | Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@mixin`. |
-| Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Recreate shared conditions with Master CSS `@custom-variant` and `@variant`. |
+| Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Use `@custom-media` for media names and `@mixin` with `@contents` for other wrappers. |
 | Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
 | Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
 | Markup | Class strings in HTML, JSX, templates, helper maps, and component props | Convert complete class strings, not fragments. |
@@ -112,13 +112,13 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 | `@theme inline` | Scoped `@theme` or a fixed `@mixin` | Tokens retain `var()` references. Use a fixed utility for a literal declaration. |
 | `@theme static` | Native `@layer theme` | Native custom properties and top-level keyframes ship with their stylesheet. |
 
-Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme switch. Define custom variants separately when markup uses `@manual-light` or `@manual-dark` suffixes.
+Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme switch. Define selector mixins separately when markup uses `@apply(--manual-light)` or `@apply(--manual-dark)` suffixes.
 
 ```css name=app.css
 @import "@master/css";
 
-@custom-variant manual-light { &:where(.light, .light *) { @slot; } }
-@custom-variant manual-dark { &:where(.dark, .dark *) { @slot; } }
+@mixin --manual-light { &:where(.light, .light *) { @contents; } }
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
 
 @theme { .light {
   --color-panel: #fff;
@@ -190,10 +190,10 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `hover:bg-blue-700` | `bg-blue-70:hover` | Selector states follow the value. |
 | `focus-visible:outline-2` | `outline-width:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
 | `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
-| `md:grid-cols-3` | `grid-cols:3@md` | Breakpoint and condition suffixes use `@`. |
-| `dark:bg-slate-950` | `bg-slate-95@manual-dark` | Output follows the `@custom-variant manual-dark` selector or query. |
-| `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
-| `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports(backdrop-filter(0px))` | Use raw `@supports()` for local conditions. |
+| `md:grid-cols-3` | `grid-cols(3)@md` | Breakpoint and condition suffixes use `@`. |
+| `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | Output follows the explicit `--manual-dark` selector mixin. |
+| `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion-safe` | Built-in motion variants are `@motion-safe` and `@motion-reduce`. |
+| `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports((backdrop-filter:blur(0px)))` | Use raw `@supports()` for local conditions. |
 | `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |
 | `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
 
@@ -203,16 +203,12 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 </button>
 ```
 
-Use `@custom-variant` when a Tailwind custom variant represents shared conditional product language. Keep selector states as selector suffixes or nested selectors.
+Use `@custom-media` for reusable media queries and a mixin with `@contents` for other wrappers. Keep selector states as selector suffixes or nested selectors.
 
 ```css name=app.css
 @import "@master/css";
 
-@custom-variant compact {
-  @media (width < 48rem) {
-    @slot;
-  }
-}
+@custom-media --compact (width < 48rem);
 
 ```
 
@@ -336,7 +332,7 @@ Use `@layer components` when the name describes a product UI role rather than a 
       pointer-events: none;
     }
 
-    @variant md {
+    @media (--md) {
       padding-inline: var(--spacing-lg);
     }
   }
@@ -441,7 +437,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, and `@variant`.
+- [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, and `@apply`.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static source scanning behavior.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup utilities, theme tokens, custom utilities, and component classes.
 - [Code linting](/guide/code-linting) for validating Master CSS classes during migration.

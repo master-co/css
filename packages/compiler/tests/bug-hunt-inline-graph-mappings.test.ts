@@ -11,22 +11,27 @@ for (const binding of ['native', 'wasm'] as const) {
     using compiler = await createCompiler({ binding })
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
       const entry = `@import "./child.css"${qualifier};@mixin --paint {padding:2rem}/* 😀 */\n.after{margin:1px}`
-      const child = "/* child */\n.card{@variant all {padding:2rem;}}\n.card{padding:3rem}"
+      const child = "/* child */\n.card{@apply --all {padding:2rem;}}\n.card{padding:3rem}"
       const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
@@ -47,36 +52,46 @@ test('Node manifest files and references reject qualified global definitions', a
     for (const qualifier of [' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) screen']) {
       writeFileSync(entry, `@import "./child.css"${qualifier};`)
       expect(() => compileManifestFileSync(entry, { baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } })).toThrow(/Qualified import.*global @mixin/)
-      await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@variant all{padding:2rem;}}", { projectDir: root, baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+      await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@apply --all{padding:2rem;}}", { projectDir: root, baseManifest: {
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } })).rejects.toThrow(/Qualified import.*global @mixin/)
 
     }

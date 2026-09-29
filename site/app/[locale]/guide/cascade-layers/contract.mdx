@@ -17,7 +17,7 @@ utilities > components > defaults > base > theme
 
 Normal unlayered author rules take precedence over normal layered author rules. `!important` reverses the order between layers; it also gives important layered declarations precedence over important unlayered declarations. The order above describes normal declarations, not every case in the native cascade.
 
-Generated CSS emits rules into those layer blocks. Native style rules that use `@variant` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
+Generated CSS emits rules into those layer blocks. Native style rules that use `@apply` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
 
 ## The five layers \{#the-five-layers\}
 ### Theme \{#theme\}
@@ -28,12 +28,12 @@ Theme rules are intentionally early: they provide values that later layers consu
 ### Base \{#base\}
 Use `base` for low-level resets, normalization, and structural document baselines. This layer should make the browser environment predictable, not express a brand or component design.
 
-Use the `@base` class suffix for a generated rule, or write native CSS inside `@layer base`.
+Use the `@layer(base)` class suffix for a generated rule, or write native CSS inside `@layer base`.
 
 ### Defaults \{#defaults\}
 Use `defaults` for broad visual choices made by the project, such as the page's text color, typography inside an article, or code styling that should remain below component and utility styles. These are not the browser's built-in default styles.
 
-Use the `@default` class suffix, native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
+Use the `@layer(defaults)` class suffix, native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
 
 For example, put `button { font: inherit; }` in `base`, `body { color: var(--color-text-body); }` in `defaults`, and `.btn { display: inline-flex; }` in `components`.
 
@@ -45,7 +45,7 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@mixin`. Custom utilities can use native declarations, nested selectors, and `@variant` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@mixin`. Custom utilities can use native declarations, nested selectors, and `@apply` blocks.
 
 ```css name=index.css
 @mixin --flow {
@@ -86,7 +86,7 @@ Add base rules in the stylesheet your app loads when the reset is part of the ap
 }
 ```
 
-You can also use `@base` from markup:
+You can also use `@layer(base)` from markup:
 
 <ConfiguredExample source="" html={require('./tests/adding-base-styles/template.html?raw')} />
 
@@ -100,8 +100,8 @@ Put brand or content defaults in the defaults layer when they should apply acros
 Avoid using the base layer for brand or content typography:
 
 ```html
-<!-- @MARK font-mono_:is(code,pre)@base -->
-<body class="font-mono_:is(code,pre)@base">…</body>
+<!-- @MARK font-mono_:is(code,pre)@layer(base) -->
+<body class="font-mono_:is(code,pre)@layer(base)">…</body>
 ```
 
 Base should normalize. Defaults should express broad design defaults.
@@ -181,8 +181,8 @@ size is 16px:
 | `p-md padding:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
 | `p-md! padding:8px` | `padding: 1rem` | Importance takes precedence over value source. |
 | `p-md! padding:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
-| `padding:8px@base padding:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
-| `padding:8px@base! padding:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| `padding:8px@layer(base) padding:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `padding:8px@layer(base)! padding:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
 | Unlayered `.outside { padding: 32px; }` and `padding:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
 | Component-layer `padding: 24px !important` and `padding:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
 | `padding:8px padding-top:12px` | Top padding is `12px`; other sides are `8px` | The longhand supplies the more specific property override. |
@@ -212,3 +212,5 @@ Use the five layers in their declared order:
 1. `utilities` holds utilities and final local adjustments.
 
 When a declaration loses, first confirm that its selector and conditions match. Then inspect importance, origin, layer and specificity in the browser. Include native unlayered rules in that check; layer order alone does not explain every result.
+
+`@layer(...)` selects one of the four generated style layers for the entire class. It never creates a sublayer. Repeated identical choices merge; different choices report a conflict. Keep stylesheet layers outside `@apply`; mixin bodies and contents cannot contain layer blocks.

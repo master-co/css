@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from '../helpers/contents-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   compileCSSManifest,
@@ -175,10 +175,10 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('detects local compose styles without treating them as Master entries', () => {
-    expect(hasLocalStyleDirectives(".card { @variant all {display:block;} }")).toBe(true)
-    expect(hasLocalStyleDirectives('.card { @variant print { color: red; } }')).toBe(true)
+    expect(hasLocalStyleDirectives(".card { @apply --all {display:block;} }")).toBe(true)
+    expect(hasLocalStyleDirectives('.card { @media (--print) { color: red; } }')).toBe(true)
     expect(hasLocalStyleDirectives(".card { @media (prefers-color-scheme: dark) { color: red; } }")).toBe(false)
-    expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
+    expect(() => hasLocalStyleDirectives('.card { @slot; }')).toThrow('Variants were removed')
     expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
     expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
     expect(isStylesheetRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
@@ -230,7 +230,7 @@ describe('style CSS extraction helpers', () => {
     const { manifest } = compileCSSManifest(' @mixin --brand { color: #fff; } ', {
       baseManifest: defaultManifest
     })
-    const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @variant all {color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
+    const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @apply --all {color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
       baseManifest: manifest
     })
 
@@ -247,7 +247,7 @@ describe('style CSS extraction helpers', () => {
     const modulePath = join(root, 'app/Button.module.css')
     writeFileSync(tokenPath, "@mixin --brand { background-color: #123456; }\n.referenced-native { color: red; }")
 
-    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .button {\n        @variant all {background-color:#123456;}\n      }\n    ", {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .button {\n        @apply --all {background-color:#123456;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -266,13 +266,13 @@ describe('style CSS extraction helpers', () => {
     const modulePath = join(root, 'app/Button.module.css')
     writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
 
-    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @apply --all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
 
     expect(result.transformed).toBe(true)
-    expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:1s pop}')
+    expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:pop 1s}')
     expect(result.code).toContain('--spacing-card:2rem')
     expect(result.code).not.toContain('@keyframes pop')
     expect(result.code).not.toContain('@reference')
@@ -287,7 +287,7 @@ describe('style CSS extraction helpers', () => {
     const modulePath = join(root, 'app/Button.module.css')
     writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }")
 
-    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @variant all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
+    const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @apply --all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: {
@@ -297,7 +297,7 @@ describe('style CSS extraction helpers', () => {
     })
 
     expect(result.transformed).toBe(true)
-    expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:1s pop}')
+    expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:pop 1s}')
     expect(result.code).not.toContain('--spacing-card:2rem')
     expect(result.code).not.toContain('@keyframes pop')
     expect(result.code).not.toContain('@reference')
@@ -309,7 +309,7 @@ describe('style CSS extraction helpers', () => {
     const pagePath = join(root, 'app/page.css')
     writeFileSync(globalsPath, '@import "@master/css";')
 
-    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @apply --all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -336,7 +336,7 @@ describe('style CSS extraction helpers', () => {
       baseManifest: defaultManifest,
       projectDir: root
     })
-    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @variant all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
+    const result = await transformLocalStylesheet(pagePath, "\n      @reference \"./globals.css\";\n\n      .home-section {\n        @apply --all {padding-block:var(--spacing-5xl);}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: globalResult.emittedGlobals

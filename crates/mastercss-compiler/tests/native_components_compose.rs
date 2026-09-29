@@ -14,7 +14,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap()
 }
@@ -22,7 +22,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
 #[test]
 fn variant_preserves_fallbacks_and_repeated_shorthand_order() {
     let result = compile(
-        r###".card{@variant always{color:red;}display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}"###,
+        r###".card{@apply --always{color:red;}display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}"###,
     );
     let css = result.css.unwrap();
     assert!(css.contains("display:block;display:made-up-value"), "{css}");
@@ -35,7 +35,7 @@ fn variant_preserves_fallbacks_and_repeated_shorthand_order() {
 #[test]
 fn utility_rules_preserve_fallbacks_through_manifest_and_variant() {
     let result = compile(
-        r###"@mixin --fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}.a{@variant always{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
+        r###"@mixin --fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}.a{@apply --always{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     engine.ensure_class_rules(["fallback"]).unwrap();
@@ -74,7 +74,7 @@ fn native_components_are_output_without_becoming_utilities() {
 #[test]
 fn nested_rules_are_not_moved_across_source_boundaries() {
     let result = compile(
-        r###".a{@variant always{color:red;}@media (width>1px){color:blue}@variant always{color:green;}}"###,
+        r###".a{@apply --always{color:red;}@media (width>1px){color:blue}@apply --always{color:green;}}"###,
     );
     let css = result.css.unwrap();
     assert!(
@@ -89,7 +89,7 @@ fn nested_rules_are_not_moved_across_source_boundaries() {
 
 #[test]
 fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
-    let source = r###"@mixin --fallback {display:-webkit-box;display:flex!important;display:grid}.a{@variant always{display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
+    let source = r###"@mixin --fallback {display:-webkit-box;display:flex!important;display:grid}.a{@apply --always{display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let body = &parsed.manifest_input.mixins.as_ref().unwrap()[0].body;
     let mut values = Vec::new();
@@ -150,19 +150,27 @@ fn pattern_importance_spelling_and_comments_do_not_reorder_declarations() {
         "&:hover{display:block} DISPLAY:flex !/**/IMPORTANT; /* fallback */ display:made-up-value; display:grid!important",
     ] {
         let result = compile(&format!(
-            "@mixin --paint-a{{{declarations}}}@mixin --paint-b{{{declarations}}}.a{{@variant always{{{declarations}}}}}"
+            "@mixin --paint-a{{{declarations}}}@mixin --paint-b{{{declarations}}}.a{{@apply --always{{{declarations}}}}}"
         ));
         let css = result.css.unwrap();
         assert!(
-            css.contains("display:flex !important;display:made-up-value;display:grid !important"),
+            css.to_ascii_lowercase()
+                .replace("/**/", "")
+                .split_whitespace()
+                .collect::<String>()
+                .contains("display:flex!important;display:made-up-value;display:grid!important"),
             "{css}"
         );
         let native = compile(&format!(
-            ".a{{@variant always{{color:red;{declarations}}}}}"
+            ".a{{@apply --always{{color:red;{declarations}}}}}"
         ));
         let css = native.css.unwrap();
         assert!(
-            css.contains("display:flex !important;display:made-up-value;display:grid !important"),
+            css.to_ascii_lowercase()
+                .replace("/**/", "")
+                .split_whitespace()
+                .collect::<String>()
+                .contains("display:flex!important;display:made-up-value;display:grid!important"),
             "{css}"
         );
     }

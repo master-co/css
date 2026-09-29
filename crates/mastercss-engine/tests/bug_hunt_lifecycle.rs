@@ -71,8 +71,8 @@ fn audit_transition_replay_matches_snapshot_through_256_operations() {
         "padding:md",
         "width:10px:hover@sm",
         "animate:spin",
-        "block@base",
-        "block@default",
+        "block@layer(base)",
+        "block@layer(defaults)",
         "block!",
         "invalid-unknown",
     ];
@@ -125,7 +125,7 @@ fn audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable() {
     for invalid in [
         "{",
         r#"{"version":999}"#,
-        r#"{"version":4,"languageVersion":6,"utilities":null}"#,
+        r#"{"version":4,"languageVersion":7,"utilities":null}"#,
     ] {
         assert!(engine.refresh(invalid).is_err());
         assert_eq!(engine.snapshot().unwrap(), before);

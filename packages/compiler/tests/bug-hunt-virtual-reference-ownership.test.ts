@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, unlinkSync, writeFileSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test, vi } from 'vitest'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { contentsManifest as defaultManifestJSON } from './helpers/contents-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createStylesheetCollection, transformStylesheet } from '../src/stylesheet/public'
 
@@ -22,7 +22,7 @@ function fixture() {
     const owner = join(directory, 'owner.scss'), reference = join(directory, 'tokens #.css'), resource = join(directory, 'pixel.svg')
     writeFileSync(resource, `<svg data-owner="${side}"/>`)
     writeFileSync(reference, `@theme{:root, :host {--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}}.never-${side}{color:red}`)
-    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@variant all{padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
+    return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@apply --all{padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
   })
   writeFileSync(join(root, 'tokens #.css'), '@mixin --paint-a {padding:99rem}@mixin --paint-b {padding:99rem}')
   return { root, sources, scanner, delivery, dependencies, remove: () => rmSync(root, { recursive: true, force: true }) }
@@ -57,7 +57,7 @@ test.each(['self', 'indirect'])('BH-0004 virtual owner participates in %s refere
     const owner = join(f.root, 'owner.css')
     writeFileSync(owner, '@mixin --paint {color:red}')
     writeFileSync(join(f.root, 'other.css'), '@reference "./owner.css";')
-    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@variant all{color:red;}}`, {
+    await expect(transformStylesheet('\0prepared:cycle.css', `@reference "./${cycle === 'self' ? 'owner' : 'other'}.css";.a{@apply --all{color:red;}}`, {
       baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: owner }
     })).rejects.toThrow('Circular CSS reference:')
   } finally { f.remove() }

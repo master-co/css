@@ -501,10 +501,10 @@
         "./base.css",
         "./client",
         "./index.css",
+        "./media.css",
         "./node",
         "./theme.css",
-        "./utilities.css",
-        "./variants.css"
+        "./utilities.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -737,9 +737,9 @@
         "./base.css",
         "./default-manifest.json",
         "./index.css",
+        "./media.css",
         "./theme.css",
-        "./utilities.css",
-        "./variants.css"
+        "./utilities.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -817,23 +817,7 @@
           "MasterCSSManifest",
           "MasterCSSManifestCSSDeclarationPrimitive",
           "MasterCSSManifestCSSDeclarations",
-          "MasterCSSManifestCondition",
-          "MasterCSSManifestConditionBooleanNode",
-          "MasterCSSManifestConditionComparisonOperatorNode",
-          "MasterCSSManifestConditionGroupNode",
           "MasterCSSManifestConditionIdentifier",
-          "MasterCSSManifestConditionLogicalOperatorNode",
-          "MasterCSSManifestConditionNode",
-          "MasterCSSManifestConditionNumberNode",
-          "MasterCSSManifestConditionOperatorNode",
-          "MasterCSSManifestConditionStringNode",
-          "MasterCSSManifestConditionValueNode",
-          "MasterCSSManifestConditions",
-          "MasterCSSManifestSelectorCombinatorNode",
-          "MasterCSSManifestSelectorLiteralNode",
-          "MasterCSSManifestSelectorNode",
-          "MasterCSSManifestSelectorSeparatorNode",
-          "MasterCSSManifestSelectors",
           "MasterCSSManifestUtilityLayerName",
           "MasterCSSManifestVariable",
           "MasterCSSManifestVariableEntry",
@@ -841,10 +825,6 @@
           "MasterCSSManifestVariableType",
           "MasterCSSManifestVariableValue",
           "MasterCSSManifestVariables",
-          "MasterCSSManifestVariant",
-          "MasterCSSManifestVariantBranch",
-          "MasterCSSManifestVariantToken",
-          "MasterCSSManifestVariants",
           "MasterCSSMediaQueryExpression",
           "MasterCSSMixinDefinition",
           "MasterCSSMixinNode",
@@ -891,7 +871,6 @@
           "CSSDirectiveStyleDefinition",
           "CSSDirectiveStyleNativeDefinition",
           "CSSDirectiveVariableValue",
-          "CSSDirectiveVariantDefinitions",
           "CSSMixinSource",
           "CSSNativeOutput",
           "CSSOrderedDeclaration",
@@ -947,7 +926,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "d40914f3471037ee"
+      "surface": "3ab4f272faa2cece"
     },
     "@master/css-server": {
       "directory": "server",

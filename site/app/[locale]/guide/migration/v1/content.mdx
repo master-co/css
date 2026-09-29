@@ -1,4 +1,4 @@
-Master CSS v1 projects should be upgraded as real application migrations, not as automatic string rewrites. The current documentation is CSS-first: the project CSS entry, `@theme`, `@custom-variant`, managed classes, rendering modes, linting, and language tooling are the source of truth.
+Master CSS v1 projects should be upgraded as real application migrations, not as automatic string rewrites. The current documentation is CSS-first: the project CSS entry, `@theme`, `@custom-media`, managed classes, rendering modes, linting, and language tooling are the source of truth.
 
 This guide avoids unverified one-to-one mappings for old v1 syntax. Audit the old project, install the current packages, then convert setup, theme, and class usage in small reviewed batches.
 
@@ -27,7 +27,7 @@ Inspect the v1 project before changing files.
 | Packages | `@master/css`, runtime, server, framework packages, language tooling, and ESLint packages | Replace v1 packages with the current package or integration that owns the behavior. |
 | Runtime setup | Manual runtime initialization, framework runtime helpers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
 | CSS entries | Imported Master CSS files, generated CSS files, global styles, and old config references | Create a current CSS entry with `@import "@master/css";`. |
-| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@custom-variant`, `@layer components`, and `@mixin`. |
+| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@custom-media`, `@layer components`, and `@mixin`. |
 | Class syntax | Old class strings, dynamic class builders, custom utilities, selectors, variables, and important flags | Convert intentionally and validate generated CSS. |
 | Tooling | Editor extension, language service, lint rules, build commands, and CI scripts | Update after the app compiles with current packages. |
 
@@ -69,18 +69,12 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 
 } }
 
-@custom-variant dashboard {
-  @media (width >= 72rem) {
-    @slot;
-  }
-}
-
 @custom-media --dashboard (width >= 72rem);
 ```
 
 { }
 ```html
-<section class="display:grid gap-lg r-card fg-body grid-cols:3@dashboard p-card">
+<section class="display:grid gap-lg r-card fg-body grid-cols(3)@dashboard p-card">
   ...
 </section>
 ```

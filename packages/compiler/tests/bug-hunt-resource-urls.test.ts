@@ -4,26 +4,31 @@ import { createCompilerBindingSession } from '../src/session'
 
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: 'entry', files: {
-    entry: "@import './child.css';.example{@variant all {background:var(--hero);}}",
+    entry: "@import './child.css';.example{@apply --all {background:var(--hero);}}",
     child: "@theme {:root, :host {--hero:url(hero.svg?q=1#part)}}\n\n.native{background:image-set(\"small.png\" 1x,url(big.png) 2x)}"
   }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
   urls: { entry: '/output/main.css', child: '/output/child.css' },
   resourceURLs: { child: { 'hero.svg?q=1#part': '/source/child/hero.svg?q=1#part', 'small.png': '/source/child/small.png', 'big.png': '/source/child/big.png' } },
   baseManifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 }
 

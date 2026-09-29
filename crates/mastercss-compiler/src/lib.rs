@@ -44,7 +44,7 @@ use mastercss_schema::{
     CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry,
     CssDirectiveExtractionPolicy, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, Diagnostic,
-    ErrorCode, SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
+    ErrorCode, SourceLocation, SourceLocationRange, SourceRange,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -159,6 +159,8 @@ pub struct CssDependencyAnalysis {
     pub source_without_references: String,
     pub imports: Vec<CssDependencyImport>,
     pub resources: Vec<CssResourceReference>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uses_custom_media: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -214,6 +216,7 @@ pub fn analyze_css_dependencies(source: &str) -> CssDependencyAnalysis {
         })
         .collect();
     CssDependencyAnalysis {
+        uses_custom_media: custom_media::uses_native_alias(source).then_some(true),
         resources: analyze_css_resources(source),
         source_without_references,
         imports,
@@ -406,7 +409,6 @@ enum DirectiveName {
     Mixin,
     Apply,
     Utility,
-    CustomVariant,
 }
 
 impl DirectiveName {
@@ -418,7 +420,6 @@ impl DirectiveName {
             Self::Utility => "utility",
             Self::Mixin => "mixin",
             Self::Apply => "apply",
-            Self::CustomVariant => "custom-variant",
         }
     }
 }
@@ -455,7 +456,6 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
             name if name.eq_ignore_ascii_case("utility") => DirectiveName::Utility,
             name if name.eq_ignore_ascii_case("mixin") => DirectiveName::Mixin,
             name if name.eq_ignore_ascii_case("apply") => DirectiveName::Apply,
-            name if name.eq_ignore_ascii_case("custom-variant") => DirectiveName::CustomVariant,
             _ => return Err(input.new_error(BasicParseErrorKind::AtRuleInvalid(name))),
         };
         let mut parts = Vec::new();
@@ -532,7 +532,6 @@ fn directive_name_from_prelude(prelude: &ThemePrelude) -> DirectiveName {
         Some("utility") => DirectiveName::Utility,
         Some("mixin") => DirectiveName::Mixin,
         Some("apply") => DirectiveName::Apply,
-        Some("custom-variant") => DirectiveName::CustomVariant,
         _ => DirectiveName::Theme,
     }
 }
@@ -670,30 +669,27 @@ mod stylesheet_graph;
 mod stylesheet_inline;
 mod stylesheet_resources;
 pub use stylesheet_resources::{CssResourceReference, analyze_css_resources};
+mod native_selectors;
 mod syntax;
 mod theme;
-mod variant;
 
 pub(crate) use imports::{
     decode_css_quoted_string, default_filename, default_true, extraction_policy_from_statements,
 };
+pub(crate) use native_selectors::{
+    combine_managed_selectors, printed_selectors, reject_removed_directives,
+};
 pub(crate) use native_style::{
-    NativeStyleContext, lower_native_rule_list, lower_native_style_rule,
-    native_rule_list_has_directives,
+    NativeStyleContext, lower_native_style_rule, native_rule_list_has_directives,
 };
 pub(crate) use pattern::{
     condition_properties, css_block_end, css_statement_delimiter, minified_css,
 };
 pub(crate) use syntax::{
-    collect_declarations, css_comment_end, css_quote_end, declaration_name, directive_error,
-    next_char_end, ranged_directive_diagnostic,
+    css_comment_end, css_quote_end, declaration_name, directive_error, next_char_end,
+    ranged_directive_diagnostic,
 };
 pub(crate) use theme::lower_theme_rule;
-pub(crate) use variant::{
-    combine_managed_selectors, lower_custom_variant_rule, printed_selectors,
-    reject_removed_directives, rewrite_managed_variant_directives,
-    validate_condition_variant_syntax,
-};
 
 pub use compiled_stylesheet_graph::{
     CompileCssStylesheetGraphRequest, CompiledCssStylesheet, CompiledCssStylesheetGraph,

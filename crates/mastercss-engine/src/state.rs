@@ -1,6 +1,5 @@
 use super::{
-    ManifestProjection, ManifestSelectorNode, ManifestVariant, StateBranch, add_condition_wrapper,
-    parse_raw_condition_wrapper, render_condition_token, render_manifest_condition,
+    ManifestProjection, StateBranch, add_condition_wrapper, render_condition_token,
     resolve_layer_condition,
 };
 
@@ -23,24 +22,16 @@ pub(crate) fn resolve_state_branches(
     }];
 
     if !selector_token.is_empty() {
-        let selector_variant = manifest
-            .variants
-            .iter()
-            .find(|variant| variant.token == selector_token);
-        if let Some(variant) = selector_variant {
-            branches = expand_variant_branches(branches, variant, manifest);
-        } else {
-            let template = selector_token_to_template(&selector_token, manifest);
-            if template
-                .as_deref()
-                .is_some_and(|selector| !mastercss_lexer::valid_selector_structure(selector))
-            {
-                return Vec::new();
-            }
-            for branch in &mut branches {
-                branch.key.push_str(&selector_token);
-                branch.selector_template = template.clone();
-            }
+        let template = selector_token_to_template(&selector_token, manifest);
+        if template
+            .as_deref()
+            .is_some_and(|selector| !mastercss_lexer::valid_selector_structure(selector))
+        {
+            return Vec::new();
+        }
+        for branch in &mut branches {
+            branch.key.push_str(&selector_token);
+            branch.selector_template = template.clone();
         }
     }
 
@@ -85,16 +76,6 @@ pub(crate) fn resolve_state_branches(
                         .collect::<Vec<_>>()
                 })
                 .collect();
-            continue;
-        }
-
-        let variant_token = format!("@{condition_token}");
-        if let Some(variant) = manifest
-            .variants
-            .iter()
-            .find(|variant| variant.token == variant_token)
-        {
-            branches = expand_variant_branches(branches, variant, manifest);
             continue;
         }
 
@@ -169,68 +150,7 @@ pub(crate) fn split_state_token(state_token: &str) -> (String, Vec<String>) {
     (selector, conditions)
 }
 
-pub(crate) fn expand_variant_branches(
-    current: Vec<StateBranch>,
-    variant: &ManifestVariant,
-    manifest: &ManifestProjection,
-) -> Vec<StateBranch> {
-    current
-        .into_iter()
-        .flat_map(|base| {
-            variant
-                .branches
-                .iter()
-                .enumerate()
-                .filter_map(|(index, variant_branch)| {
-                    if base.layer.is_some()
-                        && variant_branch.layer.is_some()
-                        && base.layer != variant_branch.layer
-                    {
-                        return None;
-                    }
-                    let mut branch = base.clone();
-                    branch.key.push_str(&variant.token);
-                    branch.key.push('#');
-                    branch.key.push_str(&index.to_string());
-                    branch.layer = variant_branch.layer.or(branch.layer);
-
-                    let variant_selector = if let Some(selector) = &variant_branch.selector {
-                        Some(selector.clone())
-                    } else if !variant_branch.selector_nodes.is_empty() {
-                        let suffix = generate_selector_nodes(&variant_branch.selector_nodes);
-                        Some(suffix_to_template(&suffix))
-                    } else {
-                        None
-                    };
-                    branch.selector_template = compose_selector_templates(
-                        branch.selector_template.as_deref(),
-                        variant_selector.as_deref(),
-                    );
-
-                    if !variant_branch.condition_nodes.is_empty() {
-                        for condition in &variant_branch.condition_nodes {
-                            let wrapper = render_manifest_condition(condition, None);
-                            add_condition_wrapper(
-                                &mut branch.condition_wrappers,
-                                &condition.id,
-                                wrapper,
-                            );
-                        }
-                    } else {
-                        for raw in &variant_branch.conditions {
-                            if let Some((id, wrapper)) = parse_raw_condition_wrapper(raw) {
-                                add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper);
-                            }
-                        }
-                    }
-                    let _ = manifest;
-                    Some(branch)
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect()
-}
-
+#[cfg(test)]
 pub(crate) fn compose_selector_templates(
     current: Option<&str>,
     next: Option<&str>,
@@ -249,13 +169,10 @@ pub(crate) fn compose_selector_templates(
 
 pub(crate) fn selector_token_to_template(
     selector_token: &str,
-    manifest: &ManifestProjection,
+    _manifest: &ManifestProjection,
 ) -> Option<String> {
     if selector_token.is_empty() {
         return None;
-    }
-    if let Some(nodes) = manifest.selectors.get(selector_token) {
-        return Some(suffix_to_template(&generate_selector_nodes(nodes)));
     }
     let mut selector = normalize_selector_aliases(selector_token);
     selector = replace_selector_underscores(&selector);
@@ -358,13 +275,8 @@ pub(crate) fn resolve_style_selector_aliases(
     selector: &str,
     manifest: &ManifestProjection,
 ) -> String {
-    let output = rewrite_pseudo_selectors(selector, |token| {
-        manifest
-            .selectors
-            .get(token)
-            .map(|nodes| generate_selector_nodes(nodes))
-    });
-    normalize_selector_aliases(&output)
+    let _ = manifest;
+    normalize_selector_aliases(selector)
 }
 
 fn normalize_selector_aliases(source: &str) -> String {
@@ -544,39 +456,4 @@ pub(crate) fn find_group_close(source: &str) -> Option<usize> {
         }
     }
     None
-}
-
-pub(crate) fn generate_selector_nodes(nodes: &[ManifestSelectorNode]) -> String {
-    nodes
-        .iter()
-        .map(|node| {
-            let value = node.value.as_deref().unwrap_or_default();
-            if node.node_type.as_deref() == Some("separator") {
-                return value.to_owned();
-            }
-            let prefix = match node.node_type.as_deref() {
-                Some("pseudo-class") => ":",
-                Some("pseudo-element") => "::",
-                Some("class") => ".",
-                Some("id") => "#",
-                Some("attribute") | Some("combinator") | Some("universal") | None => "",
-                Some(_) => "",
-            };
-            if node.node_type.as_deref() == Some("attribute") {
-                return format!("[{value}]");
-            }
-            let mut output = format!("{prefix}{value}");
-            if !node.children.is_empty() {
-                let children = generate_selector_nodes(&node.children);
-                if value.is_empty() {
-                    output.push_str(&children);
-                } else {
-                    output.push('(');
-                    output.push_str(&children);
-                    output.push(')');
-                }
-            }
-            output
-        })
-        .collect()
 }

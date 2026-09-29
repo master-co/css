@@ -5,20 +5,25 @@ import { expect, test } from 'vitest'
 import { compileProjectManifest } from '../src/node-compiler'
 
 const baseManifest = {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {
@@ -27,7 +32,7 @@ for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'child.css')
         writeFileSync(entry, `@import "./child.css"${qualifier};.after{margin:1px}`)
-        writeFileSync(child, '@mixin --paint {padding:2rem}\n' + (compose ? ".composed{@variant all {padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        writeFileSync(child, '@mixin --paint {padding:2rem}\n' + (compose ? ".composed{@apply --all {padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         if (qualifier) {
           expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @mixin/)
           writeFileSync(entry, `@import "./child.css"${qualifier};@mixin --paint {padding:2rem}.after{margin:1px}`)
@@ -53,7 +58,7 @@ test('Node project merges prior entries while resolving child-owned references a
     const first = join(root, 'first.css'), second = join(root, 'second.css'), child = join(root, 'child.css'), reference = join(root, 'tokens.css')
     writeFileSync(first, '@mixin --paint {padding:2rem}')
     writeFileSync(second, '@import "./child.css" layer(cards);')
-    writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@variant all {color:red;padding:2rem;}}")
+    writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@apply --all {color:red;padding:2rem;}}")
     writeFileSync(reference, '@mixin --accent {color:red}')
     const result = compileProjectManifest([first, second], { root, baseManifest, preserveNativeCSS: true, classes: ['card'] })
     expect(result.manifest.mixins?.some(utility => utility.name === '--paint')).toBe(true)

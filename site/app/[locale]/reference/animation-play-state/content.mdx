@@ -10,14 +10,14 @@ Check Run indicator to set the child SVG’s play state to running. Uncheck it t
 ```html
 <!-- Native checkbox · run and pause -->
 <div
-  class="animation-play-state:running:has(input:checked)>svg@screen@motion">
+  class="animation-play-state:running:has(input:checked)>svg@media(screen)@motion-safe">
   <label class="display:block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
     class="fg-text-blue
            animation:rotate|2s|linear|infinite
            animation-play-state:paused
-           animation:none@print">
+           animation:none@media(print)">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -39,8 +39,8 @@ Start the indicator with the checkbox, then hover the stationary panel to pause 
 ```html
 <!-- Run, then hover the stable panel -->
 <div
-  class="animation-play-state:running:has(input:checked)>div>svg@screen@motion
-         animation-play-state:paused:has(input:checked)>div:hover>svg@screen@motion">
+  class="animation-play-state:running:has(input:checked)>div>svg@media(screen)@motion-safe
+         animation-play-state:paused:has(input:checked)>div:hover>svg@media(screen)@motion-safe">
   <label class="display:block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <div class="p-sm border:1px|dashed|var(--color-line-subtle) r-sm">
     <p class="mb-sm font-sm">Hover this panel to pause</p>
@@ -49,7 +49,7 @@ Start the indicator with the checkbox, then hover the stationary panel to pause 
       class="fg-text-blue
              animation:rotate|2s|linear|infinite
              animation-play-state:paused
-             animation:none@print">
+             animation:none@media(print)">
       <circle cx="24" cy="24" r="17" opacity=".25" />
       <path d="M24 8v16h12 M19 13l5-5 5 5" />
     </svg>
@@ -67,8 +67,8 @@ Start the indicator, then focus the Project name field. The editor’s focus-wit
 ```html
 <!-- Pause while editing -->
 <div
-  class="animation-play-state:paused:has(input:checked)>div:focus-within>svg@screen@motion
-         animation-play-state:running:has(input:checked)>div>svg@screen@motion">
+  class="animation-play-state:paused:has(input:checked)>div:focus-within>svg@media(screen)@motion-safe
+         animation-play-state:running:has(input:checked)>div>svg@media(screen)@motion-safe">
   <label class="display:block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <div class="p-sm border:1px|solid|var(--color-line-subtle) r-sm">
     <label class="display:block mb-sm font-sm">Project name <input type="text" value="Canvas" class="max-width:100% p-xs border:1px|solid|var(--color-line-subtle) r-sm outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible"></label>
@@ -77,7 +77,7 @@ Start the indicator, then focus the Project name field. The editor’s focus-wit
       class="fg-text-blue
              animation:rotate|2s|linear|infinite
              animation-play-state:paused
-             animation:none@print">
+             animation:none@media(print)">
       <circle cx="24" cy="24" r="17" opacity=".25" />
       <path d="M24 8v16h12 M19 13l5-5 5 5" />
     </svg>
@@ -95,14 +95,14 @@ Check Run indicator and resize the viewport. The child stays paused below `sm` a
 ```html
 <!-- Run only at sm -->
 <div
-  class="animation-play-state:running:has(input:checked)>svg@screen@motion@sm">
+  class="animation-play-state:running:has(input:checked)>svg@media(screen)@motion-safe@sm">
   <label class="display:block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
     class="fg-text-blue
            animation:rotate|2s|linear|infinite
            animation-play-state:paused
-           animation:none@print">
+           animation:none@media(print)">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>

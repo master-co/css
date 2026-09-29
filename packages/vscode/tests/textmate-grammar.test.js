@@ -278,10 +278,10 @@ test('highlights all retained directive keywords', () => {
 @theme { :root { --color: red; } }
 @mixin --box { display: block; }
 @custom-media --wide (width >= 48rem);
-@custom-variant hocus { &:hover { @slot; } }
-.box { @variant wide { display: grid; } }`
+@mixin --hocus { &:hover { @contents; } }
+.box { @media (--wide) { display: grid; } }`
   const tokens = tokenizeWith(injectedCSSGrammar, source)
-  for (const name of ['source', 'safelist', 'blocklist', 'preserve', 'prune', 'reference', 'theme', 'mixin', 'custom-variant', 'variant', 'slot']) {
+  for (const name of ['source', 'safelist', 'blocklist', 'preserve', 'prune', 'reference', 'theme', 'mixin', 'contents']) {
     expectScope(tokens, `@${name}`, 'keyword.control.at-rule.master-css')
   }
 })
@@ -297,19 +297,21 @@ test('keeps source and reference paths separate from class lists', () => {
 })
 
 test('highlights explicit custom-variant slots and native wrappers', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@custom-variant hocus { &:is(:hover,:focus) { @slot; } }
-@mixin --card { @variant hocus { color: red; } @media print { display: block; } }`)
-  expectScope(tokens, 'hocus', 'variable.parameter.master-css')
-  expectScope(tokens, 'hocus', 'support.constant.property-value.master-css.query')
-  expectScope(tokens, '@slot', 'keyword.control.at-rule.master-css')
+  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --hocus { &:is(:hover,:focus) { @contents; } }
+@mixin --card { @apply --hocus { color: red; } @media print { display: block; } }`)
+  expectScope(tokens, '--hocus', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
+  expectScope(tokens, '@contents', 'keyword.control.at-rule.master-css')
   expectScope(tokens, '--card', 'variable.css.custom-property.master-css')
 })
 
 test('colors named conditions and delegates native at-rules', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --card { @variant wide { display: block; } }
-@custom-variant supported { @supports (display: grid) { @slot; } }
-@custom-variant contained { @container (width > 30rem) { @slot; } }`)
-  expectScope(tokens, 'wide', 'support.constant.property-value.master-css.query')
+  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --card { @media (--wide) { display: block; } }
+@mixin --supported { @supports (display: grid) { @contents; } }
+@mixin --contained { @container (width > 30rem) { @contents; } }`)
+  const query = tokens.find(token => token.text.includes('--wide'))
+  expect(query).toBeDefined()
+  expect(query.scopes.at(-1)).toBe(tokenizeWith(nativeCSSGrammar, '@media (--wide) {}').find(token => token.text.includes('--wide')).scopes.at(-1))
   for (const [rule, condition] of [['@supports', '(display: grid)'], ['@container', '(width > 30rem)']]) {
     const name = rule.slice(1)
     const native = tokenizeWith(nativeCSSGrammar, `${rule} ${condition} {}`).find(token => token.text === name)

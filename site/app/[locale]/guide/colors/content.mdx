@@ -202,8 +202,8 @@ The preset sets `:root { color-scheme: light dark; }`. Its 45 adaptive semantic 
 The preset `@light` and `@dark` class suffixes still mean **system preference media queries**. A manual theme changes tokens and native controls but does not activate these suffixes. If an application needs a selector variant, declare a separate name:
 
 ```css
-@custom-variant manual-dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
 }
 ```
 

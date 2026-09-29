@@ -665,9 +665,9 @@ export default function Play({ shareId }: PlayProps = {}) {
               />
             </div>
             {previewErrorEvent &&
-              <div className="position:absolute inset:0 height:100% width:100% p-2xl bg-red-5@site-light bg-red-95@site-dark text-danger">
+              <div className="position:absolute inset:0 height:100% width:100% p-2xl bg-red-5@apply(--site-light) bg-red-95@apply(--site-dark) text-danger">
                 <h2 className="font-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                <div className="margin-block:1.25rem padding:0.938rem|1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@site-dark bg-red-90@site-light">
+                <div className="margin-block:1.25rem padding:0.938rem|1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@apply(--site-dark) bg-red-90@apply(--site-light)">
                   {previewErrorEvent.message}
                 </div>
                 <div className="font-xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

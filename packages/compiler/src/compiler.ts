@@ -67,10 +67,7 @@ function directiveSummary(result: CompileCSSResult) {
     'theme',
     'customMedia',
     'mixins',
-    'keyframes',
-    'variants',
-    'conditions',
-    'selectors'
+    'keyframes'
   ] as const
   return Object.freeze({
     manifestInput: Object.freeze({

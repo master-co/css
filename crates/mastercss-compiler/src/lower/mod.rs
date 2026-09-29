@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use mastercss_engine::{EngineCompositionRuleIr, EngineSession};
+use mastercss_engine::EngineSession;
 use mastercss_schema::{
     CssDeclaration, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, UtilityLayerName,
@@ -58,7 +58,6 @@ pub struct LowerCssDirectivesResult {
 struct ResolvedStyleBranch {
     selector: String,
     conditions: Vec<String>,
-    layer: Option<UtilityLayerName>,
 }
 
 #[derive(Debug, Clone)]

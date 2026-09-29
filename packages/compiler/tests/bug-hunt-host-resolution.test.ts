@@ -10,22 +10,27 @@ function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-host-resolution-'))
   mkdirSync(join(root, 'styles'))
   const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css')
-  writeFileSync(child, "@preserve native;.example{@variant all {color:red;}}")
+  writeFileSync(child, "@preserve native;.example{@apply --all {color:red;}}")
   const scanner = { cwd: root, options: {}, css: { text: '', manifest: {
-  "variants": [
-    {
-      "token": "@all" as const,
-      "branches": [
-        {
-          "conditions": [
-            "@media all"
-          ]
-        }
-      ]
-    }
-  ],
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
   "version": 4 as const,
-  "languageVersion": 6 as const
+  "languageVersion": 7 as const
 } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, entry, child, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }

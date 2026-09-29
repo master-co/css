@@ -73,7 +73,7 @@ fn assert_replay(
 #[test]
 fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals() {
     let manifest = json!({
-        "version":4,"languageVersion":6,
+        "version":4,"languageVersion":7,
         "variables": {"": (0..200).map(|i| json!({"name":format!("v{i}"),"key":format!("v{i}"),"values":[{"path":[":root,:host"],"value":"red"}]})).collect::<Vec<_>>()},
         "theme": [{"type":"rule","prelude":":root,:host","children":(0..200).map(|i|json!({"type":"declaration","name":format!("v{i}"),"value":"red"})).collect::<Vec<_>>() }],
         "mixins": (0..200).map(|i| json!({
@@ -140,7 +140,7 @@ fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals()
 #[test]
 fn batches_scoped_tokens_cyclic_dependencies_and_native_animation_properties() {
     let manifest = json!({
-      "version":4,"languageVersion":6,
+      "version":4,"languageVersion":7,
       "variables": {
         "": [
           {
@@ -230,24 +230,6 @@ fn batches_scoped_tokens_cyclic_dependencies_and_native_animation_properties() {
           {"type":"declaration","property":"color","value":[{"type":"text","value":"var(--b)"}]},
           {"type":"declaration","property":"animation","value":[{"type":"text","value":"pulse 1s"}]}
         ]}
-      ],
-      "variants": [
-        {
-          "token": "@light",
-          "branches": [
-            {
-              "selector": "&:where(.light,.light *)"
-            }
-          ]
-        },
-        {
-          "token": "@dark",
-          "branches": [
-            {
-              "selector": "&:where(.dark,.dark *)"
-            }
-          ]
-        }
       ],
       "theme": [
         {

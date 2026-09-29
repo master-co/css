@@ -53,7 +53,7 @@ Set only the image to `none` when the type and position should survive. Open pri
 <!-- Screen SVG · print square -->
 <ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:square|outside list-style-image:url(/demo/marker.svg)
-    list-style-image:none@print">
+    list-style-image:none@media(print)">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
   <li class="mb-2xs">Review the composition</li>
@@ -71,8 +71,8 @@ Resize past `sm` to add the image on screen. The square type remains the fallbac
 <!-- Real viewport · square to SVG -->
 <ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
     list-style:square|outside list-style-image:none
-    list-style-image:none@print
-    list-style-image:url(/demo/marker.svg)@screen@sm">
+    list-style-image:none@media(print)
+    list-style-image:url(/demo/marker.svg)@media(screen)@sm">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
   <li class="mb-2xs">Review the composition</li>

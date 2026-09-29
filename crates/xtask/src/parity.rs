@@ -21,7 +21,7 @@ pub(crate) fn validate_semantic_parity_corpus(
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
     if corpus.version != 3
-        || corpus.semantic_baseline != "language-5-static-mixins"
+        || corpus.semantic_baseline != "language-7-mixin-contents"
         || corpus.public_baseline != "Master CSS v2"
     {
         return Err("Language corpus has an unsupported version or contract.".into());
@@ -71,7 +71,9 @@ pub(crate) fn validate_semantic_parity_corpus(
                 let canonical = if case.kind == "lexer" {
                     case.expected_canonical
                         .split('|')
-                        .filter(|name| *name != "compose")
+                        .filter(|name| {
+                            !matches!(*name, "compose" | "variant" | "custom-variant" | "slot")
+                        })
                         .collect::<Vec<_>>()
                         .join("|")
                 } else {
@@ -94,7 +96,7 @@ pub(crate) fn validate_semantic_parity_corpus(
                 .collect::<Vec<_>>()
     {
         return Err(
-            "V2 language corpus must retain every historical case and parser evidence, except removed compose lexer nodes."
+            "V2 language corpus must retain every historical case and parser evidence, except removed directive lexer nodes."
                 .into(),
         );
     }
@@ -109,7 +111,7 @@ pub(crate) fn validate_semantic_parity_corpus(
         if case.source_id.is_empty()
             || !matches!(case.kind.as_str(), "condition" | "selector" | "lexer")
             || case.input.is_empty()
-            || case.expected_canonical.is_empty()
+            || (case.kind != "lexer" && case.expected_canonical.is_empty())
         {
             return Err(format!("Invalid parser parity case: {}", case.id));
         }

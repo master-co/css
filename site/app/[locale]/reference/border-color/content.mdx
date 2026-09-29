@@ -80,8 +80,8 @@ Transparent color differs from `border-top-width:0` or `bt-none`, which remove t
          border:2px|solid border-color:currentColor r-sm
          font-md bg-surface-base fg-text-blue box-sizing:border-box
          bg-surface-inset:focus-visible
-         fg-text-violet:hover@screen
-         fg-text-violet:focus-visible@screen">
+         fg-text-violet:hover@media(screen)
+         fg-text-violet:focus-visible@media(screen)">
   Current color
 </button>
 ```
@@ -101,8 +101,8 @@ At `sm`, the blue border follows the violet foreground through `currentColor`. P
          border:2px|solid border-color-blue r-sm font-md
          bg-surface-base fg-text-violet box-sizing:border-box
          bg-surface-inset:focus-visible
-         border-color:transparent@print
-         border-color:currentColor@screen@sm">
+         border-color:transparent@media(print)
+         border-color:currentColor@media(screen)@sm">
   Preview details
 </button>
 ```

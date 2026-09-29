@@ -129,7 +129,11 @@ impl Migration {
                         Some(CssSyntaxKind::Ident(_))
                     )
             {
-                result.notes.push("Replace removed mode/query directives with explicit native CSS conditions or a named @variant".into());
+                result.notes.push("Replace removed mode/query directives with explicit native CSS conditions or @mixin with @apply and @contents".into());
+            }
+            if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if matches!(name.as_ref(), "custom-variant" | "variant" | "slot"))
+            {
+                result.notes.push("Variants were removed: migrate media wrappers to @custom-media and other wrappers to @mixin/@apply/@contents. Move any layer branches to explicit call-site @layer blocks or @layer(...) suffixes before conversion".into());
             }
             if let CssSyntaxKind::AtKeyword(name) = &first.kind
                 && (name.eq_ignore_ascii_case("mode") || name.eq_ignore_ascii_case("theme"))
@@ -145,7 +149,7 @@ impl Migration {
                 )
                 .is_ok();
                 if !valid {
-                    result.notes.push(format!("Review @{name} manually: use explicit native theme selectors and @custom-variant with @slot; inline/static and managed modes are removed"));
+                    result.notes.push(format!("Review @{name} manually: use explicit native theme selectors and @mixin with @apply and @contents; inline/static and managed modes are removed"));
                 }
             }
 
@@ -223,6 +227,10 @@ impl Migration {
             {
                 result.notes.push(format!("UTF-16 {}: @compose has been removed; replace it with native CSS declarations/selectors or use utilities in markup", byte_to_utf16_offset(source, first.bytes.start).unwrap()));
                 continue;
+            }
+            if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if matches!(name.as_ref(), "custom-variant" | "variant" | "slot"))
+            {
+                result.notes.push("Variants were removed: migrate media wrappers to @custom-media and other wrappers to @mixin/@apply/@contents. Move any layer branches to explicit call-site @layer blocks or @layer(...) suffixes before conversion".into());
             }
             if let CssSyntaxKind::AtKeyword(name) = &first.kind
                 && matches!(name.as_ref(), "safelist" | "blocklist")

@@ -16,8 +16,8 @@ Use infinite to repeat the two-second rotation until its animation is removed or
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
-           animation:none@print
-           animation-play-state:paused@reduce-motion">
+           animation:none@media(print)
+           animation-play-state:paused@motion-reduce">
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
@@ -63,8 +63,8 @@ Compare three complete cycles with two and a half cycles. Both use one-second li
              animation-iteration-count:3
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -84,8 +84,8 @@ Compare three complete cycles with two and a half cycles. Both use one-second li
              animation-iteration-count:2.5
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -124,8 +124,8 @@ Use a finite count with forwards fill. With alternate direction, an even count e
              animation-iteration-count:2
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion">→</span>
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce">→</span>
   </div>
 </div>
 ```
@@ -163,8 +163,8 @@ Resize before replaying to run one cycle below `sm` or three cycles at `sm`.
              animation-iteration-count:1
              animation-name:layer-slide
              animation-timing-function:linear
-             animation:none@print
-             animation-play-state:paused@reduce-motion
+             animation:none@media(print)
+             animation-play-state:paused@motion-reduce
              animation-iteration-count:3@sm">→</span>
   </div>
 </div>

@@ -1,7 +1,6 @@
-import { presetContainerConditions } from '~/site/common/preset-css'
+import { presetContainerQueries } from '~/site/common/preset-css'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
-import generateManifestCondition from '~/site/utils/generate-manifest-condition'
 
 const containerVariableEntries = getThemeNumericVariableEntries('container')
 const formatLength = (value: number, unit: string) => `${Number(value.toFixed(4))}${unit}`
@@ -22,9 +21,9 @@ export default () => {
           {
             containerVariableEntries.map((entry) => (
               <tr key={entry.key}>
-                <th className="white-space:nowrap"><InlineCode>{`@container(${entry.key})`}</InlineCode></th>
+                <th className="white-space:nowrap"><InlineCode>{`@container((width>=${entry.value}))`}</InlineCode></th>
                 <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
-                <td><InlineCode lang="css">{generateManifestCondition(presetContainerConditions[entry.key])}</InlineCode></td>
+                <td><InlineCode lang="css">{presetContainerQueries[entry.key]}</InlineCode></td>
               </tr>
             ))
           }

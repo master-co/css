@@ -58,6 +58,34 @@ pub fn parse_functional_class(source: &str) -> Option<Result<FunctionalClassHead
     }))
 }
 
+/// The CSS call inside a Master @apply(...) suffix. No stylesheet parsing.
+pub fn parse_mixin_call(source: &str) -> Result<(String, Vec<String>), String> {
+    if let Some(head) = parse_functional_class(source) {
+        let head = head?;
+        if !head.name.starts_with("--") || head.suffix_start != source.len() {
+            return Err("@apply requires a complete dashed mixin call".into());
+        }
+        return Ok((
+            head.name,
+            head.arguments
+                .iter()
+                .map(|range| source[range.clone()].trim().to_owned())
+                .collect(),
+        ));
+    }
+    let tokens = tokenize_css_syntax(source);
+    match tokens.as_slice() {
+        [token] if matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")) => {
+            if let Kind::Ident(name) = &token.kind {
+                Ok((name.to_string(), Vec::new()))
+            } else {
+                unreachable!()
+            }
+        }
+        _ => Err("@apply requires a dashed mixin name, for example @apply(--hocus)".into()),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

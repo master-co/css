@@ -350,8 +350,7 @@ pub(crate) use composition::{
     push_index_value,
 };
 pub(crate) use conflicts::{
-    collect_rule_declarations, equal_variant_scope, find_conflicts, sort_descriptors,
-    split_top_level,
+    collect_rule_declarations, equal_rule_scope, find_conflicts, sort_descriptors, split_top_level,
 };
 pub(crate) use order::{compare_condition_features, get_property_order};
 pub(crate) use partial_conflicts::{collect_manifest_variables, find_partial_conflicts};

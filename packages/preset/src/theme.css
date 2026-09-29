@@ -354,16 +354,3 @@
     --order-last: 999999;
   }
 }
-
-
-@custom-media --4xs (width >= 22.5rem);
-@custom-media --3xs (width >= 30rem);
-@custom-media --2xs (width >= 37.5rem);
-@custom-media --xs (width >= 48rem);
-@custom-media --sm (width >= 52.125rem);
-@custom-media --md (width >= 64rem);
-@custom-media --lg (width >= 80rem);
-@custom-media --xl (width >= 90rem);
-@custom-media --2xl (width >= 100rem);
-@custom-media --3xl (width >= 120rem);
-@custom-media --4xl (width >= 160rem);

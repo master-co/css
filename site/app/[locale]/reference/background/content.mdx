@@ -35,8 +35,8 @@ Hover or focus each surface. The first changes only the background color, preser
 <div id="target" tabindex="0" role="img" aria-label="Change only the background color"
   class="height:160px w-xs max-width:100% background-position:center background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
-         background-image:url(/demo/landscape.svg) bg-blue-20:hover@screen
-         bg-blue-20:focus-visible@screen"
+         background-image:url(/demo/landscape.svg) bg-blue-20:hover@media(screen)
+         bg-blue-20:focus-visible@media(screen)"
 ></div>
 ```
 
@@ -46,8 +46,8 @@ Hover or focus each surface. The first changes only the background color, preser
   class="height:160px w-xs max-width:100% background-position:center background-repeat:no-repeat
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)
-         background:var(--color-blue-20):hover@screen
-         background:var(--color-blue-20):focus-visible@screen"
+         background:var(--color-blue-20):hover@media(screen)
+         background:var(--color-blue-20):focus-visible@media(screen)"
 ></div>
 ```
 
@@ -61,8 +61,8 @@ Widen the actual preview viewport to `sm` to apply the complete image shorthand.
 ```html
 <!-- Plain surface → image at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:160px w-xs max-width:100% bg-surface-inset background:white@print
-         background:url(/demo/landscape.svg)|center/cover|no-repeat@screen@sm"
+  class="height:160px w-xs max-width:100% bg-surface-inset background:white@media(print)
+         background:url(/demo/landscape.svg)|center/cover|no-repeat@media(screen)@sm"
 ></div>
 ```
 

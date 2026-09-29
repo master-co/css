@@ -13,7 +13,7 @@
   <a href="#details">Details</a>
   <a href="#resources">Resources</a>
 </nav>
-<div id="scrollport" class="overflow-y:auto height:14rem scroll-behavior:smooth scroll-behavior:auto@reduce-motion" tabindex="0" aria-label="Scrollable collection">
+<div id="scrollport" class="overflow-y:auto height:14rem scroll-behavior:smooth scroll-behavior:auto@motion-reduce" tabindex="0" aria-label="Scrollable collection">
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
@@ -36,7 +36,7 @@
   </Class2CSS>
 </details>
 
-The browser chooses the timing and may ignore smooth scrolling. The `@reduce-motion` override uses the user’s actual system preference.
+The browser chooses the timing and may ignore smooth scrolling. The `@motion-reduce` override uses the user’s actual system preference.
 
 ### Use immediate scrolling \{#keep-static-output-immediate\}
 `scroll-behavior:auto` uses the browser’s ordinary immediate scrolling behavior. Activate Details to compare the direct jump with the animated example above.
@@ -83,7 +83,7 @@ Use scroll padding on the container to reserve its viewing region, and scroll ma
   <a href="#details">Details</a>
   <a href="#resources">Resources</a>
 </nav>
-<div id="scrollport" class="overflow-y:auto height:14rem scroll-pt-2xl scroll-behavior:smooth scroll-behavior:auto@reduce-motion" tabindex="0" aria-label="Scrollable collection">
+<div id="scrollport" class="overflow-y:auto height:14rem scroll-pt-2xl scroll-behavior:smooth scroll-behavior:auto@motion-reduce" tabindex="0" aria-label="Scrollable collection">
   <header class="position:sticky top:0 z-index:1 height:3rem">Collection navigation</header>
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
@@ -111,7 +111,7 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
   <a href="#details">Details</a>
   <a href="#resources">Resources</a>
 </nav>
-<div id="scrollport" class="overflow-y:auto height:14rem scroll-behavior:auto scroll-behavior:smooth@motion@sm" tabindex="0" aria-label="Scrollable collection">
+<div id="scrollport" class="overflow-y:auto height:14rem scroll-behavior:auto scroll-behavior:smooth@motion-safe@sm" tabindex="0" aria-label="Scrollable collection">
   <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
