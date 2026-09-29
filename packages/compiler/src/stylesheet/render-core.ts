@@ -1,3 +1,4 @@
+import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -6,6 +7,7 @@ import type {
 import type { MasterCSSEngineSnapshot } from '@master/css'
 
 interface MasterCSSRenderBindingResult {
+  readonly outputMappings: CSSOutputMapping[]
   readonly classes: string[]
   readonly snapshot: MasterCSSEngineSnapshot
   readonly hydrationManifest: MasterCSSHydrationManifest
@@ -23,6 +25,7 @@ export interface RenderCompiledManifestCSSResult {
   css: string
   nativeCSS: string
   generatedCSS: string
+  outputMappings: CSSOutputMapping[]
   emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
 
@@ -51,12 +54,15 @@ export function renderCompiledManifestCSSWithSession(
     session.ensureClasses(classNames)
   }
   session.ensureStylesheetResources(nativeCSSText)
-  const generatedCSS = session.snapshot().snapshot.text
+  const rendered = session.snapshot()
+  const generatedCSS = rendered.snapshot.text
+  const offset = nativeCSSText ? nativeCSSText.length + 2 : 0
 
   return {
     css: [nativeCSSText, generatedCSS].filter(Boolean).join('\n\n'),
     nativeCSS: nativeCSSText,
     generatedCSS,
+    outputMappings: rendered.outputMappings.map(mapping => ({ ...mapping, generatedStart: mapping.generatedStart + offset, generatedEnd: mapping.generatedEnd === undefined ? undefined : mapping.generatedEnd + offset })),
     emittedGlobals: session.emittedGlobals()
   }
 }

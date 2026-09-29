@@ -408,12 +408,12 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     'fg-red-60': 1
   })
   expect(result.emittedGlobals).toEqual({
-    variables: { 'color-red-60': 3 }
+    variables: { 'color-red-60': 3 }, keyframes: {}
   })
   expect(result.text).toContain('.fg-red-60')
   expect(result.text).toContain('.animation\\:fade\\|1s')
   expect(result.text).not.toContain('--color-red-60:')
-  expect(result.text).not.toContain('@keyframes fade{')
+  expect(result.text).toContain('@keyframes fade')
 })
 
 test('registers emittedGlobals counts once on a new runtime', async ({ page }) => {

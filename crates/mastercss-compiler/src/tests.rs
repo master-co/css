@@ -200,7 +200,7 @@ fn rejects_removed_theme_modifiers_with_original_ranges() {
 }
 
 #[test]
-fn keyframes_require_native_stylesheet_ownership() {
+fn keyframes_have_distinct_native_and_managed_ownership() {
     let result = compile_css_directives(
         "@theme{:root{--color-brand:#123}}@keyframes fade{from,50%{opacity:0}to{opacity:1}}",
         &CompileNativeCssOptions::default(),
@@ -213,13 +213,13 @@ fn keyframes_require_native_stylesheet_ownership() {
             .get("animations")
             .is_none()
     );
-    assert!(
-        compile_css_directives(
-            "@theme{@keyframes fade{to{opacity:1}}}",
-            &CompileNativeCssOptions::default()
-        )
-        .is_err()
-    );
+    let managed = compile_css_directives(
+        "@theme{@keyframes fade{to{opacity:1}}}",
+        &CompileNativeCssOptions::default(),
+    )
+    .unwrap();
+    assert!(managed.native_css.is_empty());
+    assert_eq!(managed.manifest_input.keyframes.unwrap()[0].name, "fade");
 }
 
 #[test]

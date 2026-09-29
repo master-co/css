@@ -242,8 +242,8 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         this.disconnect()
         return facade
       },
-      refresh: (manifest?: MasterCSSManifest) => {
-        this.refresh(manifest)
+      refresh: (manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) => {
+        this.refresh(manifest, emittedGlobals)
         return facade
       },
       ensureClassRules: (classNames: readonly string[]) =>
@@ -320,7 +320,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
     this.hydrationFailureReason = undefined
     const manifest = this.hydrationManifest
-    if (manifest?.version !== 2 || !Array.isArray(manifest.rules)) {
+    if (manifest?.version !== 3 || !Array.isArray(manifest.rules)) {
       return this.failHydration('Missing or invalid hydration manifest.')
     }
     if (!manifest.rules.length) {
@@ -332,7 +332,10 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
-    const resourceOrder = snapshot.resources.variables.map(resource => resource.name)
+    const resourceOrder = {
+      variables: snapshot.resources.variables.map(resource => resource.name),
+      keyframes: snapshot.resources.keyframes.map(resource => resource.name)
+    }
     if (JSON.stringify(resourceOrder) !== JSON.stringify(manifest.resourceOrder)) {
       return this.failHydration('Generated resources do not match the hydration manifest.', classNames)
     }
@@ -663,7 +666,8 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return this
   }
 
-  refresh(manifest: MasterCSSManifest = this.manifest) {
+  refresh(manifest: MasterCSSManifest = this.manifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+    if (emittedGlobals) this.replaceEmittedGlobals(emittedGlobals)
     const transition = this.bindingEngine.refresh(manifest)
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()

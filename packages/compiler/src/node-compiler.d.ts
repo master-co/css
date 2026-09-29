@@ -54,6 +54,7 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
 type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
     /** Host context definitions retain file URL owners until the host publishes assets. */
     resolveReferenceResources?: boolean;
+    definitionsOnly?: boolean;
     referenceResources?: boolean;
     referenceStack?: string[];
     diagnostics?: CompilerDiagnosticRecorder;
@@ -100,6 +101,7 @@ export declare function resolveCSSReferenceFile(reference: CSSDirectiveReference
 export declare function compileCSSManifestGraph(graph: PreparedCSSImportGraph, options?: CompileCSSManifestInternalOptions & {
     mapReferences?: (file: string, source: string, references: CSSDirectiveReference[]) => readonly CSSDirectiveReference[];
 }): {
+    notices?: import("@master/css-schema/css-directives").CSSDirectiveNotice[];
     mixinSources?: CSSMixinSource[];
     nativeOutput?: import("@master/css-schema/css-directives").CSSNativeOutput;
     sourceMap?: string;

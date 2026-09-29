@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn native_animation_values_never_register_or_synthesize_keyframes() {
-    let manifest = json!({"version":3,"languageVersion":5}).to_string();
+    let manifest = json!({"version":4,"languageVersion":6}).to_string();
     for css in [
         ".x{animation:fade 1s}",
         ".x{animation-name:\"fade\"}",
@@ -28,7 +28,7 @@ fn native_animation_values_never_register_or_synthesize_keyframes() {
     }
 }
 #[test]
-fn animation_classes_emit_only_property_rules_and_hydrate_without_animation_metadata() {
+fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut session = RenderSession::create(manifest, None).unwrap();
     session
@@ -36,15 +36,20 @@ fn animation_classes_emit_only_property_rules_and_hydrate_without_animation_meta
         .unwrap();
     let rendered = session.snapshot().unwrap();
     assert!(rendered.snapshot.text.contains("animation:fade 1s"));
-    assert!(!rendered.snapshot.text.contains("@keyframes"));
+    assert!(rendered.snapshot.text.contains("@keyframes fade"));
+    assert!(rendered.snapshot.text.contains("@keyframes rotate"));
     let hydration = serde_json::to_value(rendered.hydration_manifest).unwrap();
-    assert_eq!(hydration["version"], 2);
+    assert_eq!(hydration["version"], 3);
     assert!(
         hydration["rules"]
             .as_array()
             .unwrap()
             .iter()
             .all(|rule| rule.get("animationNames").is_none())
+    );
+    assert_eq!(
+        hydration["resourceOrder"]["keyframes"],
+        json!(["fade", "rotate"])
     );
     assert!(RenderSession::create(manifest, Some(r#"{"animations":{"fade":1}}"#)).is_err());
 }

@@ -87,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})),
+                    base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})),
                 },
             )
             .unwrap();

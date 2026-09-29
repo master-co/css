@@ -48,6 +48,12 @@ impl EngineSession {
                 transition.mutations.splice(0..0, mutations);
             }
         }
+        if self.theme_batch_depth == 0 {
+            let mutations = self.sync_keyframes();
+            if let Ok(transition) = &mut result {
+                transition.mutations.extend(mutations);
+            }
+        }
         result
     }
 }

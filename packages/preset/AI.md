@@ -68,3 +68,7 @@ Token values live in `src/theme.css`. Ordered token mappings belong to `crates/m
 Author recipes in the stable `src/utilities.css` entrypoint using `@mixin`. Only used classes and delivered native `@apply` roots emit CSS/resources. Parameter recipes require static arguments; grid counts and spans must be positive integers. `font-*` selects one property by token existence and reports cross-property ambiguity. `text-*` is the generic single-string named-mixin rule with explicit typography companion tokens; it is never a color alias. Raw property abbreviations and single-declaration fixed aliases are removed. Vendor declaration pairs belong to Rust output rules.
 
 The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.
+
+## Refined preset contract
+
+The preset contains ten mixins. `fit`, `full`, `center`, `middle`, and `round` are removed; projects may author these names themselves. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; do not restore implicit role lookups or a `surface` prefix. Ten animations are direct children of `@theme` and absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.

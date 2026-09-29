@@ -350,6 +350,7 @@ export async function compileStylesheet(
     ...result,
     dependencies: finalizedResult.dependencies,
     warnings: finalizedResult.warnings,
+    notices: finalizedResult.notices,
     css: finalizedResult.css,
     generatedCSS: finalizedResult.generatedCSS,
     sourceMap: outputMap(finalizedResult.css)
@@ -394,8 +395,9 @@ export async function compileRenderedStylesheet(
     ...result,
     dependencies: finalizedResult.dependencies,
     warnings: finalizedResult.warnings,
+    notices: finalizedResult.notices,
     css: renderedCSS.css,
-    sourceMap: outputMap(renderedCSS.css),
+    sourceMap: outputMap(renderedCSS.css, renderedCSS.outputMappings),
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     emittedGlobals: renderedCSS.emittedGlobals,
@@ -406,13 +408,14 @@ export async function compileRenderedStylesheet(
 
 function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
   return {
-    variables: {}
+    variables: {},
+    keyframes: {}
   }
 }
 
 function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
   return Boolean(
-    Object.keys(emittedGlobals?.variables || {}).length
+    Object.keys(emittedGlobals?.variables || {}).length || Object.keys(emittedGlobals?.keyframes || {}).length
   )
 }
 
@@ -513,8 +516,9 @@ export async function transformLocalStylesheet(
     ...result,
     dependencies: finalizedResult.dependencies,
     warnings: finalizedResult.warnings,
+    notices: finalizedResult.notices,
     css: generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css,
-    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css),
+    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css, generatedGlobals === 'separate' ? [] : renderedCSS.outputMappings),
     generatedCSS: renderedCSS.generatedCSS
   }
   return {
@@ -636,7 +640,8 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
   return {
     css,
     emittedGlobals: {
-      variables: {}
+      variables: {},
+    keyframes: {}
     }
   }
 }

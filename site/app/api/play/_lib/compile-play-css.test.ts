@@ -42,7 +42,7 @@ test('compiles the starter Play template into generated CSS', async () => {
   assert.match(result.css, /--color-surface-base/)
   assert.match(result.css, /--color-surface-raised/)
   assert.match(result.css, /--color-text-body/)
-  assert.match(result.css, /\.surface-raised\{/)
+  assert.match(result.css, /\.bg-surface-raised\{/)
   assert.match(result.css, /\.fg-text-body\{/)
   assert.match(result.css, /\.btn\s*\{[\s\S]*?&:hover \.btn-arrow-line\s*\{\s*opacity:\s*1;\s*transform:\s*scale\(1\);\s*\}/)
   assertUnverifiedCustomProperties(result)
@@ -56,7 +56,7 @@ test('keeps native CSS while generating Play classes', async () => {
   const result = await compileFixture(sourceCSS, extractClassNamesFromHTML(html))
 
   assert.match(result.css, /\.native\s*\{\s*color:\s*var\(--color-text-body\);\s*\}/)
-  assert.match(result.css, /\.surface-raised\{/)
+  assert.match(result.css, /\.bg-surface-raised\{/)
   assert.match(result.css, /\.btn\s*\{/)
   assert.match(result.css, /--color-text-body/)
   assert.match(result.css, /--color-master:/)
@@ -64,22 +64,17 @@ test('keeps native CSS while generating Play classes', async () => {
 })
 
 test('delivers authored keyframes referenced by native CSS', async () => {
-  const sourceCSS = '@keyframes fade { to { opacity: 1; } } .native { animation: fade 1s; }'
+  const sourceCSS = '@keyframes play-fade { to { opacity: 1; } } .native { animation: play-fade 1s; }'
   const result = await compileFixture(sourceCSS, [])
 
-  assert.match(result.css, /\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)
-  assert.match(result.css, /@keyframes fade/)
+  assert.match(result.css, /\.native\s*\{\s*animation:\s*(?:play-fade 1s|1s play-fade);\s*\}/)
+  assert.match(result.css, /@keyframes play-fade/)
 })
 
-test('does not duplicate generated keyframes when native CSS defines them', async () => {
+test('rejects native keyframes that collide with a managed preset definition', async () => {
   const sourceCSS = [
     '@keyframes fade { to { opacity: .5; } }',
     '.native { animation-name: fade; animation-duration: 1s; }'
   ].join('\n')
-  const result = await compileFixture(sourceCSS, [])
-  const matches = result.css.match(/@keyframes fade/g) || []
-
-  assert.equal(matches.length, 1)
-  assert.match(result.css, /@keyframes\s+fade/)
-  assert.match(result.css, /\.native\s*\{\s*animation-name:\s*fade;\s*animation-duration:\s*1s;\s*\}/)
+  await assert.rejects(compileFixture(sourceCSS, []), /conflicts with managed keyframes/)
 })

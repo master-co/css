@@ -37,8 +37,8 @@ pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
 }
 
 pub(super) fn current_helper(manifest: &mut Value) {
-    if manifest["version"] == 3
-        && manifest["languageVersion"] == 5
+    if manifest["version"] == 4
+        && manifest["languageVersion"] == 6
         && manifest.get("utilities").is_none()
     {
         return;

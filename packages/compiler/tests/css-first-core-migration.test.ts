@@ -3,10 +3,10 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 3 as const, languageVersion: 5 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 6 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v5 authoring contracts', () => {
+describe('directive language v6 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { :root { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green; } }
@@ -16,12 +16,12 @@ describe('directive language v5 authoring contracts', () => {
       @mixin --align-left { text-align: left; }
       @mixin --align-right { text-align: right; }
     `)
-    expect(manifest.version).toBe(3)
-    expect(manifest.languageVersion).toBe(5)
+    expect(manifest.version).toBe(4)
+    expect(manifest.languageVersion).toBe(6)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
-    expect(css.createRule('outline-brand')?.text).toContain('var(--color-line-brand)')
+    expect(css.createRule('outline-line-brand')?.text).toContain('var(--color-line-brand)')
     expect(css.createRule('outline-other')?.text).toContain('var(--color-other)')
     expect(css.createRule('align-left')?.text).toContain('text-align:left')
     expect(css.createRule('outline-missing')).toBeUndefined()
@@ -80,7 +80,7 @@ describe('directive language v5 authoring contracts', () => {
     '.card { @variant media((width>=40rem)) { display: block; } }',
     '@theme inline { --color-brand: red; }', '@theme static { --color-brand: red; }',
     '@theme dark { --color-brand: red; }', '@theme { --color-brand: red; }',
-    '@theme { :root { color: red; } }', '@theme { @keyframes fade { to { opacity: 1; } } }',
+    '@theme { :root { color: red; } }',
     '@utility align-<left|right> { text-align: --master-value(); }',
     '@utility pair:<*> { width: --master-value(); }',
     '@utility pair:* { width: --master-value(1px); }',

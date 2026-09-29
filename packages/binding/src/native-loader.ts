@@ -40,6 +40,7 @@ export interface NativeEngineSession {
   ensureClassRules(classNames: string[]): string
   deleteClassRules(classNames: string[]): string
   registerEmittedGlobals(emittedGlobalsJSON: string): string
+  replaceEmittedGlobals(emittedGlobalsJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   refresh(manifestJSON: string): string
   snapshot(): string

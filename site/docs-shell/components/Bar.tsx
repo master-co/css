@@ -11,11 +11,11 @@ export default function Bar({ className, width, animated, children, color = 'tex
   return (
     <div ref={ref} className={clsx('display:flex align-items:center gap:0.625rem margin-left:-1px flex-wrap:nowrap@sm flex-wrap:wrap@media((width<52.125rem))', className)}>
       <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx('display:none@media((width<52.125rem))', className, animated && 'transition:width|2s|ease-out will-change:width')}>
-        <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-subtle stroke-width:1')} />
+        <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-line-subtle stroke-width:1')} />
       </svg>
       <div className="display:none@sm flex:0|0|100%@media((width<52.125rem)) order:2@media((width<52.125rem))">
         <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx(className, animated && 'transition:width|2s|ease-out will-change:width')}>
-          <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-subtle stroke-width:1')} />
+          <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-line-subtle stroke-width:1')} />
         </svg>
       </div>
       {icon}

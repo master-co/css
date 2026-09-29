@@ -456,7 +456,7 @@ export default function Play({ shareId }: PlayProps = {}) {
   const shareButtonTitle = shareError || (copied ? 'Copied share link' : sharing ? 'Sharing ...' : 'Share')
 
   return (
-    <div className="position:absolute display:flex flex-direction:column full">
+    <div className="position:absolute display:flex flex-direction:column height:100% width:100%">
       <Header fixed={false}>
         <HeaderContent>
           <Link href={'/'}>
@@ -548,7 +548,7 @@ export default function Play({ shareId }: PlayProps = {}) {
       </Header >
       <div
         className={clsx(
-          'display:flex overflow:hidden flex:1 full background-color:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-direction:column!@media((width<64rem))',
+          'display:flex overflow:hidden flex:1 height:100% width:100% background-color:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-direction:column!@media((width<64rem))',
           {
             'flex-direction:row': !layout,
             'flex-direction:row-reverse': layout === '2',
@@ -566,7 +566,7 @@ export default function Play({ shareId }: PlayProps = {}) {
           className={clsx(
             layout === '5' && 'display:none!@md',
             {
-              'full!@media((width<64rem))': tab !== 'Preview',
+              'height:100%!@media((width<64rem)) width:100%!@media((width<64rem))': tab !== 'Preview',
               'border-right:1px|solid|var(--color-line-subtle)': !layout,
               'border-left:1px|solid|var(--color-line-subtle)': layout === '2',
               'border-bottom:1px|solid|var(--color-line-subtle)': layout === '3',
@@ -591,7 +591,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             </Tab>
           </Tabs>
           <span className='display:none'>{tab}</span>
-          <div className='full min-height:0'>
+          <div className='height:100% width:100% min-height:0'>
             <Editor
               className={clsx(
                 { 'display:none!': tab === 'Preview' }
@@ -631,7 +631,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             overlay={false}
             originX={'center'}
             showHandler={responsive ? [false, true, true] : false}
-            className={clsx('full outline:1px|solid|var(--color-line-divider).resizing', {
+            className={clsx('height:100% width:100% outline:1px|solid|var(--color-line-divider).resizing', {
               'max-height:100% max-width:100% outline:1px|solid|var(--color-line-subtle)': responsive
             })}
             showHeight={true}
@@ -665,7 +665,7 @@ export default function Play({ shareId }: PlayProps = {}) {
               />
             </div>
             {previewErrorEvent &&
-              <div className="position:absolute inset:0 full p-2xl bg-red-5@site-light bg-red-95@site-dark text-danger">
+              <div className="position:absolute inset:0 height:100% width:100% p-2xl bg-red-5@site-light bg-red-95@site-dark text-danger">
                 <h2 className="font-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
                 <div className="margin-block:1.25rem padding:0.938rem|1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@site-dark bg-red-90@site-light">
                   {previewErrorEvent.message}

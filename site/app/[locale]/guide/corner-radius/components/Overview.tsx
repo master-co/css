@@ -12,20 +12,10 @@ const radiusRoles: Record<string, string> = {
   '4xl': 'Hero panels, oversized feature surfaces.'
 }
 
-const radiusShortcuts = [
-  {
-    key: 'rounded',
-    token: '',
-    utility: 'rounded',
-    role: 'Tags, segmented controls, pill buttons.'
-  },
-  {
-    key: 'round',
-    token: '',
-    utility: 'round',
-    role: 'Avatars, icon buttons, indicators.'
-  }
-]
+const radiusShapes = [{
+  key: 'pill', token: '--radius-pill', utility: 'r-pill',
+  role: 'Pills; combine with explicit width and aspect-ratio:1/1 for circles.'
+}]
 
 function getRadiusRows() {
   const tokenRows = getThemeNumericVariableEntries('radius').flatMap(({ key }) => {
@@ -40,7 +30,7 @@ function getRadiusRows() {
     }]
   })
 
-  return [...tokenRows, ...radiusShortcuts]
+  return [...tokenRows, ...radiusShapes]
 }
 
 export function RadiusTokenTable() {

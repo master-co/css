@@ -21,8 +21,8 @@ const request: MasterCSSCompileStylesheetsRequest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 }
 
@@ -57,8 +57,8 @@ for (const binding of ['native', 'wasm'] as const) {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 } })
     expect(result.css).toContain('content: "@--master-css-style-slot-0;"')
     expect(result.css).toContain('.card{padding:2rem}')
@@ -84,8 +84,8 @@ for (const binding of ['native', 'wasm'] as const) {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }, options: { preserveNativeCSS: false } })
     expect(result.css).toContain('@media print')
     expect(result.css.match(/@layer/g)).toHaveLength(1)

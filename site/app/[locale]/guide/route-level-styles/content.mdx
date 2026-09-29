@@ -47,7 +47,7 @@ A route stylesheet can use project tokens, variants, and shared utilities direct
 }
 ```
 
-Here `surface-raised` is a shared utility; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
+Here `bg-surface-raised` is a shared utility; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
 
 This keeps route CSS chunks self-contained without copying global native rules or generated utility classes. Unrelated CSS passes through unchanged.
 

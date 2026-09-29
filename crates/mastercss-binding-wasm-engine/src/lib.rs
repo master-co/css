@@ -80,6 +80,18 @@ impl WasmEngineSession {
         render_value(&transition)
     }
 
+    #[wasm_bindgen(js_name = replaceEmittedGlobals)]
+    pub fn replace_emitted_globals(
+        &mut self,
+        emitted_globals_json: &str,
+    ) -> Result<JsValue, JsValue> {
+        let transition = self
+            .inner
+            .replace_emitted_globals(emitted_globals_json)
+            .map_err(js_error)?;
+        render_value(&transition)
+    }
+
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
         &self,

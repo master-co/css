@@ -12,8 +12,8 @@ function labels(target: string, settings?: ConstructorParameters<typeof CSSLangu
 it('does not insert unencoded whitespace into values', () => expect(labels('font-family:')).not.toContain('Arial, Helvetica, sans-serif'))
 it('continues native border values after a space delimiter', () => expect(labels("border:1px|")).toContain('solid'))
 it('continues native shadow values after a comma', () => expect(labels('box-shadow:1px|1px|2px|black,')).toContain('inset'))
-it('offers conditions after a named style', () => expect(labels("text-align:center@")).not.toContain('center'))
-it('offers states after a named style', () => expect(labels("text-align:center:")).not.toContain('center'))
+it('offers conditions after a named style', () => expect(labels("text-align:center@")).not.toContain('sr-only'))
+it('offers states after a named style', () => expect(labels("text-align:center:")).not.toContain('sr-only'))
 
 describe('named token completion', () => {
   test('describes the token identity and actual CSS', () => {
@@ -80,16 +80,17 @@ describe('token ordering', () => {
       'fg-yellow-50', 'fg-yellow-60', 'fg-yellow-70', 'fg-yellow-80', 'fg-yellow-90', 'fg-yellow-95', 'fg-yellow-100', 'fg-yellow'
     ])
   })
-  test('preserves namespace fallback aliases', () => {
+  test('offers complete color role names without implicit namespace aliases', () => {
     const values = labels('fg-')
-    expect(values).toEqual(expect.arrayContaining(['fg-blue', 'fg-link', 'fg-muted', 'fg-strong', 'fg-text-blue', 'fg-text-link']))
+    expect(values).toEqual(expect.arrayContaining(['fg-blue', 'fg-text-muted', 'fg-text-strong', 'fg-text-blue', 'fg-text-link']))
     expect(values).not.toContain('fg-accent')
-    expect(values).not.toContain('fg-line-blue')
+    for (const name of ['fg-muted', 'fg-strong', 'fg-link']) expect(values).not.toContain(name)
+    expect(values).toContain('fg-line-divider')
   })
   test('limits surface tokens to the registered namespace', () => {
-    const values = labels('surface-')
-    expect(values).toEqual(expect.arrayContaining(['surface-base', 'surface-inset', 'surface-raised', 'surface-floating', 'surface-inverse']))
-    expect(values).not.toContain('surface-blue')
+    const values = labels('bg-surface-')
+    expect(values).toEqual(expect.arrayContaining(['bg-surface-base', 'bg-surface-inset', 'bg-surface-raised', 'bg-surface-floating', 'bg-surface-inverse']))
+    expect(values).not.toContain('bg-surface-blue')
   })
   test('compares unitful values for suggestions without rewriting declarations', () => {
     const settings = { manifest: createPresetManifest({ variables: [

@@ -25,7 +25,7 @@ fn utility_definitions_use_native_preludes_and_whole_value_parameters() {
     "#,
     );
     engine
-        .ensure_class_rules(["content-auto", "equal-cols(4)", "outline-brand"])
+        .ensure_class_rules(["content-auto", "equal-cols(4)", "outline-line-brand"])
         .unwrap();
     let text = engine.css_text();
     assert!(text.contains("content-visibility:auto"), "{text}");
@@ -244,8 +244,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":3,"languageVersion":5,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":3,"languageVersion":5,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":4,"languageVersion":6,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":4,"languageVersion":6,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

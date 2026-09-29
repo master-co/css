@@ -20,7 +20,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
       await scanner.init()
       const stylesheets = createStylesheetCollection()
-      await stylesheets.register(scanner, join(root, 'app/globals.css'), "\n        @theme {:root, :host {\n          --color-primary: #ff0000;\n        }}\n\n\n        @keyframes fade {\n          from { opacity: 0; }\n          to { opacity: 1; }\n        }\n\n        .main {\n          color: var(--color-primary);\n          animation-name: fade;\n        }\n      ", {
+      await stylesheets.register(scanner, join(root, 'app/globals.css'), "\n        @theme {:root, :host {\n          --color-primary: #ff0000;\n        }}\n\n\n        @theme { @keyframes fade {\n          from { opacity: 0; }\n          to { opacity: 1; }\n        } }\n\n        .main {\n          color: var(--color-primary);\n          animation-name: fade;\n        }\n      ", {
         baseManifest: defaultBuildManifest,
         projectDir: root
       })
@@ -38,6 +38,7 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       const code = await (plugin.load as any)(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
 
       expect(parseDefaultExport(code)).toEqual({
+        keyframes: { fade: 1 },
         variables: {
           'color-primary': 1
         }

@@ -63,6 +63,7 @@ impl EngineSession {
         EngineResourcesIr {
             theme_text: self.theme_rule_text(),
             variables,
+            keyframes: self.keyframe_snapshot(),
         }
     }
 
@@ -70,6 +71,20 @@ impl EngineSession {
         for (name, count) in &self.emitted_globals.variables {
             if *count > 0 {
                 self.variable_counts.insert(name.clone(), *count);
+            }
+        }
+        for (name, count) in self.emitted_globals.keyframes.clone() {
+            if count > 0 {
+                self.keyframe_counts.insert(name.clone(), count);
+                if let Some(definition) = self
+                    .compiled
+                    .keyframes
+                    .iter()
+                    .find(|definition| definition.name == name)
+                {
+                    let dependencies = definition.dependencies.clone();
+                    self.register_rule_variables(&dependencies);
+                }
             }
         }
     }

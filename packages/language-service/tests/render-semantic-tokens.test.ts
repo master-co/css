@@ -50,7 +50,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    "<div className=\"fg-brand:hover@sm center center:hover center:is(:state-name) sr-only_div::before:of(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
+    "<div className=\"fg-brand:hover@sm sr-only sr-only:hover sr-only:is(:state-name) sr-only_div::before:of(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -102,7 +102,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
   expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@sm', 'keyword', ['query'])
-  expectToken(tokens, "center", 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'state-name', 'modifier', ['pseudoClass'])
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, '_', 'operator', ['selector', 'selectorCombinator'])
@@ -199,7 +199,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
   expectToken(tokens, '@card', 'keyword', ['query'])
   expectToken(tokens, '3', 'number', ['query'])
   expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
-  expectToken(tokens, 'center', 'enumMember')
+  expectToken(tokens, 'sr-only', 'enumMember')
   expectToken(tokens, 'cover', 'enumMember')
   expectToken(tokens, 'background-image', 'property')
   expectToken(tokens, 'url', 'function')
@@ -262,34 +262,34 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
 
 test.concurrent('renders native-aligned semantic tokens for grouped classes with selector suffixes', () => {
   const { tokens } = renderTokens(
-    "<div class=\"{text-align:center;center}>li:hover@sm\"></div>",
+    "<div class=\"{text-align:center;sr-only}>li:hover@sm\"></div>",
     'html'
   )
 
   expectToken(tokens, '{', 'operator', ['blockBrace'])
   expectToken(tokens, 'text-align', 'property')
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
-  expectToken(tokens, 'center', 'enumMember')
+  expectToken(tokens, 'sr-only', 'enumMember')
   expectToken(tokens, ';', 'operator', ['declarationTerminator'])
-  expectToken(tokens, "center", 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, '>', 'operator', ['selector', 'selectorCombinator'])
   expectToken(tokens, 'li', 'type', ['selector'])
   expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@sm', 'keyword', ['query'])
-  expect(tokens.some(({ text }) => text.includes("center}>li:hover@sm"))).toBe(false)
+  expect(tokens.some(({ text }) => text.includes("sr-only}>li:hover@sm"))).toBe(false)
 })
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
-  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"center fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @mixin --reset {\n        @safelist \"center\";\n      }\n\n    @mixin --btn {\n        @safelist \"fit fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"center\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"center\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@utility font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@utility bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }\n\n    @mixin --reset {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"sr-only\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"sr-only\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@utility font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@utility bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
-  expectToken(tokens, "center", 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'fg-primary', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
-  expectToken(tokens, "fit", 'enumMember')
+  expectToken(tokens, "text-gradient", 'enumMember')
   expectToken(tokens, 'bg-blue', 'enumMember')
 
   expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword' as const, modifiers: ['directive'] })
@@ -324,10 +324,10 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"fit\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@utility btn:hover {\n        @safelist \"center\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@utility btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
 
-  expectToken(tokens, "fit", 'enumMember')
-  expectToken(tokens, "center", 'enumMember')
+  expectToken(tokens, "text-gradient", 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword' as const, modifiers: ['directive'] })
@@ -348,9 +348,9 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
-  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"center fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"sr-only fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @custom-variant quoted { @media (x: \"a;b\") { @slot; } }\n  ", 'css')
 
-  expectToken(tokens, "center", 'enumMember')
+  expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier' as const, modifiers: ['directive'] })
@@ -367,7 +367,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
 })
 
 test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
-  const { tokens } = renderTokens(".btn { @compose \"center fg-red\"; }", 'css')
+  const { tokens } = renderTokens(".btn { @compose \"sr-only fg-red\"; }", 'css')
 
   expect(tokens).toEqual([])
 })

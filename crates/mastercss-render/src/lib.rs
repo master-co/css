@@ -14,6 +14,7 @@ pub struct ServerRenderIr {
     pub classes: Vec<String>,
     pub snapshot: EngineSnapshotIr,
     pub hydration_manifest: HydrationManifest,
+    pub output_mappings: Vec<mastercss_schema::CssOutputMapping>,
 }
 
 #[derive(Debug)]
@@ -87,6 +88,7 @@ impl RenderSession {
         let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes: self.classes.clone(),
+            output_mappings: self.engine.keyframe_output_mappings(&snapshot),
             snapshot,
             hydration_manifest,
         })
@@ -109,6 +111,7 @@ impl RenderSession {
         let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes,
+            output_mappings: self.engine.keyframe_output_mappings(&snapshot),
             snapshot,
             hydration_manifest,
         })
@@ -162,7 +165,7 @@ mod tests {
     use super::*;
 
     fn manifest() -> String {
-        serde_json::json!({"version":3,"languageVersion":5,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]})
+        serde_json::json!({"version":4,"languageVersion":6,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]})
         .to_string()
     }
 
@@ -174,15 +177,21 @@ mod tests {
             rendered.snapshot.text,
             "@layer utilities{.block{display:block}.red{color:red}}"
         );
-        assert_eq!(rendered.hydration_manifest.version, 2);
+        assert_eq!(rendered.hydration_manifest.version, 3);
         assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
-        assert!(rendered.hydration_manifest.resource_order.is_empty());
+        assert!(
+            rendered
+                .hydration_manifest
+                .resource_order
+                .variables
+                .is_empty()
+        );
     }
 
     #[test]
     fn repeated_classes_share_generated_rules() {
         let mut session =
-            RenderSession::create(r#"{"version":3,"languageVersion":5}"#, None).unwrap();
+            RenderSession::create(r#"{"version":4,"languageVersion":6}"#, None).unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block"])
             .unwrap();
@@ -235,7 +244,7 @@ mod tests {
 
     #[test]
     fn cached_native_declarations_preserve_later_pseudo_states() {
-        let manifest = serde_json::json!({"version":3,"languageVersion":5,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":6,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]})
         .to_string();
         let mut cached = RenderSession::create(&manifest, None).unwrap();
         cached.ensure_classes(["background:var(--stripe)"]).unwrap();
@@ -256,7 +265,7 @@ mod tests {
 
     #[test]
     fn cached_subsets_preserve_page_resource_composition() {
-        let manifest = serde_json::json!({"version":3,"languageVersion":5,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"mixins":[{"name":"--brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"name":"--animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":6,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"mixins":[{"name":"--brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"name":"--animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}]})
         .to_string();
         let emitted_globals = r#"{"variables":{}}"#;
         let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
@@ -272,7 +281,7 @@ mod tests {
 
     #[test]
     fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
-        let manifest = serde_json::json!({"version":3,"languageVersion":5,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":6,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
         .to_string();
         let mut session = RenderSession::create(&manifest, None).unwrap();
 
@@ -299,7 +308,7 @@ mod tests {
 
     #[test]
     fn preserves_and_increments_host_resource_counts() {
-        let manifest = serde_json::json!({"version":3,"languageVersion":5,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        let manifest = serde_json::json!({"version":4,"languageVersion":6,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
         .to_string();
         let mut session =
             RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":2}}"#)).unwrap();

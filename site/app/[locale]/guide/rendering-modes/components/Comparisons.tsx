@@ -8,7 +8,7 @@ export default () => (
     <table className=''>
       <thead>
         <tr>
-          <th className="position:sticky top-2xl z-index:1 pt-md surface-raised top:60px@sm">Modes</th>
+          <th className="position:sticky top-2xl z-index:1 pt-md bg-surface-raised top:60px@sm">Modes</th>
           <th className="position:sticky top-2xl z-index:1 width:calc(100%/6) pt-md text-align:center bg-surface-base top:60px@sm">Progressive</th>
           <th className="position:sticky top-2xl z-index:1 width:calc(100%/6) pt-md text-align:center bg-surface-base top:60px@sm">Runtime</th>
           <th className="position:sticky top-2xl z-index:1 width:calc(100%/6) pt-md text-align:center bg-surface-base top:60px@sm">Static</th>

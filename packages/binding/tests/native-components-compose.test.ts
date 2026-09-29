@@ -26,8 +26,8 @@ test('native and Wasm retain ordered native output, resource references and migr
     from: 'rc-managed' as const, sourceVersion: '2.0.0-rc.managed',
     manifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] },
     targetManifest: {
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 },
     stylesheets: ['@components{button{display:block}}.a{@compose button;}'],
     classLists: [['button:hover']], documents: []

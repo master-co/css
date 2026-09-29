@@ -91,6 +91,15 @@ pub(super) fn assemble_native_output(
     let registry = crate::custom_media::registry(Some(&manifest))?;
     let (css, mappings) =
         crate::custom_media::lower_css(&css, &mappings, &registry, "stylesheet.css")?;
+    crate::keyframes::validate_manifest_native_names(&css, "stylesheet.css", &manifest, &mappings)?;
+    crate::keyframes::include_native_variables(&mut result.manifest, &css);
+    crate::keyframes::include_native_variables(&mut result.resolution_manifest, &css);
+    result.notices = crate::keyframes::native_notices(
+        &css,
+        "stylesheet.css",
+        &result.resolution_manifest,
+        &mappings,
+    )?;
     result.css = Some(css);
     result.output_mappings = mappings;
     Ok(())

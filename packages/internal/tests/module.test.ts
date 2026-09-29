@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":3,"languageVersion":5}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":4,"languageVersion":6}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,14 +42,14 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":3,"languageVersion":5}')
-    expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {} };')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":4,"languageVersion":6}')
+    expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {} };')
     expect(toManifestJSON({
-  "version": 3 as const,
-  "languageVersion": 5 as const
-})).toBe('{"version":3,"languageVersion":5}')
-    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1}};')
-    expect(normalizeEmittedGlobals()).toEqual({ variables: {} })
+  "version": 4 as const,
+  "languageVersion": 6 as const
+})).toBe('{"version":4,"languageVersion":6}')
+    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
+    expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
   })
 
   it('does not expose runtime injection source helpers', () => {
@@ -102,8 +102,8 @@ describe('@master/css-internal module helpers', () => {
     )
 
     expect(module.default).toEqual({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 })
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -114,8 +114,8 @@ describe('@master/css-internal module helpers', () => {
       ok: true,
       status: 200,
       json: async () => ({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
@@ -129,8 +129,8 @@ describe('@master/css-internal module helpers', () => {
     )
 
     expect(module.default).toEqual({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)

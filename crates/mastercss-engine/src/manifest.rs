@@ -20,6 +20,12 @@ pub(crate) fn compile_manifest(
     let mut projection: ManifestProjection = serde_json::from_value(manifest.as_value().clone())
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
     let mut seen = std::collections::HashSet::new();
+    projection.keyframes.reverse();
+    projection
+        .keyframes
+        .retain(|definition| seen.insert(definition.name.clone()));
+    projection.keyframes.reverse();
+    seen.clear();
     projection.mixins.reverse();
     projection
         .mixins
@@ -401,17 +407,17 @@ pub(crate) const BUILTIN_TOKEN_NAMESPACES: &[(&[&str], &[&str])] = &[
     (SPACING_UNITLESS_PROPERTIES, &["~spacing"]),
     (CONTAINER_PROPERTIES, &["~container"]),
     (RADIUS_PROPERTIES, &["~radius"]),
-    (BORDER_COLOR_PROPERTIES, &["~color-line", "~color"]),
+    (BORDER_COLOR_PROPERTIES, &["~color"]),
     (
         &["accent-color", "background-color", "fill", "filter"],
         &["~color"],
     ),
-    (&["caret-color"], &["~color-text", "~color"]),
-    (&["stroke"], &["~color-line", "~color"]),
-    (&["color"], &["~color", "~color-text"]),
+    (&["caret-color"], &["~color"]),
+    (&["stroke"], &["~color"]),
+    (&["color"], &["~color"]),
     (
         &["-webkit-text-fill-color", "text-decoration-color"],
-        &["~color-text", "~color"],
+        &["~color"],
     ),
     (&["-webkit-text-stroke-color"], &["~color"]),
     (&["text-shadow"], &["~color"]),

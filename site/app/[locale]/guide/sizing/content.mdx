@@ -8,17 +8,17 @@ Master CSS keeps sizing decisions close to the element that owns them. Use `widt
 <Demo>
   <div className="container-type:inline-size width:100%">
     <div className="grid-cols(1) display:grid gap-md width:100% grid-cols(2)@container((width>=18rem))">
-      <section className="min-width:0 p-lg r-lg surface-raised shadow-xs">
+      <section className="min-width:0 p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>Fluid wrapper</DemoLabel>
         <div className="width:100% max-w-3xs margin-inline:auto">
           <div className="height:2.5rem r-lg bg-blue-60/.15"></div>
           <div className="height:1rem width:75% mt-sm r-sm bg-blue-60/.1"></div>
         </div>
       </section>
-      <section className="min-width:0 p-lg r-lg surface-raised shadow-xs">
+      <section className="min-width:0 p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>Measured object</DemoLabel>
         <div className="display:flex align-items:center gap-md">
-          <div className="height:3rem width:3rem round bg-blue-60/.15"></div>
+          <div className="height:3rem width:3rem aspect-ratio:1/1 border-radius:50% bg-blue-60/.15"></div>
           <div className="flex:1 min-width:0">
             <div className="height:1rem width:100% max-width:7rem r-sm bg-blue-60/.16"></div>
             <div className="height:0.75rem width:calc(100%/3*2) mt-xs r-sm bg-blue-60/.1"></div>
@@ -123,7 +123,7 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 
 ```html
 <!-- @MARK width:2.5rem height:2.5rem -->
-<img class="width:2.5rem height:2.5rem round object-fit:cover" src="..." alt="" />
+<img class="width:2.5rem height:2.5rem border-radius:50% aspect-ratio:1/1 object-fit:cover" src="..." alt="" />
 
 <!-- @MARK width:9rem --><!-- @MARK height:5rem -->
 <figure class="height:5rem width:9rem">...</figure>
@@ -182,7 +182,7 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-  <div className="width:100% max-w-sm margin-inline:auto p-lg r-lg surface-raised shadow-xs">
+  <div className="width:100% max-w-sm margin-inline:auto p-lg r-lg bg-surface-raised shadow-xs">
     <DemoLabel>min-w:0 max-width:24rem</DemoLabel>
     <div className="display:flex gap-md">
       <div className="flex:0 height:2.5rem width:2.5rem r-lg bg-blue-60/.15"></div>

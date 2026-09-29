@@ -94,7 +94,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.emittedGlobals.variables['color-green-60']).toBe(2)
 
     expect(result.nativeCSS).toContain('@keyframes fade')
-    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 } })
+    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 }, keyframes: {} })
   })
 
   it('replaces @master/css imports with CSS import modifiers', () => {

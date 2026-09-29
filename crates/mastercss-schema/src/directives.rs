@@ -133,12 +133,13 @@ pub enum ErrorCode {
     RemovedPresetUtility,
     UtilityNameConflict,
     AmbiguousToken,
+    DynamicAnimationNames,
     UnknownToken,
     Internal,
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 26] = [
+    pub const ALL: [Self; 27] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -163,6 +164,7 @@ impl ErrorCode {
         Self::RemovedPresetUtility,
         Self::UtilityNameConflict,
         Self::AmbiguousToken,
+        Self::DynamicAnimationNames,
         Self::UnknownToken,
         Self::Internal,
     ];
@@ -193,6 +195,7 @@ impl ErrorCode {
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",
             Self::AmbiguousToken => "AMBIGUOUS_TOKEN",
+            Self::DynamicAnimationNames => "DYNAMIC_ANIMATION_NAMES",
             Self::UnknownToken => "UNKNOWN_TOKEN",
             Self::Internal => "INTERNAL",
         }
@@ -207,6 +210,10 @@ impl ErrorCode {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CssDirectiveManifestInput {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation_variables: Option<BTreeMap<String, Vec<String>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keyframes: Option<Vec<KeyframeDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mixins: Option<Vec<MixinDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -446,4 +453,13 @@ pub enum MediaQueryExpr {
     Not { query: Box<MediaQueryExpr> },
     And { queries: Vec<MediaQueryExpr> },
     Or { queries: Vec<MediaQueryExpr> },
+}
+
+/// Informational compiler feedback with an authored source reference.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssDirectiveNotice {
+    pub code: crate::ErrorCode,
+    pub message: String,
+    pub source: Option<CssDirectiveSourceReference>,
 }

@@ -32,7 +32,7 @@ test('the portable guide preserves the upgrade workflow and labels historical sy
   assert.match(markdown, /Do not initialize the old and new Master runtimes/)
   assert.match(markdown, /root-size/)
   assert.match(markdown, /image-set/)
-  assert.match(markdown, /binding ABI 15/)
+  assert.match(markdown, /binding ABI \*\*17\*\*/)
   assert.match(markdown, /--from rc-sizing/)
   for (const profile of ['rc-legacy', 'rc-named', 'rc-native', 'rc-managed', 'rc-utilities']) assert.ok(markdown.includes(profile))
   assert.match(markdown, /MASTER_QUERY_REQUIRES_CSS/)
@@ -48,9 +48,9 @@ test('new guide examples follow the native and named-token contract', () => {
     ['p-md', 'padding:var(--spacing-md)'],
     ['fg-brand', 'color:var(--color-brand)'],
     ['font-family:mono', 'font-family:mono'],
-    ['fg:red', 'color:red'],
-    ['bg:#fff', 'background:#fff'],
-    ['b:2px', 'border:2px'],
+    ['color:red', 'color:red'],
+    ['background:#fff', 'background:#fff'],
+    ['border:2px', 'border:2px'],
     ['stroke-width:2px', 'stroke-width:2px'],
     ['line-clamp:3', 'line-clamp:3'],
     ['background-image:image-set(url(a.png)|1x,url(b.png)|2x)', 'image-set(url(a.png) 1x,url(b.png) 2x)']

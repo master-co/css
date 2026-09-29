@@ -43,8 +43,8 @@ export default function Page() {
       <p className="review-surface-intro">The original Guide panel has a raised surface and restrained shadow. The approved shared surface keeps that hierarchy available without adding padding, layout, clipping or elevation to a measured lesson by default.</p>
       <div className="review-surface-reviewNote" role="note">Approved direction: <code>DemoSurface</code> has a fine bordered default. <code>elevation=&quot;raised&quot;</code> deliberately recalls the original panel shadow. Geometry remains owned by the example.</div>
 
-      <section aria-labelledby="surface-comparison">
-        <h2 id="surface-comparison">Basic content panel</h2>
+      <section aria-labelledby="bg-surface-comparison">
+        <h2 id="bg-surface-comparison">Basic content panel</h2>
         <div className="review-surface-comparison">
           <article className="review-surface-option">
             <div className="review-surface-optionHeading"><span>01</span><div><h3>Original Guide</h3><p><code>app-panel</code></p></div></div>
@@ -64,8 +64,8 @@ export default function Page() {
         </div>
       </section>
 
-      <section aria-labelledby="surface-variants">
-        <h2 id="surface-variants">Flat and raised treatments</h2>
+      <section aria-labelledby="bg-surface-variants">
+        <h2 id="bg-surface-variants">Flat and raised treatments</h2>
         <p className="review-surface-sectionCopy">The two treatments share the same dimensions. Elevation is used only where stacking is part of the explanation.</p>
         <Demo>
           <div className="review-surface-treatmentGrid">
@@ -76,9 +76,9 @@ export default function Page() {
         <p className="review-surface-optionNote">Use explicit classes for padding, flex/grid, dimensions, position and overflow. The raised treatment adds visual shadow only.</p>
       </section>
 
-      <section aria-labelledby="surface-real-use">
+      <section aria-labelledby="bg-surface-real-use">
         <div className="review-surface-sectionHeading">
-          <div><h2 id="surface-real-use">Actual Reference use</h2><p>The surface must not become an extra column or change the content box.</p></div>
+          <div><h2 id="bg-surface-real-use">Actual Reference use</h2><p>The surface must not become an extra column or change the content box.</p></div>
           <Link href="/reference/column-span">Open /reference/column-span</Link>
         </div>
         <div className="review-surface-actualPair">

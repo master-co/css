@@ -16,7 +16,7 @@ export default function HeroHeader({ metadata }: any) {
         {metadata.date && <div className='display:flex justify-content:center gap-xs mb-sm fg-accent'>
           <span>{formattedDate}</span>
         </div>}
-        <h1 className='max-width:52.125rem margin-inline:auto font-3xl font-weight:normal tracking-tight text-wrap:pretty text-align:center text-gradient surface-raised background-image:linear-gradient(180deg,var(--color-gray-60),var(--color-gray-90)) -webkit-text-fill-color:transparent background-image:linear-gradient(180deg,oklch(100%|0|none),var(--color-gray-40))@site-dark font-size:64px@sm'>
+        <h1 className='max-width:52.125rem margin-inline:auto font-3xl font-weight:normal tracking-tight text-wrap:pretty text-align:center text-gradient bg-surface-raised background-image:linear-gradient(180deg,var(--color-gray-60),var(--color-gray-90)) -webkit-text-fill-color:transparent background-image:linear-gradient(180deg,oklch(100%|0|none),var(--color-gray-40))@site-dark font-size:64px@sm'>
           {$(metadata.title.absolute || metadata.title)}
         </h1>
         {metadata.authors && <AuthorList className="align-items:center justify-content:center gap-xl mt-2xl" isLink>{metadata.authors}</AuthorList>}

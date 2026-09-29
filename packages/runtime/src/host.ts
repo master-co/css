@@ -29,7 +29,8 @@ export function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
 
 function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
   return {
-    variables: { ...(emittedGlobals?.variables || {}) }
+    variables: { ...(emittedGlobals?.variables || {}) },
+    keyframes: { ...(emittedGlobals?.keyframes || {}) }
   }
 }
 
@@ -37,7 +38,7 @@ function addEmittedGlobals(
   target: Required<MasterCSSEmittedGlobals>,
   source: MasterCSSEmittedGlobals
 ) {
-  for (const kind of ['variables'] as const) {
+  for (const kind of ['variables', 'keyframes'] as const) {
     for (const [name, count] of Object.entries(source[kind] || {})) {
       if (count) {
         target[kind][name] = Math.min(
@@ -67,6 +68,25 @@ export default class RuntimeHost {
   protected readonly defaultsLayer = new RuntimeUtilityLayer('defaults', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
   protected readonly componentsLayer = new RuntimeUtilityLayer('components', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
   protected readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
+  protected readonly keyframes = new RuntimeLayer('keyframes',
+    (layer, rule, index) => {
+      rule.nativeNodeCount = 0
+      const sheet = this.getStyleSheet()
+      if (!sheet) return
+      const next = layer.rules.filter(rule => rule.native)[index]?.native
+      const nativeIndex = next ? this.findTopLevelRuleIndex(next) : sheet.cssRules.length
+      try {
+        const inserted = sheet.insertRule(rule.text, nativeIndex)
+        rule.native = sheet.cssRules.item(inserted) || undefined
+        rule.nativeNodeCount = 1
+      } catch (error) {
+        console.error(error, rule)
+      }
+    },
+    (_layer, rule) => {
+      const index = rule.native ? this.findTopLevelRuleIndex(rule.native) : -1
+      if (index !== -1) this.getStyleSheet()?.deleteRule(index)
+    })
   protected readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
   private readonly ruleClasses = new Map<HydratedGeneratedRule, string | Set<string>>()
   protected readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
@@ -101,6 +121,12 @@ export default class RuntimeHost {
     if (!emittedGlobals) return
     const transition = this.bindingEngine.registerEmittedGlobals(emittedGlobals)
     addEmittedGlobals(this.emittedGlobals, emittedGlobals)
+    this.applyTransition(transition)
+  }
+
+  protected replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
+    const transition = this.bindingEngine.replaceEmittedGlobals(emittedGlobals)
+    Object.assign(this.emittedGlobals, cloneEmittedGlobals(emittedGlobals))
     this.applyTransition(transition)
   }
 
@@ -139,6 +165,7 @@ export default class RuntimeHost {
     const rank = LAYER_ORDER.indexOf(name as typeof LAYER_ORDER[number])
     for (let index = 0; index < sheet.cssRules.length; index++) {
       const rule = sheet.cssRules.item(index)!
+      if (rule.constructor.name === 'CSSKeyframesRule') return index
       if (isLayerBlockRule(rule)) {
         const ruleRank = LAYER_ORDER.indexOf(rule.name as typeof LAYER_ORDER[number])
         if (ruleRank > rank) return index
@@ -230,6 +257,7 @@ export default class RuntimeHost {
     this.defaultsLayer.reset()
     this.componentsLayer.reset()
     this.utilitiesLayer.reset()
+    this.keyframes.reset()
     this.resetResourceCounts()
   }
 
@@ -316,6 +344,14 @@ export default class RuntimeHost {
         this.setThemeResource(mutation.op === 'insert' ? mutation.text : '')
         continue
       }
+      if (mutation.target === 'keyframes') {
+        if (mutation.op === 'insert') {
+          this.keyframes.insert({ key: mutation.key, name: mutation.key, text: mutation.text }, mutation.index)
+        } else {
+          this.keyframes.delete(mutation.key, mutation.index)
+        }
+        continue
+      }
       const layer = this.getUtilityLayerByName(mutation.target)
       if (mutation.op === 'insert') {
         if (!mutation.rule) {
@@ -370,6 +406,14 @@ export default class RuntimeHost {
       this.registerClassRule(rule)
     }
 
+    const nativeKeyframes = new Map([...sheet.cssRules]
+      .filter((rule): rule is CSSKeyframesRule => rule.constructor.name === 'CSSKeyframesRule')
+      .map(rule => [rule.name, rule]))
+    for (const resource of snapshot.resources.keyframes) {
+      const native = nativeKeyframes.get(resource.name)
+      this.keyframes.adopt({ key: resource.name, name: resource.name, text: resource.text,
+        native, nativeNodeCount: native ? 1 : 0 })
+    }
     this.syncResourceSnapshot(snapshot.resources)
   }
 

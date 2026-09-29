@@ -420,7 +420,10 @@ impl LanguageSession {
             matcher_types: semantics.matcher_types,
             definition_source: engine
                 .class_mixin_definition(class_name)?
-                .and_then(|definition| definition.source),
+                .and_then(|definition| definition.source)
+                .or(engine
+                    .class_keyframe_definition(class_name)?
+                    .and_then(|definition| definition.source)),
             variables,
             rules: inspection.rules,
             diagnostics: inspection.diagnostics,

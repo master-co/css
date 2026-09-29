@@ -10,6 +10,7 @@ import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@mast
 type BindingEngineInspection = ReturnType<MasterCSSEngineBindingSession['inspect']>
 
 export type MasterCSSRuleTarget =
+  | 'keyframes'
   | 'theme'
   | 'base'
   | 'defaults'
@@ -37,7 +38,7 @@ export type MasterCSSEngineMutation =
   | MasterCSSEngineDeleteMutation
 
 export interface MasterCSSEngineTransition {
-  readonly version: 2
+  readonly version: 3
   readonly mutations: readonly MasterCSSEngineMutation[]
 }
 
@@ -50,6 +51,7 @@ export interface MasterCSSEngineVariableResource {
 export interface MasterCSSEngineResources {
   readonly themeText?: string
   readonly variables: readonly MasterCSSEngineVariableResource[]
+  readonly keyframes: readonly (MasterCSSEngineVariableResource & { readonly text: string })[]
 }
 
 export interface MasterCSSEngineExecutionState {
@@ -64,7 +66,7 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  readonly version: 2
+  readonly version: 3
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resources: MasterCSSEngineResources
   readonly text: string
@@ -105,6 +107,7 @@ export interface MasterCSSEngine extends Disposable {
    * Counts are cumulative for the lifetime of the session and cannot be unregistered.
    */
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
@@ -116,6 +119,7 @@ export interface BindingEngineSession {
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection

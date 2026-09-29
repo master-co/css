@@ -34,6 +34,8 @@ export function bindEngineBindingSession(
     deleteClassRules: (classNames) => invoke(() => session.deleteClassRules(classNames)),
     registerEmittedGlobals: (emittedGlobals) =>
       invoke(() => session.registerEmittedGlobals(emittedGlobals)),
+    replaceEmittedGlobals: (emittedGlobals) =>
+      invoke(() => session.replaceEmittedGlobals(emittedGlobals)),
     refresh: (manifest) => invoke(() => session.refresh(manifest)),
     executionState: (classNames) => invoke(() => session.executionState(classNames)),
     inspect: (className) => invoke(() => session.inspect(className)),

@@ -8,7 +8,7 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":4,"languageVersion":6,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn classifies_host_rule_validation_results_in_rust() {

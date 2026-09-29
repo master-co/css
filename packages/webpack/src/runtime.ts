@@ -24,6 +24,10 @@ async function startRuntime(
   emittedGlobals = masterCSSEmittedGlobals
 ) {
   if (typeof document === 'undefined') return
+  if (state.runtime) {
+    state.runtime.refresh(manifest, emittedGlobals)
+    return
+  }
   destroyRuntime()
   const generation = state.generation
   const startup = (state.pendingStart ?? Promise.resolve()).catch(() => {}).then(async () => {

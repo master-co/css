@@ -26,7 +26,7 @@ Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and r
 
 ```html
 <!-- @MARK shadow-lg -->
-<article class="r-lg surface-raised shadow-lg">
+<article class="r-lg bg-surface-raised shadow-lg">
   <h2 class="fg-text-strong">Raised surface</h2>
   <p class="fg-text-muted">Cards need a clear surface before they need a large shadow.</p>
 </article>
@@ -41,12 +41,12 @@ Use `box-shadow:<token>` for common elevation levels. The utility resolves value
 
 ```html
 <!-- @MARK shadow-sm -->
-<article class="r-lg surface-raised shadow-sm">
+<article class="r-lg bg-surface-raised shadow-sm">
   ...
 </article>
 
 <!-- @MARK shadow-lg -->
-<div class="r-lg surface-floating shadow-lg">
+<div class="r-lg bg-surface-floating shadow-lg">
   ...
 </div>
 ```
@@ -134,7 +134,7 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 ```html
 <main class="bg-surface-base">
   <section class="bg-surface-base">
-    <article class="surface-raised shadow-sm">...</article>
+    <article class="bg-surface-raised shadow-sm">...</article>
   </section>
 </main>
 ```

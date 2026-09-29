@@ -7,7 +7,7 @@ import CreateIconButton from '../../reference/border-radius/components/CreateIco
 ## Overview [sr-only]
 Corner radius defines the shape language of surfaces, controls, media, and badges. It tells users whether an element is dense and precise, soft and spacious, pill-shaped, or circular.
 
-Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r-sm`, `r-lg`, and `r-2xl` for shared UI curvature instead of repeating raw values across markup. Use `rounded` and `round` when the shape itself is the decision.
+Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r-sm`, `r-lg`, and `r-2xl` for shared UI curvature instead of repeating raw values across markup. Use `r-pill` for a pill, and combine it with explicit dimensions and `aspect-ratio:1/1` for a circle.
 
 <BorderRadiusBasicUsage />
 
@@ -23,7 +23,7 @@ Use related tokens for related surfaces. A card, its nested media, and an action
 ---
 
 ## Use radius tokens
-Use `border-radius:<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
+Use `r-<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
 
 ```html
 <!-- @MARK r-md -->
@@ -45,7 +45,7 @@ Use `border-radius:<token>` for all corners. The utility resolves values from `r
   </Class2CSS>
 </details>
 
-Use `border-radius:*` in product markup. Use the explicit `border-radius:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+Use `r-md` or `border-radius-md` for a named token, and `border-radius:<value>` for a native value.
 
 ---
 
@@ -58,8 +58,8 @@ This lets radius utilities use scale or project token names such as `md`, `card`
 
 ---
 
-## Use shape shortcuts
-Use `rounded` when the element should behave like a pill, regardless of its width. Use `round` when the element should be circular.
+## Create pills and circles \{#use-shape-shortcuts\}
+`r-pill` sets only the border radius. Add an explicit width and `aspect-ratio:1/1` for a square box with a circular outline. It never changes dimensions or aspect ratio by itself.
 
 <CreatePillButton />
 <CreateIconButton />
@@ -67,11 +67,11 @@ Use `rounded` when the element should behave like a pill, regardless of its widt
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['border-radius:1e9em', 'round']}
+    {['r-pill', 'aspect-ratio:1/1']}
   </Class2CSS>
 </details>
 
-Use shape shortcuts for semantic shapes. Use `border-radius:*` when the element should stay on the shared radius scale.
+Use the same `r-pill` token for both shapes; dimensions determine the result.
 
 ---
 

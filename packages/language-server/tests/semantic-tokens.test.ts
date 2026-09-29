@@ -25,14 +25,14 @@ withFixture('basic', async (context) => {
   })
 
   test('returns active semantic tokens for the class at a position', async ({ expect }) => {
-    const text = '<div class="fg-red center:hover"></div>'
+    const text = '<div class="fg-red sr-only:hover"></div>'
     const textDocument = context.createDocument(text)
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(ACTIVE_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
         uri: textDocument.uri
       },
-      position: textDocument.positionAt(text.indexOf("center") + 1)
+      position: textDocument.positionAt(text.indexOf("sr-only") + 1)
     })
 
     expect(semanticTokens.data.length).toBeGreaterThan(0)
@@ -46,7 +46,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
-    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"center fg-red\";", { lang: 'css' })
+    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"sr-only fg-red\";", { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
@@ -184,7 +184,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens when highlighting is off', async ({ expect }) => {
-    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"center\";", { lang: 'css' })
+    const textDocument = context.createDocument("@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@safelist \"sr-only\";", { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {

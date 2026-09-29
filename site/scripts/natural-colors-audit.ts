@@ -27,7 +27,7 @@ export async function auditNaturalColors() {
   const surfaces = ['base', 'inset', 'raised', 'floating']
   let computed: Record<string, { text: string, base: string, surfaces: Record<string, string> }>
   try {
-    const classes = [...naturalColorNames.flatMap(name => [`text-${name}`, `bg-${name}`]), ...surfaces.map(name => `surface-${name}`)]
+    const classes = [...naturalColorNames.flatMap(name => [`text-${name}`, `bg-${name}`]), ...surfaces.map(name => `bg-surface-${name}`)]
     const rendered = renderClassNamesSync(classes, { manifest: preset as unknown as MasterCSSManifest })
     await page.setContent(`<style>${rendered.cssText}</style><div id="probe"></div>`)
     computed = await page.evaluate(({ families, surfaces }) => {
@@ -39,7 +39,7 @@ export async function auditNaturalColors() {
         const text = getComputedStyle(probe).color, base = getComputedStyle(probe).backgroundColor
         const backgrounds: Record<string, string> = {}
         for (const surface of surfaces) {
-          probe.className = `surface-${surface}`
+          probe.className = `bg-surface-${surface}`
           backgrounds[surface] = getComputedStyle(probe).backgroundColor
         }
         values[`${family}:${mode}`] = { text, base, surfaces: backgrounds }

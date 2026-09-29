@@ -440,7 +440,7 @@
       "id": "rc87-lexer-6d5d386f580d29af",
       "sourceId": "rc87-6d5d386f580d29af",
       "kind": "lexer",
-      "input": "block\u3000fg:red",
+      "input": "block　fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -467,7 +467,7 @@
       "id": "rc87-lexer-9548ae64df5ed481",
       "sourceId": "rc87-9548ae64df5ed481",
       "kind": "lexer",
-      "input": " block  fg:red\u3000m:1x ",
+      "input": " block  fg:red　m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -857,7 +857,7 @@
     {
       "id": "engine-inline-theme-variable-dependencies",
       "manifest": {
-        "version": 3,
+        "version": 4,
         "variables": {
           "color": [
             {
@@ -925,7 +925,7 @@
             }
           ]
         },
-        "languageVersion": 5,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -976,14 +976,14 @@
         {
           "op": "ensure",
           "classes": [
-            "surface-raised"
+            "bg-surface-raised"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.bg-surface-raised{background-color:var(--color-surface-raised)}}"
         },
         {
           "op": "delete",
           "classes": [
-            "surface-raised"
+            "bg-surface-raised"
           ],
           "expectedCss": ""
         }
@@ -1138,8 +1138,8 @@
     {
       "id": "engine-animation-resource-metadata",
       "manifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "mixins": [
           {
             "name": "--float-left",
@@ -1309,8 +1309,8 @@
     {
       "id": "engine-semantic-manifest-layer",
       "manifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "mixins": [
           {
             "name": "--card",
@@ -1383,8 +1383,8 @@
     {
       "id": "engine-same-class-across-layers",
       "manifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1452,7 +1452,7 @@
     {
       "id": "engine-native-alias-global-variable",
       "manifest": {
-        "version": 3,
+        "version": 4,
         "variables": {
           "": [
             {
@@ -1470,7 +1470,7 @@
             }
           ]
         },
-        "languageVersion": 5,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -1498,7 +1498,7 @@
     {
       "id": "engine-native-alias-warm-session",
       "manifest": {
-        "version": 3,
+        "version": 4,
         "variables": {
           "": [
             {
@@ -1516,7 +1516,7 @@
             }
           ]
         },
-        "languageVersion": 5,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -1567,8 +1567,13 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "full",
-          "expectedRuleContains": "width:100%;height:100%"
+          "className": "width:100%",
+          "expectedRuleContains": "width:100%"
+        },
+        {
+          "op": "inspectContains",
+          "className": "height:100%",
+          "expectedRuleContains": "height:100%"
         }
       ]
     },
@@ -2937,12 +2942,12 @@
       "sourceId": "rc87-5ae87bddfc5f375d",
       "source": "@custom-variant light { &:where(.light, .light *) { @slot; } } @custom-variant dark { &:where(.dark, .dark *) { @slot; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -3106,12 +3111,12 @@
       "sourceId": "rc87-1ef0184cc6a4bd8e",
       "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -3150,12 +3155,12 @@
       "sourceId": "rc87-58a8b9e387f59ddb",
       "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -3198,12 +3203,12 @@
       "sourceId": "rc87-7d6ba9d28d83415c",
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       }
     },
     {
@@ -3211,7 +3216,7 @@
       "sourceId": "rc87-da6ec108d6e14a3a",
       "source": "",
       "baseManifest": {
-        "version": 3,
+        "version": 4,
         "keyAliases": {
           "w": "inline-size"
         },
@@ -3225,11 +3230,11 @@
             ]
           }
         ],
-        "languageVersion": 5
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       }
     },
     {
@@ -3237,12 +3242,12 @@
       "sourceId": "rc87-e793d99a43aa91ea",
       "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -3322,12 +3327,12 @@
       "sourceId": "rc87-bce3dcbace35c62f",
       "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "theme": [
           {
             "type": "rule",
@@ -3478,12 +3483,12 @@
       "sourceId": "rc87-2763794c2aab6ae8",
       "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } }",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "variants": [
           {
             "token": "@motion-safe",
@@ -3617,12 +3622,12 @@
       "sourceId": "rc87-e9991ac8889c54d6",
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "mixins": [
           {
             "name": "--card",
@@ -3714,12 +3719,12 @@
       "sourceId": "rc87-229f90c18e0fc001",
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
-        "version": 3,
-        "languageVersion": 5
+        "version": 4,
+        "languageVersion": 6
       },
       "expectedManifest": {
-        "version": 3,
-        "languageVersion": 5,
+        "version": 4,
+        "languageVersion": 6,
         "mixins": [
           {
             "name": "--btn",
@@ -3814,7 +3819,8 @@
     "Scope base variables to Document and ShadowRoot using :root,:host.",
     "Preserve breakpoint and container units; reject historical inferred condition syntax.",
     "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field.",
-    "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged."
+    "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged.",
+    "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered."
   ],
-  "languageVersion": 5
+  "languageVersion": 6
 }

@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}}),
+                serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}}),
             ),
             resolution_manifest: None,
         },
@@ -181,6 +181,6 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
 
 #[test]
 fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":3,"languageVersion":5,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
+    let old = serde_json::json!({"version":4,"languageVersion":6,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
     assert!(EngineSession::create(&old.to_string()).is_err());
 }

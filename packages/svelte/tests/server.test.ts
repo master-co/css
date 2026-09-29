@@ -98,6 +98,7 @@ describe('Svelte server hook renderer', () => {
       manifest: defaultManifest,
       hydrationManifest: false,
       emittedGlobals: {
+        keyframes: { fade: 1 },
         variables: {
           'animate-fade': 1,
           'color-red-60': 1

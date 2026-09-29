@@ -180,6 +180,41 @@ pub(crate) fn collect_class_completion_candidates(
         push_property_completion_candidate(&mut candidates, &mut labels, property, None);
     }
 
+    for definition in &manifest.keyframes {
+        // CSS string syntax handles reserved words, escapes and punctuation. Avoid
+        // literal whitespace because these values are inserted into markup classes.
+        let plain = definition.name.chars().enumerate().all(|(index, ch)| {
+            ch.is_ascii_alphabetic() || ch == '_' || ch == '-' || (index > 0 && ch.is_ascii_digit())
+        }) && !matches!(
+            definition.name.to_ascii_lowercase().as_str(),
+            "none" | "initial" | "inherit" | "unset" | "revert" | "revert-layer"
+        );
+        let value = if plain {
+            definition.name.clone()
+        } else {
+            let escaped = definition
+                .name
+                .chars()
+                .map(|ch| {
+                    if ch.is_alphanumeric() || ch == '-' || ch == '_' {
+                        ch.to_string()
+                    } else {
+                        format!("\\{:06x}", ch as u32)
+                    }
+                })
+                .collect::<String>();
+            format!("\"{escaped}\"")
+        };
+        for property in ["animation-name", "-webkit-animation-name"] {
+            push_value_completion_candidate(
+                &mut candidates,
+                &mut labels,
+                format!("{property}:{value}"),
+                Some("managed keyframes".into()),
+            );
+        }
+    }
+
     for utility in &manifest.utilities {
         if utility.utility_type == -2 {
             let is_component = utility.layer == UtilityLayerName::Components;

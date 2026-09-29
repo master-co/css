@@ -53,7 +53,7 @@
 - Native defaults/components use CSS layers and ship by default. Utilities require use or extraction; theme variables follow transitive references and retain all authored scopes. Native keyframes ship with their imported stylesheet.
 - Directive syntax changes may require language token updates and docs updates.
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.
-- `@keyframes` are always native CSS; reject them inside `@theme`.
+- Managed `@keyframes` must be direct children of top-level `@theme`; emit after generated layers only when referenced. External native keyframes ship unchanged. Reject delivered native/managed name collisions with both sources. Dynamic animation names retain all managed keyframes and produce an information diagnostic.
 
 ## Safe Changes
 

@@ -6,7 +6,7 @@
 <!-- @MARK :invalid -->
 <label>Email <input type="email" class="b-red:invalid" /></label>
 <!-- @MARK [open] -->
-<details class="surface-raised[open]">
+<details class="bg-surface-raised[open]">
   <summary>Release details</summary>
   <p>Published today.</p>
 </details>
@@ -62,7 +62,7 @@ Master CSS accepts native selector syntax. The selector is relative to the eleme
 | `:pseudo-class`       | Pseudo-class selector                                 |
 | `::pseudo-element`    | Pseudo-element selector                               |
 
-<Class2CSS>{['bg-blue-60.active', 'b-red:invalid', 'surface-raised[open]']}</Class2CSS>
+<Class2CSS>{['bg-blue-60.active', 'b-red:invalid', 'bg-surface-raised[open]']}</Class2CSS>
 
 ### `*` — Universal \{#--universal\}
 Use `*` as a wildcard. In `>*`, every direct child matches.
@@ -221,15 +221,15 @@ Use `:focus-visible` when the browser should decide whether to show a focus ring
 Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
 ```html
 <ul>
-  <li class="surface-inset:even">Draft</li>
-  <li class="surface-inset:even">In review</li>
-  <li class="surface-inset:even">Published</li>
+  <li class="bg-surface-inset:even">Draft</li>
+  <li class="bg-surface-inset:even">In review</li>
+  <li class="bg-surface-inset:even">Published</li>
 </ul>
 ```
 
 `:odd` maps to `:nth-child(odd)`; `:even` maps to `:nth-child(2n)`. Positions count all element siblings, not only siblings that carry the same class.
 
-<Class2CSS>{['surface-inset:even', 'mt-sm:odd']}</Class2CSS>
+<Class2CSS>{['bg-surface-inset:even', 'mt-sm:odd']}</Class2CSS>
 
 ### `:valid`, `:invalid`, `:required` \{#valid--invalid--required\}
 Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
@@ -363,7 +363,7 @@ These aliases generate `::-webkit-scrollbar*` selectors. Their effect depends on
 Use `[open]` to style a `<details>` element while it is expanded. The browser updates the attribute when the user toggles its summary.
 ```html
 <!-- @MARK [open] -->
-<details class="surface-raised[open]" open>
+<details class="bg-surface-raised[open]" open>
   <summary>Details</summary>
   <p>Details content goes here.</p>
 </details>

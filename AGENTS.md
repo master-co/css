@@ -15,7 +15,7 @@ Source and tests establish current behavior; deeper `.ai/*.md` documents explain
 
 ## Project Contracts
 
-Master CSS turns markup classes such as `fg:red:hover@sm` into layered CSS across engine, runtime, server, scanner, integrations, language tooling, and ESLint.
+Master CSS turns markup classes such as `fg-red-60:hover@sm` into layered CSS across engine, runtime, server, scanner, integrations, language tooling, and ESLint.
 
 `packages/preset/src/base.css`, exposed through `@master/css/base.css`, declares the stable order:
 
@@ -25,7 +25,7 @@ Master CSS turns markup classes such as `fg:red:hover@sm` into layered CSS acros
 
 Native defaults and components use `@layer` with class selectors; removed `@defaults`/`@components` are errors. Top-level `@mixin` definitions register on-demand Master recipes; `@apply --name(...)` expands a mixin in place. `@utility`, `from()` and `--master-value()` are removed. Use native CSS declarations and selectors in stylesheets and utilities directly in markup; `@compose` is removed. Preserve ordered declarations and duplicates.
 
-Generated rules use those layer blocks without dynamically adding the layer statement. Keyframes remain outside layers. Any CSS output difference is an intentional, explained behavior change covered by tests or fixtures.
+Generated rules use those layer blocks without dynamically adding the layer statement. Keyframes remain outside layers. Direct children of top-level `@theme` are managed on demand; external native definitions retain native delivery. Analyze animation declarations and transitive tokens in Rust, retaining all managed definitions for dynamic names. Any CSS output difference is an intentional, explained behavior change covered by tests or fixtures.
 
 Rust is the single semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and diagnostic capability checks; it must not implement semantic fallbacks.
 
@@ -41,7 +41,7 @@ shared / external data
   -> framework integrations / VS Code / examples / site
 ```
 
-`@master/css` owns Manifest v3 execution and must not depend on compiler, tooling, downstream hosts, or integrations. Tooling owns lexer/source/scanner/validator/lint/language sessions and must not depend on compiler, language service, build adapters, or editors. Compiler owns compiler/project/stylesheet/inspection orchestration. Resolve cycle pressure by placing dependency-light contracts in schema, semantics in the owning Rust crate, compiler orchestration in compiler, and editor-neutral operations in tooling. `@master/css-internal` is repository-private and bundled into official consumers; it is neither a public adapter SPI nor a generic utility package.
+`@master/css` owns Manifest v4 execution and must not depend on compiler, tooling, downstream hosts, or integrations. Tooling owns lexer/source/scanner/validator/lint/language sessions and must not depend on compiler, language service, build adapters, or editors. Compiler owns compiler/project/stylesheet/inspection orchestration. Resolve cycle pressure by placing dependency-light contracts in schema, semantics in the owning Rust crate, compiler orchestration in compiler, and editor-neutral operations in tooling. `@master/css-internal` is repository-private and bundled into official consumers; it is neither a public adapter SPI nor a generic utility package.
 
 ## Design And Change Boundaries
 

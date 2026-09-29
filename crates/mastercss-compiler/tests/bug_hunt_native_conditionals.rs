@@ -14,7 +14,7 @@ fn direct(source: &str) -> String {
             warnings: parsed.warnings,
             native_output: parsed.native_output,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
     )
     .unwrap();
     lowered
@@ -26,7 +26,7 @@ fn graph(source: &str) -> String {
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
         "urls":{"entry.css":"/entry.css"},
-        "baseManifest":{"version":3,"languageVersion":5, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
+        "baseManifest":{"version":4,"languageVersion":6, "customMedia":{"--always":{"type":"true"}},"mixins":[]}
     }))
     .unwrap();
     compile_css_stylesheet_graph(&request).unwrap().stylesheets[0]
@@ -132,7 +132,7 @@ fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
             &parsed.manifest_input,
             parsed.style_definitions.as_deref().unwrap_or_default(),
             &[],
-            &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":3,"languageVersion":5,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
+            &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":6,"customMedia":{"--always":{"type":"true"}}})), resolution_manifest: None },
         )
         .unwrap();
         for (generated, original) in [(".card", ".card"), ("padding", "padding:2rem;")] {

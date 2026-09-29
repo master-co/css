@@ -204,10 +204,10 @@ describe('@master/css-preset defaultManifest', () => {
   it('matches the readable preset sources and publishes only executable recipes', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
- expect(manifest.version).toBe(3)
- expect(manifest.languageVersion).toBe(5)
- expect(manifest.mixins).toHaveLength(15)
- expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(15)
+ expect(manifest.version).toBe(4)
+ expect(manifest.languageVersion).toBe(6)
+ expect(manifest.mixins).toHaveLength(10)
+ expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(10)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
  expect(manifest.mixins?.find(mixin => mixin.name === '--text')?.parameters).toEqual([{ name: '--step', syntax: 'string' }])
@@ -281,8 +281,7 @@ describe('@master/css-preset defaultManifest', () => {
   {prefix:'font',property:'font-family',namespaces:['font-family']},
   {prefix:'font',property:'font-weight',namespaces:['font-weight']},
   {prefix:'p',property:'padding',namespaces:['spacing']},
-  {prefix:'bg',property:'background-color',namespaces:['color']},
-  {prefix:'surface',property:'background-color',namespaces:['color-surface']}
+  {prefix:'bg',property:'background-color',namespaces:['color']}
  ]))
 })
 
@@ -294,7 +293,7 @@ describe('@master/css-preset defaultManifest', () => {
       css.createRule('background-image:linear-gradient(#000,#fff)')?.text,
       css.createRule('bg-blue')?.text,
       css.createRule('bg-surface-base')?.text,
-      css.createRule('surface-base')?.text,
+      css.createRule('bg-surface-base')?.text,
       css.createRule('grid-cols(3)')?.text,
       css.createRule('clamp-lines(3)')?.text,
       css.createRule('text-2xl')?.text
@@ -322,7 +321,8 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect(css.createRule('display:block')?.text).toBe('.display\\:block{display:block}')
     expect(css.createRule('bottom:0')?.text).toBe('.bottom\\:0{bottom:0}')
-    expect(css.createRule('center')?.text).toBe('.center{left:0;right:0;margin-left:auto;margin-right:auto}')
+    for (const name of ['fit', 'full', 'center', 'middle', 'round', 'surface-base']) expect(css.createRule(name)).toBeUndefined()
+    expect(css.createRule('r-pill')?.text).toBe('.r-pill{border-radius:var(--radius-pill)}')
     expect(css.createRule('border-radius:1e9em')?.text).toBe('.border-radius\\:1e9em{border-radius:1e9em}')
     expect(css.createRule('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
     expect(css.createRule('text-align:center')?.text).toBe('.text-align\\:center{text-align:center}')
@@ -345,8 +345,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('outline-width:medium')?.text).toBe('.outline-width\\:medium{outline-width:medium}')
     expect(css.createRule('outline-width:thick')?.text).toBe('.outline-width\\:thick{outline-width:thick}')
     expect(css.createRule('outline-width:thin')?.text).toBe('.outline-width\\:thin{outline-width:thin}')
-    expect(css.createRule('text-fill-color-red')?.text).toBe('.text-fill-color-red{-webkit-text-fill-color:var(--color-text-red)}')
-    expect(css.createRule('text-decoration-color-red')?.text).toBe('.text-decoration-color-red{text-decoration-color:var(--color-text-red)}')
+    expect(css.createRule('text-fill-color-text-red')?.text).toBe('.text-fill-color-text-red{-webkit-text-fill-color:var(--color-text-red)}')
+    expect(css.createRule('text-decoration-color-text-red')?.text).toBe('.text-decoration-color-text-red{text-decoration-color:var(--color-text-red)}')
     expect(css.createRule('text-stroke-color-red')?.text).toBe('.text-stroke-color-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule("-webkit-text-stroke:1px")?.text).toBe(".-webkit-text-stroke\\:1px{-webkit-text-stroke:1px}")
     expect(css.createRule('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
@@ -361,9 +361,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
     const orderedCSS = createTestCSS(defaultManifest)
-    orderedCSS.ensureClassRules('center', 'left:8px')
-    expect(orderedCSS.utilitiesLayer.text.indexOf('left:0')).toBeLessThan(orderedCSS.utilitiesLayer.text.indexOf('left:8px'))
-    expect(orderedCSS.createRule('center')?.type).toBe(UtilityType.Semantic)
+    orderedCSS.ensureClassRules('sr-only', 'position:relative')
+    expect(orderedCSS.utilitiesLayer.text.indexOf('position:absolute')).toBeLessThan(orderedCSS.utilitiesLayer.text.indexOf('position:relative'))
+    expect(orderedCSS.createRule('sr-only')?.type).toBe(UtilityType.Semantic)
     expect(orderedCSS.createRule('align-items:center')?.type).toBe(UtilityType.Normal)
   })
 
@@ -382,7 +382,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('border-width:1px')?.text).toBe('.border-width\\:1px{border-width:1px}')
     expect(css.createRule("border:line")?.text).toBe(".border\\:line{border:line}")
-    expect(css.createRule('b-divider')?.text).toBe('.b-divider{border-color:var(--color-line-divider)}')
+    expect(css.createRule('b-line-divider')?.text).toBe('.b-line-divider{border-color:var(--color-line-divider)}')
     expect(css.createRule('border-top-width:1px')?.text).toBe('.border-top-width\\:1px{border-top-width:1px}')
     expect(css.createRule("border-left:line")?.text).toBe(".border-left\\:line{border-left:line}")
     expect(css.createRule('border-inline-width:1px')?.text).toBe('.border-inline-width\\:1px{border-inline-width:1px}')
@@ -423,8 +423,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('fg-text-muted')?.text).toBe('.fg-text-muted{color:var(--color-text-muted)}')
     expect(css.createRule('fg-text-link')?.text).toBe('.fg-text-link{color:var(--color-text-link)}')
     expect(css.createRule('fg-text-link-hover')?.text).toBe('.fg-text-link-hover{color:var(--color-text-link-hover)}')
-    expect(css.createRule('fg-muted')?.text).toBe('.fg-muted{color:var(--color-text-muted)}')
-    expect(css.createRule('text-decoration-red')?.text).toBe('.text-decoration-red{text-decoration-color:var(--color-text-red)}')
+    expect(css.createRule('fg-muted')).toBeUndefined()
+    expect(css.createRule('text-decoration-text-red')?.text).toBe('.text-decoration-text-red{text-decoration-color:var(--color-text-red)}')
     expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule('text-decoration-thickness:px')?.text).toBe('.text-decoration-thickness\\:px{text-decoration-thickness:px}')
     expect(css.createRule('text-decoration-thickness:var(--thickness)')?.text).toBe('.text-decoration-thickness\\:var\\(--thickness\\){text-decoration-thickness:var(--thickness)}')
@@ -433,8 +433,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
     expect(declarationsCSS.createRule("background:canvas")?.text).toContain('background:canvas')
     expect(declarationsCSS.createRule("background:surface")?.text).toContain('background:surface')
-    expect(css.createRule('surface-base')?.text).toBe('.surface-base{background-color:var(--color-surface-base)}')
-    expect(css.createRule('surface-floating/.9')?.text).toBe('.surface-floating\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-floating) 90%,transparent)}')
+    expect(css.createRule('bg-surface-base')?.text).toBe('.bg-surface-base{background-color:var(--color-surface-base)}')
+    expect(css.createRule('bg-surface-floating/.9')?.text).toBe('.bg-surface-floating\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-floating) 90%,transparent)}')
     expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
     expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
     expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')

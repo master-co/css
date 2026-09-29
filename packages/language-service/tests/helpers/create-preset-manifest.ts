@@ -23,7 +23,7 @@ function normalizeVariable(variable: PlanVariableDraft): PlanVariableDraft {
 }
 
 export function createPresetManifest(manifest: PresetManifestInput | MasterCSSManifest = {}): MasterCSSManifest {
-  if (manifest.version === 3) return manifest as MasterCSSManifest
+  if (manifest.version === 4) return manifest as MasterCSSManifest
   const variables = ((manifest as PresetManifestInput).variables || []).map(normalizeVariable)
   return {
     ...defaultManifest,

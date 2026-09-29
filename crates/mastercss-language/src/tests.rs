@@ -376,7 +376,7 @@ fn applies_document_context_settings_in_rust() {
 #[test]
 fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
     let session = LanguageSession::create(
-        r#"{"version":3,"languageVersion":5,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":4,"languageVersion":6,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
     let source = "<div class=\"{color:red;block}>li:hover@sm\"></div>";
@@ -447,7 +447,7 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+            r#"{"version":4,"languageVersion":6,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
@@ -471,7 +471,7 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":3,"languageVersion":5,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
+            r#"{"version":4,"languageVersion":6,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
@@ -504,7 +504,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_modes_variants_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":3,"languageVersion":5,"variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]},{"token":"@ocean","branches":[{"selector":"&:where(.ocean,.ocean *)"}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":4,"languageVersion":6,"variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]},{"token":"@ocean","branches":[{"selector":"&:where(.ocean,.ocean *)"}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@ocean",
@@ -524,7 +524,7 @@ fn completion_owns_modes_variants_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session = LanguageSession::create(r#"{"version":3,"languageVersion":5}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":6}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -558,7 +558,7 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":3,"languageVersion":5,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"variants":[{"token":"@dark","branches":[{"selector":"&:where(.dark,.dark *)"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":4,"languageVersion":6,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"variants":[{"token":"@dark","branches":[{"selector":"&:where(.dark,.dark *)"}]}],"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();

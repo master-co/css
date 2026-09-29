@@ -28,7 +28,7 @@ export interface MasterCSSRenderSnapshot {
   readonly emittedGlobals: MasterCSSEmittedGlobals
   readonly hydrationManifest: Readonly<Omit<MasterCSSHydrationManifest, 'rules' | 'resourceOrder'>> & {
     readonly rules: readonly MasterCSSHydrationRule[]
-    readonly resourceOrder: readonly string[]
+    readonly resourceOrder: MasterCSSHydrationManifest['resourceOrder']
   }
 }
 
@@ -77,7 +77,10 @@ function toSnapshot(
     hydrationManifest: Object.freeze({
       ...rendered.hydrationManifest,
       rules: freezeArray(rendered.hydrationManifest.rules),
-      resourceOrder: freezeArray(rendered.hydrationManifest.resourceOrder)
+      resourceOrder: Object.freeze({
+        variables: freezeArray(rendered.hydrationManifest.resourceOrder.variables),
+        keyframes: freezeArray(rendered.hydrationManifest.resourceOrder.keyframes)
+      })
     })
   })
 }

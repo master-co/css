@@ -57,26 +57,32 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     })
   })
 
-  it('does not synthesize keyframes from animation names', async () => {
+  it('emits managed keyframes referenced by native animation declarations', async () => {
     const result = await compileBrowserStylesheet('.native { animation: fade 1s; }', {
       baseManifest: defaultManifest
     })
 
     expect(result.css).toMatch(/\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)
-    expect(result.css).not.toContain('@keyframes fade')
+    expect(result.css).toContain('@keyframes fade')
+    expect(result.css).not.toContain('@keyframes rotate')
+    expect(result.emittedGlobals.keyframes).toEqual({ fade: 1 })
   })
 
-  it('does not duplicate generated keyframes defined by native CSS', async () => {
-    const result = await compileBrowserStylesheet([
-      '@keyframes fade { to { opacity: .5; } }',
-      '.native { animation-name: fade; animation-duration: 1s; }'
-    ].join('\n'), {
+  it('rejects collisions between delivered native and managed keyframes', async () => {
+    await expect(compileBrowserStylesheet('@keyframes fade { to { opacity: .5; } }', {
       baseManifest: defaultManifest
-    })
+    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ message: expect.stringContaining('conflicts with managed keyframes') })]) })
+  })
 
-    expect(result.css.match(/@keyframes fade/g) || []).toHaveLength(1)
-    expect(result.css).toContain('@keyframes fade')
-    expect(result.css).toMatch(/\.native\s*\{\s*animation-name:\s*fade;\s*animation-duration:\s*1s;\s*\}/)
+  it('reports dynamic native animation roots as information while retaining all managed definitions', async () => {
+    const result = await compileBrowserStylesheet('.native { animation-name: var(--external); }', {
+      baseManifest: defaultManifest,
+      from: 'dynamic.css'
+    })
+    expect(Object.keys(result.emittedGlobals.keyframes)).toHaveLength(10)
+    expect(result.diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: 'DYNAMIC_ANIMATION_NAMES', severity: 'information' })
+    ]))
   })
 
   it('rejects undefined theme modes with a structured diagnostic', async () => {

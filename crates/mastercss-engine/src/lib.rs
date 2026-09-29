@@ -58,6 +58,10 @@ struct ManifestProjection {
     #[serde(default)]
     theme: Vec<mastercss_schema::ThemeNode>,
     #[serde(default)]
+    keyframes: Vec<mastercss_schema::KeyframeDefinition>,
+    #[serde(default)]
+    animation_variables: HashMap<String, Vec<String>>,
+    #[serde(default)]
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
     version: u32,
     #[serde(skip)]
@@ -337,6 +341,9 @@ pub struct EngineSession {
     rule_counts: HashMap<(UtilityLayerName, String), u32>,
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
+    keyframe_counts: HashMap<String, u32>,
+    keyframe_texts: Vec<(String, String)>,
+    stylesheet_sources: Vec<String>,
     theme_variable_names: Vec<String>,
     theme_text: Option<String>,
     theme_dirty: bool,
@@ -351,9 +358,12 @@ const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
     UtilityLayerName::Utilities,
 ];
 
+mod animation;
+pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;
 mod condition;
 mod custom_media;
+mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod execution_state;
 mod generation;

@@ -18,8 +18,8 @@ const items = [
 
 function BorderSpecimens() {
   return <div className="review-legend-specimens">
-    <div className={`border:2px|solid|var(--color-blue) surface-raised review-legend-specimen`}>Subject</div>
-    <div className={`border:2px|solid|var(--color-violet) surface-raised review-legend-specimen`}>Comparison</div>
+    <div className={`border:2px|solid|var(--color-blue) bg-surface-raised review-legend-specimen`}>Subject</div>
+    <div className={`border:2px|solid|var(--color-violet) bg-surface-raised review-legend-specimen`}>Comparison</div>
   </div>
 }
 
@@ -34,8 +34,8 @@ const options = [
     number: '01', title: 'Original Guide', detail: 'Labels beside the objects',
     note: 'The original Guide has no standalone legend; its small labels identify individual specimens directly.',
     preview: <OriginalDemo><div className="review-legend-originalContent"><div className="review-legend-originalItems">
-      <div><OriginalDemoLabel>Subject border</OriginalDemoLabel><div className={`border:2px|solid|var(--color-blue) surface-raised review-legend-specimen`}>Subject</div></div>
-      <div><OriginalDemoLabel>Comparison border</OriginalDemoLabel><div className={`border:2px|solid|var(--color-violet) surface-raised review-legend-specimen`}>Comparison</div></div>
+      <div><OriginalDemoLabel>Subject border</OriginalDemoLabel><div className={`border:2px|solid|var(--color-blue) bg-surface-raised review-legend-specimen`}>Subject</div></div>
+      <div><OriginalDemoLabel>Comparison border</OriginalDemoLabel><div className={`border:2px|solid|var(--color-violet) bg-surface-raised review-legend-specimen`}>Comparison</div></div>
     </div></div></OriginalDemo>
   },
   {

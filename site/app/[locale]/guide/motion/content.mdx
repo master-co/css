@@ -11,11 +11,11 @@ Master CSS keeps those decisions close to the element with `animate-*` recipes, 
 <Demo>
   <div className="container-type:inline-size width:100%">
     <div className="grid-cols(1) display:grid gap-md width:100% grid-cols(2)@container((width>=16rem))">
-      <div className="p-lg r-lg surface-raised shadow-xs">
+      <div className="p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>animation:fade|slow|smooth</DemoLabel>
         <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion"></div>
       </div>
-      <div className="p-lg r-lg surface-raised shadow-xs">
+      <div className="p-lg r-lg bg-surface-raised shadow-xs">
         <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
         <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion"></div>
       </div>
@@ -169,18 +169,20 @@ Override motion tokens in the project CSS entry when your product needs a differ
   --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
   --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
 
-} }
-@keyframes dialog-in {
+}
+  @keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }
   }
-
+}
 ```
 
 ```html
 <!-- @MARK animate-dialog-in --><!-- @MARK transition:opacity|var(--duration-exit)|var(--easing-standard) -->
 <dialog class="animate-dialog-in transition:opacity|var(--duration-exit)|var(--easing-standard)"></dialog>
 ```
+
+Managed keyframes are generated only when an animation declaration references them. Static names, all authored token scopes and fallbacks are tracked. Unresolved dynamic names keep all managed animations; unused mixins and referenced native styles do not. Put always-delivered keyframes outside `@theme`. JavaScript-only names need native keyframes or `@safelist "animation-name:dialog-in";`. See the [keyframe contract](/guide/directives#theme-static).
 
 Use named tokens for repeated motion decisions. Keep raw durations and raw curves for one-off timing that does not belong in the system yet.
 

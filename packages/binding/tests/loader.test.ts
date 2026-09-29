@@ -58,8 +58,8 @@ describe('native target resolution', () => {
     expect(assertNativeCLIInfo(executable)).toMatchObject({
       bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
       packageVersion: '0.0.0',
-      manifestVersion: 3,
-      hydrationManifestVersion: 2
+      manifestVersion: 4,
+      hydrationManifestVersion: 3
     })
   })
 
@@ -89,8 +89,8 @@ describe('native target resolution', () => {
   it('rejects unsupported lint request versions with a structured error', () => {
     const lint = loadNativeToolingBinding({ required: true })!
       .createLintSession({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
@@ -118,8 +118,8 @@ describe('native target resolution', () => {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variables": {
     "spacing": [
       {
@@ -166,8 +166,8 @@ describe('native target resolution', () => {
 
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "mixins": [
     {
       "name": "--block",

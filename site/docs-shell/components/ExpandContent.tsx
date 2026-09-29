@@ -20,7 +20,7 @@ export default function ExpandContent(props: any) {
         'position:sticky bottom:0 pb-md padding-top:1em': expanded,
         'margin-bottom:2em margin-top:-7.5rem padding-top:7.5rem': !expanded,
       })}>
-        <button className={clsx('border-radius:1e9em outline:1px|solid|var(--color-line-subtle) outline-offset:0 surface-raised shadow-sm btn btn-sm', {
+        <button className={clsx('border-radius:1e9em outline:1px|solid|var(--color-line-subtle) outline-offset:0 bg-surface-raised shadow-sm btn btn-sm', {
           'margin-top:-2rem': !expanded
         })} onClick={() => setExpanded(!expanded)}>{$(expanded ? 'Collapse' : 'Expand')}</button>
       </div>

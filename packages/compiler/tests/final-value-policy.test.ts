@@ -3,8 +3,8 @@ import { compileManifestSync, createCompilerSync } from '../src/node'
 import { validateCompiledCSS } from '../src/value-validation'
 
 const baseManifest = {
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variants": [
     {
       "token": "@all" as const,

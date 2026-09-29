@@ -191,7 +191,7 @@ fn token_maps_work_without_preset_utility_definitions() {
             "font-bold",
             "p-md",
             "bg-red-60",
-            "surface-base",
+            "bg-surface-base",
         ],
     );
     for declaration in [

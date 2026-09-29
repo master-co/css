@@ -6,7 +6,7 @@ export default ({ children, className, url }: any) =>
     children.map((item: any) =>
       <Link key={item.name}
         className={clsx(
-          'display:flex flex-direction:column align-items:center justify-content:center aspect-ratio:1/1 border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:center transition:background-color|.2s surface-raised:hover:not(.disabled)',
+          'display:flex flex-direction:column align-items:center justify-content:center aspect-ratio:1/1 border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:center transition:background-color|.2s bg-surface-raised:hover:not(.disabled)',
           {
             'filter:grayscale(1) disabled': item.disabled
           }

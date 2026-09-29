@@ -12,7 +12,7 @@ export default function ColorPaletteItem({ color, level, colorName }: { color: s
 
   return (
     <div key={color + level}>
-      <div title={`${colorName}-${level} ${color}`} className="display:flex align-items:center justify-content:center width:100% aspect-ratio:3/2 r-sm outline:1px|solid outline-subtle outline-offset:-1px letter-spacing:.5em cursor:pointer aspect-ratio:1/1@sm"
+      <div title={`${colorName}-${level} ${color}`} className="display:flex align-items:center justify-content:center width:100% aspect-ratio:3/2 r-sm outline:1px|solid outline-line-subtle outline-offset:-1px letter-spacing:.5em cursor:pointer aspect-ratio:1/1@sm"
         style={{ backgroundColor: color }}
         role="button"
         tabIndex={0}

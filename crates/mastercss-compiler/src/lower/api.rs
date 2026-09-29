@@ -17,7 +17,7 @@ pub fn lower_css_directives(
         .clone()
         .or_else(|| options.base_manifest.clone());
     let resolution_manifest = compile_with_base(input, resolution_base.clone())?;
-    let manifest = if resolution_base == options.base_manifest {
+    let mut manifest = if resolution_base == options.base_manifest {
         resolution_manifest.clone()
     } else {
         // Resolve local bodies against reference definitions before removing
@@ -30,7 +30,14 @@ pub fn lower_css_directives(
     let (generated_css, generated_mappings) = render_style_definitions(
         create_merged_style_definitions(style_definitions, &mut engine, None)?,
     );
+    crate::keyframes::include_native_variables(&mut manifest, &generated_css);
     Ok(LowerCssDirectivesResult {
+        notices: crate::keyframes::native_notices(
+            &generated_css,
+            "stylesheet.css",
+            &manifest,
+            &generated_mappings,
+        )?,
         mixin_sources: Vec::new(),
         css: None,
         output_mappings: Vec::new(),

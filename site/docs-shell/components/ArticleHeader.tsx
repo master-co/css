@@ -7,7 +7,7 @@ import { createTranslation } from '../utils/i18n'
 import PackageBadges from './PackageBadges'
 import brands from '../data/brands'
 
-const headerIconClassName = 'display:block full max-width:100% max-height:100%'
+const headerIconClassName = 'display:block width:100% height:100% max-width:100% max-height:100%'
 const headerIconStyle = {
   display: 'block',
   width: '100%',

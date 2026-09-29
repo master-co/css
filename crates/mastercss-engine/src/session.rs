@@ -43,6 +43,9 @@ impl EngineSession {
             rule_counts: HashMap::new(),
             emitted_globals,
             variable_counts: HashMap::new(),
+            keyframe_counts: HashMap::new(),
+            keyframe_texts: Vec::new(),
+            stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),
             theme_text: None,
             theme_dirty: false,
@@ -100,6 +103,7 @@ impl EngineSession {
                 continue;
             }
             self.register_rule_variables(&rule.ir.variable_names);
+            self.register_keyframes(&rule.ir.keyframe_names, rule.ir.retain_all_keyframes);
             let layer_rules = &mut self.layers[layer_index(layer)];
             let index = layer_rules
                 .binary_search_by(|existing| compare_stored_rules(existing, &rule))
@@ -162,6 +166,10 @@ impl EngineSession {
                         key,
                     });
                     session.unregister_rule_variables(&rule.ir.variable_names);
+                    session.unregister_keyframes(
+                        &rule.ir.keyframe_names,
+                        rule.ir.retain_all_keyframes,
+                    );
                 }
                 session
                     .class_order
@@ -194,7 +202,41 @@ impl EngineSession {
         &mut self,
         native_css: &str,
     ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        if native_css.is_empty() {
+            return Ok(EngineTransitionIr::empty());
+        }
+        let changes_variables =
+            crate::stylesheet_declarations(native_css)
+                .iter()
+                .any(|(name, value)| {
+                    name.strip_prefix("--").is_some_and(|name| {
+                        !self
+                            .compiled
+                            .animation_variables
+                            .get(name)
+                            .is_some_and(|values| values.contains(value))
+                    })
+                });
+        self.stylesheet_sources.push(native_css.into());
+        if changes_variables {
+            self.rebuild(
+                self.manifest.clone(),
+                self.compiled.clone(),
+                self.emitted_globals.clone(),
+            )
+        } else {
+            self.register_stylesheet_resources(native_css)
+        }
+    }
+
+    fn register_stylesheet_resources(
+        &mut self,
+        native_css: &str,
+    ) -> Result<EngineTransitionIr, EngineError> {
         self.with_theme_batch(|session| {
+            let animation = session.animation_references(native_css)?;
+            session.register_keyframes(&animation.names, animation.retain_all);
             let stylesheet_variables = mastercss_lexer::collect_css_variable_references(native_css);
             let variable_names = stylesheet_variables
                 .into_iter()
@@ -213,6 +255,12 @@ impl EngineSession {
         let mut emitted_globals = self.emitted_globals.clone();
         for name in &self.theme_variable_names {
             emitted_globals.variables.entry(name.clone()).or_insert(1);
+        }
+        for definition in self.keyframe_snapshot() {
+            emitted_globals
+                .keyframes
+                .entry(definition.name)
+                .or_insert(1);
         }
         Ok(emitted_globals)
     }
@@ -234,6 +282,15 @@ impl EngineSession {
             let next = current.saturating_add(count);
             if next != current {
                 merged.variables.insert(name, next);
+                changed = true;
+            }
+        }
+        for (name, count) in emitted_globals.keyframes {
+            if count > 0 {
+                let previous = merged.keyframes.get(&name).copied().unwrap_or_default();
+                merged
+                    .keyframes
+                    .insert(name, previous.saturating_add(count));
                 changed = true;
             }
         }
@@ -272,14 +329,33 @@ impl EngineSession {
             }
             session.theme_dirty = true;
             session.variable_counts.clear();
+            session.keyframe_counts.clear();
             session.theme_variable_names.clear();
             session.compiled = compiled;
+            for source in &session.stylesheet_sources {
+                for (name, value) in crate::stylesheet_declarations(source) {
+                    if let Some(name) = name.strip_prefix("--") {
+                        let values = session
+                            .compiled
+                            .animation_variables
+                            .entry(name.into())
+                            .or_default();
+                        if !values.contains(&value) {
+                            values.push(value);
+                        }
+                    }
+                }
+            }
             session.manifest = manifest;
             session.emitted_globals = emitted_globals;
             session.class_rules.clear();
             session.class_order.clear();
             session.rule_counts.clear();
             session.initialize_variable_resources();
+            let native_sources = session.stylesheet_sources.clone();
+            for source in native_sources {
+                session.register_stylesheet_resources(&source)?;
+            }
             mutations.extend(session.ensure_class_rules(connected_classes)?.mutations);
             Ok(EngineTransitionIr::new(mutations))
         })
@@ -293,7 +369,7 @@ impl EngineSession {
             .map(|rule| rule.ir.clone())
             .collect();
         Ok(EngineSnapshotIr {
-            version: 2,
+            version: 3,
             rules,
             resources: self.resource_snapshot(),
             text: self.css_text(),
@@ -332,6 +408,9 @@ impl EngineSession {
         }
 
         let mut subset = self.fork_empty_with_emitted_globals(self.emitted_globals.clone());
+        for source in &self.stylesheet_sources {
+            subset.register_stylesheet_resources(source)?;
+        }
         let mut mutations = Vec::new();
         for (class_name, generated) in cached_classes {
             subset.insert_generated_class_rules(&class_name, generated, &mut mutations);
@@ -405,11 +484,24 @@ impl EngineSession {
             .into_iter()
             .map(|rule| rule.ir)
             .collect::<Vec<_>>();
-        let diagnostics = super::named::diagnostics(class_name, &self.compiled);
+        let mut diagnostics = super::named::diagnostics(class_name, &self.compiled);
+        if rules.iter().any(|rule| rule.retain_all_keyframes) && !self.compiled.keyframes.is_empty()
+        {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::DynamicAnimationNames,
+                phase: mastercss_schema::DiagnosticPhase::Match,
+                severity: mastercss_schema::DiagnosticSeverity::Info,
+                message: "Dynamic animation names retain all managed keyframes while this usage root is active".into(),
+                source: Some(class_name.into()), range: None, notes: Vec::new(),
+            });
+        }
+        let has_errors = diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.severity == mastercss_schema::DiagnosticSeverity::Error);
         Ok(EngineInspectionIr {
             version: 2,
             class_name: class_name.to_owned(),
-            match_status: if diagnostics.is_empty()
+            match_status: if !has_errors
                 && (!rules.is_empty() || !self.matched_utility_names(class_name)?.is_empty())
             {
                 mastercss_schema::MatchStatus::Matched
@@ -418,7 +510,7 @@ impl EngineSession {
                 .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::AmbiguousToken)
             {
                 mastercss_schema::MatchStatus::Ambiguous
-            } else if !diagnostics.is_empty() {
+            } else if has_errors {
                 mastercss_schema::MatchStatus::SyntaxError
             } else {
                 mastercss_schema::MatchStatus::Unmatched
@@ -773,6 +865,9 @@ impl EngineSession {
             }
             output.push('}');
         }
+        for definition in self.keyframe_snapshot() {
+            output.push_str(&definition.text);
+        }
         output
     }
 
@@ -782,6 +877,9 @@ impl EngineSession {
         self.class_order.clear();
         self.rule_counts.clear();
         self.variable_counts.clear();
+        self.keyframe_counts.clear();
+        self.keyframe_texts.clear();
+        self.stylesheet_sources.clear();
         self.theme_variable_names.clear();
         self.theme_text = None;
         self.theme_dirty = false;
@@ -798,6 +896,9 @@ impl EngineSession {
             rule_counts: HashMap::new(),
             emitted_globals,
             variable_counts: HashMap::new(),
+            keyframe_counts: HashMap::new(),
+            keyframe_texts: Vec::new(),
+            stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),
             theme_text: None,
             theme_dirty: false,

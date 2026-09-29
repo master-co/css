@@ -58,7 +58,7 @@ function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<n
 }
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
-  const source = "<div class=\"text-align:center fg-brand center btn\"></div>"
+  const source = "<div class=\"text-align:center fg-brand sr-only btn\"></div>"
   const tokens = collectBrowserSemanticTokenItems(source, 'html', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -68,15 +68,15 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
 
   expect(mapped).toEqual(expect.arrayContaining([
     { text: 'text-align', type: 'property' as const, modifiers: [] },
-    { text: 'center', type: 'enumMember' as const, modifiers: [] },
+    { text: 'sr-only', type: 'enumMember' as const, modifiers: [] },
     { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] },
-    { text: "center", type: 'enumMember' as const, modifiers: [] },
+    { text: "sr-only", type: 'enumMember' as const, modifiers: [] },
     { text: 'btn', type: 'enumMember' as const, modifiers: [] }
   ]))
 })
 
 test.concurrent('encodes browser role-derived semantic token modifiers', () => {
-  const source = "<div class=\"{fg-red;center}>li:hover@sm\"></div>"
+  const source = "<div class=\"{fg-red;sr-only}>li:hover@sm\"></div>"
   const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
   const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
   const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
@@ -95,7 +95,7 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 })
 
 test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
-  const source = "\n    @safelist \"sr-only fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --btn {\n        @safelist \"center fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
+  const source = "\n    @safelist \"sr-only fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --btn {\n        @safelist \"sr-only fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -106,7 +106,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
   expect(mapped).toEqual(expect.arrayContaining([
     { text: "sr-only", type: 'enumMember' as const, modifiers: [] },
     { text: 'fg-red', type: 'enumMember' as const, modifiers: [] },
-    { text: "center", type: 'enumMember' as const, modifiers: [] },
+    { text: "sr-only", type: 'enumMember' as const, modifiers: [] },
     { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] }
   ]))
   expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword' as const, modifiers: ['directive'] })

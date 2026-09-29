@@ -35,10 +35,10 @@ pub enum DiagnosticSeverity {
 
 #[derive(Debug, Error)]
 pub enum SchemaError {
-    #[error("Unsupported MasterCSSManifest version. Expected version 3.")]
+    #[error("Unsupported MasterCSSManifest version. Expected version 4.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 5; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 6; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
@@ -72,7 +72,7 @@ impl SchemaError {
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v3 wire format.
+/// Validated, order-preserving representation of the public Manifest v4 wire format.
 ///
 /// The domain crates deliberately keep the original JSON object intact while individual
 /// subsystems progressively replace `Value` access with strongly typed projections. This
@@ -105,6 +105,9 @@ impl MasterCssManifest {
             if object.contains_key(field) {
                 return Err(SchemaError::RemovedField(field.into()));
             }
+        }
+        if let Some(keyframes) = object.get("keyframes") {
+            serde_json::from_value::<Vec<KeyframeDefinition>>(keyframes.clone())?;
         }
         if let Some(mixins) = object.get("mixins") {
             serde_json::from_value::<Vec<MixinDefinition>>(mixins.clone())?;
@@ -159,4 +162,17 @@ impl MasterCssManifest {
     pub fn to_json(&self) -> Result<String, SchemaError> {
         Ok(serde_json::to_string(&self.0)?)
     }
+}
+
+/// Compiled native keyframes. Source metadata is compiler/tooling provenance;
+/// execution needs only ordered CSS and its custom-property dependencies.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct KeyframeDefinition {
+    pub name: String,
+    pub text: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependencies: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<CssDirectiveSourceReference>,
 }

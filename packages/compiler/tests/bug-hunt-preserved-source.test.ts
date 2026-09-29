@@ -19,8 +19,8 @@ const baseManifest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = "@theme {:root, :host {--color-unused:red}}\n\n" + native

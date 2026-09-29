@@ -14,7 +14,7 @@ export default ({ children, className }: any) => {
       children.map((definedMetadata: DefinedMetadata) =>
         <Link key={definedMetadata.pathname}
           className={clsx(
-            'flex-direction:column align-items:start! justify-content:space-between! p-xl border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:left transition:background-color|.2s surface-raised:hover',
+            'flex-direction:column align-items:start! justify-content:space-between! p-xl border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:left transition:background-color|.2s bg-surface-raised:hover',
             {
               'disabled': definedMetadata.disabled
             }

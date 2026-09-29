@@ -1,0 +1,104 @@
+{
+  "samples": 40,
+  "node": "v24.20.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "baseline": "390a61fa96d3085e5138202a8cf3161ffc0aa29a",
+  "timingScope": "Fresh engine sessions with the native addon already loaded; current implementation only, not a process or Wasm startup comparison.",
+  "manifest": {
+    "before": {
+      "raw": 135938,
+      "gzip": 16315,
+      "brotli": 10694
+    },
+    "after": {
+      "raw": 136818,
+      "gzip": 16608,
+      "brotli": 10960
+    }
+  },
+  "nativeCSS": {
+    "before": {
+      "raw": 4466,
+      "gzip": 1344,
+      "brotli": 1132
+    },
+    "after": {
+      "raw": 2989,
+      "gzip": 1042,
+      "brotli": 850
+    }
+  },
+  "runtime": {
+    "budgetBaseline": {
+      "packages/runtime/dist/global.min.js": {
+        "raw": 49787,
+        "gzip": 13993,
+        "brotli": 12550
+      }
+    },
+    "actual": {
+      "raw": 47815,
+      "gzip": 13165,
+      "brotli": 11887
+    }
+  },
+  "scenarios": {
+    "none": {
+      "css": {
+        "raw": 48,
+        "gzip": 58,
+        "brotli": 47
+      },
+      "frames": 0,
+      "medianMs": {
+        "engineCreation": 13.771375000000035,
+        "generate": 0.018458000000009633,
+        "remove": 0.0019170000000485743,
+        "addAgain": 0.004541000000017448
+      }
+    },
+    "one": {
+      "css": {
+        "raw": 208,
+        "gzip": 146,
+        "brotli": 131
+      },
+      "frames": 1,
+      "medianMs": {
+        "engineCreation": 13.817749999999933,
+        "generate": 0.037958000000116954,
+        "remove": 0.004083000000036918,
+        "addAgain": 0.01516700000001947
+      }
+    },
+    "multiple": {
+      "css": {
+        "raw": 588,
+        "gzip": 235,
+        "brotli": 206
+      },
+      "frames": 3,
+      "medianMs": {
+        "engineCreation": 13.71208300000012,
+        "generate": 0.04837499999985084,
+        "remove": 0.005499999999983629,
+        "addAgain": 0.02741599999990285
+      }
+    },
+    "dynamic": {
+      "css": {
+        "raw": 1735,
+        "gzip": 412,
+        "brotli": 372
+      },
+      "frames": 10,
+      "medianMs": {
+        "engineCreation": 13.83587499999976,
+        "generate": 0.03787499999998545,
+        "remove": 0.004790999999841006,
+        "addAgain": 0.01375000000007276
+      }
+    }
+  }
+}

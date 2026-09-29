@@ -14,7 +14,7 @@
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
 - Contributor routing across npm workspaces and Rust crates, including Cargo manifests, crate-local AI notes, risk packs, and scoped validation commands.
 
-- Utility queries expose language v5 native properties, mixin calls and named token families; never suggest removed raw aliases, `@utility`, or `=namespace`.
+- Utility queries expose language v6 native properties, mixin calls and named token families; never suggest removed raw aliases, `@utility`, or `=namespace`.
 
 ## Does Not Own
 

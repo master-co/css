@@ -49,10 +49,70 @@ pub(crate) fn lower_theme_rule(
         body,
         offset: rule.body_start_byte.unwrap_or(rule.start_byte),
     };
+    let mut native_theme_rules = Vec::new();
+    let index = crate::source_index::SourceIndex::new(body);
+    for child in sheet.rules.0 {
+        if let CssRule::Keyframes(keyframe) = child {
+            let start = index
+                .byte_offset_for_location(keyframe.loc.line, keyframe.loc.column)
+                .unwrap_or_default();
+            let open = crate::pattern::css_statement_delimiter(body, start, body.len())
+                .map(|(open, _)| open)
+                .ok_or_else(|| {
+                    directive_error(
+                        source,
+                        filename,
+                        context.offset + start,
+                        "Invalid keyframes block",
+                    )
+                })?;
+            let end = super::css_block_end(body, open, body.len()).ok_or_else(|| {
+                directive_error(
+                    source,
+                    filename,
+                    context.offset + start,
+                    "Unclosed keyframes block",
+                )
+            })?;
+            let text = body[start..=end].to_owned();
+            for token in mastercss_lexer::tokenize_css_syntax(&text) {
+                if let mastercss_lexer::CssSyntaxKind::AtKeyword(name) = token.kind
+                    && (token.bytes.start != 0 || !name.eq_ignore_ascii_case("keyframes"))
+                {
+                    return Err(directive_error(
+                        source,
+                        filename,
+                        context.offset + start + token.bytes.start,
+                        "Managed keyframes require native frame declarations; nested directives and vendor keyframes are unsupported",
+                    ));
+                }
+            }
+            let name = match keyframe.name {
+                lightningcss::rules::keyframes::KeyframesName::Ident(name) => name.0.to_string(),
+                lightningcss::rules::keyframes::KeyframesName::Custom(name) => name.to_string(),
+            };
+            let dependencies = mastercss_lexer::collect_css_variable_references(&text);
+            input
+                .keyframes
+                .get_or_insert_default()
+                .push(mastercss_schema::KeyframeDefinition {
+                    name,
+                    text,
+                    dependencies,
+                    source: crate::source_index::SourceIndex::new(source).reference(
+                        filename,
+                        context.offset + start,
+                        context.offset + end + 1,
+                    ),
+                });
+        } else {
+            native_theme_rules.push(child);
+        }
+    }
     input
         .theme
         .get_or_insert_default()
-        .extend(context.rules(sheet.rules.0, false)?);
+        .extend(context.rules(native_theme_rules, false)?);
     Ok(())
 }
 
@@ -192,7 +252,7 @@ impl ThemeContext<'_> {
                         self.source,
                         self.filename,
                         self.offset,
-                        "@theme only accepts native selectors, @media, @supports, @container, @scope and @starting-style; keyframes belong in ordinary CSS",
+                        "@theme only accepts native selectors, @media, @supports, @container, @scope and @starting-style; managed keyframes must be direct children of @theme",
                     ));
                 }
             };

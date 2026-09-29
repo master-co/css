@@ -19,7 +19,11 @@ export function referenceDemoSections(page: string): Promise<ReferenceDemoSectio
 async function readSections(page: string) {
   const file = path.join(root, page, 'content.mdx')
   const source = await readFile(file, 'utf8')
-  const { markdown, notes } = await extractReferenceMdx(file)
+  // Generated examples can now contain managed keyframes. They are output,
+  // not authored configuration to register again inside the demo.
+  const { markdown, notes } = await extractReferenceMdx(file, [], [], {
+    component: name => name === 'Class2CSS' ? '' : undefined
+  })
   if (notes.length) throw new Error(`${page}: ${notes.join('; ')}`)
   const sections: ReferenceDemoSection[] = []
   // Includes are expanded by the existing reference exporter, preserving their examples.

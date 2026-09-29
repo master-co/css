@@ -134,7 +134,7 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `fg-text-body`, `fg-text-muted`, `fg-text-blue`, `surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border:1px|solid|var(--color-line-divider)`.
+- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `fg-text-body`, `fg-text-muted`, `fg-text-blue`, `bg-surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border:1px|solid|var(--color-line-divider)`.
 - Use project semantic tokens such as `divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
 - Preserve typography semantics: use `font-size:<value>` for raw font-size-only replacements, and `text-<token>` only when the complete type treatment is intended.
 - Prefer scale tokens such as `p-sm`, `gap-md`, and `mt-lg` over routine raw spacing, color, shadow, or timing values.

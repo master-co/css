@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css` is the public Manifest v3 execution surface. It binds the canonical Rust
+`@master/css` is the public Manifest v4 execution surface. It binds the canonical Rust
 engine through native or runtime-Wasm bindings and exposes the stable preset CSS
 entrypoints.
 
@@ -29,7 +29,7 @@ entrypoints.
 
 - `createEngine()` from `.` for universal async loading.
 - `createEngineSync()` from `./node` for native-only Node loading.
-- Manifest v3, generated rule, engine state, and emitted-global types.
+- Manifest v4, generated rule, engine state, and emitted-global types.
 - Virtual manifest, emitted-global, and generated CSS declarations from `./client`.
 - Stable CSS subpaths listed above.
 

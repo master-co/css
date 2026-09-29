@@ -813,6 +813,7 @@
           "serializeMasterCSSManifest"
         ],
         "./manifest": [
+          "MasterCSSKeyframeDefinition",
           "MasterCSSManifest",
           "MasterCSSManifestCSSDeclarationPrimitive",
           "MasterCSSManifestCSSDeclarations",
@@ -879,6 +880,7 @@
           "CSSDirectiveExtractionPolicy",
           "CSSDirectiveLayerName",
           "CSSDirectiveManifestInput",
+          "CSSDirectiveNotice",
           "CSSDirectiveReference",
           "CSSDirectiveRelatedInformation",
           "CSSDirectiveResult",
@@ -945,7 +947,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "c5a8f9d92ae88b62"
+      "surface": "d40914f3471037ee"
     },
     "@master/css-server": {
       "directory": "server",

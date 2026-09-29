@@ -81,7 +81,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   const references = [...referenceFileInputs(options.referenceFiles), ...Object.entries(graph.files).flatMap(([file, source]) => {
     // Keep parser diagnostics attached to the supplied source identity; only the
     // filesystem lookup of its references uses the host's original source owner.
-    const parsed = compileCSS(source, { from: owners[file] ?? file })
+    const parsed = compileCSS(source, { from: owners[file] ?? file, preserveNativeCSS: false })
     if (file === graph.entry && options.references) return options.references
     const references = parsed.references || []
     const owner = graph.baseFiles?.[file] ?? owners[file] ?? file
@@ -96,7 +96,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
     const chain = [...stack, ...(item.file && !item.file.startsWith('\0') ? [existsSync(item.file) ? realpathSync(item.file) : resolve(item.file)] : [])]
     if (chain.includes(realpathSync(file))) throw new Error(`Circular CSS reference: ${[...stack, file].join(' -> ')}`)
     const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }, analyzeCSSDependencies)
-    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest }, undefined, chain, {}, {}, undefined, metadataOnly)
+    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest }, undefined, chain, {}, {}, [], metadataOnly)
     reference.manifest = compiled.manifest
     reference.dependencies.push(...compiled.directives.dependencies)
     reference.warnings.push(...compiled.directives.warnings)
@@ -185,7 +185,7 @@ export async function compileDeliveredSource(id: string, source: string, options
     file: asset.id, compilationFile: asset.id, source: graph.files[asset.id],
     sourceMap: graph.sourceMaps?.[asset.id], graph: { sources: graph.files }
   }) }))
-  return { ...result, stylesheets, entry: graph.entry }
+  return { ...result, stylesheets, entry: graph.entry, outputMap: (css: string, mappings: CSSOutputMapping[]) => stylesheetOutputMap(css, mappings, { file: graph.entry, compilationFile: graph.entry, source: graph.files[graph.entry], sourceMap: graph.sourceMaps?.[graph.entry], graph: { sources: graph.files } }) }
 }
 
 export async function registerDeliveredStylesheet(

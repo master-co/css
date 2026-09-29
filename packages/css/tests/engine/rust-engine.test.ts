@@ -63,7 +63,7 @@ const selectorVariantRuleTexts = [
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
-  version: 3 as const, languageVersion: 5 as const,
+  version: 4 as const, languageVersion: 6 as const,
   variables: {
     color: [
       {
@@ -94,12 +94,12 @@ const scopedThemeCSS = [
   '.light{--color-surface-raised:var(--color-white)}',
   '.dark{--color-surface-raised:var(--color-gray-90)}',
   '}',
-  '@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}'
+  '@layer utilities{.bg-surface-raised{background-color:var(--color-surface-raised)}}'
 ].join('')
 
 const manifest: MasterCSSManifest = {
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "conditions": {
     "sm": {
       "id": "media",
@@ -354,7 +354,7 @@ describe('Rust engine session', () => {
     try {
       engine.ensureClassRules(['display:block'])
       expect(engine.refresh(manifest)).toMatchObject({
-        version: 2 as const,
+        version: 3 as const,
         mutations: [
           { op: 'delete', key: 'display:block' },
           { op: 'insert', key: 'display:block' }
@@ -453,8 +453,8 @@ describe('Rust engine session', () => {
     const wasm = await createEngine({ manifest: scopedThemeManifest, binding: 'wasm' })
 
     try {
-      const nativeTransition = native.ensureClassRules(['surface-raised'])
-      const wasmTransition = wasm.ensureClassRules(['surface-raised'])
+      const nativeTransition = native.ensureClassRules(['bg-surface-raised'])
+      const wasmTransition = wasm.ensureClassRules(['bg-surface-raised'])
 
       expect(wasmTransition).toEqual(nativeTransition)
       expect(native.snapshot().text).toBe(scopedThemeCSS)

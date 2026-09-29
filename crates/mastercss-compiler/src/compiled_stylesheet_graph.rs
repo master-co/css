@@ -81,6 +81,22 @@ fn merge_input(target: &mut Map<String, Value>, next: &CssDirectiveManifestInput
         unreachable!("directive input is an object")
     };
     for (key, value) in next {
+        if key == "animationVariables" {
+            let target = target
+                .entry(key)
+                .or_insert_with(|| Value::Object(Map::new()))
+                .as_object_mut()
+                .expect("native variable map");
+            for (name, values) in value.as_object().into_iter().flatten() {
+                target
+                    .entry(name.clone())
+                    .or_insert_with(|| Value::Array(Vec::new()))
+                    .as_array_mut()
+                    .expect("values")
+                    .extend(values.as_array().into_iter().flatten().cloned());
+            }
+            continue;
+        }
         match (target.get_mut(&key), value) {
             (Some(Value::Array(target)), Value::Array(next)) => target.extend(next),
             (Some(Value::Object(target)), Value::Object(next)) => target.extend(next),
@@ -242,6 +258,11 @@ pub fn compile_css_stylesheet_graph(
             *definition = refined.next().expect("one refined slot definition");
         }
         if let Some(css) = &relocated {
+            for definition in result.manifest_input.keyframes.iter_mut().flatten() {
+                if let Some(reference) = &mut definition.source {
+                    css.restore_reference(original_source, reference);
+                }
+            }
             for definition in result.manifest_input.mixins.iter_mut().flatten() {
                 crate::mixins::visit_sources(definition, &mut |source| {
                     if let Some(reference) = source {
@@ -290,7 +311,9 @@ pub fn compile_css_stylesheet_graph(
         }
         let result = &parsed[index];
         combined.mixin_sources.extend(result.mixin_sources.clone());
-        merge_input(&mut input, &result.manifest_input);
+        let mut delivered_input = result.manifest_input.clone();
+        delivered_input.animation_variables = None;
+        merge_input(&mut input, &delivered_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
         append_unique(&mut combined.warnings, &result.warnings);
@@ -327,7 +350,7 @@ pub fn compile_css_stylesheet_graph(
         .collect();
     combined.references = (!graph.references.is_empty()).then(|| graph.references.clone());
     combined.style_definitions = (!all_definitions.is_empty()).then_some(all_definitions);
-    let lowered = lower_css_directives(
+    let mut lowered = lower_css_directives(
         &combined.manifest_input,
         &definitions,
         &combined.warnings,
@@ -340,7 +363,7 @@ pub fn compile_css_stylesheet_graph(
     // lower_css_directives resolves its own native rules after finalizing managed
     // definitions, but its resolution_manifest field predates that finalization.
     // The next per-file lowering pass needs all finalized managed definitions.
-    let resolution_manifest = compile_manifest_input(
+    let mut resolution_manifest = compile_manifest_input(
         &lowered.input,
         &CompileManifestOptions {
             base_manifest: request
@@ -559,6 +582,30 @@ pub fn compile_css_stylesheet_graph(
             })
         })
         .collect::<Result<Vec<_>, CompilerError>>()?;
+    for sheet in stylesheets
+        .iter()
+        .filter(|sheet| reachable.contains(sheet.id.as_str()))
+    {
+        crate::keyframes::validate_manifest_native_names(
+            &sheet.css,
+            &sheet.id,
+            &resolution_manifest,
+            &sheet.output_mappings,
+        )?;
+        crate::keyframes::include_native_variables(&mut lowered.manifest, &sheet.css);
+        crate::keyframes::include_native_variables(&mut resolution_manifest, &sheet.css);
+    }
+    for sheet in stylesheets
+        .iter()
+        .filter(|sheet| reachable.contains(sheet.id.as_str()))
+    {
+        combined.notices.extend(crate::keyframes::native_notices(
+            &sheet.css,
+            &sheet.id,
+            &resolution_manifest,
+            &sheet.output_mappings,
+        )?);
+    }
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
     combined
         .mixin_sources

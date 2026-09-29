@@ -15,13 +15,13 @@ function suggest(languageService: CSSLanguageService, target: string) {
 test.concurrent('returns fresh class completion items from cached skeletons', () => {
   const languageService = new CSSLanguageService()
   const firstCompletionItems = suggest(languageService, '')
-  const firstBlockCompletionItem = firstCompletionItems?.find(({ label }) => label === 'center')
-  if (!firstBlockCompletionItem) throw new Error('Expected center completion item')
+  const firstBlockCompletionItem = firstCompletionItems?.find(({ label }) => label === 'sr-only')
+  if (!firstBlockCompletionItem) throw new Error('Expected sr-only completion item')
 
   firstBlockCompletionItem.detail = 'mutated'
 
   const secondCompletionItems = suggest(languageService, '')
-  expect(secondCompletionItems?.find(({ label }) => label === 'center')?.detail).not.toBe('mutated')
+  expect(secondCompletionItems?.find(({ label }) => label === 'sr-only')?.detail).not.toBe('mutated')
 })
 
 test.concurrent('does not leak selector insertText mutations between requests', () => {
@@ -44,8 +44,8 @@ test.concurrent('documentation CSS generation does not mutate language service s
   const before = snapshotLanguageCSS(languageService)
 
   expect(before.font.text).toContain('.font-bold')
-  expect(before.animation.text).not.toContain('@keyframes fade')
-  expect(suggest(languageService, '')?.find(({ label }) => label === 'center')?.documentation).toBeTruthy()
+  expect(before.animation.text).toContain('@keyframes fade')
+  expect(suggest(languageService, '')?.find(({ label }) => label === 'sr-only')?.documentation).toBeTruthy()
   expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
 
   expect(snapshotLanguageCSS(languageService)).toEqual(before)

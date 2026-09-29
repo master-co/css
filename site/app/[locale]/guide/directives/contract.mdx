@@ -20,7 +20,7 @@ Master CSS directives describe token definitions, reusable utility names, named 
 
 ## Entry markers \{#entry-markers\}
 ### `@import "@master/css"` \{#import-mastercss\}
-The package import is the only project entry marker. It loads the preset's native CSS, including its stable layer order, base styles, and native keyframes, and identifies the stylesheet that receives generated utility CSS.
+The package import is the only project entry marker. It loads the preset's native CSS, including its stable layer order and base styles, and identifies the stylesheet that receives generated utility CSS.
 
 ```css
 @import "@master/css";
@@ -92,7 +92,7 @@ references introduced by a later transform.
 
 `compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional
 `emittedGlobals` resource-count snapshot when another output already supplies
-generated theme variables. Positive counts suppress duplicate emission;
+generated theme variables or managed keyframes. Positive counts suppress duplicate emission;
 zero counts do not. New references still emit their transitive resource closure.
 The returned snapshot includes the external context and resources required by this
 render, without changing the input snapshot. Omitting the option preserves normal
@@ -118,13 +118,13 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies `@theme`, `@mixin`, `@custom-media`, and `@custom-variant` definitions. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used tokens can still cause the local output to include their required theme declarations. Keyframes need an actual `@import` or another delivered stylesheet.
+A reference supplies `@theme`, `@mixin`, `@custom-media`, and `@custom-variant` definitions. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used tokens and managed keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native keyframes outside `@theme` need an actual `@import` or another delivered stylesheet.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
 Vite, Next.js, and Webpack supply project definition context to local stylesheets, CSS Modules, and SFC styles. An explicit reference is useful for dependencies outside that context or standalone compilation. Local stylesheets do not become scanning or pruning roots. CSS Modules and scoped hosts must deliver generated theme selectors globally.
 
-The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains variable counts only.
+The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains separate `variables` and `keyframes` counts.
 
 ## Project settings \{#project-settings\}
 ### Removed `@settings` \{#settings\}
@@ -153,7 +153,7 @@ Declare custom properties under explicit native selectors. A theme block must be
 }
 ```
 
-The compiler preserves selector order, declaration order, repeated declarations, and native nesting. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`. Only custom-property declarations belong in `@theme`; use ordinary stylesheets for other declarations, keyframes, or layer rules. `@variant` is not accepted inside a theme.
+The compiler preserves selector order, declaration order, repeated declarations, and native nesting. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules. `@variant` is not accepted inside a theme.
 
 Theme declarations are emitted in the `theme` layer. A used token retains every authored declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values; it does not claim to know the value for a particular DOM element.
 
@@ -177,7 +177,7 @@ This enables `color:white@ocean`. Theme declarations can independently use `[dat
 `@theme inline` is removed. Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
 
 ### Native styles replace static resources \{#theme-static\}
-`@theme static` is removed. Put properties that must always be delivered in native CSS, for example `@layer theme { :root { --app-version: 1; } }`. Keyframes are always native stylesheet rules, outside Master-generated layer blocks:
+`@theme static` is removed. Put properties that must always be delivered in native CSS, for example `@layer theme { :root { --app-version: 1; } }`. Native keyframes outside `@theme` are always delivered:
 
 ```css
 @keyframes reveal {
@@ -186,7 +186,25 @@ This enables `color:white@ocean`. Theme declarations can independently use `[dat
 }
 ```
 
-Animation property utilities remain available. The engine, runtime, server renderer, and hydration data do not register, infer, prune, or recreate animation definitions. Load the stylesheet that owns `reveal` before using `animation:reveal|.2s`.
+For on-demand animation definitions, put `@keyframes` directly inside a top-level `@theme`, beside its selector rules:
+
+```css
+@theme {
+  :root, :host { --animate-reveal: reveal .2s ease-out; }
+  @keyframes reveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+```
+
+`animate-reveal`, `animation-name:reveal`, or a retained native animation declaration retains this definition. Native `@apply` output is analyzed after expansion. Unused mixins and undelivered reference styles are not roots. Definitions emit as top-level keyframes after generated layer blocks, in final definition order. The last same-name managed definition completely replaces earlier ones; decoded identifiers and strings compare case-sensitively. A managed/native same-name collision in the delivered graph is an error with both source locations.
+
+Animation shorthand, comma lists and `var()` references are analyzed across all authored theme scopes, fallbacks and compiler-visible native overrides. Unknown static names may come from external CSS. An unresolved dynamic name conservatively retains **all managed keyframes** and produces an informational tooling diagnostic. Removing the final root releases keyframes and their body token dependencies; delivered native roots remain pinned through `emittedGlobals.keyframes`.
+
+Managed keyframes cannot be registered inside theme selectors, conditions, layers or mixins. Frames contain native declarations; `@apply` and `@variant` inside frames are unsupported. Native keyframes remain available for these delivery requirements. JavaScript-created animations and later JavaScript changes to custom properties are not observed. Use native keyframes or `@safelist "animation-name:reveal";` for those names.
+
+HMR supplies a complete emitted-globals snapshot to `runtime.refresh(manifest, emittedGlobals)`. Engine callers can use `replaceEmittedGlobals()` for replacement or `registerEmittedGlobals()` for additional ownership. Hydration records separate variable and keyframe order, including when both resources share a name.
 
 CSS Modules may rename literal animation identifiers. To consume a global native keyframe across bundlers, declare an animation token in the global theme (for example `--animate-reveal: reveal .2s`) and use `animation: var(--animate-reveal)` inside the module. This retains normal variable inheritance and avoids depending on a bundler-specific `global()` animation syntax.
 
@@ -332,9 +350,9 @@ The last definition with the same decoded name replaces the entire previous mixi
 
 Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve every authored scope and transitive dependency. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
-Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
+Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v3 with languageVersion 5 and binding ABI 16; hydration and transition structures remain v2 and reject old language data.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 6 and binding ABI 17. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
 
 <StylesheetExample title="A parameter mixin" source={"@mixin --pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
 

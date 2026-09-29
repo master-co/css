@@ -52,8 +52,8 @@ const lineRows = getModeRows('color-line', (key) => [`b-${key}`], (key) => `outl
 const baseHueRows = colorRows
 const surfaceRows = getModeRows(
   'color-surface',
-  (key) => key === 'base' ? ['surface-base'] : [`surface-${key}`],
-  (key) => key === 'base' ? 'bg-surface-base' : `surface-${key}`,
+  (key) => key === 'base' ? ['bg-surface-base'] : [`bg-surface-${key}`],
+  (key) => key === 'base' ? 'bg-surface-base' : `bg-surface-${key}`,
   'background'
 )
 const textRows = getModeRows('color-text', (key) => [`fg-text-${key}`], (key) => `fg-text-${key}`, 'text')
@@ -113,10 +113,10 @@ export function SurfacesDemo() {
   return (
     <Demo $py={0} $px={0}>
       <DemoLight>
-        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-surface-base shadow-lg"></div>
       </DemoLight>
       <DemoDark>
-        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm surface-base shadow-lg"></div>
+        <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-surface-base shadow-lg"></div>
       </DemoDark>
     </Demo>
   )
@@ -166,14 +166,14 @@ export function TextHueDemo() {
 export function TextRolesDemo() {
   function renderPreview() {
     return (
-      <div className="display:grid gap-xs width:100% max-w-3xs p-lg r-sm font-semibold text-align:center surface-raised fg-text-body shadow-lg">
+      <div className="display:grid gap-xs width:100% max-w-3xs p-lg r-sm font-semibold text-align:center bg-surface-raised fg-text-body shadow-lg">
         <div className="font-md font-semibold fg-text-strong">Quarterly report</div>
         <p className="margin:0 fg-text-body">Revenue is on track for the current cycle.</p>
         <p className="margin:0 text-sm fg-text-muted">Updated 12 minutes ago</p>
         <button className="text-sm fg-text-disabled" disabled>Archived export unavailable</button>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a className="text-decoration:underline fg-text-link fg-text-link-hover:hover" href="#">Open report</a>
-        <div className="width:fit-content margin-inline:auto mt-sm py-xs px-sm r-sm surface-inverse fg-text-inverse">Private note</div>
+        <div className="width:fit-content margin-inline:auto mt-sm py-xs px-sm r-sm bg-surface-inverse fg-text-inverse">Private note</div>
       </div>
     )
   }

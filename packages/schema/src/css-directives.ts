@@ -1,3 +1,4 @@
+import type { MasterCSSKeyframeDefinition } from './keyframes.js'
 import type { MasterCSSMixinDefinition, MasterCSSMixinValue } from './mixin.js'
 import type {
   MasterCSSThemeNode,
@@ -105,6 +106,8 @@ export type CSSDirectiveConditionPathEntry =
   | { type: 'variant'; token: string }
 
 export interface CSSDirectiveManifestInput {
+  keyframes?: MasterCSSKeyframeDefinition[]
+  animationVariables?: Record<string, string[]>
   variants?: CSSDirectiveVariantDefinitions
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
@@ -179,7 +182,14 @@ export interface CSSMixinSource {
   source: CSSDirectiveSourceReference
 }
 
+export interface CSSDirectiveNotice {
+  code: string
+  message: string
+  source?: CSSDirectiveSourceReference | null
+}
+
 export interface CSSDirectiveResult {
+  notices?: CSSDirectiveNotice[]
   mixinSources?: CSSMixinSource[]
   nativeOutput?: CSSNativeOutput
   outputMappings?: CSSOutputMapping[]

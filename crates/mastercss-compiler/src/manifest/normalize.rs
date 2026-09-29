@@ -206,6 +206,53 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     if !theme.is_empty() {
         manifest.insert("theme".into(), Value::Array(theme));
     }
+    let mut keyframes = base
+        .get("keyframes")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .chain(
+            fragment
+                .get("keyframes")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten(),
+        )
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut animation_variables = base
+        .get("animationVariables")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
+    for (name, values) in fragment
+        .get("animationVariables")
+        .and_then(Value::as_object)
+        .into_iter()
+        .flatten()
+    {
+        animation_variables
+            .entry(name.clone())
+            .or_insert_with(|| Value::Array(Vec::new()))
+            .as_array_mut()
+            .expect("animation variable values")
+            .extend(values.as_array().into_iter().flatten().cloned());
+    }
+    if !animation_variables.is_empty() {
+        manifest.insert(
+            "animationVariables".into(),
+            Value::Object(animation_variables),
+        );
+    }
+    let mut seen_keyframes = std::collections::HashSet::new();
+    keyframes.reverse();
+    keyframes.retain(|definition| {
+        seen_keyframes.insert(definition["name"].as_str().unwrap_or_default().to_owned())
+    });
+    keyframes.reverse();
+    if !keyframes.is_empty() {
+        manifest.insert("keyframes".into(), Value::Array(keyframes));
+    }
     let variants = merge_array_by(base.get("variants"), fragment.get("variants"), |variant| {
         variant
             .get("token")
@@ -288,6 +335,18 @@ pub(crate) fn compile_manifest_fragment(
         fragment.insert(
             "customMedia".into(),
             serde_json::to_value(&registry).expect("custom media"),
+        );
+    }
+    if let Some(variables) = &input.animation_variables {
+        fragment.insert(
+            "animationVariables".into(),
+            serde_json::to_value(variables).expect("native animation variable values"),
+        );
+    }
+    if let Some(keyframes) = &input.keyframes {
+        fragment.insert(
+            "keyframes".into(),
+            serde_json::to_value(keyframes).expect("keyframe definitions"),
         );
     }
     if let Some(theme) = &input.theme {
@@ -375,6 +434,8 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
     );
     for key in [
         "theme",
+        "keyframes",
+        "animationVariables",
         "customMedia",
         "variables",
         "variants",
@@ -387,6 +448,17 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         if let Some(value) = manifest.get(key) {
             preset.insert(key.into(), value.clone());
         }
+    }
+    for definition in preset
+        .get_mut("keyframes")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        definition
+            .as_object_mut()
+            .expect("keyframe definition")
+            .shift_remove("source");
     }
     for definition in preset
         .get_mut("mixins")

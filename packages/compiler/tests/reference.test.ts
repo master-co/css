@@ -6,8 +6,8 @@ import { compileCSSManifestFile, compileProjectManifest } from '../src/node-comp
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variants": [
     {
       "token": "@all" as const,

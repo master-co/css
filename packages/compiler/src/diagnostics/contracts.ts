@@ -116,6 +116,7 @@ export interface MasterCSSInspectionReport {
     text?: string
     emittedGlobals: Readonly<{
       variables: number
+      keyframes: number
     }>
   }>
   readonly missingCSS: Readonly<{

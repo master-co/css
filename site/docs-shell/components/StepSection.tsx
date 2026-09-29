@@ -15,13 +15,13 @@ const StepSection = styled.div`
 export const StepNum = styled.div`
   display:inline-flex align-items:center
   justify-content:center
-  height:24px width:24px margin-right:1.281rem r-sm border:1px|solid|var(--color-line-subtle) font-xs font-weight:460 tracking-normal surface-raised counter-increment:step vertical-align:middle
+  height:24px width:24px margin-right:1.281rem r-sm border:1px|solid|var(--color-line-subtle) font-xs font-weight:460 tracking-normal bg-surface-raised counter-increment:step vertical-align:middle
   content:counter(step):before
 `
 
 export const StepEnd = styled.div`
-  position:absolute left-2xl bottom:0 height:10px width:10px round border:1px|solid|var(--color-line-subtle)
-  surface-raised
+  position:absolute left-2xl bottom:0 height:10px width:10px aspect-ratio:1/1 border-radius:50% border:1px|solid|var(--color-line-subtle)
+  bg-surface-raised
   box-shadow:0|0.1px|0.3px|rgba(0,0,0,0.024),0|0.4px|0.9px|rgba(0,0,0,0.036),0|1px|1px|rgba(0,0,0,0.06)
   transform:translate(-4px,4px) display:none@media((width<64rem))
 `

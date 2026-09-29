@@ -128,15 +128,15 @@ test('disposes an engine that resolves before hydration startup times out', asyn
     let disposals = 0
     const engine = {
       binding: 'wasm' as const,
-      ensureClassRules: () => ({ version: 2, mutations: [] }),
-      deleteClassRules: () => ({ version: 2, mutations: [] }),
-      registerEmittedGlobals: () => ({ version: 2, mutations: [] }),
-      refresh: () => ({ version: 2, mutations: [] }),
+      ensureClassRules: () => ({ version: 3, mutations: [] }),
+      deleteClassRules: () => ({ version: 3, mutations: [] }),
+      registerEmittedGlobals: () => ({ version: 3, mutations: [] }),
+      refresh: () => ({ version: 3, mutations: [] }),
       inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
-        version: 2,
+        version: 3,
         rules: [],
-        resources: { variables: [] },
+        resources: { variables: [], keyframes: [] },
         text: ''
       }),
       dispose: () => { disposals++ },
@@ -179,17 +179,17 @@ test('rejects every pending caller and disposes when emitted globals registratio
     let disposals = 0
     const engine = {
       binding: 'wasm' as const,
-      ensureClassRules: () => ({ version: 2, mutations: [] }),
-      deleteClassRules: () => ({ version: 2, mutations: [] }),
+      ensureClassRules: () => ({ version: 3, mutations: [] }),
+      deleteClassRules: () => ({ version: 3, mutations: [] }),
       registerEmittedGlobals: () => {
         throw new Error('invalid emitted globals')
       },
-      refresh: () => ({ version: 2, mutations: [] }),
+      refresh: () => ({ version: 3, mutations: [] }),
       inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
-        version: 2,
+        version: 3,
         rules: [],
-        resources: { variables: [] },
+        resources: { variables: [], keyframes: [] },
         text: ''
       }),
       dispose: () => { disposals++ },

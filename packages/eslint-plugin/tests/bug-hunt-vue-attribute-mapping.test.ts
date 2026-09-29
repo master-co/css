@@ -20,7 +20,7 @@ it.each([
   // NBSP is inside a class token; use it in a harmless preceding comment instead.
   const prefix = separator === '&nbsp;' ? '/* &nbsp; */ ' : ''
   const quote = separator === '&NewLine;' ? '`' : "'"
-  const source = `<template><div :class="${prefix}${quote}${separator === '&nbsp;' ? '' : 'center' + separator}${token}${quote}"></div></template>`
+  const source = `<template><div :class="${prefix}${quote}${separator === '&nbsp;' ? '' : 'sr-only' + separator}${token}${quote}"></div></template>`
   const [result] = await linter(false).lintText(source, { filePath: 'mapping.vue' })
   expect(result.messages).toHaveLength(1)
   expect(result.messages[0]).toMatchObject({
@@ -30,7 +30,7 @@ it.each([
 })
 
 it('maps diagnostics after a literal CRLF and an astral character in the source prefix', async () => {
-  const source = '<template><!-- 😀 --><div :class="`center\r\n&#122;zz`"></div></template>'
+  const source = '<template><!-- 😀 --><div :class="`sr-only\r\n&#122;zz`"></div></template>'
   const [result] = await linter(false).lintText(source, { filePath: 'mapping.vue' })
   expect(result.messages).toHaveLength(1)
   expect(result.messages[0]).toMatchObject({

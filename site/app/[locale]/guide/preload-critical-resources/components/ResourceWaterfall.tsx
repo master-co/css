@@ -92,7 +92,7 @@ export default function ResourceWaterfall() {
           <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
             <div className="grid-cols(1) gap-md">
               {scenarios.map((scenario) => (
-                <section key={scenario.title} className="p-md r-lg border:1px|solid|var(--color-line-divider) surface-raised">
+                <section key={scenario.title} className="p-md r-lg border:1px|solid|var(--color-line-divider) bg-surface-raised">
                   <header className="mb-sm">
                     <h3 className="margin:0 font-sm font-semibold fg-text-neutral">{scenario.title}</h3>
                     <p className="margin-inline:0 mt-3xs margin-bottom:0 font-2xs fg-text-gray">{scenario.summary}</p>
@@ -130,7 +130,7 @@ function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallSce
   return (
     <>
       <div className="display:flex align-items:center min-width:0 font-2xs font-medium fg-text-neutral">{row.resource}</div>
-      <div className="position:relative overflow:hidden surface-inset" style={{ height: '2rem' }}>
+      <div className="position:relative overflow:hidden bg-surface-inset" style={{ height: '2rem' }}>
         <TimelineTicks />
         <MetricLine metric={metric} />
         {row.bars.map((bar) => (

@@ -15,7 +15,7 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
 export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins' | 'rc-preset'
   readonly sourceVersion: string
   readonly manifest: Readonly<Record<string, unknown>>
   readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -34,7 +34,7 @@ export interface MasterCSSRCClassMigration {
 
 export interface MasterCSSRCMigrationResult {
   readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins' | 'rc-preset'
   readonly sourceVersion: string
   readonly behaviorChanges: readonly string[]
   readonly configurationCSS: string
@@ -83,6 +83,7 @@ export interface MasterCSSBindingInfo {
 export type MasterCSSBinding = 'auto' | 'native' | 'wasm'
 export type MasterCSSResolvedBinding = Exclude<MasterCSSBinding, 'auto'>
 export type MasterCSSRuleTarget =
+  | 'keyframes'
   | 'theme'
   | 'base'
   | 'defaults'
@@ -131,7 +132,7 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  version: 2
+  version: 3
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   resources: MasterCSSEngineResources
   text: string
@@ -146,6 +147,7 @@ export interface MasterCSSEngineVariableResource {
 export interface MasterCSSEngineResources {
   themeText?: string
   variables: MasterCSSEngineVariableResource[]
+  keyframes: (MasterCSSEngineVariableResource & { text: string })[]
 }
 
 export type MasterCSSMatchStatus = 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
@@ -398,6 +400,7 @@ export interface MasterCSSDiagnosticsReportInput {
     text?: string
     included?: boolean
     variables?: readonly string[]
+    keyframes?: readonly string[]
   }
   firstSourceByClass?: Record<string, string>
   fatalError?: string
@@ -444,6 +447,7 @@ export interface MasterCSSInspectionReport {
     text?: string
     emittedGlobals: {
       variables: number
+      keyframes: number
     }
   }
   missingCSS: {
@@ -883,6 +887,7 @@ export interface MasterCSSLowerDirectivesOptions {
 }
 
 export interface MasterCSSLowerDirectivesResult {
+  notices?: import('@master/css-schema/css-directives').CSSDirectiveNotice[]
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
@@ -895,6 +900,7 @@ export interface MasterCSSLowerDirectivesResult {
 }
 
 export interface MasterCSSServerRender {
+  outputMappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
   classes: string[]
   snapshot: MasterCSSEngineSnapshot
   hydrationManifest: import('@master/css-schema/hydration-manifest').MasterCSSHydrationManifest

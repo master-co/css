@@ -12,7 +12,6 @@ const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8'
 
 test('comprehensive', async ({ page }) => {
   await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
-  await page.addStyleTag({ content: '@keyframes fade{0%{opacity:0}to{opacity:1}}' })
   await init(page, generatedCSS, manifest, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
   const rules = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.rules)

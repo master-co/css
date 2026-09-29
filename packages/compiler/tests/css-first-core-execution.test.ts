@@ -4,8 +4,8 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
 const baseManifest = {
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 

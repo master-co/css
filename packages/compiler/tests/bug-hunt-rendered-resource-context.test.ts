@@ -15,8 +15,8 @@ const baseManifest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const definitions = "@theme {:root{--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;}}\n\n@keyframes audit{from{opacity:0}to{opacity:1}}"
 const initialSource = definitions + '.card{color:var(--color-old)}'

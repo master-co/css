@@ -27,7 +27,7 @@ export default function DocMenuButton(props: any) {
       <MenuButton {...props} opened={opened} onClick={() => setOpened(!opened)} />
       {opened &&
         <Portal>
-          <div className="position:fixed bottom:0 top:49px z-index:1050 overflow-y:auto width:100% padding-bottom:5rem padding-top:1.25rem surface-raised/.9 backdrop-filter:blur(25px) animation:fade|.3s overscroll-behavior:contain top:61px@md">
+          <div className="position:fixed bottom:0 top:49px z-index:1050 overflow-y:auto width:100% padding-bottom:5rem padding-top:1.25rem bg-surface-raised/.9 backdrop-filter:blur(25px) animation:fade|.3s overscroll-behavior:contain top:61px@md">
             {app.navs.map(({ Icon, disabled, fullName, ...eachLink }: any) =>
               <Fragment key={eachLink.name}>
                 <Link className={clsx('display:flex align-items:center width:100%', { 'fg-text-disabled': disabled })} {...eachLink} disabled={disabled} onClick={!disabled && (() => setOpened(false))}>

@@ -238,6 +238,7 @@ impl EngineSession {
                     } else {
                         0
                     };
+                    let animation = self.declaration_animation_references(&declarations);
                     generated.push(StoredRule {
                         ir: GeneratedRuleIr {
                             class_name: class_name.to_owned(),
@@ -280,6 +281,8 @@ impl EngineSession {
                             },
                             selector_text: Some(selector_text),
                             variable_names,
+                            keyframe_names: animation.names,
+                            retain_all_keyframes: animation.retain_all,
                         },
                         manifest_order: utility.order.unwrap_or_default(),
                         declarations,

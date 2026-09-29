@@ -1,3 +1,4 @@
+import { noticeDiagnostics } from './notices'
 /** @internal Node-only compiler and import-graph implementation. */
 import { readFileSync, realpathSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
@@ -92,6 +93,7 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
 type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
   /** Host context definitions retain file URL owners until the host publishes assets. */
   resolveReferenceResources?: boolean
+  definitionsOnly?: boolean
   referenceResources?: boolean
   referenceStack?: string[]
   diagnostics?: CompilerDiagnosticRecorder
@@ -356,6 +358,7 @@ function compileManifestInputWithBinding(
 }
 
 interface BindingLowerCSSDirectivesResult {
+  notices?: CompileCSSResult['notices']
   mixinSources: CSSMixinSource[]
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
@@ -400,6 +403,7 @@ function lowerCSSDirectivesWithBinding(
   for (const warning of lowered.warnings) {
     options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   }
+  noticeDiagnostics(lowered.notices, options.onDiagnostic)
   return lowered
 }
 
@@ -451,6 +455,7 @@ function resolveCSSReferenceContext(
       ...options,
       baseManifest: manifest,
       preserveNativeCSS: false,
+      definitionsOnly: true,
       referenceResources: options.resolveReferenceResources,
       referenceStack: options.referenceStack
     })
@@ -497,6 +502,7 @@ function toCompileCSSManifestResult(
   return {
     ...directiveData,
     mixinSources: lowerResult.mixinSources,
+    notices: lowerResult.notices,
     ...(lowerResult.css === undefined ? {} : { outputMappings: lowerResult.outputMappings ?? [] }),
     dependencies,
     manifest: lowerResult.manifest,
@@ -517,7 +523,7 @@ export function compileCSSManifestGraph(
   } = {}
 ) {
   const references = Object.entries(graph.files).flatMap(([file, source]) => {
-    const parsed = compileCSS(source, { from: file })
+    const parsed = compileCSS(source, { from: file, preserveNativeCSS: false })
     const references = parsed.references || []
     return options.mapReferences?.(file, source, references) ?? references
   })
@@ -535,6 +541,7 @@ export function compileCSSManifestGraph(
   ])) : undefined
   const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => compilePreparedGraph(nativeCompiler(), {
     graph,
+    ...(options.definitionsOnly ? { nativeStylesheets: [] } : {}),
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
@@ -550,6 +557,7 @@ export function compileCSSManifestGraph(
   const dependencies = [...new Set([...directives.dependencies, ...referenceContext.dependencies, ...resourceDependencies])]
   const warnings = [...new Set([...directives.warnings, ...referenceContext.warnings])]
   for (const warning of warnings) options.onDiagnostic?.(compilerWarningDiagnostic(warning))
+  noticeDiagnostics(directives.notices, options.onDiagnostic)
   const entry = compiled.stylesheets.find(sheet => sheet.id === compiled.entry)!
   return {
     ...directives, dependencies, warnings, css: entry.css, outputMappings: entry.outputMappings, sourceTexts: graph.files,

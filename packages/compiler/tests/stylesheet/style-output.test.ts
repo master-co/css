@@ -121,7 +121,7 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n        --animation-main: scale 1s;\n      }}\n\n\n      @keyframes fade {\n        from {\n          opacity: 0;\n        }\n\n        to {\n          opacity: 1;\n        }\n      }\n\n      @layer components {\n        .btn {\n          display: grid;\n        }\n      }\n\n      .main {\n        color: var(--color-primary);\n        animation-name: fade;\n      }\n\n      .unused {\n        color: var(--color-primary);\n      }\n    ", { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n        --animation-main: scale 1s;\n      }}\n\n\n      @keyframes native-fade {\n        from {\n          opacity: 0;\n        }\n\n        to {\n          opacity: 1;\n        }\n      }\n\n      @layer components {\n        .btn {\n          display: grid;\n        }\n      }\n\n      .main {\n        color: var(--color-primary);\n        animation-name: native-fade;\n      }\n\n      .unused {\n        color: var(--color-primary);\n      }\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), "<main class=\"btn display:block main fg-red\"></main>")
 
     const css = await createExtractedCSS({
@@ -137,8 +137,8 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('.unused')
     expect(css).toContain('--color-primary:red')
     expect(css).toContain('--color-red')
-    expect(css).toContain('@keyframes fade')
-    expect(css.match(/@keyframes fade/g) || []).toHaveLength(2)
+    expect(css).toContain('@keyframes native-fade')
+    expect(css.match(/@keyframes native-fade/g) || []).toHaveLength(1)
     expect(css).toContain('.btn')
     expect(css).toContain('display: grid')
     expect(css).toContain(".display\\:block{display:block}")
@@ -182,7 +182,7 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --animation-main: scale 1s;\n        --color-primary: #ff0000;\n\n        \n\n        \n\n        \n      } }\n@keyframes fade {\n          from {\n            opacity: 0;\n          }\n\n          to {\n            opacity: 1;\n          }\n        }\n@keyframes slide {\n          to {\n            transform: translateX(1rem);\n          }\n        }\n@keyframes scale {\n          to {\n            transform: scale(1.1);\n          }\n        }\n\n\n      .main {\n        color: var(--color-primary);\n        animation-name: fade,slide;\n      }\n\n      .main-animated {\n        animation: var(--animation-main);\n      }\n    ", { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --animation-main: scale 1s;\n        --color-primary: #ff0000;\n\n        \n\n        \n\n        \n      } }\n@keyframes native-fade {\n          from {\n            opacity: 0;\n          }\n\n          to {\n            opacity: 1;\n          }\n        }\n@keyframes slide {\n          to {\n            transform: translateX(1rem);\n          }\n        }\n@keyframes scale {\n          to {\n            transform: scale(1.1);\n          }\n        }\n\n\n      .main {\n        color: var(--color-primary);\n        animation-name: native-fade,slide;\n      }\n\n      .main-animated {\n        animation: var(--animation-main);\n      }\n    ", { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
     const result = await createExtractedCSSResult({
@@ -195,8 +195,9 @@ describe('style CSS extraction helpers', () => {
 
     expect(result.css).toContain('.main')
     expect(result.css).toContain('--color-primary:red')
-    expect(result.css).toContain('@keyframes fade')
+    expect(result.css).toContain('@keyframes native-fade')
     expect(result.emittedGlobals).toEqual({
+      keyframes: {},
       variables: {
         'animation-main': 1,
         'color-primary': 1
@@ -245,6 +246,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('--color-primary: red')
     expect(result.css).toContain('@keyframes static-fade')
     expect(result.emittedGlobals).toEqual({
+      keyframes: {},
       variables: {}
     })
   })

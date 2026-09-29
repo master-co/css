@@ -123,6 +123,7 @@
     --radius-2xl: 1rem;
     --radius-3xl: 1.5rem;
     --radius-4xl: 2rem;
+    --radius-pill: calc(infinity * 1px);
 
     /* Spacing */
     --spacing-4xs: 0.125rem;
@@ -188,11 +189,10 @@
     --animate-shake: shake 1s infinite;
     --animate-zoom: zoom 1s infinite;
 
-    /* Keyframes */
   }
-}
 
-@keyframes fade {
+  /* On-demand animation resources. */
+  @keyframes fade {
     0% {
       opacity: 0;
     }
@@ -202,7 +202,7 @@
     }
   }
 
-@keyframes flash {
+  @keyframes flash {
     0%, 50%, to {
       opacity: 1;
     }
@@ -212,7 +212,7 @@
     }
   }
 
-@keyframes float {
+  @keyframes float {
     0% {
       transform: none;
     }
@@ -226,7 +226,7 @@
     }
   }
 
-@keyframes heart {
+  @keyframes heart {
     0% {
       transform: scale(1);
     }
@@ -248,7 +248,7 @@
     }
   }
 
-@keyframes jump {
+  @keyframes jump {
     0%, to {
       transform: translateY(-25%);
       animation-timing-function: cubic-bezier(.8, 0, 1, 1);
@@ -260,14 +260,14 @@
     }
   }
 
-@keyframes ping {
+  @keyframes ping {
     75%, to {
       transform: scale(2);
       opacity: 0;
     }
   }
 
-@keyframes pulse {
+  @keyframes pulse {
     0% {
       transform: none;
     }
@@ -281,7 +281,7 @@
     }
   }
 
-@keyframes rotate {
+  @keyframes rotate {
     0% {
       transform: rotate(-360deg);
     }
@@ -291,7 +291,7 @@
     }
   }
 
-@keyframes shake {
+  @keyframes shake {
     0% {
       transform: none;
     }
@@ -317,7 +317,7 @@
     }
   }
 
-@keyframes zoom {
+  @keyframes zoom {
     0% {
       transform: scale(0);
     }
@@ -326,6 +326,8 @@
       transform: none;
     }
   }
+
+}
 
 /* Shadow geometry is stable; native color-scheme selects each color. */
 @theme {

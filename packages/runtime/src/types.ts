@@ -56,7 +56,7 @@ export interface MasterCSSRuntimeFacade extends Disposable {
   readonly binding: MasterCSSEngine['binding']
   observe(): this
   disconnect(): this
-  refresh(manifest?: MasterCSSManifest): this
+  refresh(manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): this
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   snapshot(): MasterCSSRuntimeSnapshot

@@ -81,7 +81,7 @@ function foundationComponent(slug: string, name: string, attributes: Record<stri
   if (name === 'ContainerTokenTable') return numericScale('container', containerDescriptions)
   if (name === 'BreakpointVariables') return numericScale('breakpoint', breakpointDescriptions)
   if (name === 'ContainerVariables') return numericScale('container', containerRoles)
-  if (name === 'RadiusTokenTable') return numericScale('radius', radiusRoles)
+  if (name === 'RadiusTokenTable') return numericScale('radius', radiusRoles) + '\n- `--radius-pill` / `r-pill`: `calc(infinity * 1px)`. Sets radius only; explicit dimensions and `aspect-ratio:1/1` make a circle.'
   if (name === 'BreakpointQueries') return queryScale('breakpoint')
   if (name === 'ContainerQueries') return queryScale('container')
   if (name === 'ContainerSizeValues') return getThemeNumericVariableEntries('container').map(entry =>

@@ -193,7 +193,9 @@ impl Migration {
             }
             serde_json::to_value(resources).map_err(|e| e.to_string())
         };
-        if resources(&source)? != resources(&candidate)? {
+        let before_resources = resources(&source)?;
+        let after_resources = resources(&candidate)?;
+        if before_resources != after_resources {
             return Err("Sizing migration changes token or animation resources".into());
         }
         Ok(candidate)

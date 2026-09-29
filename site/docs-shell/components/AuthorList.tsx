@@ -33,7 +33,7 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
             {...(isLink ? { href: author?.url } : {})}
           >
             <Image
-              className={clsx('round object-fit:cover', {
+              className={clsx('aspect-ratio:1/1 border-radius:50% object-fit:cover', {
                 'outline:1px|solid|var(--color-line-subtle) outline-offset-3xs': size === 'md'
               })}
               src={author.image}

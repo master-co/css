@@ -10,13 +10,13 @@ Radius curves the border and background without changing the box dimensions. Com
 <BasicUsage />
 
 ### Create a pill button \{#create-a-pill-button\}
-`rounded` applies a very large radius, creating a pill on this content-sized button. It does not force a square.
+`r-pill` uses `calc(infinity * 1px)`, creating a pill on this content-sized button. It does not force a square.
 
 <DemoExample page="border-radius" section="create-a-pill-button" />
 <CreatePillButton />
 
 ### Create an icon button \{#create-an-icon-button\}
-`round` sets both a 50% border radius and `aspect-ratio:1/1`. Give this icon-only button a width and an accessible name; its height follows the square ratio.
+Combine `r-pill` with `aspect-ratio:1/1` and an explicit width for a circle. Radius alone does not set the dimensions or aspect ratio. Give this icon-only button an accessible name.
 
 <DemoExample page="border-radius" section="create-an-icon-button" />
 <CreateIconButton />

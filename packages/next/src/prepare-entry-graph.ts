@@ -75,5 +75,5 @@ export async function prepareNextEntryGraph(context: ModuleContext, projectDir: 
   // The graph is now lowered and host-processed, including its generated globals.
   // The publication pass only reconnects imports/resources; it must not re-emit
   // the original manifest's unprocessed variables and keyframes afterward.
-  return { graph, entry: await graph.prepareEntry(rawEntry.source, rawEntry.sourceMap), manifest: { version: 3 as const, languageVersion: 5 as const, mixins: [] }, postcss: true }
+  return { graph, entry: await graph.prepareEntry(rawEntry.source, rawEntry.sourceMap), manifest: { version: 4 as const, languageVersion: 6 as const, mixins: [] }, postcss: true }
 }

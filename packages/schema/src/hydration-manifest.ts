@@ -39,13 +39,15 @@ export interface MasterCSSHydrationRule {
   readonly nodes?: readonly MasterCSSHydrationRuleNode[]
   readonly selectorText?: string
   readonly variableNames?: readonly string[]
+  readonly keyframeNames?: readonly string[]
+  readonly retainAllKeyframes?: boolean
 }
 
 export interface MasterCSSHydrationManifest {
-  readonly version: 2
-  readonly languageVersion: 5
+  readonly version: 3
+  readonly languageVersion: 6
   readonly rules: readonly MasterCSSHydrationRule[]
-  readonly resourceOrder: readonly string[]
+  readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

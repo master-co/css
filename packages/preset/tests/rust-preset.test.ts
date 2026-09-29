@@ -33,8 +33,9 @@ describe('Rust-owned default preset', () => {
     const variables = flattenMasterCSSManifestVariables(defaultManifest.variables)
     expect(variables.some(({ name }) => name === 'color-blue-60')).toBe(true)
     expect(variables.some(({ name }) => name === 'spacing-md')).toBe(true)
-    expect(readFileSync(resolve(import.meta.dirname, '../src/default-native.css'), 'utf8')).toContain('@keyframes fade')
-    expect(defaultManifest.mixins?.some(({ name }) => name === '--center')).toBe(true)
+    expect(readFileSync(resolve(import.meta.dirname, '../src/default-native.css'), 'utf8')).not.toContain('@keyframes fade')
+    expect(defaultManifest.keyframes?.some(({ name }) => name === 'fade')).toBe(true)
+    expect(defaultManifest.mixins?.some(({ name }) => name === '--center')).toBe(false)
   })
 
   it('renders representative classes through the native Rust engine', () => {
@@ -45,7 +46,7 @@ describe('Rust-owned default preset', () => {
       engine.ensureClassRules([
         'display:block',
         'fg-red-60',
-        'surface-base',
+        'bg-surface-base',
         'grid-cols(3)',
         'text-2xl'
       ])

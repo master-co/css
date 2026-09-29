@@ -383,18 +383,27 @@ fn compile_css_directives_impl(
             &native_css,
         )
     };
-    if !external_slots
-        && native_output.is_none()
-        && source.contains("--")
-        && source.contains("media")
-    {
+    if !external_slots && native_output.is_none() && !native_css.is_empty() {
         native_output = Some(crate::NativeCssOutput {
             css: native_css.clone(),
             mappings: native_mappings.clone(),
             slots: Vec::new(),
         });
     }
+    let variables = crate::keyframes::native_variables(&native_css);
+    if !variables.is_empty() {
+        manifest_input.animation_variables = Some(variables);
+    }
+    if !external_slots {
+        crate::keyframes::validate_native_names(
+            &native_css,
+            &options.from,
+            manifest_input.keyframes.as_deref().unwrap_or_default(),
+            &native_mappings,
+        )?;
+    }
     Ok(CompileCssDirectivesResult {
+        notices: Vec::new(),
         mixin_sources: crate::mixin_sources::collect(source, &options.from),
         native_output,
         native_mappings,

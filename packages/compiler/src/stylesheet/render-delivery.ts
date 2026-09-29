@@ -15,13 +15,16 @@ export async function compileRenderedDelivery(id: string, source: string, option
       emittedGlobals: options.emittedGlobals
     })
     const css = [entry.css, generated.generatedCSS].filter(Boolean).join('\n\n')
-    const renderedCSS = { ...generated, css, nativeCSS: entry.css }
+    const shift = (entry.css ? entry.css.length + 2 : 0) - (generated.nativeCSS ? generated.nativeCSS.length + 2 : 0)
+    const resourceMappings = generated.outputMappings.map(mapping => ({ ...mapping, generatedStart: mapping.generatedStart + shift, generatedEnd: mapping.generatedEnd === undefined ? undefined : mapping.generatedEnd + shift }))
+    const sourceMap = result.outputMap(css, [...entry.outputMappings, ...resourceMappings])
+    const renderedCSS = { ...generated, css, nativeCSS: entry.css, outputMappings: resourceMappings }
     return {
       ...result.directives,
       entry: result.entry,
-      stylesheets: result.stylesheets.map(asset => asset.id === entry.id ? { ...asset, css } : asset),
+      stylesheets: result.stylesheets.map(asset => asset.id === entry.id ? { ...asset, css, sourceMap } : asset),
       resources: result.resources,
-      sourceMap: entry.sourceMap,
+      sourceMap,
       css, nativeCSS: entry.css, generatedCSS: generated.generatedCSS,
       emittedGlobals: generated.emittedGlobals, manifest: result.manifest, renderedCSS
     }

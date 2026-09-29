@@ -41,8 +41,8 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "mixins": [
     {
       "name": "--block",
@@ -83,8 +83,8 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variables": {
     "": [
       {
@@ -131,8 +131,8 @@ it('passes emitted globals to the Wasm-owned session', async () => {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variables": {
     "color": [
       {
@@ -179,8 +179,8 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const,
+  "version": 4 as const,
+  "languageVersion": 6 as const,
   "variables": {
     "color": [
       {
@@ -219,8 +219,8 @@ it('preserves native declarations independently of browser CSS.supports', async 
   )))
   const session = await createWasmEngineSession(
     JSON.stringify({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }),
     {},
     { input }
@@ -235,8 +235,8 @@ it('preserves native declarations independently of browser CSS.supports', async 
 
   const renderSession = await createWasmRenderSession(
     JSON.stringify({
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }),
     {},
     { input }

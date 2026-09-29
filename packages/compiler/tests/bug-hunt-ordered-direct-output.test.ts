@@ -21,8 +21,8 @@ const baseManifest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const source = "@mixin --paint {padding:2rem}@layer{.card{@variant all {padding:2rem;}}.card{padding:3rem!important}}"
 

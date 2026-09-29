@@ -19,8 +19,8 @@ const baseManifest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 function origin(result: { css: string, sourceMap?: string }, text: string) {
   expect(result.sourceMap).toBeTypeOf('string')
@@ -104,4 +104,28 @@ test('invalid host maps keep successful output tied to explicit preprocessed con
   const result = await compileStylesheet(file, source, { baseManifest, preserveNativeCSS: true, sourceMap: '{invalid' })
   expect(origin(result, '.card').entry).toMatchObject({ originalSource: pathToFileURL(file).href + '?master-css-preprocessed' })
   expect(result.css).toContain('.card')
+})
+
+test('managed keyframes map to the authored definition after generated layers', async () => {
+  const file = '/project/entry.css'
+  const source = '/* definition */\n@theme {\n @keyframes reveal { to { opacity:1 } }\n}\n.run{animation:reveal 1s}'
+  const result = await compileRenderedStylesheet(file, source, { baseManifest, preserveNativeCSS: true })
+  expect(origin(result, '@keyframes reveal').entry).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: 1 })
+  expect(result.emittedGlobals.keyframes).toEqual({ reveal: 1 })
+})
+
+test.each([false, true])('reference styles never create animation roots or native collisions, delivery=%s', async (delivery) => {
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-keyframes-reference-')))
+  try {
+    const file = join(root, 'entry.css'), child = join(root, 'tokens.css')
+    writeFileSync(child, '@theme{@keyframes reveal{to{opacity:1}}@keyframes unused{to{opacity:0}}}\n@keyframes reveal{to{opacity:.5}}.unused{animation:var(--unknown)}')
+    const result = await compileRenderedStylesheet(file, '@reference "./tokens.css";.run{animation:reveal 1s}', {
+      baseManifest, projectDir: root, preserveNativeCSS: true,
+      ...(delivery ? { delivery: { entryURL: '/entry.css', stylesheetURL: (id: string) => pathToFileURL(id).href, resourceURL: (id: string) => pathToFileURL(id).href } } : {})
+    })
+    expect(result.css).not.toContain('@keyframes unused')
+    expect(result.css.match(/@keyframes reveal/g)).toHaveLength(1)
+    expect(result.emittedGlobals.keyframes).toEqual({ reveal: 1 })
+    expect(origin(result, '@keyframes reveal').entry).toMatchObject({ originalSource: pathToFileURL(child).href })
+  } finally { rmSync(root, { recursive: true, force: true }) }
 })

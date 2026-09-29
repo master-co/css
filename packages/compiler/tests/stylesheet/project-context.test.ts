@@ -7,8 +7,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
 
 const baseManifest: MasterCSSManifest = {
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const roots: string[] = []
 function fixture() {

@@ -12,7 +12,7 @@ function getModeRows(namespace: string, utilities: (key: string) => string[], pr
 const textRows = getModeRows('color-text', key => [`fg-text-${key}`], 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'disabled', 'inverse', 'link', 'link-hover'])
 export const rowsByGroup = {
-  surfaces: getModeRows('color-surface', key => [`surface-${key}`], 'background'),
+  surfaces: getModeRows('color-surface', key => [`bg-surface-${key}`], 'background'),
   lineRoles: getModeRows('color-line', key => [`b-${key}`], 'line'),
   baseHue: getModeRows('color', key => [`bg-${key}`, `fg-${key}`], 'background'),
   textRoles: textRows.filter(({ key }) => textRoleKeys.has(key)),

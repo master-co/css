@@ -224,7 +224,7 @@ export default function Resizable({
         }
       </div>
       {resizing &&
-        <Portal><div className={clsx('position:fixed left:0 top:0 z-index:1040 full animation:fade|.2s contain:strict', {
+        <Portal><div className={clsx('position:fixed left:0 top:0 z-index:1040 height:100% width:100% animation:fade|.2s contain:strict', {
           'bg-black/.5': overlay // prevent mouse move into iframe
         })}></div></Portal>
       }

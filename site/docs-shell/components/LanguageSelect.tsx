@@ -13,7 +13,7 @@ export default function LanguageSelect({ className, children, ...props }: { clas
   const i18n = useI18n()
   return (
     <>
-      <select {...props} className={clsx('position:absolute inset:0 full opacity:0 cursor:pointer', className)}
+      <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer', className)}
         onChange={async (event: any) => {
           if (!pathname) return
           const newLocale = event.target.value

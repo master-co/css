@@ -5,7 +5,7 @@
 ```txt
 class string
   -> Rust EngineSession.ensure_class_rules(batch)
-  -> match native declarations, built-in token families, and Manifest v3 mixins
+  -> match native declarations, built-in token families, and Manifest v4 mixins
   -> parse values, variables, selectors, and conditions
   -> calculate stable priority and layer indexes
   -> insert referenced tokens with all authored scopes and dependencies
@@ -30,14 +30,14 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
-Manifest envelopes are v3; hydration and transition envelopes remain v2. Executable data must carry
-`languageVersion: 5` (binding ABI 16). Reject missing or unsupported language versions before
+Manifest envelopes are v4; hydration, transition and engine snapshot envelopes are v3. Executable data must carry
+`languageVersion: 6` (binding ABI 17). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
 
 Conditions retain their ordered native wrappers and authored units. Named
-custom media and variants share a collision-checked namespace. Theme trees retain explicit native selectors, ordered declarations and scoped values. The browser computes variable values. Modes, inline/static variables and managed keyframes are removed. Preset adaptive colors and shadow colors use native light-dark(); both branches remain live, and color-scheme is ordinary CSS. General hue aliases are fixed swatches.
+custom media and variants share a collision-checked namespace. Theme trees retain explicit native selectors, ordered declarations and scoped values. The browser computes variable values. Modes and inline/static variables remain removed. Keyframes directly inside top-level `@theme` are managed on demand; native keyframes outside it ship unchanged. Preset adaptive colors and shadow colors use native light-dark(); both branches remain live, and color-scheme is ordinary CSS. General hue aliases are fixed swatches.
 
 ## CSS Authoring To Manifest
 
@@ -46,7 +46,7 @@ project CSS containing @import "@master/css"
   -> Rust project policy discovers and merges entries
   -> @master/css-compiler/project supplies filesystem and package resolution
   -> Rust compiler parses directives and native CSS
-  -> Rust compiler lowers Manifest v3 plus native CSS results
+  -> Rust compiler lowers Manifest v4 plus native CSS results
   -> compiler / integrations / ESLint / language-server share that manifest
   -> Rust engine executes the manifest
 ```
@@ -111,7 +111,7 @@ Risks:
 document or shadow root
   -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest })
   -> runtime.observe()
-  -> register emitted variable counts; keyframes remain native CSS
+  -> register emitted variable and managed keyframe counts; replace the complete external snapshot on HMR
   -> find or create style#master-css
   -> hydrate pre-rendered rules or connect current classes
   -> MutationObserver detects class and subtree changes

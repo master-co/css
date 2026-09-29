@@ -1,3 +1,4 @@
+import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import { analyzeCSSDependencies, compileCSS, compileCSSManifestGraph, createManifestFromCSSResult, type CompileCSSResult, type CompileCSSManifestResult } from '../node-compiler'
 import { prepareCSSImportGraph } from '../node-imports'
 import { resolve } from 'node:path'
@@ -13,7 +14,7 @@ export function compilePreparedStylesheet(filename: string, css: string, options
   compileOptions: Omit<CompileStylesheetOptions, 'projectDir' | 'loadSass' | 'baseManifest' | 'sourceMap' | 'baseFile' | 'onDependency' | 'references' | 'referenceFiles'>
   finalizedResult: CompileCSSManifestResult
   result: CompileCSSResult
-  outputMap: (code: string) => string
+  outputMap: (code: string, resources?: CSSOutputMapping[]) => string
 } {
   const { projectDir, loadSass: _loadSass, baseManifest, sourceMap, baseFile, onDependency, referenceFiles, references: suppliedReferences, ...compileOptions } = options
   const hostReferences = referenceFileInputs(referenceFiles)
@@ -38,7 +39,7 @@ export function compilePreparedStylesheet(filename: string, css: string, options
       if (finalizedResult.stylesheets.length > 1) {
         throw new MasterCSSError({ code: 'CSS_IMPORT_ERROR', domain: 'compiler', message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.' })
       }
-      const outputMap = (code: string) => stylesheetOutputMap(code, finalizedResult.outputMappings, context, finalizedResult.css.length)
+      const outputMap = (code: string, resources: CSSOutputMapping[] = []) => stylesheetOutputMap(code, [...finalizedResult.outputMappings, ...resources], context, finalizedResult.css.length)
       return { compileOptions, finalizedResult, result: finalizedResult.directives, outputMap }
     }
     const context = { file: baseFile ?? filename, source: css, compilationFile, sourceMap }
@@ -49,7 +50,7 @@ export function compilePreparedStylesheet(filename: string, css: string, options
     if (hostReferences.length) result.references = [...hostReferences, ...(result.references ?? [])]
     const finalizedResult = createManifestFromCSSResult(result, { ...compileOptions, onDependency, baseManifest, root: projectDir, from: filename, sourceText: compilationSource, resolveReferenceResources: Boolean(referenceFiles?.length) })
     const mappings = finalizedResult.outputMappings ?? stylesheetOutputMappings(result.nativeCSS, result.nativeMappings, finalizedResult.generatedMappings)
-    const outputMap = (code: string) => stylesheetOutputMap(code, mappings, context, finalizedResult.css.length)
+    const outputMap = (code: string, resources: CSSOutputMapping[] = []) => stylesheetOutputMap(code, [...mappings, ...resources], context, finalizedResult.css.length)
     return { compileOptions, finalizedResult, result, outputMap }
   } catch (error) {
     const inputMap = errorContext?.graph?.sourceMappings ? stylesheetInputMap(compilationSource, errorContext) : sourceMap

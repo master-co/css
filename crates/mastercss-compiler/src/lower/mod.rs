@@ -37,6 +37,7 @@ pub struct LowerCssDirectivesRequest {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesResult {
+    pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
     pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,

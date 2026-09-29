@@ -14,6 +14,7 @@ interface GeneratedEngineSession {
   ensureClassRules(classNames: string[]): MasterCSSWasmEngineTransition
   deleteClassRules(classNames: string[]): MasterCSSWasmEngineTransition
   registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
+  replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
   nativeDeclarationCandidates(classNames: string[]): unknown
   ensureClassRulesWithNativeSupport(classNames: string[], supported: Uint8Array): MasterCSSWasmEngineTransition
   refresh(manifestJSON: string): MasterCSSWasmEngineTransition
@@ -182,6 +183,14 @@ export async function createWasmEngineSession(
     registerEmittedGlobals(emittedGlobals: unknown) {
       assertActive()
       return session.registerEmittedGlobals(
+        typeof emittedGlobals === 'string'
+          ? emittedGlobals
+          : JSON.stringify(emittedGlobals)
+      )
+    },
+    replaceEmittedGlobals(emittedGlobals: unknown) {
+      assertActive()
+      return session.replaceEmittedGlobals(
         typeof emittedGlobals === 'string'
           ? emittedGlobals
           : JSON.stringify(emittedGlobals)

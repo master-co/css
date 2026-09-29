@@ -270,7 +270,8 @@ export async function createMasterCSSInspectionReport(
       css: {
         included: Boolean(options.includeCss),
         text: cssResult.css,
-        variables: Object.keys(cssResult.emittedGlobals.variables)
+        variables: Object.keys(cssResult.emittedGlobals.variables),
+        keyframes: Object.keys(cssResult.emittedGlobals.keyframes)
       },
       firstSourceByClass: Object.fromEntries(firstSourceByClass)
     }

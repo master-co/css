@@ -7,6 +7,7 @@ mod managed;
 mod manifest;
 mod mixins;
 mod native;
+mod preset;
 mod removed_static;
 mod saved_rules;
 mod sizing;
@@ -51,6 +52,7 @@ pub enum RcMigrationProfile {
     RcUtilities,
     RcSizing,
     RcMixins,
+    RcPreset,
 }
 
 #[derive(Debug, Serialize)]
@@ -121,6 +123,9 @@ fn error(message: impl Into<String>) -> CompilerError {
 }
 
 pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, CompilerError> {
+    if request.from == RcMigrationProfile::RcPreset {
+        return preset::migrate(request);
+    }
     if request.from == RcMigrationProfile::RcMixins {
         return mixins::migrate(request);
     }

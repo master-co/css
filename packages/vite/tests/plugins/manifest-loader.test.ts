@@ -60,7 +60,7 @@ describe('ManifestLoaderPlugin', () => {
     expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
     expect(context.config.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'theme.css'))
     expect(context.config.server.fs.allow).toContain(themeComponentsPath)
-    expect(code).toContain('"version":3')
+    expect(code).toContain('"version":4')
     expect(code).toContain('accent')
     expect(code).toContain('#456')
     expect(code).toContain('badge')

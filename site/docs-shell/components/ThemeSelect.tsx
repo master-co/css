@@ -8,7 +8,7 @@ export default function ThemeSelect({ className, ...props }: any) {
   const themeMode = useThemeMode()
   const $ = useTranslation()
   return (
-    <select {...props} className={clsx('position:absolute inset:0 full opacity:0 cursor:pointer', className)} value={themeMode.preference}
+    <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer', className)} value={themeMode.preference}
       onChange={(event) => themeMode.preference = event.target.value}>
       <option value="light">{$('Light')}</option>
       <option value="dark">{$('Dark')}</option>

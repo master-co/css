@@ -45,7 +45,7 @@ export function FoundationSizing() {
     <DemoSurface className="width:100% max-w-sm margin-inline:auto p-md">
       <DemoLabel>w:100% · max-w-sm</DemoLabel>
       <div className="display:flex align-items:center gap-md mt-md">
-        <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem round text-sm font-mono">FN</DemoItem>
+        <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">
           <div className="text-sm font-semibold">Field notes</div>
           <p className="margin-inline:0 mt-2xs margin-bottom:0 text-sm fg-text-muted">Measured avatar. Flexible content.</p>
@@ -91,8 +91,8 @@ export function FoundationRadius() {
 export function FoundationShapes() {
   return <Demo title="Content-sized pill and width-led circle" data-foundation="shapes" caption="These links share a destination. Their shape is independent of their native navigation behavior.">
     <div className="display:flex flex-wrap:wrap align-items:end gap-lg">
-      <div><DemoLabel>rounded</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md border-radius:1e9em border:1px|solid|var(--color-line-divider) text-sm text-decoration:none bg-demo-surface fg-text-body">Shape shortcuts</a></div></div>
-      <div><DemoLabel>width:48px round</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Shape shortcuts" className="display:inline-flex align-items:center justify-content:center width:48px round border:1px|solid|var(--color-line-divider) bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
+      <div><DemoLabel>r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md r-pill border:1px|solid|var(--color-line-divider) text-sm text-decoration:none bg-demo-surface fg-text-body">Pills and circles</a></div></div>
+      <div><DemoLabel>width:48px aspect-ratio:1/1 r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" className="display:inline-flex align-items:center justify-content:center width:48px aspect-ratio:1/1 r-pill border:1px|solid|var(--color-line-divider) bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
     </div>
   </Demo>
 }

@@ -4,11 +4,12 @@ export type { MasterCSSEmittedGlobals }
 
 export const VIRTUAL_EMITTED_GLOBALS_ID = 'virtual:master-css-emitted-globals'
 export const VIRTUAL_EMITTED_GLOBALS_FILE = 'master-css-emitted-globals.js'
-export const EMPTY_EMITTED_GLOBALS_MODULE = 'export default { variables: {} };'
+export const EMPTY_EMITTED_GLOBALS_MODULE = 'export default { variables: {}, keyframes: {} };'
 
 export function normalizeEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals = {}): Required<MasterCSSEmittedGlobals> {
   return {
-    variables: emittedGlobals.variables || {}
+    variables: emittedGlobals.variables || {},
+    keyframes: emittedGlobals.keyframes || {}
   }
 }
 

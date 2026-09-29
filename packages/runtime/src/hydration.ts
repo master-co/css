@@ -22,11 +22,12 @@ export function getRootHost(root: Document | ShadowRoot) {
 }
 
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
-  return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 2
-    && (hydrationManifest as MasterCSSHydrationManifest | undefined)?.languageVersion === 5
+  return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 3
+    && (hydrationManifest as MasterCSSHydrationManifest | undefined)?.languageVersion === 6
     && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.rules)
     && (hydrationManifest as MasterCSSHydrationManifest).rules.every(rule => rule && Array.isArray(rule.priority?.features))
-    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder)
+    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.variables)
+    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.keyframes)
     ? hydrationManifest as MasterCSSHydrationManifest
     : undefined
 }
@@ -46,7 +47,7 @@ function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
   } catch (cause) {
     throw invalidHydrationManifest('Cannot parse the Master CSS hydration manifest.', cause)
   }
-  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 2, languageVersion 5 and current rule priorities. Recompile with matching packages.')
+  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 3, languageVersion 6 and current rule priorities. Recompile with matching packages.')
 }
 
 function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
@@ -86,7 +87,7 @@ export async function resolveHydrationManifest(
   if (explicit !== undefined) {
     const hydrationManifest = validateHydrationManifest(explicit)
     if (!hydrationManifest) {
-      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 2, languageVersion 5 and current rule priorities. Recompile with matching packages.')
+      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 3, languageVersion 6 and current rule priorities. Recompile with matching packages.')
     }
     return hydrationManifest
   }

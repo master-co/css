@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod keyframes;
 mod lower;
 mod manifest;
 mod migration;
@@ -107,6 +108,8 @@ pub struct CompileNativeCssResult {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -17,7 +17,7 @@ const specimens = [
 
 function ShadowSpecimens() {
   return specimens.map(({ key, utility, role, description }) => (
-    <div className={`review-comparison-specimen surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
+    <div className={`review-comparison-specimen bg-surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
       <code className="review-comparison-utility">{utility}</code>
       <div className="review-comparison-role">{role}</div>
       <p className="review-comparison-description">{description}</p>

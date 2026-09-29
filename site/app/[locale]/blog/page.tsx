@@ -28,7 +28,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
         return (
           <Image
             key={author.name}
-            className={clsx('round outline:2px|solid|canvas object-fit:cover', {
+            className={clsx('aspect-ratio:1/1 border-radius:50% outline:2px|solid|canvas object-fit:cover', {
               'margin-left:-0.25rem': index > 0
             })}
             src={author.image}
@@ -59,7 +59,7 @@ export default async function Page(props: any) {
               const formattedDate = dayjs(page.date).format('ddd, MMMM D')
               return (
                 <div key={page.pathname + index} className={clsx('border-bottom:1px|dotted|var(--color-line-subtle) border-right:1px|dotted|var(--color-line-subtle)')}>
-                  <Link href={page.pathname} className={clsx('display:flex flex-direction:column gap:1.25rem height:100% p-lg transition:background-color|.2s surface-raised:hover p-2xl@sm')}>
+                  <Link href={page.pathname} className={clsx('display:flex flex-direction:column gap:1.25rem height:100% p-lg transition:background-color|.2s bg-surface-raised:hover p-2xl@sm')}>
                     <div className="display:flex justify-content:space-between margin-bottom:-0.25rem">
                       <div className='text-xs fg-accent'>{formattedDate}</div>
                       <div className='text-xs fg-text-muted'> <TimeAgo timestamp={page.date} /></div>

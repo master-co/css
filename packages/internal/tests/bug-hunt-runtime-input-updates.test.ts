@@ -11,7 +11,7 @@ for (const pending of [false, true]) for (const order of ['manifest-first', 'glo
   let update: (modules: Module[]) => void, dispose: (data: object) => void
   const start = vi.fn(async (inputs: Inputs) => {
     await gate.promise
-    return { dispose() {}, observe() { observed.push(inputs);return this } }
+    return { dispose() {}, observe() { observed.push(inputs);return this }, refresh(manifest: unknown, emittedGlobals: unknown) { observed.push({ manifest, emittedGlobals });return this } }
   })
   const hot = { data: {}, accept(dependencies: unknown, callback?: typeof update) { if (Array.isArray(dependencies)) update = callback! }, dispose(callback: typeof dispose) { dispose = callback } }
   const source = createMasterCSSRuntimeBootstrapSource().replace(/^import .*\n/gm, '').replaceAll('import.meta.hot', 'hot')

@@ -20,8 +20,8 @@ const baseManifest = {
       ]
     }
   ],
-  "version": 3 as const,
-  "languageVersion": 5 as const
+  "version": 4 as const,
+  "languageVersion": 6 as const
 }
 const inputs = [
   { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },

@@ -62,6 +62,10 @@ pub struct GeneratedRuleIr {
     pub selector_text: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub variable_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub keyframe_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub retain_all_keyframes: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -70,7 +74,7 @@ pub struct HydrationManifest {
     pub version: u32,
     pub language_version: u32,
     pub rules: Vec<GeneratedRuleIr>,
-    pub resource_order: Vec<String>,
+    pub resource_order: HydrationResourceOrder,
 }
 
 impl HydrationManifest {
@@ -79,7 +83,10 @@ impl HydrationManifest {
             version: HYDRATION_MANIFEST_VERSION,
             language_version: LANGUAGE_VERSION,
             rules,
-            resource_order,
+            resource_order: HydrationResourceOrder {
+                variables: resource_order,
+                keyframes: Vec::new(),
+            },
         }
     }
 
@@ -90,7 +97,16 @@ impl HydrationManifest {
             .iter()
             .map(|resource| resource.name.clone())
             .collect();
-        Self::new(snapshot.rules.clone(), resource_order)
+        {
+            let mut manifest = Self::new(snapshot.rules.clone(), resource_order);
+            manifest.resource_order.keyframes = snapshot
+                .resources
+                .keyframes
+                .iter()
+                .map(|r| r.name.clone())
+                .collect();
+            manifest
+        }
     }
 
     pub fn to_script_json(&self) -> Result<String, serde_json::Error> {
@@ -160,6 +176,7 @@ pub struct EngineResourcesIr {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme_text: Option<String>,
     pub variables: Vec<EngineVariableResourceIr>,
+    pub keyframes: Vec<EngineKeyframeResourceIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -239,4 +256,20 @@ pub enum BrowserSupport {
     Unsupported,
     Unknown,
     NotChecked,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HydrationResourceOrder {
+    pub variables: Vec<String>,
+    pub keyframes: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineKeyframeResourceIr {
+    pub name: String,
+    pub text: String,
+    pub ref_count: u32,
+    pub dependencies: Vec<String>,
 }

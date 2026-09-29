@@ -518,7 +518,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('font-weight:bold')
     expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
-      .toContain('"version":3')
+      .toContain('"version":4')
   })
 
   test('adds resolve file dependencies to Set and array-like containers', () => {
@@ -553,7 +553,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":3/)
+      .toMatch(/^export default \{"version":4/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('loadMasterCSSManifestModule')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -610,7 +610,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
     expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toBe('export default {"variables":{}};')
+      .toBe('export default {"variables":{},"keyframes":{}};')
   })
 
   test('resolves ?master-css-manifest imports to per-file JS facades and external JSON assets', async () => {
@@ -665,7 +665,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":3/)
+      .toMatch(/^export default \{"version":4/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .toContain('#456')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])

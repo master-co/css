@@ -27,7 +27,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
     expect(rendered.cssText).not.toContain('--color-obsolete')
     expect(rendered.cssText).not.toContain('padding:100px')
-    expect(rendered.hydrationManifest.languageVersion).toBe(5)
+    expect(rendered.hydrationManifest.languageVersion).toBe(6)
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {

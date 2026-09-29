@@ -41,6 +41,13 @@ export default class BoundEngine implements MasterCSSEngine {
     ))
   }
 
+  replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
+    this.assertActive()
+    return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
+      this.session.replaceEmittedGlobals(emittedGlobals)
+    ))
+  }
+
   refresh(manifest: MasterCSSManifest) {
     this.assertActive()
     return this.invoke(() => freezeResult<MasterCSSEngineTransition>(

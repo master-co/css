@@ -14,11 +14,11 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
-pub const MANIFEST_VERSION: u32 = 3;
-pub const LANGUAGE_VERSION: u32 = 5;
-pub const HYDRATION_MANIFEST_VERSION: u32 = 2;
-pub const BINDING_ABI_VERSION: u32 = 16;
-pub const ENGINE_TRANSITION_VERSION: u32 = 2;
+pub const MANIFEST_VERSION: u32 = 4;
+pub const LANGUAGE_VERSION: u32 = 6;
+pub const HYDRATION_MANIFEST_VERSION: u32 = 3;
+pub const BINDING_ABI_VERSION: u32 = 17;
+pub const ENGINE_TRANSITION_VERSION: u32 = 3;
 pub const VALIDATOR_BATCH_VERSION: u32 = 4;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
 pub const LINT_BATCH_VERSION: u32 = 3;
@@ -78,6 +78,8 @@ impl<'a> BindingInfo<'a> {
 pub struct EmittedGlobals {
     #[serde(default)]
     pub variables: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub keyframes: BTreeMap<String, u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -124,6 +126,7 @@ pub enum UtilityLayerName {
 #[serde(rename_all = "lowercase")]
 pub enum RuleTarget {
     Theme,
+    Keyframes,
     Base,
     Defaults,
     Components,

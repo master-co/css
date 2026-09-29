@@ -11,7 +11,7 @@ export type {
   RenderCompiledManifestCSSResult
 } from './render-core'
 
-/** Compare canonical Rust reference counts; only referenced theme variables are managed. */
+/** Compare canonical Rust reference counts; referenced theme variables and keyframes are managed. */
 export function hasStylesheetResourceReferences(manifest: RenderCompiledManifestCSSOptions['manifest'], source: string): boolean {
   const session = createRenderBindingSessionSync({ manifest })
   try {
@@ -19,6 +19,7 @@ export function hasStylesheetResourceReferences(manifest: RenderCompiledManifest
     session.ensureStylesheetResources(source)
     const after = session.snapshot().snapshot.resources
     return after.variables.some(value => value.refCount > (before.variables.find(item => item.name === value.name)?.refCount ?? 0))
+      || after.keyframes.some(value => value.refCount > (before.keyframes.find(item => item.name === value.name)?.refCount ?? 0))
   } finally { session.dispose() }
 }
 

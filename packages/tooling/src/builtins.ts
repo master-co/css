@@ -1214,7 +1214,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border",
     "property": "border",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1222,7 +1221,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block",
     "property": "border-block",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1230,7 +1228,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block-color",
     "property": "border-block-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1238,7 +1235,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block-end",
     "property": "border-block-end",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1246,7 +1242,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block-end-color",
     "property": "border-block-end-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1254,7 +1249,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block-start",
     "property": "border-block-start",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1262,7 +1256,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-block-start-color",
     "property": "border-block-start-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1270,7 +1263,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-bottom",
     "property": "border-bottom",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1278,7 +1270,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-bottom-color",
     "property": "border-bottom-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1286,7 +1277,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-color",
     "property": "border-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1294,7 +1284,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline",
     "property": "border-inline",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1302,7 +1291,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline-color",
     "property": "border-inline-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1310,7 +1298,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline-end",
     "property": "border-inline-end",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1318,7 +1305,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline-end-color",
     "property": "border-inline-end-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1326,7 +1312,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline-start",
     "property": "border-inline-start",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1334,7 +1319,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-inline-start-color",
     "property": "border-inline-start-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1342,7 +1326,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-left",
     "property": "border-left",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1350,7 +1333,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-left-color",
     "property": "border-left-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1358,7 +1340,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-right",
     "property": "border-right",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1366,7 +1347,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-right-color",
     "property": "border-right-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1374,7 +1354,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-top",
     "property": "border-top",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1382,7 +1361,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "border-top-color",
     "property": "border-top-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1390,7 +1368,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "outline-color",
     "property": "outline-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1426,7 +1403,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "caret-color",
     "property": "caret-color",
     "namespaces": [
-      "color-text",
       "color"
     ]
   },
@@ -1434,7 +1410,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "stroke",
     "property": "stroke",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1442,23 +1417,20 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "color",
     "property": "color",
     "namespaces": [
-      "color",
-      "color-text"
+      "color"
     ]
   },
   {
     "prefix": "fg",
     "property": "color",
     "namespaces": [
-      "color",
-      "color-text"
+      "color"
     ]
   },
   {
     "prefix": "-webkit-text-fill-color",
     "property": "-webkit-text-fill-color",
     "namespaces": [
-      "color-text",
       "color"
     ]
   },
@@ -1466,7 +1438,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "text-fill-color",
     "property": "-webkit-text-fill-color",
     "namespaces": [
-      "color-text",
       "color"
     ]
   },
@@ -1474,7 +1445,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "text-decoration-color",
     "property": "text-decoration-color",
     "namespaces": [
-      "color-text",
       "color"
     ]
   },
@@ -1679,17 +1649,9 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "surface",
-    "property": "background-color",
-    "namespaces": [
-      "color-surface"
-    ]
-  },
-  {
     "prefix": "b",
     "property": "border-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1697,7 +1659,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "bt",
     "property": "border-top-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1705,7 +1666,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "br",
     "property": "border-right-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1713,7 +1673,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "bb",
     "property": "border-bottom-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1721,7 +1680,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "bl",
     "property": "border-left-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1729,7 +1687,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "bx",
     "property": "border-inline-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1737,7 +1694,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "by",
     "property": "border-block-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1745,7 +1701,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "outline",
     "property": "outline-color",
     "namespaces": [
-      "color-line",
       "color"
     ]
   },
@@ -1753,7 +1708,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "prefix": "text-decoration",
     "property": "text-decoration-color",
     "namespaces": [
-      "color-text",
       "color"
     ]
   },
@@ -2036,7 +1990,6 @@ export const builtinTokenNamespaces = Object.freeze(
       "outline-color"
     ],
     "variableAliasRefs": [
-      "~color-line",
       "~color"
     ]
   },
@@ -2056,7 +2009,6 @@ export const builtinTokenNamespaces = Object.freeze(
       "caret-color"
     ],
     "variableAliasRefs": [
-      "~color-text",
       "~color"
     ]
   },
@@ -2065,7 +2017,6 @@ export const builtinTokenNamespaces = Object.freeze(
       "stroke"
     ],
     "variableAliasRefs": [
-      "~color-line",
       "~color"
     ]
   },
@@ -2074,8 +2025,7 @@ export const builtinTokenNamespaces = Object.freeze(
       "color"
     ],
     "variableAliasRefs": [
-      "~color",
-      "~color-text"
+      "~color"
     ]
   },
   {
@@ -2084,7 +2034,6 @@ export const builtinTokenNamespaces = Object.freeze(
       "text-decoration-color"
     ],
     "variableAliasRefs": [
-      "~color-text",
       "~color"
     ]
   },
