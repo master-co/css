@@ -1,7 +1,6 @@
-import DemoDark from '~/site/docs-shell/components/DemoDark'
-import DemoLight from '~/site/docs-shell/components/DemoLight'
-import Demo from '~/site/docs-shell/components/Demo'
-import DemoLabel from '~/site/docs-shell/components/DemoLabel'
+import { DemoDark, DemoLight } from '~/site/components/demo/DemoMode'
+import Demo from '~/site/components/demo/Demo'
+import { DemoLabel } from '~/site/components/demo/primitives'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 
 import { getShadowRows } from '~/site/common/foundation-data/elevation/shadow-data'
@@ -70,7 +69,7 @@ function SurfaceStack() {
 
 export function SurfaceElevationDemo() {
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex flex-wrap:wrap container-type:inline-size">
       <DemoLight>
         <SurfaceStack />
       </DemoLight>

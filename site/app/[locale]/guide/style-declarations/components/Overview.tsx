@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import Demo from '~/site/docs-shell/components/Demo'
+import Demo from '~/site/components/demo/Demo'
 import mobileImage from '~/site/public/images/landscape-mobile-screen.png'
 
 export default () => (
-  <Demo $py={0}>
+  <Demo padding="none" className="padding-inline:2rem padding-inline:3rem@sm">
     <div className="transition-property:transform transition-duration:0.2s transform:scale(1.1):hover">
       <Image
         src={mobileImage}

@@ -14,8 +14,8 @@ shared `internal` submodule sources were changed for this work.
 - Nine scene families are indexed in `/design-system`, with links to real Reference
   examples. The gallery also documents primitives, variants, composition, controls,
   layout constraints, code presentation and existing benchmark charts.
-- Existing MDX and TSX demos use the site library. The MDX adapter removes shared
-  auto-imports that would otherwise override the provider. Browser frames and
+- Existing MDX and TSX demos use the site library. The MDX provider registers
+  site-owned demos directly. Browser frames and
   installation previews use the same chrome while retaining native iframe and
   existing resize behavior.
 
@@ -27,7 +27,7 @@ Run from the repository root:
 pnpm --filter site clean:next
 pnpm build:site
 pnpm --filter site exec tsx --test \
-  components/demo/reference/reference-demo.test.ts utils/demo-mdx.test.ts
+  components/demo/reference/reference-demo.test.ts utils/demo-ownership.test.ts
 pnpm --filter site lint
 pnpm --filter site type-check
 pnpm --filter site prepare-app

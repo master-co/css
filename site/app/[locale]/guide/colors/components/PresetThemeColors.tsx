@@ -1,10 +1,9 @@
-import Demo from '~/site/docs-shell/components/Demo'
-import DemoDark from '~/site/docs-shell/components/DemoDark'
-import DemoLight from '~/site/docs-shell/components/DemoLight'
+import Demo from '~/site/components/demo/Demo'
+import { DemoDark, DemoLight } from '~/site/components/demo/DemoMode'
 
 export function SurfacesDemo() {
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>
         <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-surface-base shadow-lg"></div>
       </DemoLight>
@@ -23,7 +22,7 @@ export function LineRolesDemo() {
   }
 
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>{renderPreview()}</DemoLight>
       <DemoDark>{renderPreview()}</DemoDark>
     </Demo>
@@ -32,7 +31,7 @@ export function LineRolesDemo() {
 
 export function BaseHueDemo() {
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>
         <div className="display:grid place-content:center height:3rem width:100% aspect-ratio:2/1 r-sm bg-yellow"></div>
       </DemoLight>
@@ -45,7 +44,7 @@ export function BaseHueDemo() {
 
 export function TextHueDemo() {
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>
         <div className="font-size-9xl font-weight-heavy fg-text-yellow">M</div>
       </DemoLight>
@@ -72,7 +71,7 @@ export function TextRolesDemo() {
   }
 
   return (
-    <Demo $py={0} $px={0}>
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>{renderPreview()}</DemoLight>
       <DemoDark>{renderPreview()}</DemoDark>
     </Demo>

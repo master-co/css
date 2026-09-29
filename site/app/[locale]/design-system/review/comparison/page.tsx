@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
+
 import Demo from '~/site/components/demo/Demo'
 import { DemoComparison } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/app/[locale]/guide/elevation/components/ShadowTokens'
@@ -7,7 +7,7 @@ import './page.css'
 
 export const metadata = {
   title: 'Demo comparison review',
-  description: 'Comparison of the original Guide grid, previous shared comparison and approved layout.'
+  description: 'Current Demo comparison and practical examples.'
 }
 
 const specimens = [
@@ -25,23 +25,9 @@ function ShadowSpecimens() {
   ))
 }
 
-function OriginalComparison() {
-  return <div className="container-type:inline-size width:100%"><div className="grid-cols(1) gap-xl width:100% grid-cols(2)@container((width>=18rem))"><ShadowSpecimens /></div></div>
-}
-
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Local shadow-scale grid',
-    note: 'The Guide controls its own responsive columns and generous gap.',
-    preview: <OriginalDemo><OriginalComparison /></OriginalDemo>
-  },
-  {
-    number: '02', title: 'Previous', detail: 'Earlier shared DemoComparison',
-    note: 'The earlier auto-fit grid uses a 14rem minimum and the medium gap.',
-    preview: <Demo><div className="review-comparison-previous"><ShadowSpecimens /></div></Demo>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Shared DemoComparison',
+    number: '01', title: 'Current', detail: 'Shared DemoComparison',
     note: 'A 17rem reading minimum and larger gap keep both specimens clear before stacking.',
     preview: <Demo><DemoComparison><ShadowSpecimens /></DemoComparison></Demo>
   }
@@ -51,12 +37,11 @@ export default function Page() {
   return <main className="review-comparison-review">
     <div className="review-comparison-kicker">Design system · Component review 07</div>
     <h1>Demo comparison</h1>
-    <p className="review-comparison-intro">The original Guide arranges related examples in a spacious responsive grid. The approved shared comparison preserves that calm rhythm and keeps specimens readable before it asks them to sit side by side.</p>
-    <div className="review-comparison-reviewNote" role="note">Approved direction: <code>DemoComparison</code> uses wider reading columns and a larger gap. It adds no frame, padding, labels, child wrappers or paint that could change the CSS lesson.</div>
+    <p className="review-comparison-intro">A 17rem reading minimum and larger gap keep both specimens clear before stacking.</p>
 
     <section aria-labelledby="comparison-options">
       <h2 id="comparison-options">Two elevation specimens</h2>
-      <p className="review-comparison-sectionCopy">The same <code>shadow-sm</code> and <code>shadow-lg</code> cards appear in each treatment. Resize the page to see when the pair stacks.</p>
+
       <div className="review-comparison-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-comparison-option" key={number}>
           <div className="review-comparison-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

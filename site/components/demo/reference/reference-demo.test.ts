@@ -70,3 +70,15 @@ test('new demo tokens are defined and specimens do not force layout on demo item
     assert.equal([...theme.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 2, token)
   }
 })
+
+test('default canvas stripe uses a defined theme image at the intended scale', async () => {
+  const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
+  const theme = await readFile(new URL('../../../styles/docs-shell/theme.css', import.meta.url), 'utf8')
+  const stripe = css.match(/\.demo-canvas\[data-background="stripes"\]\s*\{([^}]+)\}/)?.[1]
+  assert.ok(stripe)
+  assert.match(stripe, /background-image:\s*var\(--stripe-image\)/)
+  assert.match(stripe, /background-position:\s*0 0/)
+  assert.match(stripe, /background-size:\s*7\.5px 7\.5px/)
+  assert.equal([...theme.matchAll(/--stripe-image:/g)].length, 2)
+  assert.doesNotMatch(css, /var\(--stripe\)/)
+})

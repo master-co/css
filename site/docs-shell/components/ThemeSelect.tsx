@@ -2,9 +2,10 @@
 
 import { useThemeMode } from '@master/theme-mode.react'
 import clsx from 'clsx'
+import type { SelectHTMLAttributes } from 'react'
 import { useTranslation } from '../contexts/i18n'
 
-export default function ThemeSelect({ className, ...props }: any) {
+export default function ThemeSelect({ className, ...props }: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'value' | 'defaultValue' | 'onChange'>) {
   const themeMode = useThemeMode()
   const $ = useTranslation()
   return (

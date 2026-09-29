@@ -1,14 +1,13 @@
 import Link from 'next/link'
 import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
-import GuideIndex from '~/site/app/[locale]/guide/components/GuideIndex'
-import categories from '~/site/.categories/guide.json'
+
 import DemoCatalog from '~/site/components/demo/DemoCatalog'
 import DemoExample from '~/site/components/demo/DemoExample'
 import './page.css'
 
 export const metadata = {
   title: 'Demo catalog review',
-  description: 'Original Guide navigation, the current recipe disclosure and a refined candidate.'
+  description: 'Current Demo catalog and practical examples.'
 }
 
 function groups(prefix: string) {
@@ -22,19 +21,9 @@ function groups(prefix: string) {
 
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Established category navigation',
-    note: 'The Guide presents paths into its lessons through a compact card grid. It keeps that existing navigation and does not need recipe disclosures.',
-    preview: <div className="review-catalog-original"><GuideIndex pageCategories={categories.filter(category => category.name === 'Getting Started')} /></div>
-  },
-  {
-    number: '02', title: 'Current', detail: 'Shared recipe catalog',
-    note: 'A categorized index leads to native disclosure rows. Each row keeps its Reference preview in server-rendered HTML and links to the complete lesson.',
-    preview: <div className="review-catalog-previous"><DemoCatalog groups={groups('current-catalog')} /></div>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Sharper disclosure hierarchy',
+    number: '01', title: 'Current', detail: 'Sharper disclosure hierarchy',
     note: 'The same native details gain clearer tap and focus areas, a distinct class marker, calmer open state and more comfortable preview inset.',
-    preview: <DemoCatalog groups={groups('candidate-catalog')} />
+    preview: <DemoCatalog groups={groups('current-catalog')} />
   }
 ] as const
 
@@ -42,13 +31,13 @@ export default function Page() {
   return <main className="review-catalog-review">
     <div className="review-catalog-kicker">Design system · Component review 30</div>
     <h1>Demo catalog</h1>
-    <p className="review-catalog-intro">The Guide already has a clear lesson index. The shared catalog is for browsing many independent Reference specimens inside the Design System. This review refines that disclosure without changing the Guide index or the Reference lesson pages.</p>
-    <div className="review-catalog-reviewNote" role="note">The refined shared recipe disclosure is adopted. The original Guide index and Reference lessons remain in place.</div>
+    <p className="review-catalog-intro">The same native details gain clearer tap and focus areas, a distinct class marker, calmer open state and more comfortable preview inset.</p>
+
     <label htmlFor="catalog-review-theme" className="review-catalog-themeControl"><span>Preview theme</span><span className="review-catalog-themeSelect">Light · Dark · System<ThemeSelect id="catalog-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="catalog-options">
       <h2 id="catalog-options">Navigation treatments</h2>
-      <p className="review-catalog-sectionCopy">Open the clear examples by pointer, Enter or Space. Both shared variants use real Reference scenes; their class labels and destination links are identical.</p>
+
       <div className="review-catalog-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-catalog-option" key={number}>
           <div className="review-catalog-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

@@ -1,31 +1,10 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useId, useState } from 'react'
 import DemoMeasure from '~/site/components/demo/DemoMeasure'
 import { DemoSurface } from '~/site/components/demo/primitives'
 
-function PreviousMeasure({ children, label }: { children: ReactNode, label: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [size, setSize] = useState<{ width: number, height: number }>()
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) return
-    const observer = new ResizeObserver(() => {
-      const bounds = element.getBoundingClientRect()
-      setSize({ width: Math.round(bounds.width), height: Math.round(bounds.height) })
-    })
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
-
-  return <div>
-    <div className="review-measure-previousMeasureLine"><span>{label}{size && ` · ${size.width} × ${size.height} px`}</span></div>
-    <div ref={ref}>{children}</div>
-  </div>
-}
-
-export default function MeasureReviewStage({ adopted = false }: { adopted?: boolean }) {
+export default function MeasureReviewStage() {
   const widthId = useId()
   const detailsId = useId()
   const [requestedWidth, setRequestedWidth] = useState(300)
@@ -48,9 +27,7 @@ export default function MeasureReviewStage({ adopted = false }: { adopted?: bool
     </div>
     <div className="review-measure-stage">
       <div className="review-measure-widthBoundary" style={{ width: `min(100%, ${requestedWidth}px)` }}>
-        {adopted
-          ? <DemoMeasure label="Content bounds">{content}</DemoMeasure>
-          : <PreviousMeasure label="Content bounds">{content}</PreviousMeasure>}
+        <DemoMeasure label="Content bounds">{content}</DemoMeasure>
       </div>
     </div>
     <p className="review-measure-stageNote">The ruler reports the actual rendered box. At narrow widths, the available space can be less than the requested width.</p>

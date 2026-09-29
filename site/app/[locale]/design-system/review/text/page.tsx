@@ -1,23 +1,21 @@
 import Link from 'next/link'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
-import OriginalDemoP from '~/site/docs-shell/components/DemoP'
 import Demo from '~/site/components/demo/Demo'
 import { DemoMedia, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
 export const metadata = {
   title: 'Demo text review',
-  description: 'Review-only comparison of original Guide text, current site text and proposed type roles.'
+  description: 'The current Demo text roles and layout-neutral body copy.'
 }
 
 const bodyCopy = 'Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.'
 
-function FloatExample({ adopted }: { adopted: boolean }) {
+function FloatExample() {
   return (
     <Demo title="Text flow" caption="The width and float belong to the lesson; text stays in normal flow.">
       <DemoSurface className="display:flow-root p-md font-size-sm">
         <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
-        {adopted ? <DemoText className="margin:0">{bodyCopy}</DemoText> : <p className="margin:0 demo-text">{bodyCopy}</p>}
+        <DemoText className="margin:0">{bodyCopy}</DemoText>
       </DemoSurface>
     </Demo>
   )
@@ -28,24 +26,13 @@ export default function Page() {
     <main className="review-text-review">
       <div className="review-text-kicker">Design system · Component review 04</div>
       <h1>Demo text</h1>
-      <p className="review-text-intro">The original Guide gives large specimen copy presence. The shared text element needs that option while keeping ordinary instructional paragraphs readable and layout neutral.</p>
-      <div className="review-text-reviewNote" role="note">Approved direction: <code>DemoText</code> now exposes body, lead and caption roles. Default body text keeps its inherited size, line height and margin reset; optional roles do not enter measured examples unless requested.</div>
+      <p className="review-text-intro">Shared text has body, lead and caption roles. Body copy keeps its inherited size and remains neutral inside measured layouts.</p>
 
-      <section aria-labelledby="text-comparison">
-        <h2 id="text-comparison">Default and display copy</h2>
-        <div className="review-text-comparison">
+      <section aria-labelledby="text-current">
+        <h2 id="text-current">Default and display copy</h2>
+        <div className="review-text-current">
           <article className="review-text-option">
-            <div className="review-text-optionHeading"><span>01</span><div><h3>Original Guide</h3><p><code>DemoP</code> specimen</p></div></div>
-            <OriginalDemo><div className="review-text-textStage"><OriginalDemoP>Designing for consistency across every platform.</OriginalDemoP></div></OriginalDemo>
-            <p className="review-text-optionNote">Strong, enlarged display copy from the established typography lesson.</p>
-          </article>
-          <article className="review-text-option">
-            <div className="review-text-optionHeading"><span>02</span><div><h3>Previous</h3><p>Plain <code>DemoText</code></p></div></div>
-            <Demo><div className="review-text-textStage"><p className="demo-text">Designing for consistency across every platform.</p></div></Demo>
-            <p className="review-text-optionNote">Useful for paragraphs, but visually flat as a specimen.</p>
-          </article>
-          <article className="review-text-option">
-            <div className="review-text-optionHeading"><span>03</span><div><h3>Adopted</h3><p>Explicit lead role</p></div></div>
+            <div className="review-text-optionHeading"><span>01</span><div><h3>Current text</h3><p>Explicit lead role</p></div></div>
             <Demo><div className="review-text-textStage"><DemoText variant="lead">Designing for consistency across every platform.</DemoText></div></Demo>
             <p className="review-text-optionNote">A measured type step, firmer weight and tighter rhythm without making every paragraph large.</p>
           </article>
@@ -69,11 +56,10 @@ export default function Page() {
           <div><h2 id="text-real-use">Actual Reference use</h2><p>Text flow must remain the same beside a floated object.</p></div>
           <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/float">Open https://developer.mozilla.org/en-US/docs/Web/CSS/float</Link>
         </div>
-        <div className="review-text-actualPair">
-          <div><span className="review-text-pairLabel">Previous body text</span><FloatExample adopted={false} /></div>
-          <div><span className="review-text-pairLabel">Adopted body text</span><FloatExample adopted /></div>
+        <div className="review-text-actualUse">
+          <div><span className="review-text-useLabel">Body text</span><FloatExample /></div>
         </div>
-        <p className="review-text-optionNote">Both paragraphs use the same source text and the same inherited <code>font-size-sm</code>; the lead and caption styles do not enter the float lesson.</p>
+        <p className="review-text-optionNote">The paragraph inherits <code>font-size-sm</code>; lead and caption styles do not enter the float lesson.</p>
       </section>
     </main>
   )

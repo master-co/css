@@ -10,7 +10,7 @@ const options = [
   { value: 'items-end', label: 'End' }
 ] as const
 
-export default function ControlsReviewScene({ candidate = false }: { candidate?: boolean }) {
+export default function ControlsReviewScene() {
   const [alignment, setAlignment] = useState<(typeof options)[number]['value']>('items-start')
   const buttons = options.map(({ value, label }) => <button
     key={value}
@@ -20,7 +20,7 @@ export default function ControlsReviewScene({ candidate = false }: { candidate?:
     onClick={() => setAlignment(value)}
   >{label}</button>)
 
-  return <Demo title="Cross-axis alignment" controls={<DemoControls label="Cross-axis alignment" variant={candidate ? 'segmented' : 'plain'}>{buttons}</DemoControls>}
+  return <Demo title="Cross-axis alignment" controls={<DemoControls label="Cross-axis alignment" variant="segmented">{buttons}</DemoControls>}
     caption="Selection changes the actual alignment utility on the flex parent.">
     <div className={`display:flex gap-sm height:10rem ${alignment}`}>
       <DemoItem tone="blue" className="flex:1 p-md">01</DemoItem>

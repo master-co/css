@@ -1,20 +1,11 @@
 import Link from 'next/link'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
-import OriginalPaletteItem from '~/site/docs-shell/components/ColorPaletteItem'
-import { getColor } from '~/site/docs-shell/data/color-palette'
 import Demo from '~/site/components/demo/Demo'
 import { DemoSwatch } from '~/site/components/demo'
 import './page.css'
 
 export const metadata = {
   title: 'Demo swatch review',
-  description: 'Review-only comparison of original palette swatches, current demo swatch and labeled inventory candidate.'
-}
-
-const blue = getColor('blue', 60)
-
-function PreviousSwatch() {
-  return <div className="review-swatch-swatchPrevious"><div className={`bg-demo-blue review-swatch-colorPrevious`} /><span className="demo-label">Subject</span></div>
+  description: 'The current labeled Demo swatch and semantic role inventory.'
 }
 
 export default function Page() {
@@ -22,24 +13,13 @@ export default function Page() {
     <main className="review-swatch-review">
       <div className="review-swatch-kicker">Design system · Component review 05</div>
       <h1>Demo swatch</h1>
-      <p className="review-swatch-intro">The Guide palette already gives each color a generous chip and a clear step. The shared swatch can reuse that precise feel while making a small semantic role inventory readable on the striped canvas.</p>
-      <div className="review-swatch-reviewNote" role="note">Approved direction: the static <code>DemoSwatch</code> is now a labeled inventory tile. The original Guide palette remains interactive and copies a value; the shared tile does not pretend to be a control. Its color still comes from an explicit utility class or inline style.</div>
+      <p className="review-swatch-intro">The shared swatch pairs a color chip with a visible semantic label and token. It is a static inventory tile; use a button when copying a value.</p>
 
-      <section aria-labelledby="swatch-comparison">
-        <h2 id="swatch-comparison">One blue specimen</h2>
-        <div className="review-swatch-comparison">
+      <section aria-labelledby="swatch-current">
+        <h2 id="swatch-current">One blue specimen</h2>
+        <div className="review-swatch-current">
           <article className="review-swatch-option">
-            <div className="review-swatch-optionHeading"><span>01</span><div><h3>Original Guide</h3><p>Palette step 60</p></div></div>
-            <OriginalDemo><div className="review-swatch-originalStage"><div className="review-swatch-stepHead">60</div><div className="review-swatch-originalChip"><OriginalPaletteItem color={blue} level={60} colorName="blue" /></div></div></OriginalDemo>
-            <p className="review-swatch-optionNote">Generous chip, subtle outline, numbered step and keyboard copy action.</p>
-          </article>
-          <article className="review-swatch-option">
-            <div className="review-swatch-optionHeading"><span>02</span><div><h3>Previous</h3><p>Plain <code>DemoSwatch</code></p></div></div>
-            <Demo><div className="review-swatch-swatchStage"><PreviousSwatch /></div></Demo>
-            <p className="review-swatch-optionNote">The role has a label, but the chip and label have little visual relationship.</p>
-          </article>
-          <article className="review-swatch-option">
-            <div className="review-swatch-optionHeading"><span>03</span><div><h3>Adopted</h3><p>Shared inventory tile</p></div></div>
+            <div className="review-swatch-optionHeading"><span>01</span><div><h3>Current swatch</h3><p>Shared inventory tile</p></div></div>
             <Demo><div className="review-swatch-swatchStage"><DemoSwatch label="Subject" value="--color-demo-blue" className="bg-demo-blue" /></div></Demo>
             <p className="review-swatch-optionNote">The token and semantic role share a restrained frame; the chip keeps a hairline edge.</p>
           </article>
@@ -62,14 +42,13 @@ export default function Page() {
 
       <section aria-labelledby="swatch-real-use">
         <div className="review-swatch-sectionHeading">
-          <div><h2 id="swatch-real-use">Actual Guide use</h2><p>The original palette is preserved for browsing and copying fixed color steps.</p></div>
+          <div><h2 id="swatch-real-use">Role inventory</h2><p>Each color is identified by text as well as paint.</p></div>
           <Link href="/guide/colors#default-color-palette">Open /guide/colors</Link>
         </div>
-        <div className="review-swatch-actualPair">
-          <div><span>Guide palette</span><OriginalDemo><div className="review-swatch-paletteStage"><div className="review-swatch-stepHead"><span>40</span><span>50</span><span>60</span><span>70</span></div><div className="review-swatch-originalRow">{([40, 50, 60, 70] as const).map(level => <OriginalPaletteItem key={level} color={getColor('blue', level)} level={level} colorName="blue" />)}</div></div></OriginalDemo></div>
-          <div><span>Shared role inventory</span><Demo><div className="review-swatch-candidateRow">{(['Canvas', 'Surface', 'Subject', 'Comparison'] as const).map((label, index) => <DemoSwatch key={label} label={label} className={['bg-demo-canvas', 'bg-demo-surface', 'bg-demo-blue', 'bg-demo-violet'][index]} />)}</div></Demo></div>
+        <div className="review-swatch-actualUse">
+          <div><span>Shared role inventory</span><Demo><div className="review-swatch-currentRoleRow">{(['Canvas', 'Surface', 'Subject', 'Comparison'] as const).map((label, index) => <DemoSwatch key={label} label={label} className={['bg-demo-canvas', 'bg-demo-surface', 'bg-demo-blue', 'bg-demo-violet'][index]} />)}</div></Demo></div>
         </div>
-        <p className="review-swatch-optionNote">These have different jobs: the Guide retains a copyable fixed palette, while the shared tile names roles in Design System and scenario explanations.</p>
+        <p className="review-swatch-optionNote">The shared tile names roles in Design System and scenario explanations. The Guide palette provides the separate copy action.</p>
       </section>
     </main>
   )

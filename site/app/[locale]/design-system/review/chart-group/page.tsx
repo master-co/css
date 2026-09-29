@@ -6,7 +6,7 @@ import './page.css'
 
 export const metadata = {
   title: 'Chart group review',
-  description: 'Compare the established benchmark chart, current grouping and a refined heading treatment.'
+  description: 'Current Benchmark chart group and practical examples.'
 }
 
 const items: BenchmarkBarItem[] = [
@@ -15,30 +15,21 @@ const items: BenchmarkBarItem[] = [
   { id: 'c', label: 'Fixture C', value: 0, color: 'neutral', detail: 'no recorded output' }
 ]
 
-function PreviousChartGroup() {
-  return <div className="review-chart-group-previousGroup">
-    <div className="review-chart-group-previousHeading"><h4>Compressed CSS</h4><span>Brotli · 10 samples</span></div>
-    <BenchmarkBars items={items} unit="kB" />
-  </div>
-}
-
 const options = [
-  { number: '01', title: 'Original Guide', detail: 'Chart beneath the document heading', preview: <div className="review-chart-group-original"><h4>Compressed CSS</h4><BenchmarkBars items={items} unit="kB" /></div>, note: 'The original benchmark page gives the chart its context in the document heading and figure caption. The bars, values, and colors already work well.' },
-  { number: '02', title: 'Previous shared', detail: 'Compact chart group heading', preview: <PreviousChartGroup />, note: 'The previous shared wrapper introduced a small in-chart title and a secondary detail across a fine rule.' },
-  { number: '03', title: 'Adopted', detail: 'Clear metric hierarchy and context', preview: <BenchmarkChartGroup title="Compressed CSS" detail="Brotli · 10 samples" items={items} unit="kB" />, note: 'The adopted shared style strengthens the metric name, keeps unit and sample context in one quiet line, and adds breathing room above the unchanged bars.' }
+  { number: '01', title: 'Current', detail: 'Clear metric hierarchy and context', preview: <BenchmarkChartGroup title="Compressed CSS" detail="Brotli · 10 samples" items={items} unit="kB" />, note: "The current shared style strengthens the metric name, keeps unit and sample context in one quiet line, and adds breathing room above the unchanged bars." }
 ] as const
 
 export default function Page() {
   return <main className="review-chart-group-review">
     <div className="review-chart-group-kicker">Design system · Component review 20</div>
     <h1>Benchmark chart group</h1>
-    <p className="review-chart-group-intro">A chart title should explain what the bars measure without competing with the data. The original Guide chart and its full figure caption remain useful; this review concerns the optional shared heading around a chart.</p>
-    <div className="review-chart-group-reviewNote" role="note">Adopted shared style: <code>BenchmarkChartGroup</code> now uses the refined metric heading. The published Guide keeps its original chart and figure caption.</div>
+    <p className="review-chart-group-intro">The current shared style strengthens the metric name, keeps unit and sample context in one quiet line, and adds breathing room above the unchanged bars.</p>
+
     <label htmlFor="chart-review-theme" className="review-chart-group-themeControl"><span>Preview theme</span><span className="review-chart-group-themeSelect">Light · Dark · System<ThemeSelect id="chart-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="chart-options">
       <h2 id="chart-options">Chart treatments</h2>
-      <p className="review-chart-group-sectionCopy">Each treatment uses the same illustrative data, including a zero value. The bars themselves are the existing Guide component.</p>
+
       <div className="review-chart-group-options">{options.map(({ number, title, detail, preview, note }) => <article className="review-chart-group-option" key={number}>
         <div className="review-chart-group-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
         <div className="review-chart-group-optionPreview">{preview}</div>

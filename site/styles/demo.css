@@ -25,7 +25,27 @@
   .demo-description { margin-top: .2rem; }
   .demo-caption { padding: .75rem 1.25rem; border-top: 1px solid var(--color-demo-line); background: var(--color-demo-canvas); }
   .demo-canvas { min-width: 0; border-radius: inherit; }
-  .demo-canvas[data-background="stripes"] { background: var(--stripe); }
+  .demo-canvas[data-background="stripes"] {
+    background-image: var(--stripe-image);
+    background-position: 0 0;
+    background-size: 7.5px 7.5px;
+  }
+  .demo-mode { min-width: 0; width: 50%; }
+  .demo-mode-preview { float: right; transform: translateX(50%); }
+  :where(.demo-mode.dark) .demo-mode-preview { float: left; transform: translateX(-50%); }
+  @container (width < 28rem) {
+    .demo-mode { width: 100%; }
+    .demo-mode-preview {
+      display: flex;
+      float: none;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 100%;
+      padding-inline: var(--spacing-md);
+      transform: none;
+    }
+    .demo-mode-preview > * { max-width: 100%; }
+  }
   .demo-browser-header { display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-xs) var(--spacing-md); border-bottom: 1px solid var(--color-demo-line); background: var(--color-demo-surface); border-radius: var(--demo-radius) var(--demo-radius) 0 0; }
   .demo-browser-dots { display: flex; gap: var(--spacing-2xs); }
   .demo-browser-dots i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-demo-muted); opacity: .5; }

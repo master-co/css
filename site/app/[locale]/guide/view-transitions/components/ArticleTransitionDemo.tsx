@@ -3,7 +3,7 @@
 import '~/site/styles/btn.css'
 import '~/site/styles/btn-yellow.css'
 import clsx from 'clsx'
-import Demo from '~/site/docs-shell/components/Demo'
+import Demo from '~/site/components/demo/Demo'
 import Image from 'next/image'
 import { IconChevronLeft } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'

@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
-import OriginalDemoLabel from '~/site/docs-shell/components/DemoLabel'
+
 import Demo from '~/site/components/demo/Demo'
 import DemoExample from '~/site/components/demo/DemoExample'
 import { DemoLegend } from '~/site/components/demo'
@@ -8,7 +7,7 @@ import './page.css'
 
 export const metadata = {
   title: 'Demo legend review',
-  description: 'The original Guide label pattern, previous shared legend and approved refined legend.'
+  description: 'Current Demo legend and practical examples.'
 }
 
 const items = [
@@ -23,28 +22,9 @@ function BorderSpecimens() {
   </div>
 }
 
-function PreviousLegend() {
-  return <ul className="review-legend-previousLegend" aria-label="Legend">
-    {items.map(({ tone, label }) => <li key={label}><span className="review-legend-previousMarker" data-tone={tone} aria-hidden="true" />{label}</li>)}
-  </ul>
-}
-
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Labels beside the objects',
-    note: 'The original Guide has no standalone legend; its small labels identify individual specimens directly.',
-    preview: <OriginalDemo><div className="review-legend-originalContent"><div className="review-legend-originalItems">
-      <div><OriginalDemoLabel>Subject border</OriginalDemoLabel><div className={`border-width:2px border-style:solid b-blue bg-surface-raised review-legend-specimen`}>Subject</div></div>
-      <div><OriginalDemoLabel>Comparison border</OriginalDemoLabel><div className={`border-width:2px border-style:solid b-violet bg-surface-raised review-legend-specimen`}>Comparison</div></div>
-    </div></div></OriginalDemo>
-  },
-  {
-    number: '02', title: 'Previous', detail: 'Earlier shared DemoLegend',
-    note: 'A separate compact key pairs every color with a name outside the teaching layout.',
-    preview: <Demo caption={<PreviousLegend />}><BorderSpecimens /></Demo>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Readable annotation key',
+    number: '01', title: 'Current', detail: 'Readable annotation key',
     note: 'Slightly larger monospace labels and precise bordered swatches improve scanning while keeping the key outside the scene.',
     preview: <Demo caption={<DemoLegend items={[...items]} />}><BorderSpecimens /></Demo>
   }
@@ -54,12 +34,11 @@ export default function Page() {
   return <main className="review-legend-review">
     <div className="review-legend-kicker">Design system · Component review 09</div>
     <h1>Demo legend</h1>
-    <p className="review-legend-intro">A legend explains recurring color roles after the specimen. The adopted shared legend keeps the Guide’s plain text character and gives each keyed color a more deliberate mark and readable label.</p>
-    <div className="review-legend-reviewNote" role="note">Approved direction: the shared <code>DemoLegend</code> uses the refined key. The original Guide uses attached labels instead of a separate legend and remains unchanged.</div>
+    <p className="review-legend-intro">Slightly larger monospace labels and precise bordered swatches improve scanning while keeping the key outside the scene.</p>
 
     <section aria-labelledby="legend-options">
       <h2 id="legend-options">Border color comparison</h2>
-      <p className="review-legend-sectionCopy">The subject and comparison objects are the same in each treatment. The key lives outside their layout, so it cannot change the border lesson.</p>
+
       <div className="review-legend-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-legend-option" key={number}>
           <div className="review-legend-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

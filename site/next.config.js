@@ -4,7 +4,6 @@ import withMasterCSS from '@master/css-next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
 import { readPublicEnv } from './utils/public-env.js'
 import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.js'
-import { withSiteDemos } from './utils/demo-mdx.js'
 
 const publicEnv = readPublicEnv()
 const useCloudflareImageLoader = shouldUseCloudflareImageLoader({
@@ -12,11 +11,11 @@ const useCloudflareImageLoader = shouldUseCloudflareImageLoader({
   siteUrl: publicEnv.NEXT_PUBLIC_URL
 })
 
-const nextConfig = withSiteDemos(await withMasterCSS(await withCommonNextConfig({
+const nextConfig = await withMasterCSS(await withCommonNextConfig({
   redirects
 }), {
   mode: 'progressive'
-}))
+})
 
 nextConfig.staticPageGenerationTimeout = 180
 nextConfig.turbopack ??= {}

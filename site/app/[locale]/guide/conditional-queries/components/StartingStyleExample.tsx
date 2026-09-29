@@ -1,6 +1,6 @@
 import '~/site/styles/btn.css'
 import '~/site/styles/btn-yellow.css'
-import Demo from '~/site/docs-shell/components/Demo'
+import Demo from '~/site/components/demo/Demo'
 
 export default () => <>
   <Demo>

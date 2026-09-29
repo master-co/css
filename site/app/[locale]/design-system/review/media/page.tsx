@@ -1,31 +1,18 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
 import Demo from '~/site/components/demo/Demo'
 import { DemoMedia, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
 export const metadata = {
   title: 'Demo media review',
-  description: 'Review-only comparison of the original guide image, current media and refined media candidate.'
+  description: 'The shared Demo media and its text flow example.'
 }
 
-function PreviousVector() {
-  return <svg viewBox="0 0 320 200" role="img" aria-label="Landscape with a sun and mountains" className={`review-media-mediaPrevious review-media-mediaSpecimen`}>
-    <rect width="320" height="200" fill="currentColor" opacity=".12" />
-    <circle cx="240" cy="54" r="24" fill="currentColor" opacity=".55" />
-    <path d="M0 200 100 50 205 200Z" fill="currentColor" opacity=".8" />
-    <path d="m120 200 90-110 110 110Z" fill="currentColor" opacity=".4" />
-  </svg>
-}
-
-function FloatExample({ adopted }: { adopted: boolean }) {
+function FloatExample() {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
       <DemoSurface className="display:flow-root p-md font-size-sm">
-        {adopted
-          ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
-          : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />}
+        <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
         <DemoText className="margin:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
       </DemoSurface>
     </Demo>
@@ -37,24 +24,13 @@ export default function Page() {
     <main className="review-media-review">
       <div className="review-media-kicker">Design system · Component review 03</div>
       <h1>Demo media</h1>
-      <p className="review-media-intro">The Guide already uses real imagery well. The adopted shared media keeps supplied images native and gives the SVG fallback quieter illustration detail for layout and color lessons.</p>
-      <div className="review-media-reviewNote" role="note">Approved direction: the refined SVG and thin visual edge are now shared. The image source, intrinsic dimensions, crop, float and accessibility text remain the caller&apos;s responsibility.</div>
+      <p className="review-media-intro">Shared media keeps supplied images native and provides a quiet SVG illustration for layout and color lessons. The caller supplies dimensions, crop, float and accessibility text.</p>
 
-      <section aria-labelledby="media-comparison">
-        <h2 id="media-comparison">Default visual</h2>
-        <div className="review-media-comparison">
+      <section aria-labelledby="media-current">
+        <h2 id="media-current">Default visual</h2>
+        <div className="review-media-current">
           <article className="review-media-option">
-            <div className="review-media-optionHeading"><span>01</span><div><h3>Original Guide</h3><p>Introduction image</p></div></div>
-            <OriginalDemo><div className="review-media-mediaStage"><Image src="/building.jpg" width={320} height={200} alt="Modern white architecture beneath a blue sky" className="review-media-mediaSpecimen" /></div></OriginalDemo>
-            <p className="review-media-optionNote">A real, well composed photograph remains the right choice when content is visual.</p>
-          </article>
-          <article className="review-media-option">
-            <div className="review-media-optionHeading"><span>02</span><div><h3>Previous</h3><p>Shared SVG fallback</p></div></div>
-            <Demo><div className="review-media-mediaStage"><PreviousVector /></div></Demo>
-            <p className="review-media-optionNote">Simple saturated mountains; no asset is required.</p>
-          </article>
-          <article className="review-media-option">
-            <div className="review-media-optionHeading"><span>03</span><div><h3>Adopted</h3><p>Shared SVG fallback</p></div></div>
+            <div className="review-media-optionHeading"><span>01</span><div><h3>Current media</h3><p>Shared SVG illustration</p></div></div>
             <Demo><div className="review-media-mediaStage"><DemoMedia className="review-media-mediaSpecimen" /></div></Demo>
             <p className="review-media-optionNote">Measured contour lines, quieter fills and a hairline edge within the same box.</p>
           </article>
@@ -79,11 +55,10 @@ export default function Page() {
           <div><h2 id="media-real-use">Actual Reference use</h2><p>Float changes paragraph geometry, so the image box must stay identical.</p></div>
           <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/float">Open https://developer.mozilla.org/en-US/docs/Web/CSS/float</Link>
         </div>
-        <div className="review-media-actualPair">
-          <div><span className="review-media-pairLabel">Previous media</span><FloatExample adopted={false} /></div>
-          <div><span className="review-media-pairLabel">Adopted media</span><FloatExample adopted /></div>
+        <div className="review-media-actualUse">
+          <div><span className="review-media-useLabel">Shared media</span><FloatExample /></div>
         </div>
-        <p className="review-media-optionNote">Both examples use the same real <code>float:left</code> class and the same 112 × 70 displayed image box. The edge is visual only; the text wrap should match.</p>
+        <p className="review-media-optionNote">The image uses a real <code>float:left</code> class and a 112 × 70 displayed box. Its visual edge does not change text flow.</p>
       </section>
     </main>
   )

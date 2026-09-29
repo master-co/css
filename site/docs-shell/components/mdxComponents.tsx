@@ -5,14 +5,10 @@ import Do from './Do'
 import DoNot from './DoNot'
 import Info from './Info'
 import InteractingIndicator from './InteractingIndicator'
-import Demo from './Demo'
-import DemoPanel from './DemoPanel'
 import PMAction from './PMAction'
 import Warn from './Warn'
 import DocProp from './DocProp'
 import DocFn from './DocFn'
-import BrowserHeader from './BrowserHeader'
-import HelloWorld from './HelloWorld'
 import ImageCallToPreview from './ImageCallToPreview'
 import InlineGood from './InlineGood'
 import InlineBad from './InlineBad'
@@ -20,10 +16,7 @@ import InlineWarn from './InlineWarn'
 import Dropped from './Dropped'
 import ResizeZone from './ResizeZone'
 import ArticleTOC from './ArticleTOC'
-import IFrame from './IFrame'
 import DocBadge from './DocBadge'
-import DemoP from './DemoP'
-import DemoLabel from './DemoLabel'
 import StepSection, { Step, StepNum, StepL, StepR, StepEnd } from './StepSection'
 
 const CodeTabs = dynamic(() => import('./CodeTabs'))
@@ -193,10 +186,6 @@ export const mdxComponents: MDXComponents = {
       </figure>
     )
   },
-  Demo: (props: any) => <Demo {...props} />,
-  DemoPanel: (props: any) => <DemoPanel {...props} />,
-  DemoP: (props: any) => <DemoP {...props} />,
-  DemoLabel: (props: any) => <DemoLabel {...props} />,
   InteractingIndicator: (props: any) => <InteractingIndicator {...props} />,
   Warn: (props: any) => <Warn {...props} />,
   DocProp: (props: any) => <DocProp {...props} />,
@@ -211,14 +200,11 @@ export const mdxComponents: MDXComponents = {
   CodeTabs: (props: any) => <CodeTabs {...props} />,
   Code: (props: any) => <Code {...props} />,
   InlineCode: (props: any) => <InlineCode {...props} />,
-  BrowserHeader: (props: any) => <BrowserHeader {...props} />,
-  HelloWorld: (props: any) => <HelloWorld {...props} />,
   ImageCallToPreview: (props: any) => <ImageCallToPreview {...props} />,
   InlineGood: (props: any) => <InlineGood {...props} />,
   InlineBad: (props: any) => <InlineBad {...props} />,
   InlineWarn: (props: any) => <InlineWarn {...props} />,
   ArticleTOC: (props: any) => <ArticleTOC {...props} />,
-  IFrame: (props: any) => <IFrame {...props} />,
   ResizeZone: (props: any) => <ResizeZone {...props} />,
   DocBadge: (props: any) => <DocBadge {...props} />,
   Dropped: (props: any) => <Dropped {...props} />,

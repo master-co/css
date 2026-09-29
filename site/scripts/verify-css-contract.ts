@@ -233,7 +233,7 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
         '/reference': ['--color-blue:', '--leading-md:'],
         '/design-system': ['--color-demo-line:', '--leading-lg:'],
         '/design-system/review/asset': ['--color-text-link:'],
-        '/design-system/review/data-table': ['--spacing-3xs:'],
+        '/design-system/review/data-table': ['--color-line-divider:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
     }
     for (const variable of requiredVariables[route] ?? []) {

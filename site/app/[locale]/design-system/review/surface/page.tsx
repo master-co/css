@@ -1,36 +1,27 @@
 import Link from 'next/link'
-import type { HTMLAttributes } from 'react'
-import clsx from 'clsx'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
-import OriginalDemoPanel from '~/site/docs-shell/components/DemoPanel'
 import Demo from '~/site/components/demo/Demo'
 import { DemoItem, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
 export const metadata = {
   title: 'Demo surface review',
-  description: 'Comparison of the original Guide panel, previous shared surface and approved refined surface.'
-}
-
-function PreviousSurface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} className={clsx('review-surface-previousSurface', className)} />
+  description: 'The current shared Demo surface and elevation option.'
 }
 
 function content() {
   return <><span className="review-surface-eyebrow">COLLECTION / 024</span><div className="review-surface-cardTitle">Field notes</div><p className="review-surface-cardCopy">A stable backdrop for the object and its supporting text.</p></>
 }
 
-function ReferenceExample({ previous }: { previous: boolean }) {
-  const Surface = previous ? PreviousSurface : DemoSurface
+function ReferenceExample() {
   return (
     <Demo title="Column span" caption="The surface contains real columns. Padding and columns belong to the lesson.">
-      <Surface className="p-md font-size-sm">
+      <DemoSurface className="p-md font-size-sm">
         <div className="gap-md columns:2">
           <DemoText className="margin-inline:0 mb-sm margin-top:0">Start with the collection overview and its key details.</DemoText>
           <DemoItem tone="blue" className="my-sm p-sm font-weight-medium">Collection notes</DemoItem>
           <DemoText className="margin:0">Continue through each column in reading order, then move to the next section.</DemoText>
         </div>
-      </Surface>
+      </DemoSurface>
     </Demo>
   )
 }
@@ -40,24 +31,13 @@ export default function Page() {
     <main className="review-surface-review">
       <div className="review-surface-kicker">Design system · Component review 06</div>
       <h1>Demo surface</h1>
-      <p className="review-surface-intro">The original Guide panel has a raised surface and restrained shadow. The approved shared surface keeps that hierarchy available without adding padding, layout, clipping or elevation to a measured lesson by default.</p>
-      <div className="review-surface-reviewNote" role="note">Approved direction: <code>DemoSurface</code> has a fine bordered default. <code>elevation=&quot;raised&quot;</code> deliberately recalls the original panel shadow. Geometry remains owned by the example.</div>
+      <p className="review-surface-intro">The shared surface provides a fine border by default and optional elevation. Padding and geometry remain owned by the example.</p>
 
-      <section aria-labelledby="bg-surface-comparison">
-        <h2 id="bg-surface-comparison">Basic content panel</h2>
-        <div className="review-surface-comparison">
+      <section aria-labelledby="bg-surface-current">
+        <h2 id="bg-surface-current">Basic content panel</h2>
+        <div className="review-surface-current">
           <article className="review-surface-option">
-            <div className="review-surface-optionHeading"><span>01</span><div><h3>Original Guide</h3><p><code>app-panel</code></p></div></div>
-            <OriginalDemo><div className="review-surface-surfaceStage"><OriginalDemoPanel $p={0} className="p-md">{content()}</OriginalDemoPanel></div></OriginalDemo>
-            <p className="review-surface-optionNote">Raised fill and soft shadow; padding here is supplied by the specimen.</p>
-          </article>
-          <article className="review-surface-option">
-            <div className="review-surface-optionHeading"><span>02</span><div><h3>Previous</h3><p>Earlier shared <code>DemoSurface</code></p></div></div>
-            <Demo><div className="review-surface-surfaceStage"><PreviousSurface className="p-md">{content()}</PreviousSurface></div></Demo>
-            <p className="review-surface-optionNote">Raised fill with a subtle edge, but no layered option.</p>
-          </article>
-          <article className="review-surface-option">
-            <div className="review-surface-optionHeading"><span>03</span><div><h3>Adopted</h3><p>Shared <code>DemoSurface</code></p></div></div>
+            <div className="review-surface-optionHeading"><span>01</span><div><h3>Current surface</h3><p>Shared <code>DemoSurface</code></p></div></div>
             <Demo><div className="review-surface-surfaceStage"><DemoSurface elevation="raised" className="p-md">{content()}</DemoSurface></div></Demo>
             <p className="review-surface-optionNote">A precise edge, compact radius and opt-in shadow for a genuinely raised layer.</p>
           </article>
@@ -69,8 +49,8 @@ export default function Page() {
         <p className="review-surface-sectionCopy">The two treatments share the same dimensions. Elevation is used only where stacking is part of the explanation.</p>
         <Demo>
           <div className="review-surface-treatmentGrid">
-            <div><span className="review-surface-pairLabel">Default · no elevation</span><DemoSurface className="p-md"><div className="review-surface-cardTitle">Layout surface</div><p className="review-surface-cardCopy">Keeps an example legible without implying a floating layer.</p></DemoSurface></div>
-            <div><span className="review-surface-pairLabel">Raised · explicit elevation</span><DemoSurface elevation="raised" className="p-md"><div className="review-surface-cardTitle">Floating layer</div><p className="review-surface-cardCopy">Shows a stacked panel when depth is actually relevant.</p></DemoSurface></div>
+            <div><span className="review-surface-useLabel">Default · no elevation</span><DemoSurface className="p-md"><div className="review-surface-cardTitle">Layout surface</div><p className="review-surface-cardCopy">Keeps an example legible without implying a floating layer.</p></DemoSurface></div>
+            <div><span className="review-surface-useLabel">Raised · explicit elevation</span><DemoSurface elevation="raised" className="p-md"><div className="review-surface-cardTitle">Floating layer</div><p className="review-surface-cardCopy">Shows a stacked panel when depth is actually relevant.</p></DemoSurface></div>
           </div>
         </Demo>
         <p className="review-surface-optionNote">Use explicit classes for padding, flex/grid, dimensions, position and overflow. The raised treatment adds visual shadow only.</p>
@@ -81,9 +61,8 @@ export default function Page() {
           <div><h2 id="bg-surface-real-use">Actual Reference use</h2><p>The surface must not become an extra column or change the content box.</p></div>
           <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-span">Open https://developer.mozilla.org/en-US/docs/Web/CSS/column-span</Link>
         </div>
-        <div className="review-surface-actualPair">
-          <div><span className="review-surface-pairLabel">Previous surface</span><ReferenceExample previous /></div>
-          <div><span className="review-surface-pairLabel">Adopted surface</span><ReferenceExample previous={false} /></div>
+        <div className="review-surface-actualUse">
+          <div><span className="review-surface-useLabel">Shared surface</span><ReferenceExample /></div>
         </div>
       </section>
     </main>

@@ -6,22 +6,12 @@ import './page.css'
 
 export const metadata = {
   title: 'Demo palette review',
-  description: 'Original Guide palette, current preset palette and a refined candidate.'
+  description: 'Current Demo palette and practical examples.'
 }
 
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Fixed color-step grid',
-    note: 'The Guide shows every fixed step with its original click-to-copy swatch and keeps this established UI.',
-    preview: <div className="review-palette-original"><ColorPalette filterColors={['blue']} /></div>
-  },
-  {
-    number: '02', title: 'Current', detail: 'Shared preset-variable palette',
-    note: 'The newer gallery reads preset variables and copies their CSS variable references through native buttons.',
-    preview: <div className="review-palette-previous"><DemoPalette families={['blue']} /></div>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Precise token gallery',
+    number: '01', title: 'Current', detail: 'Precise token gallery',
     note: 'The same values gain a 44px chip target, clearer family heading and a quieter in-flow copy result that does not cover other rows.',
     preview: <DemoPalette families={['blue']} />
   }
@@ -31,13 +21,13 @@ export default function Page() {
   return <main className="review-palette-review">
     <div className="review-palette-kicker">Design system · Component review 28</div>
     <h1>Demo palette</h1>
-    <p className="review-palette-intro">A color inventory needs a predictable reading order and precise copy targets. The candidate refines the Design System token gallery while keeping the Guide’s original fixed-color palette intact.</p>
-    <div className="review-palette-reviewNote" role="note">The refined shared palette is adopted. The Guide palette keeps its original presentation.</div>
+    <p className="review-palette-intro">The same values gain a 44px chip target, clearer family heading and a quieter in-flow copy result that does not cover other rows.</p>
+
     <label htmlFor="palette-review-theme" className="review-palette-themeControl"><span>Preview theme</span><span className="review-palette-themeSelect">Light · Dark · System<ThemeSelect id="palette-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="palette-options">
       <h2 id="palette-options">Blue token scale</h2>
-      <p className="review-palette-sectionCopy">All treatments show the same thirteen preset steps. The original copies the literal color; the shared palette copies <code>var(--color-blue-*)</code>, which is what its Design System usage documents.</p>
+
       <div className="review-palette-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-palette-option" key={number}>
           <div className="review-palette-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

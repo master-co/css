@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from '~/site/docs-shell/components/Demo'
-import OriginalDemoLabel from '~/site/docs-shell/components/DemoLabel'
+
 import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import Demo from '~/site/components/demo/Demo'
 import DemoExample from '~/site/components/demo/DemoExample'
@@ -9,7 +8,7 @@ import './page.css'
 
 export const metadata = {
   title: 'Demo badge review',
-  description: 'The original Guide label pattern, current shared badge and a refined candidate.'
+  description: 'Current Demo badge and practical examples.'
 }
 
 const badges = [
@@ -19,37 +18,18 @@ const badges = [
   { label: 'Informational note', tone: 'neutral', variant: 'ghost' }
 ] as const
 
-function BadgeSpecimen({ previous = false }: { previous?: boolean }) {
+function BadgeSpecimen() {
   return <div className="review-badge-specimens">
     {badges.map(({ label, tone, variant }) => <div key={label} className="review-badge-specimen">
-      <DemoBadge tone={tone} variant={variant} className={previous ? 'review-badge-previousBadge' : undefined}>{label}</DemoBadge>
+      <DemoBadge tone={tone} variant={variant}>{label}</DemoBadge>
       <DemoItem className="review-badge-object">{label} surface</DemoItem>
-    </div>)}
-  </div>
-}
-
-function OriginalSpecimen() {
-  return <div className="review-badge-specimens">
-    {badges.map(({ label }) => <div key={label} className="review-badge-specimen">
-      <OriginalDemoLabel>{label}</OriginalDemoLabel>
-      <div className={`app-box review-badge-originalObject`}>{label} surface</div>
     </div>)}
   </div>
 }
 
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Plain labels above specimens',
-    note: 'The Guide uses small text labels, without a standalone state badge. Its demo and object styling remain unchanged.',
-    preview: <OriginalDemo><OriginalSpecimen /></OriginalDemo>
-  },
-  {
-    number: '02', title: 'Previous', detail: 'Earlier shared badge',
-    note: 'The current badge inherits item paint and has a compact, font-relative inset.',
-    preview: <Demo><BadgeSpecimen previous /></Demo>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Precise state annotation',
+    number: '01', title: 'Current', detail: 'Precise state annotation',
     note: 'A smaller radius, balanced padding and tabular monospace type keep the chip crisp across tones and sizes.',
     preview: <Demo><BadgeSpecimen /></Demo>
   }
@@ -59,13 +39,13 @@ export default function Page() {
   return <main className="review-badge-review">
     <div className="review-badge-kicker">Design system · Component review 24</div>
     <h1>Demo badge</h1>
-    <p className="review-badge-intro">A badge identifies a state or category beside a specimen. It is static text, so an action still needs a real button or link. The adopted treatment keeps the Guide’s restrained annotation style and sharpens the shared badge.</p>
-    <div className="review-badge-reviewNote" role="note">Adopted direction: the shared badge has a smaller radius and balanced monospace inset. The original Guide remains unchanged.</div>
+    <p className="review-badge-intro">A smaller radius, balanced padding and tabular monospace type keep the chip crisp across tones and sizes.</p>
+
     <label htmlFor="badge-review-theme" className="review-badge-themeControl"><span>Preview theme</span><span className="review-badge-themeSelect">Light · Dark · System<ThemeSelect id="badge-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="badge-options">
       <h2 id="badge-options">State labels beside an object</h2>
-      <p className="review-badge-sectionCopy">All three treatments use the same subject and comparison content. Labels sit outside the objects being demonstrated.</p>
+
       <div className="review-badge-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-badge-option" key={number}>
           <div className="review-badge-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

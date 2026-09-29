@@ -29,19 +29,9 @@ function sectionsFor(prefix: string): DocumentationIndexSection[] {
 const related = { href: '/reference', title: 'Full Reference', description: 'Browse utilities, tokens and tools.', Icon: IconBook }
 const options = [
   {
-    number: '01', title: 'Original', detail: 'Established card grid and categories',
-    note: 'The original index already had strong top-level navigation, compact entry links and a native A–Z switch. It did not expose direct shortcuts to multi-group headings.',
-    className: 'review-index-original', prefix: 'original'
-  },
-  {
-    number: '02', title: 'Current', detail: 'Group anchors added',
-    note: 'The current component preserves the original visual system and adds stable group shortcuts for long Reference sections.',
-    className: 'review-index-current', prefix: 'current'
-  },
-  {
-    number: '03', title: 'Candidate', detail: 'Refined type and link rhythm',
-    note: 'The adopted styling keeps the same grid and native navigation, with clearer card hierarchy, calmer category links and larger mobile targets.',
-    className: 'review-index-candidate', prefix: 'candidate'
+    number: '01', title: 'Current', detail: 'Refined type and link rhythm',
+    note: "The current styling keeps the same grid and native navigation, with clearer card hierarchy, calmer category links and larger mobile targets.",
+    className: 'review-index-currentPreview', prefix: 'current'
   }
 ] as const
 
@@ -49,12 +39,11 @@ export default function Page() {
   return <main className="review-index-review">
     <div className="review-index-kicker">Design system · Component review 16</div>
     <h1>Documentation index</h1>
-    <p className="review-index-intro">The Guide and Reference catalog already give readers useful routes into a large set of pages. This review retains their card grid and A–Z switch, then considers a small refinement to type hierarchy and category spacing.</p>
-    <div className="review-index-reviewNote" role="note">Adopted styling: the published Guide and Reference indexes now use the candidate treatment. Each catalog below has independent anchors, so the By category and A–Z controls can be tested separately with keyboard or pointer.</div>
+    <p className="review-index-intro">The current styling keeps the same grid and native navigation, with clearer card hierarchy, calmer category links and larger mobile targets.</p>
 
     <section aria-labelledby="index-options">
       <h2 id="index-options">Catalog treatments</h2>
-      <p className="review-index-sectionCopy">All three variants use the same six destinations. The original omits the later group shortcut row; the current and candidate include it.</p>
+
       <div className="review-index-options">
         {options.map(({ number, title, detail, note, className, prefix }) => <article className="review-index-option" key={number}>
           <div className="review-index-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

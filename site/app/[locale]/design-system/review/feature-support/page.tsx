@@ -6,7 +6,7 @@ import './page.css'
 
 export const metadata = {
   title: 'Feature support review',
-  description: 'Original Guide support guidance, current browser status and a refined candidate.'
+  description: 'Current Feature support and practical examples.'
 }
 
 function SupportExamples() {
@@ -18,17 +18,7 @@ function SupportExamples() {
 
 const options = [
   {
-    number: '01', title: 'Original Guide', detail: 'Support explained in prose',
-    note: 'The Compatibility Guide explains that feature support comes from the generated CSS and advises a fallback for target browsers. That guidance remains the source of truth.',
-    preview: <div className="review-feature-support-original"><p>Browser support depends on the final property, value, selector, at-rule, or platform feature. Check the feature and keep a fallback when the target browser may not support it.</p></div>
-  },
-  {
-    number: '02', title: 'Current', detail: 'Browser syntax status',
-    note: 'The live status tests CSS.supports in this browser. It reports syntax recognition, not that an entire interaction or platform behavior works.',
-    preview: <div className="review-feature-support-previous"><SupportExamples /></div>
-  },
-  {
-    number: '03', title: 'Adopted', detail: 'Compact status with explicit signal',
+    number: '01', title: 'Current', detail: 'Compact status with explicit signal',
     note: 'The syntax stays readable, while a small status marker and steadier spacing distinguish recognized and unsupported queries without relying on color alone.',
     preview: <SupportExamples />
   }
@@ -38,13 +28,13 @@ export default function Page() {
   return <main className="review-feature-support-review">
     <div className="review-feature-support-kicker">Design system · Component review 31</div>
     <h1>Feature support</h1>
-    <p className="review-feature-support-intro">The Guide explains compatibility in context. A small Design System label can additionally report whether this browser parses a specific CSS feature query, while the adjacent example retains its real fallback.</p>
-    <div className="review-feature-support-reviewNote" role="note">The refined shared support label is adopted. The Compatibility Guide keeps its original guidance.</div>
+    <p className="review-feature-support-intro">The syntax stays readable, while a small status marker and steadier spacing distinguish recognized and unsupported queries without relying on color alone.</p>
+
     <label htmlFor="support-review-theme" className="review-feature-support-themeControl"><span>Preview theme</span><span className="review-feature-support-themeSelect">Light · Dark · System<ThemeSelect id="support-review-theme" aria-label="Preview theme" /></span></label>
 
     <section aria-labelledby="support-options">
       <h2 id="support-options">Support treatments</h2>
-      <p className="review-feature-support-sectionCopy">The second query is intentionally unsupported. Compare the text and marker in light and dark modes; the status is based on the current browser, not a server guess.</p>
+
       <div className="review-feature-support-options">
         {options.map(({ number, title, detail, note, preview }) => <article className="review-feature-support-option" key={number}>
           <div className="review-feature-support-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

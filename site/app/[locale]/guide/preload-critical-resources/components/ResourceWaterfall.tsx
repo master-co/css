@@ -1,4 +1,4 @@
-import Demo from '~/site/docs-shell/components/Demo'
+import Demo from '~/site/components/demo/Demo'
 
 type WaterfallBar = {
   label: string
@@ -83,7 +83,7 @@ const scenarios: WaterfallScenario[] = [
 export default function ResourceWaterfall() {
   return (
     <figure>
-      <Demo $px={0} $py={0}>
+      <Demo padding="none">
         <div
           className="overflow-x:auto width:100%"
           role="img"

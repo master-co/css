@@ -102,14 +102,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ProjectStyleExample,
     ...foundationPaint,
     ...foundationTypeMotion,
-    // Keep established Guide MDX demonstrations on their original primitives.
-    Demo: mdxComponents.Demo,
-    DemoPanel: mdxComponents.DemoPanel,
-    DemoP: mdxComponents.DemoP,
-    DemoLabel: mdxComponents.DemoLabel,
-    BrowserHeader: mdxComponents.BrowserHeader,
-    IFrame: mdxComponents.IFrame,
-    HelloWorld: mdxComponents.HelloWorld,
+    BrowserHeader: demoComponents.DemoBrowserHeader,
+    IFrame: demoComponents.DemoIFrame,
+    HelloWorld: demoComponents.DemoHelloWorld,
     DemoExample,
     ...components,
   }
