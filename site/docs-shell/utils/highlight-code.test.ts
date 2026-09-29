@@ -75,10 +75,35 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
   assert.ok(hostWrapper)
   assert.equal(getTextContent(hostWrapper), 'fg-text-red:hover@md display:block')
   assert.equal(hostWrapper.properties?.['data-master-css-host-role'], 'class-attribute-value')
+  assert.ok(hasClassName(hostWrapper, 'mcss-host-active-on-hover'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-selector-pseudoClass-name'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+})
+
+test('highlightCode marks every class value in the introduction example for hover', async () => {
+  const source = [
+    '<article class="overflow:hidden r-lg bg-surface-raised shadow-lg">',
+    '  <img class="aspect-ratio:16/9 object-fit:cover" ...>',
+    '  <div class="p-lg">',
+    '    <p class="text-2xs font-semibold text-transform:uppercase fg-text-blue">Launch panel</p>',
+    '    <h2 class="text-md font-medium fg-text-strong">Build the first screen in markup</h2>',
+    '    <a class="bg-blue-60 fg-white bg-blue-70:hover">Start building</a>',
+    '  </div>',
+    '</article>'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'html' })
+
+  assert.equal(highlightedCodeText(hast), source)
+  assert.deepEqual(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent), [
+    'overflow:hidden r-lg bg-surface-raised shadow-lg',
+    'aspect-ratio:16/9 object-fit:cover',
+    'p-lg',
+    'text-2xs font-semibold text-transform:uppercase fg-text-blue',
+    'text-md font-medium fg-text-strong',
+    'bg-blue-60 fg-white bg-blue-70:hover'
+  ])
 })
 
 test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
@@ -104,10 +129,11 @@ test('highlightCode keeps every named class in the colors guide whole and copyab
 })
 
 test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
-  const hast = await highlightCode("<div className=\"fg-text-red:hover@md display:block\" />", { lang: 'tsx' })
+  const hast = await highlightCode("const helper = clsx('fg-white'); const view = <div className=\"fg-text-red:hover@md display:block\" />", { lang: 'tsx' })
 
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
+  assert.equal(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent).join(''), 'fg-text-red:hover@md display:block')
 })
 
 test('highlightCode treats mcss snippets as plaintext with class-list semantic overlay', async () => {

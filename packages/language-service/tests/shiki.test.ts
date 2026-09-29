@@ -495,9 +495,49 @@ test('wraps host class attribute values around Master CSS semantic spans', async
     expect(getHastText(wrapper)).toBe('fg-text-amber')
     expect(hasHastClass(wrapper, 'mcss-host')).toBe(true)
     expect(wrapper.properties?.['data-master-css-host-role']).toBe('class-attribute-value')
+    expect(hasHastClass(wrapper, 'mcss-host-active-on-hover')).toBe(true)
     expect(wrapper.properties?.style).toBe(originalClassValueElement?.properties?.style)
     expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-utility-semantic'))).toBe(true)
     expect(collectHastElements(hast).filter((element) => getHastText(element) === 'bar' && hasHastClass(element, 'mcss-host'))).toHaveLength(0)
+  } finally {
+    await highlighter.dispose?.()
+  }
+})
+
+test('marks markup attribute values without marking helper strings in the same document', async () => {
+  const highlighter = await createHighlighter({
+    themes: [shikiSmokeTheme],
+    langs: ['html', 'angular-html', 'tsx', 'javascript', 'mdx', 'vue', 'svelte', 'astro']
+  })
+  const cases = [
+    ['html', '<div class="fg-red"></div><span class="bg-blue"></span>', ['fg-red', 'bg-blue']],
+    ['html', '<article class="fg-red">\n  <img class="aspect-ratio:16/9 object-fit:cover" ...>\n  <div class="p-lg">\n</article>', ['fg-red', 'aspect-ratio:16/9 object-fit:cover', 'p-lg']],
+    ['angular-html', '<div class="fg-red"></div>', ['fg-red']],
+    ['tsx', 'const helper = clsx("fg-red"); const view = <div className="bg-blue" />', ['bg-blue']],
+    ['tsx', 'const view = <div className="fg-red" />;\nconst helper = clsx("bg-blue");\nconst next = <span className="sr-only" />', ['fg-red', 'sr-only']],
+    ['javascript', 'const helper = clsx("fg-red")', []],
+    ['mdx', '<div className="fg-red" />', ['fg-red']],
+    ['vue', '<template><div class="fg-red"></div></template>', ['fg-red']],
+    ['svelte', '<div class="fg-red"></div>', ['fg-red']],
+    ['astro', '<div class="fg-red"></div>', ['fg-red']]
+  ] as const
+
+  try {
+    for (const [lang, code, expected] of cases) {
+      const hast = highlighter.codeToHast(code, {
+        lang,
+        theme: shikiSmokeTheme,
+        transformers: [transformerMasterCSS({ manifest }) as any]
+      })
+      const wrappers = collectHastElementsByClass(hast, 'mcss-host-active-on-hover')
+      expect(wrappers.map(getHastText), lang).toEqual(expected)
+      expect(collectHastElementsByClass(hast, 'line').map(getHastText)).toEqual(code.split('\n'))
+      if (lang === 'tsx') {
+        const allWrappers = collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')
+        expect(allWrappers).toHaveLength(expected.length + 1)
+        expect(allWrappers.filter((wrapper) => !hasHastClass(wrapper, 'mcss-host-active-on-hover'))).toHaveLength(1)
+      }
+    }
   } finally {
     await highlighter.dispose?.()
   }
@@ -548,6 +588,7 @@ test('wraps each visible line of multiline class values without changing code te
         expect(wrappers.map(getHastText)).toEqual(['fg-red', "  sr-only"])
         expect(wrappers.every((wrapper) => wrapper.properties?.style)).toBe(true)
         expect(wrappers.every((wrapper) => wrapper.properties?.['data-master-css-host-role'] === 'class-attribute-value')).toBe(true)
+        expect(wrappers.every((wrapper) => hasHastClass(wrapper, 'mcss-host-active-on-hover'))).toBe(true)
         expect(collectHastElementsByClass(wrappers[0], 'mcss-semantic-role-utility-semantic')).toHaveLength(1)
         expect(collectHastElementsByClass(wrappers[1], 'mcss-semantic-role-utility-semantic')).toHaveLength(1)
       }

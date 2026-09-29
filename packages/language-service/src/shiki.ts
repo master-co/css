@@ -197,6 +197,7 @@ import { applyClassAttributeValueWrappers } from './shiki/hast'
 import {
   classAttributeValueWrappersKey,
   cssDirectiveLanguageIds,
+  getMasterCSSShikiLanguageId,
   getLanguageServiceLanguageId,
   languageServiceLanguageIds
 } from './shiki/languages'
@@ -641,11 +642,70 @@ function withoutUndefinedProperties(properties: Record<string, unknown>) {
   return Object.fromEntries(Object.entries(properties).filter(([, value]) => value !== undefined))
 }
 
+const markupShikiLanguageIds = new Set([
+  'html', 'angular-html', 'jsx', 'tsx', 'vue', 'svelte', 'astro', 'markdown', 'mdx'
+])
+
+function collectMarkupAttributeRanges(
+  context: ShikiTransformerContext,
+  classPositions: readonly MasterCSSLanguageClassPosition[],
+  lang?: string
+) {
+  const ranges = new Set<string>()
+  const seen = new Set<string>()
+  if (!classPositions.length || !markupShikiLanguageIds.has(getMasterCSSShikiLanguageId(lang) ?? '') || !context.codeToTokens) return ranges
+
+  try {
+    const { decorations: _decorations, transformers: _transformers, ...tokenOptions } = context.options
+    const lines = context.codeToTokens(context.source, {
+      ...tokenOptions,
+      includeExplanation: 'scopeName'
+    }).tokens
+    const scopedTokens = lines.flatMap((line) => line.map((token) => ({
+      start: token.offset,
+      end: token.offset + token.content.length,
+      scopes: token.explanation?.flatMap(({ scopes }) => scopes?.map(({ scopeName }) => scopeName) ?? []) ?? []
+    })))
+
+    for (const { contextRange } of classPositions) {
+      const key = `${contextRange.start}:${contextRange.end}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      const inMarkupAttribute = scopedTokens.some(({ start, end, scopes }) =>
+        start < contextRange.end && end > contextRange.start
+        && scopes.some((scope) => scope.startsWith('meta.attribute.') || scope.startsWith('meta.tag.attributes.'))
+      )
+      if (inMarkupAttribute) {
+        ranges.add(key)
+        continue
+      }
+
+      // MDX does not retain the tag scope on attribute value tokens. Its
+      // attribute-name token still identifies a directly quoted class value.
+      let attributeName: (typeof scopedTokens)[number] | undefined
+      for (let index = scopedTokens.length - 1; index >= 0; index--) {
+        const token = scopedTokens[index]
+        if (token.end <= contextRange.start && token.scopes.some((scope) => scope.startsWith('entity.other.attribute-name.'))) {
+          attributeName = token
+          break
+        }
+      }
+      if (attributeName && /^\s*=\s*["'`]$/.test(context.source.slice(attributeName.end, contextRange.start))) {
+        ranges.add(key)
+      }
+    }
+  } catch {
+    // A missing host grammar must leave semantic highlighting unchanged.
+  }
+  return ranges
+}
+
 function createClassAttributeValueWrapperDecorations(
   source: string,
   classPositions: readonly MasterCSSLanguageClassPosition[],
   tokens: ShikiToken[][],
   options: MasterCSSShikiOptions,
+  markupAttributeRanges: ReadonlySet<string>,
   existingDecorations: ShikiDecoration[] = []
 ): ShikiDecoration[] {
   if (!shouldCreateClassAttributeValueWrappers(options)) return []
@@ -669,7 +729,10 @@ function createClassAttributeValueWrapperDecorations(
     .map((range) => {
       const style = findTokenStyleForRange(tokens, range)
       const defaultProperties = {
-        class: 'mcss-host mcss-host-role-class-attribute-value',
+        class: mergeClassProperty(
+          'mcss-host mcss-host-role-class-attribute-value',
+          markupAttributeRanges.has(`${range.start}:${range.end}`) ? 'mcss-host-active-on-hover' : undefined
+        ),
         'data-master-css-host-role': 'class-attribute-value',
         style
       }
@@ -808,6 +871,7 @@ export function transformerMasterCSS(
         analysis?.classPositions ?? [],
         tokens,
         resolvedOptions,
+        collectMarkupAttributeRanges(this, analysis?.classPositions ?? [], lang),
         this.options.decorations ?? []
       )
       this.options[classAttributeValueWrappersKey] = classAttributeValueWrapperDecorations

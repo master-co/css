@@ -11,7 +11,7 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 879,
+    "records": 880,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
@@ -20,7 +20,7 @@
       "mcp-resource": 3,
       "mcp-tool": 20,
       "package": 35,
-      "subpath": 93,
+      "subpath": 94,
       "wire-contract": 23
     }
   },
@@ -20806,6 +20806,28 @@
       "targets": [
         "./dist/shiki.d.ts",
         "./dist/shiki.js"
+      ]
+    },
+    {
+      "kind": "subpath",
+      "owner": "@master/css-language-service",
+      "responsibility": "editor feature composition and document adaptation",
+      "consumers": [
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-vscode",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "service",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "subpath:@master/css-language-service:./shiki.css",
+      "package": "@master/css-language-service",
+      "subpath": "./shiki.css",
+      "conditions": [],
+      "targets": [
+        "./src/shiki.css"
       ]
     },
     {

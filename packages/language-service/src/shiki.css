@@ -1,0 +1,7 @@
+@media (hover: hover) {
+  @layer components {
+    .mcss-host-active-on-hover:not(:hover) :where(*) {
+      color: inherit !important;
+    }
+  }
+}

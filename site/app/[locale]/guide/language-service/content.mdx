@@ -33,6 +33,15 @@ The extension highlights Master CSS directive syntax in CSS-family documents and
 
 The default highlighting mode is active-context highlighting. It keeps long markup calm until the cursor enters a class string, then highlights the current class context.
 
+Shiki code examples use the same quiet default for markup class attributes, with pointer hover in place of the editor cursor. Import the public stylesheet alongside `transformerMasterCSS` to show the native string color until a class value is hovered:
+
+```ts
+import '@master/css-language-service/shiki.css'
+import { transformerMasterCSS } from '@master/css-language-service/shiki'
+```
+
+Each visible line of a multiline class value responds separately. Class strings in standalone JavaScript helpers and CSS directive class lists keep their existing highlighting.
+
 ### Color tools
 Color syntax can use VS Code color decorators and the color picker. This includes supported Master CSS color utilities and manifest colors that resolve through the active project.
 

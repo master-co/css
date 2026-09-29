@@ -60,11 +60,12 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-language-service': {
     introduction: 'Map Master CSS tooling results to editor documents, language features and syntax highlighting. Use the Shiki entrypoint for server-rendered code presentation.',
-    usage: 'Supply a tooling session when creating `MasterCSSLanguageService`. Shiki helpers accept a reusable language session or manifest through their options. See [Language Service](/guide/language-service) for configuration and examples.',
+    usage: 'Supply a tooling session when creating `MasterCSSLanguageService`. Shiki helpers accept a reusable language session or manifest through their options. Import `@master/css-language-service/shiki.css` for hover-activated markup highlighting. See [Language Service](/guide/language-service) for configuration and examples.',
     entries: {
       '.': 'Editor document services, settings and trigger characters.',
       './common': 'Shared completion trigger characters.',
       './shiki': 'Shiki transformer, semantic decorations and language registration.',
+      './shiki.css': 'Hover-activated markup class colors for Shiki output.',
       './syntaxes/master-css.tmLanguage.json': 'TextMate grammar asset for directive highlighting.'
     }
   },

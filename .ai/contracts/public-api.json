@@ -621,6 +621,7 @@
         ".",
         "./common",
         "./shiki",
+        "./shiki.css",
         "./syntaxes/master-css.tmLanguage.json"
       ],
       "bins": [],

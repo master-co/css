@@ -39,7 +39,9 @@
     "shiki": "^4.4.3",
     "vscode-languageserver": "^10.1.1"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/*.css"
+  ],
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -57,10 +59,12 @@
       "import": "./dist/shiki.js",
       "default": "./dist/shiki.js"
     },
+    "./shiki.css": "./src/shiki.css",
     "./syntaxes/master-css.tmLanguage.json": "./syntaxes/master-css.tmLanguage.json"
   },
   "files": [
     "dist",
+    "src/*.css",
     "syntaxes"
   ],
   "publishConfig": {
