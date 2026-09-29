@@ -84,77 +84,17 @@ impl LanguageSession {
         token_start: u32,
         tokens: &mut Vec<SemanticTokenInputIr>,
     ) -> Result<(), LanguageError> {
-        let starts_with_group = class_name.starts_with('{');
-        let group_close = starts_with_group
-            .then(|| find_language_group_close(class_name))
-            .flatten();
-        let body_start = usize::from(starts_with_group);
-        let body_end = group_close.unwrap_or(class_name.len());
-        let body = &class_name[body_start..body_end];
-        let semicolons = top_level_semicolons(body);
-        if starts_with_group || !semicolons.is_empty() {
-            if starts_with_group {
-                push_semantic_token(
-                    tokens,
-                    token_start,
-                    token_start + 1,
-                    "operator",
-                    &["blockBrace"],
-                );
-            }
-            let mut part_start = 0;
-            for part_end in semicolons
-                .iter()
-                .copied()
-                .chain(std::iter::once(body.len()))
-            {
-                let part = &body[part_start..part_end];
-                let trimmed = part.trim();
-                if !trimmed.is_empty() {
-                    let leading_bytes = part.len() - part.trim_start().len();
-                    self.push_class_semantic_tokens(
-                        trimmed,
-                        token_start
-                            + utf16_len(&class_name[..body_start])
-                            + utf16_len(&body[..part_start + leading_bytes]),
-                        tokens,
-                    )?;
-                }
-                if part_end < body.len() {
-                    let semicolon_start = token_start
-                        + utf16_len(&class_name[..body_start])
-                        + utf16_len(&body[..part_end]);
-                    push_semantic_token(
-                        tokens,
-                        semicolon_start,
-                        semicolon_start + 1,
-                        "operator",
-                        &["declarationTerminator"],
-                    );
-                }
-                part_start = part_end.saturating_add(1);
-            }
-            if let Some(close) = group_close {
-                let close_start = token_start + utf16_len(&class_name[..close]);
-                push_semantic_token(
-                    tokens,
-                    close_start,
-                    close_start + 1,
-                    "operator",
-                    &["blockBrace"],
-                );
-                let suffix_start = close + 1;
-                push_state_semantic_tokens(
-                    tokens,
-                    &class_name[suffix_start..],
-                    token_start + utf16_len(&class_name[..suffix_start]),
-                );
-            }
-            return Ok(());
-        }
-
         let semantics = self.engine.inspect_class_semantics(class_name)?;
         if semantics.kind == ClassSemanticKind::Unknown {
+            if self
+                .engine
+                .inspect(class_name)?
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError)
+            {
+                return Ok(());
+            }
             for (index, character) in class_name.char_indices() {
                 if !matches!(character, ':' | '_' | '>' | '+' | '~' | '@') || index == 0 {
                     continue;

@@ -339,16 +339,7 @@ describe.concurrent('color space', () => {
   })
 })
 
-// ? not supported yet
-// test.concurrent('group', async () => {
-//     const target = '#000'
-//     const content = `
-//         export default () => <div className='{fg:${target}}'></div>
-//     `
-//     const doc = createDoc('tsx', content)
-//     const languageService = new CSSLanguageService()
-//     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
-//         color: { red: 0, green: 0, blue: 0, alpha: 1 },
-//         range: getRange(target, doc)
-//     }])
-// })
+test.each(['{color:#999}', 'color:#999:of(.active)', 'color:#999:is(:of(.active))'])('does not color a retired class: %s', async (target) => {
+  const doc = createDoc('html', `<div class="${target}"></div>`)
+  expect(await createLanguageService().renderSyntaxColors(doc)).toEqual([])
+})

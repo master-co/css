@@ -602,16 +602,9 @@ fn should_exclude(candidate: &str) -> bool {
     if !balanced_brackets(candidate) {
         return true;
     }
-    if let Some(body) = candidate
-        .strip_prefix('{')
-        .and_then(|value| value.strip_suffix('}'))
-    {
-        return body.split(';').any(should_exclude);
-    }
     if candidate.starts_with("${") && candidate.ends_with('}') {
         return false;
     }
-    let has_group_body = candidate.contains('{') && candidate.contains('}');
     if candidate.starts_with('$')
         || candidate.ends_with(';')
         || candidate.contains("</")
@@ -628,11 +621,10 @@ fn should_exclude(candidate: &str) -> bool {
     {
         return true;
     }
-    candidate.chars().next().is_none_or(|character| {
-        !(character.is_alphanumeric()
-            || matches!(character, '-' | '_' | '{')
-            || character == '.' && has_group_body)
-    })
+    candidate
+        .chars()
+        .next()
+        .is_none_or(|character| !(character.is_alphanumeric() || matches!(character, '-' | '_')))
 }
 
 fn contains_tag_like_pair(source: &str) -> bool {
@@ -722,10 +714,10 @@ mod tests {
     }
 
     #[test]
-    fn keeps_groups_and_interpolation_candidates() {
+    fn excludes_groups_and_keeps_interpolation_candidates() {
         assert_eq!(
             extract_class_candidates(r#"<div class="{fg:red;bg:blue}" data-id="${id}"></div>"#),
-            vec!["{fg:red;bg:blue}", "${id}"]
+            vec!["${id}"]
         );
     }
 
@@ -749,8 +741,6 @@ mod tests {
                 "font:1rem@>=789",
                 "font:1rem@>789",
                 "block>li:hover",
-                "{fg:red;block}>li",
-                ".something{bg:white}",
             ]
         );
     }

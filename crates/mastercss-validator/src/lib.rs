@@ -76,7 +76,7 @@ impl ValidatorSession {
 mod tests {
     use super::*;
 
-    const MANIFEST: &str = r#"{"version":4,"languageVersion":7,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
+    const MANIFEST: &str = r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
 
     #[test]
     fn generates_batches_without_retaining_class_rules() {
@@ -95,7 +95,7 @@ mod tests {
 
     #[test]
     fn preserves_native_declarations_regardless_of_host_support() {
-        let mut session = ValidatorSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
+        let mut session = ValidatorSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block", "display:banana"])
             .unwrap();
@@ -112,22 +112,21 @@ mod tests {
     }
 
     #[test]
-    fn validates_native_declarations_nested_in_groups() {
+    fn rejects_groups_without_exposing_nested_declarations() {
         let mut session = ValidatorSession::create(MANIFEST).unwrap();
-        let candidates = session
-            .native_declaration_candidates(["{text-wrap:pretty;block}"])
-            .unwrap();
-        assert_eq!(candidates.len(), 1);
-        assert_eq!(candidates[0].class_name, "text-wrap:pretty");
-        let result = session
-            .generate_classes(["{text-wrap:pretty;block}"], Some(&[true]))
-            .unwrap();
-        assert!(result.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
-        assert_eq!(
-            result.classes[0].rules[0].text,
-            ".\\{text-wrap\\:pretty\\;block\\}{text-wrap:pretty}"
+        assert!(
+            session
+                .native_declaration_candidates(["{text-wrap:pretty;block}"])
+                .unwrap()
+                .is_empty()
         );
-        assert_eq!(result.classes[0].rules.len(), 2);
-        assert!(result.classes[0].rules[1].text.contains("display:block"));
+        let result = session
+            .generate_classes(["{text-wrap:pretty;block}"], None)
+            .unwrap();
+        assert_eq!(
+            result.classes[0].match_status,
+            mastercss_schema::MatchStatus::SyntaxError
+        );
+        assert!(result.classes[0].rules.is_empty());
     }
 }

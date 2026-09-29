@@ -111,13 +111,13 @@ test('highlightCode renders Master CSS semantic spans in TSX class attributes', 
 })
 
 test('highlightCode treats mcss snippets as plaintext with class-list semantic overlay', async () => {
-  const hast = await highlightCode('fg-text-red:hover@md {bg-blue;fg-white}', {
+  const hast = await highlightCode('fg-text-red:hover@md bg-blue fg-white', {
     lang: 'mcss',
     inline: true
   })
 
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-block-brace'))
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-block-brace'), false)
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })
 

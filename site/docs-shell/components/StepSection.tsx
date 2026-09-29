@@ -2,12 +2,15 @@ import styled from '@master/styled.react'
 
 const StepSection = styled.div`
   mt-2xl
-  {counter-reset:step}
+  counter-reset:step
   margin-block:1.875rem_hr
   margin-bottom:0_.code:last
+  margin-left:-44.5px_:is(h2,h3,h4)
   margin-left:0_.codeTabs_.code
+  margin-top:0_:is(h2,h3,h4)
   text-sm_:is(li,p)
-  {font-size:16px;margin-left:-44.5px;margin-top:0;font-weight:460}_:is(h2,h3,h4)
+  font-size:16px_:is(h2,h3,h4)
+  font-weight:460_:is(h2,h3,h4)
   user-select:text_a
   margin-left:-2.781rem_:is(.code,.codeTabs,.demo)@media((width<64rem))
 `

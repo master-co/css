@@ -20,8 +20,6 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   AT_TRIGGER_CHARACTER,
-  DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
-  GROUP_TRIGGER_CHARACTER,
   INVOKED_TRIGGER_CHARACTERS,
   QUERY_TRIGGER_CHARACTERS,
   SELECTOR_TRIGGER_CHARACTERS,
@@ -83,9 +81,7 @@ const SERVER_CAPABILITIES: ServerCapabilities = {
         ...VALUE_TRIGGER_CHARACTERS,
         ...SELECTOR_TRIGGER_CHARACTERS,
         ...QUERY_TRIGGER_CHARACTERS,
-        DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
         AT_TRIGGER_CHARACTER,
-        GROUP_TRIGGER_CHARACTER,
       ])
     ]
   },

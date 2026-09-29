@@ -192,7 +192,7 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(4)
- expect(manifest.languageVersion).toBe(7)
+ expect(manifest.languageVersion).toBe(8)
  expect(manifest.mixins).toHaveLength(10)
  expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(10)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)

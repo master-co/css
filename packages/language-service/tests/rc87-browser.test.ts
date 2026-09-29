@@ -76,21 +76,16 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
 })
 
 test.concurrent('encodes browser role-derived semantic token modifiers', () => {
-  const source = "<div class=\"{fg-red;sr-only}>li:hover@sm\"></div>"
+  const source = "<div class=\"fg-red>li:hover@sm sr-only>li:hover@sm\"></div>"
   const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
   const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
-  const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
   const selectorCombinatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('selectorCombinator')
 
   expect(tokens).toEqual(expect.arrayContaining([
-    { text: '{', type: 'operator' as const, modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
     { text: 'fg-red', type: 'enumMember' as const, modifiers: [], modifierBits: 0 },
-    { text: ';', type: 'operator' as const, modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
-    { text: '}', type: 'operator' as const, modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
     { text: '>', type: 'operator' as const, modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
     { text: ':', type: 'operator' as const, modifiers: ['pseudoClass', 'selector', 'pseudoClassDelimiter'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClass')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClassDelimiter')) }
   ]))
-  expect(declarationTerminatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
   expect(selectorCombinatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
 })
 

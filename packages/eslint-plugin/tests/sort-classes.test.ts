@@ -83,8 +83,8 @@ createTester({
       }],
     },
     {
-      code: "<div class=\"display:flex text-transform:uppercase margin:0 margin:0>li text-decoration:none>li>a padding-inline:0.25rem>li align-items:baseline fg-gray-30>li>a column-gap:1.75rem font-size:.75rem font-medium padding-bottom:0.375rem>li padding-top:1.25rem padding-top:0.625rem>li {border-bottom:3px|solid|oklch(0%|0|none)}>li:has(>.router-link-active) {fg-black}>li:has(>.router-link-active)>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Group</div>",
-      output: "<div class=\"display:flex align-items:baseline margin:0 padding-top:1.25rem font-medium font-size:.75rem text-transform:uppercase column-gap:1.75rem margin:0>li padding-inline:0.25rem>li padding-bottom:0.375rem>li padding-top:0.625rem>li {border-bottom:3px|solid|oklch(0%|0|none)}>li:has(>.router-link-active) text-decoration:none>li>a {fg-black}>li:has(>.router-link-active)>a fg-gray-30>li>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Group</div>",
+      code: "<div class=\"display:flex text-transform:uppercase margin:0 margin:0>li text-decoration:none>li>a padding-inline:0.25rem>li align-items:baseline fg-gray-30>li>a column-gap:1.75rem font-size:.75rem font-medium padding-bottom:0.375rem>li padding-top:1.25rem padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) fg-black>li:has(>.router-link-active)>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
+      output: "<div class=\"display:flex align-items:baseline margin:0 padding-top:1.25rem font-medium font-size:.75rem text-transform:uppercase column-gap:1.75rem margin:0>li padding-inline:0.25rem>li padding-bottom:0.375rem>li padding-top:0.625rem>li border-bottom:3px|solid|oklch(0%|0|none)>li:has(>.router-link-active) text-decoration:none>li>a fg-black>li:has(>.router-link-active)>a fg-gray-30>li>a fg-gray-10>li>a:hover box-shadow:none>li>a:focus\">Selectors</div>",
       errors: [{ messageId: 'invalidClassOrder' }],
     },
     {

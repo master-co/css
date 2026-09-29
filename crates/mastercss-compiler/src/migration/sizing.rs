@@ -137,7 +137,7 @@ impl Migration {
         };
         let separator = if token { '-' } else { ':' };
         let candidate =
-            format!("{{{stem}width{separator}{value};{stem}height{separator}{value}}}{suffix}");
+            format!("{stem}width{separator}{value}{suffix} {stem}height{separator}{value}{suffix}");
         let old = self.rules(&self.target, &source);
         // A size rule becomes two independently sorted declarations. Compare
         // each property with its complete selector/condition/layer context;
@@ -181,9 +181,21 @@ impl Migration {
         current_helper(&mut saved);
         let engine = EngineSession::create(&saved.to_string()).map_err(|e| e.to_string())?;
         let resources = |class: &str| -> Result<Value, String> {
-            let (mut probe, class, _) = super::saved_rules::prepare(&engine, class)?;
+            let classes = mastercss_lexer::collect_class_list_token_ranges(class);
+            let (mut probe, classes) = if classes.len() > 1 {
+                (
+                    EngineSession::create(&saved.to_string()).map_err(|e| e.to_string())?,
+                    classes
+                        .into_iter()
+                        .map(|token| token.token)
+                        .collect::<Vec<_>>(),
+                )
+            } else {
+                let (probe, class, _) = super::saved_rules::prepare(&engine, class)?;
+                (probe, vec![class])
+            };
             probe
-                .ensure_class_rules([class.as_str()])
+                .ensure_class_rules(&classes)
                 .map_err(|e| e.to_string())?;
             let mut resources = probe.snapshot().map_err(|e| e.to_string())?.resources;
             // Splitting a declaration changes ownership counts, never resource

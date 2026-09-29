@@ -627,8 +627,6 @@
       "entrypoints": {
         ".": [
           "AT_TRIGGER_CHARACTER",
-          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
-          "GROUP_TRIGGER_CHARACTER",
           "INVOKED_TRIGGER_CHARACTERS",
           "MasterCSSLanguageService",
           "MasterCSSLanguageServiceOptions",
@@ -644,8 +642,6 @@
         ],
         "./common": [
           "AT_TRIGGER_CHARACTER",
-          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
-          "GROUP_TRIGGER_CHARACTER",
           "INVOKED_TRIGGER_CHARACTERS",
           "QUERY_TRIGGER_CHARACTERS",
           "SELECTOR_TRIGGER_CHARACTERS",
@@ -673,7 +669,7 @@
           "transformerMasterCSS"
         ]
       },
-      "surface": "b2f4194481ddca97"
+      "surface": "450c6032b7b84226"
     },
     "@master/css-mcp": {
       "directory": "mcp",
@@ -1137,9 +1133,7 @@
           "CLASS_ATTRIBUTES",
           "CLASS_DECLARATIONS",
           "CLASS_FUNCTIONS",
-          "DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
           "DELIMITER_SIGN",
-          "GROUP_TRIGGER_CHARACTER",
           "HighlightTokenRole",
           "INVOKED_TRIGGER_CHARACTERS",
           "MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP",
@@ -1193,7 +1187,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "ca16efe011e530d6"
+      "surface": "41c4fdff48410eb4"
     },
     "@master/css-vite": {
       "directory": "vite",

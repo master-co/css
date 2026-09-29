@@ -110,7 +110,7 @@ fn reports_ambiguity_dynamic_values_and_cascade_risks() {
 
 #[test]
 fn migration_is_idempotent_for_safe_classes() {
-    let input = request(&["font:mono:hover@sm!", "p:4x", "{p:md;fg:red}:hover"]);
+    let input = request(&["font:mono:hover@sm!", "p:4x", "p:md:hover", "fg:red:hover"]);
     let first = migrate_rc(&input).unwrap();
     let second = migrate_rc(&RcMigrationRequest {
         class_lists: first

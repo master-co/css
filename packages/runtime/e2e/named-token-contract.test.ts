@@ -10,8 +10,8 @@ const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid;
 const classLists = [
   "p-md padding:8px",
   "padding:8px p-md",
-  "{p-md;padding-top:12px} padding:8px",
-  "padding:8px {padding-top:12px;p-md}",
+  "p-md padding-top:12px padding:8px",
+  "padding:8px padding-top:12px p-md",
   "p-md padding:8px@sm",
   'font-mono font-family:mono',
   "bg-red background-color:transparent solid-edges border:2px outline:2px",
@@ -30,7 +30,7 @@ async function computed(page: Page) {
 }
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
-  test(`${mode} preserves named and native value priorities, groups and shorthand resets`, async ({ page }) => {
+  test(`${mode} preserves named and native value priorities and shorthand resets`, async ({ page }) => {
     await page.setViewportSize({ width: 1100, height: 720 })
     await page.emulateMedia({ colorScheme: 'light' })
     const classes = classLists.flatMap(value => value.split(' '))
@@ -71,7 +71,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     if (mode === 'runtime' || mode === 'progressive') {
       await page.locator('#target-0').evaluate(element => { element.className = "p-md padding:10px" })
       await expect(page.locator('#target-0')).toHaveCSS('padding', '10px')
-      await page.locator('#target-2').evaluate(element => { element.className = "{p-md;padding-top:14px} padding:8px" })
+      await page.locator('#target-2').evaluate(element => { element.className = "p-md padding-top:14px padding:8px" })
       await expect(page.locator('#target-2')).toHaveCSS('padding-top', '14px')
       expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('padding-top:14px')
     }

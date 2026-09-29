@@ -128,7 +128,8 @@
           "name": "keeps grouped declarations generated utilities and invalid group recovery",
           "coverage": [
             "corpus:engine-grouped-declarations",
-            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name",
+            "test:crates/mastercss-engine/tests/removed_class_syntax.rs#removed_classes_have_no_execution_or_tooling_results"
           ]
         },
         {
@@ -219,7 +220,8 @@
         {
           "name": "prefers raw managed dynamic utilities before native and semantic fallbacks",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name",
+            "test:crates/mastercss-engine/tests/removed_class_syntax.rs#removed_classes_have_no_execution_or_tooling_results"
           ]
         },
         {
@@ -520,7 +522,8 @@
         {
           "name": "tries raw managed utilities before key alias fallback",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name_inside_groups"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#native_property_precedes_overlapping_enum_name",
+            "test:crates/mastercss-engine/tests/removed_class_syntax.rs#removed_classes_have_no_execution_or_tooling_results"
           ]
         },
         {

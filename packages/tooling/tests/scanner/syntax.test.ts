@@ -6,7 +6,7 @@ import { join } from 'node:path'
 test('syntax', async () => {
   const scanner = await new MasterCSSScanner({}, __dirname).init()
   const testClasses = [
-    "{fg-blue-40/.5;font-size:2rem;padding:1rem;width:100%;text-align:center}>li:hover@md",
+    "fg-blue-40/.5>li:hover@md font-size:2rem>li:hover@md padding:1rem>li:hover@md width:100%>li:hover@md text-align:center>li:hover@md",
     "width:calc(+100%-1.25rem)",
     "padding:0.625rem|1.25rem|1.875rem|2.5rem",
     "margin:1.25rem|1.875rem",
@@ -29,7 +29,7 @@ test('syntax', async () => {
     'font-size:1.5rem:hover@sm',
     "text-align:center:hover@sm",
     'fg-sky-60/.5:hover@sm',
-    "{padding:0.625rem|1.25rem|1.875rem|2.5rem;text-align:center;fg-sky-60/.5}:hover@sm",
+    "padding:0.625rem|1.25rem|1.875rem|2.5rem:hover@sm text-align:center:hover@sm fg-sky-60/.5:hover@sm",
     'width:2.125rem:active:not([disabled])+svg>rect',
     'cursor:no-drop[disabled]+svg',
     'transform:translateX(20px)',
@@ -46,7 +46,7 @@ test('syntax', async () => {
     'bg-red:even',
     'bg-red:first',
     'bg-red:last',
-    "{width:0.313rem;height:0.313rem;border-radius:1e9em;bg-slate-90}::scrollbar",
+    "width:0.313rem::scrollbar height:0.313rem::scrollbar border-radius:1e9em::scrollbar bg-slate-90::scrollbar",
     'bg-gray-20::scrollbar@dark',
     "background:slate-86::scrollbar-thumb",
     "background:slate-76::scrollbar-thumb:hover",
@@ -62,12 +62,13 @@ test('syntax', async () => {
     'outline:3px|solid|var(--color-red):hover',
     "text-align:center@sm",
     'opacity:.5',
-    '.sidebar:hover_{opacity:.75}',
-    ".navitem:hover_{background:black/.75}"
+    '.sidebar:hover_opacity:.75',
+    ".navitem:hover_background:black/.75"
   ]
+  const independentClasses = testClasses.flatMap(value => value.split(' '))
   await scanner.scan('syntax.html', readFileSync(join(__dirname, 'syntax.html'), 'utf-8'))
   for (const eachGeneratedClass of scanner?.css.utilitiesLayer.rules.map(({ name }) => name) || []) {
-    expect(testClasses).toContain(eachGeneratedClass)
+    expect(independentClasses).toContain(eachGeneratedClass)
   }
 })
 

@@ -31,8 +31,14 @@ Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct value
 ### Variable properties \{#variable-properties\}
 <Variables />
 
-### Group \{#group\}
-<GroupSyntax />
+<a id="group"></a>
+
+### Combining declarations \{#combining-declarations\}
+Write each declaration as a separate class, repeating any shared selector or query suffix. For reusable combinations or ordered declarations, define an [`@mixin`](/reference/directives/definitions#utilities).
+
+```html
+<ul class="display:block>li:hover@md font-size:14px>li:hover@md text-align:center>li:hover@md">…</ul>
+```
 
 ### Important \{#important\}
 <Important />

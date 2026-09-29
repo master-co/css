@@ -2,7 +2,7 @@ import WindowControls from './WindowControls'
 
 const BrowserHeader = ({ url }: any) => {
   return (
-    <div className="display:flex width:100% padding:var(--spacing-xs)|var(--spacing-sm) border-top-left-radius:5px border-top-right-radius:5px backdrop-filter:blur(1px) contain:content {border-top-left-radius:0px;border-top-right-radius:0px;margin-top:0;border-top-width:0px}+.demo">
+    <div className="display:flex width:100% padding:var(--spacing-xs)|var(--spacing-sm) border-top-left-radius:5px border-top-right-radius:5px backdrop-filter:blur(1px) contain:content margin-top:0+.demo border-top-left-radius:0px+.demo border-top-right-radius:0px+.demo border-top-width:0px+.demo">
       <div className="width:25%">
         <WindowControls />
       </div>

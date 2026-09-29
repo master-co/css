@@ -48,7 +48,11 @@
       position: relative;
     }
 
-    :is(h2, h3):hover>svg {
+    .doc-heading-icon {
+      visibility: hidden;
+    }
+
+    :is(h2, h3):is(:hover, :target)>.doc-heading-icon {
       visibility: visible;
     }
 

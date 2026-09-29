@@ -373,7 +373,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
 })
 
 test.concurrent('creates Shiki decorations for raw Master CSS class lists', () => {
-  const code = 'fg-brand:hover@sm {bg-blue;fg-white}'
+  const code = 'fg-brand:hover@sm bg-blue fg-white'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'mcss',
     classList: true,
@@ -389,9 +389,8 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
     { text: 'fg-brand', type: 'enumMember' as const, modifiers: [] },
     { text: 'hover', type: 'modifier' as const, modifiers: ['pseudoClass'] },
     { text: '@sm', type: 'keyword' as const, modifiers: ['query'] },
-    { text: '{', type: 'operator' as const, modifiers: [] },
-    { text: ';', type: 'operator' as const, modifiers: [] },
-    { text: '}', type: 'operator' as const, modifiers: [] }
+    { text: 'bg-blue', type: 'enumMember' as const, modifiers: [] },
+    { text: 'fg-white', type: 'enumMember' as const, modifiers: [] }
   ]))
 })
 

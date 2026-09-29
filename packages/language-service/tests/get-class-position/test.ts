@@ -84,8 +84,8 @@ test.concurrent('quote in class', () => {
   expectClassPosition(target, contents)
 })
 
-test.concurrent('group syntax', () => {
-  const target = '{abs}'
+test.concurrent('preserves the complete removed group range for diagnostics', () => {
+  const target = '{display:block}'
   const contents = ['<div class="class-a ', target, '"></div>']
   expectClassPosition(target, contents)
 })
@@ -105,4 +105,3 @@ test.concurrent('nested strings and literals', () => {
   const contents = [`export default () => <div className={'block `, target, `'}>hello world</div>`]
   expectClassPosition(target, contents, 'tsx')
 })
-

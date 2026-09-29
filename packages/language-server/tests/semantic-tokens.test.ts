@@ -152,7 +152,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns full semantic tokens for opened documents', async ({ expect }) => {
-    const textDocument = context.createDocument('<div class="{fg-red;block}>li:hover@sm"></div>')
+    const textDocument = context.createDocument('<div class="fg-red>li:hover@sm sr-only>li:hover@sm"></div>')
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.server.onSemanticTokens({
       textDocument: {
@@ -167,7 +167,7 @@ withFixture('basic', async (context) => {
     expect(semanticTokens.data.some((_, index) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
     )).toBe(true)
-    expect(hasTokenModifier(semanticTokens.data, 'declarationTerminator')).toBe(true)
+    expect(hasTokenModifier(semanticTokens.data, 'declarationTerminator')).toBe(false)
     expect(hasTokenModifier(semanticTokens.data, 'selectorCombinator')).toBe(true)
     await context.server.onDidClose({ document: textDocument })
   })

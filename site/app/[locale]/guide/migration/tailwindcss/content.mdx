@@ -220,7 +220,7 @@ Use `@custom-media` for reusable media queries and a mixin with `@contents` for 
 ```
 { }
 
-For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, `:has()`, and `:of()`, but it does not implement Tailwind's group and peer variant naming.
+For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, and `:has()`, but it does not implement Tailwind's group and peer variant naming.
 
 ```html
 <article class="bg-blue-5:hover_h2">
@@ -456,4 +456,4 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
 | Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:100% max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
-| Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, `:of()`, and combinators. |
+| Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, and combinators. |

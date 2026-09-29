@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn native_animation_values_never_register_or_synthesize_keyframes() {
-    let manifest = json!({"version":4,"languageVersion":7}).to_string();
+    let manifest = json!({"version":4,"languageVersion":8}).to_string();
     for css in [
         ".x{animation:fade 1s}",
         ".x{animation-name:\"fade\"}",

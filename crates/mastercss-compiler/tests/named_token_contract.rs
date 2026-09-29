@@ -36,10 +36,9 @@ fn engine() -> EngineSession {
 }
 
 fn declarations(engine: &EngineSession, class: &str) -> String {
-    engine
-        .composition_rules(class)
-        .unwrap()
-        .into_iter()
+    class
+        .split_whitespace()
+        .flat_map(|class| engine.composition_rules(class).unwrap())
         .flat_map(|rule| {
             rule.declarations.into_iter().map(|declaration| {
                 format!(
@@ -133,7 +132,10 @@ fn reserved_names_longest_prefix_and_ambiguity_are_deterministic() {
     );
     let group = engine.inspect("{p-md;font-brand}:hover").unwrap();
     assert!(group.match_status != mastercss_schema::MatchStatus::Matched);
-    assert!(group.diagnostics[0].message.contains("Ambiguous"));
+    assert_eq!(
+        group.diagnostics[0].code,
+        mastercss_schema::ErrorCode::ClassSyntaxError
+    );
     assert_eq!(
         declarations(&engine, "font-size-brand"),
         "font-size:var(--font-size-brand)"
@@ -164,10 +166,7 @@ fn signs_opacity_and_variants_preserve_token_identity() {
         "color:color-mix(in oklab,var(--color-red) 50%,transparent)"
     );
     assert!(
-        engine
-            .inspect("{p-md;fg-red}:hover@sm!")
-            .unwrap()
-            .match_status
+        engine.inspect("p-md:hover@sm!").unwrap().match_status
             == mastercss_schema::MatchStatus::Matched
     );
     let inspection = engine.inspect("p-md:hover!").unwrap();
@@ -216,26 +215,30 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
 }
 
 #[test]
-fn groups_preserve_each_items_value_source_scope_and_importance() {
+fn independent_classes_preserve_value_source_scope_and_importance() {
     for class in [
-        "{p-md;padding:8px}:hover@sm!",
-        "{padding:8px;p-md}:hover@sm!",
+        "p-md:hover@sm! padding:8px:hover@sm!",
+        "padding:8px:hover@sm! p-md:hover@sm!",
     ] {
         let mut engine = engine();
-        engine.ensure_class_rules([class]).unwrap();
+        engine.ensure_class_rules(class.split_whitespace()).unwrap();
         let css = engine.css_text();
         assert!(
             css.find("padding:var(--spacing-md)!important").unwrap()
                 < css.find("padding:8px!important").unwrap()
         );
-        assert_eq!(engine.composition_rules(class).unwrap().len(), 2);
+        assert_eq!(
+            class
+                .split_whitespace()
+                .map(|class| engine.composition_rules(class).unwrap().len())
+                .sum::<usize>(),
+            2
+        );
         assert!(css.contains(":hover"));
         assert!(css.contains("@media"));
     }
     let mut engine = engine();
-    engine
-        .ensure_class_rules(["{p-md}", "padding:8px"])
-        .unwrap();
+    engine.ensure_class_rules(["p-md", "padding:8px"]).unwrap();
     assert!(
         engine.css_text().find("padding:var(--spacing-md)").unwrap()
             < engine.css_text().find("padding:8px").unwrap()
@@ -257,7 +260,7 @@ fn native_property_names_do_not_become_token_prefixes() {
         let candidates = engine.native_declaration_candidates([class]).unwrap();
         assert_eq!(candidates[0].property, property);
         assert_eq!(candidates[0].value, value);
-        engine.ensure_class_rules([class]).unwrap();
+        engine.ensure_class_rules(class.split_whitespace()).unwrap();
         assert_eq!(declarations(&engine, class), format!("{property}:{value}"));
     }
 }
@@ -290,7 +293,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":7,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":4,"languageVersion":8,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -326,7 +329,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":7,"utilities":[utility]}).to_string();
+        let source = json!({"version":4,"languageVersion":8,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()

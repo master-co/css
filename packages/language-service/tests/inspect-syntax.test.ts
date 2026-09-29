@@ -58,3 +58,9 @@ test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover sy
   }
 })
 
+
+test.each(['{color:red;display:block}', 'color:red:of(.active)', 'color:red:is(:of(.active))'])('does not offer CSS hover for a retired class: %s', (target) => {
+  const hover = inspect(target)
+  expect(hover?.contents).toMatchObject({ kind: 'markdown', value: expect.stringContaining('CLASS_SYNTAX_ERROR') })
+  expect((hover?.contents as { value: string }).value).not.toContain('```css')
+})

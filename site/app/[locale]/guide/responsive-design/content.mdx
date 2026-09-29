@@ -55,7 +55,7 @@ The `container` class is a utility class that applies the `container-type: inlin
   <Demo>
     <div className="overflow:hidden container-type:inline-size width:100% r-lg border:1px|solid|var(--color-line-divider) bg-surface-raised">
       <div className="display:flex flex-direction:column@container((width<=18rem))">
-        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover {width:100%;aspect-ratio:16/9}@container((width<=18rem))" width={300} height={200} alt="container left" />
+        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="container left" />
         <div className='padding:var(--spacing-lg)|var(--spacing-xl)'>
           <div className='text-md font-medium fg-text-neutral'>Lorem ipsum</div>
           <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>

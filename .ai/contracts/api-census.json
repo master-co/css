@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 885,
+    "records": 879,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 701,
+      "export": 695,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -6898,44 +6898,6 @@
       "lifecycle": "service",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-language-service:./common#DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
-      "package": "@master/css-language-service",
-      "subpath": "./common",
-      "name": "DECLARATION_SEPARATOR_TRIGGER_CHARACTER"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-language-service",
-      "responsibility": "editor feature composition and document adaptation",
-      "consumers": [
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-vscode",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "service",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-language-service:./common#GROUP_TRIGGER_CHARACTER",
-      "package": "@master/css-language-service",
-      "subpath": "./common",
-      "name": "GROUP_TRIGGER_CHARACTER"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-language-service",
-      "responsibility": "editor feature composition and document adaptation",
-      "consumers": [
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-vscode",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "service",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-language-service:./common#INVOKED_TRIGGER_CHARACTERS",
       "package": "@master/css-language-service",
       "subpath": "./common",
@@ -7392,25 +7354,6 @@
       "lifecycle": "service",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-language-service:.#DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
-      "package": "@master/css-language-service",
-      "subpath": ".",
-      "name": "DECLARATION_SEPARATOR_TRIGGER_CHARACTER"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-language-service",
-      "responsibility": "editor feature composition and document adaptation",
-      "consumers": [
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-vscode",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "service",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-language-service:.#defaultLanguageServiceSettings",
       "package": "@master/css-language-service",
       "subpath": ".",
@@ -7434,25 +7377,6 @@
       "package": "@master/css-language-service",
       "subpath": ".",
       "name": "editSyntaxColors"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-language-service",
-      "responsibility": "editor feature composition and document adaptation",
-      "consumers": [
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-vscode",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "service",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-language-service:.#GROUP_TRIGGER_CHARACTER",
-      "package": "@master/css-language-service",
-      "subpath": ".",
-      "name": "GROUP_TRIGGER_CHARACTER"
     },
     {
       "kind": "export",
@@ -13494,33 +13418,6 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-tooling:./language#DECLARATION_SEPARATOR_TRIGGER_CHARACTER",
-      "package": "@master/css-tooling",
-      "subpath": "./language",
-      "name": "DECLARATION_SEPARATOR_TRIGGER_CHARACTER"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-tooling:./language#DELIMITER_SIGN",
       "package": "@master/css-tooling",
       "subpath": "./language",
@@ -13579,33 +13476,6 @@
       "package": "@master/css-tooling",
       "subpath": "./language",
       "name": "getMasterCSSSemanticTokenScopeKeys"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-tooling",
-      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
-      "consumers": [
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "tooling-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-tooling:./language#GROUP_TRIGGER_CHARACTER",
-      "package": "@master/css-tooling",
-      "subpath": "./language",
-      "name": "GROUP_TRIGGER_CHARACTER"
     },
     {
       "kind": "export",
@@ -23130,7 +23000,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_VERSION",
       "name": "MASTER_CSS_LANGUAGE_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 7
+      "value": 8
     },
     {
       "kind": "wire-contract",

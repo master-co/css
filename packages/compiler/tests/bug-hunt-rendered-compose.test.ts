@@ -22,7 +22,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 }
 
 test('rendered stylesheet includes lowered native compose declarations', async () => {

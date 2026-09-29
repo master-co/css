@@ -17,9 +17,8 @@ test.concurrent('extracts class candidates from mixed source strings', () => {
   ])
 })
 
-test.concurrent('keeps grouped class candidates before downstream validation', () => {
+test.concurrent('rejects grouped raw candidates without extracting their members', () => {
   expect(extractClassCandidates('<div class="{fg-red;bg-blue}" data-id="${id}"></div>')).toEqual([
-    '{fg-red;bg-blue}',
     '${id}'
   ])
 })

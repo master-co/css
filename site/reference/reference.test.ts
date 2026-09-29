@@ -251,7 +251,7 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
   }
 })
 
-test('all 120 retired Guide anchors target an existing Reference section', () => {
+test('all 121 retired Guide anchors target an existing Reference section', () => {
   let count = 0
   for (const page of Object.values(legacySyntaxPages)) for (const target of Object.values(page.anchors)) {
     const [url, anchor] = target.split('#')
@@ -259,7 +259,7 @@ test('all 120 retired Guide anchors target an existing Reference section', () =>
     assert.ok(doc?.headings.some(heading => heading.id === anchor), target)
     count++
   }
-  assert.equal(count, 120)
+  assert.equal(count, 121)
 })
 
 test('Syntax Tutorial exports its complete configured button, CSS, headings and searchable output', async () => {

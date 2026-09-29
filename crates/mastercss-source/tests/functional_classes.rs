@@ -25,12 +25,17 @@ fn functional_classes_survive_html_entities_and_nested_arguments() {
 }
 
 #[test]
-fn contents_wrappers_keep_nested_calls_groups_and_order() {
+fn contents_wrappers_keep_nested_calls_and_order() {
     let classes = candidates(
         "component.tsx",
-        r#"const node = <div className={'{color:red;display:block}@apply(--wrap(calc(2px+1rem)))@apply(--hover)@layer(components)!'} />;"#,
+        r#"const node = <div className={'pair@apply(--wrap(calc(2px+1rem)))@apply(--hover)@layer(components)!'} />;"#,
     );
-    assert!(classes.contains(&"{color:red;display:block}@apply(--wrap(calc(2px+1rem)))@apply(--hover)@layer(components)!".into()), "{classes:?}");
+    assert!(
+        classes.contains(
+            &"pair@apply(--wrap(calc(2px+1rem)))@apply(--hover)@layer(components)!".into()
+        ),
+        "{classes:?}"
+    );
     let html = candidates(
         "index.html",
         r#"<div class='color:red@apply(--wrap(&quot;wide&quot;))@dark'></div>"#,

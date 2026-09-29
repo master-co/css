@@ -36,9 +36,9 @@ fn preserves_dimensions_conditions_importance_and_token_identity() {
     ]);
     let result = migrate_rc(&request).unwrap();
     for (index, expected) in [
-        "{width:20px;height:20px}:hover@sm!",
-        "{min-width:2rem;min-height:2rem}",
-        "{max-width-sm;max-height-sm}",
+        "width:20px:hover@sm! height:20px:hover@sm!",
+        "min-width:2rem min-height:2rem",
+        "max-width-sm max-height-sm",
     ]
     .iter()
     .enumerate()
@@ -54,7 +54,17 @@ fn preserves_dimensions_conditions_importance_and_token_identity() {
     rerun.class_lists = result
         .class_lists
         .into_iter()
-        .map(|list| list.into_iter().map(|item| item.after.unwrap()).collect())
+        .map(|list| {
+            list.into_iter()
+                .flat_map(|item| {
+                    item.after
+                        .unwrap()
+                        .split_whitespace()
+                        .map(str::to_owned)
+                        .collect::<Vec<_>>()
+                })
+                .collect()
+        })
         .collect();
     assert!(
         migrate_rc(&rerun)
@@ -127,7 +137,7 @@ fn every_profile_finishes_with_the_shared_sizing_stage() {
         let result = migrate_rc(&input).unwrap();
         assert_eq!(
             result.class_lists[0][0].after.as_deref(),
-            Some("{width:20px;height:20px}"),
+            Some("width:20px height:20px"),
             "{profile:?}: {:?}",
             result.class_lists[0][0].notes
         );
@@ -154,6 +164,6 @@ fn sizing_helpers_do_not_replace_explicit_short_alias_definitions() {
     assert_eq!(result.class_lists[0][0].after.as_deref(), Some("min(20px)"));
     assert_eq!(
         result.class_lists[1][0].after.as_deref(),
-        Some("{min-width:20px;min-height:20px}")
+        Some("min-width:20px min-height:20px")
     );
 }

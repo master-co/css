@@ -188,36 +188,6 @@ fn closing(source: &str, start: usize, open: char, close: char) -> Option<usize>
     None
 }
 
-pub(super) fn group_parts(source: &str) -> Option<(Vec<&str>, &str)> {
-    let end = closing(source, 0, '{', '}')?;
-    let mut parts = Vec::new();
-    let mut index = 1;
-    let mut start = 1;
-    while index < end {
-        let character = source[index..].chars().next()?;
-        if matches!(character, '\'' | '"') {
-            index = quoted_end(source, index)?;
-            continue;
-        }
-        if matches!(character, '(' | '[' | '{') {
-            let close = match character {
-                '(' => ')',
-                '[' => ']',
-                _ => '}',
-            };
-            index = closing(source, index, character, close)? + 1;
-            continue;
-        }
-        if character == ';' {
-            parts.push(&source[start..index]);
-            start = index + 1;
-        }
-        index += character.len_utf8();
-    }
-    parts.push(&source[start..end]);
-    Some((parts, &source[end + 1..]))
-}
-
 /// Conservative source audit, deliberately separate from class extraction.
 /// These constructs need project knowledge that a literal-only rewrite lacks.
 pub(super) fn audit_source(source: &str) -> Vec<String> {

@@ -71,7 +71,7 @@ test('expects the variable output', async ({ page }) => {
     p?.classList.add(
       'bg-second',
       'b-third',
-      '{outline-fourth;accent-color-fifth}',
+      'outline-fourth', 'accent-color-fifth',
       'fg-second',
       'accent-color-sixth'
     )
@@ -89,8 +89,8 @@ test('expects the variable output', async ({ page }) => {
   expect(text).toMatch(/\.light\{[^}]*--color-fourth:#000000[^}]*\}/)
   expect(text).toMatch(/\.dark\{[^}]*--color-fifth:#022222[^}]*\}/)
   expect(text).toMatch(/\.light\{[^}]*--color-fifth:#033333[^}]*\}/)
-  expect(text).toContain('.\\{outline-fourth\\;accent-color-fifth\\}{accent-color:var(--color-fifth)}')
-  expect(text).toContain('.\\{outline-fourth\\;accent-color-fifth\\}{outline-color:var(--color-fourth)}')
+  expect(text).toContain('.accent-color-fifth{accent-color:var(--color-fifth)}')
+  expect(text).toContain('.outline-fourth{outline-color:var(--color-fourth)}')
   expect(text).toContain('.fg-second{color:var(--color-second)}')
   expect(text).toMatch(/\.light\{[^}]*--color-sixth:#666666[^}]*\}/)
 
@@ -113,7 +113,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('{outline-fourth;accent-color-fifth}')
+    document.getElementById('mp')?.classList.remove('outline-fourth', 'accent-color-fifth')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)

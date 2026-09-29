@@ -295,46 +295,21 @@ Use `:not()` to exclude a selector from the match.
 <div class="fg-green-60:not(.active) active">...</div>
 ```
 
-### `:of()` \{#of\}
-`:of()` is the only proprietary selector introduced by Master CSS. It lets the current element respond to a parent, ancestor, or previous sibling. Use native selectors first when they can express the relationship; use `:of()` when you need to style the current element from outside-in context.
+<a id="of"></a>
 
-Style the element when an ancestor matches.
-```html
-<!-- @MARK active -->
-<div class="active">
-  <div>
-    <!-- @MARK :of(.active) -->
-    <div class="display:none:of(.active)">hidden</div>
-  </div>
-</div>
+### External context \{#external-context\}
+Use native CSS when an element responds to an ancestor, parent, or preceding sibling. Give the target a class and express the relationship in the stylesheet:
+
+```css
+@layer components {
+  .active .contextual { display: none; }
+  .active > .child-contextual { display: none; }
+  .active + .adjacent-contextual { display: none; }
+  .active ~ .sibling-contextual { display: none; }
+}
 ```
-Style the element when its parent matches.
-```html
-<!-- @MARK active -->
-<div class="active">
-  <!-- @MARK :of(.active>) -->
-  <div class="display:none:of(.active>)">hidden</div>
-</div>
-```
-Style the element when its previous adjacent sibling matches.
-```html
-<!-- @MARK active -->
-<div class="active"></div>
-<!-- @MARK :of(.active+) -->
-<div class="display:none:of(.active+)">hidden</div>
-```
-Style the element when one of its preceding siblings matches.
-```html
-<!-- @MARK active -->
-<div class="active"></div>
-<div></div>
-<!-- @MARK :of(.active~) -->
-<div class="display:none:of(.active~)">hidden</div>
-```
-Do not put combinators or pseudo-elements before `:of()`. The following order is unsupported:
-```html
-<div class="display:none_div::before:of(.active)">hidden</div>
-```
+
+Use a mixin with a native selector and `@contents` when the same relationship should wrap several utilities. See [mixin contents](/reference/directives/definitions#contents).
 
 ## Pseudo-elements \{#pseudo-elements\}
 ### `::before`, `::after` \{#before--after\}

@@ -105,15 +105,8 @@ pub(crate) fn token_candidates(
 }
 
 pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<super::Diagnostic> {
+    let diagnostic_source = source;
     let source = source.strip_suffix('!').unwrap_or(source);
-    if let Some(body) = source.strip_prefix('{')
-        && let Some(close) = super::find_group_close(body)
-    {
-        return super::split_top_level(&body[..close], ';')
-            .iter()
-            .flat_map(|item| diagnostics(&format!("{item}{}", &body[close + 1..]), manifest))
-            .collect();
-    }
     let error = |code, message: String| super::Diagnostic {
         phase: mastercss_schema::DiagnosticPhase::Match,
         severity: mastercss_schema::DiagnosticSeverity::Error,
@@ -122,7 +115,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         source: None,
         range: Some(mastercss_schema::SourceRange {
             start: 0,
-            end: source.encode_utf16().count() as u32,
+            end: diagnostic_source.encode_utf16().count() as u32,
         }),
         notes: Vec::new(),
     };
@@ -149,6 +142,25 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             super::ErrorCode::ClassSyntaxError,
             format!("Unbalanced or invalid Master class structure: {source}"),
         )];
+    }
+    let native_state = source.split_once(':').and_then(|(property, value)| {
+        super::is_valid_native_property(property).then(|| super::split_dynamic_value_state(value).1)
+    });
+    for state in matching_utilities(source, manifest)
+        .into_iter()
+        .map(|(_, matched)| matched.state_token)
+        .chain(native_state)
+    {
+        let selector = super::state::split_state_token(&state).0;
+        if !selector.is_empty()
+            && super::state::selector_token_to_template(&selector, manifest)
+                .is_none_or(|template| !mastercss_lexer::valid_selector_structure(&template))
+        {
+            return vec![error(
+                super::ErrorCode::ClassSyntaxError,
+                format!("Invalid selector structure: {selector}"),
+            )];
+        }
     }
     let mut explicit_layer = None;
     for token in super::state::split_state_token(source).1 {
@@ -239,18 +251,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
                 format!(
                     "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
                 ),
-            )];
-        }
-    }
-    for (_, matched) in matching_utilities(source, manifest) {
-        let selector = super::state::split_state_token(&matched.state_token).0;
-        if !selector.is_empty()
-            && super::state::selector_token_to_template(&selector, manifest)
-                .is_some_and(|template| !mastercss_lexer::valid_selector_structure(&template))
-        {
-            return vec![error(
-                super::ErrorCode::ClassSyntaxError,
-                format!("Invalid selector structure: {selector}"),
             )];
         }
     }

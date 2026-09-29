@@ -34,7 +34,8 @@ const valid = [
   ['audit-align-end:hover', [':hover{text-align:end}']],
   ['font-family-probe', ['font-family:var(--font-family-probe)']],
   ['font:16px', ['{font:16px}']],
-  ["{p-probe;padding-top:12px}:hover", [':hover{', 'padding:var(--spacing-probe)', 'padding-top:12px']],
+  ["p-probe:hover", [':hover{', 'padding:var(--spacing-probe)']],
+  ["padding-top:12px:hover", [':hover{', 'padding-top:12px']],
   ['display:block[data-state=":first"]:first', ['[data-state=":first"]:first-child']],
   [String.raw`display:block[data-state="escaped\":first"]:last`, [String.raw`[data-state="escaped\":first"]:last-child`]],
   ['display:block:is(:first,[data-state=":last"])::before', [':is(:first-child,[data-state=":last"])::before']],
@@ -51,6 +52,8 @@ const valid = [
 ] as const
 
 const invalid = [
+  ["{p-probe;padding-top:12px}:hover", "syntax-error", "CLASS_SYNTAX_ERROR"],
+  ["p-probe:of(.active)", "syntax-error", "CLASS_SYNTAX_ERROR"],
   ['ordinary-audit-class', 'unmatched', undefined],
   ['font-probe', 'ambiguous', 'AMBIGUOUS_TOKEN'],
   ['font-family-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
@@ -86,7 +89,7 @@ test('447: compiler and engine binding combinations agree on the language contra
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')

@@ -1,4 +1,4 @@
-// Compare the removed preset dimensions with explicit grouped declarations.
+// Compare the removed preset dimensions with explicit independent declarations.
 // node scripts/benchmark-sizing-migration.mjs BASELINE_DIRECTORY OUTPUT.json
 import { createRequire } from 'node:module'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -10,8 +10,8 @@ const [baseline, output] = process.argv.slice(2)
 if (!baseline || !output) throw new Error('Expected BASELINE_DIRECTORY OUTPUT.json; preserve current-release.node there.')
 const classes = ['size:20px', 'min-size:10px', 'max-size:40px', 'size-sm', 'min-size-md', 'max-size-lg']
 const migrated = [
-  '{width:20px;height:20px}', '{min-width:10px;min-height:10px}', '{max-width:40px;max-height:40px}',
-  '{width-sm;height-sm}', '{min-width-md;min-height-md}', '{max-width-lg;max-height-lg}'
+  'width:20px', 'height:20px', 'min-width:10px', 'min-height:10px', 'max-width:40px', 'max-height:40px',
+  'width-sm', 'height-sm', 'min-width-md', 'min-height-md', 'max-width-lg', 'max-height-lg'
 ]
 const sizes = value => {
   const bytes = Buffer.from(value)

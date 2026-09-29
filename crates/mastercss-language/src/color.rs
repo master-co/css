@@ -357,7 +357,7 @@ mod tests {
     use super::*;
 
     fn session() -> EngineSession {
-        EngineSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap()
+        EngineSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap()
     }
 
     #[test]

@@ -15,7 +15,7 @@ fn lower_for_test(
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 4,"languageVersion":7, "mixins": [] })),
+            base_manifest: Some(json!({ "version": 4,"languageVersion":8, "mixins": [] })),
             resolution_manifest: None,
         },
     )

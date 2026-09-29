@@ -86,9 +86,6 @@ impl Migration {
         ) {
             return Ok(after);
         }
-        if before.starts_with('{') {
-            return Ok(after);
-        } // Each group member was converted independently.
         let fixed = self.original["utilities"]
             .as_array()
             .into_iter()

@@ -353,9 +353,7 @@ pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
 };
-pub(crate) use state::{
-    find_group_close, resolve_state_branches, resolve_style_selector_aliases, split_top_level,
-};
+pub(crate) use state::{resolve_state_branches, resolve_style_selector_aliases, split_top_level};
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
     append_builtin_native_declaration_utilities, append_builtin_token_utilities,

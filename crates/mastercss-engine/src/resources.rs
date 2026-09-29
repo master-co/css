@@ -1,8 +1,8 @@
 use super::{
     EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashMap, HashSet,
     NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
-    UtilityLayerName, find_group_close, is_valid_native_property, resolve_value_components,
-    single_native_declaration, split_dynamic_value_state, split_top_level,
+    UtilityLayerName, is_valid_native_property, resolve_value_components,
+    single_native_declaration, split_dynamic_value_state,
 };
 
 impl EngineSession {
@@ -93,6 +93,7 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Option<NativeDeclarationCandidate> {
+        mastercss_lexer::decode_native_content(class_name)?;
         let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
         if super::named::token_prefix(semantic_class_name, &self.compiled).is_some_and(|prefix| {
             !super::named::token_candidates(semantic_class_name, prefix, &self.compiled).is_empty()
@@ -111,7 +112,10 @@ impl EngineSession {
         if !is_valid_native_property(property) {
             return None;
         }
-        let (raw_value, _) = split_dynamic_value_state(&semantic_class_name[colon + 1..]);
+        let (raw_value, state) = split_dynamic_value_state(&semantic_class_name[colon + 1..]);
+        if !super::state::valid_class_selector(&super::state::split_state_token(&state).0) {
+            return None;
+        }
         if raw_value.is_empty() {
             return None;
         }
@@ -178,19 +182,10 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Vec<NativeDeclarationCandidate> {
-        if self.class_rules.contains_key(class_name) {
-            return Vec::new();
-        }
-        if let Some(body) = class_name.strip_prefix('{')
-            && let Some(close) = find_group_close(body)
+        if self.class_rules.contains_key(class_name)
+            || !super::named::diagnostics(class_name, &self.compiled).is_empty()
         {
-            return split_top_level(&body[..close], ';')
-                .into_iter()
-                .filter(|nested_class| !nested_class.is_empty())
-                .flat_map(|nested_class| {
-                    self.native_declaration_candidates_for_class(&nested_class)
-                })
-                .collect();
+            return Vec::new();
         }
         let source_candidate = self.parse_native_declaration_candidate(class_name);
         let generated = self.generate_class_rules(class_name);

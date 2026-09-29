@@ -36,7 +36,7 @@ it('previews by default, writes safe files, and is idempotent', async () => {
   const entry = path.join(cwd, 'app.css')
   const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 } })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })
@@ -206,7 +206,7 @@ it('previews rc-utilities and blocks every write when one typed definition needs
   expect(runMigrate(['app.css'], options).files[0].edits).toEqual([])
 })
 
-it('migrates rc-sizing as one grouped class, preserves preview and blocks competing dimensions', () => {
+it('migrates rc-sizing as independent classes, preserves preview and blocks competing dimensions', () => {
   const cwd = nativeProject()
   const manifest = { ...preset, packageVersion: '2.0.0-rc.sizing', utilities: [...preset.utilities, {
     id: 'size:<*>', type: -1, emit: { type: "static" as const, rules: [{ declarations: { width: null, height: null } }] }, matchers: [{ type: 'key' as const, keys: ['size'] }]
@@ -217,7 +217,7 @@ it('migrates rc-sizing as one grouped class, preserves preview and blocks compet
   fs.writeFileSync(file, before)
   const options = { cwd, from: 'rc-sizing' as const }
   const preview = runMigrate(['index.html'], options)
-  expect(preview.files[0].edits[0]).toMatchObject({ before: 'size:20px:hover@sm!', after: '{width:20px;height:20px}:hover@sm!' })
+  expect(preview.files[0].edits[0]).toMatchObject({ before: 'size:20px:hover@sm!', after: 'width:20px:hover@sm! height:20px:hover@sm!' })
   expect(fs.readFileSync(file, 'utf8')).toBe(before)
   expect(runMigrate(['index.html'], { ...options, write: true }).files[0].written).toBe(true)
   expect(runMigrate(['index.html'], options).files[0].edits).toEqual([])

@@ -27,14 +27,16 @@ fn unknown_native_capabilities_are_preserved_without_host_support() {
 }
 
 #[test]
-fn output_is_stable_with_duplicates_groups_blocklists_and_source_order() {
+fn output_is_stable_with_duplicate_declarations_blocklists_and_source_order() {
     let inputs: [&[&str]; 3] = [
         &["made-up:bad", "color:red"],
         &[
             "blocked:value",
             "made-up:bad",
-            "{border-color:red;outline-color:blue}",
-            "{border-color:red;outline-color:blue}",
+            "border-color:red",
+            "outline-color:blue",
+            "border-color:red",
+            "outline-color:blue",
             "made-up:other",
             "background-color:blue",
         ],
@@ -42,14 +44,14 @@ fn output_is_stable_with_duplicates_groups_blocklists_and_source_order() {
     ];
     let mut expected = None;
     for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
-        let mut scanner = ScannerSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
+        let mut scanner = ScannerSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
         for index in order {
             scan(&mut scanner, &format!("{index}.html"), inputs[index]);
         }
         let state = scanner.state().unwrap();
         let mut valid = state.valid_classes.clone();
         valid.sort();
-        assert_eq!(valid.len(), 5);
+        assert_eq!(valid.len(), 6);
         assert_eq!(
             valid
                 .iter()

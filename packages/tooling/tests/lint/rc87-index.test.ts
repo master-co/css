@@ -123,7 +123,6 @@ describe('class sorting', () => {
       "margin-top:0.5rem",
       'box-shadow:0|2px|8px|#0003',
       'font-size:2.5rem@xs',
-      "{content:``;block;height:100%;width:100%;abs}::after"
     ]
 
     expect(sortClassNames(classNames, css)).toEqual([
@@ -147,8 +146,7 @@ describe('class sorting', () => {
       'opacity:.8',
       'box-shadow:0|2px|8px|#0003',
       'transition:opacity|.2s',
-      "{content:``;block;height:100%;width:100%;abs}::after",
-      'bg-black:hover',
+            'bg-black:hover',
       "display:block@dark",
       'font-size:2.5rem@xs',
       "padding-inline:0.75rem@sm",

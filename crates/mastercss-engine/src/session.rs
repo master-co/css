@@ -435,21 +435,6 @@ impl EngineSession {
         if !super::named::diagnostics(&class_name, &self.compiled).is_empty() {
             return Ok(Vec::new());
         }
-        if let Some(body) = class_name.strip_prefix('{')
-            && let Some(close) = super::find_group_close(body)
-        {
-            let mut names = Vec::new();
-            for member in super::split_top_level(&body[..close], ';') {
-                for name in
-                    self.matched_utility_names(&format!("{member}{}", &body[close + 1..]))?
-                {
-                    if !names.contains(&name) {
-                        names.push(name);
-                    }
-                }
-            }
-            return Ok(names);
-        }
         Ok(
             super::named::matching_utilities(&class_name, &self.compiled)
                 .into_iter()

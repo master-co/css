@@ -27,7 +27,6 @@ const functionalPseudoClasses = new Set([
   ':nth-last-col',
   ':nth-last-of-type',
   ':nth-of-type',
-  ':of',
   ':state',
   ':where'
 ])
@@ -79,7 +78,7 @@ function normalizePseudo(label) {
 const registry = {
   pseudos: unique([...Object.keys(selectors)
     .filter((name) => (name.startsWith('::') || name.startsWith(':')) && !pagePseudoClasses.has(name))
-    .map(normalizePseudo), ':of()'])
+    .map(normalizePseudo)])
     .sort(),
   properties: Object.fromEntries(Object.entries(properties)
     .map(([name, value]) => [name, collectSyntaxValues(value.syntax)])

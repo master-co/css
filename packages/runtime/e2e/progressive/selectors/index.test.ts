@@ -35,7 +35,7 @@ test('selectors', async ({ page }) => {
 
     const defaultsHost = document.createElement('div')
     defaultsHost.id = 'selectorless-default-host'
-    defaultsHost.className = '{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)'
+    defaultsHost.className = 'display:flex_:is(h4,.app-nav)@layer(defaults) position:relative_:is(h4,.app-nav)@layer(defaults)'
     defaultsHost.innerHTML = '<h4 id="selectorless-default-descendant">Default descendant</h4>'
 
     document.body.append(baseHost, defaultsHost)
@@ -44,13 +44,13 @@ test('selectors', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => ({
     base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === "display:block_button@layer(base)")?.text,
     defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.filter(
-      (rule) => rule.name === '{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)'
+      (rule) => ['display:flex_:is(h4,.app-nav)@layer(defaults)', 'position:relative_:is(h4,.app-nav)@layer(defaults)'].includes(rule.name)
     ).map(rule => rule.text)
   }))).toEqual({
     base: '.display\\:block_button\\@layer\\(base\\) button{display:block}',
     defaults: [
-      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}',
-      '.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}'
+      '.display\\:flex_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}',
+      '.position\\:relative_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}'
     ]
   })
 

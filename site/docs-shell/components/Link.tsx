@@ -112,7 +112,7 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   }, [ref])
 
   const resolvedClassName = useMemo(() => clsx(className, {
-    '{font-size:50%;line-height:0;vertical-align:super;white-space:break-spaces}:after': indicate && (target.current === '_blank' || isHash),
+    'font-size:50%:after line-height:0:after white-space:break-spaces:after vertical-align:super:after': indicate && (target.current === '_blank' || isHash),
     'content-hash:after': indicate && isHash,
     'content-external:after': indicate && target.current === '_blank',
     'fg-text-disabled': props.disabled

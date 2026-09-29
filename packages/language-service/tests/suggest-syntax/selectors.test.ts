@@ -24,7 +24,6 @@ describe.concurrent('pseudo-class', () => {
       ':nth-last-child()',
       ':nth-last-of-type()',
       ':nth-of-type()',
-      ':of()',
       ':state()',
       ':where()'
     ]))

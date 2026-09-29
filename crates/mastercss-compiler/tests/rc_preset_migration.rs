@@ -33,7 +33,9 @@ fn removed_recipes_expand_equivalently_with_every_modifier() {
             "{fit;round}:focus",
         ],
     );
-    let after = result.class_lists[0]
+    assert_eq!(result.class_lists[0][5].status, "review");
+    assert!(result.class_lists[0][5].after.is_none());
+    let after = result.class_lists[0][..5]
         .iter()
         .map(|item| item.after.as_deref().unwrap())
         .collect::<Vec<_>>();
@@ -45,7 +47,6 @@ fn removed_recipes_expand_equivalently_with_every_modifier() {
             "left:0 right:0 margin-left:auto margin-right:auto",
             "top:0 bottom:0 margin-top:auto margin-bottom:auto",
             "border-radius:50% aspect-ratio:1/1",
-            "{width:fit-content;height:fit-content;border-radius:50%;aspect-ratio:1/1}:focus"
         ]
     );
 }
@@ -113,4 +114,23 @@ fn expanding_recipes_with_overlapping_declarations_requires_review() {
             .unwrap()
             .contains("aspect-ratio:1/1")
     );
+}
+
+#[test]
+fn removed_class_syntax_requires_manual_migration() {
+    let result = migrate(
+        "@mixin --fit{width:fit-content;height:fit-content}",
+        &[
+            "{fit}",
+            "{fit;display:block}:hover!",
+            "{{fit};display:block}",
+            "{fit",
+            "fit:of(.active)",
+            "display:block:is(:of(.active))",
+        ],
+    );
+    for item in &result.class_lists[0] {
+        assert_eq!(item.status, "review", "{item:?}");
+        assert!(item.after.is_none(), "{item:?}");
+    }
 }

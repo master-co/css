@@ -12,11 +12,13 @@ jsxTester.run('invalid', rule, {
     {
       code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
     },
-    {
-      code: `<div class="{content:'';block}::after@light"></div>`,
-    },
   ],
   invalid: [
+    {
+      code: `<div class="{content:'';display:block}::after display:block:of(.active)"></div>`,
+      errors: [{ message: /Unbalanced or invalid Master class structure/ }, { message: /Invalid selector structure/ }],
+      output: null
+    },
     {
       code: `<div class="bg-black text-decoration:1 rrr">Simple, basic</div>`,
       errors: [

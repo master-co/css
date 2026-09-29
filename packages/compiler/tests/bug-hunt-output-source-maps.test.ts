@@ -25,7 +25,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 }
 function origin(result: { css: string, sourceMap?: string }, text: string) {
   expect(result.sourceMap).toBeTypeOf('string')

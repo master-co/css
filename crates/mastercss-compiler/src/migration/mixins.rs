@@ -42,40 +42,10 @@ fn static_name(source: &str) -> (&str, &str) {
 }
 
 pub(super) fn class(source: &str, saved: &Value) -> Result<String, String> {
+    mastercss_lexer::decode_native_content(source)
+        .ok_or("Invalid class structure; review manually")?;
     if source.contains("${") || source.contains("{{") {
         return Err("Dynamic class construction requires manual migration; enumerate complete mixin calls or use native CSS variables".into());
-    }
-    if let Some(body) = source.strip_prefix('{') {
-        let close = tokenize_css_syntax(source)
-            .first()
-            .and_then(|token| token.close)
-            .and_then(|index| {
-                tokenize_css_syntax(source)
-                    .get(index)
-                    .map(|token| token.bytes.start)
-            })
-            .ok_or("Unclosed class group")?;
-        let body = &body[..close - 1];
-        let tokens = tokenize_css_syntax(body);
-        let mut index = 0;
-        let mut start = 0;
-        let mut converted = Vec::new();
-        while index < tokens.len() {
-            let token = &tokens[index];
-            if token.kind == Kind::Delim(';') {
-                converted.push(class(&body[start..token.bytes.start], saved)?);
-                start = token.bytes.end;
-            } else if let Some(close) = token.close {
-                index = close;
-            }
-            index += 1;
-        }
-        converted.push(class(&body[start..], saved)?);
-        return Ok(format!(
-            "{{{}}}{}",
-            converted.join(";"),
-            &source[close + 1..]
-        ));
     }
     let (name, suffix) = static_name(source);
     if let Some(key) = name.strip_prefix("text-") {
@@ -310,6 +280,9 @@ pub(super) fn migrate(
                         let diagnostics = inspection
                             .map(|inspection| inspection.diagnostics)
                             .unwrap_or_default();
+                        let invalid_syntax = diagnostics.iter().any(|diagnostic| {
+                            diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError
+                        });
                         let notes = diagnostics
                             .into_iter()
                             .map(|diagnostic| diagnostic.message)
@@ -323,7 +296,7 @@ pub(super) fn migrate(
                             } else {
                                 "replace"
                             },
-                            after: Some(after),
+                            after: (!invalid_syntax).then_some(after),
                             notes,
                         }
                     }

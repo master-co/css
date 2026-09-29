@@ -24,6 +24,6 @@ Use `var(--name)` to combine tokens in a direct value:
 <div class="margin:var(--spacing-sm)|var(--spacing-md)">...</div>
 ```
 
-There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, important, and group syntax apply to both forms.
+There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, and important syntax apply to both forms.
 
 Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md padding:8px` and `padding:8px p-md` therefore use `8px`. Shorthand/longhand and important priorities still apply; HTML class order does not decide the winner.

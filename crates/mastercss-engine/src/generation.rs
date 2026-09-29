@@ -1,9 +1,9 @@
 use super::{
     EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet,
     RulePriorityIr, StoredRule, collect_css_variable_names, composition_conditions,
-    composition_selector, create_selector_text, emit_declarations, find_group_close,
-    normalize_dynamic_value, parse_serialized_declarations, resolve_state_branches,
-    selector_priority, split_top_level, wrap_raw_conditions, wrap_state_conditions,
+    composition_selector, create_selector_text, emit_declarations, normalize_dynamic_value,
+    parse_serialized_declarations, resolve_state_branches, selector_priority, wrap_raw_conditions,
+    wrap_state_conditions,
 };
 
 impl EngineSession {
@@ -13,25 +13,6 @@ impl EngineSession {
     ) -> Vec<EngineCompositionRuleIr> {
         if let Some(result) = self.application_rules(class_name) {
             return result.unwrap_or_default();
-        }
-        if let Some((items, state)) = group_items(class_name) {
-            if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
-                return Vec::new();
-            }
-            return items
-                .iter()
-                .enumerate()
-                .flat_map(|(index, item)| {
-                    let nested = format!("{item}{state}");
-                    self.generate_composition_rules(&nested)
-                        .into_iter()
-                        .map(move |mut rule| {
-                            rule.key = format!("{class_name}\0group:{index}\0{}", rule.key);
-                            rule.class_name = class_name.into();
-                            rule
-                        })
-                })
-                .collect();
         }
         if mastercss_lexer::decode_native_content(class_name).is_none() {
             return Vec::new();
@@ -150,9 +131,6 @@ impl EngineSession {
     pub(crate) fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
         if let Some(result) = self.application_rules(class_name) {
             return self.store_application(class_name, result.unwrap_or_default());
-        }
-        if let Some(rules) = self.generate_group_rules(class_name) {
-            return rules;
         }
         if mastercss_lexer::decode_native_content(class_name).is_none() {
             return Vec::new();
@@ -304,52 +282,4 @@ impl EngineSession {
         }
         generated
     }
-
-    pub(crate) fn generate_group_rules(&self, class_name: &str) -> Option<Vec<StoredRule>> {
-        let (items, state) = group_items(class_name)?;
-        if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
-            return Some(Vec::new());
-        }
-        let group_selector = format!(".{}", super::css_escape(class_name));
-        let mut generated = Vec::new();
-        for (index, item) in items.iter().enumerate() {
-            let nested = format!("{item}{state}");
-            let nested_selector = format!(".{}", super::css_escape(&nested));
-            for mut rule in self.generate_class_rules(&nested) {
-                rule.ir.class_name = class_name.into();
-                rule.ir.key = format!("{class_name}\0group:{index}\0{}", rule.ir.key);
-                rule.ir.text = mastercss_lexer::replace_rule_class_selector(
-                    &rule.ir.text,
-                    &nested_selector,
-                    &group_selector,
-                );
-                rule.ir.selector_text = rule.ir.selector_text.map(|selector| {
-                    mastercss_lexer::replace_class_selector(
-                        &selector,
-                        &nested_selector,
-                        &group_selector,
-                    )
-                });
-                for node in &mut rule.ir.nodes {
-                    node.text = mastercss_lexer::replace_rule_class_selector(
-                        &node.text,
-                        &nested_selector,
-                        &group_selector,
-                    );
-                }
-                generated.push(rule);
-            }
-        }
-        Some(generated)
-    }
-}
-
-pub(crate) fn group_items(class_name: &str) -> Option<(Vec<String>, &str)> {
-    let body = class_name.strip_prefix('{')?;
-    let close = find_group_close(body)?;
-    let items = split_top_level(&body[..close], ';')
-        .into_iter()
-        .filter(|item| !item.is_empty())
-        .collect();
-    Some((items, &body[close + 1..]))
 }

@@ -22,16 +22,15 @@ pub(crate) fn resolve_state_branches(
     }];
 
     if !selector_token.is_empty() {
-        let template = selector_token_to_template(&selector_token, manifest);
-        if template
-            .as_deref()
-            .is_some_and(|selector| !mastercss_lexer::valid_selector_structure(selector))
-        {
+        let Some(template) = selector_token_to_template(&selector_token, manifest) else {
+            return Vec::new();
+        };
+        if !mastercss_lexer::valid_selector_structure(&template) {
             return Vec::new();
         }
         for branch in &mut branches {
             branch.key.push_str(&selector_token);
-            branch.selector_template = template.clone();
+            branch.selector_template = Some(template.clone());
         }
     }
 
@@ -171,104 +170,37 @@ pub(crate) fn selector_token_to_template(
     selector_token: &str,
     _manifest: &ManifestProjection,
 ) -> Option<String> {
-    if selector_token.is_empty() {
+    if selector_token.is_empty() || !valid_class_selector(selector_token) {
         return None;
     }
     let mut selector = normalize_selector_aliases(selector_token);
     selector = replace_selector_underscores(&selector);
-    if let Some((before, context, after)) = split_top_level_of_selector(&selector) {
-        let suffix = format!("{before}{after}");
-        let separator = if context.chars().next_back().is_some_and(|character| {
-            !character.is_whitespace() && !matches!(character, '>' | '+' | '~')
-        }) {
-            " "
-        } else {
-            ""
-        };
-        return Some(format!(
-            "{context}{separator}{}",
-            suffix_to_template(&suffix)
-        ));
-    }
     Some(suffix_to_template(&selector))
 }
 
-pub(crate) fn split_top_level_of_selector(selector: &str) -> Option<(&str, &str, &str)> {
-    let mut depth = 0_u32;
-    let mut quote = None;
-    let mut escaped = false;
+/// Master selector suffixes accept native CSS, excluding retired class syntax.
+/// Inspect tokens so strings, escaped punctuation and attribute contents stay literal.
+pub(crate) fn valid_class_selector(selector: &str) -> bool {
+    use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(selector);
     let mut index = 0;
-    while index < selector.len() {
-        let character = selector[index..].chars().next()?;
-        if escaped {
-            escaped = false;
-            index += character.len_utf8();
+    while let Some(token) = tokens.get(index) {
+        if matches!(token.kind, Kind::Delim('[')) {
+            let Some(close) = token.close else {
+                return false;
+            };
+            index = close + 1;
             continue;
         }
-        if character == '\\' {
-            escaped = true;
-            index += character.len_utf8();
-            continue;
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("of"))
+            && index > 0
+            && matches!(tokens[index - 1].kind, Kind::Delim(':'))
+        {
+            return false;
         }
-        if let Some(current_quote) = quote {
-            if character == current_quote {
-                quote = None;
-            }
-            index += character.len_utf8();
-            continue;
-        }
-        if character == '\'' || character == '"' {
-            quote = Some(character);
-            index += character.len_utf8();
-            continue;
-        }
-        if depth == 0 && selector[index..].starts_with(":of(") {
-            let body_start = index + ":of(".len();
-            let mut body_depth = 1_u32;
-            let mut body_quote = None;
-            let mut body_escaped = false;
-            for (offset, body_character) in selector[body_start..].char_indices() {
-                if body_escaped {
-                    body_escaped = false;
-                    continue;
-                }
-                if body_character == '\\' {
-                    body_escaped = true;
-                    continue;
-                }
-                if let Some(current_quote) = body_quote {
-                    if body_character == current_quote {
-                        body_quote = None;
-                    }
-                    continue;
-                }
-                if body_character == '\'' || body_character == '"' {
-                    body_quote = Some(body_character);
-                } else if body_character == '(' {
-                    body_depth += 1;
-                } else if body_character == ')' {
-                    body_depth -= 1;
-                    if body_depth == 0 {
-                        let body_end = body_start + offset;
-                        let after_start = body_end + body_character.len_utf8();
-                        return Some((
-                            &selector[..index],
-                            &selector[body_start..body_end],
-                            &selector[after_start..],
-                        ));
-                    }
-                }
-            }
-            return None;
-        }
-        if matches!(character, '(' | '[' | '{') {
-            depth += 1;
-        } else if matches!(character, ')' | ']' | '}') {
-            depth = depth.saturating_sub(1);
-        }
-        index += character.len_utf8();
+        index += 1;
     }
-    None
+    true
 }
 
 pub(crate) fn resolve_style_selector_aliases(
@@ -423,37 +355,4 @@ pub(crate) fn split_top_level(source: &str, delimiter: char) -> Vec<String> {
     }
     result.push(source[start..].to_owned());
     result
-}
-
-pub(crate) fn find_group_close(source: &str) -> Option<usize> {
-    let mut nested_depth = 0_u32;
-    let mut quote = None;
-    let mut escaped = false;
-    for (index, character) in source.char_indices() {
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if character == '\\' {
-            escaped = true;
-            continue;
-        }
-        if let Some(current_quote) = quote {
-            if character == current_quote {
-                quote = None;
-            }
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            quote = Some(character);
-        } else if character == '{' {
-            nested_depth += 1;
-        } else if character == '}' {
-            if nested_depth == 0 {
-                return Some(index);
-            }
-            nested_depth -= 1;
-        }
-    }
-    None
 }

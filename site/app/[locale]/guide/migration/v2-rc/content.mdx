@@ -1,3 +1,11 @@
+## Language version 8
+
+Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
+
+Recompile saved manifests and hydration data with matching packages. `languageVersion` is now `8`; language 7 artifacts are rejected. Manifest v4, hydration v3 and the binding ABI remain unchanged. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+
+The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
+
 ## Preset simplification and managed keyframes
 
 Use `--from rc-preset` with the exact saved **Manifest v3 / languageVersion 5** to migrate this change. The migration resolves the old token lookup order and preserves custom same-name mixins. Review overlapping declarations before applying recipe expansion.
@@ -74,7 +82,7 @@ There is no implicit token lookup inside a colon value, including functions, fal
 
 ### Preserve selectors and conditions
 
-Keep state suffixes, responsive conditions, important markers, grouping, and `|` space encoding. Change each affected item inside a group independently.
+Keep state suffixes, responsive conditions, important markers, and `|` space encoding. Replace declaration groups manually with separate classes carrying the complete suffix. Review overlaps and use a mixin when declaration order or a shared wrapper matters.
 
 ```text name="RC reference — not executed"
 font:mono:hover@sm!
@@ -89,7 +97,7 @@ For this new example, define the project color token explicitly:
 
 ```text name="New v2 syntax"
 font-mono:hover@sm!
-{p-md;fg-brand}:hover
+p-md:hover fg-brand:hover
 ```
 
 Named tokens do not introduce a numeric multiplier scale. `p-4` only works if the project defines the corresponding spacing token. Use a real CSS length for a literal.
@@ -184,7 +192,7 @@ Regenerate artifacts from their source definitions and deploy a coordinated pack
 - Manifest **v4**, language **v7**, binding ABI **17**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use explicit theme scopes, `customMedia` and variants.
-- Recompile into Manifest v4 / language 7 / ABI 18. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
+- Recompile into Manifest v4 / language 8 / ABI 18. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
@@ -501,7 +509,7 @@ Removing the utility does not ban its name: unregistered colon inputs follow nat
 
 The old `min` and `max` aliases retire with `min-size` and `max-size`. Logical `size-x`/`size-y` aliases and native `@page` size descriptors are unaffected.
 
-The CLI proposes one grouped replacement, for example `{width:20px;height:20px}:hover@sm!`, to retain each source occurrence and its suffix. A group is not proof of unchanged sorting. Overlapping width/height rules, selector references, dynamic construction and unproven custom definitions require manual review and block the entire write batch. A custom same-name utility retained in the target manifest is not decomposed. Re-running an applied migration is idempotent.
+The CLI proposes separate classes, for example `width:20px:hover@sm! height:20px:hover@sm!`, with the complete suffix on each class. Separate classes still require a cascade review. Overlapping width/height rules, selector references, dynamic construction and unproven custom definitions require manual review and block the entire write batch. A custom same-name utility retained in the target manifest is not decomposed. Re-running an applied migration is idempotent.
 
 Removed-utility advice excludes explicitly registered ordinary CSS classes. Custom tooling hosts can pass the project result’s read-only `nativeClassNames` to `createToolingSession` or `createToolingSessionSync`; this suppresses that advice without changing engine generation. The CLI, MCP and language server retain project registrations automatically.
 

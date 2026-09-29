@@ -173,89 +173,16 @@ fn executes_rc87_language_lexer_parity_corpus() {
                     ["@", "sm", "&", "<=", "md"]
                 );
             }
-            "rc87-377b579d44d48303" => {
+            "rc87-377b579d44d48303"
+            | "rc87-26f2db55b217f0d5"
+            | "rc87-bcbede53a81f0bc5"
+            | "rc87-eb118a232c54e6de"
+            | "rc87-af4d2924300d54db" => {
                 let mut tokens = Vec::new();
                 session
                     .push_class_semantic_tokens(&case.input, 0, &mut tokens)
                     .unwrap();
-                assert_eq!(
-                    token_views(&case.input, &tokens)
-                        .into_iter()
-                        .map(|(text, _, _)| text)
-                        .collect::<Vec<_>>(),
-                    [
-                        "{",
-                        "color",
-                        ":",
-                        "red",
-                        ";",
-                        "background",
-                        ":",
-                        "blue",
-                        "}"
-                    ]
-                );
-            }
-            "rc87-26f2db55b217f0d5" => {
-                let mut tokens = Vec::new();
-                session
-                    .push_class_semantic_tokens(&case.input, 0, &mut tokens)
-                    .unwrap();
-                let views = token_views(&case.input, &tokens);
-                assert_eq!(
-                    views
-                        .iter()
-                        .map(|(text, _, _)| text.as_str())
-                        .collect::<Vec<_>>(),
-                    [
-                        "{", "color", ":", "red", ";", "display", ":", "block", "}", ">", "li",
-                        ":", "hover", "@sm"
-                    ]
-                );
-                assert!(
-                    views
-                        .iter()
-                        .any(|(_, _, modifiers)| modifiers.contains(&"selectorCombinator".into()))
-                );
-            }
-            "rc87-bcbede53a81f0bc5" => {
-                let mut tokens = Vec::new();
-                session
-                    .push_class_semantic_tokens(&case.input, 0, &mut tokens)
-                    .unwrap();
-                assert_eq!(
-                    token_views(&case.input, &tokens)
-                        .iter()
-                        .map(|(text, _, _)| text.as_str())
-                        .collect::<Vec<_>>(),
-                    ["{", "display", ":", "block", "}", "@sm"]
-                );
-            }
-            "rc87-eb118a232c54e6de" => {
-                let mut tokens = Vec::new();
-                session
-                    .push_class_semantic_tokens(&case.input, 0, &mut tokens)
-                    .unwrap();
-                assert_eq!(
-                    token_views(&case.input, &tokens)
-                        .iter()
-                        .map(|(text, _, _)| text.as_str())
-                        .collect::<Vec<_>>(),
-                    ["{", "color", ":", "red", ";", "background", ":", "blue"]
-                );
-            }
-            "rc87-af4d2924300d54db" => {
-                let mut tokens = Vec::new();
-                session
-                    .push_class_semantic_tokens(&case.input, 0, &mut tokens)
-                    .unwrap();
-                assert_eq!(
-                    token_views(&case.input, &tokens)
-                        .iter()
-                        .map(|(text, _, _)| text.as_str())
-                        .collect::<Vec<_>>(),
-                    ["color", ":", "red", ";", "background", ":", "blue"]
-                );
+                assert!(tokens.is_empty(), "{}", case.input);
             }
             source_id => panic!("unhandled language-owned lexer case {source_id}"),
         }
@@ -374,12 +301,12 @@ fn applies_document_context_settings_in_rust() {
 }
 
 #[test]
-fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
+fn tokenizes_selector_combinators_without_class_group_tokens() {
     let session = LanguageSession::create(
-        r#"{"version":4,"languageVersion":7,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
-    let source = "<div class=\"{color:red;block}>li:hover@sm\"></div>";
+    let source = "<div class=\"color:red>li:hover block>li:hover\"></div>";
     let result = session
         .analyze_document(&AnalyzeDocumentRequestIr {
             source: source.into(),
@@ -388,7 +315,7 @@ fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
             settings: LanguageDocumentSettingsIr::default(),
         })
         .unwrap();
-    assert!(result.semantic_tokens.iter().any(|token| {
+    assert!(!result.semantic_tokens.iter().any(|token| {
         token
             .modifiers
             .iter()
@@ -447,7 +374,7 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":4,"languageVersion":7,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+            r#"{"version":4,"languageVersion":8,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
@@ -471,7 +398,7 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":4,"languageVersion":7,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
+            r#"{"version":4,"languageVersion":8,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
@@ -504,7 +431,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_mixin_wrappers_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":4,"languageVersion":7,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":4,"languageVersion":8,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@apply(--ocean)",
@@ -524,7 +451,7 @@ fn completion_owns_mixin_wrappers_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -558,7 +485,7 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":4,"languageVersion":7,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{}}"#,
+        r#"{"version":4,"languageVersion":8,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{}}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();

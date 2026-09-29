@@ -10,6 +10,6 @@ const rendered = renderHTML(html, {
   manifest: defaultManifestJSON as unknown as MasterCSSManifest
 })
 
-it('basic', () => {
-  expect(rendered.html).toContain('.\\{font-mono\\;font-feature-settings\\:normal\\}_\\:where\\(code\\,kbd\\,samp\\)')
+it('keeps historical groups invalid without expanding their members', () => {
+  expect(rendered.html).not.toContain('.\\{font-mono\\;font-feature-settings\\:normal\\}_\\:where\\(code\\,kbd\\,samp\\)')
 })

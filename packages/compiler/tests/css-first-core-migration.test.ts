@@ -3,10 +3,10 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 7 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 8 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v7 authoring contracts', () => {
+describe('directive language v8 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { :root { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green; } }
@@ -17,7 +17,7 @@ describe('directive language v7 authoring contracts', () => {
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(7)
+    expect(manifest.languageVersion).toBe(8)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')

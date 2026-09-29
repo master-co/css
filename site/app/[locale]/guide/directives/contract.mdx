@@ -351,13 +351,17 @@ Master compiles a static subset of the [CSS mixin draft](https://drafts.csswg.or
 
 Supplied content retains the caller's parameter bindings, including when forwarded through nested applications. Fallback uses the defining mixin's bindings. Ordinary custom properties retain native CSS cascade behavior. Finite nested calls are allowed; recursive definitions and expansion depth/node limit violations are errors.
 
+```css
+@mixin --emphasis { color: red; display: block; }
+```
+
 ```html
 <button class="color:red@apply(--hocus)">Save</button>
 <div class="grid-cols(3)@apply(--card-wide)"></div>
-<div class="{color:red;display:block}@apply(--hocus)!"></div>
+<div class="emphasis@apply(--hocus)!"></div>
 ```
 
-`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A declaration group is supplied as one block, so a wrapper's own declarations are not repeated per member. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
+`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A named mixin supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
 
 Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
 
@@ -371,7 +375,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 7 and binding ABI 18. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 8 and binding ABI 18. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
 
@@ -752,10 +756,6 @@ Use `@preserve native;` when a Master-managed stylesheet contains native CSS cla
 The stylesheet is still processed by Master CSS. Native class rules are retained even when no scanned source uses their classes; ordinary compiler normalization still applies. This policy does not force unused managed classes into the generated output and does not mean that the original CSS bytes are preserved.
 
 For the full native CSS pruning model, see [Native CSS pruning](/guide/native-css-pruning).
-
-### Group rule identity
-
-Each item in a declaration group retains its declaration identity, value source, conditions, importance, and shorthand or longhand priority. Groups can emit multiple rules for the same escaped group selector. This lets direct values override tokens within the same scope in generated CSS, SSR, and hydration, independently of item order.
 
 ## Native queries and validation \{#native-queries-and-validation\}
 

@@ -40,19 +40,18 @@ impl EngineSession {
         head: &str,
         suffixes: &[String],
     ) -> Result<Vec<EngineCompositionRuleIr>, String> {
+        if let Some(diagnostic) = super::named::diagnostics(class, &self.compiled).first() {
+            return Err(diagnostic.message.clone());
+        }
         let important = class.ends_with('!');
-        let state = if let Some((_, state)) = super::generation::group_items(head) {
-            state.to_owned()
-        } else {
-            super::named::matching_utilities(head, &self.compiled)
-                .first()
-                .map(|(_, matched)| matched.state_token.clone())
-                .or_else(|| {
-                    self.native_declaration_fallback(head)
-                        .map(|(_, matched)| matched.state_token)
-                })
-                .unwrap_or_default()
-        };
+        let state = super::named::matching_utilities(head, &self.compiled)
+            .first()
+            .map(|(_, matched)| matched.state_token.clone())
+            .or_else(|| {
+                self.native_declaration_fallback(head)
+                    .map(|(_, matched)| matched.state_token)
+            })
+            .unwrap_or_default();
         let base = head.strip_suffix(&state).unwrap_or(head);
         let diagnostics = super::named::diagnostics(base, &self.compiled);
         if let Some(diagnostic) = diagnostics.first() {

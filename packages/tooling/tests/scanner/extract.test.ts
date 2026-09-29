@@ -76,7 +76,6 @@ test('=', () => {
     content:'='
     content:"="
     `)).toEqual([
-        '{components[0]}',
         'content:\'=\'',
         'content:"="'
     ])
@@ -116,7 +115,7 @@ test('wxh', () => {
     ])
 })
 
-test('group', () => {
+test('excludes removed group syntax', () => {
     expect(extractClassCandidates(`
     {form}
     {:else}
@@ -127,10 +126,6 @@ test('group', () => {
     .something{bg-white}
     `))
         .toEqual([
-            '{form}',
-            '{data_0}',
-            '{bg-black;font-size:1rem}_div@dark',
-            '.something{bg-white}',
         ])
 })
 

@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":4,"languageVersion":7,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
+                serde_json::json!({"version":4,"languageVersion":8,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
             ),
             resolution_manifest: None,
         },
@@ -87,11 +87,14 @@ fn replacement_removes_nested_rules_and_changes_parameter_signature() {
 fn empty_mixin_remains_matched_without_output() {
     let result = compile("@mixin --card{color:red}@mixin --card{}").unwrap();
     let engine = EngineSession::create(&result.manifest.to_string()).unwrap();
-    for class in ["card", "card()", "{card}"] {
+    for class in ["card", "card()"] {
         let inspection = engine.inspect(class).unwrap();
         assert_eq!(inspection.match_status, MatchStatus::Matched);
         assert!(inspection.rules.is_empty());
     }
+    let removed_group = engine.inspect("{card}").unwrap();
+    assert_eq!(removed_group.match_status, MatchStatus::SyntaxError);
+    assert!(removed_group.rules.is_empty());
     assert_eq!(
         engine.inspect_class_semantics("card").unwrap().kind,
         mastercss_engine::ClassSemanticKind::Semantic
@@ -181,6 +184,6 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
 
 #[test]
 fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":4,"languageVersion":7,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
+    let old = serde_json::json!({"version":4,"languageVersion":8,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
     assert!(EngineSession::create(&old.to_string()).is_err());
 }

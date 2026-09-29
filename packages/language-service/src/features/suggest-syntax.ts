@@ -148,26 +148,20 @@ export default function suggestSyntax(
         end: position
       })
   // Class boundaries, including quoted arguments, come from the Rust document analysis.
-  let field = query
+  const field = query
   const entries = this.session.completionIndex().classEntries
   if (!field || context?.triggerCharacter === ' ') {
     return rootCompletionItems(this, entries, '')
   }
-  const isGroup = field.startsWith('{')
-  if (isGroup) {
-    const declarationStart = field.lastIndexOf(';')
-    field = field.slice(declarationStart < 0 ? 1 : declarationStart + 1)
-    if (!field) return rootCompletionItems(this, entries, '')
-  }
   if (field.startsWith('@') || field.startsWith('~')) return []
 
   const inspection = this.session.inspectClassName(field)
+  if (inspection.diagnostics?.some(({ code }) => code === 'CLASS_SYNTAX_ERROR')) return []
   const state = inspection.stateToken ?? ''
   const atIndex = inspection.kind === 'mixin'
     ? state.includes('@') ? field.length - state.length + state.lastIndexOf('@') : -1
     : field.lastIndexOf('@')
   if (atIndex > 0) {
-    if (isGroup) return
     if (field.endsWith('@')) return queryCompletionItems(entries)
     // Native query contents and retired shorthand are not property or selector completions.
     return []
@@ -178,7 +172,6 @@ export default function suggestSyntax(
   const property = key && entries.some(({ label }) => label.startsWith(`${key}:`))
   const hasSelectorSuffix = Boolean(keyMatch && field.slice(keyMatch[0].length).includes(':'))
   if (/[:_>+~]$/u.test(field) && inspection.stateToken) {
-    if (isGroup) return
     return selectorCompletionItems(this, entries, field)
   }
   if (key && property && !hasSelectorSuffix && atIndex < 0) {
@@ -187,7 +180,6 @@ export default function suggestSyntax(
   }
 
   if (/[:_>+~]$/u.test(field)) {
-    if (isGroup) return
     return selectorCompletionItems(this, entries, field)
   }
 

@@ -1,6 +1,5 @@
 //! Frozen Manifest v3 / language 5 preset migration. Never consulted at runtime.
 use super::{RcClassMigration, RcMigrationRequest, RcMigrationResult, error};
-use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
 use mastercss_schema::{MixinDefinition, MixinNode, MixinValuePart};
 use serde_json::Value;
 use std::collections::HashSet;
@@ -85,40 +84,10 @@ impl Saved {
     }
 
     fn class(&self, source: &str) -> Result<String, String> {
+        mastercss_lexer::decode_native_content(source)
+            .ok_or("Invalid class structure; review manually")?;
         if source.contains("${") || source.contains("{{") {
             return Err("Enumerate complete classes before migrating dynamic construction".into());
-        }
-        let tokens = tokenize_css_syntax(source);
-        if let Some(first) = tokens
-            .first()
-            .filter(|token| token.kind == Kind::Delim('{'))
-        {
-            let close = first.close.ok_or("Unclosed class group")?;
-            let mut cursor = 1;
-            let mut start = first.bytes.end;
-            let mut parts = Vec::new();
-            while cursor < close {
-                let token = &tokens[cursor];
-                if token.kind == Kind::Delim(';') {
-                    parts.push(
-                        self.class(&source[start..token.bytes.start])?
-                            .replace(' ', ";"),
-                    );
-                    start = token.bytes.end;
-                } else if let Some(end) = token.close {
-                    cursor = end;
-                }
-                cursor += 1;
-            }
-            parts.push(
-                self.class(&source[start..tokens[close].bytes.start])?
-                    .replace(' ', ";"),
-            );
-            return Ok(format!(
-                "{{{}}}{}",
-                parts.join(";"),
-                &source[tokens[close].bytes.end..]
-            ));
         }
         let (head, suffix) = super::values::split_rc_value_state(source);
         // Preserve native declarations, including properties whose names overlap mixins.
@@ -227,7 +196,7 @@ pub(super) fn migrate(
             list.iter()
                 .map(|before| match saved.class(before) {
                     Ok(after) => {
-                        let notes = mastercss_lexer::collect_class_list_token_ranges(&after)
+                        let diagnostics = mastercss_lexer::collect_class_list_token_ranges(&after)
                             .into_iter()
                             .flat_map(|token| {
                                 target
@@ -239,6 +208,12 @@ pub(super) fn migrate(
                             .filter(|diagnostic| {
                                 diagnostic.severity == mastercss_schema::DiagnosticSeverity::Error
                             })
+                            .collect::<Vec<_>>();
+                        let invalid_syntax = diagnostics.iter().any(|diagnostic| {
+                            diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError
+                        });
+                        let notes = diagnostics
+                            .into_iter()
                             .map(|diagnostic| diagnostic.message)
                             .collect::<Vec<_>>();
                         RcClassMigration {
@@ -250,7 +225,7 @@ pub(super) fn migrate(
                             } else {
                                 "replace"
                             },
-                            after: Some(after),
+                            after: (!invalid_syntax).then_some(after),
                             notes,
                         }
                     }

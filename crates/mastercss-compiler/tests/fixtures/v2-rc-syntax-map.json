@@ -142,11 +142,11 @@
     },
     {
       "rc": "size:20px",
-      "v2": "{width:20px;height:20px}",
+      "v2": "width:20px height:20px",
       "rcDeclarations": "width:20px;height:20px",
       "v2Declarations": "width:20px;height:20px",
       "intentionalChange": "Preset sizing removed; paired declarations migrate to a group, with overlapping dimensional cascade reviewed separately by rc_sizing_migration.",
-      "current": "{width:20px;height:20px}",
+      "current": "width:20px height:20px",
       "currentDeclarations": "width:20px;height:20px"
     },
     {

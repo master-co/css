@@ -65,7 +65,7 @@ fn prepared_analysis_consumes_or_cancels_pending_state_and_rejects_stale_ids() {
 
 #[test]
 fn host_support_does_not_remove_native_declaration_semantics() {
-    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":7}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
     let prepared = session
         .prepare_document(&request(
             "<div class=\"display:banana display:block display:block\"/>",
@@ -83,4 +83,64 @@ fn host_support_does_not_remove_native_declaration_semantics() {
             .any(|token| token.start < result.class_positions[1].range.start)
     );
     assert!(!result.semantic_tokens.is_empty());
+}
+
+#[test]
+fn retired_classes_keep_complete_utf16_ranges_without_member_semantics() {
+    let session = session();
+    for (language, source) in [
+        (
+            "html",
+            "😀<div class=\"{p-md;animation:float|1s} display:block:of(.active) display:block\"/>",
+        ),
+        (
+            "typescriptreact",
+            "const emoji = '😀'; const view = <div className=\"{p-md;animation:float|1s} display:block:of(.active) display:block\"/>",
+        ),
+        (
+            "vue",
+            "<template>😀<div class=\"{p-md;animation:float|1s} display:block:of(.active) display:block\"/></template>",
+        ),
+        (
+            "svelte",
+            "😀<div class=\"{p-md;animation:float|1s} display:block:of(.active) display:block\"/>",
+        ),
+        (
+            "mdx",
+            "😀\n<div className=\"{p-md;animation:float|1s} display:block:of(.active) display:block\"/>",
+        ),
+    ] {
+        let request =
+            serde_json::from_value(serde_json::json!({"source":source,"languageId":language}))
+                .unwrap();
+        let result = session.analyze_document(&request).unwrap();
+        assert_eq!(result.class_positions.len(), 3, "{language}: {result:?}");
+        for position in &result.class_positions[..2] {
+            let raw = String::from_utf16(
+                &source
+                    .encode_utf16()
+                    .skip(position.range.start as usize)
+                    .take((position.range.end - position.range.start) as usize)
+                    .collect::<Vec<_>>(),
+            )
+            .unwrap();
+            assert_eq!(raw, position.token);
+            assert!(
+                !result
+                    .semantic_tokens
+                    .iter()
+                    .any(|token| token.start >= position.range.start
+                        && token.start < position.range.end),
+                "{language}"
+            );
+            let inspection = session.inspect_class_name(&position.token, None).unwrap();
+            assert_eq!(
+                inspection.match_status,
+                mastercss_schema::MatchStatus::SyntaxError
+            );
+            assert!(inspection.text.is_empty());
+            assert!(inspection.variables.is_empty());
+        }
+        assert!(!result.semantic_tokens.is_empty());
+    }
 }

@@ -50,7 +50,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    "<div className=\"fg-brand:hover@sm sr-only sr-only:hover sr-only:is(:state-name) sr-only_div::before:of(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
+    "<div className=\"fg-brand:hover@sm sr-only sr-only:hover sr-only:is(:state-name) sr-only_div::before:is(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -109,7 +109,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
   expectToken(tokens, 'div', 'type', ['selector'])
   expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector', 'pseudoElementDelimiter'])
   expectToken(tokens, 'before', 'modifier', ['pseudoElement'])
-  expectToken(tokens, 'of', 'modifier', ['pseudoClass'])
+  expectToken(tokens, 'is', 'modifier', ['pseudoClass'])
   expectToken(tokens, '.', 'operator', ['selector', 'selectorPunctuation'])
   expectToken(tokens, 'active', 'class', ['selector'])
   expectToken(tokens, '1', 'number')
@@ -231,15 +231,12 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
   expectToken(tokens, 'px', 'enumMember', ['unit'])
 })
 
-test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
+test.concurrent('renders semantic tokens for independent declarations, strings, units, and important marks', () => {
   const { tokens } = renderTokens(
-    '<div class="{fg-red;bg-blue} transform:translate(2.5rem|20px) content:\'a|b\' size:2.5rem fg-red!"></div>',
+    '<div class="fg-red bg-blue transform:translate(2.5rem|20px) content:\'a|b\' size:2.5rem fg-red!"></div>',
     'html'
   )
 
-  expectToken(tokens, '{', 'operator', ['blockBrace'])
-  expectToken(tokens, ';', 'operator', ['declarationTerminator'])
-  expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
   expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'bg-blue', 'enumMember')
@@ -260,19 +257,16 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
   expectToken(tokens, '!', 'operator', ['important'])
 })
 
-test.concurrent('renders native-aligned semantic tokens for grouped classes with selector suffixes', () => {
+test.concurrent('renders native-aligned semantic tokens for independent classes with selector suffixes', () => {
   const { tokens } = renderTokens(
-    "<div class=\"{text-align:center;sr-only}>li:hover@sm\"></div>",
+    "<div class=\"text-align:center>li:hover@sm sr-only>li:hover@sm\"></div>",
     'html'
   )
 
-  expectToken(tokens, '{', 'operator', ['blockBrace'])
   expectToken(tokens, 'text-align', 'property')
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
   expectToken(tokens, 'sr-only', 'enumMember')
-  expectToken(tokens, ';', 'operator', ['declarationTerminator'])
   expectToken(tokens, "sr-only", 'enumMember')
-  expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, '>', 'operator', ['selector', 'selectorCombinator'])
   expectToken(tokens, 'li', 'type', ['selector'])
   expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])

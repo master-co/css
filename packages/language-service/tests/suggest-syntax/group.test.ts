@@ -1,8 +1,10 @@
-import { test, it, expect, describe } from 'vitest'
+import { test, expect } from 'vitest'
 import { hint } from './helper'
 
-test.concurrent('one declaration', () => expect(hint('{text-align:')?.find(({ label }) => label === 'center')).toMatchObject({ label: 'center' }))
-test.concurrent('two declarations', () => expect(hint('{block;text-align:')?.find(({ label }) => label === 'center')).toMatchObject({ label: 'center' }))
-it.concurrent('should not hint selectors', () => expect(hint('{block;text-center:')).toBeUndefined())
-it.concurrent('should not hint at', () => expect(hint('{block;text-center@')).toBeUndefined())
+test.each(['{text-align:', '{block;text-align:', '{block;text-center:', '{block;text-center@'])('does not complete removed class syntax: %s', (source) => {
+  expect(hint(source) ?? []).toEqual([])
+})
 
+test('does not offer the removed pseudo class', () => {
+  expect(hint('display:block:')?.map(({ label }) => label)).not.toContain(':of()')
+})

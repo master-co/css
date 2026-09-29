@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 7 as const,
+  "languageVersion": 8 as const,
   "mixins": [
     {
       "name": "--block",

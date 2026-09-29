@@ -491,7 +491,21 @@ impl Migration {
     }
 
     fn class(&self, source: &str) -> RcClassMigration {
-        match self.convert(source) {
+        match self.convert(source).and_then(|after| {
+            for token in mastercss_lexer::collect_class_list_token_ranges(&after) {
+                let inspection = self
+                    .target
+                    .borrow()
+                    .inspect(&token.token)
+                    .map_err(|error| error.to_string())?;
+                if let Some(diagnostic) = inspection.diagnostics.into_iter().find(|diagnostic| {
+                    diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError
+                }) {
+                    return Err(diagnostic.message);
+                }
+            }
+            Ok(after)
+        }) {
             Ok(after) => RcClassMigration {
                 before: source.into(),
                 status: if after == source {
@@ -512,20 +526,19 @@ impl Migration {
     }
 
     fn convert(&self, source: &str) -> Result<String, String> {
+        mastercss_lexer::decode_native_content(source)
+            .ok_or("Invalid class structure; review manually")?;
         if source.starts_with("text:") && self.profile == RcMigrationProfile::RcLegacy {
             return Err("Typography now uses explicit --text-name and companion tokens. Choose text-name or font-size:value, then review line-height and letter-spacing instead of preserving the removed formula".into());
         }
         let after = self.convert_previous(source)?;
         let after = self.utility_class(source, after)?;
-        mixins::class(&self.sizing_class(after)?, &self.original)
+        self.sizing_class(after)
     }
 
     fn convert_previous(&self, source: &str) -> Result<String, String> {
         let migrated_wrappers = variants::class(&self.target_manifest.borrow(), source)?;
         let source = migrated_wrappers.as_str();
-        if source.starts_with('{') {
-            return self.group(source);
-        }
         if let Some(name) = self.managed_reference(source) {
             return if name == source {
                 Ok(source.into())
@@ -586,9 +599,6 @@ impl Migration {
     fn convert_declaration(&self, source: &str) -> Result<String, String> {
         if source.contains("${") || source.contains("{{") {
             return Err("Dynamic class construction cannot be migrated safely".into());
-        }
-        if source.starts_with('{') {
-            return self.group(source);
         }
         if matches!(
             self.profile,
@@ -703,6 +713,13 @@ impl Migration {
     }
 
     fn rules(&self, engine: &RefCell<EngineSession>, class: &str) -> Vec<EngineCompositionRuleIr> {
+        let tokens = mastercss_lexer::collect_class_list_token_ranges(class);
+        if tokens.len() > 1 {
+            return tokens
+                .iter()
+                .flat_map(|token| self.rules(engine, &token.token))
+                .collect();
+        }
         let engine = engine.borrow();
         let helper = engine
             .manifest_json()
@@ -806,22 +823,6 @@ impl Migration {
                         })
             })
         })
-    }
-
-    fn group(&self, source: &str) -> Result<String, String> {
-        let parts = values::group_parts(source).ok_or("Unbalanced declaration group")?;
-        let mut converted = Vec::new();
-        for part in &parts.0 {
-            converted.push(self.convert(part)?);
-        }
-        for (index, a) in converted.iter().enumerate() {
-            if converted[index + 1..].iter().any(|b| self.overlap(a, b)) {
-                return Err(
-                    "Group has overlapping declarations; review cascade order manually".into(),
-                );
-            }
-        }
-        Ok(format!("{{{}}}{}", converted.join(";"), parts.1))
     }
 }
 

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-7-mixin-contents",
+  "semanticBaseline": "language-8-native-selectors-and-independent-classes",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -323,35 +323,40 @@
       "sourceId": "rc87-15b32890c36a85e9",
       "kind": "selector",
       "input": ":of(.active)",
-      "expectedCanonical": ".active &"
+      "expectedCanonical": ".active &",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-32a046dabc542c75",
       "sourceId": "rc87-32a046dabc542c75",
       "kind": "selector",
       "input": ":of(#active)",
-      "expectedCanonical": "#active &"
+      "expectedCanonical": "#active &",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-162ff02b6632f8d4",
       "sourceId": "rc87-162ff02b6632f8d4",
       "kind": "selector",
       "input": ":of(active)",
-      "expectedCanonical": "active &"
+      "expectedCanonical": "active &",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-607cf543e3bdec74",
       "sourceId": "rc87-607cf543e3bdec74",
       "kind": "selector",
       "input": ":of(.active_)",
-      "expectedCanonical": ".active &"
+      "expectedCanonical": ".active &",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-2da2114031098406",
       "sourceId": "rc87-2da2114031098406",
       "kind": "selector",
       "input": ":of(.active>)",
-      "expectedCanonical": ".active>&"
+      "expectedCanonical": ".active>&",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-a7caf8516afa1558",
@@ -443,7 +448,7 @@
       "id": "rc87-lexer-6d5d386f580d29af",
       "sourceId": "rc87-6d5d386f580d29af",
       "kind": "lexer",
-      "input": "block\u3000fg:red",
+      "input": "block　fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -470,7 +475,7 @@
       "id": "rc87-lexer-9548ae64df5ed481",
       "sourceId": "rc87-9548ae64df5ed481",
       "kind": "lexer",
-      "input": " block  fg:red\u3000m:1x ",
+      "input": " block  fg:red　m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -778,7 +783,7 @@
             "{color-black!;border-bottom:2px|solid}",
             "{padding-top:calc(2.5em+3.75rem);margin-top:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-black:oklch(0% 0 none)}}@layer utilities{.\\{color-black\\!\\;border-bottom\\:2px\\|solid\\}{border-bottom:2px solid}.\\{color-black\\!\\;border-bottom\\:2px\\|solid\\}{color:var(--color-black)!important}.\\{padding-top\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;margin-top\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){margin-top:-3.75rem}.\\{padding-top\\:calc\\(2\\.5em\\+3\\.75rem\\)\\;margin-top\\:-3\\.75rem\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem)}}"
+          "expectedCss": ""
         }
       ]
     },
@@ -794,7 +799,7 @@
             "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
             "display:block@starting-style"
           ],
-          "expectedCss": "@layer base{.display\\:block_button\\@layer\\(base\\) button{display:block}}@layer defaults{.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}.\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
+          "expectedCss": "@layer base{.display\\:block_button\\@layer\\(base\\) button{display:block}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
         }
       ]
     },
@@ -805,19 +810,10 @@
         {
           "op": "inspect",
           "className": "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
-          "expectedValid": true,
-          "expectedRuleTexts": [
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){display:flex}",
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav){position:relative}"
-          ],
-          "expectedSelectorTexts": [
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)",
-            ".\\{display\\:flex\\;position\\:relative\\}_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)"
-          ],
-          "expectedLayers": [
-            "defaults",
-            "defaults"
-          ]
+          "expectedValid": false,
+          "expectedRuleTexts": [],
+          "expectedSelectorTexts": [],
+          "expectedLayers": []
         }
       ]
     },
@@ -928,7 +924,7 @@
             }
           ]
         },
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -1143,7 +1139,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--float-left",
@@ -1253,7 +1249,7 @@
             "display:block:nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.display\\:block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.display\\:block\\:of\\(\\.active\\>\\){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.display\\:block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
         }
       ]
     },
@@ -1315,7 +1311,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--card",
@@ -1379,7 +1375,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1446,7 +1442,7 @@
             }
           ]
         },
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -1493,7 +1489,7 @@
             }
           ]
         },
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -2921,12 +2917,12 @@
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -3095,12 +3091,12 @@
       "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -3140,12 +3136,12 @@
       "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -3189,12 +3185,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7
+        "languageVersion": 8
       }
     },
     {
@@ -3216,12 +3212,12 @@
             ]
           }
         ],
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7
+        "languageVersion": 8
       }
     },
     {
@@ -3230,12 +3226,12 @@
       "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -3304,12 +3300,12 @@
       "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "theme": [
           {
             "type": "rule",
@@ -3449,12 +3445,12 @@
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3603,12 +3599,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--card",
@@ -3701,12 +3697,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 7,
+        "languageVersion": 8,
         "mixins": [
           {
             "name": "--btn",
@@ -3805,5 +3801,5 @@
     "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered.",
     "Language 7 removes executable variant definitions and their manifest indexes. Current cases use native custom media, explicit layer suffixes and ordered mixin contents; the frozen RC oracle remains unchanged."
   ],
-  "languageVersion": 7
+  "languageVersion": 8
 }

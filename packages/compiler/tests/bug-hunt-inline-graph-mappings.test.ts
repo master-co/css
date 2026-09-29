@@ -31,7 +31,7 @@ for (const binding of ['native', 'wasm'] as const) {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
@@ -70,7 +70,7 @@ test('Node manifest files and references reject qualified global definitions', a
   }
 ],
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 } })).toThrow(/Qualified import.*global @mixin/)
       await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@apply --all{padding:2rem;}}", { projectDir: root, baseManifest: {
   mixins: [
@@ -91,7 +91,7 @@ test('Node manifest files and references reject qualified global definitions', a
   }
 ],
   "version": 4 as const,
-  "languageVersion": 7 as const
+  "languageVersion": 8 as const
 } })).rejects.toThrow(/Qualified import.*global @mixin/)
 
     }
