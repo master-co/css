@@ -79,8 +79,8 @@ export default function ViewTransitionDemo() {
                 aria-pressed={activeButton}
                 className={clsx(
                   'min-height:4.5rem p-md text-align:left cursor:pointer app-panel',
-                  'r-md border:1px|solid|var(--color-line-divider)',
-                  activeButton ? 'outline:2px|solid|var(--color-accent) bg-surface-raised' : 'bg-surface-raised:hover'
+                  'r-md border-width:1px border-style:solid b-line-divider',
+                  activeButton ? 'outline-width:2px outline-style:solid outline-accent bg-surface-raised' : 'bg-surface-raised:hover'
                 )}
                 key={view.id}
                 onClick={() => selectView(view.id)}

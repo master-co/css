@@ -26,7 +26,7 @@ export default function Backers({ backers }: any) {
         </>
       return (
         href
-          ? <Link key={'backer-' + i} href={href} className={clsx(className, 'transition:transform|.2s transform:scale(1.1):hover')}><Avatar /></Link>
+          ? <Link key={'backer-' + i} href={href} className={clsx(className, 'transition-property:transform transition-duration:0.2s transform:scale(1.1):hover')}><Avatar /></Link>
           : <div key={'backer-' + i} className={className}><Avatar /></div>
       )
     })}

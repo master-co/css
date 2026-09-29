@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-8-native-selectors-and-independent-classes",
+  "semanticBaseline": "language-9-atomic-class-authoring",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -448,7 +448,7 @@
       "id": "rc87-lexer-6d5d386f580d29af",
       "sourceId": "rc87-6d5d386f580d29af",
       "kind": "lexer",
-      "input": "block　fg:red",
+      "input": "block\u3000fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -475,7 +475,7 @@
       "id": "rc87-lexer-9548ae64df5ed481",
       "sourceId": "rc87-9548ae64df5ed481",
       "kind": "lexer",
-      "input": " block  fg:red　m:1x ",
+      "input": " block  fg:red\u3000m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
       "targetPackage": "tooling",
       "runner": "cargo-test"
@@ -828,14 +828,14 @@
             "bg-red-60",
             "m-md"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}.m-md{margin:var(--spacing-md)}}"
         },
         {
           "op": "delete",
           "classes": [
             "fg-red-60"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.bg-red-60{background-color:var(--color-red-60)}.m-md{margin:var(--spacing-md)}}"
         },
         {
           "op": "delete",
@@ -924,7 +924,7 @@
             }
           ]
         },
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -1069,7 +1069,7 @@
             "-m-3xs",
             "-ml-3xs"
           ],
-          "expectedCss": "@layer theme{:root,:host{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-3xs:.25rem}}@layer utilities{.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}}"
         }
       ]
     },
@@ -1139,7 +1139,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--float-left",
@@ -1234,7 +1234,7 @@
             "r-md",
             "rtl-lg"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.border-top\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.border\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.rtl-lg{border-top-left-radius:var(--radius-lg)}.border-top\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.border\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}}"
         }
       ]
     },
@@ -1266,7 +1266,7 @@
             "transition:opacity|300ms|ease|100ms",
             "font-feature-settings:\"kern\""
           ],
-          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-width\\:max-content{max-width:max-content}.min-height\\:min-content{min-height:min-content}}"
+          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-width\\:max-content{max-width:max-content}.min-height\\:min-content{min-height:min-content}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}}"
         }
       ]
     },
@@ -1311,7 +1311,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--card",
@@ -1375,7 +1375,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1442,7 +1442,7 @@
             }
           ]
         },
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -1489,7 +1489,7 @@
             }
           ]
         },
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -2917,12 +2917,12 @@
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { :root, :host { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } }\n @theme { .dark { --color-brand: #123; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -3091,12 +3091,12 @@
       "source": "@theme { :root, :host { --color-brand: $color-blue-50; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -3136,12 +3136,12 @@
       "source": "@theme { :root, :host { --spacing--card: -12; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -3185,12 +3185,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8
+        "languageVersion": 9
       }
     },
     {
@@ -3212,12 +3212,12 @@
             ]
           }
         ],
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8
+        "languageVersion": 9
       }
     },
     {
@@ -3226,12 +3226,12 @@
       "source": "@theme { :root, :host { --breakpoint-card: 777px; --container-panel: 333px; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -3300,12 +3300,12 @@
       "source": "@theme { :root, :host { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; } }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "theme": [
           {
             "type": "rule",
@@ -3445,12 +3445,12 @@
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3599,12 +3599,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--card",
@@ -3697,12 +3697,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 8,
+        "languageVersion": 9,
         "mixins": [
           {
             "name": "--btn",
@@ -3801,5 +3801,5 @@
     "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered.",
     "Language 7 removes executable variant definitions and their manifest indexes. Current cases use native custom media, explicit layer suffixes and ordered mixin contents; the frozen RC oracle remains unchanged."
   ],
-  "languageVersion": 8
+  "languageVersion": 9
 }

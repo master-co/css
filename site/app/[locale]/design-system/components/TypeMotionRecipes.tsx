@@ -5,7 +5,7 @@ const examples = [
   ['Type hierarchy', '/guide/typography#overview', FoundationTypography],
   ['Size and treatment', '/guide/typography#without-vs-with--textsize', FoundationTypeComparison],
   ['Finite entrances', '/guide/motion#overview', FoundationMotion],
-  ['State transition', '/guide/motion#use-transition-shorthands', FoundationTransition],
+  ['State transition', '/guide/motion#transition-properties', FoundationTransition],
   ['Dialog entrance', '/guide/motion#customize-motion-tokens', FoundationDialog],
 ] as const
 

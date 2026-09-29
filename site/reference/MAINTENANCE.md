@@ -24,7 +24,7 @@ Individual document pages render their authored or generated body directly. Do n
 
 ## Editing safely
 
-1. Keep existing utility URLs. Add new contracts through the section registry instead of creating a URL for every alias or token.
+1. Keep active utility URLs. Retired compound-class pages have no metadata or teaching body and use `retired-reference.ts` to direct visitors to atomic properties. They must not appear in the catalog, search, sitemap or machine exports.
 2. Preserve explicit heading IDs. In MDX, write `## New title \{#stable-id\}`. The braces must be escaped for MDX; the visible title and exported Markdown omit the marker. Add an old anchor entrance when moving a section.
 3. Add prose for prerequisites, exceptions and intended use. Placeholder syntax rows describe declaration shapes, not the full grammar of accepted values.
 4. Keep a text equivalent for every meaningful component. `markdown.ts` handles `Overview`, `Class2CSS`, literal `Code`, local MDX includes, token tables and configured examples. Unsupported components are reported and fail the coverage test. Do not execute arbitrary JSX to extract prose.

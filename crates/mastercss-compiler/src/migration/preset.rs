@@ -110,6 +110,35 @@ impl Saved {
             return Ok(source.into());
         }
         let positive = head.strip_prefix('-').unwrap_or(&head);
+        if [
+            "border",
+            "border-top",
+            "border-right",
+            "border-bottom",
+            "border-left",
+            "border-block",
+            "border-inline",
+            "border-block-start",
+            "border-block-end",
+            "border-inline-start",
+            "border-inline-end",
+            "animation",
+            "transition",
+        ]
+        .iter()
+        .any(|prefix| {
+            positive
+                .strip_prefix(prefix)
+                .and_then(|rest| rest.strip_prefix('-'))
+                .is_some_and(|key| {
+                    self.tokens.contains(&format!("color-line-{key}"))
+                        || self.tokens.contains(&format!("color-{key}"))
+                        || self.tokens.contains(&format!("duration-{key}"))
+                        || self.tokens.contains(&format!("easing-{key}"))
+                })
+        }) {
+            return Err("This historical compound token family was removed; choose independent properties from the saved CSS".into());
+        }
         let mut families = mastercss_engine::builtin_token_families()
             .map(|(prefix, property, _)| (prefix, property))
             .collect::<Vec<_>>();

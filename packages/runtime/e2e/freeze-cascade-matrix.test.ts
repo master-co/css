@@ -18,8 +18,8 @@ const cases = [
   { classes: "outside padding:8px!", padding: '8px' },
   { classes: "component padding:8px", padding: '8px' },
   { classes: "component-important padding:8px!", padding: '24px' },
-  { classes: "padding:8px padding-top:12px", padding: '12px 8px 8px' },
-  { classes: "p-md padding-top:12px padding:8px", padding: '12px 8px 8px' }
+  { classes: "padding:8px padding-top:12px", padding: '8px' },
+  { classes: "p-md padding-top:12px padding:8px", padding: '8px' }
 ]
 const classes = [...cases.flatMap(item => item.classes.split(' ')), 'display:block', 'layout']
 const html = `<!doctype html><html><head><style>
@@ -63,7 +63,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       await page.locator('#case-11').evaluate(element => { element.className = '' })
       await expect(page.locator('#case-11')).toHaveCSS('padding', '0px')
       await page.locator('#case-11').evaluate(element => { element.className = "padding:8px padding-top:12px p-md" })
-      await expect(page.locator('#case-11')).toHaveCSS('padding', '12px 8px 8px')
+      await expect(page.locator('#case-11')).toHaveCSS('padding', '8px')
     }
   })
 }

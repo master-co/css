@@ -146,11 +146,7 @@ impl EngineSession {
         let utility = UtilityDefinition {
             id: format!("native:{}", candidate.ir.property),
             name: None,
-            utility_type: if super::is_native_shorthand_property(&candidate.ir.property) {
-                -1
-            } else {
-                0
-            },
+            utility_type: 0,
             order: Some(0),
             layer: UtilityLayerName::Utilities,
             keys: Vec::new(),

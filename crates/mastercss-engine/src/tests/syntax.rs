@@ -129,7 +129,7 @@ fn animation_declarations_do_not_register_native_keyframes() {
 
 #[test]
 fn native_keyframe_values_retain_theme_dependencies_as_stylesheet_usage() {
-    let manifest = r##"{"version":4,"languageVersion":8,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"#ff0"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"#ff0"}]}]}"##;
+    let manifest = r##"{"version":4,"languageVersion":9,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"#ff0"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"#ff0"}]}]}"##;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine.ensure_stylesheet_resources("@keyframes fade{to{background:var(--color-primary)}}").unwrap();
     assert!(engine.css_text().contains("--color-primary:#ff0"));
@@ -187,7 +187,7 @@ fn renders_the_compiled_condition_grammar() {
 
 #[test]
 fn separates_child_selectors_from_dynamic_values() {
-    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":9}"#).unwrap();
     engine.ensure_class_rules(["margin-top:0>div"]).unwrap();
     assert_eq!(
         engine.css_text(),
@@ -206,7 +206,7 @@ fn separates_child_selectors_from_dynamic_values() {
 
 #[test]
 fn native_property_precedes_overlapping_enum_name() {
-    let manifest = r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--text-wrap","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"wrap"}]}]},{"name":"--text-pretty","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"pretty"}]}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":9,"mixins":[{"name":"--text-wrap","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"wrap"}]}]},{"name":"--text-pretty","body":[{"type":"declaration","property":"text-wrap","value":[{"type":"text","value":"pretty"}]}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["text-wrap:pretty"])
@@ -231,14 +231,14 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 
 #[test]
 fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
-    let manifest = r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":9,"mixins":[{"name":"--text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.inspect("text-center").unwrap().rules[0].text,
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":4,"languageVersion":9}"#).unwrap();
     assert!(engine.inspect("margin:$(spacing-x1)").unwrap().match_status != mastercss_schema::MatchStatus::Matched);
     assert!(
         engine
@@ -250,7 +250,7 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
 
 #[test]
 fn mixin_variants_keep_the_requested_layer() {
-    let manifest = r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--demo","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"flex"}]}]}],"customMedia":{}}"#;
+    let manifest = r#"{"version":4,"languageVersion":9,"mixins":[{"name":"--demo","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"flex"}]}]}],"customMedia":{}}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine.ensure_class_rules(["demo@layer(defaults)", "demo@layer(components)"]).unwrap();
     assert_eq!(engine.css_text(), "@layer defaults{.demo\\@layer\\(defaults\\){display:flex}}@layer components{.demo\\@layer\\(components\\){display:flex}}");
@@ -258,7 +258,7 @@ fn mixin_variants_keep_the_requested_layer() {
 
 #[test]
 fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
-    let manifest = r#"{"version":4,"languageVersion":8,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":9,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"0 / 7.5px 7.5px linear-gradient(red,blue) transparent"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
         engine.native_declaration_candidates(["background:var(--stripe)"]).unwrap(),
@@ -279,7 +279,7 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
 
 #[test]
 fn repeated_native_declarations_share_one_rule() {
-    let manifest = r#"{"version":4,"languageVersion":8,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":9,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]}"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
         .ensure_class_rules(["background:var(--stripe)"])

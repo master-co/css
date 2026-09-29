@@ -176,7 +176,6 @@ setHeadlineSize('3rem')
 
 The class `font-size:var(--headline-size)` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which follows native CSS custom property behavior.
 
-Use `var()` for a value supplied only by the DOM. The former `$name` shorthand is removed; explicit `var(--name)` works for both manifest tokens and inline custom properties.
 
 Use the same pattern for a data-driven progress value. Keep an accessible numeric value alongside the visual width:
 
@@ -184,7 +183,7 @@ Use the same pattern for a data-driven progress value. Keep an accessible numeri
 <div id="progress" role="progressbar" aria-label="Upload progress"
   aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
   class="overflow:hidden height:1rem border-radius:100% bg-gray-10">
-  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)@motion-safe"
+  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition-property:width@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:var(--easing-smooth)@motion-safe"
     style="--progress: 25%"></div>
 </div>
 ```

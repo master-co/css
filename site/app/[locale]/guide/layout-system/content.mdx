@@ -144,17 +144,17 @@ Grid placement should describe the region's role in the layout, not the visual s
 | Assign a named area | `grid-area:<name>` |
 
 ```html
-<!-- @MARK grid-col-span(12) --><!-- @MARK grid-column:3/11@md --><!-- @MARK grid-row-span(2)@md -->
+<!-- @MARK grid-col-span(12) --><!-- @MARK grid-column-start:3@md grid-column-end:11@md --><!-- @MARK grid-row-span(2)@md -->
 <section class="grid-cols(12) gap-lg">
   <header class="grid-col-span(12)">...</header>
-  <article class="grid-column:3/11@md grid-row-span(2)@md">...</article>
+  <article class="grid-column-start:3@md grid-column-end:11@md grid-row-span(2)@md">...</article>
 </section>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid-cols(12)', 'gap-lg', 'grid-col-span(12)', 'grid-column:3/11@md', 'grid-row-span(2)@md']}
+    {['grid-cols(12)', 'gap-lg', 'grid-col-span(12)', 'grid-column-start:3@md grid-column-end:11@md', 'grid-row-span(2)@md']}
   </Class2CSS>
 </details>
 
@@ -174,7 +174,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-  <article className="display:flex container-type:inline-size flex-direction:column gap-md width:100% p-md r-lg border:1px|solid|var(--color-line-divider) bg-surface-raised shadow-xs flex-direction:row@container((width>=18rem))">
+  <article className="display:flex container-type:inline-size flex-direction:column gap-md width:100% p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised shadow-xs flex-direction:row@container((width>=18rem))">
     <div className="display:grid place-content:center width:100% aspect-ratio:4/3 r-md bg-blue-60/.12 flex:0@container((width>=18rem)) width:9rem@container((width>=18rem))">
       <div className="grid-cols(3) gap-2xs width:5rem">
         <div className="height:1.25rem r-sm bg-blue-60/.25"></div>

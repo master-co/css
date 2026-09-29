@@ -30,7 +30,7 @@ async function computed(page: Page) {
 }
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
-  test(`${mode} preserves named and native value priorities and shorthand resets`, async ({ page }) => {
+  test(`${mode} uses general value priority and preserves native declaration resets`, async ({ page }) => {
     await page.setViewportSize({ width: 1100, height: 720 })
     await page.emulateMedia({ colorScheme: 'light' })
     const classes = classLists.flatMap(value => value.split(' '))
@@ -58,8 +58,8 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     const styles = await computed(page)
     expect(styles[0].padding).toBe('8px')
     expect(styles[1].padding).toBe('8px')
-    expect(styles[2].padding).toBe('12px 8px 8px')
-    expect(styles[3].padding).toBe('12px 8px 8px')
+    expect(styles[2].padding).toBe('8px')
+    expect(styles[3].padding).toBe('8px')
     expect(styles[4].padding).toBe('8px')
     expect(styles[5].fontFamily).toBe('mono')
     expect(styles[6]).toMatchObject({ backgroundColor: 'rgba(0, 0, 0, 0)', borderStyle: 'none', outlineStyle: 'none' })
@@ -72,8 +72,8 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       await page.locator('#target-0').evaluate(element => { element.className = "p-md padding:10px" })
       await expect(page.locator('#target-0')).toHaveCSS('padding', '10px')
       await page.locator('#target-2').evaluate(element => { element.className = "p-md padding-top:14px padding:8px" })
-      await expect(page.locator('#target-2')).toHaveCSS('padding-top', '14px')
-      expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('padding-top:14px')
+      await expect(page.locator('#target-2')).toHaveCSS('padding-top', '8px')
+      await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('padding-top:14px')
     }
   })
 }

@@ -52,7 +52,7 @@ A two-value position supplies horizontal then vertical offsets. Percentages alig
 ```html
 <!-- 50% 25% · shares the free space -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:50%|25%
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position-x:50% background-position-y:25%
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>
@@ -61,7 +61,7 @@ A two-value position supplies horizontal then vertical offsets. Percentages alig
 ```html
 <!-- 24px 12px · measured offset -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position:var(--spacing-lg)|var(--spacing-sm)
+  class="height:160px w-xs max-width:100% background-repeat:no-repeat background-position-x:var(--spacing-lg) background-position-y:var(--spacing-sm)
          background-size:160px|100px bg-surface-inset
          background-image:url(/demo/landscape.svg)"
 ></div>

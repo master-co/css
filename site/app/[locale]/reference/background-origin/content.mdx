@@ -11,7 +11,7 @@ Compare the same 80 × 50 image at the top-left of three positioning areas. The 
 ```html
 <!-- Border origin · x 0, y 0 -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:border-box
          background-position:0|0 background-size:80px|50px
          background-image:url(/demo/landscape.svg)"
@@ -21,7 +21,7 @@ Compare the same 80 × 50 image at the top-left of three positioning areas. The 
 ```html
 <!-- Padding origin · x 8, y 8 -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:padding-box
          background-position:0|0 background-size:80px|50px
          background-image:url(/demo/landscape.svg)"
@@ -31,7 +31,7 @@ Compare the same 80 × 50 image at the top-left of three positioning areas. The 
 ```html
 <!-- Content origin · x 32, y 32 -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:content-box
          background-position:0|0 background-size:80px|50px
          background-image:url(/demo/landscape.svg)"
@@ -55,7 +55,7 @@ Percentage image sizes also use the chosen positioning area. With `background-si
 ```html
 <!-- Fill the border positioning area -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:border-box
          background-position:0|0 background-size:100%|100%
          background-image:url(/demo/landscape.svg)"
@@ -65,7 +65,7 @@ Percentage image sizes also use the chosen positioning area. With `background-si
 ```html
 <!-- Fill the content positioning area -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:content-box
          background-position:0|0 background-size:100%|100%
          background-image:url(/demo/landscape.svg)"
@@ -82,7 +82,7 @@ Widen the preview to `sm` to move the same image from the padding origin to the 
 ```html
 <!-- Padding → content at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box background-repeat:no-repeat background-origin:padding-box
          background-position:0|0 background-size:80px|50px
          background-image:url(/demo/landscape.svg) background-origin:padding-box@media(print)

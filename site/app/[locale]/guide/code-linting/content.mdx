@@ -113,7 +113,6 @@ margin:16px display:block@dark@sm <!-- [!code --] -->
 margin:16px display:block@sm@dark <!-- [!code ++] -->
 ```
 
-Canonical fixes preserve value sources and cascade priority. A literal stays a literal; `font-size:16px` is not replaced by a token that happens to equal `16px` today. Explicit `var()` references and multi-value declarations retain their identities. A shorter static utility or composition is not suggested when it changes the existing shorthand, longhand, or value-source priority.
 
 Use the explicit [v2 RC migration command](/guide/migration/v2-rc#6-preview-and-apply-migration-proposals) for historical token syntax. Canonical linting does not guess the meaning of old colon tokens.
 
@@ -136,7 +135,6 @@ margin:2.5rem@sm margin:3.125rem@md
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
 
-Partially overlapping spacing, physical inset, radius, and border width/color/style shorthands are split so the surviving declarations are kept:
 
 ```mcss
 mx-md ml-lg <!-- [!code --] -->

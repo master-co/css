@@ -55,7 +55,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                 )
               })}
             </div>
-            <div className="display:flex flex-wrap:wrap gap:var(--spacing-xs)|var(--spacing-sm)" role="group" aria-label={`${item.label} breakdown`}>
+            <div className="display:flex flex-wrap:wrap row-gap:var(--spacing-xs) column-gap:var(--spacing-sm)" role="group" aria-label={`${item.label} breakdown`}>
               {item.segments.map((segment, index) => {
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
                 const colorClasses = benchmarkColorClasses[color]

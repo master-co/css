@@ -11,7 +11,7 @@ export default function PageContentBlockMap() {
   const $ = useTranslation()
 
   return (
-    <nav aria-label={$('Page block map')} className="position:sticky top:0 overflow-y:auto flex:0|0|2rem order:-1 height:100dvh padding-block:8.75rem display:none@media(print) display:none@media((width<80rem)) scrollbar scrollbar-concealed">
+    <nav aria-label={$('Page block map')} className="position:sticky top:0 overflow-y:auto flex-grow:0 flex-shrink:0 flex-basis:2rem order:-1 height:100dvh padding-block:8.75rem display:none@media(print) display:none@media((width<80rem)) scrollbar scrollbar-concealed">
       <div className="display:flex flex-direction:column align-items:center justify-content:center gap:1px width:100% min-height:100%">
         {items.map((item) => {
           const active = currentId === item.id
@@ -24,7 +24,7 @@ export default function PageContentBlockMap() {
             <button
               aria-current={active ? 'location' : undefined}
               aria-label={title}
-              className="display:grid place-content:center height:14px width:24px padding:0 r-xs border-width:0 outline-offset-4xs background-color:transparent cursor:pointer outline:2px|solid|var(--color-focus):focus"
+              className="display:grid place-content:center height:14px width:24px padding:0 r-xs border-width:0 outline-offset-4xs background-color:transparent cursor:pointer outline-width:2px:focus outline-style:solid:focus outline-focus:focus"
               data-page-content-block-id={item.id}
               key={item.id}
               suppressHydrationWarning
@@ -33,7 +33,7 @@ export default function PageContentBlockMap() {
               onClick={() => anchor(item.id, { offset: 110 })}
             >
               <span data-page-content-block-indicator suppressHydrationWarning className={clsx('display:block height:3px border-radius:1e9em bg-accent/.45.active-parent! opacity:.8.active-parent! width:16px.active! bg-accent.active! opacity:1.active!', {
-                'transition:all|.15s': activeTransitionsReady,
+                'transition-property:all transition-duration:.15s': activeTransitionsReady,
                 'active': active,
                 'active-parent': activeParent,
                 'width:14px bg-line-divider opacity:.6': item.level === 2,

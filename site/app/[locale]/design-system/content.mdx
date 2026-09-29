@@ -317,7 +317,7 @@ Derive breakpoint widths from the active preset; the numbers above illustrate th
 ```tsx
 <DemoMotion>
   <div className="display:grid place-items:center height:10rem">
-    <DemoItem className="width:4rem height:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
+    <DemoItem className="width:4rem height:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem>
   </div>
 </DemoMotion>
 ```
@@ -972,7 +972,6 @@ supports the rendered markup in [React](/guide/installation/react) and
 [Vue](/guide/installation/vuejs).
 
 For formal rules that need code without a live preview, `ConfiguredExample` accepts
-the same `source` and literal `html` (or its existing `classes` shorthand). It uses
 the same native-property support as the preview and includes complete generated CSS.
 
 ## Platform behavior \{#platform-behavior\}
@@ -1359,7 +1358,7 @@ Every specimen below is available directly in MDX. The surrounding example owns 
   {/* overflowing content */}
 </DemoScrollArea>
 <DemoMotion>
-  <DemoItem className="width:4rem height:4rem animation:rotate|2s|linear|infinite" />
+  <DemoItem className="width:4rem height:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite" />
 </DemoMotion>
 <DemoViewport title="Responsive layout" document={htmlDocument} responsive />
 ```
@@ -1466,7 +1465,6 @@ A truncation example needs a complete visible reading path when the hidden infor
 Use `data-style-pseudo="::first-letter"` with a style readout when the taught property applies to a pseudo-element. The same measurement component reads that native computed style. Do not infer a rendering-quality or performance improvement from an accepted hint.
 
 ### Isolate glyph paint
-Use the authored-text recipe with `appearance: 'plain'` for decoration, fill, shadow and stroke. It keeps the neutral surface and external labels while leaving the subject’s background and outline untouched. Read the actual longhands alongside optional box measurements; a paint change does not imply a new font size or layout box.
 
 ```ts
 typeSpecimens(section, {
@@ -1477,14 +1475,12 @@ typeSpecimens(section, {
 })
 ```
 
-Keep a real line when demonstrating its style, thickness or offset. Use longhands to preserve the other parts of a shorthand. Preserve parent and inline-child structure when explaining decoration propagation; a child’s `none` value cannot erase its ancestor’s line.
 
 Transparent text needs an authored visible paint source, such as a clipped gradient or a nonzero outline. Supply a solid fallback for print when backgrounds may be omitted. A plain specimen does not supply those prerequisites. Interactive subjects retain the shared keyboard focus ring.
 
 ### Preserve lists and generated content
 Render the complete authored list, article and descendants. The plain text surface must not invent a counter name, reset value, marker, item or pseudo-element. Keep reading labels outside the authored article or list and report the property on the element that owns it. Native counter prefixes may remain unresolved `counter()` expressions in computed styles; inspect their rendered text instead of replacing them with scripted numbers.
 
-Keep marker type, position and image distinct. Use identical content and constraints to compare inside and outside wrapping; supply explicit padding for hanging markers. Image examples need a valid asset or native gradient and a type fallback. A full `list-style` shorthand resets omitted parts, so independent conditions need longhands.
 
 Keep essential link names and instructions in HTML. A generated indicator supplements the native anchor and can enter its accessible name. Test the actual pseudo-element and preserve keyboard focus. For platform-dependent syntax, show the browser’s real support branch and label an authored fallback clearly.
 
@@ -1496,7 +1492,6 @@ Keep essential link names and instructions in HTML. A generated indicator supple
 ### Preserve background paint prerequisites
 Author the image source, box dimensions, position, size, repeat behavior and backing color in the visible HTML. The plain specimen adds no image, border, padding, clipping or blend mode to the subject. Keep labels and computed readings outside its painted area.
 
-Use the same image and geometry when comparing one longhand. Separate the positioning area (`background-origin`) from the painting boundary (`background-clip`). Computed percentages and fit keywords are not measurements of rendered image pixels; pair them with a known source ratio and visible edges.
 
 For attachment, provide real overflowing content and a fixed-height iframe viewport. Test inner-panel and document scrolling independently; do not substitute transformed layers. Keep foreground text readable on its own opaque surface and describe platform-dependent fixed-background behavior in the exported prose.
 
@@ -1507,7 +1502,6 @@ Supply border width, style and color explicitly. Compare the same box dimensions
 
 The plain specimen adds no border, outline, radius or shadow to the subject. Keep the live readings and labels outside it. Radius does not clip descendant content on its own; show the separate overflow rule when clipping is part of the example.
 
-Use native focusable controls for outline conditions. Keep a visible keyboard focus treatment, enough space for outward rings, and a real destination for skip links. Distinguish the full outline shorthand from independent longhands, and report native keyword widths as browser-computed values.
 
 Compile authored theme declarations with their examples. The shadow recipe enables the preview's theme control explicitly, so users can compare actual token values in both modes. Raw paint values remain literal unless the author supplies a theme-dependent token or condition.
 
@@ -1549,7 +1543,6 @@ Will-change specimens expose the declared hint and its lifetime. Keep their cont
 
 ### Preserve native transition timelines
 
-Use a visible native control and author both CSS endpoints. The moving or fading subject owns its transition longhands; these properties are not inherited. Keep the trigger separate when movement could make hover unstable, and place the duration, delay and easing readings outside the subject.
 
 For comparisons, keep distance and endpoints explicit. Use actual CSS transitions, including their waiting interval and state-specific easing. Gate both duration and delay for reduced motion, retain an immediate print state, and let native transitions finish when preferences change. Playback controls should pause only demos that explicitly opt into them.
 

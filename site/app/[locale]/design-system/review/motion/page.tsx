@@ -14,18 +14,18 @@ export const metadata = {
 const original = <OriginalDemo><div className="review-motion-originalScene">
   <div className="review-motion-originalCard">
     <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-    <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion-safe" />
+    <div className="height:3.5rem width:3.5rem r-lg bg-blue-5 animation-name:fade@motion-safe animation-duration:var(--duration-slow)@motion-safe animation-timing-function:var(--easing-smooth)@motion-safe animation-iteration-count:infinite@motion-safe animation-direction:alternate@motion-safe" />
   </div>
   <div className="review-motion-originalCard">
     <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-    <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion-safe" />
+    <div className="height:3.5rem width:3.5rem r-lg bg-green-5 animation-name:zoom@motion-safe animation-duration:var(--duration-fast)@motion-safe animation-timing-function:var(--easing-overshoot)@motion-safe animation-iteration-count:infinite@motion-safe animation-direction:alternate@motion-safe" />
   </div>
 </div></OriginalDemo>
 
 function Preview({ candidate = false }: { candidate?: boolean }) {
   return <Demo padding="none"><div className={candidate ? 'review-motion-candidate' : 'review-motion-current'}>
     <DemoMotion><div className="review-motion-scene">
-      <DemoItem tone="blue" className="display:grid place-content:center height:4rem width:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
+      <DemoItem tone="blue" className="display:grid place-content:center height:4rem width:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem>
     </div></DemoMotion>
   </div></Demo>
 }

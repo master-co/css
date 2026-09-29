@@ -1,3 +1,5 @@
 import './ignore-css-imports'
+import { fileURLToPath } from 'node:url'
 
-await import('./generate-llms-txt')
+const { generate } = await import('./generate-llms-txt')
+await generate(fileURLToPath(new URL('../', import.meta.url)))

@@ -3,20 +3,17 @@ use super::{
     CanonicalClassSuggestionsIr, ClassDescriptor, EngineError, EngineSession, HashSet,
     LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, LintClassListPolicy, LintSession,
     NativeDeclarationCandidateIr, RawValueCandidatesIr, Value,
-    build_canonical_recommendation_index, class_list, collect_manifest_variables, find_conflicts,
-    find_partial_conflicts, sort_descriptors,
+    build_canonical_recommendation_index, class_list, find_conflicts, find_partial_conflicts,
+    sort_descriptors,
 };
 
 impl LintSession {
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
-        let (variable_keys, variable_values) = collect_manifest_variables(manifest_json);
         let engine = EngineSession::create(manifest_json)?;
         let manifest = serde_json::from_str::<Value>(manifest_json).unwrap_or(Value::Null);
         let canonical_index = build_canonical_recommendation_index(&manifest, &engine)?;
         Ok(Self {
             engine,
-            variable_keys,
-            variable_values,
             canonical_index,
         })
     }
@@ -72,12 +69,7 @@ impl LintSession {
             .collect::<Result<Vec<_>, EngineError>>()?;
         let sorted_class_names = sort_descriptors(&descriptors);
         let conflicts = find_conflicts(&descriptors);
-        let partial_conflicts = find_partial_conflicts(
-            &descriptors,
-            &self.engine,
-            &self.variable_keys,
-            &self.variable_values,
-        )?;
+        let partial_conflicts = find_partial_conflicts(&descriptors);
         let matches = descriptors
             .iter()
             .map(|descriptor| descriptor.matched)

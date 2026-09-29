@@ -8,7 +8,7 @@ export default function Tabs(props: any) {
     <nav className={clsx('overflow-x:auto overflow-y:hidden display:none::scrollbar', props.className)}>
       {/* width:fit-content min-width:100% 用於觸發 ResizeObserver */}
       <div className={clsx(
-        'display:flex gap-xl width:fit-content min-width:100% border-bottom:1px|solid|var(--color-line-subtle)',
+        'display:flex gap-xl width:fit-content min-width:100% border-bottom-width:1px border-bottom-style:solid bb-line-subtle',
         props.contentClassName
       )}>
         {props.children}
@@ -22,7 +22,7 @@ export function Tab(props: any) {
   return (
     <Link {...props}
       className={clsx(
-        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block:2px|transparent|solid font-weight:460 white-space:nowrap app-nav',
+        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-width:2px border-block-style:solid border-block-color:transparent font-weight:460 white-space:nowrap app-nav',
         {
           'font-xs!': size === 'sm',
           'font-sm!': !size

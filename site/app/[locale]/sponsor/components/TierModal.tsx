@@ -22,7 +22,7 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
         )}
       </div>
     </div>
-    <div className="margin-bottom:0.313rem padding-inline:1.563rem padding-top:0.938rem border-top:1px|solid|var(--color-line-subtle) text-xs">
+    <div className="margin-bottom:0.313rem padding-inline:1.563rem padding-top:0.938rem border-top-width:1px border-top-style:solid bt-line-subtle text-xs">
       {$('Choose a platform')}
     </div>
     <Link href={selectedTier.openCollectiveUrl} className="display:flex align-items:center gap-sm min-height:48px padding-inline:1.563rem font-medium text-decoration:none!">

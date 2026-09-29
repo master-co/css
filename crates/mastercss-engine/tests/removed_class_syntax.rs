@@ -1,7 +1,7 @@
 use mastercss_engine::{ClassSemanticKind, EngineSession};
 use mastercss_schema::{CssSyntaxStatus, ErrorCode, MatchStatus};
 
-const MANIFEST: &str = r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--wrap","body":[{"type":"declaration","property":"order","value":[{"type":"text","value":"1"}]},{"type":"contents","fallback":[]}]}]}"#;
+const MANIFEST: &str = r#"{"version":4,"languageVersion":9,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--wrap","body":[{"type":"declaration","property":"order","value":[{"type":"text","value":"1"}]},{"type":"contents","fallback":[]}]}]}"#;
 
 #[test]
 fn removed_classes_have_no_execution_or_tooling_results() {

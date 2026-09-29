@@ -188,7 +188,7 @@ fn raw_values_win_only_after_existing_priority_tiers() {
     let mut engine = engine();
     engine.ensure_class_rules(["pt-sm", "padding:8px"]).unwrap();
     let css = engine.css_text();
-    assert!(css.find("padding:8px").unwrap() < css.find("padding-top:var(--spacing-sm)").unwrap());
+    assert!(css.find("padding-top:var(--spacing-sm)").unwrap() < css.find("padding:8px").unwrap());
 }
 
 #[test]
@@ -293,7 +293,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":8,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":4,"languageVersion":9,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -329,7 +329,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":8,"utilities":[utility]}).to_string();
+        let source = json!({"version":4,"languageVersion":9,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()

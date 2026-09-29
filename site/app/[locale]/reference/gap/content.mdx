@@ -19,7 +19,6 @@
 ```
 
 ### Set row and column gaps separately \{#set-row-and-column-gaps-separately\}
-`row-gap:*` sets row-gap; `column-gap:*` sets column-gap. Both grids below use 24px between rows and 12px between columns. The two-value shorthand puts row-gap first.
 
 <DemoExample page="gap" section="set-row-and-column-gaps-separately" />
 
@@ -36,8 +35,8 @@
 ```
 
 ```html
-<!-- Two-value shorthand -->
-<div id="layout" class="grid-cols(3) grid-auto-rows:48px gap:var(--spacing-lg)|var(--spacing-sm) width:17.5rem max-width:100%" role="group" aria-label="Available space">
+<!-- Explicit row and column gaps -->
+<div id="layout" class="grid-cols(3) grid-auto-rows:48px row-gap:var(--spacing-lg) column-gap:var(--spacing-sm) width:17.5rem max-width:100%" role="group" aria-label="Available space">
   <div id="target" class="p-sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>

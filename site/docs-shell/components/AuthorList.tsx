@@ -34,7 +34,7 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
           >
             <Image
               className={clsx('aspect-ratio:1/1 border-radius:50% object-fit:cover', {
-                'outline:1px|solid|var(--color-line-subtle) outline-offset-3xs': size === 'md'
+                'outline-width:1px outline-style:solid outline-color-line-subtle outline-offset-3xs': size === 'md'
               })}
               src={author.image}
               width={avatarSize}

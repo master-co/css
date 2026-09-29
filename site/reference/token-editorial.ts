@@ -1,6 +1,6 @@
 /** Reading context only; token values and consumers still come from the preset. */
 export const tokenEditorial: Record<string, { context: string, guide: string, label: string }> = {
-  animate: { context: 'Named animation shorthands combine a keyframe name with timing and repetition. The current recipes loop indefinitely; use a finite animation when an entrance should run once.', guide: '/guide/motion', label: 'Motion' },
+  animate: { context: 'Named animation recipes emit independent animation properties. Primary tokens name keyframes; companion tokens customize timing and repetition. The current recipes loop indefinitely; use a finite animation when an entrance should run once.', guide: '/guide/motion', label: 'Motion' },
   breakpoint: { context: 'These lengths define the shared viewport thresholds. The named media conditions are listed separately in [Breakpoints](/reference/tokens/breakpoints).', guide: '/guide/breakpoints', label: 'Breakpoints' },
   color: { context: 'Numbered palette steps have fixed values. Hue aliases such as blue have separate light and dark values; current resolves to the element’s currentColor.', guide: '/guide/colors', label: 'Colors' },
   'color-line': { context: 'Line roles give borders, outlines and strokes a consistent emphasis in each theme.', guide: '/guide/colors#line-roles', label: 'Colors' },

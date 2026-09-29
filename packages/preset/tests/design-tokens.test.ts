@@ -192,7 +192,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
       namespace: 'animate',
       key: 'fade',
       type: 'string',
-      values: [{ path: [':root,:host'], value: 'fade 1s infinite' }]
+      values: [{ path: [':root,:host'], value: 'fade' }]
     })
     expect(defaultManifest).not.toHaveProperty('animations')
     expect(findVariable('color-blue-60')).toMatchObject({
@@ -356,7 +356,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
     expect(declarationsCSS.createRule('text:blue-60')).toBeUndefined()
     expect(css.createRule('text-fill-color-text-pink')?.text).toBe('.text-fill-color-text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
-    expect(css.createRule('animate-fade')?.text).toContain('animation:var(--animate-fade)')
+    expect(css.createRule('animate-fade')?.text).toContain('animation-name:var(--animate-fade)')
     expect(declarationsCSS.createRule("background:accent")?.text).toContain('background:accent')
     expect(css.createRule("color:on-blue")?.text).not.toContain('var(--color-on-blue)')
     expect(css.createRule("border:line-blue")?.text).not.toContain('var(--color-line-blue)')

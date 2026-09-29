@@ -303,7 +303,7 @@ fn applies_document_context_settings_in_rust() {
 #[test]
 fn tokenizes_selector_combinators_without_class_group_tokens() {
     let session = LanguageSession::create(
-        r#"{"version":4,"languageVersion":8,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":4,"languageVersion":9,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
     let source = "<div class=\"color:red>li:hover block>li:hover\"></div>";
@@ -374,7 +374,7 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":4,"languageVersion":8,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+            r#"{"version":4,"languageVersion":9,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
@@ -398,7 +398,7 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":4,"languageVersion":8,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
+            r#"{"version":4,"languageVersion":9,"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
@@ -431,7 +431,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_mixin_wrappers_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":4,"languageVersion":8,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":4,"languageVersion":9,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@apply(--ocean)",
@@ -451,7 +451,7 @@ fn completion_owns_mixin_wrappers_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":4,"languageVersion":9}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -485,7 +485,7 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":4,"languageVersion":8,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{}}"#,
+        r#"{"version":4,"languageVersion":9,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{}}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();

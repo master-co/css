@@ -21,7 +21,7 @@ function SpacingTable({ variant }: { variant: 'original' | 'current' | 'candidat
         <th scope="row"><InlineCode>{`--spacing-${entry.key}`}</InlineCode></th>
         <td><InlineCode>{entry.value}</InlineCode></td>
         <td>{`${Number(entry.px.toFixed(4))}px`}</td>
-        <td><div className={`display:inline-flex width:fit-content outline:1px|solid|var(--color-line-subtle) outline-offset:-1px v:middle ${pink ? 'background-color:var(--stripe-pink)' : 'demo-pattern'}`} style={{ gap: entry.value }}>
+        <td><div className={`display:inline-flex width:fit-content outline-width:1px outline-style:solid outline-line-subtle outline-offset:-1px v:middle ${pink ? 'background-color:var(--stripe-pink)' : 'demo-pattern'}`} style={{ gap: entry.value }}>
           {Array.from({ length: 5 }, (_, index) => <span key={index} className={`display:inline-block width:1.5em height:1.5em ${pink ? 'bg-surface-raised' : 'demo-item'}`} />)}
         </div></td>
       </tr>)}</tbody>

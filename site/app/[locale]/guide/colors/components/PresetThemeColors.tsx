@@ -125,7 +125,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
   function renderPreview() {
     return (
-      <div className="height:6rem width:6rem r-sm border:1.25rem|solid|var(--color-line-divider)"></div>
+      <div className="height:6rem width:6rem r-sm border-width:1.25rem border-style:solid b-line-divider"></div>
     )
   }
 

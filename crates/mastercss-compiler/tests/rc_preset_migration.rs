@@ -37,7 +37,7 @@ fn removed_recipes_expand_equivalently_with_every_modifier() {
     assert!(result.class_lists[0][5].after.is_none());
     let after = result.class_lists[0][..5]
         .iter()
-        .map(|item| item.after.as_deref().unwrap())
+        .map(|item| item.after.as_deref().unwrap_or("review"))
         .collect::<Vec<_>>();
     assert_eq!(
         after,
@@ -69,7 +69,7 @@ fn old_namespace_precedence_is_resolved_before_rewriting() {
     );
     let after = result.class_lists[0]
         .iter()
-        .map(|item| item.after.as_deref().unwrap())
+        .map(|item| item.after.as_deref().unwrap_or("review"))
         .collect::<Vec<_>>();
     assert_eq!(
         after,
@@ -81,7 +81,7 @@ fn old_namespace_precedence_is_resolved_before_rewriting() {
             "stroke-line-divider",
             "caret-color-text-muted",
             "text-fill-color-text-muted",
-            "border-inline-start-line-divider",
+            "review",
             "bg-surface-base"
         ]
     );

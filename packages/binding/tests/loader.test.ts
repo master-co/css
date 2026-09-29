@@ -90,11 +90,11 @@ describe('native target resolution', () => {
     const lint = loadNativeToolingBinding({ required: true })!
       .createLintSession({
   "version": 4 as const,
-  "languageVersion": 8 as const
+  "languageVersion": 9 as const
 } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
-        version: 0 as const,
+        version: 3 as const,
         classList: 'unknown',
         classNames: ['unknown']
       } as never)).toThrow('INVALID_LINT_REQUEST')
@@ -119,7 +119,7 @@ describe('native target resolution', () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "variables": {
     "spacing": [
       {
@@ -139,17 +139,17 @@ describe('native target resolution', () => {
 } as never)
     try {
       expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
-        version: 3 as const,
+        version: 4 as const,
         suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
       })
       expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
-        version: 3 as const,
+        version: 4 as const,
         candidates: [
           { className: "margin:var(--spacing-md)|17px", key: 'margin', segments: ['17px'], properties: ['margin'] }
         ]
       })
       const result = lint.analyzeClassListPolicy({
-        version: 3 as const,
+        version: 4 as const,
         classList: "margin:var(--spacing-md)|17px",
         classNames: ["margin:var(--spacing-md)|17px"],
         rawValuePolicy: { allowedPatterns: [] }
@@ -167,7 +167,7 @@ describe('native target resolution', () => {
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "mixins": [
     {
       "name": "--block",

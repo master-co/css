@@ -27,18 +27,18 @@ export function flow(section: ReferenceDemoSection): DemoScene {
       caption: 'The dashed reference is 160px wide. Border-box fits inside it; content-box adds its padding and border to that width.', inspect: ['box-sizing', 'width'], sizing: 'content',
     }
   }
-  if (page === 'columns' || page === 'column-span') {
+  if (page === 'column-count' || page === 'column-width' || page === 'column-span') {
     const html = section.html[0]
-      .replace(/<(article|div) class="/, `<$1 data-ui="columns" data-scenario="prose-flow"${page === 'columns' ? ' data-target' : ''} class="`)
+      .replace(/<(article|div) class="/, `<$1 data-ui="columns" data-scenario="prose-flow"${page !== 'column-span' ? ' data-target' : ''} class="`)
       .replace(/<(h2|h3) class="/, '<$1 data-target class="')
     return {
       html,
-      caption: page === 'columns' ? 'Read down each column, then across to the next. The container grows naturally instead of forcing overflow columns.' : 'The highlighted heading belongs to the column flow. With all, it crosses the column set and the following text resumes below it.',
+      caption: page !== 'column-span' ? 'Read down each column, then across to the next. The container grows naturally instead of forcing overflow columns.' : 'The highlighted heading belongs to the column flow. With all, it crosses the column set and the following text resumes below it.',
       sizing: 'content',
     }
   }
   if (page.startsWith('break-')) {
-    const parent = lists.find(value => value.includes('columns:')) ?? 'columns:2 h:12.5rem column-fill:auto'
+    const parent = lists.find(value => /columns:|column-count:/.test(value)) ?? 'column-count:2 height:12.5rem column-fill:auto'
     const values = lists.length > 1 ? lists.slice(1, 5) : ['height:130px', target, 'height:60px', 'height:40px']
     const preview = (baseline: boolean) => `<div data-ui="columns" data-scenario="fragmentation" class="${classValue(parent)}">${values.map((value, index) => tile(index === 1 ? '02 · Target' : `0${index + 1}`, value, index === 1 ? 'blue' : 'neutral', baseline && index === 1 ? `${page}:auto` : '').replace(baseline || index !== 1 ? ' data-target' : ' data-unused', '')).join('')}</div>`
     const caption = page === 'break-inside' ? 'Both column sets are 200px tall. The blue block can split in the automatic flow; avoid keeps it together when the condition applies.' : `Both column sets are 200px tall. The forced break moves content to the next column ${page === 'break-before' ? 'before' : 'after'} the blue block when the condition applies.`

@@ -5,5 +5,5 @@ import { setupCounter } from './counter'
 // console.log('manifest', manifest)
 
 const counterElement = document.querySelector<HTMLButtonElement>('#counter')
-counterElement?.classList.add('transition:transform|.3s', 'scale(1.1):hover')
+counterElement?.classList.add('transition-property:transform transition-duration:0.3s', 'scale(1.1):hover')
 counterElement && setupCounter(counterElement)

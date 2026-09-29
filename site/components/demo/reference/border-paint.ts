@@ -13,7 +13,7 @@ const properties: Record<string, string[]> = {
 }
 const captions: Record<string, string> = {
   'border-collapse': 'Cell borders and spacing are explicitly authored. Compare the actual shared seams as well as the computed table properties.',
-  'border-image': 'The border image paints within the authored geometry. Its shorthand resets omitted image components without changing the regular border width.',
+  'border-image': 'The border image paints within the authored geometry. Its image properties are independent of the regular border width.',
   'border-image-source': 'The source changes while the slice, painted width and measured layout box remain the same.',
   'border-image-slice': 'The 96 × 96 source uses 24-unit corners. Slice boundaries belong to the source; painted widths belong to the destination border.',
   'border-image-width': 'A bare number multiplies regular border width. The box reading measures layout, so paint can grow without changing it.',

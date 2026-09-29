@@ -8,11 +8,11 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":4,"languageVersion":8,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":4,"languageVersion":9,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn wrapper_conflicts_compare_expanded_selectors_and_keep_branch_order() {
-    let manifest = serde_json::json!({"version":4,"languageVersion":8,"mixins":[
+    let manifest = serde_json::json!({"version":4,"languageVersion":9,"mixins":[
         {"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
         {"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},
         {"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},
@@ -97,7 +97,7 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
             &HashSet::new(),
         )
         .unwrap();
-    assert_eq!(batch.version, 3);
+    assert_eq!(batch.version, 4);
     assert_eq!(
         batch.sorted_class_names,
         ["margin:2px", "margin:3px", "color:white", "unknown"]

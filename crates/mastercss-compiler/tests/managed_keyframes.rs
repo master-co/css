@@ -18,14 +18,16 @@ fn managed_keyframes_follow_last_usage_and_keep_body_tokens() {
     let mut engine = engine(SOURCE);
     assert!(engine.css_text().is_empty());
     engine
-        .ensure_class_rules(["animate-fade", "animation-name:fade"])
+        .ensure_class_rules(["animation:var(--animate-fade)", "animation-name:fade"])
         .unwrap();
     let text = engine.css_text();
     assert!(text.contains("@keyframes fade"), "{text}");
     assert!(!text.contains("@keyframes pop"));
     assert!(text.contains("--color-brand:red"));
     assert_eq!(text.matches("@keyframes fade").count(), 1);
-    engine.delete_class_rules(["animate-fade"]).unwrap();
+    engine
+        .delete_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     assert!(engine.css_text().contains("@keyframes fade"));
     engine.delete_class_rules(["animation-name:fade"]).unwrap();
     assert_eq!(engine.css_text(), "");
@@ -47,7 +49,9 @@ fn dynamic_names_keep_all_until_the_root_disappears() {
 #[test]
 fn all_scopes_and_nested_fallbacks_are_kept() {
     let mut engine = engine(&format!("{SOURCE}@theme{{.dark{{--animate-fade:pop 2s}}}}"));
-    engine.ensure_class_rules(["animate-fade"]).unwrap();
+    engine
+        .ensure_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     assert_eq!(engine.snapshot().unwrap().resources.keyframes.len(), 2);
 }
 
@@ -64,9 +68,13 @@ fn stylesheet_roots_and_emitted_globals_pin_without_duplicates() {
         Some(&serde_json::to_string(&globals).unwrap()),
     )
     .unwrap();
-    runtime.ensure_class_rules(["animate-fade"]).unwrap();
+    runtime
+        .ensure_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     assert!(!runtime.css_text().contains("@keyframes"));
-    runtime.delete_class_rules(["animate-fade"]).unwrap();
+    runtime
+        .delete_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     assert!(!runtime.css_text().contains("@keyframes"));
     runtime.replace_emitted_globals("{}").unwrap();
     runtime.ensure_class_rules(["animation-name:fade"]).unwrap();
@@ -118,7 +126,9 @@ fn rejects_nested_registration_and_contents_directives() {
 #[test]
 fn native_overrides_are_included_in_class_analysis() {
     let mut engine = engine(&format!("{SOURCE}.dark{{--animate-fade:pop 2s}}"));
-    engine.ensure_class_rules(["animate-fade"]).unwrap();
+    engine
+        .ensure_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     assert_eq!(engine.snapshot().unwrap().resources.keyframes.len(), 2);
 }
 
@@ -160,7 +170,9 @@ fn escaped_names_strings_keywords_and_case_follow_css_identity() {
 #[test]
 fn refresh_replaces_body_dependencies_and_external_snapshot_releases_roots() {
     let mut engine = engine(SOURCE);
-    engine.ensure_class_rules(["animate-fade"]).unwrap();
+    engine
+        .ensure_class_rules(["animation:var(--animate-fade)"])
+        .unwrap();
     let mut next: serde_json::Value =
         serde_json::from_str(&engine.manifest_json().unwrap()).unwrap();
     next["keyframes"][0]["text"] = serde_json::json!("@keyframes fade{to{opacity:.3}}");

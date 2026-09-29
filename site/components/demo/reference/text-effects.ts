@@ -17,8 +17,8 @@ const properties: Record<string, string[]> = {
 const captions: Record<string, string> = {
   'text-decoration': 'The readings describe the element that originates the decoration. A descendant can have no decoration of its own while the ancestor’s line still paints through its inline text.',
   'text-decoration-color': 'Compare the actual foreground and line colors. A transparent decoration hides its paint without hiding the glyphs.',
-  'text-decoration-line': 'The line longhand preserves the other decoration parts. Line aliases use the full shorthand and reset omitted parts.',
-  'text-decoration-style': 'The authored underline supplies a real line. The style longhand changes its pattern while preserving its thickness.',
+  'text-decoration-line': 'Choose the decoration line independently from its style, color and thickness.',
+  'text-decoration-style': 'The authored underline supplies a real line. Its style changes the pattern while preserving its thickness.',
   'text-decoration-thickness': 'The computed value can remain auto or from-font; those keywords are not pixel measurements. Explicit thickness changes paint without resizing the text box.',
   'text-underline-offset': 'The underline moves relative to the text baseline. Offset does not add padding or increase the line box.',
   'text-fill-color': 'Glyph fill is independent of the foreground color. The plain surface adds no fill, stroke or background to the subject.',

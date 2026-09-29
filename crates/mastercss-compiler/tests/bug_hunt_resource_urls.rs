@@ -55,7 +55,7 @@ fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"/output/main.css","child":"/output/child.css"},
         "resourceURLs":{"child":{"image.png":"/original/child/image.png","small.png":"/original/child/small.png","big.png":"/original/child/big.png"}},
-        "baseManifest":{"version":4,"languageVersion":8, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":4,"languageVersion":9, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     })).unwrap();
     let result = compile_css_stylesheet_graph(&request).unwrap();
     assert!(
@@ -85,7 +85,7 @@ fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
 fn relocation_requires_complete_independent_mappings_and_preserves_local_fragments() {
     let base = json!({
         "graph":{"entry":"entry","files":{"entry":".a{background:url(image.png);mask:url(#mask);cursor:url(''),auto}"},"edges":[]},
-        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":8, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":9, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{}
     });
     for (map, expected) in [
@@ -117,7 +117,7 @@ fn relocation_requires_complete_independent_mappings_and_preserves_local_fragmen
 fn theme_urls_are_resolved_before_manifest_merging_and_unmapped_absolute_urls_survive() {
     let request = serde_json::from_value(json!({
         "graph":{"entry":"entry","files":{"entry":"@theme{:root, :host {--hero:url(images/hero.svg);--remote:url(https://assets.test/remote.svg)}}.a{background:url(data:image/svg+xml,%3Csvg%3E);filter:url(#filter)}"},"edges":[]},
-        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":8, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":9, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{"entry":{"images/hero.svg":"/original/images/hero.svg"}}
     })).unwrap();
     let output = compile_css_stylesheet_graph(&request).unwrap();

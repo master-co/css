@@ -16,7 +16,7 @@ const DocBadge = styled.div<{
       md: 'height:1.75rem px-xs font-xs'
     },
   },
-  ({ outlined }) => outlined && 'border:1px|solid|var(--color-line-subtle) fg-text-strong'
+  ({ outlined }) => outlined && 'border-width:1px border-style:solid b-line-subtle fg-text-strong'
 )
 
 export default DocBadge

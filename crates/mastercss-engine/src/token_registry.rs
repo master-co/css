@@ -1,6 +1,5 @@
 //! Built-in named token families formerly authored as preset utilities.
 pub(crate) const TOKEN_FAMILIES: &[(&str, &str, &[&str])] = &[
-    ("animate", "animation", &["~animate"]),
     ("font", "font-size", &["~font-size"]),
     ("font", "font-family", &["~font-family"]),
     ("font", "font-weight", &["~font-weight"]),

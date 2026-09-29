@@ -53,7 +53,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "mixins": [
     {
       "name": "--block",
@@ -86,7 +86,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "mixins": [
     {
       "name": "--block",
@@ -130,7 +130,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "variables": {
     "spacing": [
       {
@@ -192,39 +192,41 @@ test('loads the isolated source tooling Wasm surface', async () => {
   ]
 }))
   expect(lint.analyze(['block', "margin:2px", "margin:3px", 'unknown'], undefined, [])).toEqual({
-    version: 3 as const,
+    version: 4 as const,
     sortedClassNames: ['block', "margin:2px", "margin:3px", 'unknown'],
     conflicts: [{ className: "margin:2px", conflicts: ["margin:3px"] }],
     partialConflicts: []
   })
   expect(lint.analyze(["margin-inline:2px", "margin-inline-start:3px"], undefined, [])).toEqual({
-    version: 3 as const,
-    sortedClassNames: ["margin-inline:2px", "margin-inline-start:3px"],
+    version: 4 as const,
+    sortedClassNames: ["margin-inline-start:3px", "margin-inline:2px"],
     conflicts: [],
-    partialConflicts: []
+    partialConflicts: [{ className: "margin-inline-start:3px", conflict: "margin-inline:2px" }]
   })
   expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
-    version: 3 as const,
+    version: 4 as const,
     suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
   })
   expect(lint.canonicalClassGroups(['mxs-md', 'mxe-md'], undefined, undefined)).toEqual({
-    version: 3 as const,
+    version: 4 as const,
     suggestions: []
   })
   expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
-    version: 3 as const,
+    version: 4 as const,
     candidates: [
       { className: "margin:var(--spacing-md)|17px", key: 'margin', segments: ['17px'], properties: ['margin'] }
     ]
   })
-  // Decomposing a shorthand would change its cascade tier, so no partial autofix.
-  expect(lint.analyzeClassList("margin-inline:2px  margin-inline-start:3px", ["margin-inline:2px", "margin-inline-start:3px"], undefined, [])).toEqual({
-    version: 3 as const,
-    analysis: { version: 3 as const, sortedClassNames: ["margin-inline:2px", "margin-inline-start:3px"], conflicts: [], partialConflicts: [] },
-    diagnostics: []
-  })
+  // Partial conflicts are diagnostic only; authored values are never decomposed.
+  const partial = lint.analyzeClassList("margin-inline:2px  margin-inline-start:3px", ["margin-inline:2px", "margin-inline-start:3px"], undefined, []) as { version: number, diagnostics: { code: string }[] }
+  expect(partial.version).toBe(4)
+  expect(partial.diagnostics.filter(item => item.code === 'partially-conflicting-class')).toEqual([expect.objectContaining({
+    code: 'partially-conflicting-class',
+    message: 'Class "margin-inline:2px" overrides declarations from "margin-inline-start:3px" in generated CSS.'
+  })])
+  expect(partial.diagnostics.find(item => item.code === 'partially-conflicting-class')).not.toHaveProperty('fix')
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 3 as const,
+    version: 4 as const,
     classList: 'block unknown',
     classNames: ['block', 'unknown'],
     validationErrors: [
@@ -246,7 +248,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     })
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
-    version: 3 as const,
+    version: 4 as const,
     classList: "😀 margin:var(--spacing-md)|17px",
     classNames: ['😀', "margin:var(--spacing-md)|17px"],
     rawValuePolicy: {
@@ -270,7 +272,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "mixins": [
     {
       "name": "--block",

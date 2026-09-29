@@ -1,0 +1,20 @@
+import Overview from './components/Overview'
+
+## Overview [sr-only] \{#overview\}
+<Overview />
+
+## Usage
+
+The browser fits columns into the available inline size. Pair a preferred width with `column-count:*` when the number of columns also needs a limit.
+
+### Choose a preferred column width \{#choose-a-preferred-column-width\}
+
+<DemoExample page="column-width" section="choose-a-preferred-column-width" />
+
+```html
+<article class="column-width:12rem column-gap:1.5rem">
+  <p>Design decisions become easier to follow when spacing, color and type share a consistent vocabulary.</p>
+  <p>Readers follow each column from top to bottom, then continue at the top of the next column.</p>
+  <p>The browser balances the content across the available columns. Resize the preview to see how the text responds.</p>
+</article>
+```

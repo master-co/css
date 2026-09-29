@@ -28,7 +28,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
         return (
           <Image
             key={author.name}
-            className={clsx('aspect-ratio:1/1 border-radius:50% outline:2px|solid|canvas object-fit:cover', {
+            className={clsx('aspect-ratio:1/1 border-radius:50% outline-width:2px outline-style:solid outline-color:canvas object-fit:cover', {
               'margin-left:-0.25rem': index > 0
             })}
             src={author.image}
@@ -53,13 +53,13 @@ export default async function Page(props: any) {
   return <>
     <main className='padding-inline:1.25rem pt-2xl padding-top:3.75rem@sm'>
       <div className="max-w-5xl margin-block:4.5rem margin-inline:auto margin-block:7.5rem@sm prose">
-        <div className='grid-cols(1) border-left:1px|solid|var(--color-line-subtle) border-top:1px|solid|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@md'>
+        <div className='grid-cols(1) border-left-width:1px border-left-style:solid bl-line-subtle border-top-width:1px border-top-style:solid bt-line-subtle grid-cols(2)@sm grid-cols(3)@md'>
           {pages
             .map((page: any, index: number) => {
               const formattedDate = dayjs(page.date).format('ddd, MMMM D')
               return (
-                <div key={page.pathname + index} className={clsx('border-bottom:1px|dotted|var(--color-line-subtle) border-right:1px|dotted|var(--color-line-subtle)')}>
-                  <Link href={page.pathname} className={clsx('display:flex flex-direction:column gap:1.25rem height:100% p-lg transition:background-color|.2s bg-surface-raised:hover p-2xl@sm')}>
+                <div key={page.pathname + index} className={clsx('border-bottom-width:1px border-bottom-style:dotted bb-line-subtle border-right-width:1px border-right-style:dotted br-line-subtle')}>
+                  <Link href={page.pathname} className={clsx('display:flex flex-direction:column gap:1.25rem height:100% p-lg transition-property:background-color transition-duration:0.2s bg-surface-raised:hover p-2xl@sm')}>
                     <div className="display:flex justify-content:space-between margin-bottom:-0.25rem">
                       <div className='text-xs fg-accent'>{formattedDate}</div>
                       <div className='text-xs fg-text-muted'> <TimeAgo timestamp={page.date} /></div>

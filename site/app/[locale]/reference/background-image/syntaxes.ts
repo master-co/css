@@ -1,10 +1,10 @@
 const syntaxes = [
   ['background-image:url(`…`)'],
-  ["background:linear-gradient(`…`)"],
-  ["background:radial-gradient(`…`)"],
-  ["background:repeating-linear-gradient(`…`)"],
-  ["background:repeating-radial-gradient(`…`)"],
-  ["background:conic-gradient(`…`)"],
+  ["background-image:linear-gradient(`…`)"],
+  ["background-image:radial-gradient(`…`)"],
+  ["background-image:repeating-linear-gradient(`…`)"],
+  ["background-image:repeating-radial-gradient(`…`)"],
+  ["background-image:conic-gradient(`…`)"],
 ]
 
 export default syntaxes

@@ -11,7 +11,7 @@ Compare identical boxes with an 8px dashed border and 24px padding. Only the bac
 ```html
 <!-- Border box · paint beneath the border -->
 <div id="target" role="img" aria-label="Blue background clipped to border box"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box bg-blue-30"
 ></div>
 ```
@@ -19,7 +19,7 @@ Compare identical boxes with an 8px dashed border and 24px padding. Only the bac
 ```html
 <!-- Padding box · border band stays clear -->
 <div id="target" role="img" aria-label="Blue background clipped to padding box"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:padding-box bg-blue-30"
 ></div>
 ```
@@ -27,7 +27,7 @@ Compare identical boxes with an 8px dashed border and 24px padding. Only the bac
 ```html
 <!-- Content box · padding stays clear -->
 <div id="target" role="img" aria-label="Blue background clipped to content box"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:content-box bg-blue-30"
 ></div>
 ```
@@ -65,7 +65,7 @@ Widen to `sm` to move the painting edge from the border box to the content box. 
 ```html
 <!-- Border → content at sm -->
 <div id="target" role="img" aria-label="Responsive background painting area"
-  class="height:176px width:280px max-width:100% p-lg border:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+  class="height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)
          background-clip:border-box bg-blue-30 background-clip:border-box@media(print)
          background-clip:content-box@media(screen)@sm"
 ></div>

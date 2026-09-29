@@ -13,7 +13,7 @@ Use `outline-solid` or `outline-dashed` to change only `outline-style`. These de
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-offset-3xs outline-width:3px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
@@ -26,7 +26,7 @@ Use `outline-solid` or `outline-dashed` to change only `outline-style`. These de
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:dashed
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:dashed
          outline-offset-3xs outline-width:3px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
@@ -41,7 +41,6 @@ Use `outline-solid` or `outline-dashed` to change only `outline-style`. These de
   </Class2CSS>
 </details>
 
-`outline:solid` is the full outline shorthand, so it also resets width and color. Use the dedicated style utility or explicit `outline-style:solid` longhand when those values should be preserved.
 
 ### Use dashed focus indicators \{#use-dashed-focus-indicators\}
 Use Tab to focus the real skip link, then Enter to move to its destination. Its dashed outline is a keyboard focus treatment; the visible link remains available without focus.
@@ -81,7 +80,7 @@ The button has a solid resting outline. Keyboard focus changes only its style to
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-offset-3xs outline-width:3px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible
@@ -91,4 +90,4 @@ The button has a solid resting outline. Keyboard focus changes only its style to
 </button>
 ```
 
-Use [outline](/reference/outline) when all three outline components should change together.
+Set [outline width](/reference/outline-width) and [color](/reference/outline-color) independently.

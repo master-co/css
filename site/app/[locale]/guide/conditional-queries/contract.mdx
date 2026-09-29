@@ -55,10 +55,10 @@ Select the generated layer with `@layer(base)`, `@layer(defaults)`, `@layer(comp
 Use the built-in `@starting-style` suffix to define a transition's initial value.
 
 ```html
-<div popover class="opacity:0@starting-style transition:opacity|250ms@motion-safe">Details</div>
+<div popover class="opacity:0@starting-style transition-property:opacity@motion-safe transition-duration:250ms@motion-safe">Details</div>
 ```
 
-<Class2CSS>{['opacity:0@starting-style', 'transition:opacity|250ms@motion-safe']}</Class2CSS>
+<Class2CSS>{['opacity:0@starting-style', 'transition-property:opacity@motion-safe transition-duration:250ms@motion-safe']}</Class2CSS>
 
 ## Simple native queries \{#arbitrary-conditions-and-queries\}
 
@@ -95,12 +95,12 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
 
 ```html
-<aside class="container:card/inline-size">
+<aside class="container-name:card container-type:inline-size">
   <div class="grid-cols(2)@container(card|(width>=40rem))">Card content</div>
 </aside>
 ```
 
-<Class2CSS>{['container:card/inline-size', 'grid-cols(2)@container(card|(width>=40rem))']}</Class2CSS>
+<Class2CSS>{['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=40rem))']}</Class2CSS>
 
 Style queries use their native form:
 
@@ -132,7 +132,6 @@ Multiple suffixes preserve their nesting and source order, including repeated wr
 Comparable ranges in the same unit retain range priority. Incomparable units and expressions use a stable syntax-based order; Master CSS does not assume a browser root font size. A named condition and its equivalent native query share sorting data. Autofix cannot reorder wrappers merely because their current declarations happen to match.
 
 ## Upgrading RC conditions
-The old numeric and feature shorthand forms are historical syntax. Use the [v2 RC migration guide](/guide/migration/v2-rc) to preserve the old generated result, including a project's former root-size assumption. The ordinary compiler never interprets those forms.
 
 ## Simple queries in classes
 

@@ -53,10 +53,10 @@ The `container` class is a utility class that applies the `container-type: inlin
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
   <Demo>
-    <div className="overflow:hidden container-type:inline-size width:100% r-lg border:1px|solid|var(--color-line-divider) bg-surface-raised">
+    <div className="overflow:hidden container-type:inline-size width:100% r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
       <div className="display:flex flex-direction:column@container((width<=18rem))">
         <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="container left" />
-        <div className='padding:var(--spacing-lg)|var(--spacing-xl)'>
+        <div className='padding-top:var(--spacing-lg) padding-right:var(--spacing-xl) padding-bottom:var(--spacing-lg) padding-left:var(--spacing-xl)'>
           <div className='text-md font-medium fg-text-neutral'>Lorem ipsum</div>
           <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
         </div>
@@ -94,8 +94,8 @@ Use a complete [native media query](/reference/rules/conditions#media-queries) t
 ### Creating named containers
 Use the `container:<name>/<type>` to create a named container with a specific type, and then use the `@container(<name>)` query to apply styles based on the size of a named container.
 ```html
-<!-- @MARK container:card/inline-size -->
-<div class="container:card/inline-size">
+<!-- @MARK container-name:card container-type:inline-size -->
+<div class="container-name:card container-type:inline-size">
   <!-- @MARK @container(card) -->
   <div class="display:none@container(card|(width>=16rem))"></div>
 </div>
@@ -103,7 +103,7 @@ Use the `container:<name>/<type>` to create a named container with a specific ty
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container:card/inline-size', 'display:none@container(card|(width>=16rem))']}
+    {['container-name:card container-type:inline-size', 'display:none@container(card|(width>=16rem))']}
   </Class2CSS>
 </details>
 

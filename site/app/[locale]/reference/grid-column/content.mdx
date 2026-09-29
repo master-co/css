@@ -4,14 +4,14 @@
 
 ## Basic usage \{#basic-usage\}
 ### Place an item by columns \{#place-an-item-by-columns\}
-`grid-column:2/4` places the blue item between column lines 2 and 4, covering the last two columns of this three-column grid. Use `1/-1` to span from the first to the last explicit grid line.
+`grid-column-start:2 grid-column-end:4` places the blue item between column lines 2 and 4, covering the last two columns of this three-column grid. Use `1/-1` to span from the first to the last explicit grid line.
 
 <DemoExample page="grid-column" section="place-an-item-by-columns" />
 
 ```html
 <div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
   <div id="peer" class="p-sm">01</div>
-  <div id="target" class="grid-column:2/4 p-sm">2 → 4</div>
+  <div id="target" class="grid-column-start:2 grid-column-end:4 p-sm">2 → 4</div>
   <div id="item-3" class="p-sm">03</div>
   <div id="item-4" class="p-sm">04</div>
   <div id="item-5" class="p-sm">05</div>
@@ -20,7 +20,7 @@
 
 ```html
 <div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
-  <div id="target" class="grid-column:1/-1 p-sm">1 → −1</div>
+  <div id="target" class="grid-column-start:1 grid-column-end:-1 p-sm">1 → −1</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
   <div id="item-4" class="p-sm">04</div>
@@ -51,7 +51,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 
 ```html
 <div id="layout" class="display:grid grid-cols(3) grid-auto-rows:48px gap-md width:17.5rem max-width:100%">
-  <div id="target" class="grid-column:auto p-sm grid-column:1/-1@sm">01</div>
+  <div id="target" class="grid-column:auto p-sm grid-column-start:1@sm grid-column-end:-1@sm">01</div>
   <div id="peer" class="p-sm">02</div>
   <div id="item-3" class="p-sm">03</div>
 </div>

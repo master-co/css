@@ -23,8 +23,8 @@ export default function PreviewViewport({ html, breakpoint, responsive }: { html
   }, [mode])
   useEffect(syncFrameThemeMode, [syncFrameThemeMode])
   const toggleClassName = (pressed: boolean) => clsx(
-    'border:1px|solid|var(--color-line-divider) btn btn-sm',
-    pressed ? 'outline:2px|solid|var(--color-accent) bg-surface-raised' : 'bg-surface-raised:hover'
+    'border-width:1px border-style:solid b-line-divider btn btn-sm',
+    pressed ? 'outline-width:2px outline-style:solid outline-accent bg-surface-raised' : 'bg-surface-raised:hover'
   )
   return <div style={{ width: '100%', minWidth: 0 }}>
     {responsive && <div className="display:flex flex-wrap:wrap align-items:center gap-sm text-sm" role="group" aria-label="Preview viewport">

@@ -44,7 +44,7 @@ fn output_is_stable_with_duplicate_declarations_blocklists_and_source_order() {
     ];
     let mut expected = None;
     for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
-        let mut scanner = ScannerSession::create(r#"{"version":4,"languageVersion":8}"#).unwrap();
+        let mut scanner = ScannerSession::create(r#"{"version":4,"languageVersion":9}"#).unwrap();
         for index in order {
             scan(&mut scanner, &format!("{index}.html"), inputs[index]);
         }

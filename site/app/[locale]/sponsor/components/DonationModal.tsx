@@ -87,7 +87,7 @@ export default function DonationModal() {
     }
   }, [searchParams])
 
-  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-width:320px padding:5rem|1.875rem|1.875rem|1.875rem">
+  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-width:320px padding-top:5rem padding-right:1.875rem padding-bottom:1.875rem padding-left:1.875rem">
     <div className="position:absolute inset:0 height:128px width:128px aspect-ratio:1/1 margin-inline:auto border-radius:50% bg-surface-raised transform:translateY(-50%)">
       <Image className="position:relative top-4xs aspect-ratio:1/1 margin-inline:auto border-radius:50% object-fit:contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
     </div>

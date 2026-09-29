@@ -38,7 +38,6 @@ This lets sizing utilities use `md`, `5xl`, or project token names without the `
 ---
 
 ## Use container values in sizing utilities
-Sizing utilities that read from the container namespace use contextual shorthand. Write `max-w-md`; do not repeat the namespace inside the value.
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK max-w-5xl --><!-- @MARK margin-inline:auto -->
@@ -57,7 +56,6 @@ Sizing utilities that read from the container namespace use contextual shorthand
   </Class2CSS>
 </details>
 
-The shorthand is contextual: `md` can mean a container value inside `max-w-md`, and a breakpoint threshold inside `@md`. The utility or variant decides which namespace is active.
 
 <ContainerSizeValues />
 
@@ -118,8 +116,8 @@ For repeated conditions, define `@mixin --card-wide { @container (width>=28rem) 
 Use named containers when a descendant should query a specific ancestor instead of the nearest container.
 
 ```html
-<!-- @MARK container:card/inline-size -->
-<section class="container:card/inline-size">
+<!-- @MARK container-name:card container-type:inline-size -->
+<section class="container-name:card container-type:inline-size">
   <!-- @MARK @container(card|(width>=16rem)) -->
   <article class="grid-cols(2)@container(card|(width>=16rem))">...</article>
 </section>
@@ -128,7 +126,7 @@ Use named containers when a descendant should query a specific ancestor instead 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container:card/inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
+    {['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
   </Class2CSS>
 </details>
 

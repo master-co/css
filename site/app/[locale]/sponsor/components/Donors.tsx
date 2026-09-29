@@ -9,7 +9,7 @@ export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
         <h2 id={eachSponsorTier.name} className="text-transform:capitalize margin:0!">
           {eachSponsorTier.name}
         </h2>
-        <hr className="flex:1|1|auto margin-block:0!" />
+        <hr className="flex-grow:1 flex-shrink:1 flex-basis:auto margin-block:0!" />
       </div>
       { }
       <div className={`align-items:center gap:${eachSponsorTier.gap - 20}px gap:${eachSponsorTier.gap}px@sm grid-cols:${eachSponsorTier.columns}`}>

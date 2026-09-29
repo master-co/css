@@ -62,14 +62,16 @@ Fit-content is bounded by the available space and the content’s minimum size. 
 
 A basis is a starting size, not a minimum width. The live size reading shows the resulting border box after the available width and the gap have been accounted for.
 
-### Prefer shorthand for complete flex behavior \{#prefer-shorthand-for-complete-flex-behavior\}
-Use [flex](/reference/flex) when growth, shrinkage and the basis belong together. In this 240px-tall column, `flex:0|0|4.5rem` reserves a 72px header; the remaining region grows below it.
+<a id="prefer-shorthand-for-complete-flex-behavior"></a>
+### Set independent flex properties \{#set-independent-flex-properties\}
+Set growth, shrinkage and the basis independently. In this 240px-tall column, `flex-grow:0 flex-shrink:0 flex-basis:4.5rem` reserves a 72px header; the remaining region grows below it.
 
-<DemoExample page="flex-basis" section="prefer-shorthand-for-complete-flex-behavior" />
+
+<DemoExample page="flex-basis" section="set-independent-flex-properties" />
 
 ```html
 <div id="layout" class="display:flex flex-direction:column gap-md height:15rem">
-  <div id="target" class="flex:0|0|4.5rem p-sm">72px header</div>
+  <div id="target" class="flex-grow:0 flex-shrink:0 flex-basis:4.5rem p-sm">72px header</div>
   <div id="peer" class="flex:1 min-height:0 p-sm">Remaining height</div>
 </div>
 ```
@@ -82,6 +84,6 @@ Use [conditional queries](/reference/rules/conditions) to switch the basis at a 
 ```html
 <div id="layout" class="display:flex flex-wrap:wrap gap-md">
   <div id="target" class="flex-basis:100% flex-shrink:0 height:6rem p-sm flex-basis:6rem@sm">Sidebar</div>
-  <div id="peer" class="flex:1|1|8rem height:6rem min-width:0 p-sm">Main content</div>
+  <div id="peer" class="flex-grow:1 flex-shrink:1 flex-basis:8rem height:6rem min-width:0 p-sm">Main content</div>
 </div>
 ```

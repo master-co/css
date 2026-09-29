@@ -5,7 +5,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import highlightCode from './highlight-code'
 
 const manifest: MasterCSSManifest = {
-  version: 4, languageVersion: 8,
+  version: 4, languageVersion: 9,
   mixins: [{ name: '--brand', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
 }
 
@@ -28,7 +28,7 @@ test('custom manifests are isolated and caller-owned sessions remain usable', as
   const code = '<div class="brand"></div>'
   const options = { lang: 'html', masterCSS: { manifest } }
   const custom = await highlightCode(code, options)
-  const empty = await highlightCode(code, { lang: 'html', masterCSS: { manifest: { version: 4, languageVersion: 8 } } })
+  const empty = await highlightCode(code, { lang: 'html', masterCSS: { manifest: { version: 4, languageVersion: 9 } } })
   assert.notDeepEqual(custom, empty)
   assert.deepEqual(await highlightCode(code, options), custom)
   const session = createLanguageSessionSync({ manifest })

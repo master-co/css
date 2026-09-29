@@ -120,7 +120,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   })
   await init(page, "@layer utilities{.display\\:block{display:block}}", undefined, {
   "version": 3 as const,
-  "languageVersion": 8 as const,
+  "languageVersion": 9 as const,
   "rules": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
@@ -311,7 +311,8 @@ test('progressive hydration uses JSON modules without constructing a loader or c
   })
 })
 
-test('external hydration rejects an unsupported JSON module manifest without fetch', async ({ page }) => {
+for (const invalid of [{ version: 2, rules: [], resourceOrder: [] }, { version: 3, languageVersion: 8, rules: [], resourceOrder: { variables: [], keyframes: [] } }]) {
+test(`external hydration rejects unsupported version ${invalid.version}/${invalid.languageVersion} without fetch`, async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/eval-error.json', loaderURL).href
 
@@ -319,7 +320,7 @@ test('external hydration rejects an unsupported JSON module manifest without fet
   await page.route(source, route => route.fulfill({
     status: 200,
     contentType: 'application/json',
-    body: JSON.stringify({ version: 2 as const, rules: [], resourceOrder: [] })
+    body: JSON.stringify(invalid)
   }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     const style = document.createElement('style')
@@ -364,6 +365,8 @@ test('external hydration rejects an unsupported JSON module manifest without fet
     runtimeStarted: false
   })
 })
+
+}
 
 test('external hydration does not fetch after a JSON import request fails', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()

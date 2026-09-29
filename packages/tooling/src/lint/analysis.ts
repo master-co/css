@@ -14,12 +14,11 @@ export interface MasterCSSLintClassConflict {
 
 export interface MasterCSSLintPartialClassConflict {
   readonly className: string
-  readonly replacement: string
   readonly conflict: string
 }
 
 export interface MasterCSSLintAnalysis {
-  readonly version: 3
+  readonly version: 4
   readonly sortedClassNames: readonly string[]
   readonly conflicts: readonly MasterCSSLintClassConflict[]
   readonly partialConflicts: readonly MasterCSSLintPartialClassConflict[]
@@ -47,7 +46,7 @@ export interface MasterCSSLintDiagnosticInput {
 }
 
 export interface MasterCSSLintClassListAnalysis {
-  readonly version: 3
+  readonly version: 4
   readonly analysis: MasterCSSLintAnalysis
   readonly diagnostics: readonly MasterCSSLintDiagnosticInput[]
   readonly sortEdit?: MasterCSSLintEdit

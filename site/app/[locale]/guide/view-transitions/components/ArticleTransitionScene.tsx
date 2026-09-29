@@ -53,7 +53,7 @@ export default function ArticleTransitionScene() {
         className={clsx(selected.imageTransition, shared, 'display:block height:auto width:100% aspect-ratio:16/9 object-fit:cover')} />
       <div className="p-lg">
         <time dateTime={selected.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(selected.dateTransition, shared, 'text-xs fg-text-muted')}>{selected.date}</time>
-        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-semibold outline:2px|solid|var(--color-blue):focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
+        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-semibold outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
         <p className="mt-md margin-bottom:0 text-sm fg-text-muted">{selected.description} The image, title and date keep their names in both views. Each snapshot can move to its new bounds while surrounding content fades.</p>
         <button type="button" className="mt-lg demo-button" onClick={() => run(() => setSelectedId(undefined), () => buttons.current.get(selected.id) ?? null)}>
           <IconArrowLeft size={14} aria-hidden="true" />Back to collection

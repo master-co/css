@@ -3,13 +3,13 @@
 
 ## Basic usage \{#basic-usage\}
 ### Place an item by rows \{#place-an-item-by-rows\}
-`grid-row:1/3` places the blue item between row lines 1 and 3, covering the first two 48px rows and their 16px gap. Compare `1/-1`, which covers all three explicit rows.
+`grid-row-start:1 grid-row-end:3` places the blue item between row lines 1 and 3, covering the first two 48px rows and their 16px gap. Compare `1/-1`, which covers all three explicit rows.
 
 <DemoExample page="grid-row" section="place-an-item-by-rows" />
 
 ```html
 <div id="layout" class="display:grid grid-cols(2) grid-template-rows:repeat(3,48px) gap-md width:17.5rem max-width:100%">
-  <div id="target" class="grid-row:1/3 p-sm">1 → 3</div>
+  <div id="target" class="grid-row-start:1 grid-row-end:3 p-sm">1 → 3</div>
   <div id="peer" class="grid-column:2 p-sm">02</div>
   <div id="item-3" class="grid-column:2 p-sm">03</div>
   <div id="item-4" class="grid-column:2 p-sm">04</div>
@@ -18,7 +18,7 @@
 
 ```html
 <div id="layout" class="display:grid grid-cols(2) grid-template-rows:repeat(3,48px) gap-md width:17.5rem max-width:100%">
-  <div id="target" class="grid-row:1/-1 p-sm">1 → −1</div>
+  <div id="target" class="grid-row-start:1 grid-row-end:-1 p-sm">1 → −1</div>
   <div id="peer" class="grid-column:2 p-sm">02</div>
   <div id="item-3" class="grid-column:2 p-sm">03</div>
   <div id="item-4" class="grid-column:2 p-sm">04</div>
@@ -50,7 +50,7 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 
 ```html
 <div id="layout" class="display:grid grid-cols(2) grid-template-rows:repeat(3,48px) gap-md width:17.5rem max-width:100%">
-  <div id="target" class="grid-row:auto p-sm grid-row:1/-1@sm">Target</div>
+  <div id="target" class="grid-row:auto p-sm grid-row-start:1@sm grid-row-end:-1@sm">Target</div>
   <div id="peer" class="grid-column:2 p-sm">02</div>
   <div id="item-3" class="grid-column:2 p-sm">03</div>
   <div id="item-4" class="grid-column:2 p-sm">04</div>

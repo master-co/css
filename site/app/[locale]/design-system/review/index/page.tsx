@@ -19,8 +19,8 @@ function sectionsFor(prefix: string): DocumentationIndexSection[] {
         { id: `${prefix}-display`, title: 'display', category: 'Document flow', url: '/reference/display' },
       ] },
       { id: `${prefix}-layout`, title: 'Layout', entries: [
-        { id: `${prefix}-flex`, title: 'flex', category: 'Layout', url: '/reference/flex' },
-        { id: `${prefix}-grid`, title: 'grid', category: 'Layout', url: '/reference/grid' },
+        { id: `${prefix}-flex`, title: 'flex', category: 'Layout', url: '/reference/flex-grow' },
+        { id: `${prefix}-grid`, title: 'grid', category: 'Layout', url: '/reference/grid-template-columns' },
       ] },
     ] }
   ]

@@ -1054,9 +1054,9 @@
       ]
     },
     {
-      "url": "/reference/animation",
+      "url": "/reference/animate",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation/content.mdx",
+      "source": "site/app/[locale]/reference/animate/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1186,9 +1186,9 @@
       ]
     },
     {
-      "url": "/reference/background",
+      "url": "/reference/background-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background/content.mdx",
+      "source": "site/app/[locale]/reference/background-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1296,9 +1296,9 @@
       ]
     },
     {
-      "url": "/reference/border",
+      "url": "/reference/border-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border/content.mdx",
+      "source": "site/app/[locale]/reference/border-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1329,9 +1329,9 @@
       ]
     },
     {
-      "url": "/reference/border-image",
+      "url": "/reference/border-image-source",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image/content.mdx",
+      "source": "site/app/[locale]/reference/border-image-source/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1549,9 +1549,9 @@
       ]
     },
     {
-      "url": "/reference/columns",
+      "url": "/reference/column-count",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/columns/content.mdx",
+      "source": "site/app/[locale]/reference/column-count/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1780,9 +1780,9 @@
       ]
     },
     {
-      "url": "/reference/flex",
+      "url": "/reference/flex-grow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex/content.mdx",
+      "source": "site/app/[locale]/reference/flex-grow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1945,9 +1945,9 @@
       ]
     },
     {
-      "url": "/reference/grid",
+      "url": "/reference/grid-template-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid/content.mdx",
+      "source": "site/app/[locale]/reference/grid-template-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2044,9 +2044,9 @@
       ]
     },
     {
-      "url": "/reference/grid-template",
+      "url": "/reference/grid-template-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template/content.mdx",
+      "source": "site/app/[locale]/reference/grid-template-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2176,9 +2176,9 @@
       ]
     },
     {
-      "url": "/reference/line-clamp",
+      "url": "/reference/clamp-lines",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/line-clamp/content.mdx",
+      "source": "site/app/[locale]/reference/clamp-lines/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2198,9 +2198,9 @@
       ]
     },
     {
-      "url": "/reference/list-style",
+      "url": "/reference/list-style-type",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/list-style/content.mdx",
+      "source": "site/app/[locale]/reference/list-style-type/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2385,9 +2385,9 @@
       ]
     },
     {
-      "url": "/reference/outline",
+      "url": "/reference/outline-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline/content.mdx",
+      "source": "site/app/[locale]/reference/outline-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2990,9 +2990,9 @@
       ]
     },
     {
-      "url": "/reference/text-decoration",
+      "url": "/reference/text-decoration-line",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration/content.mdx",
+      "source": "site/app/[locale]/reference/text-decoration-line/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3122,9 +3122,9 @@
       ]
     },
     {
-      "url": "/reference/text-stroke",
+      "url": "/reference/text-stroke-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-stroke/content.mdx",
+      "source": "site/app/[locale]/reference/text-stroke-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3177,9 +3177,9 @@
       ]
     },
     {
-      "url": "/reference/text-wrap",
+      "url": "/reference/text-wrap-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-wrap/content.mdx",
+      "source": "site/app/[locale]/reference/text-wrap-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3716,9 +3716,9 @@
       ]
     },
     {
-      "url": "/reference/transition",
+      "url": "/reference/transition-property",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition/content.mdx",
+      "source": "site/app/[locale]/reference/transition-property/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3815,9 +3815,9 @@
       ]
     },
     {
-      "url": "/reference/white-space",
+      "url": "/reference/white-space-collapse",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/white-space/content.mdx",
+      "source": "site/app/[locale]/reference/white-space-collapse/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [

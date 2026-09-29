@@ -23,16 +23,16 @@ A flex item’s automatic minimum can keep it as wide as an unbreakable child. H
 ```html
 <!-- Automatic minimum -->
 <div id="layout" class="display:flex gap-md width:15rem" role="group" aria-label="Available space">
-  <div id="peer" class="flex:0|0|48px p-sm">01</div>
-  <div id="target" class="overflow:clip flex:1|1|0"><span id="item-3" class="display:block width:14rem p-sm">Unbreakable content</span></div>
+  <div id="peer" class="flex-grow:0 flex-shrink:0 flex-basis:48px p-sm">01</div>
+  <div id="target" class="overflow:clip flex-grow:1 flex-shrink:1 flex-basis:0px"><span id="item-3" class="display:block width:14rem p-sm">Unbreakable content</span></div>
 </div>
 ```
 
 ```html
 <!-- Zero minimum -->
 <div id="layout" class="display:flex gap-md width:15rem" role="group" aria-label="Available space">
-  <div id="peer" class="flex:0|0|48px p-sm">01</div>
-  <div id="target" class="overflow:clip flex:1|1|0 min-width:0"><span id="item-3" class="display:block width:14rem p-sm">Unbreakable content</span></div>
+  <div id="peer" class="flex-grow:0 flex-shrink:0 flex-basis:48px p-sm">01</div>
+  <div id="target" class="overflow:clip flex-grow:1 flex-shrink:1 flex-basis:0px min-width:0"><span id="item-3" class="display:block width:14rem p-sm">Unbreakable content</span></div>
 </div>
 ```
 

@@ -134,8 +134,8 @@ describe('class sorting', () => {
       'gap:0.5rem',
       "height:100%",
       "width:100%",
-      "margin:0",
       "margin-top:0.5rem",
+      "margin:0",
       "padding:1rem",
       'r-lg',
       "border:1px|solid|var(--color-gray-30)",
@@ -425,62 +425,43 @@ describe('class conflicts', () => {
 })
 
 describe('partial class conflicts', () => {
-  test('does not automatically split margin axis classes when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['mx-md', 'ml-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['mx-md', 'mr-lg'], css)).toEqual([])
+  test.each([
+    ['mt-lg', 'm-md'],
+    ['pl-lg', 'p-md'],
+    ['inset-md', 'top-lg'],
+    ['inset-md', 'left-lg'],
+    ['inset-md@sm', 'top-lg@sm'],
+    ['r-md', 'rtl-lg'],
+    ['rbr-lg', 'r-md'],
+    ['border-radius:.375rem', 'border-top-left-radius:.5rem'],
+    ['border-top-width:2px', 'border-width:1px'],
+    ['border-left-width:1px', 'border-width:0'],
+    ['b-red-60', 'bt-blue-60'],
+    ['border-color-red-60', 'border-left-color-blue-60'],
+    ['border-style:solid', 'border-top-style:dashed'],
+    ['border-bottom-style:dotted', 'border-style:solid'],
+    ['ixs-lg', 'ix-md']
+  ])('reports %s overridden by %s without a replacement', (className, conflict) => {
+    const expected = [{ className, conflict }]
+    expect(findPartialClassConflicts([className, conflict], css)).toEqual(expected)
+    expect(findPartialClassConflicts([conflict, className], css)).toEqual(expected)
+    const report = createConflictingClassesReport(`${className} ${conflict}`, css)
+    expect(report.diagnostics.every(diagnostic => diagnostic.fix === undefined)).toBe(true)
   })
 
-  test('does not automatically split padding shorthand classes when a later axis overrides part of them', () => {
-    expect(findPartialClassConflicts(['p-md', 'px-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['p-md', 'py-lg'], css)).toEqual([])
-  })
-
-  test('does not automatically split shorthand classes when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['m-md', 'mt-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['p-md', 'pl-lg'], css)).toEqual([])
-  })
-
-  test('ignores different variants and fully overridden classes', () => {
-    expect(findPartialClassConflicts(['mx-md', 'ml-lg@sm'], css)).toEqual([])
-    expect(findPartialClassConflicts(['mx-md', 'mx-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['mx-md', 'm-lg'], css)).toEqual([])
-  })
-
-  test('does not automatically split physical inset shorthands when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['inset-md', 'top-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['inset-md', 'left-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['inset-md@sm', 'top-lg@sm'], css)).toEqual([])
-  })
-
-  test('does not automatically split radius shorthands when a later corner overrides part of them', () => {
-    expect(findPartialClassConflicts(['r-md', 'rtl-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['r-md', 'rbr-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-radius:.375rem', 'border-top-left-radius:.5rem'], css)).toEqual([])
-  })
-
-  test('does not automatically split border width shorthands when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['border-width:1px', 'border-top-width:2px'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-width:0', 'border-left-width:1px'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-width:1px', 'border-top-width:2px'], css)).toEqual([])
-  })
-
-  test('does not automatically split border color shorthands when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(['b-red-60', 'bt-blue-60'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-color-red-60', 'border-left-color-blue-60'], css)).toEqual([])
-  })
-
-  test('does not automatically split border style shorthands when a later side overrides part of them', () => {
-    expect(findPartialClassConflicts(["border-style:solid", "border-top-style:dashed"], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-style:solid', 'border-bottom-style:dotted'], css)).toEqual([])
-  })
-
-  test('ignores unsupported partial conflict families', () => {
-    expect(findPartialClassConflicts(['border-width:1px', 'border-top-width:2px@sm'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-width:1px', 'border-width:2px'], css)).toEqual([])
-    expect(findPartialClassConflicts(['border-width:1px', 'border-inline-width:2px'], css)).toEqual([])
-    expect(findPartialClassConflicts(['ix-md', 'ixs-lg'], css)).toEqual([])
-    expect(findPartialClassConflicts(['r:var(--radius-md)|var(--radius-lg)', 'rtl-xl'], css)).toEqual([])
-    expect(findPartialClassConflicts(['unknown-class', 'btn'], css)).toEqual([])
+  test.each([
+    ['mx-md', 'ml-lg'],
+    ['p-md', 'px-lg'],
+    ['p-md', 'py-lg'],
+    ['mx-md', 'ml-lg@sm'],
+    ['mx-md', 'mx-lg'],
+    ['mx-md', 'm-lg'],
+    ['border-width:1px', 'border-top-width:2px@sm'],
+    ['border-width:1px', 'border-width:2px'],
+    ['border-width:1px', 'border-inline-width:2px'],
+    ['unknown-class', 'btn']
+  ])('does not infer a partial overlap between %s and %s', (first, second) => {
+    expect(findPartialClassConflicts([first, second], css)).toEqual([])
   })
 })
 

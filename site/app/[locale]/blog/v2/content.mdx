@@ -32,10 +32,10 @@ You can now customize CSS [animations](/guide/motion#customize-motion-tokens) in
   }
 
 ```
-Apply the `fade` keyframe via [animation syntax](/reference/animation):
+Apply the `fade` keyframe via [animation syntax](/reference/animate):
 ```html
-<!-- @MARK animation:fade|.5s|ease -->
-<div class="animation:fade|.5s|ease"></div>
+<!-- @MARK animation-name:fade animation-duration:0.5s animation-timing-function:ease -->
+<div class="animation-name:fade animation-duration:0.5s animation-timing-function:ease"></div>
 ```
 It only generates the CSS keyframe rule used:
 ```css
@@ -58,11 +58,10 @@ It only generates the CSS keyframe rule used:
 
 ## Explicit Motion Declarations
 
-Animation and transition longhands use their full CSS property keys:
 ```html
 <div class="animation-play-state:paused">
 <div class="animation-fill-mode:forwards">
 <div class="animation-iteration-count:infinite">
 <div class="animation-direction:alternate">
 ```
-To learn more, check out the [animation](/reference/animation) documentation.
+To learn more, check out the [animation](/reference/animate) documentation.

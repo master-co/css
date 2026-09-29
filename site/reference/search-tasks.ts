@@ -4,7 +4,7 @@ export const searchTasks = [
   ['padding:', 'padding'], ['padding-inline:', 'padding'], ['padding-block:', 'padding'], ['padding-inline-start:', 'padding'],
   ['padding-inline-end:', 'padding'], ['padding-block-start:', 'padding'], ['padding-block-end:', 'padding'],
   ['padding-inline-start', 'padding'], ['padding-block', 'padding'], ['padding-right', 'padding'],
-  ['padding:var(--spacing-md)|var(--spacing-lg)', 'padding'], ['按鈕內距', 'padding'], ['行內起點內距', 'padding'],
+  ['padding-top:var(--spacing-md) padding-right:var(--spacing-lg) padding-bottom:var(--spacing-md) padding-left:var(--spacing-lg)', 'padding'], ['按鈕內距', 'padding'], ['行內起點內距', 'padding'],
   ['--spacing-md', 'tokens/spacing'], ['spacing', 'tokens/spacing'],
   ['fg-red:hover@sm', 'rules/conditions'], ['Conditions', 'rules/conditions'],
   ['Variables & modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],

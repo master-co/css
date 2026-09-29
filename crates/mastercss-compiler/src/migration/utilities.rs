@@ -213,23 +213,23 @@ impl Migration {
             &engine,
             &format!("migration-saved-utility:{value}{suffix}"),
         )?;
-        let candidate =
-            if key == "text-stroke" && old.len() == 1 && old[0].declarations.len() == 1 {
-                let property = old[0].declarations[0].property.as_str();
-                let key =
+        let candidate = if key == "text-stroke" && old.len() == 1 && old[0].declarations.len() == 1
+        {
+            let property = old[0].declarations[0].property.as_str();
+            let key =
                     match property {
                         "-webkit-text-stroke-width" => "text-stroke-width",
                         "-webkit-text-stroke-color" => "text-stroke-color",
-                        "-webkit-text-stroke" => "text-stroke",
+                        "-webkit-text-stroke" => return Err("Choose explicit text stroke width and color from the saved CSS; compound stroke migration requires manual review".into()),
                         _ => return Err(
                             "Saved text-stroke utility has custom intent; review its declarations"
                                 .into(),
                         ),
                     };
-                format!("{key}:{value}{suffix}")
-            } else {
-                after
-            };
+            format!("{key}:{value}{suffix}")
+        } else {
+            after
+        };
         self.equivalent(&old, &candidate, true)?;
         self.utility_resources(
             &engine,

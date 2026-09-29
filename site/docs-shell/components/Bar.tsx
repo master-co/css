@@ -10,11 +10,11 @@ export default function Bar({ className, width, animated, children, color = 'tex
 
   return (
     <div ref={ref} className={clsx('display:flex align-items:center gap:0.625rem margin-left:-1px flex-wrap:nowrap@sm flex-wrap:wrap@media((width<52.125rem))', className)}>
-      <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx('display:none@media((width<52.125rem))', className, animated && 'transition:width|2s|ease-out will-change:width')}>
+      <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx('display:none@media((width<52.125rem))', className, animated && 'transition-property:width transition-duration:2s transition-timing-function:ease-out will-change:width')}>
         <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-line-subtle stroke-width:1')} />
       </svg>
-      <div className="display:none@sm flex:0|0|100%@media((width<52.125rem)) order:2@media((width<52.125rem))">
-        <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx(className, animated && 'transition:width|2s|ease-out will-change:width')}>
+      <div className="display:none@sm flex-grow:0@media((width<52.125rem)) flex-shrink:0@media((width<52.125rem)) flex-basis:100%@media((width<52.125rem)) order:2@media((width<52.125rem))">
+        <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? resolvedWidth : width }} className={clsx(className, animated && 'transition-property:width transition-duration:2s transition-timing-function:ease-out will-change:width')}>
           <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill-${color}`, 'stroke-line-subtle stroke-width:1')} />
         </svg>
       </div>
@@ -31,7 +31,7 @@ export default function Bar({ className, width, animated, children, color = 'tex
             return -c * t * (t - 2) + b
           }} />
       </b>
-      <div className={clsx('flex:1 min-width:0', animated && 'transition:opacity|.5s|ease-out transition-delay:2s will-change:opacity')}
+      <div className={clsx('flex:1 min-width:0', animated && 'transition-property:opacity transition-duration:0.5s transition-timing-function:ease-out transition-delay:2s will-change:opacity')}
         style={{ opacity: inView ? 1 : 0 }}>
         {children}
       </div>

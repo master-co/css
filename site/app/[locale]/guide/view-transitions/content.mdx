@@ -161,8 +161,8 @@ In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-  animation:fade|var(--duration-fast)|both::view-transition-new(hero)
-  animation:fade|var(--duration-fast)|both|reverse::view-transition-old(hero)
+  animation-name:fade::view-transition-new(hero) animation-duration:var(--duration-fast)::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)
+  animation-name:fade::view-transition-old(hero) animation-duration:var(--duration-fast)::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)
   animation-duration-slow::view-transition-group(hero)
 ">
 ```
@@ -172,8 +172,8 @@ In Master CSS, write the pseudo-element after the declaration:
   <Class2CSS>
     {[
       'animation-duration-slow::view-transition-group(hero)',
-      'animation:fade|var(--duration-fast)|both|reverse::view-transition-old(hero)',
-      'animation:fade|var(--duration-fast)|both::view-transition-new(hero)'
+      'animation-name:fade::view-transition-old(hero) animation-duration:var(--duration-fast)::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)',
+      'animation-name:fade::view-transition-new(hero) animation-duration:var(--duration-fast)::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)'
     ]}
   </Class2CSS>
 </details>

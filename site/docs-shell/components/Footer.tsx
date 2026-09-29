@@ -36,7 +36,7 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
   return (
-    <div {...props} className={clsx('py-2xl border-top:1px|solid|var(--color-line-subtle)', className)}>
+    <div {...props} className={clsx('py-2xl border-top-width:1px border-top-style:solid bt-line-subtle', className)}>
       <div className='container-type:inline-size max-width:100rem margin-inline:auto'>
         <div className="grid-cols(2) flex:1 justify-content:space-between gap:2.5rem font-sm fg-text-muted grid-cols(4)@container((width>=18rem)) grid-cols(5)@container((width>=28rem))">
           {navGroups.map((group) => (
@@ -60,16 +60,16 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
         {legalLinks.map((link, index) => (
           <Fragment key={link.href || link.name}>
             <Link href={link.href} className={clsx(index === 0 && 'margin-left:auto')}>{$(link.name)}</Link>
-            {index < legalLinks.length - 1 && <div className='border-left:1px|solid|var(--color-line-subtle)'></div>}
+            {index < legalLinks.length - 1 && <div className='border-left-width:1px border-left-style:solid bl-line-subtle'></div>}
           </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='border-left:1px|solid|var(--color-line-subtle) display:none@media((width<64rem))'></div>}
+        {legalLinks.length > 0 && <div className='border-left-width:1px border-left-style:solid bl-line-subtle display:none@media((width<64rem))'></div>}
         <label className='position:relative display:none@media((width<64rem))'>
           <span className='pr-xs text-transform:capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
           <ThemeSelect />
           <IconChevronDown className='display:inline-block height:1em width:1em vertical-align:middle' />
         </label>
-        <div className='border-left:1px|solid|var(--color-line-subtle) display:none@media((width<64rem))'></div>
+        <div className='border-left-width:1px border-left-style:solid bl-line-subtle display:none@media((width<64rem))'></div>
         <label className='position:relative display:none@media((width<64rem))'>
           <span className='pr-xs text-transform:capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />

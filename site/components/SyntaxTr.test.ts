@@ -118,7 +118,7 @@ test('proxies preset namespace placeholders and restores declaration values', ()
   assert.equal(proxy, 'animate-fade')
 
   const declarations = generateDeclarations(proxy)
-  assert.equal(declarations.animation, 'var(--animate-fade)')
+  assert.equal(declarations['animation-name'], 'var(--animate-fade)')
 
   const restored = restoreText(placeholders, [
     proxy,
@@ -126,8 +126,8 @@ test('proxies preset namespace placeholders and restores declaration values', ()
     convertDeclarationsToCSS(declarations)
   ])
   assert.match(restored, /animate-<name>/)
-  assert.match(restored, /animation: <name>;/)
-  assert.doesNotMatch(restored, /fade|--animate/)
+  assert.match(restored, /animation-name: <name>;/)
+  assert.doesNotMatch(restored, /fade/)
 })
 
 test('restores generic placeholders split across text nodes', () => {

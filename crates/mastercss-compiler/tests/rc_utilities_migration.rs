@@ -39,10 +39,8 @@ fn preserves_actual_stroke_intent_and_does_not_guess_variable_types() {
         result.class_lists[1][0].after.as_deref(),
         Some("-webkit-text-stroke-color:#fff")
     );
-    assert_eq!(
-        result.class_lists[2][0].after.as_deref(),
-        Some("-webkit-text-stroke:red")
-    );
+    assert_eq!(result.class_lists[2][0].status, "review");
+    assert_eq!(result.class_lists[2][0].after, None);
     assert_eq!(result.class_lists[3][0].status, "review");
     assert_eq!(result.class_lists[4][0].status, "review");
 }
@@ -145,7 +143,7 @@ fn unchanged_declarations_do_not_hide_changed_resource_values() {
     let mut request = request(vec![vec!["card"]], vec![]);
     let definition = json!({"id":"card","type":-2,"emit":{"type":"declarations","declarations":["color:var(--color-brand)"]},"matchers":[{"type":"static","name":"card"}]});
     request.manifest = json!({"version":1,"languageVersion":2,"variables":{"color":[{"key":"brand","value":"red"}]},"utilities":[definition.clone()]});
-    request.target_manifest = json!({"version":4,"languageVersion":8,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
+    request.target_manifest = json!({"version":4,"languageVersion":9,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
     let result = migrate_rc(&request).unwrap();
     assert_eq!(result.class_lists[0][0].status, "review");
     assert!(

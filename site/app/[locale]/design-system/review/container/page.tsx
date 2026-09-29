@@ -13,7 +13,7 @@ export const metadata = {
 }
 
 function QuerySpecimen() {
-  return <section className="overflow:hidden container-type:inline-size width:100% r-lg border:1px|solid|var(--color-line-divider) bg-surface-raised">
+  return <section className="overflow:hidden container-type:inline-size width:100% r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
     <div className="display:flex flex-direction:column@container((width<=18rem))">
       <div className="flex:1 p-md bg-surface-inset"><strong>Media</strong><p className="review-container-specimenCopy">A visual region</p></div>
       <div className="flex:1 p-md"><strong>Content</strong><p className="review-container-specimenCopy">Stacks when this wrapper narrows.</p></div>

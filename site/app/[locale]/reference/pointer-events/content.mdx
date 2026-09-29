@@ -11,12 +11,12 @@ Compare the same transparent overlay with `pointer-events:none` and `pointer-eve
 
 ```html
 <!-- None · reaches the checkbox -->
-<div class="position:relative px-lg pb-lg pt-xl border:1px|solid|var(--color-line-divider) r-sm">
+<div class="position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm">
   <label class="display:flex align-items:center gap-sm">
     <input type="checkbox"> Snap to grid
   </label>
   <div id="target" aria-hidden="true"
-    class="position:absolute inset:0 border:1px|dashed|var(--color-violet) r-sm
+    class="position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm
            pointer-events:none">
     <span class="position:absolute right-xs top-xs font-xs fg-text-violet">Overlay</span>
   </div>
@@ -25,12 +25,12 @@ Compare the same transparent overlay with `pointer-events:none` and `pointer-eve
 
 ```html
 <!-- Auto · overlay intercepts the pointer -->
-<div class="position:relative px-lg pb-lg pt-xl border:1px|solid|var(--color-line-divider) r-sm">
+<div class="position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm">
   <label class="display:flex align-items:center gap-sm">
     <input type="checkbox"> Snap to grid
   </label>
   <div id="target" aria-hidden="true"
-    class="position:absolute inset:0 border:1px|dashed|var(--color-violet) r-sm
+    class="position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm
            pointer-events:auto">
     <span class="position:absolute right-xs top-xs font-xs fg-text-violet">Overlay</span>
   </div>
@@ -73,7 +73,7 @@ The property is inherited. A child with `pointer-events:auto` can receive pointe
 <DemoExample page="pointer-events" section="restore-pointer-events-on-a-child" />
 
 ```html
-<div class="p-md border:1px|dashed|var(--color-violet) r-sm pointer-events:none">
+<div class="p-md border-width:1px border-style:dashed b-violet r-sm pointer-events:none">
   <p class="font-xs fg-text-muted">Parent ignores direct pointer targeting</p>
   <label id="target"
     class="display:flex align-items:center gap-sm pointer-events:auto">
@@ -91,13 +91,13 @@ Resize the real viewport. The overlay intercepts pointer input below `sm` and le
 
 ```html
 <!-- Auto → none at sm -->
-<div class="position:relative px-lg pb-lg pt-xl border:1px|solid|var(--color-line-divider) r-sm">
+<div class="position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm">
   <label class="display:flex align-items:center gap-sm">
     <input type="checkbox"> Snap to grid
   </label>
   <div id="target" aria-hidden="true"
 
-  class="position:absolute inset:0 border:1px|dashed|var(--color-violet) r-sm
+  class="position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm
          pointer-events:auto pointer-events:none@media(screen)@sm">
     <span class="position:absolute right-xs top-xs font-xs fg-text-violet">Overlay</span>
   </div>

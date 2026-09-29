@@ -4,7 +4,7 @@ import DocBadge from './DocBadge'
 import InlineCode from './InlineCode'
 
 const iconProps = {
-  className: 'stroke-width:1.5 margin-right:0.125rem bg-text-body/.1 border-radius:0.25rem padding:0.125rem flex:0|0|auto',
+  className: 'stroke-width:1.5 margin-right:0.125rem bg-text-body/.1 border-radius:0.25rem padding:0.125rem flex-grow:0 flex-shrink:0 flex-basis:auto',
   width: 14,
   height: 14
 }

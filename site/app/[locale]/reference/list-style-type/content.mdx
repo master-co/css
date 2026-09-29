@@ -4,7 +4,6 @@
 
 ## Examples \{#examples\}
 ### Use decimal markers \{#use-decimal-markers\}
-Use an ordered list for a meaningful sequence and `list-style:decimal` for decimal markers. This shorthand also resets position to outside and image to none.
 
 <DemoExample page="list-style-type" section="use-decimal-markers" />
 
@@ -25,7 +24,6 @@ Use an ordered list for a meaningful sequence and `list-style:decimal` for decim
 </details>
 
 ### Use disc markers \{#use-disc-markers\}
-Use an unordered list when item order is not significant. The disc shorthand provides ordinary bullets and resets the other list-style parts.
 
 <DemoExample page="list-style-type" section="use-disc-markers" />
 
@@ -46,7 +44,7 @@ Set `list-style-type` independently for native marker styles. Square suits this 
 ```html
 <!-- Unordered · square -->
 <ul id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
-    list-style:disc|outside list-style-type:square">
+    list-style-type:disc list-style-position:outside list-style-image:initial list-style-type:square">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
   <li class="mb-2xs">Review the composition</li>
@@ -56,14 +54,13 @@ Set `list-style-type` independently for native marker styles. Square suits this 
 ```html
 <!-- Ordered · lower-roman -->
 <ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
-    list-style:decimal|outside list-style-type:lower-roman">
+    list-style-type:decimal list-style-position:outside list-style-image:initial list-style-type:lower-roman">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>
   <li class="mb-2xs">Review the composition</li>
 </ol>
 ```
 
-The longhand leaves position and image unchanged. An available image marker takes precedence over the type.
 
 ### Apply conditionally \{#apply-conditionally\}
 Resize past `sm` to replace decimal markers with lower-roman on screen. Position stays outside and the list remains ordered. Print uses decimal.
@@ -73,7 +70,7 @@ Resize past `sm` to replace decimal markers with lower-roman on screen. Position
 ```html
 <!-- Real viewport · type only -->
 <ol id="target" class="width:260px max-width:100% margin:0 pl-lg font-md leading-lg
-    list-style:decimal|outside list-style-type:decimal@media(print)
+    list-style-type:decimal list-style-position:outside list-style-image:initial list-style-type:decimal@media(print)
     list-style-type:lower-roman@media(screen)@sm">
   <li class="mb-2xs">Collect references</li>
   <li class="mb-2xs">Compare the spacing across every screen size.</li>

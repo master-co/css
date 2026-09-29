@@ -361,8 +361,7 @@ pub(crate) use utility::{
     split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
-    find_matching_parenthesis, is_native_shorthand_property, is_valid_native_property,
-    normalize_css_math_functions,
+    find_matching_parenthesis, is_valid_native_property, normalize_css_math_functions,
 };
 
 pub use condition::{condition_priority, native_query_features};

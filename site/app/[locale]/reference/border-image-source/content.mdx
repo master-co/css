@@ -11,7 +11,7 @@ A source can be a gradient or an image file. Both panels keep their own slice, w
 <!-- Gradient · continuous color -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
@@ -27,7 +27,7 @@ A source can be a gradient or an image file. Both panels keep their own slice, w
 <!-- SVG · distinct corners and edges -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
@@ -50,7 +50,7 @@ The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border 
 <!-- Image source · patterned border -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
@@ -66,7 +66,7 @@ The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border 
 <!-- No source · regular blue border -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:none
@@ -78,7 +78,7 @@ The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border 
 </div>
 ```
 
-The blue fallback is authored as `border:12px|solid|var(--color-blue-60)`. Slice and width values remain declared when the source is absent.
+The blue fallback is authored as `border-width:12px border-style:solid b-blue-60`. Slice and width values remain declared when the source is absent.
 
 ### Apply conditionally \{#apply-conditionally\}
 Widen to `sm` to replace the gradient with the SVG source. Print uses no image and retains the solid border.
@@ -89,7 +89,7 @@ Widen to `sm` to replace the gradient with the SVG source. Print uses no image a
 <!-- Gradient → SVG at sm -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)

@@ -13,7 +13,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Primary · blue -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid
+         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor
          border-color-blue font-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
@@ -24,7 +24,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Comparison · violet -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid
+         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor
          border-color-violet font-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
@@ -47,7 +47,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Four painted edges -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:6px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:6px border-style:solid b-blue
          font-md bg-surface-inset fg-text-body
          box-sizing:border-box">
   Preview panel
@@ -58,7 +58,7 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Transparent top · width preserved -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:6px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:6px border-style:solid border-right-color-blue border-bottom-color-blue border-left-color-blue
          border-top-color:transparent font-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Preview panel
@@ -77,7 +77,7 @@ Transparent color differs from `border-top-width:0` or `bt-none`, which remove t
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:2px|solid border-color:currentColor r-sm
+         border-width:2px border-style:solid border-color:currentcolor border-color:currentColor r-sm
          font-md bg-surface-base fg-text-blue box-sizing:border-box
          bg-surface-inset:focus-visible
          fg-text-violet:hover@media(screen)
@@ -98,7 +98,7 @@ At `sm`, the blue border follows the violet foreground through `currentColor`. P
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:2px|solid border-color-blue r-sm font-md
+         border-width:2px border-style:solid border-color:currentcolor border-color-blue r-sm font-md
          bg-surface-base fg-text-violet box-sizing:border-box
          bg-surface-inset:focus-visible
          border-color:transparent@media(print)
@@ -134,7 +134,7 @@ Define a semantic line token in each theme, then compile the token declarations 
 <!-- Configured divider · mode-aware paint -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid font-md
+         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor font-md
          bg-surface-inset fg-text-body box-sizing:border-box
          border-color-line-divider">
   Project divider

@@ -10,16 +10,16 @@ This visible native button declares an upcoming transform. Press and hold it, or
 ```html
 <!-- Transform hint · press to move -->
 <div class="p-lg">
-  <div class="position:relative height:96px width:160px outline:1px|dashed|var(--color-line-subtle)">
+  <div class="position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle">
     <button id="target" type="button"
       class="display:grid place-items:center height:96px width:160px p-sm
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 transform:none
              will-change:transform
-             outline:2px|solid|var(--color-blue):focus-visible
+             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
              outline-offset:3px:focus-visible
              transform:none@media(print)
-             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe
              will-change:auto@media(print)
              transform:translateY(-8px):active@media(screen)">
       Move preview
@@ -45,15 +45,15 @@ Press this visible button to lower its opacity. The hint names opacity; a separa
 ```html
 <!-- Opacity hint · press to fade -->
 <div class="p-lg">
-  <div class="position:relative height:96px width:160px outline:1px|dashed|var(--color-line-subtle)">
+  <div class="position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle">
     <button id="target" type="button"
       class="display:grid place-items:center height:96px width:160px p-sm
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 will-change:opacity
-             outline:2px|solid|var(--color-blue):focus-visible
+             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
              outline-offset:3px:focus-visible
              opacity:1@media(print)
-             transition:opacity|var(--duration-fast)|ease-out@motion-safe
+             transition-property:opacity@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe
              will-change:auto@media(print)
              opacity:.64:active@media(screen)">
       Preview overlay
@@ -72,15 +72,15 @@ Hover or focus to prepare a transform hint before pressing. Move away and remove
 ```html
 <!-- Auto → prepare → press → auto -->
 <div class="p-lg">
-  <div class="position:relative height:96px width:160px outline:1px|dashed|var(--color-line-subtle)">
+  <div class="position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle">
     <button id="target" type="button"
       class="display:grid place-items:center height:96px width:160px p-sm
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 transform:none will-change:auto
-             outline:2px|solid|var(--color-blue):focus-visible
+             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
              outline-offset:3px:focus-visible
              transform:none@media(print)
-             transition:transform|var(--duration-fast)|ease-out@motion-safe
+             transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe
              will-change:auto@media(print)
              will-change:transform:hover@media(screen)
              will-change:transform:focus-visible@media(screen)
@@ -101,15 +101,15 @@ Widen the actual viewport to `sm` to declare an opacity hint. Pressing the nativ
 ```html
 <!-- Auto → opacity hint at sm -->
 <div class="p-lg">
-  <div class="position:relative height:96px width:160px outline:1px|dashed|var(--color-line-subtle)">
+  <div class="position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle">
     <button id="target" type="button"
       class="display:grid place-items:center height:96px width:160px p-sm
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 will-change:auto
-             outline:2px|solid|var(--color-blue):focus-visible
+             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
              outline-offset:3px:focus-visible
              opacity:1@media(print)
-             transition:opacity|var(--duration-fast)|ease-out@motion-safe
+             transition-property:opacity@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe
              will-change:auto@media(print)
              opacity:.64:active@media(screen)
              will-change:opacity@media(screen)@sm">

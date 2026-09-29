@@ -14,8 +14,8 @@ const sections: DocumentationIndexSection[] = [
       { id: 'display', title: 'display', category: 'Document flow', url: '/reference/display' },
     ] },
     { id: 'gallery-layout', title: 'Layout', entries: [
-      { id: 'flex', title: 'flex', category: 'Layout', url: '/reference/flex' },
-      { id: 'grid', title: 'grid', category: 'Layout', url: '/reference/grid' },
+      { id: 'flex', title: 'flex', category: 'Layout', url: '/reference/flex-grow' },
+      { id: 'grid', title: 'grid', category: 'Layout', url: '/reference/grid-template-columns' },
     ] },
   ] },
   { id: 'gallery-foundations', title: 'Foundations', description: 'Share values across the interface.', Icon: IconPalette, groups: [{ entries: [

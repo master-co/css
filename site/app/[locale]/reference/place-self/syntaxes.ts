@@ -10,7 +10,6 @@ const syntaxes = [
   'place-self:flex-end',
   'place-self:self-start',
   'place-self:self-end',
-  ['place-self:`align-self`|`justify-self`'],
 ]
 
 export default syntaxes

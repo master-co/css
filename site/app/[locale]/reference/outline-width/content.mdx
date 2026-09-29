@@ -4,7 +4,7 @@
 ## Examples \{#examples\}
 
 ### Set outline width \{#set-outline-width\}
-A length in `outline:<size>` changes the outline width independently. Compare 2px and 6px outlines around identical buttons; their layout size does not grow.
+A length in `outline-width:<size>` changes the outline width independently. Compare 2px and 6px outlines around identical buttons; their layout size does not grow.
 
 <DemoExample page="outline-width" section="set-outline-width" />
 
@@ -13,7 +13,7 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-offset-3xs outline-width:2px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
@@ -26,7 +26,7 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-offset-3xs outline-width:6px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
@@ -42,7 +42,6 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 </details>
 
 ### Use keyword widths \{#use-keyword-widths\}
-Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widths without resetting style or color. The explicit `outline-width:*` longhands are equivalent. Read the browser’s resolved pixel values below.
 
 <DemoExample page="outline-width" section="use-keyword-widths" />
 
@@ -51,7 +50,7 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-width:thin outline-offset-3xs outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible">
@@ -64,7 +63,7 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-width:medium
+         border-width:1px border-style:solid b-line-divider r-sm outline-width:medium
          outline-style:solid outline-offset-3xs
          outline-blue font-md bg-surface-base
          fg-text-body box-sizing:border-box
@@ -78,7 +77,7 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-width:thick outline-offset-3xs
          outline-blue font-md bg-surface-base
          fg-text-body box-sizing:border-box
@@ -87,7 +86,6 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 </button>
 ```
 
-These keywords resolve to lengths. `outline:thin` is instead a full shorthand with the style omitted; that resets the style to `none` and leaves no visible outline. A visible style must be supplied.
 
 ### Apply conditionally \{#apply-conditionally\}
 Keyboard focus increases the outline from 2px to 4px. Width grows into the surrounding paint area without moving or resizing the button. Print removes the outline width.
@@ -99,7 +97,7 @@ Keyboard focus increases the outline from 2px to 4px. Width grows into the surro
 <button id="target" type="button"
   class="display:inline-flex align-items:center justify-content:center
          min-height:44px max-width:100% px-md py-sm
-         border:1px|solid|var(--color-line-divider) r-sm outline-style:solid
+         border-width:1px border-style:solid b-line-divider r-sm outline-style:solid
          outline-offset-3xs outline-width:2px outline-blue
          font-md bg-surface-base fg-text-body box-sizing:border-box
          bg-surface-inset:focus-visible

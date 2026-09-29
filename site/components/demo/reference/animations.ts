@@ -2,7 +2,7 @@ import type { DemoScene, ReferenceDemoSection } from './types'
 import { typeSpecimens } from './type-specimens'
 
 const properties: Record<string, string[]> = {
-  'animation': ['animation-name', 'animation-duration', 'animation-iteration-count'],
+  'animate': ['animation-name', 'animation-duration', 'animation-iteration-count'],
   'animation-delay': ['animation-delay', 'animation-duration'],
   'animation-direction': ['animation-direction', 'animation-duration'],
   'animation-duration': ['animation-duration', 'animation-fill-mode'],

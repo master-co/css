@@ -64,9 +64,9 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | Adaptive readable foreground | Text hue aliases | `fg-text-blue`, `fg-text-petrol` |
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border:1px|solid|var(--color-line-divider) --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border-width:1px border-style:solid b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <main class="bg-surface-base fg-text-body">
-  <section class="border:1px|solid|var(--color-line-divider) bg-surface-raised">
+  <section class="border-width:1px border-style:solid b-line-divider bg-surface-raised">
     <h2 class="fg-text-strong">Project updates</h2>
     <p class="fg-text-muted">Three milestones changed this week.</p>
     <a class="fg-text-link text-decoration:underline" href="#">Continue</a>
@@ -106,8 +106,8 @@ Line tokens are for borders, dividers, outlines, and strokes. `divider` and `sub
 <LineRolesDemo />
 
 ```html
-<!-- @MARK border:1.25rem|solid|var(--color-line-divider) -->
-<div class="border:1.25rem|solid|var(--color-line-divider)"></div>
+<!-- @MARK border-width:1.25rem border-style:solid b-line-divider -->
+<div class="border-width:1.25rem border-style:solid b-line-divider"></div>
 ```
 
 ### Text roles
@@ -174,9 +174,9 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 ```
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border:1px|solid|var(--color-line-divider) --><!-- @MARK fg-text-muted -->
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border-width:1px border-style:solid b-line-divider --><!-- @MARK fg-text-muted -->
 <main class="bg-surface-base fg-text-body">
-  <section class="border:1px|solid|var(--color-line-divider) bg-surface-raised">
+  <section class="border-width:1px border-style:solid b-line-divider bg-surface-raised">
     <p class="fg-text-muted">The classes stay the same in every mode.</p>
   </section>
 </main>

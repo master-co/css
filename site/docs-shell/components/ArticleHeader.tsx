@@ -76,7 +76,7 @@ export default async function ArticleHeader(props: any) {
         <div className={clsx('display:flex gap-xs display:none:empty', center ? 'align-items:center' : 'align-items:start')}>
           {end}
         </div>
-        {icon && <div className='display:grid flex:0|0|auto place-content:center margin-inline:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
+        {icon && <div className='display:grid flex-grow:0 flex-shrink:0 flex-basis:auto place-content:center margin-inline:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
           <div className="display:grid place-content:center height:4.5rem width:4.5rem height:5rem@sm width:5rem@sm" style={headerIconSlotStyle}>
             {icon}
           </div>
@@ -88,7 +88,7 @@ export default async function ArticleHeader(props: any) {
       })}>{$(metadata.description)}</p>
       {
         (metadata.unfinished || metadata.disabled) &&
-        <div className="margin-block:1.25rem padding:0.797rem|1.25rem r-lg text-xs font-weight:460 bg-accent/.1 fg-accent">
+        <div className="margin-block:1.25rem padding-top:0.797rem padding-right:1.25rem padding-bottom:0.797rem padding-left:1.25rem r-lg text-xs font-weight:460 bg-accent/.1 fg-accent">
           <span className='margin-right:0.625rem'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
         </div>
       }

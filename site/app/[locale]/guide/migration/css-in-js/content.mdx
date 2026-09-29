@@ -149,7 +149,7 @@ export function Meter({ value }: { value: number }) {
   return (
     <div className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
       <div
-        className="height:100% width:var(--value) bg-green-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
+        className="height:100% width:var(--value) bg-green-60 transition-property:width transition-duration:var(--duration-fast) transition-timing-function:var(--easing-smooth)"
         style={{ '--value': `${value}%` } as React.CSSProperties}
       />
     </div>

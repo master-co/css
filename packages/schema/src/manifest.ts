@@ -62,7 +62,7 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 4
-  languageVersion: 8
+  languageVersion: 9
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]

@@ -1,11 +1,11 @@
 const syntaxes = [
-  ["border:`size`"],
-  ["border-top:`size`"],
-  ["border-bottom:`size`"],
-  ["border-left:`size`"],
-  ["border-right:`size`"],
-  ["border-inline:`size`"],
-  ["border-block:`size`"],
+  ["border-width:`size`"],
+  ["border-top-width:`size`"],
+  ["border-bottom-width:`size`"],
+  ["border-left-width:`size`"],
+  ["border-right-width:`size`"],
+  ["border-inline-width:`size`"],
+  ["border-block-width:`size`"],
 ]
 
 export default syntaxes

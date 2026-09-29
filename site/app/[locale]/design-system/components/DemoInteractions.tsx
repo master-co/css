@@ -16,7 +16,7 @@ export default function DemoInteractions() {
         </div>
       </Demo>
       <Demo title="Motion" caption="Animation starts only when requested. Replay returns every animation to its starting time.">
-        <DemoMotion><div className="display:flex justify-content:center p-lg"><DemoItem className="display:grid place-content:center height:4rem width:4rem animation:rotate|2s|linear|infinite">↗</DemoItem></div></DemoMotion>
+        <DemoMotion><div className="display:flex justify-content:center p-lg"><DemoItem className="display:grid place-content:center height:4rem width:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem></div></DemoMotion>
       </Demo>
       <Demo title="Scroll region" caption="A keyboard-focusable, bounded region keeps scrolling local to the example.">
         <DemoScrollArea role="region" aria-label="Layer collection" className="height:10rem">

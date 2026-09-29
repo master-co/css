@@ -1,15 +1,11 @@
-import createPage from '~/site/docs-shell/factories/create-page'
-import Layout from '~/site/layouts/doc'
-import metadata from './metadata'
-import dictionaries from '~/site/dictionaries'
-import categories from '~/site/.categories/reference.json'
+import RetiredReferencePage, { retiredReferenceMetadata } from '~/site/components/RetiredReferencePage'
 
-export const { Page, dynamic, revalidate, generateMetadata } = createPage({
-  metadata,
-  dictionaries,
-  categories,
-  content: import('./content.mdx'),
-  Layout,
-})
+export const dynamic = 'force-static'
 
-export default Page
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  return retiredReferenceMetadata('border', (await params).locale)
+}
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  return <RetiredReferencePage slug="border" locale={(await params).locale} />
+}

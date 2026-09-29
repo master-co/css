@@ -3,12 +3,11 @@
 
 ## Examples \{#examples\}
 ### Underline text \{#underline-text\}
-`text-decoration-line:underline` adds a line while leaving the specified color, style and thickness intact. Here the dedicated longhand keeps the blue wavy treatment.
 
 <DemoExample page="text-decoration-line" section="underline-text" />
 
 ```html
-<!-- Underline · independent longhands -->
+<!-- Underline · independent properties -->
 <p id="target"
   class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration-style:wavy
          text-decoration-line:underline text-decoration-thickness:2px
@@ -41,15 +40,16 @@ Separate line values with `|` to emit a space-separated CSS value. Both decorati
 </p>
 ```
 
-### Use shorthand aliases for common cases \{#use-shorthand-aliases-for-common-cases\}
-Use the shorter aliases when resetting the full decoration is appropriate. They emit the `text-decoration` shorthand, not just its line property.
+<a id="use-shorthand-aliases-for-common-cases"></a>
+### Set one decoration line \{#set-one-decoration-line\}
 
-<DemoExample page="text-decoration-line" section="use-shorthand-aliases-for-common-cases" />
+<DemoExample page="text-decoration-line" section="set-one-decoration-line" />
+
 
 ```html
 <!-- underline -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:underline"
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration-line:underline"
 >
   Design together
 </p>
@@ -58,7 +58,7 @@ Use the shorter aliases when resetting the full decoration is appropriate. They 
 ```html
 <!-- line-through -->
 <p id="target"
-  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration:line-through"
+  class="display:inline-block max-width:100% margin:0 font-2xl leading-xl text-decoration-line:line-through"
 >
   Design together
 </p>
@@ -76,7 +76,6 @@ Use the shorter aliases when resetting the full decoration is appropriate. They 
 A strike-through is a visual treatment. Use semantic `<s>` or `<del>` when the text is outdated or represents a document deletion.
 
 ### Apply conditionally \{#apply-conditionally\}
-Hover or focus to add an overline to the existing underline. The line longhand leaves the blue color and 2px thickness unchanged. Print keeps one underline.
 
 <DemoExample page="text-decoration-line" section="apply-conditionally" />
 

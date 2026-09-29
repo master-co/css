@@ -114,7 +114,6 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './utility-type': 'Utility classification constants and their type.',
       './runtime-style': 'Runtime style element identifier.',
       './emitted-globals': 'Counts of resources already emitted outside a session.',
-      './native-css-shorthand': 'Native CSS shorthand property lookup.',
       './css-common': 'Shared CSS vendor identifiers.',
       './diagnostics': 'Diagnostic versions, source ranges and error payloads.',
       './integration': 'Rendering modes and shared integration options.'

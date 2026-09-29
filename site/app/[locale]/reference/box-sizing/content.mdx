@@ -9,7 +9,7 @@ Use `box-border` to include padding and border within the declared width and hei
 
 ```html
 <!-- @MARK box-sizing:border-box -->
-<div class="width:10rem p-md border:1px|solid|var(--color-gray-20) box-sizing:border-box">
+<div class="width:10rem p-md border-width:1px border-style:solid b-gray-20 box-sizing:border-box">
   Border-box
 </div>
 ```
@@ -28,7 +28,7 @@ Use `box-content` when the declared size should describe the content alone. Here
 
 ```html
 <!-- @MARK box-sizing:content-box -->
-<div class="width:10rem p-md border:1px|solid|var(--color-gray-20) box-sizing:content-box">
+<div class="width:10rem p-md border-width:1px border-style:solid b-gray-20 box-sizing:content-box">
   Content-box
 </div>
 ```
@@ -39,8 +39,8 @@ Keep one sizing model across the parts of a component so its dimensions remain p
 <DemoExample page="box-sizing" section="prefer-consistency-inside-components" />
 
 ```html
-<div class="width:10rem p-md border:1px|solid|var(--color-gray-20) box-sizing:border-box">Border-box</div>
-<div class="width:10rem p-md border:1px|solid|var(--color-gray-20) box-sizing:content-box">Content-box</div>
+<div class="width:10rem p-md border-width:1px border-style:solid b-gray-20 box-sizing:border-box">Border-box</div>
+<div class="width:10rem p-md border-width:1px border-style:solid b-gray-20 box-sizing:content-box">Content-box</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -49,5 +49,5 @@ The same width can produce a different outer size when a condition switches its 
 <DemoExample page="box-sizing" section="apply-conditionally" />
 
 ```html
-<div class="width:10rem p-md border:1px|solid|var(--color-gray-20) box-sizing:border-box box-sizing:content-box@sm">Content</div>
+<div class="width:10rem p-md border-width:1px border-style:solid b-gray-20 box-sizing:border-box box-sizing:content-box@sm">Content</div>
 ```

@@ -14,7 +14,7 @@ The source below is 96 × 96, with corners that end at coordinate 24. Compare un
   class="display:block mb-md" />
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
@@ -30,7 +30,7 @@ The source below is 96 × 96, with corners that end at coordinate 24. Compare un
 <!-- 25% of 96 · same slice -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:25%
          border-image-source:url('/demo/border-grid.svg')
@@ -60,7 +60,7 @@ The center is discarded by default. Adding `fill` paints its pale blue region be
 <!-- Center discarded · normal surface -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
@@ -76,7 +76,7 @@ The center is discarded by default. Adding `fill` paints its pale blue region be
 <!-- Fill · center painted -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24|fill
          border-image-source:url('/demo/border-grid.svg')
@@ -99,7 +99,7 @@ At `sm`, include the source center with `fill`. Print drops the center while kee
 <!-- Discarded → filled center at sm -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:130px
-         width:250px max-width:100% p-md border:12px|solid|var(--color-blue-60)
+         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')

@@ -6,21 +6,27 @@ Master CSS classes select named styles or express CSS declarations directly in m
 <button type="button" class="fg-white:hover@md">Save</button>
 ```
 
-Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `padding:1rem`). Full CSS properties retain native semantics; abbreviations replace only the property name. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
+Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `padding:1rem`). Direct declarations use full CSS property names; named token families may use shorter prefixes. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
 
 
 ## Basic syntax \{#basic-syntax\}
 ### Utilities \{#utilities\}
 <Utilities />
 
-### Multi-style shorthands \{#multi-style-shorthands\}
-<MultiStyleShorthands />
 
-### Named styles and native shorthands \{#ambiguous-shorthands\}
-<AmbiguousShorthands />
+### Independent properties \{#independent-properties\}
 
-### Motion longhands \{#motion-longhands\}
-<SymbolShorthands />
+Each class expresses one styling decision. Use named color tokens and full CSS properties for explicit values:
+
+```html
+<div class="border-width:1px b-line-control border-style:solid">Content</div>
+```
+
+A single value may express one decision, as with `p-sm`, `gap-md`, `overflow:hidden`, and `animation:none@media(print)`. Give different edges or axes their own declarations. Native stylesheets and inline styles retain ordinary CSS syntax.
+
+### Motion properties \{#motion-properties\}
+
+Use `animation-name:*`, `animation-duration:*`, `transition-property:*` and `transition-duration:*` to express independent settings. Named `animate-*` recipes are explicit mixins whose emitted properties can be overridden independently.
 
 ### Property abbreviations \{#property-abbreviations\}
 <Abbreviations />
@@ -90,8 +96,8 @@ Change the text color of an element using color functions like `rgb()`, `hsl()`,
 After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
 
 ```html
-<!-- @MARK bg-blue-60 --><!-- @MARK bg-blue-70:hover@md --><!-- @MARK transition:background-color|.2s -->
-<button type="button" class="bg-blue-60 transition:background-color|.2s bg-blue-70:hover@md">
+<!-- @MARK bg-blue-60 --><!-- @MARK bg-blue-70:hover@md --><!-- @MARK transition-property:background-color transition-duration:0.2s -->
+<button type="button" class="bg-blue-60 transition-property:background-color transition-duration:0.2s bg-blue-70:hover@md">
   Save
 </button>
 ```
@@ -100,6 +106,6 @@ This means:
 
 - `bg-blue-60` applies by default.
 - `bg-blue-70:hover@md` applies only when the button is hovered and the viewport matches `@md`.
-- `transition:background-color|.2s` adds a `background-color` transition.
+- `transition-property:background-color transition-duration:0.2s` adds a `background-color` transition.
 
 Continue with [selectors](/reference/rules/selectors) for element states and relationships, or [conditions](/reference/rules/conditions) for viewport, media, container, and layer suffixes. The [syntax tutorial](/guide/syntax-tutorial) introduces the authoring workflow.

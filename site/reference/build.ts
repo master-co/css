@@ -13,6 +13,7 @@ import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { resolveSyntaxRow } from './syntax'
 import { extractReferenceMdx, portableMarkdown } from './markdown'
 import { utilityEditorial, ruleSources } from './editorial'
+import { retiredReferencePages } from '../utils/retired-reference'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
 import { buildToolContracts } from './tool-contracts'
@@ -163,13 +164,14 @@ export async function generateReference(siteRoot: string) {
       nodes: [...doc.rows.map(row => ({ id: row.id, tag: 'code', text: `${row.syntax} → ${row.declarations}` })), ...extractSearchNodesFromMdx(doc.markdown)]
     }))
     await mkdir(path.dirname(searchFile), { recursive: true })
-    await writeFile(searchFile, JSON.stringify([...existing.filter((page: any) => !pages.some(doc => doc.url === page.url)), ...pages]))
+    await writeFile(searchFile, JSON.stringify([...existing.filter((page: any) => !/^\/(?:en\/|tw\/)?reference\//.test(page.url) && !pages.some(doc => doc.url === page.url)), ...pages]))
   }
   const index = { ...catalog, documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, ...doc }) => ({ ...doc, markdownUrl: `${doc.url}.md`, contentDigest: digest(markdown) })) }
   await mkdir(path.join(siteRoot, 'public/reference'), { recursive: true })
   await writeFile(path.join(siteRoot, 'public/reference/index.json'), JSON.stringify(index, null, 2))
   const pagesFile = path.join(siteRoot, '.pages.json')
-  const pages = JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]'))
+  const retiredURLs = new Set(Object.keys(retiredReferencePages).map(slug => `/reference/${slug}`))
+  const pages = JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]')).filter((page: any) => !retiredURLs.has(page.pathname))
   for (const doc of catalog.documents) if (!pages.some((page: any) => page.pathname === doc.url)) pages.push({ pathname: doc.url })
   await writeFile(pagesFile, JSON.stringify(pages))
   for (const kind of [...new Set(catalog.documents.map(doc => doc.kind))]) {

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Motion',
-  description: 'Create motion with managed keyframes, duration tokens, easing tokens, shorthands, and reduced-motion conditions.',
+  description: 'Create motion with managed keyframes, duration tokens, easing tokens, independent properties, and reduced-motion conditions.',
   category: 'Design Foundations',
   canIUseLink: 'https://caniuse.com/?search=animation',
   mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/animation',

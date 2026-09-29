@@ -26,14 +26,13 @@ Project theme declarations can override these values. See the complete [spacing 
 
 ## Examples \{#examples\}
 ### Combine values and logical sides \{#multiple-values\}
-Separate shorthand values with `|`: two values mean top/bottom, then left/right. Logical `padding-inline-start:*` means inline-start. The same start padding moves from left to right when text direction becomes RTL.
 
 <DemoExample page="padding" section="multiple-values" />
 
 ```html
 <!-- Two physical values -->
 <div id="layout" class="width:17.5rem max-width:100%" role="group" aria-label="Available space">
-  <div id="target" class="width:fit-content padding:var(--spacing-md)|var(--spacing-lg)"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
+  <div id="target" class="width:fit-content padding-top:var(--spacing-md) padding-right:var(--spacing-lg) padding-bottom:var(--spacing-md) padding-left:var(--spacing-lg)"><div id="item-3" class="display:grid place-items:center height:3rem width:7.5rem">Content</div></div>
 </div>
 ```
 
@@ -51,7 +50,6 @@ Separate shorthand values with `|`: two values mean top/bottom, then left/right.
 </div>
 ```
 
-Logical sides follow both writing mode and direction. Physical four-side shorthand keeps its top/right/bottom/left interpretation.
 
 ### Add padding on every side \{#add-padding-on-every-side\}
 `p-md` adds 16px between content and each edge of the box. The neutral content is 160 × 48px, so the blue box is 192 × 80px with no border. Its background also paints the padded area.

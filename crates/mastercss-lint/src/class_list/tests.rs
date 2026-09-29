@@ -56,7 +56,6 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
     let mut partial = analysis();
     partial.partial_conflicts.push(PartialClassConflictIr {
         class_name: "margin-inline:md".into(),
-        replacement: "margin-right:md".into(),
         conflict: "margin-left:lg".into(),
     });
     let ir = create_class_list_ir(
@@ -71,10 +70,14 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
             raw_value_policy: None,
         },
     );
-    assert_eq!(
-        ir.conflict_edit.unwrap().text,
-        "margin-right:md margin-left:lg"
-    );
+    assert!(ir.conflict_edit.is_none());
+    let diagnostic = ir
+        .diagnostics
+        .iter()
+        .find(|item| item.code == "partially-conflicting-class")
+        .unwrap();
+    assert!(diagnostic.fix.is_none());
+    assert!(!diagnostic.data.contains_key("replacement"));
 }
 
 #[test]

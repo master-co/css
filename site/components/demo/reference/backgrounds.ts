@@ -16,7 +16,7 @@ const properties: Record<string, string[]> = {
 }
 const captions: Record<string, string> = {
   color: 'The foreground and element opacity are independent readings. The specimen keeps the actual authored theme and interaction rules.',
-  background: 'Each specimen supplies its own image and geometry. Read the longhands separately to see what the shorthand changes or resets.',
+  background: 'Each specimen supplies its own image and geometry. Read the background properties independently.',
   'background-color': 'The backing surface belongs to the authored example. Background alpha changes the paint without reducing the element’s opacity.',
   'background-image': 'The image list is the browser’s computed value. The first listed layer paints above the others; dimensions and repeat behavior come from the example.',
   'background-attachment': 'Scroll both the inner panel and this preview page. Fixed attachment refers to the iframe viewport; local refers to the scrollable content. Actual paint support can vary by platform.',

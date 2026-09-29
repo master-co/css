@@ -1,0 +1,17 @@
+import Overview from './components/Overview'
+
+## Overview [sr-only] \{#overview\}
+<Overview />
+
+## Usage
+
+The `clamp-lines(n)` mixin sets the box layout, line limit and overflow treatment together. Supply a positive integer. Keep the full content available through an accessible reading path.
+
+### Limit a preview to two lines \{#limit-a-preview-to-two-lines\}
+
+<DemoExample page="clamp-lines" section="limit-a-preview-to-two-lines" />
+
+```html
+<p id="target" class="width:18rem max-width:100% clamp-lines(2)">A shared design language helps a team make consistent decisions. This preview keeps two lines visible while the complete description remains available below.</p>
+<details><summary>Read the full description</summary><p>A shared design language helps a team make consistent decisions. This preview keeps two lines visible while the complete description remains available below.</p></details>
+```

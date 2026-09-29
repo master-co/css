@@ -23,10 +23,10 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 <div class="width:240px max-width:100%">
   <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="height:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:40px width:48px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
              fg-blue-80 transform:none
              animation-delay:0ms animation-duration:1s
              animation-fill-mode:forwards
@@ -43,10 +43,10 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 <div class="width:240px max-width:100%">
   <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="height:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:40px width:48px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
              fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:forwards
@@ -121,8 +121,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
   <li class="display:flex align-items:center gap-sm font-sm">
     <span aria-hidden="true"
       class="display:inline-block height:32px width:64px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
-             animation:fade|var(--duration-slowest)|linear|both
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
+             animation-name:fade animation-duration:var(--duration-slowest) animation-timing-function:linear animation-fill-mode:both
              animation-delay:0ms animation:none@media(print)
              animation-play-state:paused@motion-reduce"></span>
     <span>Item 1 · 0ms</span>
@@ -130,8 +130,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
   <li class="display:flex align-items:center gap-sm font-sm">
     <span aria-hidden="true"
       class="display:inline-block height:32px width:64px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
-             animation:fade|var(--duration-slowest)|linear|both
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
+             animation-name:fade animation-duration:var(--duration-slowest) animation-timing-function:linear animation-fill-mode:both
              animation-delay:200ms animation:none@media(print)
              animation-play-state:paused@motion-reduce"></span>
     <span>Item 2 · 200ms</span>
@@ -139,8 +139,8 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
   <li class="display:flex align-items:center gap-sm font-sm">
     <span id="target" aria-hidden="true"
       class="display:inline-block height:32px width:64px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
-             animation:fade|var(--duration-slowest)|linear|both
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
+             animation-name:fade animation-duration:var(--duration-slowest) animation-timing-function:linear animation-fill-mode:both
              animation-delay:400ms animation:none@media(print)
              animation-play-state:paused@motion-reduce"></span>
     <span>Item 3 · 400ms</span>
@@ -166,7 +166,7 @@ Define a duration token for a shared waiting interval. This example resolves `st
 <!-- 120ms delayed marker -->
 <div class="display:flex align-items:center gap-md p-sm">
   <span id="target" aria-hidden="true"
-    class="display:block height:40px width:64px border:1px|solid|var(--color-blue-60) r-sm
+    class="display:block height:40px width:64px border-width:1px border-style:solid b-blue-60 r-sm
            bg-blue-10 opacity:1 animation-duration:1s
            animation-fill-mode:both animation-name:fade
            animation-timing-function-smooth
@@ -200,10 +200,10 @@ Resize before replaying. The marker waits 600ms below `sm` and starts immediatel
 <div class="width:240px max-width:100%">
   <p class="mb-sm font-mono font-xs fg-text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="height:56px p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:40px width:48px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
              fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:forwards

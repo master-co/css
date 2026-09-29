@@ -146,7 +146,7 @@ code: 'ctl(`font-size:1rem r:.375rem`)'
 code: "ctl(`width:1rem height:1rem`)"
 },
 {
-code: `<div class="font-size-md background-color-red-60">Named token keys</div>`
+code: `<div class="font-size-md bg-red-60">Named token keys</div>`
 },
 {
 code: `<div class="display:block@dark@sm display:block:hover@dark@sm block!@dark@sm">Condition order</div>`

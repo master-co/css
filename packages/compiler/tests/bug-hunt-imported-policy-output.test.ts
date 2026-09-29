@@ -49,7 +49,7 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
   }
 ],
   "version": 4 as const,
-  "languageVersion": 8 as const
+  "languageVersion": 9 as const
 }, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)

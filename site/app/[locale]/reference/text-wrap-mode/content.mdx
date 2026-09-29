@@ -1,0 +1,16 @@
+import Overview from './components/Overview'
+
+## Overview [sr-only] \{#overview\}
+<Overview />
+
+## Usage
+
+Use `wrap` to allow lines to wrap within their container. Use `nowrap` when content must remain on one line, and provide an appropriate overflow treatment. Set whitespace preservation with `white-space-collapse:*`.
+
+### Allow text to wrap \{#allow-text-to-wrap\}
+
+<DemoExample page="text-wrap-mode" section="allow-text-to-wrap" />
+
+```html
+<p id="target" class="text-wrap-mode:wrap width:18rem max-width:100%">Clear writing stays readable as the available space changes. This paragraph wraps inside its own box.</p>
+```

@@ -681,15 +681,19 @@ impl Migration {
                 "clamp-lines".to_owned()
             } else if old.len() == 1 && old[0].declarations.len() == 1 && family.managed {
                 let property = &old[0].declarations[0].property;
-                let canonical = builtin_token_aliases()
-                    .iter()
-                    .find_map(|(alias, property)| (*alias == key).then_some(*property))
-                    .unwrap_or(key);
-                if mastercss_schema::is_native_css_property(canonical) && property != canonical {
-                    property.clone()
-                } else {
-                    key.into()
+                // The saved declaration is evidence of an atomic overload. Do not
+                // reinterpret its raw alias using today's token-only registry.
+                if old[0].declarations[0]
+                    .value
+                    .as_str()
+                    .is_some_and(|native| native != value.replace('|', " "))
+                    && lightningcss::properties::PropertyId::from(property.as_str())
+                        .longhands()
+                        .is_some()
+                {
+                    return Err("Reconstructing a compound declaration from historical values requires manual migration; consult the saved CSS".into());
                 }
+                property.clone()
             } else {
                 key.into()
             };

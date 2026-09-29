@@ -1,0 +1,16 @@
+import Overview from './components/Overview'
+
+## Overview [sr-only] \{#overview\}
+<Overview />
+
+## Usage
+
+Each named recipe emits independent animation properties. Override one setting with `animation-duration:*`, `animation-timing-function:*` or another animation property. Respect motion preferences with `@motion-reduce`.
+
+### Use a named animation recipe \{#use-a-named-animation-recipe\}
+
+<DemoExample page="animate" section="use-a-named-animation-recipe" />
+
+```html
+<div id="target" class="display:inline-block p-md r-sm bg-blue-50 animate-rotate@motion-safe animation:none@media(print)">↗</div>
+```

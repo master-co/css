@@ -1211,29 +1211,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border",
-    "property": "border",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-block",
-    "property": "border-block",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "border-block-color",
     "property": "border-block-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-block-end",
-    "property": "border-block-end",
     "namespaces": [
       "color"
     ]
@@ -1246,22 +1225,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-block-start",
-    "property": "border-block-start",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "border-block-start-color",
     "property": "border-block-start-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-bottom",
-    "property": "border-bottom",
     "namespaces": [
       "color"
     ]
@@ -1281,22 +1246,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-inline",
-    "property": "border-inline",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "border-inline-color",
     "property": "border-inline-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-inline-end",
-    "property": "border-inline-end",
     "namespaces": [
       "color"
     ]
@@ -1309,22 +1260,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-inline-start",
-    "property": "border-inline-start",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "border-inline-start-color",
     "property": "border-inline-start-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-left",
-    "property": "border-left",
     "namespaces": [
       "color"
     ]
@@ -1337,22 +1274,8 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "border-right",
-    "property": "border-right",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
     "prefix": "border-right-color",
     "property": "border-right-color",
-    "namespaces": [
-      "color"
-    ]
-  },
-  {
-    "prefix": "border-top",
-    "property": "border-top",
     "namespaces": [
       "color"
     ]
@@ -1528,22 +1451,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
-    "prefix": "animation",
-    "property": "animation",
-    "namespaces": [
-      "duration",
-      "easing"
-    ]
-  },
-  {
-    "prefix": "transition",
-    "property": "transition",
-    "namespaces": [
-      "duration",
-      "easing"
-    ]
-  },
-  {
     "prefix": "content",
     "property": "content",
     "namespaces": [
@@ -1611,13 +1518,6 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     "property": "order",
     "namespaces": [
       "order"
-    ]
-  },
-  {
-    "prefix": "animate",
-    "property": "animation",
-    "namespaces": [
-      "animate"
     ]
   },
   {
@@ -1739,14 +1639,14 @@ export type MasterCSSBuiltinTokenAliases = Readonly<Record<string, string>>
 export type MasterCSSBuiltinTokenNamespaces = readonly MasterCSSBuiltinTokenNamespace[]
 
 export const builtinTokenAliases = Object.freeze({
-  "b": "border",
-  "bb": "border-bottom",
-  "bg": "background",
-  "bl": "border-left",
-  "br": "border-right",
-  "bt": "border-top",
-  "bx": "border-inline",
-  "by": "border-block",
+  "b": "border-color",
+  "bb": "border-bottom-color",
+  "bg": "background-color",
+  "bl": "border-left-color",
+  "br": "border-right-color",
+  "bt": "border-top-color",
+  "bx": "border-inline-color",
+  "by": "border-block-color",
   "fg": "color",
   "gap-x": "column-gap",
   "gap-y": "row-gap",
@@ -1822,7 +1722,7 @@ export const builtinTokenAliases = Object.freeze({
   "size-x": "inline-size",
   "size-y": "block-size",
   "text-fill-color": "-webkit-text-fill-color",
-  "text-stroke": "-webkit-text-stroke",
+  "text-stroke": "-webkit-text-stroke-color",
   "text-stroke-color": "-webkit-text-stroke-color",
   "text-stroke-width": "-webkit-text-stroke-width",
   "tracking": "letter-spacing",
@@ -1964,29 +1864,17 @@ export const builtinTokenNamespaces = Object.freeze(
   },
   {
     "properties": [
-      "border",
-      "border-block",
       "border-block-color",
-      "border-block-end",
       "border-block-end-color",
-      "border-block-start",
       "border-block-start-color",
-      "border-bottom",
       "border-bottom-color",
       "border-color",
-      "border-inline",
       "border-inline-color",
-      "border-inline-end",
       "border-inline-end-color",
-      "border-inline-start",
       "border-inline-start-color",
-      "border-left",
       "border-left-color",
-      "border-right",
       "border-right-color",
-      "border-top",
       "border-top-color",
-      "outline",
       "outline-color"
     ],
     "variableAliasRefs": [
@@ -2079,16 +1967,6 @@ export const builtinTokenNamespaces = Object.freeze(
       "transition-timing-function"
     ],
     "variableAliasRefs": [
-      "~easing"
-    ]
-  },
-  {
-    "properties": [
-      "animation",
-      "transition"
-    ],
-    "variableAliasRefs": [
-      "~duration",
       "~easing"
     ]
   },

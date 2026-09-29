@@ -781,7 +781,6 @@
         "./hydration-manifest",
         "./integration",
         "./manifest",
-        "./native-css-shorthand",
         "./runtime-style",
         "./utility-type"
       ],
@@ -898,9 +897,6 @@
         "./emitted-globals": [
           "MasterCSSEmittedGlobals"
         ],
-        "./native-css-shorthand": [
-          "isNativeCSSShorthandProperty"
-        ],
         "./css-common": [
           "Vendors"
         ],
@@ -923,7 +919,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "3ab4f272faa2cece"
+      "surface": "352c7b35430601fd"
     },
     "@master/css-server": {
       "directory": "server",

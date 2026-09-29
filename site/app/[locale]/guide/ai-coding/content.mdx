@@ -266,7 +266,6 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 
 ## Named tokens and native values
 
-Use hyphens for named tokens, such as `font-mono`, `fg-red`, and `p-md`. Use colons for direct CSS values, such as `font-size:16px`, `color:red`, and `padding:1rem`. Property aliases have fixed meanings: `background:#fff` is the native `background` shorthand, so use `background-color:#fff` for a color-only change.
 
 Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Do not generate `$name`, Master length `x`, or `base-unit`. Native resolution `x` in `image-set()` remains valid. Do not invent numeric names such as `p-4` unless the project defines that token.
 

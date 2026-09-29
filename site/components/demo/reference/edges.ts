@@ -15,7 +15,7 @@ const properties: Record<string, string[]> = {
   'box-shadow': ['box-shadow'],
 }
 const captions: Record<string, string> = {
-  border: 'Border readings use CSS shorthand order. The measured box includes its padding and borders.',
+  border: 'Border readings show width, style and color. The measured box includes padding and borders.',
   'border-color': 'Border color changes paint independently of width and style. Transparent edges still occupy their used border width.',
   'border-style': 'The browser reports both the style and used border width. None and hidden remove used width on these ordinary boxes.',
   'border-width': 'Compare the resolved edge widths with the measured outer box. Box sizing determines whether the border fits within the declared dimensions.',

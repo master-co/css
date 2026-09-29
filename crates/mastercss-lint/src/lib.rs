@@ -28,7 +28,6 @@ pub struct ClassConflictIr {
 #[serde(rename_all = "camelCase")]
 pub struct PartialClassConflictIr {
     pub class_name: String,
-    pub replacement: String,
     pub conflict: String,
 }
 
@@ -236,8 +235,6 @@ pub struct LintBatchIr {
 #[derive(Debug)]
 pub struct LintSession {
     engine: EngineSession,
-    variable_keys: Vec<String>,
-    variable_values: HashMap<String, String>,
     canonical_index: CanonicalRecommendationIndex,
 }
 
@@ -327,7 +324,6 @@ struct ClassDescriptor {
     class_name: String,
     matched: bool,
     rule: Option<GeneratedRuleIr>,
-    rule_count: usize,
     valid_for_conflicts: bool,
     properties: Vec<String>,
     declarations: Vec<(String, String)>,
@@ -353,7 +349,7 @@ pub(crate) use conflicts::{
     collect_rule_declarations, equal_rule_scope, find_conflicts, sort_descriptors, split_top_level,
 };
 pub(crate) use order::{compare_condition_features, get_property_order};
-pub(crate) use partial_conflicts::{collect_manifest_variables, find_partial_conflicts};
+pub(crate) use partial_conflicts::find_partial_conflicts;
 pub(crate) use recommendation::{
     build_canonical_recommendation_index, canonical_class_parts, has_same_canonical_rule_shape,
     push_canonical_candidate, rules_declaration_signature,

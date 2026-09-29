@@ -190,7 +190,7 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 
 ```css
 @theme {
-  :root, :host { --animate-reveal: reveal .2s ease-out; }
+  :root, :host { --animate-reveal: reveal; --animate-reveal--duration: .2s; --animate-reveal--timing-function: ease-out; }
   @keyframes reveal {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -200,13 +200,12 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 
 `animate-reveal`, `animation-name:reveal`, or a retained native animation declaration retains this definition. Native `@apply` output is analyzed after expansion. Unused mixins and undelivered reference styles are not roots. Definitions emit as top-level keyframes after generated layer blocks, in final definition order. The last same-name managed definition completely replaces earlier ones; decoded identifiers and strings compare case-sensitively. A managed/native same-name collision in the delivered graph is an error with both source locations.
 
-Animation shorthand, comma lists and `var()` references are analyzed across all authored theme scopes, fallbacks and compiler-visible native overrides. Unknown static names may come from external CSS. An unresolved dynamic name conservatively retains **all managed keyframes** and produces an informational tooling diagnostic. Removing the final root releases keyframes and their body token dependencies; delivered native roots remain pinned through `emittedGlobals.keyframes`.
 
 Managed keyframes cannot be registered inside theme selectors, conditions, layers or mixins. Frames contain native declarations; `@apply` and `@variant` inside frames are unsupported. Native keyframes remain available for these delivery requirements. JavaScript-created animations and later JavaScript changes to custom properties are not observed. Use native keyframes or `@safelist "animation-name:reveal";` for those names.
 
 HMR supplies a complete emitted-globals snapshot to `runtime.refresh(manifest, emittedGlobals)`. Engine callers can use `replaceEmittedGlobals()` for replacement or `registerEmittedGlobals()` for additional ownership. Hydration records separate variable and keyframe order, including when both resources share a name.
 
-CSS Modules may rename literal animation identifiers. To consume a global native keyframe across bundlers, declare an animation token in the global theme (for example `--animate-reveal: reveal .2s`) and use `animation: var(--animate-reveal)` inside the module. This retains normal variable inheritance and avoids depending on a bundler-specific `global()` animation syntax.
+CSS Modules may rename literal animation identifiers. To consume a global native keyframe across bundlers, declare a native animation variable in the global theme (for example `--motion-reveal: reveal .2s`) and use `animation: var(--motion-reveal)` inside the module. This retains normal variable inheritance and avoids depending on a bundler-specific `global()` animation syntax.
 
 ### `@custom-media` \{#custom-media\}
 Define named media queries using the [CSS Media Queries specification](https://drafts.csswg.org/mediaqueries-5/#custom-mq):
@@ -239,7 +238,6 @@ Undefined, cyclic, and invalid references are compilation errors. A later same-n
 }
 ```
 
-Markup uses `color:red@apply(--hocus)`. There is no `@hocus` or `@hocus()` shorthand. Move layer branches out of former variants to the stylesheet's outer `@layer` or the class's explicit `@layer(components)` suffix; a mixin body cannot select a layer.
 
 ## Utilities and native styles \{#managed-definitions\}
 ### Native defaults \{#defaults\}
@@ -375,7 +373,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 8 and binding ABI 18. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 9 and binding ABI 19. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
 
@@ -777,7 +775,6 @@ Query units remain authored: `800px` is not rewritten to `50rem`. Pipes decode
 to spaces outside quoted strings and escapes. Repeated wrappers retain their
 nesting and order. Comparable ranges with identical units use range priority;
 other queries use stable normalized syntax without assuming a browser root size.
-Bare numeric ranges, feature shorthand, and unknown-container-name inference
 are removed. Undefined mode or variant references are diagnosed.
 
 The engine emits structurally valid native declarations independently of host
@@ -849,3 +846,7 @@ Place CSS mixin definitions in a `.css` file when using Sass. Current Dart Sass 
 ```
 
 This is Sass interpolation, not additional Master CSS syntax. Sass `@include` and CSS `@apply` remain separate constructs.
+
+### Animation recipes
+
+The preset `animate-*` classes use a single `<string>` parameter mixin and a same-name primary token. For example, `--animate-fade: fade` names the keyframe; `--animate-fade--duration: 2s` customizes its duration. Companion tokens alone do not create classes. Native CSS declarations inside stylesheets and authored mixins keep ordinary CSS syntax.

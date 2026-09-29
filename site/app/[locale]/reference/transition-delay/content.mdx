@@ -13,15 +13,15 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
     class="display:block height:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-subtle)">
+           outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms
              transition-property:transform
@@ -40,15 +40,15 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
     class="display:block height:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-subtle)">
+           outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
@@ -81,25 +81,25 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
               transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move both layers"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move both layers
   <span aria-hidden="true"
-    class="display:block mt-md p-xs outline:1px|dashed|var(--color-line-subtle)">
+    class="display:block mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="first"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10
              fg-blue-80 transform:none
              transition:none@media(print)
-             transition:transform|var(--duration-slowest)|linear@media(screen)@motion-safe">
+             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe">
       First · no delay
     </span>
     <span id="target"
       class="display:grid place-items:center height:48px width:128px mt-sm
-             border:1px|solid|var(--color-violet-60) r-sm bg-violet-10
+             border-width:1px border-style:solid b-violet-60 r-sm bg-violet-10
              fg-violet-80 transform:none
              transition:none@media(print)
-             transition:transform|var(--duration-slowest)|linear@media(screen)@motion-safe
+             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe
              transition-delay-slow@media(screen)@motion-safe">
       Second · 300ms
     </span>
@@ -127,18 +127,18 @@ Define a named duration when a delay is shared across related interactions. This
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
     class="display:block height:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-subtle)">
+           outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@media(print)
-             transition:transform|var(--duration-slower)|var(--easing-smooth)@media(screen)@motion-safe
+             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slower)@media(screen)@motion-safe transition-timing-function:var(--easing-smooth)@media(screen)@motion-safe
              transition-delay-short@media(screen)@motion-safe">
       Layer 01
     </span>
@@ -159,18 +159,18 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
          transform:translateX(96px):has(input:checked)>span>span@media(screen)">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
     class="display:block height:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-subtle)">
+           outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@media(print)
-             transition:transform|var(--duration-slowest)|linear@media(screen)@motion-safe
+             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe
              transition-delay-slow@media(screen)@motion-safe
              transition-delay:0ms@media(screen)@sm">
       Layer 01
@@ -194,18 +194,18 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
          transition-delay-slow:has(input:checked)>span>span@media(screen)@motion-safe">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
-           outline:2px|solid|var(--color-blue):focus-visible
+           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
     class="display:block height:64px mt-md p-xs
-           outline:1px|dashed|var(--color-line-subtle)">
+           outline-width:1px outline-style:dashed outline-line-subtle">
     <span id="target"
       class="display:grid place-items:center height:48px width:128px
-             border:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms transition:none@media(print)
-             transition:transform|var(--duration-slowest)|linear@media(screen)@motion-safe">
+             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe">
       Layer 01
     </span>
   </span>

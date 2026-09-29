@@ -10,7 +10,7 @@
 - Manifest JSON codec helpers.
 - Hydration manifest contracts.
 - CSS directive schema contracts.
-- CSS syntax, utility type, runtime style, native shorthand, and CSS common contracts.
+- CSS syntax, utility type, runtime style and CSS common contracts.
 
 ## Does Not Own
 
@@ -32,7 +32,6 @@
 - `./utility-type`
 - `./runtime-style`
 - `./emitted-globals`
-- `./native-css-shorthand`
 - `./css-common`
 - `./diagnostics`
 - `./integration`
@@ -49,7 +48,6 @@ Manifest JSON codec helpers are exported from `.` and `./manifest`;
 - `src/css-syntax.ts`
 - `src/utility-type.ts`
 - `src/runtime-style.ts`
-- `src/native-css-shorthand.ts`
 - `src/css-common.ts`
 - `crates/mastercss-schema/AI.md`
 

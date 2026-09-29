@@ -3,7 +3,7 @@ use super::{
     ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering, StoredRule,
     UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
     UtilityMatcherType, collect_css_variable_names, format_standard_number,
-    is_native_shorthand_property, normalize_css_math_functions,
+    normalize_css_math_functions,
 };
 
 pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefinition>) {
@@ -11,11 +11,7 @@ pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefiniti
         utilities.push(UtilityDefinition {
             id: format!("token:{prefix}:{property}"),
             name: Some(format!("{prefix}-")),
-            utility_type: if is_native_shorthand_property(property) {
-                -1
-            } else {
-                0
-            },
+            utility_type: 0,
             order: Some(0),
             layer: UtilityLayerName::Utilities,
             keys: Vec::new(),
@@ -50,11 +46,7 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
         utilities.push(UtilityDefinition {
             id,
             name: Some((*property).into()),
-            utility_type: if is_native_shorthand_property(property) {
-                -1
-            } else {
-                0
-            },
+            utility_type: 0,
             order: Some(0),
             layer: UtilityLayerName::Utilities,
             keys: Vec::new(),

@@ -63,11 +63,7 @@ pub(crate) fn create_class_list_ir(
     let conflict_range = conflict_names
         .first()
         .and_then(|class_name| find_class_range(&items, class_name));
-    let conflict_text = if analysis.conflicts.is_empty() {
-        replace_partial_conflicts(&items, &analysis)
-    } else {
-        remove_full_conflicts(&items, &analysis)
-    };
+    let conflict_text = remove_full_conflicts(&items, &analysis);
     let conflict_edit = (conflict_text != class_list).then_some(LintEditIr {
         range,
         text: conflict_text,
@@ -203,10 +199,7 @@ fn create_diagnostics(
         validation.errors,
         validation.disallow_unknown_class,
     ));
-    let Some(fix) = conflict_edit else {
-        return diagnostics;
-    };
-    if !analysis.conflicts.is_empty() {
+    if let Some(fix) = conflict_edit {
         let removed = analysis
             .conflicts
             .iter()
@@ -249,7 +242,6 @@ fn create_diagnostics(
             ]),
             fix: Some(fix.clone()),
         });
-        return diagnostics;
     }
     let mut range_queues = HashMap::<String, VecDeque<SourceRange>>::new();
     for item in items {
@@ -262,9 +254,7 @@ fn create_diagnostics(
     }
     for conflict in &analysis.partial_conflicts {
         let message = format!(
-            "Replace {} with {}; class {} overrides part of {} in generated CSS.",
-            quote_diagnostic_value(&conflict.class_name),
-            quote_diagnostic_value(&conflict.replacement),
+            "Class {} overrides declarations from {} in generated CSS.",
             quote_diagnostic_value(&conflict.conflict),
             quote_diagnostic_value(&conflict.class_name),
         );
@@ -275,22 +265,18 @@ fn create_diagnostics(
             range: range_queues
                 .get_mut(&conflict.class_name)
                 .and_then(VecDeque::pop_front)
-                .unwrap_or_else(|| fix.range.clone()),
+                .unwrap_or(SourceRange { start: 0, end: 0 }),
             data: serde_json::Map::from_iter([
                 (
                     "actual".into(),
                     serde_json::Value::String(conflict.class_name.clone()),
                 ),
                 (
-                    "replacement".into(),
-                    serde_json::Value::String(conflict.replacement.clone()),
-                ),
-                (
                     "conflict".into(),
                     serde_json::Value::String(conflict.conflict.clone()),
                 ),
             ]),
-            fix: Some(fix.clone()),
+            fix: None,
         });
     }
     diagnostics
@@ -635,14 +621,6 @@ fn remove_full_conflicts(items: &[ClassListItem], analysis: &LintBatchIr) -> Str
     let mut items = items.to_vec();
     for conflict in &analysis.conflicts {
         remove_class_token(&mut items, &conflict.class_name);
-    }
-    build_class_list(&items)
-}
-
-fn replace_partial_conflicts(items: &[ClassListItem], analysis: &LintBatchIr) -> String {
-    let mut items = items.to_vec();
-    for conflict in &analysis.partial_conflicts {
-        replace_class_token(&mut items, &conflict.class_name, &conflict.replacement);
     }
     build_class_list(&items)
 }

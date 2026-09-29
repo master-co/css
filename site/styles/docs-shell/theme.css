@@ -28,9 +28,9 @@
 
 
 @theme { .light {
-  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, var(--color-line-subtle) 4.5%, transparent 0, transparent 50%, var(--color-line-subtle) 0, var(--color-line-subtle) 54.5%, transparent 0) transparent;
+  --stripe-image: linear-gradient(135deg, var(--color-line-subtle) 4.5%, transparent 0, transparent 50%, var(--color-line-subtle) 0, var(--color-line-subtle) 54.5%, transparent 0);
   --stripe-pink: 0 / 7.5px 7.5px linear-gradient(135deg, color-mix(in oklab, var(--color-pink) 40%, transparent) 4.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent) 50%, color-mix(in oklab, var(--color-pink) 40%, transparent) 0, color-mix(in oklab, var(--color-pink) 40%, transparent) 54.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent));
-  --tiny: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='black' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E") center;
+  --tiny-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='black' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E");
   --grid: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.03)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
   --color-primary: var(--color-yellow-40);
   --color-float: var(--color-white);
@@ -48,9 +48,9 @@
 
 
 @theme { .dark {
-  --stripe: 0 / 7.5px 7.5px linear-gradient(135deg, var(--color-line-subtle) 4.5%, transparent 0, transparent 50%, var(--color-line-subtle) 0, var(--color-line-subtle) 54.5%, transparent 0) transparent;
+  --stripe-image: linear-gradient(135deg, var(--color-line-subtle) 4.5%, transparent 0, transparent 50%, var(--color-line-subtle) 0, var(--color-line-subtle) 54.5%, transparent 0);
   --stripe-pink: 0 / 7.5px 7.5px linear-gradient(135deg, color-mix(in oklab, var(--color-pink) 40%, transparent) 4.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent) 50%, color-mix(in oklab, var(--color-pink) 40%, transparent) 0, color-mix(in oklab, var(--color-pink) 40%, transparent) 54.5%, color-mix(in oklab, var(--color-pink) 5%, transparent) 0, color-mix(in oklab, var(--color-pink) 5%, transparent));
-  --tiny: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='white' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E") center;
+  --tiny-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='white' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E");
   --grid: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255/ 0.02)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
   --color-primary: var(--color-yellow-50);
   --color-float: var(--color-gray-70);

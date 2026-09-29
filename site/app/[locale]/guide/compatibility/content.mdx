@@ -46,7 +46,6 @@ Write the unprefixed class:
 </details>
 
 ### CSS selectors
-Use the Master CSS selector shorthand when one exists:
 
 ```html
 <div class="background-color:#000::scrollbar">…</div>
@@ -62,7 +61,6 @@ Use the Master CSS selector shorthand when one exists:
 ---
 
 ## New CSS features
-Master CSS does not need a built-in utility for every platform feature before you can try it. It recognizes many explicit CSS declarations directly, while still preserving Master CSS utilities, tokens, and shorthands when they exist.
 
 ### Native declarations
 Write a property-like class when the declaration is already valid CSS:
@@ -138,13 +136,13 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 
 ```html
 <!-- @MARK :has(:checked) -->
-<form class="outline:2px|solid|var(--color-red):has(:checked)">…</form>
+<form class="outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)">…</form>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:2px|solid|var(--color-red):has(:checked)']}
+    {['outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)']}
   </Class2CSS>
 </details>
 

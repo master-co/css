@@ -192,7 +192,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols(3)@md` | Breakpoint and condition suffixes use `@`. |
 | `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | Output follows the explicit `--manual-dark` selector mixin. |
-| `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion-safe` | Built-in motion variants are `@motion-safe` and `@motion-reduce`. |
+| `motion-safe:animate-spin` | `animation-name:rotate@motion-safe animation-duration:var(--duration-slowest)@motion-safe animation-timing-function:linear@motion-safe animation-iteration-count:infinite@motion-safe` | Built-in motion variants are `@motion-safe` and `@motion-reduce`. |
 | `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports((backdrop-filter:blur(0px)))` | Use raw `@supports()` for local conditions. |
 | `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |
 | `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
@@ -375,7 +375,7 @@ function Progress({ value }: { value: number }) {
   return (
     <div className="overflow:hidden height:1rem border-radius:100% bg-gray-10">
       <div
-        className="height:100% width:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
+        className="height:100% width:var(--progress) bg-blue-60 transition-property:width transition-duration:var(--duration-fast) transition-timing-function:var(--easing-smooth)"
         style={{ '--progress': `${value}%` } as React.CSSProperties}
       />
     </div>

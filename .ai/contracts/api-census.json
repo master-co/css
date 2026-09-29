@@ -11,16 +11,16 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 880,
+    "records": 878,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 695,
+      "export": 694,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
       "package": 35,
-      "subpath": 94,
+      "subpath": 93,
       "wire-contract": 23
     }
   },
@@ -11615,46 +11615,6 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-schema:./native-css-shorthand#isNativeCSSShorthandProperty",
-      "package": "@master/css-schema",
-      "subpath": "./native-css-shorthand",
-      "name": "isNativeCSSShorthandProperty"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-schema:./runtime-style#MASTER_CSS_RUNTIME_STYLE_ID",
       "package": "@master/css-schema",
       "subpath": "./runtime-style",
@@ -21690,54 +21650,6 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "subpath:@master/css-schema:./native-css-shorthand",
-      "package": "@master/css-schema",
-      "subpath": "./native-css-shorthand",
-      "conditions": [
-        "default",
-        "import",
-        "types"
-      ],
-      "targets": [
-        "./dist/native-css-shorthand.d.ts",
-        "./dist/native-css-shorthand.js"
-      ]
-    },
-    {
-      "kind": "subpath",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "subpath:@master/css-schema:./runtime-style",
       "package": "@master/css-schema",
       "subpath": "./runtime-style",
@@ -22912,7 +22824,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 18
+      "value": 19
     },
     {
       "kind": "wire-contract",
@@ -23022,7 +22934,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_VERSION",
       "name": "MASTER_CSS_LANGUAGE_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 8
+      "value": 9
     },
     {
       "kind": "wire-contract",
@@ -23066,7 +22978,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LINT_BATCH_VERSION",
       "name": "MASTER_CSS_LINT_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",

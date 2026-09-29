@@ -33,7 +33,8 @@
     "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "test:assets": "tsx scripts/verify-public-assets.ts"
+    "test:assets": "tsx scripts/verify-public-assets.ts",
+    "test:atomic-classes": "tsx --test scripts/atomic-class-authoring.test.ts"
   },
   "dependencies": {
     "@master/css": "workspace:^",

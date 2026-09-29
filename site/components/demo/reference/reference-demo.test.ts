@@ -46,8 +46,8 @@ test('every authored utility teaching section has its own demo and compilable sc
     }
   }
   assert.deepEqual(failures, [])
-  assert.equal(Object.keys(referenceDemoCoverage).length, 180)
-  assert.equal(count, 695)
+  assert.equal(Object.keys(referenceDemoCoverage).length, 171)
+  assert.equal(count, 642)
 })
 
 test('clear uses different float heights and real side-specific clearing', async () => {

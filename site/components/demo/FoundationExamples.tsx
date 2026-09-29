@@ -91,8 +91,8 @@ export function FoundationRadius() {
 export function FoundationShapes() {
   return <Demo title="Content-sized pill and width-led circle" data-foundation="shapes" caption="These links share a destination. Their shape is independent of their native navigation behavior.">
     <div className="display:flex flex-wrap:wrap align-items:end gap-lg">
-      <div><DemoLabel>r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md r-pill border:1px|solid|var(--color-line-divider) text-sm text-decoration:none bg-demo-surface fg-text-body">Pills and circles</a></div></div>
-      <div><DemoLabel>width:48px aspect-ratio:1/1 r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" className="display:inline-flex align-items:center justify-content:center width:48px aspect-ratio:1/1 r-pill border:1px|solid|var(--color-line-divider) bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
+      <div><DemoLabel>r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md r-pill border-width:1px border-style:solid b-line-divider text-sm text-decoration:none bg-demo-surface fg-text-body">Pills and circles</a></div></div>
+      <div><DemoLabel>width:48px aspect-ratio:1/1 r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" className="display:inline-flex align-items:center justify-content:center width:48px aspect-ratio:1/1 r-pill border-width:1px border-style:solid b-line-divider bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
     </div>
   </Demo>
 }

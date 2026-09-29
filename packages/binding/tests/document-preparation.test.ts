@@ -7,7 +7,7 @@ test.each(['native', 'wasm'] as const)('%s prepared documents reject stale IDs w
   const tooling = await createToolingBinding({ binding })
   using session = await tooling.createLanguageSession({
   "version": 4 as const,
-  "languageVersion": 8 as const
+  "languageVersion": 9 as const
 })
   const first = session.prepareDocument(request)
   const second = session.prepareDocument(request)
@@ -22,7 +22,7 @@ test.each(['native', 'wasm'] as const)('%s releases prepared input after invalid
   const tooling = await createToolingBinding({ binding })
   using session = await tooling.createLanguageSession({
   "version": 4 as const,
-  "languageVersion": 8 as const
+  "languageVersion": 9 as const
 })
   const first = session.prepareDocument(request)
   expect(() => session.prepareDocument({ ...request, source: 42 } as unknown as typeof request)).toThrow()

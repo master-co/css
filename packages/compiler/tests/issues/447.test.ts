@@ -89,7 +89,7 @@ test('447: compiler and engine binding combinations agree on the language contra
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
   "version": 4 as const,
-  "languageVersion": 8 as const
+  "languageVersion": 9 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')

@@ -21,6 +21,7 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
 import { compileManifestSync } from '@master/css-compiler/node'
 import { legacySyntaxPages, type LegacySyntaxSlug } from '../utils/legacy-syntax'
+import { retiredReferencePages } from '../utils/retired-reference'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
@@ -115,7 +116,7 @@ test('pilot examples reproduce full CSS and the prose states the correct breakpo
   assert.doesNotMatch(conditions.examples[0].css, /prefers-color-scheme/)
   assert.match(conditions.examples[0].css, /@layer utilities/)
   const padding = catalog.documents.find(doc => doc.id === 'padding')!
-  assert.equal(padding.rows.length, 16)
+  assert.equal(padding.rows.length, 11)
   assert.match(padding.markdown, /--spacing-md.*1rem/)
   assert.match(padding.markdown, /not always horizontal and vertical/)
   assert.match(catalog.documents.find(doc => doc.id === 'opacity')!.markdown, /does not disable a control/)
@@ -208,7 +209,7 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.match(extraction, /setAttribute\('aria-valuenow'/)
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
-  assert.match(conditions, /container:card\/inline-size/)
+  assert.match(conditions, /container-name:card container-type:inline-size/)
   assert.match(conditions, /@supports\(\(display:grid\)\)/)
   assert.doesNotMatch(conditions, /`css @/)
 })
@@ -216,6 +217,15 @@ test('language contracts export portable examples, complete CSS and stable secti
 test('all pre-migration utility and Guide anchors remain available', async () => {
   const missing: string[] = []
   for (const page of legacyAnchors.pages) {
+    const retired = page.source.match(/\/reference\/([^/]+)\/content.mdx$/)?.[1]
+    if (retired && Object.hasOwn(retiredReferencePages, retired)) {
+      assert.ok(!catalog.documents.some(doc => doc.id === retired))
+      const destination = retiredReferencePages[retired as keyof typeof retiredReferencePages]
+      assert.ok(catalog.documents.some(doc => doc.id === destination))
+      const entry = await readFile(path.join(root, `app/[locale]/reference/${retired}/page.tsx`), 'utf8')
+      assert.ok(entry.includes('retiredReferenceMetadata'))
+      continue
+    }
     const slug = page.source.match(/\/guide\/([^/]+)\/content.mdx$/)?.[1]
     if (slug && Object.hasOwn(legacySyntaxPages, slug)) {
       const anchors = legacySyntaxPages[slug as LegacySyntaxSlug].anchors

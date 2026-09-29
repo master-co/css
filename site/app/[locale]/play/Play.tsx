@@ -483,7 +483,7 @@ export default function Play({ shareId }: PlayProps = {}) {
           <button className="display:none@media((width<64rem)) app-header-icon" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
             <svg className={clsx({ 'stroke-accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path className={clsx(
-                'transition:transform|.2s',
+                'transition-property:transform transition-duration:0.2s',
                 (!layout || layout === '2') ? 'fill-accent/.15' : 'fill-text-muted/.2',
                 { 'transform:translate(12px,4px)': !layout }
               )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
@@ -495,7 +495,7 @@ export default function Play({ shareId }: PlayProps = {}) {
           <button className="display:none@media((width<64rem)) app-header-icon" onClick={() => pushShallowURL('layout', layout === '3' ? '4' : '3')}>
             <svg className={clsx({ 'stroke-accent': layout === '3' || layout === '4' }, 'rotate:90deg')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path className={clsx(
-                'transition:transform|.2s',
+                'transition-property:transform transition-duration:0.2s',
                 (layout === '3' || layout === '4') ? 'fill-accent/.15' : 'fill-text-muted/.2',
                 { 'transform:translate(12px,4px)': layout === '3' }
               )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
@@ -567,17 +567,17 @@ export default function Play({ shareId }: PlayProps = {}) {
             layout === '5' && 'display:none!@md',
             {
               'height:100%!@media((width<64rem)) width:100%!@media((width<64rem))': tab !== 'Preview',
-              'border-right:1px|solid|var(--color-line-subtle)': !layout,
-              'border-left:1px|solid|var(--color-line-subtle)': layout === '2',
-              'border-bottom:1px|solid|var(--color-line-subtle)': layout === '3',
-              'border-top:1px|solid|var(--color-line-subtle)': layout === '4'
+              'border-right-width:1px border-right-style:solid br-line-subtle': !layout,
+              'border-left-width:1px border-left-style:solid bl-line-subtle': layout === '2',
+              'border-bottom-width:1px border-bottom-style:solid bb-line-subtle': layout === '3',
+              'border-top-width:1px border-top-style:solid bt-line-subtle': layout === '4'
             }
           )}
           width={tab === 'Preview' ? '' : width}
           height={tab === 'Preview' ? '' : height}
           showHeight={true}
         >
-          <Tabs className="flex:0|0|auto" contentClassName="padding-inline:1.25rem padding-inline:2.5rem@sm">
+          <Tabs className="flex-grow:0 flex-shrink:0 flex-basis:auto" contentClassName="padding-inline:1.25rem padding-inline:2.5rem@sm">
             {files.map((file, index) => (
               <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                 {file.title || ''}
@@ -616,7 +616,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             />
           </div>
         </Resizable>
-        <div className={clsx('position:relative overflow:hidden flex:1|1|auto bg-surface-base', {
+        <div className={clsx('position:relative overflow:hidden flex-grow:1 flex-shrink:1 flex-basis:auto bg-surface-base', {
           'display:flex justify-content:center p-xl': responsive,
           'pt-3xl': responsive && layout !== '3',
           'pb-3xl': responsive && layout === '3',
@@ -631,8 +631,8 @@ export default function Play({ shareId }: PlayProps = {}) {
             overlay={false}
             originX={'center'}
             showHandler={responsive ? [false, true, true] : false}
-            className={clsx('height:100% width:100% outline:1px|solid|var(--color-line-divider).resizing', {
-              'max-height:100% max-width:100% outline:1px|solid|var(--color-line-subtle)': responsive
+            className={clsx('height:100% width:100% outline-width:1px.resizing outline-style:solid.resizing outline-line-divider.resizing', {
+              'max-height:100% max-width:100% outline-width:1px outline-style:solid outline-color-line-subtle': responsive
             })}
             showHeight={true}
           >
@@ -646,7 +646,7 @@ export default function Play({ shareId }: PlayProps = {}) {
               onLoad={postReadyPreviewUpdate}
             />
             <div className={clsx('display:flex flex-direction:column height:100%', { 'display:none!': preview !== 'css' })}>
-              <div className='display:flex flex:0|0|auto align-items:center justify-content:space-between height:48px padding-inline:1.25rem border-bottom:1px|solid|var(--color-line-subtle) font-xs padding-inline:2.5rem@sm'>
+              <div className='display:flex flex-grow:0 flex-shrink:0 flex-basis:auto align-items:center justify-content:space-between height:48px padding-inline:1.25rem border-bottom-width:1px border-bottom-style:solid bb-line-subtle font-xs padding-inline:2.5rem@sm'>
                 <div>{compiling ? $('Compiling CSS') : $('Generated CSS')}</div>
                 <div className="fg-text-muted">{compileWarnings.length ? `${compileWarnings.length} ${$('warnings')}` : generatedCSSSize}</div>
               </div>
@@ -667,7 +667,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             {previewErrorEvent &&
               <div className="position:absolute inset:0 height:100% width:100% p-2xl bg-red-5@apply(--site-light) bg-red-95@apply(--site-dark) text-danger">
                 <h2 className="font-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                <div className="margin-block:1.25rem padding:0.938rem|1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@apply(--site-dark) bg-red-90@apply(--site-light)">
+                <div className="margin-block:1.25rem padding-top:0.938rem padding-right:1.25rem padding-bottom:0.938rem padding-left:1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@apply(--site-dark) bg-red-90@apply(--site-light)">
                   {previewErrorEvent.message}
                 </div>
                 <div className="font-xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

@@ -491,7 +491,6 @@ export interface MasterCSSLintClassConflict {
 
 export interface MasterCSSLintPartialClassConflict {
   className: string
-  replacement: string
   conflict: string
 }
 

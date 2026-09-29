@@ -11,13 +11,13 @@ const syntaxes = [
   "border-style:outset",
   "border-inline-style:solid",
   "border-block-style:solid",
-  ["border:`style`"],
-  ["border-top:`style`"],
-  ["border-bottom:`style`"],
-  ["border-left:`style`"],
-  ["border-right:`style`"],
-  ["border-inline:`style`"],
-  ["border-block:`style`"],
+  ["border-style:`style`"],
+  ["border-top-style:`style`"],
+  ["border-bottom-style:`style`"],
+  ["border-left-style:`style`"],
+  ["border-right-style:`style`"],
+  ["border-inline-style:`style`"],
+  ["border-block-style:`style`"],
 ]
 
 export default syntaxes

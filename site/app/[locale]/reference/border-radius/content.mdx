@@ -68,7 +68,7 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <!-- Top corners only -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:2px border-style:solid b-blue
          rtl-xl rtr-xl font-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Rounded top
@@ -79,7 +79,7 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <!-- Opposite corners -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:2px border-style:solid b-blue
          rbl-xl rtr-xl font-md bg-surface-inset
          fg-text-body box-sizing:border-box">
   Diagonal corners
@@ -97,7 +97,7 @@ Widen to `sm` to increase the radius from `sm` to `xl`. Print restores square co
 <!-- Small → large radius at sm -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:2px border-style:solid b-blue
          r-sm font-md bg-surface-inset fg-text-body
          box-sizing:border-box border-radius:0@media(print) r-xl@media(screen)@sm">
   Preview panel
@@ -125,7 +125,7 @@ Define project radius tokens in `@theme`, then use the same token key in the cla
 <!-- Configured panel radius · 18px -->
 <div id="target"
   class="display:flex align-items:center justify-content:center height:96px
-         width:240px max-width:100% p-md border:2px|solid|var(--color-blue)
+         width:240px max-width:100% p-md border-width:2px border-style:solid b-blue
          r-panel font-md bg-surface-inset fg-text-body
          box-sizing:border-box">
   Preview panel

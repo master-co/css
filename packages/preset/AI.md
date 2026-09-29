@@ -71,8 +71,12 @@ The runtime keeps unused IR definitions for future DOM classes. Compiler-only pa
 
 ## Refined preset contract
 
-The preset contains ten mixins. `fit`, `full`, `center`, `middle`, and `round` are removed; projects may author these names themselves. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; do not restore implicit role lookups or a `surface` prefix. Ten animations are direct children of `@theme` and absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
+The preset contains eleven mixins. `fit`, `full`, `center`, `middle`, and `round` are removed; projects may author these names themselves. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; do not restore implicit role lookups or a `surface` prefix. Ten animations are direct children of `@theme` and absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
 
 ## Conditions and wrappers
 
 `src/media.css` owns eleven breakpoints and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
+
+## Atomic class authoring
+
+`animate-*` uses the generic `--animate` named mixin. Primary `--animate-name` tokens contain keyframe names; companion tokens contain independent timing and playback values. Recipes emit animation longhands and preserve managed resource ownership. Native CSS in other recipes remains ordinary CSS. Engine declarations have no shorthand priority or value inference.

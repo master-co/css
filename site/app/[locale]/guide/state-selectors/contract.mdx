@@ -208,17 +208,16 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 Hover or press the button to match the corresponding state. Include an explicit keyboard focus treatment.
 ```html
 <!-- @MARK :hover --><!-- @MARK :active --><!-- @MARK :focus-visible -->
-<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover outline:2px|solid|var(--color-blue):focus-visible bg-blue-80:active">Preview</button>
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible bg-blue-80:active">Preview</button>
 ```
 
 Use `:focus-visible` when the browser should decide whether to show a focus ring, including keyboard navigation. Keep focus visible instead of removing outlines without a replacement.
 ```html
 <!-- @MARK :focus-visible -->
-<button type="button" class="outline:2px|solid|var(--color-blue):focus-visible">Submit</button>
+<button type="button" class="outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible">Submit</button>
 ```
 
 ### `:first`, `:last`, `:odd`, `:even` \{#first--last--odd--even\}
-Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
 ```html
 <ul>
   <li class="bg-surface-inset:even">Draft</li>
@@ -239,7 +238,7 @@ The required field is invalid while empty or while its value fails native email 
 <!-- @MARK :valid --><!-- @MARK :invalid --><!-- @MARK :required -->
 <label for="contact-email">Email</label>
 <input id="contact-email" type="email" required
-  class="border:1px|solid b-green:valid b-red:invalid outline:2px|solid|var(--color-blue):focus-visible" />
+  class="border-width:1px border-style:solid border-color:currentcolor b-green:valid b-red:invalid outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible" />
 ```
 
 Use `:required` to select required controls regardless of whether their current value is valid. Avoid communicating validation through color alone; production forms should also explain the error in text.
@@ -256,7 +255,7 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 ```html
 <!-- @MARK :checked -->
 <label>
-  <input class="outline:2px|solid|var(--color-blue):checked" type="checkbox" checked />
+  <input class="outline-width:2px:checked outline-style:solid:checked outline-blue:checked" type="checkbox" checked />
   Include archived items
 </label>
 ```
@@ -264,7 +263,7 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 `indeterminate` is a DOM property, not an HTML attribute. Set it from JavaScript when a checkbox represents a partially selected group; style that state with `:indeterminate`. It does not change the checkbox's submitted checked value.
 
 ```html
-<label><input id="select-all" type="checkbox" class="outline:2px|solid|var(--color-blue):indeterminate" /> Select all</label>
+<label><input id="select-all" type="checkbox" class="outline-width:2px:indeterminate outline-style:solid:indeterminate outline-blue:indeterminate" /> Select all</label>
 ```
 ```js
 document.querySelector('#select-all').indeterminate = true
@@ -322,7 +321,6 @@ Use `::before` and `::after` to style generated content attached to the element.
 ```
 
 ### `::scrollbar` \{#scrollbar\}
-Style common scrollbar surfaces with `::scrollbar`, `::scrollbar-thumb`, and `::scrollbar-track` shorthands. Write native vendor selectors such as `::-webkit-scrollbar-corner` directly for less common parts.
 
 These aliases generate `::-webkit-scrollbar*` selectors. Their effect depends on browser support and the platform scrollbar settings; overlay scrollbars may remain hidden until scrolling.
 ```html

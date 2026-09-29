@@ -10,11 +10,11 @@ export default ({ children, className }: any) => {
   const $ = useTranslation()
   const locale = useLocale()
   return (
-    <section className={clsx(className, 'mt-md@layer(defaults) grid-cols(1) border-left:1px|solid|var(--color-line-subtle) border-top:1px|solid|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@lg')}>{
+    <section className={clsx(className, 'mt-md@layer(defaults) grid-cols(1) border-left-width:1px border-left-style:solid bl-line-subtle border-top-width:1px border-top-style:solid bt-line-subtle grid-cols(2)@sm grid-cols(3)@lg')}>{
       children.map((definedMetadata: DefinedMetadata) =>
         <Link key={definedMetadata.pathname}
           className={clsx(
-            'flex-direction:column align-items:start! justify-content:space-between! p-xl border-bottom:1px|solid|var(--color-line-subtle) border-right:1px|solid|var(--color-line-subtle) text-align:left transition:background-color|.2s bg-surface-raised:hover',
+            'flex-direction:column align-items:start! justify-content:space-between! p-xl border-bottom-width:1px border-bottom-style:solid bb-line-subtle border-right-width:1px border-right-style:solid br-line-subtle text-align:left transition-property:background-color transition-duration:0.2s bg-surface-raised:hover',
             {
               'disabled': definedMetadata.disabled
             }
