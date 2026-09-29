@@ -192,16 +192,16 @@
       margin-inline: auto;
     }
 
+    :is(h1, h2, h3, h4, h5, h6) {
+      margin-top: var(--spacing-lg);
+      scroll-margin-top: 60px;
+    }
+
     @variant sm {
       :is(h1, h2, h3, h4, h5, h6) {
         margin-top: var(--spacing-2xl);
         scroll-margin-top: 100px;
       }
-    }
-
-    :is(h1, h2, h3, h4, h5, h6) {
-      margin-top: var(--spacing-lg);
-      scroll-margin-top: 60px;
     }
 
     :is(ul) {
