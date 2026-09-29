@@ -21,7 +21,7 @@ export default function DemoCatalog({ groups }: { groups: readonly DemoCatalogGr
       {group.entries.map(entry => <details key={entry.id} className="demo-recipe" suppressHydrationWarning>
         <summary><span className="demo-recipe-marker" aria-hidden="true" /><span>{entry.title}</span><code>{entry.label}</code></summary>
         <div className="demo-recipe-content">
-          <a href={entry.href} className="demo-recipe-link">Read the example and source ↗</a>
+          <a href={entry.href} className="demo-recipe-link">Read related documentation ↗</a>
           {entry.children}
         </div>
       </details>)}

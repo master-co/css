@@ -2,7 +2,8 @@ import Link from 'next/link'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import NamespaceUtilityTable, { type NamespaceUtilityGroup } from '~/site/components/NamespaceUtilityTable'
-import { ColorNamespaceTable } from '~/site/app/[locale]/guide/colors/components/ColorNamespaces'
+import { DocumentNamespaceTable } from '~/site/components/DocumentValues'
+import { variableNamespaceSources } from '~/site/utils/variable-namespace-sources'
 import './page.css'
 
 export const metadata = {
@@ -63,7 +64,7 @@ export default function Page() {
 
     <section aria-labelledby="utility-real-use">
       <div className="review-utility-table-sectionHeading"><div><h2 id="utility-real-use">Actual Guide use</h2><p>The live color namespace groups use manifest-filtered keys in the adopted shared component.</p></div><Link href="/guide/colors#namespaces-for-color">Open /guide/colors</Link></div>
-      <div className="review-utility-table-optionPreview"><ColorNamespaceTable /></div>
+      <div className="review-utility-table-optionPreview"><DocumentNamespaceTable rows={variableNamespaceSources.filter(row => row.namespace === 'color')} /></div>
       <p className="review-utility-table-optionNote">Only the table presentation is being considered. The Guide’s surrounding explanation and token palette remain intact.</p>
     </section>
   </main>

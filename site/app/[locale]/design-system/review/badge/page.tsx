@@ -89,7 +89,7 @@ export default function Page() {
     <section aria-labelledby="badge-real-use">
       <div className="review-badge-sectionHeading">
         <div><h2 id="badge-real-use">Actual Reference scene</h2><p>Border color uses direct subject and comparison labels with the real Master CSS classes.</p></div>
-        <Link href="/reference/border-color#set-border-color">Open /reference/border-color</Link>
+        <Link href="/reference/tokens/color">Open /reference/tokens/color</Link>
       </div>
       <DemoExample page="border-color" section="set-border-color" />
       <p className="review-badge-optionNote">The reference keeps its own teaching labels. A badge may name an adjacent category, but it must stay outside any measured border layout.</p>

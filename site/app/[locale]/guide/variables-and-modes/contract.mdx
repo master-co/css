@@ -1,4 +1,3 @@
-import VariableNamespaceSources from './components/VariableNamespaceSources'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only] \{#overview\}
@@ -37,7 +36,7 @@ Cycles, fallbacks, inheritance and functions keep native custom-property behavio
 Native keyframes outside `@theme` are delivered with their stylesheet. For on-demand keyframes, define them directly inside `@theme`; used animation names and declarations retain their dependencies through compilation, SSR and runtime.
 
 ## Namespace resolution \{#namespace-resolution\}
-Write custom properties as `--<namespace>-<key>`. Namespace lookup uses the longest registered prefix: `color-line-divider` belongs to `color-line` before `color`.
+Write custom properties as `--<namespace>-<key>`. Reference groups role values such as `--color-line-divider` into focused lookup collections. The canonical color families still resolve through the `color` namespace: `b-line-divider` selects that variable with the key `line-divider`.
 
 ```css
 @theme {
@@ -60,7 +59,7 @@ Write custom properties as `--<namespace>-<key>`. Namespace lookup uses the long
 ### Default namespace sources \{#default-namespace-sources\}
 The registry lists namespaces consumed by default utilities and named property tokens. See the [token reference](/reference#tokens) for the preset inventory. Full CSS property names do not automatically create new namespace mappings.
 
-<VariableNamespaceSources />
+Use the [complete family index](/reference/tokens/families) to look up every prefix, property and namespace. The examples below show only the mappings needed for this theme.
 
 ## Contextual token lookup \{#contextual-token-lookup\}
 
@@ -71,7 +70,7 @@ The registry lists namespaces consumed by default utilities and named property t
 | `fg-text-action` | `--color-text-action` |
 | `bg-brand` | `--color-brand` |
 
-Built-in token families own ordered namespace lookup in the Rust engine; `outline-*` checks `--color-line-*` before `--color-*`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
+Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
 
 ## Native values and unconditional declarations \{#inline-and-static-variables\}
 `@theme inline` and `@theme static` are removed. Token utilities retain `var()` references. For unconditional declarations, write native CSS:

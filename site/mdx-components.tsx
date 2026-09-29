@@ -1,3 +1,4 @@
+import TokenValues from './reference/TokenValues'
 import InstallationGuides from './components/InstallationGuides'
 import InstallationModeTabs from './components/InstallationModeTabs'
 import * as documentSteps from './components/DocumentSteps'
@@ -50,6 +51,7 @@ const Class2CSS = dynamic(() => import('./components/Class2CSS'))
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
+    TokenValues,
     InstallationModeTabs,
     Class2CSS: (props: any) => <Class2CSS {...props} />,
     ...mdxComponents,

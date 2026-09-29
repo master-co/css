@@ -312,7 +312,7 @@ Regenerate artifacts from their source definitions and deploy a coordinated pack
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
-See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
+See the [stylesheet directives](/reference#directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
 
 ---
 
@@ -687,3 +687,39 @@ manual migration. For example:
 Use `animate-reveal@motion-safe` with this theme. Native CSS and full-property
 class values still use their usual syntax; no value expansion is performed.
 See [motion recipes](/guide/motion) for companion overrides and resource ownership.
+
+
+## Project settings \{#project-settings\}
+### Removed `@settings` \{#settings\}
+The entire directive and manifest `settings` field are removed. Use the `!` suffix on a particular class for importance. Use native selectors, nesting, or `@scope` to define where stylesheet rules apply. Master CSS does not apply a global important or selector-scope setting.
+
+
+## Removed utility composition \{#rule-local-composition\}
+### `@compose` (removed) \{#compose\}
+
+`@compose` is no longer supported. Compilation reports `removed-compose-directive` wherever the at-rule appears, including native rules and utility definitions.
+
+Write native declarations, selectors and conditions in stylesheets. Share design values through CSS custom properties. Use Master utilities directly in markup, or share native classes and component interfaces when several elements need the same behavior.
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+}
+```
+
+When migrating an existing statement, preserve its expanded declarations, nested selectors, conditions, importance and destination layer. Replacing it with declarations preserves the current style but removes the dependency on the original utility: future utility changes no longer update that rule. Do not rename it to `@apply`; The supported `@apply` subset consumes mixins, not markup utility classes.
+
+The compiler no longer exposes compose IR or composition traces. Tooling removes compose canonicalization and structural directive fixes, including `composeDirective`, `includeDirectiveFixes`, `preferNativeDeclarationsInCompose`, `preferVariantBlocksInCompose`, and CLI `--fix-directives`. ESLint removes `configs.stylesheet`; its recommended config still handles classes in markup and class builders. `preferCompositionUtilities` continues to apply to markup class lists.
+
+The RC migration command reports an occurrence for manual migration and leaves the statement unchanged. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) for the remaining migration steps.
+
+---

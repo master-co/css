@@ -1,0 +1,56 @@
+[
+  {
+    "page": "align-items",
+    "id": "align-items-on-the-cross-axis",
+    "title": "Align items on the cross axis",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex align-items:center gap-md\">\n  <img id=\"target\" class=\"flex:none width:4rem height:4rem object-fit:cover\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\" />\n  <div id=\"peer\" class=\"p-sm\">Landscape study</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "align-items:center",
+      "gap-md",
+      "flex:none",
+      "width:4rem",
+      "height:4rem",
+      "object-fit:cover",
+      "p-sm"
+    ],
+    "classLists": [
+      "display:flex align-items:center gap-md",
+      "flex:none width:4rem height:4rem object-fit:cover",
+      "p-sm"
+    ],
+    "highlighted": []
+  },
+  {
+    "page": "align-items",
+    "id": "stretch-children",
+    "title": "Stretch automatic-sized children",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex align-items:stretch gap-md height:8rem\">\n  <div id=\"target\" class=\"width:6rem p-sm\">Auto height</div>\n  <div id=\"peer\" class=\"height:4rem width:6rem p-sm\">64px height</div>\n</div>",
+      "<div id=\"layout\" class=\"display:flex align-items:stretch gap-md\">\n  <div id=\"target\" class=\"width:6rem p-sm\">Auto height</div>\n  <div id=\"peer\" class=\"width:6rem height:6rem p-sm\">96px height</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "align-items:stretch",
+      "gap-md",
+      "height:8rem",
+      "width:6rem",
+      "p-sm",
+      "height:4rem",
+      "height:6rem"
+    ],
+    "classLists": [
+      "display:flex align-items:stretch gap-md height:8rem",
+      "width:6rem p-sm",
+      "height:4rem width:6rem p-sm",
+      "display:flex align-items:stretch gap-md",
+      "width:6rem p-sm",
+      "width:6rem height:6rem p-sm"
+    ],
+    "highlighted": []
+  }
+]

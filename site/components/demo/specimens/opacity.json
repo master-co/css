@@ -1,0 +1,37 @@
+[
+  {
+    "page": "opacity",
+    "id": "fade-an-entire-element",
+    "title": "Fade an entire element",
+    "html": [
+      "<!-- Opaque · complete group -->\n<details class=\"width:240px max-width:100%\">\n  <summary id=\"target\"\n    class=\"p-md r-sm font-size-md bg-blue-60 fg-white\n           opacity:1 cursor:pointer\">\n    Preview details\n  </summary>\n  <p class=\"margin-bottom:0 mt-sm font-size-sm fg-text-body\">\n    The layer is ready for review.\n  </p>\n</details>",
+      "<!-- Half opacity · same interaction -->\n<details class=\"width:240px max-width:100%\">\n  <summary id=\"target\"\n    class=\"p-md r-sm font-size-md bg-blue-60 fg-white\n           opacity:.5 cursor:pointer\">\n    Preview details\n  </summary>\n  <p class=\"margin-bottom:0 mt-sm font-size-sm fg-text-body\">\n    The layer is ready for review.\n  </p>\n</details>"
+    ],
+    "css": "",
+    "classes": [
+      "width:240px",
+      "max-width:100%",
+      "p-md",
+      "r-sm",
+      "font-size-md",
+      "bg-blue-60",
+      "fg-white",
+      "opacity:1",
+      "cursor:pointer",
+      "margin-bottom:0",
+      "mt-sm",
+      "font-size-sm",
+      "fg-text-body",
+      "opacity:.5"
+    ],
+    "classLists": [
+      "width:240px max-width:100%",
+      "p-md r-sm font-size-md bg-blue-60 fg-white opacity:1 cursor:pointer",
+      "margin-bottom:0 mt-sm font-size-sm fg-text-body",
+      "width:240px max-width:100%",
+      "p-md r-sm font-size-md bg-blue-60 fg-white opacity:.5 cursor:pointer",
+      "margin-bottom:0 mt-sm font-size-sm fg-text-body"
+    ],
+    "highlighted": []
+  }
+]

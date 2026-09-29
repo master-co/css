@@ -58,7 +58,7 @@ export default async function Page() {
       <section aria-labelledby="real-usage">
         <div className="review-demo-sectionHeading">
           <div><h2 id="real-usage">Actual Reference use</h2><p>The <code>clear:left</code> scene keeps its own float geometry and iframe isolation.</p></div>
-          <Link href="/reference/clear#clearing-left-floats">Open /reference/clear</Link>
+          <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/clear">Open https://developer.mozilla.org/en-US/docs/Web/CSS/clear</Link>
         </div>
         <div className="review-demo-actualUsage">
           <Demo title={source.title} description="A title appears only because this lesson needs to identify the comparison." caption={scene.caption} padding="none">

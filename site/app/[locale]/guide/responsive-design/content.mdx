@@ -6,7 +6,7 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
-Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [breakpoint tokens](/guide/breakpoints), while container queries use [container size tokens](/guide/containers).
+Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [named custom media](/guide/breakpoints). [Container queries](/guide/containers) measure an eligible ancestor using an explicit threshold; they do not read container size tokens.
 
 ---
 
@@ -16,14 +16,14 @@ CSS Media Queries allow styles to be applied based on the *size of the viewport*
 These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
 
 ### Using responsive breakpoints
-The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [breakpoint theme token](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [custom media name](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols(2) grid-cols(3)@xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
 ```
 
 ### Querying viewport ranges
-Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex viewport range queries.
+Use a complete [native media query](/reference/rules/conditions#mediafeature) to create more complex viewport range queries.
 ```html
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
 <div class="display:none@media((52.125rem<=width<=64rem))">…</div>
@@ -48,7 +48,7 @@ Set fixed maximum widths from the container scale when a wrapper should step thr
 CSS [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) allow styles to be applied based on the *size of a container*, rather than the size of the *viewport*. This makes it easier to build responsive components that adapt to their parent containers.
 
 ### Using container queries
-The `container` class is a utility class that applies the `container-type: inline-size;` to the element, making it a query container for `@container((width>=18rem))` and other native container queries.
+The `container-type:inline-size` declaration establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
 
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
@@ -76,10 +76,10 @@ The `container` class is a utility class that applies the `container-type: inlin
     {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
   </Class2CSS>
 </details>
-Native container queries preserve their explicit lengths. Choose values from your [container scale](/guide/containers) when appropriate; named custom variants can provide reusable queries.
+Choose component thresholds from the space the content needs. Changing a [container size token](/reference/tokens/container) does not update a literal query. Reuse a condition with a CSS mixin wrapper when needed; see [Container queries](/guide/containers).
 
 ### Querying container ranges
-Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex container range queries.
+Use a complete [native container query](/reference/rules/conditions#containersize) for a bounded container range.
 ```html
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
 <div class="display:none@container((24rem<=width<=28rem))">…</div>
@@ -92,11 +92,11 @@ Use a complete [native media query](/reference/rules/conditions#media-queries) t
 </details>
 
 ### Creating named containers
-Use the `container:<name>/<type>` to create a named container with a specific type, and then use the `@container(<name>)` query to apply styles based on the size of a named container.
+Set `container-name` and `container-type` on the ancestor. Include its name and a size condition in the descendant’s query.
 ```html
 <!-- @MARK container-name:card container-type:inline-size -->
 <div class="container-name:card container-type:inline-size">
-  <!-- @MARK @container(card) -->
+  <!-- @MARK @container(card|(width>=16rem)) -->
   <div class="display:none@container(card|(width>=16rem))"></div>
 </div>
 ```

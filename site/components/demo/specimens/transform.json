@@ -1,0 +1,47 @@
+[
+  {
+    "page": "transform",
+    "id": "move-an-element",
+    "title": "Move an element",
+    "html": [
+      "<!-- Translate upward · hover or focus -->\n<div class=\"p-lg\">\n  <div class=\"position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle\">\n    <button id=\"target\" type=\"button\"\n      class=\"display:grid place-items:center height:96px width:160px p-sm\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 transform:none\n             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n             outline-offset:3px:focus-visible\n             transform:none@media(print)\n             transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe\n             transform:translateY(-8px):hover@media(screen)\n             transform:translateY(-8px):focus-visible@media(screen)\">\n      Lift layer\n    </button>\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "p-lg",
+      "position:relative",
+      "height:96px",
+      "width:160px",
+      "outline-width:1px",
+      "outline-style:dashed",
+      "outline-line-subtle",
+      "display:grid",
+      "place-items:center",
+      "p-sm",
+      "border-width:1px",
+      "border-style:solid",
+      "b-blue-60",
+      "r-sm",
+      "font-size-sm",
+      "bg-blue-10",
+      "fg-blue-80",
+      "transform:none",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "transform:none@media(print)",
+      "transition-property:transform@motion-safe",
+      "transition-duration:var(--duration-fast)@motion-safe",
+      "transition-timing-function:ease-out@motion-safe",
+      "transform:translateY(-8px):hover@media(screen)",
+      "transform:translateY(-8px):focus-visible@media(screen)"
+    ],
+    "classLists": [
+      "p-lg",
+      "position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid place-items:center height:96px width:160px p-sm border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 transform:none outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible transform:none@media(print) transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe transform:translateY(-8px):hover@media(screen) transform:translateY(-8px):focus-visible@media(screen)"
+    ],
+    "highlighted": []
+  }
+]

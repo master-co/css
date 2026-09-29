@@ -1,0 +1,35 @@
+[
+  {
+    "page": "z-index",
+    "id": "prefer-local-stacking-contexts",
+    "title": "Prefer local stacking contexts",
+    "html": [
+      "<div class=\"position:relative height:11rem\">\n  <article class=\"position:relative z-index:0 isolation:isolate height:10rem width:12rem\">\n    <div class=\"position:absolute left-md top-md z-index:99 height:6rem width:10rem\">Child 99</div>\n  </article>\n  <div class=\"position:absolute left-2xl top-2xl z-index:1 height:6rem width:10rem\">Sibling 1</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "position:relative",
+      "height:11rem",
+      "z-index:0",
+      "isolation:isolate",
+      "height:10rem",
+      "width:12rem",
+      "position:absolute",
+      "left-md",
+      "top-md",
+      "z-index:99",
+      "height:6rem",
+      "width:10rem",
+      "left-2xl",
+      "top-2xl",
+      "z-index:1"
+    ],
+    "classLists": [
+      "position:relative height:11rem",
+      "position:relative z-index:0 isolation:isolate height:10rem width:12rem",
+      "position:absolute left-md top-md z-index:99 height:6rem width:10rem",
+      "position:absolute left-2xl top-2xl z-index:1 height:6rem width:10rem"
+    ],
+    "highlighted": []
+  }
+]

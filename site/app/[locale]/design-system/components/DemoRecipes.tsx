@@ -95,6 +95,18 @@ const categories = [
   ['interaction', 'Interaction'],
 ] as const
 
+const documentation: Record<string, string> = {
+  'screen-readers': '/reference/screen-readers',
+  padding: '/guide/spacing',
+  'border-radius': '/reference/tokens/radius',
+  'box-shadow': '/reference/tokens/shadow',
+  fill: '/guide/colors',
+  content: '/reference/tokens/content',
+  'text-fill-color': 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-fill-color',
+  'text-stroke-width': 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-stroke-width',
+  'user-drag': 'https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable',
+}
+
 export default function DemoRecipes() {
   return <DemoCatalog groups={categories.map(([id, title]) => ({
     id: `recipes-${id}`,
@@ -103,7 +115,7 @@ export default function DemoRecipes() {
       id: `${page}#${section}`,
       title: name,
       label: page,
-      href: `/reference/${page}#${section}`,
+      href: documentation[page] ?? `https://developer.mozilla.org/en-US/docs/Web/CSS/${page}`,
       children: <DemoExample page={page} section={section} />,
     })),
   }))} />

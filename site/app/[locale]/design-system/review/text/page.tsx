@@ -67,7 +67,7 @@ export default function Page() {
       <section aria-labelledby="text-real-use">
         <div className="review-text-sectionHeading">
           <div><h2 id="text-real-use">Actual Reference use</h2><p>Text flow must remain the same beside a floated object.</p></div>
-          <Link href="/reference/float">Open /reference/float</Link>
+          <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/float">Open https://developer.mozilla.org/en-US/docs/Web/CSS/float</Link>
         </div>
         <div className="review-text-actualPair">
           <div><span className="review-text-pairLabel">Previous body text</span><FloatExample adopted={false} /></div>

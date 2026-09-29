@@ -9,6 +9,17 @@ Master CSS classes select named styles or express CSS declarations directly in m
 Use a hyphen for named styles (`font-family-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `padding:1rem`). Direct declarations use full CSS property names; named token families may use shorter prefixes. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
 
 
+## Native properties
+Write full native property names for direct values. `display:block` generates `display: block`; the browser decides its layout behavior. Use [MDN’s CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) for native property semantics and [Layout System](/guide/layout-system) for composing a page.
+
+```html
+<div class="display:block opacity:.5 opacity:1:hover">Hover to reveal</div>
+```
+
+<Class2CSS>{['display:block', 'opacity:.5', 'opacity:1:hover']}</Class2CSS>
+
+Opacity changes paint, including descendants. It does not disable a control or remove it from keyboard navigation. Native CSS property coverage does not depend on whether a dedicated documentation page exists.
+
 ## Basic syntax \{#basic-syntax\}
 ### Utilities \{#utilities\}
 <Utilities />

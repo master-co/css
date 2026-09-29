@@ -1,0 +1,50 @@
+[
+  {
+    "page": "border-image-repeat",
+    "id": "round-repeated-edge-slices",
+    "title": "Round repeated edge slices",
+    "html": [
+      "<!-- Stretch · one stretched tile -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:stretch\n         border-image-slice:24\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>",
+      "<!-- Repeat · natural tiles, clipped ends -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:repeat\n         border-image-slice:24\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>",
+      "<!-- Round · whole tiles resized to fit -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:round\n         border-image-slice:24\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>",
+      "<!-- Space · whole tiles with gaps -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:space\n         border-image-slice:24\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "align-items:center",
+      "justify-content:center",
+      "height:130px",
+      "width:250px",
+      "max-width:100%",
+      "p-md",
+      "border-width:12px",
+      "border-style:solid",
+      "b-blue-60",
+      "border-image-repeat:stretch",
+      "border-image-slice:24",
+      "border-image-source:url('/demo/border-grid.svg')",
+      "border-image-width:1",
+      "font-size-md",
+      "bg-surface-base",
+      "fg-text-body",
+      "box-sizing:border-box",
+      "px-xs",
+      "py-3xs",
+      "border-image-repeat:repeat",
+      "border-image-repeat:round",
+      "border-image-repeat:space"
+    ],
+    "classLists": [
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:stretch border-image-slice:24 border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body",
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:repeat border-image-slice:24 border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body",
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:round border-image-slice:24 border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body",
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:space border-image-slice:24 border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body"
+    ],
+    "highlighted": []
+  }
+]

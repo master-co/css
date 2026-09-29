@@ -24,7 +24,7 @@ export function FoundationMedia() {
 }
 
 export function FoundationContainerGrid() {
-  return <Demo title="One card, two available widths" padding="none" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. Its md token is separate from the viewport md token.">
+  return <Demo title="One card, two available widths" padding="none" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
     <DemoContainer title="Container grid">
       <section className="container-type:inline-size">
         <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container((width>=28rem)) demo-surface">

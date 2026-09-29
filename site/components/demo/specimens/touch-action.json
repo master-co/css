@@ -1,0 +1,45 @@
+[
+  {
+    "page": "touch-action",
+    "id": "disable-browser-gestures-on-a-custom-surface",
+    "title": "Disable browser gestures on a custom surface",
+    "html": [
+      "<!-- None · native touch panning blocked -->\n<div id=\"target\" role=\"region\" aria-label=\"Gesture test\" tabindex=\"0\"\n\nclass=\"overflow:auto height:160px width:240px max-width:100%\n       border-width:1px border-style:solid b-line-divider r-sm touch-action:none\">\n  <div\n\n  class=\"display:flex flex-direction:column justify-content:space-between height:360px\n         width:480px p-md bg-surface-raised\">\n    <p class=\"margin:0\">Start · swipe vertically or horizontally</p>\n    <p class=\"align-self:end margin:0 fg-text-blue\">End · 480 × 360px content</p>\n  </div>\n</div>",
+      "<!-- Auto · native touch panning allowed -->\n<div id=\"target\" role=\"region\" aria-label=\"Gesture test\" tabindex=\"0\"\n\nclass=\"overflow:auto height:160px width:240px max-width:100%\n       border-width:1px border-style:solid b-line-divider r-sm touch-action:auto\">\n  <div\n\n  class=\"display:flex flex-direction:column justify-content:space-between height:360px\n         width:480px p-md bg-surface-raised\">\n    <p class=\"margin:0\">Start · swipe vertically or horizontally</p>\n    <p class=\"align-self:end margin:0 fg-text-blue\">End · 480 × 360px content</p>\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow:auto",
+      "height:160px",
+      "width:240px",
+      "max-width:100%",
+      "border-width:1px",
+      "border-style:solid",
+      "b-line-divider",
+      "r-sm",
+      "touch-action:none",
+      "display:flex",
+      "flex-direction:column",
+      "justify-content:space-between",
+      "height:360px",
+      "width:480px",
+      "p-md",
+      "bg-surface-raised",
+      "margin:0",
+      "align-self:end",
+      "fg-text-blue",
+      "touch-action:auto"
+    ],
+    "classLists": [
+      "overflow:auto height:160px width:240px max-width:100% border-width:1px border-style:solid b-line-divider r-sm touch-action:none",
+      "display:flex flex-direction:column justify-content:space-between height:360px width:480px p-md bg-surface-raised",
+      "margin:0",
+      "align-self:end margin:0 fg-text-blue",
+      "overflow:auto height:160px width:240px max-width:100% border-width:1px border-style:solid b-line-divider r-sm touch-action:auto",
+      "display:flex flex-direction:column justify-content:space-between height:360px width:480px p-md bg-surface-raised",
+      "margin:0",
+      "align-self:end margin:0 fg-text-blue"
+    ],
+    "highlighted": []
+  }
+]

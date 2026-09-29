@@ -55,7 +55,7 @@ export default function Page() {
     <section aria-labelledby="measure-real-use">
       <div className="review-measure-sectionHeading">
         <div><h2 id="measure-real-use">Actual Reference use</h2><p>The width reference compares a fixed 192px object with a fluid object in the same containing block.</p></div>
-        <Link href="/reference/width#set-a-fixed-or-fluid-width">Open /reference/width</Link>
+        <Link href="/reference/tokens/container">Open /reference/tokens/container</Link>
       </div>
       <DemoExample page="width" section="set-a-fixed-or-fluid-width" />
       <p className="review-measure-optionNote">The Reference keeps its own true browser measurements. A shared annotation must report the box it observes rather than a requested CSS width.</p>

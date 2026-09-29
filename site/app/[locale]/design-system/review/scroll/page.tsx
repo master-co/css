@@ -58,7 +58,7 @@ export default function Page() {
     <section aria-labelledby="scroll-real-use">
       <div className="review-scroll-sectionHeading">
         <div><h2 id="scroll-real-use">Actual Reference use</h2><p>The overflow reference shows separate vertical and horizontal scroll containers with true CSS utility classes.</p></div>
-        <Link href="/reference/overflow#create-a-scroll-container">Open /reference/overflow</Link>
+        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow">Open https://developer.mozilla.org/en-US/docs/Web/CSS/overflow</Link>
       </div>
       <DemoExample page="overflow" section="create-a-scroll-container" />
       <p className="review-scroll-optionNote">The Reference remains responsible for its own scroll geometry. Shared decoration must never add a child that changes which element actually scrolls.</p>

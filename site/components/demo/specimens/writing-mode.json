@@ -1,0 +1,26 @@
+[
+  {
+    "page": "writing-mode",
+    "id": "use-vertical-right-to-left-flow",
+    "title": "Use vertical right-to-left flow",
+    "html": [
+      "<!-- writing-mode:vertical-rl -->\n<p id=\"target\" lang=\"zh-Hant\" class=\"height:128px width:120px margin:0 font-size-md line-height:24px writing-mode:vertical-rl\">清晰設計讓每個想法都有空間</p>",
+      "<!-- writing-mode:vertical-lr -->\n<p id=\"target\" lang=\"zh-Hant\" class=\"height:128px width:120px margin:0 font-size-md line-height:24px writing-mode:vertical-lr\">清晰設計讓每個想法都有空間</p>"
+    ],
+    "css": "",
+    "classes": [
+      "height:128px",
+      "width:120px",
+      "margin:0",
+      "font-size-md",
+      "line-height:24px",
+      "writing-mode:vertical-rl",
+      "writing-mode:vertical-lr"
+    ],
+    "classLists": [
+      "height:128px width:120px margin:0 font-size-md line-height:24px writing-mode:vertical-rl",
+      "height:128px width:120px margin:0 font-size-md line-height:24px writing-mode:vertical-lr"
+    ],
+    "highlighted": []
+  }
+]

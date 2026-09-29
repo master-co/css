@@ -1,0 +1,57 @@
+[
+  {
+    "page": "transition-delay",
+    "id": "stagger-sibling-elements",
+    "title": "Stagger sibling elements",
+    "html": [
+      "<!-- One native trigger · two independent timelines -->\n<label class=\"display:block width:280px max-width:100% font-size-sm\n              transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move both layers\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move both layers\n  <span aria-hidden=\"true\"\n    class=\"display:block mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"first\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10\n             fg-blue-80 transform:none\n             transition:none@media(print)\n             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe\">\n      First · no delay\n    </span>\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px mt-sm\n             border-width:1px border-style:solid b-violet-60 r-sm bg-violet-10\n             fg-violet-80 transform:none\n             transition:none@media(print)\n             transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe\n             transition-delay-slow@media(screen)@motion-safe\">\n      Second · 300ms\n    </span>\n  </span>\n</label>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "width:280px",
+      "max-width:100%",
+      "font-size-sm",
+      "transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "mr-xs",
+      "accent-color-blue",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "mt-md",
+      "p-xs",
+      "outline-width:1px",
+      "outline-style:dashed",
+      "outline-line-subtle",
+      "display:grid",
+      "place-items:center",
+      "height:48px",
+      "width:128px",
+      "border-width:1px",
+      "border-style:solid",
+      "b-blue-60",
+      "r-sm",
+      "bg-blue-10",
+      "fg-blue-80",
+      "transform:none",
+      "transition:none@media(print)",
+      "transition-property:transform@media(screen)@motion-safe",
+      "transition-duration:var(--duration-slowest)@media(screen)@motion-safe",
+      "transition-timing-function:linear@media(screen)@motion-safe",
+      "mt-sm",
+      "b-violet-60",
+      "bg-violet-10",
+      "fg-violet-80",
+      "transition-delay-slow@media(screen)@motion-safe"
+    ],
+    "classLists": [
+      "display:block width:280px max-width:100% font-size-sm transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "display:block mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10 fg-blue-80 transform:none transition:none@media(print) transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe",
+      "display:grid place-items:center height:48px width:128px mt-sm border-width:1px border-style:solid b-violet-60 r-sm bg-violet-10 fg-violet-80 transform:none transition:none@media(print) transition-property:transform@media(screen)@motion-safe transition-duration:var(--duration-slowest)@media(screen)@motion-safe transition-timing-function:linear@media(screen)@motion-safe transition-delay-slow@media(screen)@motion-safe"
+    ],
+    "highlighted": []
+  }
+]

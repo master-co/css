@@ -1,0 +1,29 @@
+[
+  {
+    "page": "background-size",
+    "id": "cover-a-frame",
+    "title": "Cover a frame",
+    "html": [
+      "<!-- Whole source · 8:5 aspect ratio -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"w-xs max-width:100% aspect-ratio:8/5 background-position:center background-size:contain background-repeat:no-repeat\n         background-image:url(/demo/landscape.svg)\"\n></div>",
+      "<!-- Cover · fill and crop -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat\n         bg-surface-inset background-image:url(/demo/landscape.svg)\"\n></div>"
+    ],
+    "css": "",
+    "classes": [
+      "w-xs",
+      "max-width:100%",
+      "aspect-ratio:8/5",
+      "background-position:center",
+      "background-size:contain",
+      "background-repeat:no-repeat",
+      "background-image:url(/demo/landscape.svg)",
+      "height:160px",
+      "background-size:cover",
+      "bg-surface-inset"
+    ],
+    "classLists": [
+      "w-xs max-width:100% aspect-ratio:8/5 background-position:center background-size:contain background-repeat:no-repeat background-image:url(/demo/landscape.svg)",
+      "height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat bg-surface-inset background-image:url(/demo/landscape.svg)"
+    ],
+    "highlighted": []
+  }
+]

@@ -4,36 +4,23 @@ import { test } from 'node:test'
 import { referenceDemoSections } from './source'
 import { referenceScenes } from './scenes'
 import { demoDocument } from './document'
-import { referenceDemoCoverage } from './coverage'
 
-const root = new URL('../../../app/[locale]/reference/', import.meta.url)
+const root = new URL('../specimens/', import.meta.url)
 
-test('every authored utility teaching section has its own demo and compilable scene', async () => {
+test('every retained gallery specimen has a unique source and compilable scene', async () => {
   let count = 0
   const failures: string[] = []
-  const pages = (await readdir(root, { withFileTypes: true })).filter(entry => entry.isDirectory())
-  for (const page of pages) {
-    const source = await readFile(new URL(`${page.name}/content.mdx`, root), 'utf8').catch(() => '')
-    if (!source) continue
-    // Retired sizing routes document migration and intentionally have no live utility demo.
-    if (['size', 'min-size', 'max-size'].includes(page.name)) {
-      assert.doesNotMatch(source, /<DemoExample\b/)
-      continue
-    }
-    assert.ok(referenceScenes[page.name], `No scene family for ${page.name}`)
-    const sections = await referenceDemoSections(page.name)
-    const mounted = [...source.matchAll(/<DemoExample page="[\w-]+" section="([\w-]+)" \/>/g)].map(match => match[1])
-    assert.deepEqual(mounted, referenceDemoCoverage[page.name], `${page.name}: coverage inventory drift`)
-    assert.equal(new Set(mounted).size, mounted.length, `${page.name}: duplicate section demo`)
-    const authored = [...source.split(/(```[\s\S]*?```)/g).filter((_, index) => index % 2 === 0).join('\n').matchAll(/^### .+? \\\{#([\w-]+)\\\}/gm)]
-    for (const heading of authored) {
-      assert.ok(source.includes(`<DemoExample page="${page.name}" section="${heading[1]}" />`), `${page.name}#${heading[1]} has no dedicated demo`)
-    }
-    for (const match of source.matchAll(/<DemoExample page="([\w-]+)" section="([\w-]+)" \/>/g)) {
-      const section = sections.find(value => value.id === match[2])
-      assert.ok(section, `${page.name}#${match[2]} has no resolved source (including MDX includes)`)
+  const files = (await readdir(root)).filter(file => file.endsWith('.json'))
+  for (const file of files) {
+    const page = file.slice(0, -5)
+    assert.ok(referenceScenes[page], `No scene family for ${page}`)
+    const sections = await referenceDemoSections(page)
+    assert.ok(sections.length, `${page}: empty specimen collection`)
+    assert.equal(new Set(sections.map(section => section.id)).size, sections.length, `${page}: duplicate specimen`)
+    for (const section of sections) {
+      assert.equal(section.page, page)
       try {
-        const scene = referenceScenes[page.name](section)
+        const scene = referenceScenes[page](section)
         assert.ok(scene.caption.trim(), 'Every visual needs an explanation')
         assert.ok(scene.html.includes('data-target') || scene.html.includes('class='), 'A scene needs an actual CSS subject')
         const document = demoDocument(section, scene)
@@ -42,12 +29,11 @@ test('every authored utility teaching section has its own demo and compilable sc
         assert.doesNotMatch(document, /<script\b|on(?:click|load|error)=/i)
         assert.doesNotMatch(document, /(?:src|url\()=['"]?(?:\.\.\.|\/hero\.jpg|\/mask\.png)/)
         count++
-      } catch (error) { failures.push(`${page.name}#${section.id}: ${String(error)}`) }
+      } catch (error) { failures.push(`${page}#${section.id}: ${String(error)}`) }
     }
   }
   assert.deepEqual(failures, [])
-  assert.equal(Object.keys(referenceDemoCoverage).length, 171)
-  assert.equal(count, 642)
+  assert.ok(count >= 80, 'The retained gallery must exercise its full set of specimens')
 })
 
 test('clear uses different float heights and real side-specific clearing', async () => {

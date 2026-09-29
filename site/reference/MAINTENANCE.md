@@ -2,11 +2,13 @@
 
 Reference verifies language and tool behavior during writing, explanation and review. Guide pages teach a workflow and link to the formal contract. Avoid separately maintaining the same rule in both places.
 
+The canonical content policy is [Guide and Reference ownership](../AI.md#guide-and-reference-ownership). The [2026-09-29 inventory](../../.ai/reports/reference-content-inventory.md) records the 256-page baseline and implemented 90-page catalog. Retired property routes are removed without redirect compatibility; the catalog is not a native CSS support whitelist.
+
 ## Sources and outputs
 
 | Content | Source | Generated facts |
 | --- | --- | --- |
-| Existing utilities | `app/[locale]/reference/*/{metadata.ts,syntaxes.ts,content.mdx}` | Public tooling declarations, aliases, examples and full CSS |
+| Preset recipes | `reference/recipes.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
 | Language rules | `app/[locale]/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `app/[locale]/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and tooling builtins | Names, values, modes, conditions and consumers |
@@ -24,7 +26,7 @@ Individual document pages render their authored or generated body directly. Do n
 
 ## Editing safely
 
-1. Keep active utility URLs. Retired compound-class pages have no metadata or teaching body and use `retired-reference.ts` to direct visitors to atomic properties. They must not appear in the catalog, search, sitemap or machine exports.
+1. Retain URLs for continuing content. Remove retired Reference routes and update active internal links to their replacement content. The user explicitly waived redirect handling for this migration; do not add navigation-only pages or anchor redirect maps merely for compatibility. Keep removed articles out of navigation, search, sitemap and machine exports.
 2. Preserve explicit heading IDs. In MDX, write `## New title \{#stable-id\}`. The braces must be escaped for MDX; the visible title and exported Markdown omit the marker. Add an old anchor entrance when moving a section.
 3. Add prose for prerequisites, exceptions and intended use. Placeholder syntax rows describe declaration shapes, not the full grammar of accepted values.
 4. Keep a text equivalent for every meaningful component. `markdown.ts` handles `Overview`, `Class2CSS`, literal `Code`, local MDX includes, token tables and configured examples. Unsupported components are reported and fail the coverage test. Do not execute arbitrary JSX to extract prose.
@@ -36,19 +38,34 @@ The first content language is English. Traditional Chinese navigation remains av
 
 Guide and Reference overviews share `site/components/DocumentationIndex.tsx` and `site/styles/documentation-index.css`. Reference adapts its catalog in `reference/Index.tsx`; Guide derives its primary teaching entries from existing category metadata through `site/utils/guide-overview.ts`. That Guide model also supplies overview search nodes during `prepare-app` and its body in llms exports. Keep category anchors and metadata-derived links aligned when changing either overview. Section icons are keyed by section ID. The old `#syntax-tutorial` overview anchor belongs to Getting Started. `utils/syntax-tutorial.ts` uses the Reference component adapters to include generated CSS and complete configured examples in tutorial search and llms output.
 
-Design Foundations use `utils/foundation-content.ts` for search and llms bodies. Its strict adapters expand local MDX and generated CSS without executing JSX. Guide-local data modules supply the same token values, descriptions and namespace groups to SSR tables and exports. Register new data-bearing components there; visual recipes may be omitted only when their lesson and portable code are in the adjacent authored body. Search keeps explicit heading markers; portable Markdown converts them into anchor elements. Reference's `Overview` syntax-table behavior remains the default and Guide includes opt into their own handling.
+Design Foundations use `utils/foundation-content.ts` for search and llms bodies. Its strict adapters expand local MDX and generated CSS without executing JSX. `common/foundation-data/tokens.ts` supplies token facts to `TokenValues`, Reference catalogs and specimens; other shared presentation data lives beside it. Reference owns complete collections; Guide passes explicit task-specific keys, identical in HTML and portable/search output. Register changed data-bearing components in the strict adapters; never let a selected visual subset export a full catalog. Visual recipes may be omitted only when their lesson and portable code are in the adjacent authored body. Search keeps explicit heading markers; portable Markdown converts them into anchor elements. Reference's `Overview` syntax-table behavior remains the default and Guide includes opt into their own handling.
 
 The four project styling guides use `utils/project-style-content.ts` with the same strict parser. `ProjectStyleExample` reads the literal configuration and HTML from `components/demo/project-style-examples.ts`; that data supplies the iframe, code blocks and portable export. `DemoConfiguredExample` also has a direct literal-prop adapter. Keep full configuration and generated CSS in exports even when the page collapses the generated output.
 
 `ConfiguredExample` accepts either a class array or trusted literal HTML, including local raw HTML specimens. It compiles with the public render session, matching iframe previews; tooling validates every expanded declaration without filtering emission. Generate CSS from the displayed source instead of maintaining cached CSS specimens; keep any configuration required by the output, such as `@mixin`, explicit.
 
-Namespace consumers come from `utils/variable-namespace-sources.ts`, which combines the public named-token and utility registries. Do not derive this index from defined preset values: registered consumers such as `order-` may have no preset token. The normalized Markdown retains every consumer. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape.
+Namespace consumers come from `utils/variable-namespace-sources.ts` and public registry projections. Do not derive this index from defined preset values: registered consumers such as `order-` may have no preset token. Reference Markdown retains every consumer; Guide exports only its selected rows. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape. Do not add native query examples to token-consumer lists: explicit container-query values do not read or track container tokens.
 
 `DocumentCodeTable` keeps short syntax tokens intact while native CSS wraps at spaces. Reference adapts only two-column Token/CSS or Syntax/CSS tables whose cells each contain one code span. Keep long generated rules in code blocks; the authored Markdown remains the export source.
 
 `DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles remove size containment, wrap long syntax and keep both columns visible. Put longer multi-part decisions in prose lists. The migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
 
+`components/demo/specimens/` owns the authored examples still used by the Design System gallery. These are not indexed articles. Do not restore retired property MDX just to feed a gallery; add a focused specimen when a real demonstration needs one.
+
+## Content migration sequence
+
+1. For future content migrations, reconcile the inventory with completed canonical-syntax work, public families, preset mixins and current APIs. Do not change semantics or force the catalog to a fixed page count.
+2. Extract shared foundation data using existing theme/manifest helpers. Move reusable MDX before removing source routes; Typography and Corner Radius own their teaching MDX locally after this migration.
+3. Populate complete family/namespace lookups and recipe contracts, including `text-gradient`. Preserve full values, scopes, modes, dependencies, minimal examples and useful lookup specimens; Guide keeps task-specific selections and compositions.
+4. Split `tokens/containers`: values/consumers belong to `tokens/container`, query contracts to `rules/conditions`, and teaching to `/guide/containers`. Retain the Guide URL and title it `Container queries`; width-cap design belongs in Sizing. Keep breakpoint definitions identified as custom media.
+5. Identify the actual owner of useful content before retiring pages. Move removed capabilities to the migration guide. Preserve Master-specific behavior found inside native CSS articles in its owning contract; retain only demos that support a concrete teaching task. Do not create placeholder property catalogs to replace retired pages.
+6. Update Guide/Reference navigation, internal links, search tasks, sitemap, Markdown and llms together. Rebuild from authored sources, verify active link targets and remove retired route files.
+
+Completion requires full family/mixin coverage; successful property, prefix and namespace lookup; runnable self-contained Guide examples; identical selected facts across HTML/search/portable output; and no broken imports or meaningful anchors. A preset-value change must update all related presentations without implying that a literal container-query threshold changes with it. Validate lookup by `padding`, `p`, `px` and `padding-inline` alongside concrete design tasks. Preserve the documented conditions on mode and accessibility claims when relocating them.
+
 ## Validation
+
+For policy/inventory-only changes, run site lint and `pnpm run check:ai-context`. The following content/build/browser checks apply when the corresponding public sources or rendering pipeline migrate; recording the policy alone does not establish their results.
 
 Start from the usual package-warmed workspace (`pnpm build:site` performs the full orchestration). Focused commands:
 
@@ -64,7 +81,7 @@ pnpm --filter internal test
 pnpm run check:ai-context
 ```
 
-After a full static build, `pnpm --filter site test:syntax-migration` checks the retired routes’ noindex/canonical metadata, no-JavaScript links and sitemap exclusion, including canonical route copies.
+After a full static build, `pnpm --filter site test:syntax-migration` checks existing Syntax Tutorial compatibility routes and verifies that retired Reference content stays out of navigation, sitemap and machine indexes.
 
 `internal` has no package-local lint script. Shared search, heading and table changes also require Guide regression checks. Inspect 390px, 768px and 1280px layouts, keyboard selection, one-press Escape, focus restoration, direct row links and reopening search with its query preserved.
 

@@ -1,0 +1,44 @@
+[
+  {
+    "page": "backdrop-filter",
+    "id": "blur-content-behind-an-element",
+    "title": "Blur content behind an element",
+    "html": [
+      "<!-- No filter · sharp backdrop -->\n<div class=\"position:relative height:168px width:240px max-width:100%\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"display:block height:168px width:240px max-width:100%\n         object-fit:cover\" />\n  <div id=\"target\"\n    class=\"position:absolute inset-md display:flex align-items:center\n           justify-content:center p-sm border-width:1px border-style:solid b-line-divider r-sm\n           font-size-md bg-surface-base/.64 fg-text-strong\n           backdrop-filter:none\">\n    Preview layer\n  </div>\n</div>",
+      "<!-- Blur · softened backdrop -->\n<div class=\"position:relative height:168px width:240px max-width:100%\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"display:block height:168px width:240px max-width:100%\n         object-fit:cover\" />\n  <div id=\"target\"\n    class=\"position:absolute inset-md display:flex align-items:center\n           justify-content:center p-sm border-width:1px border-style:solid b-line-divider r-sm\n           font-size-md bg-surface-base/.64 fg-text-strong\n           backdrop-filter:blur(8px)\">\n    Preview layer\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "position:relative",
+      "height:168px",
+      "width:240px",
+      "max-width:100%",
+      "display:block",
+      "object-fit:cover",
+      "position:absolute",
+      "inset-md",
+      "display:flex",
+      "align-items:center",
+      "justify-content:center",
+      "p-sm",
+      "border-width:1px",
+      "border-style:solid",
+      "b-line-divider",
+      "r-sm",
+      "font-size-md",
+      "bg-surface-base/.64",
+      "fg-text-strong",
+      "backdrop-filter:none",
+      "backdrop-filter:blur(8px)"
+    ],
+    "classLists": [
+      "position:relative height:168px width:240px max-width:100%",
+      "display:block height:168px width:240px max-width:100% object-fit:cover",
+      "position:absolute inset-md display:flex align-items:center justify-content:center p-sm border-width:1px border-style:solid b-line-divider r-sm font-size-md bg-surface-base/.64 fg-text-strong backdrop-filter:none",
+      "position:relative height:168px width:240px max-width:100%",
+      "display:block height:168px width:240px max-width:100% object-fit:cover",
+      "position:absolute inset-md display:flex align-items:center justify-content:center p-sm border-width:1px border-style:solid b-line-divider r-sm font-size-md bg-surface-base/.64 fg-text-strong backdrop-filter:blur(8px)"
+    ],
+    "highlighted": []
+  }
+]

@@ -3,7 +3,7 @@ import { FoundationTypography, FoundationTypeComparison, FoundationMotion, Found
 
 const examples = [
   ['Type hierarchy', '/guide/typography#overview', FoundationTypography],
-  ['Size and treatment', '/guide/typography#without-vs-with--textsize', FoundationTypeComparison],
+  ['Size and treatment', '/guide/typography#without-vs-with--text-token', FoundationTypeComparison],
   ['Finite entrances', '/guide/motion#overview', FoundationMotion],
   ['State transition', '/guide/motion#transition-properties', FoundationTransition],
   ['Dialog entrance', '/guide/motion#customize-motion-tokens', FoundationDialog],

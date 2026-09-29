@@ -1,0 +1,56 @@
+[
+  {
+    "page": "width",
+    "id": "set-a-fixed-or-fluid-width",
+    "title": "Set a fixed or fluid width",
+    "html": [
+      "<!-- Fixed · 192px -->\n<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:12rem p-sm\">Fixed width</div>\n</div>",
+      "<!-- Fluid · 100% -->\n<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:100% p-sm\">Full width</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:17.5rem",
+      "max-width:100%",
+      "width:12rem",
+      "p-sm",
+      "width:100%"
+    ],
+    "classLists": [
+      "width:17.5rem max-width:100%",
+      "width:12rem p-sm",
+      "width:17.5rem max-width:100%",
+      "width:100% p-sm"
+    ],
+    "highlighted": []
+  },
+  {
+    "page": "width",
+    "id": "use-intrinsic-width-keywords",
+    "title": "Use intrinsic width keywords",
+    "html": [
+      "<!-- Minimum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:min-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>",
+      "<!-- Fit content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>",
+      "<!-- Maximum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:max-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:7rem",
+      "width:min-content",
+      "p-sm",
+      "font-size-md",
+      "font-family-mono",
+      "line-height:24px",
+      "width:fit-content",
+      "width:max-content"
+    ],
+    "classLists": [
+      "width:7rem",
+      "width:min-content p-sm font-size-md font-family-mono line-height:24px",
+      "width:7rem",
+      "width:fit-content p-sm font-size-md font-family-mono line-height:24px",
+      "width:7rem",
+      "width:max-content p-sm font-size-md font-family-mono line-height:24px"
+    ],
+    "highlighted": []
+  }
+]

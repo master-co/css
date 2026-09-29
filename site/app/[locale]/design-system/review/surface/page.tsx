@@ -79,7 +79,7 @@ export default function Page() {
       <section aria-labelledby="bg-surface-real-use">
         <div className="review-surface-sectionHeading">
           <div><h2 id="bg-surface-real-use">Actual Reference use</h2><p>The surface must not become an extra column or change the content box.</p></div>
-          <Link href="/reference/column-span">Open /reference/column-span</Link>
+          <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-span">Open https://developer.mozilla.org/en-US/docs/Web/CSS/column-span</Link>
         </div>
         <div className="review-surface-actualPair">
           <div><span className="review-surface-pairLabel">Previous surface</span><ReferenceExample previous /></div>

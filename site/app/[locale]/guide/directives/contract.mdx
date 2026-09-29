@@ -71,7 +71,7 @@ the required stylesheet and resource assets. Node file and rendered-stylesheet A
 opt in through their `delivery` options; their caller must publish every returned
 asset. `--no-export` and calls without delivery options retain their separate
 single-output limitations. Without resource mappings, the host must preserve
-original URL bases. See [CSS imports](/guide/css-imports) for the delivery boundaries.
+original URL bases. See [native CSS entries](/guide/rendering-modes#native-css-entries) for the delivery boundaries.
 
 
 ### Preparing native CSS for another transformer
@@ -125,10 +125,6 @@ References must be top-level statements containing one quoted resource. Relative
 Vite, Next.js, and Webpack supply project definition context to local stylesheets, CSS Modules, and SFC styles. An explicit reference is useful for dependencies outside that context or standalone compilation. Local stylesheets do not become scanning or pruning roots. CSS Modules and scoped hosts must deliver generated theme selectors globally.
 
 The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains separate `variables` and `keyframes` counts.
-
-## Project settings \{#project-settings\}
-### Removed `@settings` \{#settings\}
-The entire directive and manifest `settings` field are removed. Use the `!` suffix on a particular class for importance. Use native selectors, nesting, or `@scope` to define where stylesheet rules apply. Master CSS does not apply a global important or selector-scope setting.
 
 ## Theme and conditions \{#theme-and-variants\}
 ### `@theme` \{#theme\}
@@ -383,6 +379,22 @@ Runtime manifests retain unused definitions for future DOM classes. On-demand ge
 
 <StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
 
+### Sass interoperability
+
+Place CSS mixin definitions in a `.css` file when using Sass. Current Dart Sass reserves `@mixin --name` for future CSS support and rejects it as a Sass mixin; see [Sass's compatibility notice](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/). An SCSS file may emit the native at-rule through interpolation before Master CSS compiles it:
+
+```scss
+@#{'mixin'} --card {
+  padding: 1rem;
+}
+
+.card { @apply --card; }
+```
+
+This is Sass interpolation, not additional Master CSS syntax. Sass `@include` and CSS `@apply` remain separate constructs.
+
+---
+
 ## Source boundaries \{#source-boundaries\}
 ### `@source` \{#source\}
 Ordinary application sources use the integrations' and CLI's default discovery. Add explicit exceptions when needed:
@@ -422,36 +434,6 @@ Remove unwanted complete candidates with exact strings or `*` and `?` wildcard p
 ```
 
 The stylesheet grammar does not interpret slash-delimited patterns as regular expressions. Wildcard policy belongs in the blocklist; a safelist supplies complete classes.
-
-## Removed utility composition \{#rule-local-composition\}
-### `@compose` (removed) \{#compose\}
-
-`@compose` is no longer supported. Compilation reports `removed-compose-directive` wherever the at-rule appears, including native rules and utility definitions.
-
-Write native declarations, selectors and conditions in stylesheets. Share design values through CSS custom properties. Use Master utilities directly in markup, or share native classes and component interfaces when several elements need the same behavior.
-
-```css
-@layer components {
-  .button {
-    display: inline-flex;
-    padding: var(--spacing-md);
-    border-radius: var(--radius-lg);
-
-    &:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
-    }
-  }
-}
-```
-
-When migrating an existing statement, preserve its expanded declarations, nested selectors, conditions, importance and destination layer. Replacing it with declarations preserves the current style but removes the dependency on the original utility: future utility changes no longer update that rule. Do not rename it to `@apply`; The supported `@apply` subset consumes mixins, not markup utility classes.
-
-The compiler no longer exposes compose IR or composition traces. Tooling removes compose canonicalization and structural directive fixes, including `composeDirective`, `includeDirectiveFixes`, `preferNativeDeclarationsInCompose`, `preferVariantBlocksInCompose`, and CLI `--fix-directives`. ESLint removes `configs.stylesheet`; its recommended config still handles classes in markup and class builders. `preferCompositionUtilities` continues to apply to markup class lists.
-
-The RC migration command reports an occurrence for manual migration and leaves the statement unchanged. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) for the remaining migration steps.
-
----
 
 ## Conditional blocks \{#conditional-blocks\}
 ### Native conditions and mixin wrappers \{#variant\}
@@ -832,20 +814,6 @@ An exact zero-parameter mixin wins over named token families. Otherwise the long
 `font-brand` is removed. Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
 
 The preset has no `size`, `min-size` or `max-size` recipe. Use explicit width and height declarations, or author a parameter mixin such as `--box`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning. See the [RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution).
-
-## Sass interoperability
-
-Place CSS mixin definitions in a `.css` file when using Sass. Current Dart Sass reserves `@mixin --name` for future CSS support and rejects it as a Sass mixin; see [Sass's compatibility notice](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/). An SCSS file may emit the native at-rule through interpolation before Master CSS compiles it:
-
-```scss
-@#{'mixin'} --card {
-  padding: 1rem;
-}
-
-.card { @apply --card; }
-```
-
-This is Sass interpolation, not additional Master CSS syntax. Sass `@include` and CSS `@apply` remain separate constructs.
 
 ### Animation recipes
 

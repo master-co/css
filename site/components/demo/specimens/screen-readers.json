@@ -1,0 +1,37 @@
+[
+  {
+    "page": "screen-readers",
+    "id": "label-icon-only-controls",
+    "title": "Label icon-only controls",
+    "html": [
+      "<form class=\"display:grid justify-items:start gap-md\">\n  <label class=\"display:grid gap-xs width:240px max-width:100%\">\n    Project name <input type=\"text\" value=\"Canvas\" class=\"width:100%\">\n  </label>\n  <button type=\"reset\"\n    class=\"display:inline-flex align-items:center gap-sm\">\n    <span id=\"target\" class=\"sr-only\">Reset project name</span>\n    <svg aria-hidden=\"true\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"\n      fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n      <path d=\"M4 8a6 6 0 1 1 0 5 M4 3v5h5\" />\n    </svg>\n  </button>\n</form>\n<p class=\"margin-bottom:0 mt-md font-size-xs fg-text-muted\">Accessible name: Reset project name</p>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "justify-items:start",
+      "gap-md",
+      "gap-xs",
+      "width:240px",
+      "max-width:100%",
+      "width:100%",
+      "display:inline-flex",
+      "align-items:center",
+      "gap-sm",
+      "sr-only",
+      "margin-bottom:0",
+      "mt-md",
+      "font-size-xs",
+      "fg-text-muted"
+    ],
+    "classLists": [
+      "display:grid justify-items:start gap-md",
+      "display:grid gap-xs width:240px max-width:100%",
+      "width:100%",
+      "display:inline-flex align-items:center gap-sm",
+      "sr-only",
+      "margin-bottom:0 mt-md font-size-xs fg-text-muted"
+    ],
+    "highlighted": []
+  }
+]

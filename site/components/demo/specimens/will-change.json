@@ -1,0 +1,50 @@
+[
+  {
+    "page": "will-change",
+    "id": "reset-when-the-hint-is-no-longer-useful",
+    "title": "Reset when the hint is no longer useful",
+    "html": [
+      "<!-- Auto → prepare → press → auto -->\n<div class=\"p-lg\">\n  <div class=\"position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle\">\n    <button id=\"target\" type=\"button\"\n      class=\"display:grid place-items:center height:96px width:160px p-sm\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 transform:none will-change:auto\n             outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n             outline-offset:3px:focus-visible\n             transform:none@media(print)\n             transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe\n             will-change:auto@media(print)\n             will-change:transform:hover@media(screen)\n             will-change:transform:focus-visible@media(screen)\n             transform:translateY(-8px):active@media(screen)\">\n      Prepare and press\n    </button>\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "p-lg",
+      "position:relative",
+      "height:96px",
+      "width:160px",
+      "outline-width:1px",
+      "outline-style:dashed",
+      "outline-line-subtle",
+      "display:grid",
+      "place-items:center",
+      "p-sm",
+      "border-width:1px",
+      "border-style:solid",
+      "b-blue-60",
+      "r-sm",
+      "font-size-sm",
+      "bg-blue-10",
+      "fg-blue-80",
+      "transform:none",
+      "will-change:auto",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "transform:none@media(print)",
+      "transition-property:transform@motion-safe",
+      "transition-duration:var(--duration-fast)@motion-safe",
+      "transition-timing-function:ease-out@motion-safe",
+      "will-change:auto@media(print)",
+      "will-change:transform:hover@media(screen)",
+      "will-change:transform:focus-visible@media(screen)",
+      "transform:translateY(-8px):active@media(screen)"
+    ],
+    "classLists": [
+      "p-lg",
+      "position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid place-items:center height:96px width:160px p-sm border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 transform:none will-change:auto outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible transform:none@media(print) transition-property:transform@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:ease-out@motion-safe will-change:auto@media(print) will-change:transform:hover@media(screen) will-change:transform:focus-visible@media(screen) transform:translateY(-8px):active@media(screen)"
+    ],
+    "highlighted": []
+  }
+]

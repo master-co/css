@@ -1,0 +1,28 @@
+[
+  {
+    "page": "font-variant-numeric",
+    "id": "align-tabular-numbers",
+    "title": "Align tabular numbers",
+    "html": [
+      "<!-- proportional-nums -->\n<div id=\"target\" class=\"font-variant-numeric:proportional-nums font-size-3xl leading-sm\"><span id=\"ones\" class=\"display:inline-block\">11111</span><br><span id=\"eights\" class=\"display:inline-block\">88888</span></div>",
+      "<!-- tabular-nums -->\n<div id=\"target\" class=\"font-variant-numeric:tabular-nums font-size-3xl leading-sm\"><span id=\"ones\" class=\"display:inline-block\">11111</span><br><span id=\"eights\" class=\"display:inline-block\">88888</span></div>"
+    ],
+    "css": "",
+    "classes": [
+      "font-variant-numeric:proportional-nums",
+      "font-size-3xl",
+      "leading-sm",
+      "display:inline-block",
+      "font-variant-numeric:tabular-nums"
+    ],
+    "classLists": [
+      "font-variant-numeric:proportional-nums font-size-3xl leading-sm",
+      "display:inline-block",
+      "display:inline-block",
+      "font-variant-numeric:tabular-nums font-size-3xl leading-sm",
+      "display:inline-block",
+      "display:inline-block"
+    ],
+    "highlighted": []
+  }
+]

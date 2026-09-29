@@ -1,0 +1,23 @@
+[
+  {
+    "page": "font-style",
+    "id": "reset-font-style",
+    "title": "Reset font style",
+    "html": [
+      "<!-- An upright child inside italic text -->\n<p id=\"context\" class=\"margin:0 font-style:italic font-size-xl leading-md\">A slanted phrase with <span id=\"target\" class=\"font-style:normal\">an upright detail</span>.</p>"
+    ],
+    "css": "",
+    "classes": [
+      "margin:0",
+      "font-style:italic",
+      "font-size-xl",
+      "leading-md",
+      "font-style:normal"
+    ],
+    "classLists": [
+      "margin:0 font-style:italic font-size-xl leading-md",
+      "font-style:normal"
+    ],
+    "highlighted": []
+  }
+]

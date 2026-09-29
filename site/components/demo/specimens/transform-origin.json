@@ -1,0 +1,56 @@
+[
+  {
+    "page": "transform-origin",
+    "id": "set-the-pivot-point",
+    "title": "Set the pivot point",
+    "html": [
+      "<!-- Center · four edges move inward -->\n<div class=\"p-lg\">\n  <div class=\"position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle\">\n    <div id=\"target\"\n      class=\"display:grid align-items:start justify-items:center height:96px width:160px p-sm\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 transform:scale(.75)\n             transform-origin:center\">\n      Center pivot\n    </div>\n    <span aria-hidden=\"true\"\n      class=\"position:absolute left:77px top:45px width:6px height:6px border-radius:100%\n             bg-violet-60 pointer-events:none\"></span>\n  </div>\n</div>",
+      "<!-- Top left · two edges stay fixed -->\n<div class=\"p-lg\">\n  <div class=\"position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle\">\n    <div id=\"target\"\n      class=\"display:grid align-items:start justify-items:center height:96px width:160px p-sm\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 transform:scale(.75)\n             transform-origin:top|left\">\n      Corner pivot\n    </div>\n    <span aria-hidden=\"true\"\n      class=\"position:absolute left:-3px top:-3px width:6px height:6px border-radius:100%\n             bg-violet-60 pointer-events:none\"></span>\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "p-lg",
+      "position:relative",
+      "height:96px",
+      "width:160px",
+      "outline-width:1px",
+      "outline-style:dashed",
+      "outline-line-subtle",
+      "display:grid",
+      "align-items:start",
+      "justify-items:center",
+      "p-sm",
+      "border-width:1px",
+      "border-style:solid",
+      "b-blue-60",
+      "r-sm",
+      "font-size-sm",
+      "bg-blue-10",
+      "fg-blue-80",
+      "transform:scale(.75)",
+      "transform-origin:center",
+      "position:absolute",
+      "left:77px",
+      "top:45px",
+      "width:6px",
+      "height:6px",
+      "border-radius:100%",
+      "bg-violet-60",
+      "pointer-events:none",
+      "transform-origin:top|left",
+      "left:-3px",
+      "top:-3px"
+    ],
+    "classLists": [
+      "p-lg",
+      "position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid align-items:start justify-items:center height:96px width:160px p-sm border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 transform:scale(.75) transform-origin:center",
+      "position:absolute left:77px top:45px width:6px height:6px border-radius:100% bg-violet-60 pointer-events:none",
+      "p-lg",
+      "position:relative height:96px width:160px outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid align-items:start justify-items:center height:96px width:160px p-sm border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 transform:scale(.75) transform-origin:top|left",
+      "position:absolute left:-3px top:-3px width:6px height:6px border-radius:100% bg-violet-60 pointer-events:none"
+    ],
+    "highlighted": []
+  }
+]

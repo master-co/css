@@ -1,0 +1,37 @@
+[
+  {
+    "page": "transform-box",
+    "id": "choose-the-transform-reference-box",
+    "title": "Choose the transform reference box",
+    "html": [
+      "<!-- Fill box · translate 32 units -->\n<svg width=\"240\" height=\"160\" viewBox=\"0 0 240 160\"\n  role=\"img\" aria-label=\"Rectangle translated from its dashed source bounds\"\n  class=\"display:block height:auto max-width:100%\n         outline-width:1px outline-style:solid outline-line-subtle\">\n  <rect x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    fill=\"none\" stroke=\"#7c3aed\" stroke-dasharray=\"4 4\" />\n  <rect id=\"target\" x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    class=\"fill-blue-20 stroke-blue-60\n           transform:translateX(50%) transform-box:fill-box\n           stroke-width:16px\" />\n</svg>",
+      "<!-- Stroke box · translate 40 units -->\n<svg width=\"240\" height=\"160\" viewBox=\"0 0 240 160\"\n  role=\"img\" aria-label=\"Rectangle translated from its dashed source bounds\"\n  class=\"display:block height:auto max-width:100%\n         outline-width:1px outline-style:solid outline-line-subtle\">\n  <rect x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    fill=\"none\" stroke=\"#7c3aed\" stroke-dasharray=\"4 4\" />\n  <rect id=\"target\" x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    class=\"fill-blue-20 stroke-blue-60\n           transform:translateX(50%) transform-box:stroke-box\n           stroke-width:16px\" />\n</svg>",
+      "<!-- View box · translate 120 units -->\n<svg width=\"240\" height=\"160\" viewBox=\"0 0 240 160\"\n  role=\"img\" aria-label=\"Rectangle translated from its dashed source bounds\"\n  class=\"display:block height:auto max-width:100%\n         outline-width:1px outline-style:solid outline-line-subtle\">\n  <rect x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    fill=\"none\" stroke=\"#7c3aed\" stroke-dasharray=\"4 4\" />\n  <rect id=\"target\" x=\"24\" y=\"60\" width=\"64\" height=\"40\"\n    class=\"fill-blue-20 stroke-blue-60\n           transform:translateX(50%) transform-box:view-box\n           stroke-width:16px\" />\n</svg>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "height:auto",
+      "max-width:100%",
+      "outline-width:1px",
+      "outline-style:solid",
+      "outline-line-subtle",
+      "fill-blue-20",
+      "stroke-blue-60",
+      "transform:translateX(50%)",
+      "transform-box:fill-box",
+      "stroke-width:16px",
+      "transform-box:stroke-box",
+      "transform-box:view-box"
+    ],
+    "classLists": [
+      "display:block height:auto max-width:100% outline-width:1px outline-style:solid outline-line-subtle",
+      "fill-blue-20 stroke-blue-60 transform:translateX(50%) transform-box:fill-box stroke-width:16px",
+      "display:block height:auto max-width:100% outline-width:1px outline-style:solid outline-line-subtle",
+      "fill-blue-20 stroke-blue-60 transform:translateX(50%) transform-box:stroke-box stroke-width:16px",
+      "display:block height:auto max-width:100% outline-width:1px outline-style:solid outline-line-subtle",
+      "fill-blue-20 stroke-blue-60 transform:translateX(50%) transform-box:view-box stroke-width:16px"
+    ],
+    "highlighted": []
+  }
+]

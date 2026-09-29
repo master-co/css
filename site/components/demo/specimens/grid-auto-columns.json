@@ -1,0 +1,29 @@
+[
+  {
+    "page": "grid-auto-columns",
+    "id": "size-implicit-columns",
+    "title": "Size implicit columns",
+    "html": [
+      "<div id=\"layout\" class=\"display:grid grid-auto-columns:72px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap-md width:17.5rem max-width:100%\">\n  <div id=\"peer\" class=\"p-sm\">80px</div>\n  <div id=\"target\" class=\"p-sm\">72px</div>\n  <div id=\"item-3\" class=\"p-sm\">72px</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "grid-auto-columns:72px",
+      "grid-auto-flow:column",
+      "grid-template-columns:80px",
+      "grid-template-rows:64px",
+      "gap-md",
+      "width:17.5rem",
+      "max-width:100%",
+      "p-sm"
+    ],
+    "classLists": [
+      "display:grid grid-auto-columns:72px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap-md width:17.5rem max-width:100%",
+      "p-sm",
+      "p-sm",
+      "p-sm"
+    ],
+    "highlighted": []
+  }
+]

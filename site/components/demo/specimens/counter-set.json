@@ -1,0 +1,31 @@
+[
+  {
+    "page": "counter-set",
+    "id": "set-a-counter-on-one-item",
+    "title": "Set a counter on one item",
+    "html": [
+      "<!-- Sequence · 1, 9, 10 -->\n<ol role=\"list\" class=\"margin:0 padding:0 font-size-md leading-lg list-style:none counter-reset:step|0\">\n  <li class=\"mb-2xs counter-increment:step|1 fg-text-blue::before\n    content:counter(step)'.\\00a0'::before\">Install dependencies</li>\n  <li id=\"target\" value=\"9\" class=\"mb-2xs counter-increment:step|1 counter-set:step|9\n    fg-text-blue::before content:counter(step)'.\\00a0'::before\">Deployment checklist</li>\n  <li class=\"mb-2xs counter-increment:step|1 fg-text-blue::before\n    content:counter(step)'.\\00a0'::before\">Verify production</li>\n</ol>"
+    ],
+    "css": "",
+    "classes": [
+      "margin:0",
+      "padding:0",
+      "font-size-md",
+      "leading-lg",
+      "list-style:none",
+      "counter-reset:step|0",
+      "mb-2xs",
+      "counter-increment:step|1",
+      "fg-text-blue::before",
+      "content:counter(step)'.\\00a0'::before",
+      "counter-set:step|9"
+    ],
+    "classLists": [
+      "margin:0 padding:0 font-size-md leading-lg list-style:none counter-reset:step|0",
+      "mb-2xs counter-increment:step|1 fg-text-blue::before content:counter(step)'.\\00a0'::before",
+      "mb-2xs counter-increment:step|1 counter-set:step|9 fg-text-blue::before content:counter(step)'.\\00a0'::before",
+      "mb-2xs counter-increment:step|1 fg-text-blue::before content:counter(step)'.\\00a0'::before"
+    ],
+    "highlighted": []
+  }
+]

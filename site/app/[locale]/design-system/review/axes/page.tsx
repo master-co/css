@@ -71,7 +71,7 @@ export default function Page() {
     <section aria-labelledby="axes-real-use">
       <div className="review-axes-sectionHeading">
         <div><h2 id="axes-real-use">Actual Reference use</h2><p>The flex-direction reference demonstrates the same row direction and explains why writing mode matters.</p></div>
-        <Link href="/reference/flex-direction#lay-out-items-in-a-row">Open /reference/flex-direction</Link>
+        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction">Open https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction</Link>
       </div>
       <DemoExample page="flex-direction" section="lay-out-items-in-a-row" />
       <p className="review-axes-optionNote">The Reference demo uses real <code>flex flex-row</code> classes. An arrow is only correct here because this specimen uses horizontal writing and left-to-right text.</p>

@@ -1,0 +1,28 @@
+[
+  {
+    "page": "vertical-align",
+    "id": "align-icons-with-text",
+    "title": "Align icons with text",
+    "html": [
+      "<!-- vertical-align:baseline -->\n<button type=\"button\" id=\"context\" class=\"font-size-md leading-lg\"><svg id=\"target\" class=\"display:inline-block width:32px height:32px vertical-align:baseline\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 5h16v14H4zM8 9h8M8 13h5\" /></svg> Layers</button>",
+      "<!-- vertical-align:middle -->\n<button type=\"button\" id=\"context\" class=\"font-size-md leading-lg\"><svg id=\"target\" class=\"display:inline-block width:32px height:32px vertical-align:middle\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 5h16v14H4zM8 9h8M8 13h5\" /></svg> Layers</button>"
+    ],
+    "css": "",
+    "classes": [
+      "font-size-md",
+      "leading-lg",
+      "display:inline-block",
+      "width:32px",
+      "height:32px",
+      "vertical-align:baseline",
+      "vertical-align:middle"
+    ],
+    "classLists": [
+      "font-size-md leading-lg",
+      "display:inline-block width:32px height:32px vertical-align:baseline",
+      "font-size-md leading-lg",
+      "display:inline-block width:32px height:32px vertical-align:middle"
+    ],
+    "highlighted": []
+  }
+]

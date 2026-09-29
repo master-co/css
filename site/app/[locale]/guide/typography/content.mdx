@@ -1,12 +1,3 @@
-import FontSizeBasicUsage from '../../reference/font-size/components/BasicUsage.mdx'
-import BodyText from '../../reference/text-size/components/BodyText.mdx'
-import Headings from '../../reference/text-size/components/Headings.mdx'
-import PageTitles from '../../reference/text-size/components/PageTitles.mdx'
-import LineHeightBasicUsage from '../../reference/line-height/components/BasicUsage.mdx'
-import FontWeightBasicUsage from '../../reference/font-weight/components/BasicUsage.mdx'
-import LetterSpacingBasicUsage from '../../reference/letter-spacing/components/BasicUsage.mdx'
-import FontFamilyBasicUsage from '../../reference/font-family/components/BasicUsage.mdx'
-import { TypographyNamespaceTable } from './components/TypographyNamespaces'
 
 ## Overview [sr-only]
 <Overview />
@@ -29,7 +20,7 @@ Typography tokens define readable type scale, line height, letter spacing, font 
 ## Namespaces for typography
 Typography is built from [theme tokens](/guide/theme) organized into focused namespaces.
 
-<TypographyNamespaceTable />
+`text-` applies a size, line height and tracking treatment. `font-size-`, `leading-` and `tracking-` change one property. See the [complete family index](/reference/tokens/families).
 
 Utilities search the relevant namespace, so `font-size-lg`, `leading-md`, and `tracking-tight` can use short token names without the full custom property prefix.
 
@@ -45,7 +36,7 @@ Use `text-<token>` to apply the tuned font size, line height, and letter spacing
 * `text-xl ~ text-3xl` — Ideal for subheadings, lead paragraphs, or callouts
 * `text-4xl ~ text-10xl` — Reserved for large headings, page titles, and hero sections
 
-Use `font-<token>` when you only want the font-size token. Use `line-height:*` and `letter-spacing:*` when the design intentionally adjusts line height or letter spacing separately.
+Use `font-size-<token>` when you only want the font-size token. Use `line-height:*` and `letter-spacing:*` when the design intentionally adjusts line height or letter spacing separately.
 
 ### Body text
 <BodyText />
@@ -94,34 +85,37 @@ Prefer `text-<token>` for repeated body, heading, and display styles. Reach for 
 
 ## Type scale
 The font scale ranges from `font-size-3xs` to `font-size-10xl`, with each size intentionally designed to deliver visual harmony and clear hierarchy across a variety of use cases.
-<FontSizeBasicUsage />
+<TokenValues namespace="font-size" keys={["sm", "md", "3xl"]} />
+
+See the complete [values and consumers](/reference/tokens/font-size) in Reference.
 
 ---
 
 ## Font families
-<FontFamilyBasicUsage />
-See the [font family](/reference/font-family) reference for more details on how to add custom fonts.
+Choose `font-family-sans` for interface text and `font-family-mono` for code or aligned numeric specimens. Load the chosen font files separately; the token only declares a fallback stack.
+
+<TokenValues namespace="font-family" keys={["sans", "mono"]} />
+See the [font family](/reference/tokens/font-family) reference for more details on how to add custom fonts.
 
 ---
 
 ## Font weights
-Our typography system defines a semantic range of font weight tokens, from `font-weight-thin` to `font-weight-heavy`, providing clear naming for visual emphasis and typographic hierarchy.
+Use `font-weight-regular` for body copy and `font-weight-semibold` for headings or labels that need emphasis. Check that the loaded face supports the requested weight.
 
-* `font-weight-thin` extra-light strokes for subtle or elegant UI elements
-* `font-weight-light` light weight, ideal for large headings or minimalist design
-* `font-weight-regular` default weight for body text and general readability
-* `font-weight-medium` slightly bolder for subheadings or emphasis
-* `font-weight-bold` strong emphasis, often used in call-to-action or UI labels
-* `font-weight-heavy` maximum weight for impact, branding, or visual anchors
+<TokenValues namespace="font-weight" keys={["regular", "semibold"]} />
 
-<FontWeightBasicUsage />
+See the complete [values and consumers](/reference/tokens/font-weight) in Reference.
 
 ---
 
 ## Line height
-<LineHeightBasicUsage />
+Give paragraphs more breathing room than short headings. A complete `text-md` treatment already supplies leading; use `leading-lg` only when the content needs a deliberate override.
+
+See the complete [values and consumers](/reference/tokens/leading) in Reference.
 
 ---
 
 ## Letter spacing
-<LetterSpacingBasicUsage />
+Use `tracking-widest` with short uppercase labels sparingly, and check the result in the actual font. Keep body text on the treatment’s default tracking.
+
+See the complete [values and consumers](/reference/tokens/tracking) in Reference.

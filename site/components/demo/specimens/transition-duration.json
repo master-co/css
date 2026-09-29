@@ -1,0 +1,60 @@
+[
+  {
+    "page": "transition-duration",
+    "id": "match-duration-to-distance",
+    "title": "Match duration to distance",
+    "html": [
+      "<!-- 48px / 300ms · 160px per second -->\n<label class=\"display:block width:280px max-width:100% font-size-sm\n         transform:translateX(48px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move short distance\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move short distance\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:transform\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-duration-slow@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>",
+      "<!-- 96px / 600ms · 160px per second -->\n<label class=\"display:block width:280px max-width:100% font-size-sm\n         transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move long distance\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move long distance\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:transform\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-duration:600ms@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "width:280px",
+      "max-width:100%",
+      "font-size-sm",
+      "transform:translateX(48px):has(input:checked)>span>span@media(screen)",
+      "mr-xs",
+      "accent-color-blue",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "height:64px",
+      "mt-md",
+      "p-xs",
+      "outline-width:1px",
+      "outline-style:dashed",
+      "outline-line-subtle",
+      "display:grid",
+      "place-items:center",
+      "height:48px",
+      "width:128px",
+      "border-width:1px",
+      "border-style:solid",
+      "b-blue-60",
+      "r-sm",
+      "bg-blue-10",
+      "fg-blue-80",
+      "opacity:1",
+      "transform:none",
+      "transition-property:transform",
+      "transition-timing-function:linear",
+      "transition-duration:0ms@media(print)",
+      "transition-duration-slow@media(screen)@motion-safe",
+      "transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "transition-duration:600ms@media(screen)@motion-safe"
+    ],
+    "classLists": [
+      "display:block width:280px max-width:100% font-size-sm transform:translateX(48px):has(input:checked)>span>span@media(screen)",
+      "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "display:block height:64px mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:transform transition-timing-function:linear transition-duration:0ms@media(print) transition-duration-slow@media(screen)@motion-safe",
+      "display:block width:280px max-width:100% font-size-sm transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "display:block height:64px mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle",
+      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:transform transition-timing-function:linear transition-duration:0ms@media(print) transition-duration:600ms@media(screen)@motion-safe"
+    ],
+    "highlighted": []
+  }
+]

@@ -1,24 +1,19 @@
-import { readdir, readFile, writeFile, mkdir, rm } from 'node:fs/promises'
+import { buildRecipeContracts } from './recipes'
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
 import path from 'node:path'
-import { presetBreakpointQueries, presetContainerQueries } from '../common/preset-css'
-import { pathToFileURL } from 'node:url'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { documentHeadings } from './headings'
 import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
 import { builtinTokenFamilies, builtinTokenNamespaces } from '@master/css-tooling/builtins'
-import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
-import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
-import { resolveSyntaxRow } from './syntax'
 import { extractReferenceMdx, portableMarkdown } from './markdown'
-import { utilityEditorial, ruleSources } from './editorial'
-import { retiredReferencePages } from '../utils/retired-reference'
+import { ruleSources } from './editorial'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
 import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
-import { tokenEditorial } from './token-editorial'
+import { buildTokenContracts } from './token-contracts'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
 const fence = (lang: string, value: string) => `\`\`\`${lang}\n${value}\n\`\`\``
@@ -37,29 +32,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
       examples: extracted.examples, markdown: extracted.markdown, headings: documentHeadings(extracted.markdown), extractionNotes: extracted.notes
     } satisfies ReferenceDocument
   }
-  for (const entry of (await readdir(path.join(root, 'reference'), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
-    if (!entry.isDirectory() || entry.name.startsWith('[')) continue
-    const directory = path.join(root, 'reference', entry.name)
-    const metadataFile = path.join(directory, 'metadata.ts')
-    const metadata = await import(pathToFileURL(metadataFile).href).then(m => m.default, () => null)
-    if (!metadata) continue
-    const syntaxes = await import(pathToFileURL(path.join(directory, 'syntaxes.ts')).href).then(m => m.default, () => [])
-    const previewSource = await readFile(path.join(directory, 'components/Overview.tsx'), 'utf8').catch(() => '')
-    const preview = previewSource.match(/(?:const previewSyntax =|previewSyntax=)\s*['"]([^'"]+)/)?.[1]
-    const rows = (syntaxes as (string | string[])[]).map(value => resolveSyntaxRow(value, preview))
-    const file = path.join(directory, 'content.mdx')
-    const extracted = await extractReferenceMdx(file, rows)
-    const properties = new Set(rows.flatMap(row => row.identifiers.filter(id => !id.endsWith(':'))))
-    const aliases = [...new Set([...extracted.examples.flatMap(example => example.classes), ...rows.flatMap(row => row.identifiers), ...builtinTokenFamilies.filter(family => properties.has(family.property)).map(family => `${family.prefix}-`)])]
-    const doc: ReferenceDocument = {
-      id: entry.name, kind: metadata.referenceKind ?? 'utility', ...(metadata.guide ? { guide: metadata.guide } : {}), title: metadata.title, description: metadata.description,
-      category: metadata.category, url: `/reference/${entry.name}`, source: relative(file), sourceDigest: digest(await readFile(file, 'utf8')),
-      language: 'en', aliases, terms: [], rows, examples: extracted.examples, related: ['rules/conditions'],
-      markdown: extracted.markdown, headings: documentHeadings(extracted.markdown), extractionNotes: extracted.notes,
-      ...utilityEditorial[entry.name]
-    }
-    documents.push(doc)
-  }
+  documents.push(...await buildRecipeContracts(siteRoot))
   for (const rule of ruleSources) {
     const doc: ReferenceDocument = await fromMdx(rule.id, 'rule', path.join(root, rule.source), rule.title, rule.description, 'Syntax & rules')
     doc.guide = rule.guide
@@ -76,32 +49,11 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     doc.headings = documentHeadings(doc.markdown)
     documents.push(doc)
   }
-  const variables = flattenMasterCSSManifestVariables((preset as MasterCSSManifest).variables)
-  for (const namespace of [...new Set(variables.map(variable => variable.namespace).filter(Boolean))].sort() as string[]) {
-    const entries = variables.filter(variable => variable.namespace === namespace)
-    const consumers = getVariableNamespacePublicKeys(namespace)
-    const text = entries.map(variable => {
-      const values = variable.values.map(({ path, value }) => `Scope: ${path.join(' → ')}\nValue: ${value}`)
-      return `### ${variable.key}\n\nCSS variable: \`--${variable.name}\`.\n\n${values.map(value => fence('text', value)).join('\n\n')}`
-    }).join('\n\n')
-    const context = tokenEditorial[namespace]
-    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Each authored selector and condition is labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}-\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
-    const headings = documentHeadings(markdown)
-    const anchors = new Map(headings.filter(heading => heading.depth === 3).map(heading => [heading.title, heading.id]))
-    const identifierAnchors = Object.fromEntries(entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`].map(name => [name, anchors.get(variable.key)!])))
-    documents.push({ id: `tokens/${namespace}`, kind: 'tokens', title: namespace, description: `Preset ${namespace} values and their consumers.`, category: 'Tokens & namespaces', url: `/reference/tokens/${namespace}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(entries)), language: 'en', aliases: entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`]), identifierAnchors, terms: [namespace, ...consumers], rows: [], examples: [], related: ['rules/modes', 'directives/theme'], markdown, headings, extractionNotes: [] })
-  }
-  for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', presetBreakpointQueries], ['containers', 'Containers', presetContainerQueries] ] as const) {
-    const usage = id === 'containers'
-      ? 'Append a condition such as `@container((width>=28rem))` to a class. It measures an eligible ancestor query container; establish that container with `container` or a named container declaration.'
-      : 'Append a condition such as `@md` to a class. It measures the viewport width, independently of a component’s available width.'
-    const markdown = `## Conditions\n\nThese thresholds come from the current preset. Breakpoints have named entrances; container thresholds use complete native queries. Project @custom-media definitions override breakpoint queries; container tokens retain their authored dimensions.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name, condition]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${condition.replace(/^@container /, '').replaceAll(' ', '|')})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
-    documents.push({ id: `tokens/${id}`, kind: 'tokens', title, description: `Named ${id} conditions in the current preset.`, category: 'Tokens & namespaces', url: `/reference/tokens/${id}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(conditions)), language: 'en', aliases: Object.entries(conditions ?? {}).map(([key, condition]) => id === 'containers' ? `@container(${condition.replace(/^@container /, '').replaceAll(' ', '|')})` : `@${key}`), terms: [], rows: [], examples: [], related: ['rules/conditions'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
-  }
+  documents.push(...buildTokenContracts())
   // Directive sections are maintained once, in the existing directive source during migration.
-  const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives & settings')
+  const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Stylesheet directives')
   const sections = directive.markdown.split(/(?=^## )/m)
-  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and conditions': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Removed utility composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
+  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Theme and conditions': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
@@ -170,8 +122,7 @@ export async function generateReference(siteRoot: string) {
   await mkdir(path.join(siteRoot, 'public/reference'), { recursive: true })
   await writeFile(path.join(siteRoot, 'public/reference/index.json'), JSON.stringify(index, null, 2))
   const pagesFile = path.join(siteRoot, '.pages.json')
-  const retiredURLs = new Set(Object.keys(retiredReferencePages).map(slug => `/reference/${slug}`))
-  const pages = JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]')).filter((page: any) => !retiredURLs.has(page.pathname))
+  const pages = JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]'))
   for (const doc of catalog.documents) if (!pages.some((page: any) => page.pathname === doc.url)) pages.push({ pathname: doc.url })
   await writeFile(pagesFile, JSON.stringify(pages))
   for (const kind of [...new Set(catalog.documents.map(doc => doc.kind))]) {

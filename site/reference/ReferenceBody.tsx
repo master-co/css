@@ -1,3 +1,4 @@
+import TokenSpecimens from './TokenSpecimens'
 import { createElement, Fragment } from 'react'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import Link from '~/site/docs-shell/components/Link'
@@ -14,7 +15,7 @@ import { tokenValueEntry } from './value-entry'
 import { DocumentCodeTable, DocumentKeyList, DocumentNamespaceTable, DocumentValueList, type DocumentValueRow } from '../components/DocumentValues'
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
-export default function ReferenceMarkdown({ children, compactValues = false, introHeadingId }: { children: string, compactValues?: boolean, introHeadingId?: string }) {
+export default function ReferenceMarkdown({ children, compactValues = false, introHeadingId, specimenNamespace }: { children: string, compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string }) {
   const headings = documentHeadings(children)
   let headingIndex = 0
   let entrypoint = ''
@@ -50,6 +51,7 @@ export default function ReferenceMarkdown({ children, compactValues = false, int
         if (node.depth === 2) entrypoint = node.children.map((child: any) => child.value ?? '').join('').replace(/\s+\{#[\w-]+\}$/, '')
         const heading = node.depth === 2 || node.depth === 3 ? headings[headingIndex++] : undefined
         if (heading && heading.id === introHeadingId) return <span key={key} id={heading.id} />
+        if (heading?.id === 'specimens' && specimenNamespace) return <Fragment key={key}><h2 id="specimens">Specimens</h2><TokenSpecimens namespace={specimenNamespace} /></Fragment>
         const cleanBody = node.children.map((child: any, index: number) => render(child.type === 'text' ? { ...child, value: child.value.replace(/\s+\{#[\w-]+\}$/, '') } : child, index))
         return createElement(`h${node.depth}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
           ? <DocumentIdentifier>{heading.title}</DocumentIdentifier> : cleanBody)

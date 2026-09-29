@@ -80,7 +80,7 @@ Use the preset spacing, radius and typography scales. Demo-specific roles live i
 </Demo>
 ```
 
-Use `padding="none"` for an iframe or a scene with its own spacing. `background="plain"`, `"grid"`, `"dots"`, and `"checkerboard"` are opt-in when a lesson needs an unpatterned surface, geometry grid, or transparency cue. Do not put labels or toolbar controls inside a measured flex, grid, or float scene. The live [clear reference](/reference/clear#clearing-left-floats) demonstrates an isolated iframe with a caption; the [spacing guide](/guide/spacing) retains its original pink inner stripe where that pattern explains padding and gap.
+Use `padding="none"` for an iframe or a scene with its own spacing. `background="plain"`, `"grid"`, `"dots"`, and `"checkerboard"` are opt-in when a lesson needs an unpatterned surface, geometry grid, or transparency cue. Do not put labels or toolbar controls inside a measured flex, grid, or float scene. The live [clear reference](https://developer.mozilla.org/en-US/docs/Web/CSS/clear) demonstrates an isolated iframe with a caption; the [spacing guide](/guide/spacing) retains its original pink inner stripe where that pattern explains padding and gap.
 
 ## Primitives \{#primitives\}
 Compose small, predictable pieces. An item supplies its appearance; the example supplies its layout and dimensions.
@@ -96,7 +96,7 @@ Compose small, predictable pieces. An item supplies its appearance; the example 
 <DemoSurface elevation="raised" className="p-md">A floating layer.</DemoSurface>
 ```
 
-The [column span reference](/reference/column-span) keeps columns and padding inside the default surface; the [float reference](/reference/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.
+The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) keeps columns and padding inside the default surface; the [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.
 
 ### Demo item \{#demo-item\}
 
@@ -111,7 +111,7 @@ The [column span reference](/reference/column-span) keeps columns and padding in
 </Demo>
 ```
 
-The [order reference](/reference/order) marks the reordered item in blue. The [column span reference](/reference/column-span) uses the same explicit subject tone, while the [spacing guide](/guide/spacing) keeps its original object and pink inner stripe. `DemoItem` renders a noninteractive `div`; use a native button or link when a specimen performs an action.
+The [order reference](/reference/tokens/order) marks the reordered item in blue. The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) uses the same explicit subject tone, while the [spacing guide](/guide/spacing) keeps its original object and pink inner stripe. `DemoItem` renders a noninteractive `div`; use a native button or link when a specimen performs an action.
 
 ### Demo text \{#demo-text\}
 
@@ -123,7 +123,7 @@ The [order reference](/reference/order) marks the reordered item in blue. The [c
 <DemoText variant="caption">Condition: narrow viewport.</DemoText>
 ```
 
-Utilities on `className` can override these paint and typography defaults when the text property itself is under test. The [float reference](/reference/float) uses default body text beside an actual floated image. The [typography guide](/guide/typography) retains its original `DemoP` comparison for the lesson on the text scale.
+Utilities on `className` can override these paint and typography defaults when the text property itself is under test. The [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) uses default body text beside an actual floated image. The [typography guide](/guide/typography) retains its original `DemoP` comparison for the lesson on the text scale.
 
 ### Demo media \{#demo-media\}
 
@@ -134,7 +134,7 @@ Utilities on `className` can override these paint and typography defaults when t
 <DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} />
 ```
 
-The caller sets width, height, crop, float and spacing. The [float reference](/reference/float) demonstrates a real floated image; the [introduction guide](/guide/introduction) retains its original architectural photograph where content, rather than a placeholder, is the point.
+The caller sets width, height, crop, float and spacing. The [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) demonstrates a real floated image; the [introduction guide](/guide/introduction) retains its original architectural photograph where content, rather than a placeholder, is the point.
 
 ### Demo swatch \{#demo-swatch\}
 
@@ -237,7 +237,7 @@ Keep a label outside the measured flex or grid parent unless it is part of the l
 </Demo>
 ```
 
-Include only roles visible in the scene. The [border color reference](/reference/border-color#set-border-color) labels its blue and violet specimens directly; the [legend review](/design-system/review/legend) compares that teaching pattern with the previous and adopted shared keys.
+Include only roles visible in the scene. The [border color reference](/reference/tokens/color) labels its blue and violet specimens directly; the [legend review](/design-system/review/legend) compares that teaching pattern with the previous and adopted shared keys.
 
 ### Demo measure \{#demo-measure\}
 
@@ -249,7 +249,7 @@ Include only roles visible in the scene. The [border color reference](/reference
 </DemoMeasure>
 ```
 
-Place the measurement wrapper outside the flex, grid or float parent being taught, so it does not become an extra layout item. The [width reference](/reference/width#set-a-fixed-or-fluid-width) reports the actual browser geometry for its examples. The [measure review](/design-system/review/measure) tests live width and height changes beside the original [Guide layout ruler](/guide/layout-system).
+Place the measurement wrapper outside the flex, grid or float parent being taught, so it does not become an extra layout item. The [width reference](/reference/tokens/container) reports the actual browser geometry for its examples. The [measure review](/design-system/review/measure) tests live width and height changes beside the original [Guide layout ruler](/guide/layout-system).
 
 ### Demo axes \{#demo-axes\}
 
@@ -261,7 +261,7 @@ Place the measurement wrapper outside the flex, grid or float parent being taugh
 </DemoAxes>
 ```
 
-Use this frame only when those physical directions match the specimen; reverse and vertical examples need annotations that follow their actual directions. The [flex direction reference](/reference/flex-direction#lay-out-items-in-a-row) shows the real row behavior, and the [axes review](/design-system/review/axes) compares the original Guide labels with the previous and adopted frame.
+Use this frame only when those physical directions match the specimen; reverse and vertical examples need annotations that follow their actual directions. The [flex direction reference](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction) shows the real row behavior, and the [axes review](/design-system/review/axes) compares the original Guide labels with the previous and adopted frame.
 
 ## Interaction \{#interaction\}
 Add controls when they help explain a change. Static specimens have no toolbar. Playback-controlled specimens start paused; bounded scroll areas remain keyboard accessible.
@@ -292,7 +292,7 @@ The [controls review](/design-system/review/controls) compares both shared appea
 </DemoScrollArea>
 ```
 
-Give a named region when the collection needs a landmark, and keep the focus outline visible. The [overflow reference](/reference/overflow#create-a-scroll-container) uses real utility classes on its scrollports; the [scroll area review](/design-system/review/scroll) compares the original Guide pattern, previous shared component and adopted boundary.
+Give a named region when the collection needs a landmark, and keep the focus outline visible. The [overflow reference](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) uses real utility classes on its scrollports; the [scroll area review](/design-system/review/scroll) compares the original Guide pattern, previous shared component and adopted boundary.
 
 ### Demo viewport \{#demo-viewport\}
 
@@ -308,7 +308,7 @@ Give a named region when the collection needs a landmark, and keep the focus out
 />
 ```
 
-Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A wide preset remains wide inside a narrow phone and scrolls within the stage. The [padding reference](/reference/padding#apply-conditionally) responds to its iframe viewport, and the [viewport review](/design-system/review/viewport) shows the original Guide control, previous shared chrome and adopted frame.
+Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A wide preset remains wide inside a narrow phone and scrolls within the stage. The [padding reference](/guide/spacing) responds to its iframe viewport, and the [viewport review](/design-system/review/viewport) shows the original Guide control, previous shared chrome and adopted frame.
 
 ### Demo motion \{#demo-motion\}
 
@@ -322,7 +322,7 @@ Derive breakpoint widths from the active preset; the numbers above illustrate th
 </DemoMotion>
 ```
 
-The stage adds no layout padding or dimensions, so set those in the example. The [animation play-state reference](/reference/animation-play-state#run-an-animation) uses its own real checkbox and CSS condition; the [motion review](/design-system/review/motion) compares the original Guide token scene with the previous and adopted shared playback treatment.
+The stage adds no layout padding or dimensions, so set those in the example. The [animation play-state reference](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state) uses its own real checkbox and CSS condition; the [motion review](/design-system/review/motion) compares the original Guide token scene with the previous and adopted shared playback treatment.
 
 ## Document indexes \{#document-index\}
 
@@ -1159,7 +1159,7 @@ import DemoCatalog from '~/site/components/demo/DemoCatalog'
 <DemoCatalog groups={[{
   id: 'recipe-flow', title: 'Document flow', entries: [{
     id: 'clear-right', title: 'Clear the right boundary', label: 'clear',
-    href: '/reference/clear#clearing-right-floats',
+    href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear',
     children: <DemoExample page="clear" section="clearing-right-floats" />,
   }],
 }]} />

@@ -1,0 +1,45 @@
+[
+  {
+    "page": "border-image-slice",
+    "id": "slice-the-source-image",
+    "title": "Slice the source image",
+    "html": [
+      "<!-- 24 source units · 12px border paint -->\n<img src=\"/demo/border-grid.svg\" width=\"96\" height=\"96\"\n  alt=\"96 × 96 source with 24-unit violet corners\"\n  class=\"display:block mb-md\" />\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:stretch\n         border-image-slice:24\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>",
+      "<!-- 25% of 96 · same slice -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:130px\n         width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60\n         border-image-repeat:stretch\n         border-image-slice:25%\n         border-image-source:url('/demo/border-grid.svg')\n         border-image-width:1 font-size-md bg-surface-base\n         fg-text-body box-sizing:border-box\">\n  <span class=\"px-xs py-3xs bg-surface-base fg-text-body\">\n    Edge sample\n  </span>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "mb-md",
+      "display:flex",
+      "align-items:center",
+      "justify-content:center",
+      "height:130px",
+      "width:250px",
+      "max-width:100%",
+      "p-md",
+      "border-width:12px",
+      "border-style:solid",
+      "b-blue-60",
+      "border-image-repeat:stretch",
+      "border-image-slice:24",
+      "border-image-source:url('/demo/border-grid.svg')",
+      "border-image-width:1",
+      "font-size-md",
+      "bg-surface-base",
+      "fg-text-body",
+      "box-sizing:border-box",
+      "px-xs",
+      "py-3xs",
+      "border-image-slice:25%"
+    ],
+    "classLists": [
+      "display:block mb-md",
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:stretch border-image-slice:24 border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body",
+      "display:flex align-items:center justify-content:center height:130px width:250px max-width:100% p-md border-width:12px border-style:solid b-blue-60 border-image-repeat:stretch border-image-slice:25% border-image-source:url('/demo/border-grid.svg') border-image-width:1 font-size-md bg-surface-base fg-text-body box-sizing:border-box",
+      "px-xs py-3xs bg-surface-base fg-text-body"
+    ],
+    "highlighted": []
+  }
+]

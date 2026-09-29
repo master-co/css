@@ -1,0 +1,53 @@
+[
+  {
+    "page": "overflow",
+    "id": "create-a-scroll-container",
+    "title": "Create a scroll container",
+    "html": [
+      "<div class=\"overflow-y:auto height:10rem width:14rem\" tabindex=\"0\" aria-label=\"Vertical collection\">\n  <div class=\"h-3xs\">Tall collection</div>\n</div>\n\n<div class=\"overflow-x:auto width:14rem\" tabindex=\"0\" aria-label=\"Horizontal collection\">\n  <div class=\"height:10rem w-xs\">Wide collection</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow-y:auto",
+      "height:10rem",
+      "width:14rem",
+      "h-3xs",
+      "overflow-x:auto",
+      "w-xs"
+    ],
+    "classLists": [
+      "overflow-y:auto height:10rem width:14rem",
+      "h-3xs",
+      "overflow-x:auto width:14rem",
+      "height:10rem w-xs"
+    ],
+    "highlighted": [
+      "overflow-y:auto",
+      "overflow-x:auto"
+    ]
+  },
+  {
+    "page": "overflow",
+    "id": "clip-without-scrolling",
+    "title": "Clip without scrolling",
+    "html": [
+      "<div class=\"overflow:clip height:10rem width:14rem r-md\">\n  <div class=\"h-3xs w-xs\">Content larger than its frame</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow:clip",
+      "height:10rem",
+      "width:14rem",
+      "r-md",
+      "h-3xs",
+      "w-xs"
+    ],
+    "classLists": [
+      "overflow:clip height:10rem width:14rem r-md",
+      "h-3xs w-xs"
+    ],
+    "highlighted": [
+      "overflow:clip"
+    ]
+  }
+]

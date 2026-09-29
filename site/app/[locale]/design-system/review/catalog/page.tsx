@@ -14,8 +14,8 @@ export const metadata = {
 function groups(prefix: string) {
   return [{
     id: `${prefix}-flow`, title: 'Document flow', entries: [
-      { id: `${prefix}-clear`, title: 'Clear a right float', label: 'clear:right', href: '/reference/clear#clearing-right-floats', children: <DemoExample page="clear" section="clearing-right-floats" /> },
-      { id: `${prefix}-clear-both`, title: 'Clear both sides', label: 'clear:both', href: '/reference/clear#clearing-both-left-and-right-floats', children: <DemoExample page="clear" section="clearing-both-left-and-right-floats" /> }
+      { id: `${prefix}-clear`, title: 'Clear a right float', label: 'clear:right', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-right-floats" /> },
+      { id: `${prefix}-clear-both`, title: 'Clear both sides', label: 'clear:both', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-both-left-and-right-floats" /> }
     ]
   }]
 }
@@ -61,7 +61,7 @@ export default function Page() {
     <section aria-labelledby="catalog-real-use">
       <div className="review-catalog-sectionHeading">
         <div><h2 id="catalog-real-use">Actual Reference scene</h2><p>The catalog expands the same float-clearing lesson used in the published Reference.</p></div>
-        <Link href="/reference/clear#clearing-right-floats">Open /reference/clear</Link>
+        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/clear">Open https://developer.mozilla.org/en-US/docs/Web/CSS/clear</Link>
       </div>
       <div className="review-catalog-realGuide"><DemoExample page="clear" section="clearing-right-floats" /></div>
       <p className="review-catalog-optionNote">The disclosure and category links sit outside this specimen, so they do not become part of the float layout.</p>

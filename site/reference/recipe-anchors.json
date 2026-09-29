@@ -1,0 +1,450 @@
+{
+  "animate": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-b9794b9a2a43",
+      "title": "animate-fade",
+      "depth": 3
+    },
+    {
+      "id": "syntax-4938d00c0cce",
+      "title": "animate-flash",
+      "depth": 3
+    },
+    {
+      "id": "syntax-f7ed75444793",
+      "title": "animate-float",
+      "depth": 3
+    },
+    {
+      "id": "syntax-76315cd34398",
+      "title": "animate-heart",
+      "depth": 3
+    },
+    {
+      "id": "syntax-c42178fafa7b",
+      "title": "animate-jump",
+      "depth": 3
+    },
+    {
+      "id": "syntax-ebc521cd711d",
+      "title": "animate-ping",
+      "depth": 3
+    },
+    {
+      "id": "syntax-7b3cd77eb999",
+      "title": "animate-pulse",
+      "depth": 3
+    },
+    {
+      "id": "syntax-67014b309848",
+      "title": "animate-rotate",
+      "depth": 3
+    },
+    {
+      "id": "syntax-8f2543b66422",
+      "title": "animate-shake",
+      "depth": 3
+    },
+    {
+      "id": "syntax-0457eb0fcdda",
+      "title": "animate-zoom",
+      "depth": 3
+    },
+    {
+      "id": "usage",
+      "title": "Usage",
+      "depth": 2
+    },
+    {
+      "id": "use-a-named-animation-recipe",
+      "title": "Use a named animation recipe",
+      "depth": 3
+    }
+  ],
+  "clamp-lines": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-c22f2e01c25b",
+      "title": "clamp-lines(2)",
+      "depth": 3
+    },
+    {
+      "id": "syntax-5db155486d69",
+      "title": "clamp-lines(3)",
+      "depth": 3
+    },
+    {
+      "id": "usage",
+      "title": "Usage",
+      "depth": 2
+    },
+    {
+      "id": "limit-a-preview-to-two-lines",
+      "title": "Limit a preview to two lines",
+      "depth": 3
+    }
+  ],
+  "font-smooth": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-9deeec7e40b2",
+      "title": "font-antialiased",
+      "depth": 3
+    },
+    {
+      "id": "syntax-07a917ff6330",
+      "title": "font-subpixel-antialiased",
+      "depth": 3
+    },
+    {
+      "id": "examples",
+      "title": "Examples",
+      "depth": 2
+    },
+    {
+      "id": "use-antialiased-text",
+      "title": "Use antialiased text",
+      "depth": 3
+    },
+    {
+      "id": "restore-subpixel-antialiasing",
+      "title": "Restore browser antialiasing",
+      "depth": 3
+    },
+    {
+      "id": "use-sparingly",
+      "title": "Use sparingly",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "grid-column": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-bf7cdfc5ea88",
+      "title": "grid-column:<value>",
+      "depth": 3
+    },
+    {
+      "id": "syntax-0bbbdda1aeee",
+      "title": "grid-column-start:2 grid-column-end:4",
+      "depth": 3
+    },
+    {
+      "id": "syntax-f862b3bee43c",
+      "title": "grid-col-span(<integer>)",
+      "depth": 3
+    },
+    {
+      "id": "syntax-d3b914ce997a",
+      "title": "grid-column-start:<value>",
+      "depth": 3
+    },
+    {
+      "id": "syntax-63cf85e9e36c",
+      "title": "grid-column-end:<value>",
+      "depth": 3
+    },
+    {
+      "id": "basic-usage",
+      "title": "Basic usage",
+      "depth": 2
+    },
+    {
+      "id": "place-an-item-by-columns",
+      "title": "Place an item by columns",
+      "depth": 3
+    },
+    {
+      "id": "span-columns",
+      "title": "Span columns",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "grid-columns": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-1498a186bc13",
+      "title": "grid-cols(<integer>)",
+      "depth": 3
+    },
+    {
+      "id": "basic-usage",
+      "title": "Basic usage",
+      "depth": 2
+    },
+    {
+      "id": "create-equal-columns",
+      "title": "Create equal columns",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "grid-row": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-363d2e6199a2",
+      "title": "grid-row-start:1 grid-row-end:3",
+      "depth": 3
+    },
+    {
+      "id": "syntax-175218c6b9c7",
+      "title": "grid-row-span(2)",
+      "depth": 3
+    },
+    {
+      "id": "syntax-73006c97dd8c",
+      "title": "grid-row-start:1",
+      "depth": 3
+    },
+    {
+      "id": "syntax-28bd0b1042d7",
+      "title": "grid-row-end:3",
+      "depth": 3
+    },
+    {
+      "id": "basic-usage",
+      "title": "Basic usage",
+      "depth": 2
+    },
+    {
+      "id": "place-an-item-by-rows",
+      "title": "Place an item by rows",
+      "depth": 3
+    },
+    {
+      "id": "span-rows",
+      "title": "Span rows",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "grid-rows": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-c5c5e423a98d",
+      "title": "grid-rows(3)",
+      "depth": 3
+    },
+    {
+      "id": "basic-usage",
+      "title": "Basic usage",
+      "depth": 2
+    },
+    {
+      "id": "create-equal-rows",
+      "title": "Create equal rows",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "screen-readers": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-32fb090591d9",
+      "title": "sr-only",
+      "depth": 3
+    },
+    {
+      "id": "examples",
+      "title": "Examples",
+      "depth": 2
+    },
+    {
+      "id": "hide-text-visually",
+      "title": "Hide text visually",
+      "depth": 3
+    },
+    {
+      "id": "label-icon-only-controls",
+      "title": "Label icon-only controls",
+      "depth": 3
+    },
+    {
+      "id": "avoid-hiding-interactive-content",
+      "title": "Avoid hiding interactive content",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    }
+  ],
+  "text-size": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "syntax-2916fa568d80",
+      "title": "text-3xs",
+      "depth": 3
+    },
+    {
+      "id": "syntax-4678af81a307",
+      "title": "text-2xs",
+      "depth": 3
+    },
+    {
+      "id": "syntax-3992de70b033",
+      "title": "text-xs",
+      "depth": 3
+    },
+    {
+      "id": "syntax-c74ab393b96d",
+      "title": "text-sm",
+      "depth": 3
+    },
+    {
+      "id": "syntax-86bcc14820fd",
+      "title": "text-md",
+      "depth": 3
+    },
+    {
+      "id": "syntax-035bd245837f",
+      "title": "text-lg",
+      "depth": 3
+    },
+    {
+      "id": "syntax-5ca1763786e5",
+      "title": "text-xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-3a9e48f2189c",
+      "title": "text-2xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-08bcbbaf02a8",
+      "title": "text-3xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-d2c47719c750",
+      "title": "text-4xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-b6d71ba0685a",
+      "title": "text-5xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-9ffb4d329719",
+      "title": "text-6xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-7f1642243bd7",
+      "title": "text-7xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-a5f165bbf2e0",
+      "title": "text-8xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-593849d62889",
+      "title": "text-9xl",
+      "depth": 3
+    },
+    {
+      "id": "syntax-df2965724f10",
+      "title": "text-10xl",
+      "depth": 3
+    },
+    {
+      "id": "examples",
+      "title": "Examples",
+      "depth": 2
+    },
+    {
+      "id": "body-text",
+      "title": "Body text",
+      "depth": 3
+    },
+    {
+      "id": "headings",
+      "title": "Headings",
+      "depth": 3
+    },
+    {
+      "id": "page-titles-hero-sections",
+      "title": "Page titles, hero sections",
+      "depth": 3
+    },
+    {
+      "id": "use-a-precise-size",
+      "title": "Use a precise size",
+      "depth": 3
+    },
+    {
+      "id": "apply-conditionally",
+      "title": "Apply conditionally",
+      "depth": 3
+    },
+    {
+      "id": "add-a-named-treatment",
+      "title": "Add a named treatment",
+      "depth": 3
+    }
+  ]
+}

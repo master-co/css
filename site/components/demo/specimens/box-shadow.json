@@ -1,0 +1,33 @@
+[
+  {
+    "page": "box-shadow",
+    "id": "customize-mode-specific-tokens",
+    "title": "Customize mode-specific tokens",
+    "html": [
+      "<!-- Configured small shadow · two theme definitions -->\n<article id=\"target\"\n  class=\"width:240px max-width:100% p-lg r-md bg-surface-base\n         fg-text-body shadow-sm box-sizing:border-box\">\n  <h4 class=\"margin:0 font-size-lg\">\n    Workspace library\n  </h4>\n  <p class=\"margin-inline:0 margin-bottom:0 mt-sm font-size-sm\">\n    Shared assets and components.\n  </p>\n</article>"
+    ],
+    "css": "@theme { @media (prefers-color-scheme: light) { :root, :host {\n  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .08),\n    0 6px 12px -2px oklch(0% 0 none / .14);\n} } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host {\n  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .16),\n    0 6px 12px -2px oklch(0% 0 none / .5);\n} } }\n\n",
+    "classes": [
+      "width:240px",
+      "max-width:100%",
+      "p-lg",
+      "r-md",
+      "bg-surface-base",
+      "fg-text-body",
+      "shadow-sm",
+      "box-sizing:border-box",
+      "margin:0",
+      "font-size-lg",
+      "margin-inline:0",
+      "margin-bottom:0",
+      "mt-sm",
+      "font-size-sm"
+    ],
+    "classLists": [
+      "width:240px max-width:100% p-lg r-md bg-surface-base fg-text-body shadow-sm box-sizing:border-box",
+      "margin:0 font-size-lg",
+      "margin-inline:0 margin-bottom:0 mt-sm font-size-sm"
+    ],
+    "highlighted": []
+  }
+]

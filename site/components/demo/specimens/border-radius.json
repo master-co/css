@@ -1,0 +1,30 @@
+[
+  {
+    "page": "border-radius",
+    "id": "use-a-radius-token",
+    "title": "Use a radius token",
+    "html": [
+      "<!-- Radius only · child corners stay square -->\n<div id=\"target\"\n  class=\"width:240px max-width:100% r-2xl bg-surface-inset\n         box-sizing:border-box\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"display:block height:auto width:100%\" />\n</div>",
+      "<!-- Radius + overflow hidden · child is clipped -->\n<div id=\"target\"\n  class=\"overflow:hidden width:240px max-width:100% r-2xl\n         bg-surface-inset box-sizing:border-box\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"display:block height:auto width:100%\" />\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:240px",
+      "max-width:100%",
+      "r-2xl",
+      "bg-surface-inset",
+      "box-sizing:border-box",
+      "display:block",
+      "height:auto",
+      "width:100%",
+      "overflow:hidden"
+    ],
+    "classLists": [
+      "width:240px max-width:100% r-2xl bg-surface-inset box-sizing:border-box",
+      "display:block height:auto width:100%",
+      "overflow:hidden width:240px max-width:100% r-2xl bg-surface-inset box-sizing:border-box",
+      "display:block height:auto width:100%"
+    ],
+    "highlighted": []
+  }
+]

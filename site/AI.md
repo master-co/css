@@ -85,11 +85,48 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 ## Content Strategy
 
+### Guide and Reference ownership
+
+The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented 90-page Reference and the disposition of all existing first-level pages. That number describes current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
+
+| Content | Primary owner | Use in Guide |
+| --- | --- | --- |
+| Complete token names, values, scopes, modes and dependencies | Token Reference | Select the keys needed for the current example |
+| Complete canonical prefix / property / namespace mappings | Family index and namespace Reference | Explain the example's mappings and link to the full index |
+| Mixin parameters, output, defaults and restrictions | Recipe or directive Reference | Apply the recipe to a concrete task |
+| Complete palettes, type specimens and shadow/radius scales | Reference | Compare selected specimens in a real design |
+| Choosing, combining and customizing tokens | Design Foundations Guide | Explain tradeoffs with working examples |
+| Component, page and responsive compositions | Guide | Keep the complete task and its demo together |
+| Grammar, exceptions and failure conditions | Syntax Reference | Explain the constraints needed to complete the task |
+
+Interactivity does not determine ownership: a browsable complete palette belongs in Reference; a card comparing surface, line and text roles belongs in Guide. Guide examples must remain self-contained, including necessary values, short comparisons and generated CSS. Reference needs a purpose, a minimal example and useful visual specimens as well as complete data. Do not duplicate complete catalogs in Guide, including through hidden disclosures or search/Markdown exports.
+
+### Page admission and retirement
+
+- A new standalone Reference must document a public Master-specific contract that native CSS knowledge, an existing general rule or one registry row cannot fully explain. Cover verifiable inputs, output, scope, defaults, dependencies, overrides or errors as applicable.
+- New token families enter the complete generated index and namespace consumers first; one added family does not require a new URL. A preset namespace with its own value collection and contract may have a data-driven lookup page. Keep closely related recipe variants together.
+- Retire standalone references whose purpose is native property/value/selector instruction, including `/reference/display`. Teach direct declarations and selector composition once, link to authoritative native CSS sources, and preserve any Master-specific output differences in the owning contract.
+- Property pages containing token mappings contribute that information to the family index and namespace pages. Preserve embedded recipe contracts before retiring or narrowing their old pages. Removed capabilities belong in Migration Guide.
+- Existing demos, another framework's page list, CSS property coverage and anticipated SEO exposure do not independently justify a page. The documentation catalog is not a browser or engine support whitelist.
+- A new Guide must serve a concrete task with an executable example and a verifiable result. Existing and new pages follow the same admission rules; retain content for its present purpose rather than prior production effort.
+
+Keep all ten Design Foundations guides and narrow them to the tasks in the inventory. Complete scales and consumer tables move to Reference. Keep `/guide/containers`, with the title **Container queries**; place width-cap design choices in Sizing. Responsive Design owns the overall viewport/container strategy, and Layout System owns cross-foundation composition. Keep useful short teaching pages concise after moving their catalogs.
+
+Merge `/reference/tokens/containers` into the appropriate destinations: size values and consumers in `tokens/container`, query contracts in `rules/conditions`, and component adaptation in `/guide/containers`. Explicit container-query thresholds do not consume or track theme tokens. Preset breakpoints come from custom media, not theme custom properties. Keep color role lookup groups without implying alternate token prefixes or independent family resolution.
+
+### Shared facts and presentation
+
+Use preset data for values, scopes and dependencies; public Rust registry projections for families; and public compiler/engine output for CSS examples. `common/foundation-data/tokens.ts` supplies shared facts through existing preset/manifest helpers. Keep shared presentation data under `common/foundation-data/`. Reference renders complete collections; Guide selects explicit keys from the same source. Do not introduce TypeScript semantic parsing or hand-maintained copies of preset values.
+
+Distinguish curated design advice from executable contracts: a suggested card size is not a fixed meaning of its token. Keep selected keys identical in Guide HTML, search, Markdown and llms output. Relocate shared MDX/data dependencies before retiring a source page, including Typography and Corner Radius imports. Follow [Reference maintenance](reference/MAINTENANCE.md) for URL, anchor and export migration.
+
+### Teaching sequence
+
 Use sentence case for public documentation headings in guide `content.mdx`: capitalize only the first word and proper nouns. Avoid title case such as `Root Options`; prefer `Root options`.
 
 Guides should teach in this order:
 
-1. Explain the native web feature in plain language with authoritative references such as MDN or web.dev.
+1. State the task and explain only the native concepts needed to complete it, with authoritative references such as MDN or web.dev.
 2. Show the smallest Master CSS syntax needed.
 3. Provide a working in-page demo.
 4. Show generated CSS with `<Class2CSS>` when introducing new Master CSS classes.
@@ -143,9 +180,9 @@ Follow the public Design Tokens policy when writing site code, demos, and exampl
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.
 
-For numeric theme variable overview tables, read values from `site/utils/theme-variables` or a narrow derived helper. Render token, value, and reference unit columns; use `ThemeNumberVariableTable` for numeric spacing, radius, breakpoint, and container scales unless a guide needs a specialized table. Keep token overview tables data-driven and separate from generated CSS examples.
+For numeric theme variable tables, read values from `site/utils/theme-variables` or a narrow derived helper. Complete scales belong in Reference; Guide may render the explicit subset needed for its task. Render token, value and reference-unit columns using the existing table primitives, and label display conversions as reference values rather than compiler semantics. Keep value tables separate from generated CSS examples.
 
-For shared foundation namespaces, follow the `/guide/spacing#namespace-for-spacing` pattern: render a namespace-consumer table that groups the utilities and native properties that can use that namespace. Prefer `NamespaceUtilityTable` with keys derived from `site/utils/manifest-utilities` so rows stay aligned with the preset manifest, engine named-token namespaces, and built-in token families. Keep the group labels reader-facing and curated, but do not hand-author unsupported keys. Use a namespace-consumer table separately from token value tables: token tables explain available values, while namespace tables explain where those values can be used. Verify the namespace source in engine/preset data before documenting it.
+Complete namespace-consumer tables belong in Reference. Use canonical keys from `site/utils/manifest-utilities` and public builtins, including registered families without preset values. Guide may select relevant rows and link to the complete table. Keep grouping labels curated and reader-facing; never imply unsupported consumers, alternate spellings or a token dependency in an explicit native query. Value tables explain available values; consumer tables explain the properties and families using them.
 
 ## Assets
 
@@ -166,7 +203,7 @@ Use `placeholder="blur"` when static imports provide blur data. Set an appropria
 
 ## Validation
 
-Reference now has a normalized build-time catalog in `reference/`. Read `reference/MAINTENANCE.md` before changing its content pipeline, navigation, search or exports. Existing utilities retain their MDX and syntax sources. Formal language/directive prose lives in the corresponding Guide directory's `contract.mdx`, while `content.mdx` teaches the workflow and preserves old anchor entrances. Keep explicit MDX heading IDs (`\{#stable-id\}`) when renaming or translating headings. `prepare-app` generates the catalog, search records and per-page Markdown; never edit those outputs directly. Run `test:reference` for Reference changes in addition to the relevant checks below.
+Reference has a normalized build-time catalog in `reference/`. Read `reference/MAINTENANCE.md` before changing its content pipeline, navigation, search or exports. `reference/token-contracts.ts` builds family and namespace lookup documents; `reference/recipes.ts` reads the preset definitions and generates complete recipe CSS. Formal language/directive prose lives in the corresponding Guide directory's `contract.mdx`, while `content.mdx` teaches the workflow and preserves old anchor entrances. Keep explicit MDX heading IDs (`\{#stable-id\}`) when renaming or translating headings. `prepare-app` generates the catalog, search records and per-page Markdown; never edit those outputs directly. Run `test:reference` for Reference changes in addition to the relevant checks below. Policy-only changes require package lint and `check:ai-context`; run the public-content checks when the corresponding pages, examples or pipeline change.
 
 Run site orchestration commands from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal development, `pnpm dev:site:clean` when `.next` must be reset, and `pnpm build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging.
 

@@ -1,4 +1,3 @@
-import { getFontWeightRows } from '../app/[locale]/guide/typography/components/font-weight-data'
 import { introductionContent } from '../utils/introduction-content'
 import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
@@ -33,10 +32,6 @@ import { projectStyleExamples, projectStyleExample } from '../components/demo/pr
 import { configuredExampleCSS, configuredMarkupClasses, configuredMarkupMarkdown } from '../reference/configured-example'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { getThemeVariables, getThemeNumericVariableEntries } from '../utils/theme-variables'
-import { getAnimationRows } from '../app/[locale]/guide/motion/components/animation-data'
-import { getDurationRows } from '../app/[locale]/guide/motion/components/duration-data'
-import { getEasingRows } from '../app/[locale]/guide/motion/components/easing-data'
-import { rowsByGroup, rowDescriptionByGroup } from '../app/[locale]/guide/colors/components/color-data'
 import {
   cleanMdx,
   loadPages,
@@ -325,45 +320,28 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
   assert.ok(extractSearchNodesFromMdx(typography.searchMarkdown).some(node => node.id === 'without-vs-with-text-token'))
 })
 
-test('foundation exports include all native token values and their visible table descriptions', async () => {
+test('foundation exports use the same explicit token subsets as HTML', async () => {
+  const { tokenValuesMarkdown } = await import('../reference/TokenValues')
+  const { namespaceTokens } = await import('../common/foundation-data/tokens')
   const root = fileURLToPath(new URL('../', import.meta.url))
-  const bodies = Object.fromEntries(await Promise.all(foundationGuideSlugs.map(async slug => [slug, (await foundationGuideContent(root, slug)).markdown])))
-  for (const [slug, rows] of [['motion', [...getAnimationRows(), ...getDurationRows(), ...getEasingRows()]]] as const) {
-    for (const row of rows) {
-      assert.ok(row.description, row.token)
-      for (const value of [row.token, row.value, row.description, ...row.utilities]) assert.ok(bodies[slug].includes(value), `${slug}: ${value}`)
+  for (const slug of foundationGuideSlugs) {
+    const source = await readFile(`${root}/app/[locale]/guide/${slug}/content.mdx`, 'utf8')
+    const body = (await foundationGuideContent(root, slug)).markdown
+    for (const match of source.matchAll(/<TokenValues namespace="([^"]+)" keys={([^}]+)} \/>/g)) {
+      const keys = JSON.parse(match[2])
+      assert.ok(body.includes(tokenValuesMarkdown(match[1], keys)), `${slug}: ${match[1]}`)
+      assert.ok(keys.length < namespaceTokens(match[1]).length || keys.length <= 2, `${slug}: complete catalog`)
     }
+    assert.doesNotMatch(source, /<(?:ColorPalette|PresetThemeColors|ContainerQueries|BreakpointQueries|TypographyNamespaceTable|AnimationTokenTable|RadiusTokenTable)\b/)
   }
-  for (const row of getFontWeightRows()) assert.ok(bodies.typography.includes(row.utilities[0]), row.utilities[0])
-  for (const [group, rows] of Object.entries(rowsByGroup)) for (const row of rows) {
-    for (const value of [row.token, row.value, rowDescriptionByGroup[group as keyof typeof rowsByGroup](row.key)]) assert.ok(bodies.colors.includes(value), `colors: ${value}`)
+  const colors = (await foundationGuideContent(root, 'colors')).markdown
+  assert.ok(!colors.includes('--color-red-90'))
+  const typography = (await foundationGuideContent(root, 'typography')).markdown
+  for (const name of ['BodyText', 'Headings', 'PageTitles']) {
+    const included = await extractReferenceMdx(`${root}/app/[locale]/guide/typography/components/${name}.mdx`)
+    assert.ok(typography.includes(portableMarkdown(included.markdown)), name)
   }
-  for (const variable of getThemeVariables('color').filter(variable => /^color-.+-\d+$/.test(variable.name ?? ''))) {
-    assert.ok(bodies.colors.includes(`--${variable.name}`), variable.name)
-    assert.ok(bodies.colors.includes(String(variable.value)), variable.name)
-  }
-  for (const [slug, namespace] of [['spacing', 'spacing'], ['sizing', 'container'], ['containers', 'container'], ['breakpoints', 'breakpoint'], ['corner-radius', 'radius']]) {
-    for (const entry of getThemeNumericVariableEntries(namespace)) {
-      assert.ok(bodies[slug].includes(namespace === 'breakpoint' ? `--${entry.key}` : `--${namespace}-${entry.key}`), `${slug}: ${entry.key}`)
-      assert.ok(bodies[slug].includes(entry.value), `${slug}: ${entry.value}`)
-    }
-  }
-})
-
-test('typography exports its local Overview and all eight referenced lessons in full', async () => {
-  const root = fileURLToPath(new URL('../', import.meta.url))
-  const file = `${root}/app/[locale]/guide/typography/content.mdx`
-  const source = await readFile(file, 'utf8')
-  const content = await foundationGuideContent(root, 'typography')
-  const imports = [...source.matchAll(/^import \w+ from '(.+?\.mdx)'/gm)]
-  assert.equal(imports.length, 8)
-  for (const [, target] of imports) {
-    const included = await extractReferenceMdx(path.resolve(path.dirname(file), target))
-    assert.deepEqual(included.notes, [])
-    assert.ok(content.markdown.includes(portableMarkdown(included.markdown)), target)
-  }
-  assert.match(content.markdown, /Architectural/)
-  assert.match(content.markdown, /Future-proof infrastructure/)
+  assert.match(typography, /Future-proof infrastructure/)
 })
 
 test('foundation extraction fails on missing adapters and recursive includes without executing JSX', async () => {
@@ -511,7 +489,7 @@ test('directive references export every native CSS example and setting to both l
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'directive')
-  assert.equal(docs.length, 10)
+  assert.equal(docs.length, 8)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {

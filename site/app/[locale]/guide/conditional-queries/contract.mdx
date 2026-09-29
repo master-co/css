@@ -92,6 +92,8 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <Class2CSS>{['display:grid@supports((display:grid))']}</Class2CSS>
 
 ### Containers \{#containersize\}
+Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but `(width>=28rem)` remains a literal condition. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/containers) for choosing a component boundary.
+
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
 
 ```html

@@ -1,0 +1,32 @@
+[
+  {
+    "page": "resize",
+    "id": "restrict-resizing-to-one-axis",
+    "title": "Restrict resizing to one axis",
+    "html": [
+      "<!-- Vertical only -->\n<label class=\"display:grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"overflow:auto height:96px width:240px min-height:80px\n         min-width:160px max-height:176px max-width:100%\n         resize:vertical\">A clear layout leaves room for the next idea.</textarea>\n</label>",
+      "<!-- Horizontal only -->\n<label class=\"display:grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"overflow:auto height:96px width:240px min-height:80px\n         min-width:160px max-height:176px max-width:100%\n         resize:horizontal\">A clear layout leaves room for the next idea.</textarea>\n</label>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "gap-sm",
+      "overflow:auto",
+      "height:96px",
+      "width:240px",
+      "min-height:80px",
+      "min-width:160px",
+      "max-height:176px",
+      "max-width:100%",
+      "resize:vertical",
+      "resize:horizontal"
+    ],
+    "classLists": [
+      "display:grid gap-sm",
+      "overflow:auto height:96px width:240px min-height:80px min-width:160px max-height:176px max-width:100% resize:vertical",
+      "display:grid gap-sm",
+      "overflow:auto height:96px width:240px min-height:80px min-width:160px max-height:176px max-width:100% resize:horizontal"
+    ],
+    "highlighted": []
+  }
+]

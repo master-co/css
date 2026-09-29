@@ -1,0 +1,83 @@
+[
+  {
+    "page": "animation-play-state",
+    "id": "run-an-animation",
+    "title": "Run an animation",
+    "html": [
+      "<!-- Native checkbox · run and pause -->\n<div\n  class=\"animation-play-state:running:has(input:checked)>svg@media(screen)@motion-safe\">\n  <label class=\"display:block mb-sm font-size-sm\"><input type=\"checkbox\" class=\"mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible\">Run indicator</label>\n  <svg id=\"target\" aria-hidden=\"true\" width=\"48\" height=\"48\" viewBox=\"0 0 48 48\"\n    fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n    class=\"fg-text-blue\n           animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite\n           animation-play-state:paused\n           animation:none@media(print)\">\n    <circle cx=\"24\" cy=\"24\" r=\"17\" opacity=\".25\" />\n    <path d=\"M24 8v16h12 M19 13l5-5 5 5\" />\n  </svg>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "animation-play-state:running:has(input:checked)>svg@media(screen)@motion-safe",
+      "display:block",
+      "mb-sm",
+      "font-size-sm",
+      "mr-xs",
+      "accent-color-blue",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "fg-text-blue",
+      "animation-name:rotate",
+      "animation-duration:2s",
+      "animation-timing-function:linear",
+      "animation-iteration-count:infinite",
+      "animation-play-state:paused",
+      "animation:none@media(print)"
+    ],
+    "classLists": [
+      "animation-play-state:running:has(input:checked)>svg@media(screen)@motion-safe",
+      "display:block mb-sm font-size-sm",
+      "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "fg-text-blue animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite animation-play-state:paused animation:none@media(print)"
+    ],
+    "highlighted": []
+  },
+  {
+    "page": "animation-play-state",
+    "id": "pause-nonessential-motion",
+    "title": "Pause nonessential motion",
+    "html": [
+      "<!-- Pause while editing -->\n<div\n  class=\"animation-play-state:paused:has(input:checked)>div:focus-within>svg@media(screen)@motion-safe\n         animation-play-state:running:has(input:checked)>div>svg@media(screen)@motion-safe\">\n  <label class=\"display:block mb-sm font-size-sm\"><input type=\"checkbox\" class=\"mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible\">Run indicator</label>\n  <div class=\"p-sm border-width:1px border-style:solid b-line-subtle r-sm\">\n    <label class=\"display:block mb-sm font-size-sm\">Project name <input type=\"text\" value=\"Canvas\" class=\"max-width:100% p-xs border-width:1px border-style:solid b-line-subtle r-sm outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible\"></label>\n    <svg id=\"target\" aria-hidden=\"true\" width=\"48\" height=\"48\" viewBox=\"0 0 48 48\"\n      fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n      class=\"fg-text-blue\n             animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite\n             animation-play-state:paused\n             animation:none@media(print)\">\n      <circle cx=\"24\" cy=\"24\" r=\"17\" opacity=\".25\" />\n      <path d=\"M24 8v16h12 M19 13l5-5 5 5\" />\n    </svg>\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "animation-play-state:paused:has(input:checked)>div:focus-within>svg@media(screen)@motion-safe",
+      "animation-play-state:running:has(input:checked)>div>svg@media(screen)@motion-safe",
+      "display:block",
+      "mb-sm",
+      "font-size-sm",
+      "mr-xs",
+      "accent-color-blue",
+      "outline-width:2px:focus-visible",
+      "outline-style:solid:focus-visible",
+      "outline-blue:focus-visible",
+      "outline-offset:3px:focus-visible",
+      "p-sm",
+      "border-width:1px",
+      "border-style:solid",
+      "b-line-subtle",
+      "r-sm",
+      "max-width:100%",
+      "p-xs",
+      "fg-text-blue",
+      "animation-name:rotate",
+      "animation-duration:2s",
+      "animation-timing-function:linear",
+      "animation-iteration-count:infinite",
+      "animation-play-state:paused",
+      "animation:none@media(print)"
+    ],
+    "classLists": [
+      "animation-play-state:paused:has(input:checked)>div:focus-within>svg@media(screen)@motion-safe animation-play-state:running:has(input:checked)>div>svg@media(screen)@motion-safe",
+      "display:block mb-sm font-size-sm",
+      "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "p-sm border-width:1px border-style:solid b-line-subtle r-sm",
+      "display:block mb-sm font-size-sm",
+      "max-width:100% p-xs border-width:1px border-style:solid b-line-subtle r-sm outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
+      "fg-text-blue animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite animation-play-state:paused animation:none@media(print)"
+    ],
+    "highlighted": []
+  }
+]

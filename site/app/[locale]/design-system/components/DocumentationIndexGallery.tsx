@@ -10,12 +10,12 @@ const sections: DocumentationIndexSection[] = [
   ] }] },
   { id: 'gallery-utilities', title: 'Utilities', description: 'Look up a specific layout behavior.', Icon: IconLayoutGrid, groups: [
     { id: 'gallery-flow', title: 'Document flow', entries: [
-      { id: 'clear', title: 'clear', category: 'Document flow', url: '/reference/clear' },
-      { id: 'display', title: 'display', category: 'Document flow', url: '/reference/display' },
+      { id: 'clear', title: 'clear', category: 'Document flow', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear' },
+      { id: 'display', title: 'display', category: 'Document flow', url: '/guide/layout-system#choose-css-grid-or-flexbox' },
     ] },
     { id: 'gallery-layout', title: 'Layout', entries: [
-      { id: 'flex', title: 'flex', category: 'Layout', url: '/reference/flex-grow' },
-      { id: 'grid', title: 'grid', category: 'Layout', url: '/reference/grid-template-columns' },
+      { id: 'flex', title: 'flex', category: 'Layout', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow' },
+      { id: 'grid', title: 'grid', category: 'Layout', url: '/guide/layout-system#add-explicit-tracks-only-when-needed' },
     ] },
   ] },
   { id: 'gallery-foundations', title: 'Foundations', description: 'Share values across the interface.', Icon: IconPalette, groups: [{ entries: [

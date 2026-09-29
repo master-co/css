@@ -4,7 +4,7 @@ CSS layout is built from native primitives. [CSS Grid](https://developer.mozilla
 In Master CSS, those decisions stay close to the markup and share the same foundations as the rest of the interface:
 
 * [Breakpoints](/guide/breakpoints) define when page-level layout changes.
-* [Containers](/guide/containers) define component-level changes and shared width caps.
+* [Container queries](/guide/containers) define component-level changes.
 * [Spacing](/guide/spacing) defines gutters, margins, and section rhythm.
 * [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
 * Grid and Flex utilities express the actual composition.
@@ -52,7 +52,7 @@ These decisions are separate on purpose. A page can keep the same maximum width 
 ---
 
 ## Start with a page container
-The container defines the live area for the layout. Use `width:100%` so the wrapper can shrink, `max-width:*` so it aligns with the [container size scale](/guide/containers), `margin-inline:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+The container defines the live area for the layout. Use `width:100%` so the wrapper can shrink, `max-width:*` so it aligns with the [container size scale](/reference/tokens/container), `margin-inline:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK max-w-7xl --><!-- @MARK margin-inline:auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
@@ -70,7 +70,7 @@ The container defines the live area for the layout. Use `width:100%` so the wrap
 
 Use the wrapper for page-level alignment. Use inner grids for content relationships. This keeps outer margins, columns, and card padding from competing with each other.
 
-(i) Use `container-*` values for layout wrappers that should follow the shared container scale. Use local `x`, `ch`, or `clamp()` values when the maximum width is based on content measure instead of the responsive scale.
+(i) Use `container-*` values for layout wrappers that should follow the shared container scale. Use local `rem`, `ch`, or `clamp()` values when the maximum width is based on content measure instead of the responsive scale.
 
 ---
 
@@ -219,7 +219,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 ## Use container queries for components
 Viewport breakpoints are a good fit for page-level layout. Container queries are a better fit for reusable components because the same component can appear in a narrow sidebar, a modal, or a wide content column.
 
-Add `container` to the component boundary, then use `@container(<size>)` on descendants.
+Add `container-type:inline-size` to the component boundary, then use `@container(<size>)` on descendants.
 
 ```html
 <section class="container-type:inline-size">

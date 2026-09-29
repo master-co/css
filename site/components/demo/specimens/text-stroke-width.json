@@ -1,0 +1,32 @@
+[
+  {
+    "page": "text-stroke-width",
+    "id": "set-text-stroke-width",
+    "title": "Set text stroke width",
+    "html": [
+      "<!-- Stroke width · 0 -->\n<p id=\"target\"\n  class=\"display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5\n         text-fill-color-current -webkit-text-stroke:0 text-stroke-blue-50\"\n>\n  Outline\n</p>",
+      "<!-- Stroke width · 1px -->\n<p id=\"target\"\n  class=\"display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5\n         text-fill-color-current -webkit-text-stroke:1px text-stroke-blue-50\"\n>\n  Outline\n</p>",
+      "<!-- Stroke width · 2px -->\n<p id=\"target\"\n  class=\"display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5\n         text-fill-color-current -webkit-text-stroke:2px text-stroke-blue-50\"\n>\n  Outline\n</p>"
+    ],
+    "css": "",
+    "classes": [
+      "display:inline-block",
+      "max-width:100%",
+      "margin:0",
+      "font-size-4xl",
+      "font-weight-semibold",
+      "line-height:1.5",
+      "text-fill-color-current",
+      "-webkit-text-stroke:0",
+      "text-stroke-blue-50",
+      "-webkit-text-stroke:1px",
+      "-webkit-text-stroke:2px"
+    ],
+    "classLists": [
+      "display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5 text-fill-color-current -webkit-text-stroke:0 text-stroke-blue-50",
+      "display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5 text-fill-color-current -webkit-text-stroke:1px text-stroke-blue-50",
+      "display:inline-block max-width:100% margin:0 font-size-4xl font-weight-semibold line-height:1.5 text-fill-color-current -webkit-text-stroke:2px text-stroke-blue-50"
+    ],
+    "highlighted": []
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "page": "grid-template-columns",
+    "id": "use-minmax",
+    "title": "Control a track’s minimum",
+    "html": [
+      "<div id=\"layout\" class=\"display:grid grid-auto-rows:64px grid-template-columns:1fr|2fr gap-md width:17.5rem max-width:100%\">\n  <div id=\"target\" class=\"overflow:clip p-sm\"><span class=\"display:block width:12rem\">192px content</span></div>\n  <div id=\"peer\" class=\"p-sm\">2</div>\n</div>",
+      "<div id=\"layout\" class=\"display:grid grid-auto-rows:64px grid-template-columns:minmax(0,1fr)|2fr gap-md width:17.5rem max-width:100%\">\n  <div id=\"target\" class=\"overflow:clip p-sm\"><span class=\"display:block width:12rem\">192px content</span></div>\n  <div id=\"peer\" class=\"p-sm\">2</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "grid-auto-rows:64px",
+      "grid-template-columns:1fr|2fr",
+      "gap-md",
+      "width:17.5rem",
+      "max-width:100%",
+      "overflow:clip",
+      "p-sm",
+      "display:block",
+      "width:12rem",
+      "grid-template-columns:minmax(0,1fr)|2fr"
+    ],
+    "classLists": [
+      "display:grid grid-auto-rows:64px grid-template-columns:1fr|2fr gap-md width:17.5rem max-width:100%",
+      "overflow:clip p-sm",
+      "display:block width:12rem",
+      "p-sm",
+      "display:grid grid-auto-rows:64px grid-template-columns:minmax(0,1fr)|2fr gap-md width:17.5rem max-width:100%",
+      "overflow:clip p-sm",
+      "display:block width:12rem",
+      "p-sm"
+    ],
+    "highlighted": []
+  }
+]

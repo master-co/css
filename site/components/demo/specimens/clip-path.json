@@ -1,0 +1,38 @@
+[
+  {
+    "page": "clip-path",
+    "id": "clip-with-an-inset",
+    "title": "Clip with an inset",
+    "html": [
+      "<!-- Unclipped · original border -->\n<div\n  class=\"height:120px width:240px max-width:100%\n         outline-width:1px outline-style:solid outline-line-subtle bg-surface-base\">\n  <div id=\"target\"\n    class=\"display:grid place-items:center height:120px width:240px\n           max-width:100% border-width:2px border-style:solid b-blue-60 font-size-md\n           bg-blue-10 fg-blue-80 clip-path:none\">\n    Clipped panel\n  </div>\n</div>",
+      "<!-- Inset · rounded paint boundary -->\n<div\n  class=\"height:120px width:240px max-width:100%\n         outline-width:1px outline-style:solid outline-line-subtle bg-surface-base\">\n  <div id=\"target\"\n    class=\"display:grid place-items:center height:120px width:240px\n           max-width:100% border-width:2px border-style:solid b-blue-60 font-size-md\n           bg-blue-10 fg-blue-80\n           clip-path:inset(8px|24px|round|12px)\">\n    Clipped panel\n  </div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "height:120px",
+      "width:240px",
+      "max-width:100%",
+      "outline-width:1px",
+      "outline-style:solid",
+      "outline-line-subtle",
+      "bg-surface-base",
+      "display:grid",
+      "place-items:center",
+      "border-width:2px",
+      "border-style:solid",
+      "b-blue-60",
+      "font-size-md",
+      "bg-blue-10",
+      "fg-blue-80",
+      "clip-path:none",
+      "clip-path:inset(8px|24px|round|12px)"
+    ],
+    "classLists": [
+      "height:120px width:240px max-width:100% outline-width:1px outline-style:solid outline-line-subtle bg-surface-base",
+      "display:grid place-items:center height:120px width:240px max-width:100% border-width:2px border-style:solid b-blue-60 font-size-md bg-blue-10 fg-blue-80 clip-path:none",
+      "height:120px width:240px max-width:100% outline-width:1px outline-style:solid outline-line-subtle bg-surface-base",
+      "display:grid place-items:center height:120px width:240px max-width:100% border-width:2px border-style:solid b-blue-60 font-size-md bg-blue-10 fg-blue-80 clip-path:inset(8px|24px|round|12px)"
+    ],
+    "highlighted": []
+  }
+]

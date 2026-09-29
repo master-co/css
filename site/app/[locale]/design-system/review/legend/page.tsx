@@ -72,7 +72,7 @@ export default function Page() {
     <section aria-labelledby="legend-real-use">
       <div className="review-legend-sectionHeading">
         <div><h2 id="legend-real-use">Actual Reference use</h2><p>The border-color reference compares the same border width and style in blue and violet.</p></div>
-        <Link href="/reference/border-color#set-border-color">Open /reference/border-color</Link>
+        <Link href="/reference/tokens/color">Open /reference/tokens/color</Link>
       </div>
       <DemoExample page="border-color" section="set-border-color" />
       <p className="review-legend-optionNote">The Reference retains its own caption and code comments. A legend is useful when a scene repeats these roles, and its text must carry the meaning without relying on color alone.</p>

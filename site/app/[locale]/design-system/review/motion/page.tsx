@@ -70,7 +70,7 @@ export default function Page() {
     <section aria-labelledby="motion-real-use">
       <div className="review-motion-sectionHeading">
         <div><h2 id="motion-real-use">Actual Reference use</h2><p>The animation play-state reference uses a native checkbox and real CSS conditions, independent of shared playback chrome.</p></div>
-        <Link href="/reference/animation-play-state#run-an-animation">Open /reference/animation-play-state</Link>
+        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state">Open https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state</Link>
       </div>
       <DemoExample page="animation-play-state" section="run-an-animation" />
       <p className="review-motion-optionNote">The control in that lesson directly changes the element’s CSS play state. Shared playback controls are for explaining an animation timeline when the lesson itself does not supply a control.</p>

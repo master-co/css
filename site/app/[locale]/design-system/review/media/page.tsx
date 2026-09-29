@@ -77,7 +77,7 @@ export default function Page() {
       <section aria-labelledby="media-real-use">
         <div className="review-media-sectionHeading">
           <div><h2 id="media-real-use">Actual Reference use</h2><p>Float changes paragraph geometry, so the image box must stay identical.</p></div>
-          <Link href="/reference/float">Open /reference/float</Link>
+          <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/float">Open https://developer.mozilla.org/en-US/docs/Web/CSS/float</Link>
         </div>
         <div className="review-media-actualPair">
           <div><span className="review-media-pairLabel">Previous media</span><FloatExample adopted={false} /></div>

@@ -1,0 +1,27 @@
+[
+  {
+    "page": "object-fit",
+    "id": "cover-a-fixed-frame",
+    "title": "Cover a fixed frame",
+    "html": [
+      "<!-- Cover · preserved proportions -->\n<img id=\"target\" src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"Blue and violet mountains beneath a yellow sun\"\n  class=\"display:block width:220px height:220px max-width:100%\n         bg-surface-base object-fit:cover object-position:right\" />",
+      "<!-- Fill · stretched to the square -->\n<img id=\"target\" src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"Blue and violet mountains beneath a yellow sun\"\n  class=\"display:block width:220px height:220px max-width:100%\n         bg-surface-base object-fit:fill object-position:right\" />"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "width:220px",
+      "height:220px",
+      "max-width:100%",
+      "bg-surface-base",
+      "object-fit:cover",
+      "object-position:right",
+      "object-fit:fill"
+    ],
+    "classLists": [
+      "display:block width:220px height:220px max-width:100% bg-surface-base object-fit:cover object-position:right",
+      "display:block width:220px height:220px max-width:100% bg-surface-base object-fit:fill object-position:right"
+    ],
+    "highlighted": []
+  }
+]

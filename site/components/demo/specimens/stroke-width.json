@@ -1,0 +1,27 @@
+[
+  {
+    "page": "stroke-width",
+    "id": "pair-width-with-stroke-color",
+    "title": "Pair width with stroke color",
+    "html": [
+      "<!-- Normal · 6px after viewBox scaling -->\n<svg id=\"target\" role=\"img\"\n  aria-label=\"Scaling horizontal stroke\"\n  width=\"96\" height=\"96\" viewBox=\"0 0 24 24\"\n  class=\"display:block fg-blue-60 fill:none stroke-current\n         stroke-linecap:round stroke-width:1.5\">\n  <path d=\"M4 12h16\" />\n</svg>",
+      "<!-- Non-scaling · 1.5px on screen -->\n<svg id=\"target\" role=\"img\"\n  aria-label=\"Non-scaling horizontal stroke\"\n  width=\"96\" height=\"96\" viewBox=\"0 0 24 24\"\n  class=\"display:block fg-blue-60 fill:none stroke-current\n         stroke-linecap:round stroke-width:1.5\">\n  <path class=\"vector-effect:non-scaling-stroke\"\n    d=\"M4 12h16\" />\n</svg>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "fg-blue-60",
+      "fill:none",
+      "stroke-current",
+      "stroke-linecap:round",
+      "stroke-width:1.5",
+      "vector-effect:non-scaling-stroke"
+    ],
+    "classLists": [
+      "display:block fg-blue-60 fill:none stroke-current stroke-linecap:round stroke-width:1.5",
+      "display:block fg-blue-60 fill:none stroke-current stroke-linecap:round stroke-width:1.5",
+      "vector-effect:non-scaling-stroke"
+    ],
+    "highlighted": []
+  }
+]

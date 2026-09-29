@@ -1,4 +1,4 @@
-import { ContainerTokenTable, SizingRoleTable } from './components/XScale'
+import { SizingRoleTable } from './components/XScale'
 
 ## Overview [sr-only]
 Sizing describes the space an element should claim, the limits it should respect, and the boundary where that decision changes. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
@@ -93,7 +93,9 @@ Percentage widths and heights follow native CSS behavior. The parent needs a def
 ## Use container tokens
 Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl`, `h-sm`, `min-w-xs`, and `flex-basis-lg` use `--container-*` tokens without repeating the namespace in markup.
 
-<ContainerTokenTable />
+<TokenValues namespace="container" keys={["md", "5xl", "7xl"]} />
+
+See the complete [values and consumers](/reference/tokens/container) in Reference.
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK max-w-5xl -->
@@ -114,7 +116,7 @@ Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl
 
 Use container tokens for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `rem`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
 
-For the full container namespace and query model, see [containers](/guide/containers#namespace-for-container-values).
+Width caps use theme values. Container queries use independent literal thresholds; see [Container queries](/guide/containers) for responsive components.
 
 ---
 
@@ -169,7 +171,7 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
   </Class2CSS>
 </details>
 
-When an element should keep a non-square ratio, use [aspect ratio](/reference/aspect-ratio) with a width instead of locking both dimensions.
+When an element should keep a non-square ratio, use [aspect ratio](/guide/sizing#pair-axes-deliberately) with a width instead of locking both dimensions.
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK aspect-ratio:16/9 -->

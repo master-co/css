@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { configuredExampleHTML } from '../reference/configured-example'
 import { legacySyntaxPages, localizeSyntaxURL } from '../utils/legacy-syntax'
-import { retiredReferencePages, retiredReferenceDestination, type RetiredReferenceSlug } from '../utils/retired-reference'
 
 // Run after the static site build, including postbuild canonical route copies.
 test('retired static routes have noindex, tutorial canonical and usable no-JavaScript links', async () => {
@@ -48,22 +47,15 @@ test('static tutorial HTML retains the same complete example and CSS as its text
 })
 
 
-test('retired reference entrances redirect without entering navigation or text indexes', async () => {
+test('retired Reference content is absent from navigation and machine indexes', async () => {
   const pages = JSON.parse(await readFile(new URL('../.pages.json', import.meta.url), 'utf8')) as { pathname: string }[]
   const sitemap = await readFile(new URL('../out/sitemap.xml', import.meta.url), 'utf8')
   const llms = await readFile(new URL('../out/llms.txt', import.meta.url), 'utf8')
   const search = JSON.parse(await readFile(new URL('../out/search/en.json', import.meta.url), 'utf8')) as { url: string }[]
-  for (const slug of Object.keys(retiredReferencePages) as RetiredReferenceSlug[]) {
+  for (const slug of ['display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose']) {
     assert.ok(!pages.some(page => page.pathname === `/reference/${slug}`), slug)
     assert.ok(!sitemap.includes(`/reference/${slug}<`), slug)
     assert.ok(!llms.includes(`/reference/${slug}.md`), slug)
     assert.ok(!search.some(page => page.url === `/reference/${slug}`), slug)
-    for (const locale of ['', 'en', 'tw']) {
-      const html = await readFile(new URL(`../out/${locale ? `${locale}/` : ''}reference/${slug}.html`, import.meta.url), 'utf8')
-      assert.match(html, /<meta name="robots" content="noindex, follow"/)
-      const destination = retiredReferenceDestination(slug, locale || 'en')
-      assert.ok(html.includes(`content="0;url=${destination}"`), slug)
-      assert.ok(html.replace(/<script[\s\S]*?<\/script>/g, '').includes(`href="${destination}"`), slug)
-    }
   }
 })

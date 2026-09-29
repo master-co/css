@@ -1,0 +1,36 @@
+[
+  {
+    "page": "background-origin",
+    "id": "choose-the-background-positioning-area",
+    "title": "Choose the background positioning area",
+    "html": [
+      "<!-- Border origin · x 0, y 0 -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)\n         background-clip:border-box background-repeat:no-repeat background-origin:border-box\n         background-position:0|0 background-size:80px|50px\n         background-image:url(/demo/landscape.svg)\"\n></div>",
+      "<!-- Padding origin · x 8, y 8 -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)\n         background-clip:border-box background-repeat:no-repeat background-origin:padding-box\n         background-position:0|0 background-size:80px|50px\n         background-image:url(/demo/landscape.svg)\"\n></div>",
+      "<!-- Content origin · x 32, y 32 -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent)\n         background-clip:border-box background-repeat:no-repeat background-origin:content-box\n         background-position:0|0 background-size:80px|50px\n         background-image:url(/demo/landscape.svg)\"\n></div>"
+    ],
+    "css": "",
+    "classes": [
+      "height:176px",
+      "width:280px",
+      "max-width:100%",
+      "p-lg",
+      "border-width:8px",
+      "border-style:dashed",
+      "border-color:color-mix(var(--color-violet-50),|transparent)",
+      "background-clip:border-box",
+      "background-repeat:no-repeat",
+      "background-origin:border-box",
+      "background-position:0|0",
+      "background-size:80px|50px",
+      "background-image:url(/demo/landscape.svg)",
+      "background-origin:padding-box",
+      "background-origin:content-box"
+    ],
+    "classLists": [
+      "height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent) background-clip:border-box background-repeat:no-repeat background-origin:border-box background-position:0|0 background-size:80px|50px background-image:url(/demo/landscape.svg)",
+      "height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent) background-clip:border-box background-repeat:no-repeat background-origin:padding-box background-position:0|0 background-size:80px|50px background-image:url(/demo/landscape.svg)",
+      "height:176px width:280px max-width:100% p-lg border-width:8px border-style:dashed border-color:color-mix(var(--color-violet-50),|transparent) background-clip:border-box background-repeat:no-repeat background-origin:content-box background-position:0|0 background-size:80px|50px background-image:url(/demo/landscape.svg)"
+    ],
+    "highlighted": []
+  }
+]

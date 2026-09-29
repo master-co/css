@@ -1,19 +1,15 @@
-import { getThemeVariables } from '../utils/theme-variables'
+import { selectFoundationTokens } from '../common/foundation-data/tokens'
 
 export function tokenValuesMarkdown(namespace: string, keys: string[]) {
-  const variables = getThemeVariables(namespace)
-  return keys.map(key => {
-    const variable = variables.find(variable => variable.key === key)
-    if (!variable) throw new Error(`Unknown ${namespace} token: ${key}`)
-    return `- \`--${variable.name}\`: \`${variable.value}\``
-  }).join('\n')
+  return selectFoundationTokens(namespace, keys).map(token =>
+    `- \`--${token.name}\`: ${token.values.map(value => `\`${value.value}\` (${value.path.join(' → ')})`).join('; ')}`
+  ).join('\n')
 }
 
 export default function TokenValues({ namespace, keys }: { namespace: string; keys: string[] }) {
-  const variables = getThemeVariables(namespace)
-  return <ul>{keys.map(key => {
-    const variable = variables.find(variable => variable.key === key)
-    if (!variable) throw new Error(`Unknown ${namespace} token: ${key}`)
-    return <li key={key}><code>--{variable.name}</code>: <code>{String(variable.value)}</code></li>
-  })}</ul>
+  return <ul>{selectFoundationTokens(namespace, keys).map(token =>
+    <li key={token.key}><code>--{token.name}</code>: {token.values.map((value, index) =>
+      <span key={index}>{index ? '; ' : ''}<code>{value.value}</code> ({value.path.join(' → ')})</span>
+    )}</li>
+  )}</ul>
 }

@@ -1,0 +1,36 @@
+[
+  {
+    "page": "list-style-position",
+    "id": "place-markers-inside-the-content-box",
+    "title": "Place markers inside the content box",
+    "html": [
+      "<!-- Outside · hanging marker -->\n<ul id=\"target\" class=\"width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg\n    list-style-type:disc list-style-position:outside list-style-image:initial\">\n  <li class=\"mb-2xs\">Collect references</li>\n  <li class=\"mb-2xs\">Compare the spacing across every screen size.</li>\n  <li class=\"mb-2xs\">Review the composition</li>\n</ul>",
+      "<!-- Inside · marker on first line -->\n<ul id=\"target\" class=\"width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg\n    list-style-type:disc list-style-position:outside list-style-image:initial list-style-position:inside\">\n  <li class=\"mb-2xs\">Collect references</li>\n  <li class=\"mb-2xs\">Compare the spacing across every screen size.</li>\n  <li class=\"mb-2xs\">Review the composition</li>\n</ul>"
+    ],
+    "css": "",
+    "classes": [
+      "width:260px",
+      "max-width:100%",
+      "margin:0",
+      "pl-lg",
+      "font-size-md",
+      "leading-lg",
+      "list-style-type:disc",
+      "list-style-position:outside",
+      "list-style-image:initial",
+      "mb-2xs",
+      "list-style-position:inside"
+    ],
+    "classLists": [
+      "width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg list-style-type:disc list-style-position:outside list-style-image:initial",
+      "mb-2xs",
+      "mb-2xs",
+      "mb-2xs",
+      "width:260px max-width:100% margin:0 pl-lg font-size-md leading-lg list-style-type:disc list-style-position:outside list-style-image:initial list-style-position:inside",
+      "mb-2xs",
+      "mb-2xs",
+      "mb-2xs"
+    ],
+    "highlighted": []
+  }
+]

@@ -5,7 +5,7 @@ Use breakpoint variants for navigation modes, app shells, page grids, typography
 
 The preset defines named queries with `@custom-media`. The suffix `@md` reads `@custom-media --md`; it is independent of theme variables. The preset has no `--breakpoint-*` custom properties; use native lengths or layout tokens for width caps.
 
-<BreakpointVariables />
+See all preset names and exact conditions in [Breakpoints Reference](/reference/tokens/breakpoints).
 
 ---
 
@@ -18,7 +18,7 @@ Custom media definitions belong in your project CSS entry. Keep them product-wid
 @custom-media --lg (width >= 80rem);
 ```
 
-Use native media query syntax and explicit units. The preset scale tables show px/rem equivalents using a 16px reference for readability; generated queries preserve the authored unit.
+Use native media query syntax and explicit units. Generated queries preserve the authored unit.
 
 ---
 
@@ -44,7 +44,7 @@ Unqualified classes are the base state. Breakpoint variants layer changes on top
 ## Breakpoint scale
 Use the scale as design vocabulary, not as device names. A token such as `md` should mean "the medium page layout starts here", not "iPad" or "desktop".
 
-<BreakpointQueries />
+Choose the first threshold where the content no longer fits, then test immediately below and above it. The following grid uses `sm` and `md`; their actual preset conditions appear in the generated CSS.
 
 The exact values can differ by product. The important part is that the tokens stay semantically consistent: smaller tokens unlock compact layout changes, larger tokens unlock wider page structures.
 
@@ -78,7 +78,7 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 ---
 
 ## Query viewport ranges
-Use a complete [native media query](/reference/rules/conditions#media-queries) when a style belongs to a range instead of every larger viewport.
+Use a complete [native media query](/reference/rules/conditions#mediafeature) when a style belongs to a range instead of every larger viewport.
 
 ```html
 <!-- @MARK display:none@media((52.125rem<=width<=64rem)) -->
@@ -106,7 +106,7 @@ Viewport breakpoints decide when the page changes. Container size values decide 
 </main>
 ```
 
-Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl`, and `7xl` width values come from the [container namespace](/guide/containers).
+Here `@sm`, `@md`, and `@lg` come from custom media definitions. The `4xl`, `5xl`, and `7xl` width values come from the [container namespace](/reference/tokens/container).
 
 ---
 

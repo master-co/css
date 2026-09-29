@@ -1,7 +1,9 @@
 ## Overview [sr-only]
 Spacing controls the rhythm inside components, between related elements, and across page sections. Master CSS maps the default spacing scale to `spacing` variables, so padding, margin, gap, and inset can share the same design language.
 
-<Overview />
+<TokenValues namespace="spacing" keys={["sm", "md", "lg"]} />
+
+See the complete [values and consumers](/reference/tokens/spacing) in Reference.
 
 Use the scale by relationship:
 
@@ -47,7 +49,7 @@ Use the scale by relationship:
 ## Namespace for spacing
 The `spacing` variable namespace is shared across padding, margin, gap, inset, scroll spacing, and similar layout rules.
 
-<SpacingHeirs />
+`p-`, `m-` and `gap-` read the same spacing tokens. `px-` sets `padding-inline`, and `py-` sets `padding-block`; these follow the writing mode. See the [complete family mappings](/reference/tokens/families).
 
 This lets spacing-related utilities use `md`, `lg`, or project token names without the `spacing-` prefix.
 
@@ -87,7 +89,7 @@ For product surfaces, prefer shared names such as `p-sm`, `gap-md`, and `m-lg`. 
 ---
 
 ## Exact pixel values
-Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p-1` becomes `padding: 1` and is not a valid CSS length.
+Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a value needs exact pixel geometry. Use full property names for direct values: `padding:1px` is a length; `p-1` is not a numeric spacing multiplier.
 
 ```html
 <!-- @MARK margin:0 -->

@@ -54,7 +54,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="numeric-real-use">
-      <div className="review-numeric-table-sectionHeading"><div><h2 id="numeric-real-use">Actual Guide use</h2><p>The live Spacing Guide reads the complete scale from the preset with the adopted treatment.</p></div><Link href="/guide/spacing">Open /guide/spacing</Link></div>
+      <div className="review-numeric-table-sectionHeading"><div><h2 id="numeric-real-use">Actual Guide use</h2><p>The live Spacing Guide selects the values needed for its example from the shared preset.</p></div><Link href="/guide/spacing">Open /guide/spacing</Link></div>
       <div className="review-numeric-table-optionPreview"><ThemeNumberVariableTable namespace="spacing" representation="spacing" /></div>
       <p className="review-numeric-table-optionNote">The Guide’s pink layout demo below this table remains in place. The token values come from the active preset rather than these review samples.</p>
     </section>

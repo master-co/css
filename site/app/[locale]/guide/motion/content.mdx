@@ -1,7 +1,3 @@
-import { AnimationTokenTable } from './components/AnimationTokens'
-import { DurationTokenTable } from './components/DurationTokens'
-import { EasingTokenTable } from './components/EasingTokens'
-import { MotionNamespaceTable } from './components/MotionNamespaces'
 
 ## Overview [sr-only]
 Use motion to explain a state change or show progress. Choose a short duration for feedback and reserve continuous motion for status indicators.
@@ -17,20 +13,24 @@ Use motion to explain a state change or show progress. Choose a short duration f
 ### Animation recipes
 The `animate-*` recipes emit independent animation properties. A primary `--animate-*` token names a keyframe; companion tokens provide timing and playback settings.
 
-<AnimationTokenTable />
+Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progress. See [all animation values](/reference/tokens/animate) and the [recipe contract](/reference/animate).
 
 ### Duration scale
 Share duration tokens across animation and transition properties.
 
-<DurationTokenTable />
+<TokenValues namespace="duration" keys={["fast", "normal"]} />
+
+See the complete [values and consumers](/reference/tokens/duration) in Reference.
 
 ### Easing scale
 Choose easing tokens for repeated motion decisions, or use explicit CSS curves such as `linear`, `steps()` and `cubic-bezier()`.
 
-<EasingTokenTable />
+<TokenValues namespace="easing" keys={["smooth"]} />
+
+See the complete [values and consumers](/reference/tokens/easing) in Reference.
 
 ## Namespaces for motion
-<MotionNamespaceTable />
+`animation-duration-` and `transition-duration-` share duration tokens; `transition-timing-function-` reads easing tokens. See [all consumers](/reference/tokens/families).
 
 ## Use motion tokens
 Use a named recipe and override individual settings when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.

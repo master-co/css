@@ -76,7 +76,7 @@ export default function Page() {
     <section aria-labelledby="asset-real-use">
       <div className="review-asset-sectionHeading">
         <div><h2 id="asset-real-use">Actual Reference media scene</h2><p>The background-image lesson uses imagery as a CSS teaching subject; the asset card is for viewing and downloading artwork.</p></div>
-        <Link href="/reference/background-image#add-a-background-image">Open /reference/background-image</Link>
+        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-image">Open https://developer.mozilla.org/en-US/docs/Web/CSS/background-image</Link>
       </div>
       <DemoExample page="background-image" section="add-a-background-image" />
     </section>

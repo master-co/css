@@ -1,0 +1,27 @@
+[
+  {
+    "page": "flex-direction",
+    "id": "lay-out-items-in-a-row",
+    "title": "Lay out items in a row",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex flex-direction:row gap-sm\">\n  <div id=\"item-1\" class=\"flex:none height:4rem width:5rem p-sm\">01</div>\n  <div id=\"item-2\" class=\"flex:none height:4rem width:5rem p-sm\">02</div>\n  <div id=\"item-3\" class=\"flex:none height:4rem width:5rem p-sm\">03</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "flex-direction:row",
+      "gap-sm",
+      "flex:none",
+      "height:4rem",
+      "width:5rem",
+      "p-sm"
+    ],
+    "classLists": [
+      "display:flex flex-direction:row gap-sm",
+      "flex:none height:4rem width:5rem p-sm",
+      "flex:none height:4rem width:5rem p-sm",
+      "flex:none height:4rem width:5rem p-sm"
+    ],
+    "highlighted": []
+  }
+]

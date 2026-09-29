@@ -1,0 +1,84 @@
+[
+  {
+    "page": "padding",
+    "id": "add-padding-on-every-side",
+    "title": "Add padding on every side",
+    "html": [
+      "<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content p-md\"><div id=\"item-3\" class=\"display:grid place-items:center height:3rem width:10rem\">Content</div></div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:17.5rem",
+      "max-width:100%",
+      "width:fit-content",
+      "p-md",
+      "display:grid",
+      "place-items:center",
+      "height:3rem",
+      "width:10rem"
+    ],
+    "classLists": [
+      "width:17.5rem max-width:100%",
+      "width:fit-content p-md",
+      "display:grid place-items:center height:3rem width:10rem"
+    ],
+    "highlighted": []
+  },
+  {
+    "page": "padding",
+    "id": "set-inline-or-block-padding",
+    "title": "Set inline or block padding",
+    "html": [
+      "<!-- Horizontal writing -->\n<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content px-md py-sm\"><div id=\"item-3\" class=\"display:grid place-items:center height:3rem width:7.5rem\">Content</div></div>\n</div>",
+      "<!-- Vertical writing -->\n<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content px-md py-sm writing-mode:vertical-rl\"><div id=\"item-3\" class=\"display:grid place-items:center height:3rem width:7.5rem\">Content</div></div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:17.5rem",
+      "max-width:100%",
+      "width:fit-content",
+      "px-md",
+      "py-sm",
+      "display:grid",
+      "place-items:center",
+      "height:3rem",
+      "width:7.5rem",
+      "writing-mode:vertical-rl"
+    ],
+    "classLists": [
+      "width:17.5rem max-width:100%",
+      "width:fit-content px-md py-sm",
+      "display:grid place-items:center height:3rem width:7.5rem",
+      "width:17.5rem max-width:100%",
+      "width:fit-content px-md py-sm writing-mode:vertical-rl",
+      "display:grid place-items:center height:3rem width:7.5rem"
+    ],
+    "highlighted": []
+  },
+  {
+    "page": "padding",
+    "id": "apply-conditionally",
+    "title": "Apply conditionally",
+    "html": [
+      "<div id=\"layout\" class=\"width:17.5rem max-width:100%\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content p-md padding:0@sm\"><div id=\"item-3\" class=\"display:grid place-items:center height:3rem width:10rem\">Content</div></div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "width:17.5rem",
+      "max-width:100%",
+      "width:fit-content",
+      "p-md",
+      "padding:0@sm",
+      "display:grid",
+      "place-items:center",
+      "height:3rem",
+      "width:10rem"
+    ],
+    "classLists": [
+      "width:17.5rem max-width:100%",
+      "width:fit-content p-md padding:0@sm",
+      "display:grid place-items:center height:3rem width:10rem"
+    ],
+    "highlighted": []
+  }
+]
