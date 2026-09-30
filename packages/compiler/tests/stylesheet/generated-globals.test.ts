@@ -8,10 +8,20 @@ import { transformStylesheet } from '../../src/stylesheet/public'
 
 const baseManifest = preset as unknown as MasterCSSManifest
 
-test('separates generated globals at the compiler boundary without relocating mode selectors', async () => {
+test('separates generated globals at the compiler boundary while referenced native overrides keep separate delivery', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-global-css-'))
   const tokens = join(root, 'tokens.css')
-  writeFileSync(tokens, "\n    @mixin --ocean { &:where([data-theme=\"ocean\"], [data-theme=\"ocean\"] *) { @contents; } }\n    @theme {:root, :host { --color-probe: red; }}\n\n    @theme { [data-theme=\"ocean\"] { --color-probe: blue; } }\n\n  ")
+  writeFileSync(tokens, `
+    @mixin --ocean { &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; } }
+    @theme {
+  --color-probe: red;
+}
+
+
+
+[data-theme="ocean"] { --color-probe: blue; }
+
+  `)
   const file = join(root, 'card.module.css')
   const source = '@reference "./tokens.css"; .card { color: var(--color-probe); }'
   const inline = await transformStylesheet(file, source, { baseManifest })
@@ -21,7 +31,7 @@ test('separates generated globals at the compiler boundary without relocating mo
   expect(separate.code).toMatch(/\.card\s*\{\s*color:\s*var\(--color-probe\)/)
   expect(separate.code).not.toContain('--color-probe:')
   expect(separate.globalStylesheet?.css).toContain(':root,:host{--color-probe:red}')
-  expect(separate.globalStylesheet?.css).toContain('[data-theme=ocean]{--color-probe:blue}')
+  expect(separate.globalStylesheet?.css).not.toContain('[data-theme=ocean]')
   expect(separate.dependencies).toContain(tokens)
   expect(Object.isFrozen(separate.globalStylesheet)).toBe(true)
   expect(inline.code).toContain(separate.globalStylesheet!.css)
@@ -29,7 +39,9 @@ test('separates generated globals at the compiler boundary without relocating mo
 
 test('separation still rejects invalid local declarations atomically under strict validation', async () => {
   await expect(transformStylesheet('/project/card.module.css',
-    '@theme {:root, :host { --color-probe:red; }} .card { color:var(--color-probe); width:calc(1px + 1s); }',
+    `@theme {
+  --color-probe:red;
+} .card { color:var(--color-probe); width:calc(1px + 1s); }`,
     { baseManifest, generatedGlobals: 'separate', validation: 'error' }
   )).rejects.toThrow()
 })

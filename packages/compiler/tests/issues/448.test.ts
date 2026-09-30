@@ -5,14 +5,14 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const baseManifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 const declarations = (css: string) => [...css.matchAll(/(?:display|width|text-align):[^;}]+/g)].map(match => match[0])
 
 test.each(['native', 'wasm'] as const)('448: %s preserves duplicate fallbacks with native declarations in every utility pattern', async (binding) => {
   using compiler = await createCompiler({ binding })
   const { manifest, css } = compiler.compileManifest(`
-    @theme { :root { --spacing-audit: 2rem; --audit-space-audit: var(--spacing-audit); } }
+    @theme { --spacing-audit: 2rem; --audit-space-audit: var(--spacing-audit);  }
     @mixin --audit-frame(--value) { display: block; display: made-up-value; width: var(--value); display: flex; }
     @mixin --audit-space(--name <string>) { display: block; display: made-up-value; width: var(ident("--audit-space-" var(--name))); display: flex; }
     @mixin --audit-flow-left { display: block; display: made-up-value; text-align: left; display: flex; }

@@ -134,7 +134,7 @@ pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<
                     "@settings has been removed; use per-class ! for important and native selectors for scope",
                 ),
                 "mode" => Some(
-                    "@mode has been removed; author explicit native selectors and conditions in @theme and use @custom-media or @mixin for reuse",
+                    "@mode has been removed; author explicit native selectors and conditions outside @theme and use @custom-media or @mixin for reuse",
                 ),
                 "utilities" => Some("@utilities has been removed; use @mixin --name { ... }"),
                 "dark" | "light" => Some(

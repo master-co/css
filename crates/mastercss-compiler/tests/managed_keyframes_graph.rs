@@ -49,7 +49,7 @@ fn delivered_native_conflicts_report_the_two_source_files() {
 #[test]
 fn suppressed_native_styles_never_add_roots_or_custom_property_overrides() {
     let mut request = request(
-        "@import './child.css';@theme{:root{--animate-run:one 1s}@keyframes one{to{opacity:1}}@keyframes two{to{opacity:.5}}}",
+        "@import './child.css';@theme {--animate-run:one 1s;@keyframes one{to{opacity:1}}@keyframes two{to{opacity:.5}}}",
         ".hidden{--animate-run:two 1s;animation:var(--unknown)}@keyframes one{to{opacity:0}}",
     );
     request.native_stylesheets = Some(vec!["entry.css".into()]);

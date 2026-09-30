@@ -18,12 +18,12 @@ fn engine(source: &str) -> EngineSession {
 fn custom_recipes_and_canonical_token_keys_are_not_retired_aliases() {
     let engine = engine(
         r#"
-        @theme { :root {
+        @theme {
             --color-color-red: red;
             --padding-card: 2rem;
             --font-brand: 500;
             --spacing-md: 1rem;
-        } }
+         }
         @mixin --font(--key <string>) { font-weight: var(ident("--font-" var(--key))); }
         @mixin --padding(--key <string>) { padding: var(ident("--padding-" var(--key))); }
         @mixin --padding-md { padding: 3rem; }
@@ -52,8 +52,7 @@ fn custom_recipes_and_canonical_token_keys_are_not_retired_aliases() {
 
 #[test]
 fn escaped_theme_names_and_unicode_have_the_same_dependency_identity() {
-    let mut engine =
-        engine(r"@theme { :root { --色: 1rem; --大小: var(--\008272); --a\:b: 2rem; } }");
+    let mut engine = engine(r"@theme { --色: 1rem; --大小: var(--\008272); --a\:b: 2rem;  }");
     for class in [r"width:var(--\005927\005c0f)", r"height:var(--a\:b)"] {
         let result = engine.inspect(class).unwrap();
         assert_eq!(result.match_status, MatchStatus::Matched);

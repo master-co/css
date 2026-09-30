@@ -16,7 +16,7 @@ impl EngineSession {
         name: &str,
         arguments: &[String],
     ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
-        crate::expand_mixin(&self.compiled.mixins, name, arguments)
+        self.expand_mixin_with_contents(name, arguments, None)
     }
 
     pub fn expand_mixin_with_contents(
@@ -25,7 +25,12 @@ impl EngineSession {
         arguments: &[String],
         contents: Option<&[mastercss_schema::MixinNode]>,
     ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
-        crate::expand_mixin_with_contents(&self.compiled.mixins, name, arguments, contents)
+        let mut rules =
+            crate::expand_mixin_with_contents(&self.compiled.mixins, name, arguments, contents)?;
+        for declaration in rules.iter_mut().flat_map(|rule| &mut rule.declarations) {
+            declaration.value = super::inline_theme::substitute(&declaration.value, &self.compiled);
+        }
+        Ok(rules)
     }
 
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
@@ -53,6 +58,8 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::new(),
             keyframe_counts: HashMap::new(),
+            variable_floors: HashMap::new(),
+            keyframe_floors: HashMap::new(),
             keyframe_texts: Vec::new(),
             stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),
@@ -63,6 +70,7 @@ impl EngineSession {
         };
         session.initialize_variable_resources();
         session.sync_theme_text();
+        session.sync_keyframes();
         Ok(session)
     }
 
@@ -884,6 +892,8 @@ impl EngineSession {
         self.rule_counts.clear();
         self.variable_counts.clear();
         self.keyframe_counts.clear();
+        self.variable_floors.clear();
+        self.keyframe_floors.clear();
         self.keyframe_texts.clear();
         self.stylesheet_sources.clear();
         self.theme_variable_names.clear();
@@ -903,6 +913,8 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::new(),
             keyframe_counts: HashMap::new(),
+            variable_floors: HashMap::new(),
+            keyframe_floors: HashMap::new(),
             keyframe_texts: Vec::new(),
             stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),
@@ -913,6 +925,7 @@ impl EngineSession {
         };
         session.initialize_variable_resources();
         session.sync_theme_text();
+        session.sync_keyframes();
         session
     }
 

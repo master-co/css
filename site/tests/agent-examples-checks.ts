@@ -30,7 +30,8 @@ export async function verifyAgentMCPExamples() {
   const file = join(root, 'src/button.html')
   writeFileSync(file, agentFixExample.source)
   // A marker lets the fixture confirm the configured entry rather than only the preset fallback.
-  writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@theme { :root { --color-brand: blue; } }')
+  writeFileSync(join(root, 'app.css'), `@import "@master/css";
+@theme { --color-brand: blue;  }`)
   const connection = await connect(root)
   try {
     const tools = await connection.request<{ tools: { name: string, inputSchema: { properties: Record<string, unknown> } }[] }>('tools/list')

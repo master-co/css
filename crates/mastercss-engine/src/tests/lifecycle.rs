@@ -14,9 +14,17 @@ fn executes_language_v2_parser_cases_and_historical_rejections() {
         assert!(!case.source_id.is_empty(), "{}", case.id);
         if case.historical_rejection {
             if case.kind == "selector" {
-                assert!(selector_token_to_template(&case.input, &engine.compiled).is_none(), "{}", case.id);
+                assert!(
+                    selector_token_to_template(&case.input, &engine.compiled).is_none(),
+                    "{}",
+                    case.id
+                );
             } else {
-                assert!(render_condition_token(&case.input, &engine.compiled).is_none(), "{} must not infer legacy conditions", case.id);
+                assert!(
+                    render_condition_token(&case.input, &engine.compiled).is_none(),
+                    "{} must not infer legacy conditions",
+                    case.id
+                );
             }
             continue;
         }
@@ -62,7 +70,10 @@ fn ensure_is_idempotent_and_delete_reports_exact_index() {
     );
     let deleted = engine.delete_class_rules(["block"]).unwrap();
     assert_eq!(deleted.mutations.len(), 1);
-    assert_eq!(engine.css_text(), "@layer utilities{.width\\:10px{width:10px}}");
+    assert_eq!(
+        engine.css_text(),
+        "@layer utilities{.width\\:10px{width:10px}}"
+    );
 }
 
 #[test]
@@ -153,7 +164,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
-    let manifest = r#"{"version":4,"languageVersion":11,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
+    let manifest = r#"{"version":4,"languageVersion":12,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     let inspection = engine.inspect("multi").unwrap();
     assert_eq!(inspection.rules.len(), 1);
@@ -303,29 +314,43 @@ fn validates_and_saturates_host_globals_before_classes_are_ensured() {
             .variable_count("color-red-60"),
         u32::MAX
     );
-
 }
 
 #[test]
 fn rejects_removed_animation_resource_registration_atomically() {
-    let mut engine = EngineSession::create(include_str!("../../../../packages/preset/src/default-manifest.json")).unwrap();
+    let mut engine = EngineSession::create(include_str!(
+        "../../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
     engine.ensure_class_rules(["animation:fade|1s"]).unwrap();
     let before = engine.snapshot().unwrap();
-    assert!(engine.register_emitted_globals(r#"{"animations":{"fade":1}}"#).is_err());
+    assert!(
+        engine
+            .register_emitted_globals(r#"{"animations":{"fade":1}}"#)
+            .is_err()
+    );
     assert_eq!(engine.snapshot().unwrap(), before);
 }
 
 #[test]
 fn removed_static_variable_and_managed_animation_fields_are_rejected() {
-    for field in [r#""settings":{}"#, r#""animations":{}"#, r#""animationOptions":{}"#, r#""modes":[]"#] {
-        assert!(EngineSession::create(&format!(r#"{{"version":4,"languageVersion":11,{field}}}"#)).is_err());
+    for field in [
+        r#""settings":{}"#,
+        r#""animations":{}"#,
+        r#""animationOptions":{}"#,
+        r#""modes":[]"#,
+    ] {
+        assert!(
+            EngineSession::create(&format!(r#"{{"version":4,"languageVersion":12,{field}}}"#))
+                .is_err()
+        );
     }
-    assert!(EngineSession::create(r#"{"version":4,"languageVersion":11,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
+    assert!(EngineSession::create(r#"{"version":4,"languageVersion":12,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
 }
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":11}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":12}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["display:block", "made-up:nope"])
         .unwrap();
@@ -345,7 +370,7 @@ fn commits_native_declarations_without_host_support_filtering() {
 // Also replaces commits_only_host_supported_native_declarations with preservation assertions.
 // The final v2 contract preserves declarations; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":11}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":4,"languageVersion":12}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["width:error", "width:10px"])
         .unwrap();
@@ -358,8 +383,14 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
     engine
         .ensure_class_rules(["width:error", "width:10px"])
         .unwrap();
-    assert_eq!(engine.css_text(), "@layer utilities{.width\\:10px{width:10px}.width\\:error{width:error}}");
-    assert!(engine.inspect("width:error").unwrap().match_status == mastercss_schema::MatchStatus::Matched);
+    assert_eq!(
+        engine.css_text(),
+        "@layer utilities{.width\\:10px{width:10px}.width\\:error{width:error}}"
+    );
+    assert!(
+        engine.inspect("width:error").unwrap().match_status
+            == mastercss_schema::MatchStatus::Matched
+    );
 
     let token_engine = EngineSession::create(include_str!(
         "../../../../packages/preset/src/default-manifest.json"
@@ -369,12 +400,15 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
         .native_declaration_candidates(["fg-red-60"])
         .unwrap();
     assert!(token_candidates.is_empty());
-    assert!(token_engine.inspect("fg-red-60").unwrap().match_status == mastercss_schema::MatchStatus::Matched);
+    assert!(
+        token_engine.inspect("fg-red-60").unwrap().match_status
+            == mastercss_schema::MatchStatus::Matched
+    );
 }
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":4,"languageVersion":11}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":4,"languageVersion":12}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["padding-left:calc(5x-2px)"])
         .unwrap();

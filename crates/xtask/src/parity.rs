@@ -21,7 +21,7 @@ pub(crate) fn validate_semantic_parity_corpus(
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
     if corpus.version != 3
-        || corpus.semantic_baseline != "language-11-native-theme-tokens"
+        || corpus.semantic_baseline != "language-12-theme-token-modes"
         || corpus.public_baseline != "Master CSS v2"
     {
         return Err("Language corpus has an unsupported version or contract.".into());

@@ -44,7 +44,9 @@ describe('root command', () => {
   it('generates CSS only through the explicit generate command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n@theme {:root, :host { --color-brand: red; }}\n")
+      fs.writeFileSync(resolve(cwd, 'index.css'), `@import "@master/css";
+@theme { --color-brand: red; }
+`)
       fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block fg-brand\"></div>")
       const output = runCLI(['generate', '--no-export'], { cwd })
       expect(output).toContain(".display\\:block{display:block}")

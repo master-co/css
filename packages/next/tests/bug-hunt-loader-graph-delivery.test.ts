@@ -66,7 +66,9 @@ for (const kind of ['nested-resource', 'external-import'] as const) test(`genera
 test('general Next delivered entry retains original native declaration source maps', async () => {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-loader-entry-map-')))
   try {
-    const file = join(root, 'entry.css'), source = "@import url(\"@master/css\");@theme {:root, :host {--paint-padding:2rem}}\n\n.card{@media all {padding:var(--paint-padding);}}"
+    const file = join(root, 'entry.css'), source = `@import url("@master/css");@theme {--paint-padding:2rem}
+
+.card{@media all {padding:var(--paint-padding);}}`
     writeFileSync(file, source)
     const result = await transform(root, file, source, []), sheets = graph(file, result.code)
     const owner = [...sheets].find(([, css]) => css.includes('.card'))!
@@ -88,8 +90,10 @@ for (const syntax of ['scss', 'sass']) test(`general Next ${syntax} delivered en
     const file = join(root, 'entry.' + syntax), partial = join(root, 'parts/_entry.scss')
     mkdirSync(dirname(partial))
     writeFileSync(partial, "@reference \"./tokens.css\";.card{@media all {padding:var(--paint-padding);}}")
-    writeFileSync(join(root, 'parts/tokens.css'), "@theme {:root, :host {--paint-padding:2rem}}\n")
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:99rem}}\n")
+    writeFileSync(join(root, 'parts/tokens.css'), `@theme {--paint-padding:2rem}
+`)
+    writeFileSync(join(root, 'tokens.css'), `@theme {--paint-padding:99rem}
+`)
     const source = syntax === 'sass' ? "@use \"parts/entry\"\n@import url(\"@master/css\")\n" : "@use \"parts/entry\";@import url(\"@master/css\");"
     writeFileSync(file, source)
     const dependencies: string[] = [], result = await transform(root, file, source, dependencies, { sassOptions: { implementation: sass } })

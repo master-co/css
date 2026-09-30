@@ -16,7 +16,7 @@ function fixture(syntax: string, kind: string, startupMissing: boolean) {
   mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
   for (const directory of ['main', 'shared']) mkdirSync(join(root, directory))
   const reference = join(root, 'shared/tokens.css'), pixel = join(root, 'shared/pixel.svg')
-  const tokens = (padding: number) => `@theme{:root, :host {--paint-padding:${padding}rem;--paint-background:url("./pixel.svg?v=1#icon")}}.never{color:red}`
+  const tokens = (padding: number) => `@theme {--paint-padding:${padding}rem;--paint-background:url("./pixel.svg?v=1#icon")}.never{color:red}`
   if (!startupMissing) writeFileSync(reference, tokens(2))
   writeFileSync(pixel, '<svg xmlns="http://www.w3.org/2000/svg" data-owner="reference"/>')
   writeFileSync(join(root, `shared/_rules.${syntax}`), syntax === 'scss' ? "@reference \"./tokens.css\";.target{@media all {background:var(--paint-background);padding:var(--paint-padding);}}" : '@reference "./tokens.css"\n.target\n  @media all\n    background: var(--paint-background)\n    padding: var(--paint-padding)\n')
@@ -138,7 +138,8 @@ test.each([false, true])('BH-0004 external missing reference survives SSR close;
     await expect(server.environments.ssr.transformRequest('/style.css')).rejects.toThrow('ENOENT')
     await server.environments.ssr.close()
     const send = vi.spyOn(server.ws, 'send')
-    writeFileSync(reference, "@theme {:root, :host {--paint-padding:7rem}}\n")
+    writeFileSync(reference, `@theme {--paint-padding:7rem}
+`)
     await vi.waitFor(() => expect(send.mock.calls.length).toBeGreaterThan(0), { timeout: watchDeadline })
     expect((await server.environments.client.transformRequest('/style.css'))?.code).toContain('7rem')
     if (!checkObsolete) return
@@ -148,7 +149,8 @@ test.each([false, true])('BH-0004 external missing reference survives SSR close;
     await server.environments.client.waitForRequestsIdle()
     send.mockClear()
     const observed = new Promise<void>(resolve => server!.watcher.on('change', file => { if (file === reference) resolve() }))
-    writeFileSync(reference, "@theme {:root, :host {--paint-padding:99rem}}\n")
+    writeFileSync(reference, `@theme {--paint-padding:99rem}
+`)
     await observed
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(send.mock.calls.filter((args: readonly unknown[]) => args[0] && typeof args[0] === 'object' && 'type' in args[0] && ['update', 'full-reload'].includes(String(args[0].type)))).toEqual([])

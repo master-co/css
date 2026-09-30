@@ -90,7 +90,27 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 })
 
 test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
-  const source = "\n    @safelist \"sr-only fg-red\";\n\n    @theme { :root, :host {\n      --color-brand: var(--brand, #123);\n\n      \n    } }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --btn {\n        @safelist \"sr-only fg-brand\";\n        &:hover {\n          color: var(--brand, red);\n        }\n      }\n  "
+  const source = `
+    @safelist "sr-only fg-red";
+
+    @theme {
+      --color-brand: var(--brand, #123);
+
+
+     }
+@keyframes fade {
+        to {
+          opacity: 1;
+        }
+      }
+
+    @mixin --btn {
+        @safelist "sr-only fg-brand";
+        &:hover {
+          color: var(--brand, red);
+        }
+      }
+  `
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),

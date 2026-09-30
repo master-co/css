@@ -52,6 +52,8 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_preview_directive_format` | Preview Master CSS directive formatting for files, or format in-memory content without writing. |
 | `mastercss_apply_preview` | Apply a preview after token, hash, and workspace checks. |
 
+`@theme` defines utility tokens with direct custom-property declarations and optional `static` / `inline` modifiers. Native CSS controls scoped overrides and does not add utility candidates. Directive inspection and manifest queries report the same Rust-backed contract as the compiler and language service.
+
 ## Contributor tools
 
 These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They expose repository-specific routing as low-token JSON instead of asking an agent to repeatedly infer package ownership, risk, and validation from raw files. In non-Master CSS workspaces they return limited package data instead of guessing.

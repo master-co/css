@@ -51,8 +51,12 @@ test('BH-0004 default graph composes separate entries with child-owned reference
   const f = fixture(), scanner = new MasterCSSScanner({}, f.root)
   using collection = createStylesheetCollection()
   try {
-    f.file('parts/tokens.css', "@theme {:root, :host {--paint-padding:2rem}}\n\n@mixin --all{@contents;}.reference-never{color:pink}")
-    f.file('tokens.css', "@theme {:root, :host {--paint-padding:99rem}}\n\n")
+    f.file('parts/tokens.css', `@theme {--paint-padding:2rem}
+
+@mixin --all{@contents;}.reference-never{color:pink}`)
+    f.file('tokens.css', `@theme {--paint-padding:99rem}
+
+`)
     f.file('parts/child.css', "@reference \"./tokens.css\";@source \"./views/*.html\";.native{@apply --all {padding:var(--paint-padding);}}")
     f.file('parts/views/view.html', '<div class="native custom"></div>')
     const first = f.file('first.css', "@import \"./parts/child.css\" layer(a) screen;@import \"@master/css\";@mixin --custom {margin:3rem}")

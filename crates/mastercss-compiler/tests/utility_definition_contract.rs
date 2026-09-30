@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
+                serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
             ),
             resolution_manifest: None,
         },
@@ -158,7 +158,7 @@ fn public_manifest_compilation_resolves_mixin_conditions() {
 
 #[test]
 fn clearing_named_and_parameter_mixins_drops_old_resources() {
-    let result=compile(r#"@theme{:root{--paint-brand:var(--color-brand);--color-brand:red}}@mixin --paint(--name <string>){color:var(ident("--paint-" var(--name)))}@mixin --paint(--name <string>){}@mixin --size(--n){width:var(--n)}@mixin --size(--n){}"#).unwrap();
+    let result=compile(r#"@theme {--paint-brand:var(--color-brand);--color-brand:red}@mixin --paint(--name <string>){color:var(ident("--paint-" var(--name)))}@mixin --paint(--name <string>){}@mixin --size(--n){width:var(--n)}@mixin --size(--n){}"#).unwrap();
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     for class in ["size(1px)", "paint-brand"] {
         assert_eq!(
@@ -173,7 +173,7 @@ fn clearing_named_and_parameter_mixins_drops_old_resources() {
 #[test]
 fn replacing_named_recipe_keeps_primary_token_identity() {
     let generated = css(
-        r#"@theme{:root{--spacing-md:1rem;--gutter-md:var(--spacing-md)}}@mixin --gutter(--key <string>){margin:var(ident("--gutter-" var(--key)))}@mixin --gutter(--key <string>){padding:var(ident("--gutter-" var(--key)))}"#,
+        r#"@theme {--spacing-md:1rem;--gutter-md:var(--spacing-md)}@mixin --gutter(--key <string>){margin:var(ident("--gutter-" var(--key)))}@mixin --gutter(--key <string>){padding:var(ident("--gutter-" var(--key)))}"#,
         &["gutter-md"],
     );
     assert!(
@@ -184,6 +184,6 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
 
 #[test]
 fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":4,"languageVersion":11,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
+    let old = serde_json::json!({"version":4,"languageVersion":12,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
     assert!(EngineSession::create(&old.to_string()).is_err());
 }

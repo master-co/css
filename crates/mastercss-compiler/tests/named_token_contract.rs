@@ -21,12 +21,12 @@ fn compile(source: &str) -> Result<EngineSession, String> {
 fn engine() -> EngineSession {
     compile(&format!(
         r#"
-        @theme {{ :root, :host {{
+        @theme {{
             --spacing-md: 1rem; --spacing-sm: .5rem; --spacing-card-body: 1.25rem;
             --font-family-mono: monospace; --font-family-brand: Brand;
             --text-sm: var(--font-size-sm); --font-size-sm: .875rem; --font-size-brand: 2rem; --font-weight-bold: 700;
             --color-red: #e00; --color-brand: #123; --color-cover: #456;
-        }} }}
+         }}
         @custom-media --sm (width >= 40rem);
         {}
     "#,
@@ -285,7 +285,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":11,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":4,"languageVersion":12,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -321,7 +321,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":11,"utilities":[utility]}).to_string();
+        let source = json!({"version":4,"languageVersion":12,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()
@@ -339,7 +339,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
 
 #[test]
 fn handwritten_mixin_reserves_token_spelling() {
-    let engine = compile("@theme{:root{--color-red:red}}@mixin --fg-red{color:purple}").unwrap();
+    let engine = compile("@theme {--color-red:red}@mixin --fg-red{color:purple}").unwrap();
     assert_eq!(declarations(&engine, "fg-red"), "color:purple");
     assert!(
         engine.inspect("fg-red:hover").unwrap().rules[0]

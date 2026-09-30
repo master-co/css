@@ -276,7 +276,87 @@ test.concurrent('renders native-aligned semantic tokens for independent classes 
 })
 
 test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
-  const { tokens } = renderTokens("\n    @import \"@master/css\";\n    @reference \"./tokens.css\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @settings {\n      root-size: 16;\n    }\n\n    @theme { .dark {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n    } }\n\n\n    @theme {\n      \n    }\n@keyframes fade {\n        to {\n          opacity: 1;\n        }\n      }\n\n\n    @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }\n\n    @mixin --reset {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient fg-primary:hover@md\";\n        @media (prefers-color-scheme: dark) {\n          @safelist \"bg-blue\";\n        }\n        @variant <sm {\n          @safelist \"sr-only\";\n        }\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @mixin --content-auto {\n        @safelist \"sr-only\";\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-center {\n        text-align: center;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n      }\n@layer(utilities) bg-* from(--color-*) {\n        background-color: var(--value);\n      }\n@layer(utilities) text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n@mixin --user-select(--value) {\n        user-select: var(--value);\n      }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n\n        @variant <sm {\n          font-size: var(--value);\n        }\n\n        &:hover {\n          text-align: var(--value);\n        }\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens(`
+    @import "@master/css";
+    @reference "./tokens.css";
+    @safelist "sr-only fg-red:hover@md";
+
+    @settings {
+      root-size: 16;
+    }
+
+    @theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+
+.dark {
+      --color-primary: --alpha(var(--color-blue-60) / 80%);
+    }
+
+
+@keyframes fade {
+        to {
+          opacity: 1;
+        }
+      }
+
+    @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }
+
+    @mixin --reset {
+        @safelist "sr-only";
+      }
+
+    @mixin --btn {
+        @safelist "text-gradient fg-primary:hover@md";
+        @media (prefers-color-scheme: dark) {
+          @safelist "bg-blue";
+        }
+        @variant <sm {
+          @safelist "sr-only";
+        }
+        ::scrollbar-thumb:hover {
+          @media (prefers-color-scheme: dark) {
+            @safelist "fg-primary";
+          }
+        }
+      }
+
+    @mixin --content-auto {
+        @safelist "sr-only";
+      }
+@mixin --text-left {
+        text-align: left;
+      }
+@mixin --text-center {
+        text-align: center;
+      }
+@mixin --text-right {
+        text-align: right;
+      }
+@layer(utilities) font-* from(--font-size-*) {
+        font-size: var(--value);
+      }
+@layer(utilities) bg-* from(--color-*) {
+        background-color: var(--value);
+      }
+@layer(utilities) text-decoration-* from(--color-*) {
+        text-decoration: var(--value);
+      }
+@mixin --user-select(--value) {
+        user-select: var(--value);
+      }
+@mixin --grid-cols(--value) {
+        grid-template-columns: repeat(var(--value), minmax(0, 1fr));
+
+        @variant <sm {
+          font-size: var(--value);
+        }
+
+        &:hover {
+          text-align: var(--value);
+        }
+      }
+  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -290,7 +370,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@settings', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'root-size', type: 'property' as const, modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: "@theme", type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable' as const, modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable' as const, modifiers: [] })
@@ -312,7 +392,39 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
 })
 
 test.concurrent('does not render semantic tokens for theme directive declarations', () => {
-  const { tokens } = renderTokens("\n    @theme { :root, :host {\n      --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, \"Times New Roman\", Times, serif;\n      --tracking-tightest: -0.072em;\n\n      \n\n      --color-stone-0: oklch(99% 0.0033 72);\n    } }\n@keyframes zoom {\n        0% {\n          transform: scale(0);\n          color: var(--color-red-50);\n        }\n\n        to {\n          transform: --value();\n        }\n      }\n\n\n    @theme { .dark {\n      --color-surface-base: var(--color-gray-100);\n    } }\n\n\n    @theme { :root, :host {\n      --full: 100%;\n    } }\n\n  ", 'css')
+  const { tokens } = renderTokens(`
+    @theme {
+  --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+        --tracking-tightest: -0.072em;
+
+
+
+        --color-stone-0: oklch(99% 0.0033 72);
+}
+@keyframes zoom {
+        0% {
+          transform: scale(0);
+          color: var(--color-red-50);
+        }
+
+        to {
+          transform: --value();
+        }
+      }
+
+    @theme {
+  --color-surface-base: var(--color-gray-100);
+}
+
+.dark {
+      --color-surface-base: var(--color-gray-100);
+    }
+
+    @theme {
+  --full: 100%;
+}
+
+  `, 'css')
 
   expect(tokens).toEqual([])
 })
@@ -399,7 +511,10 @@ test.concurrent('does not render semantic tokens for custom variant directive sy
 })
 
 test.concurrent('does not render inline theme modifier semantic tokens', () => {
-  const { tokens } = renderTokens("@theme { :root, :host { --color-primary: #123; } }\n", 'css')
+  const { tokens } = renderTokens(`@theme {
+  --color-primary: #123;
+}
+`, 'css')
 
   expect(tokens).toEqual([])
 })

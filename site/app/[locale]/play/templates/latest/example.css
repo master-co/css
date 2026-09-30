@@ -1,11 +1,11 @@
 .light { color-scheme: light; }
 .dark { color-scheme: dark; }
 
-@theme { :root, :host {
+@theme {
   --color-master: var(--color-yellow-40);
   --color-master-hover: var(--color-yellow-50);
   --color-master-ink: var(--color-yellow-95);
-} }
+ }
 
 
 @layer components {

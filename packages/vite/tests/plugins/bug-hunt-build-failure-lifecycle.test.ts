@@ -46,7 +46,8 @@ for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'p
       state.write('@mixin --paint {@compose definitely-missing;}')
       const invalid = await state.next();expect(invalid.code).toBe('ERROR');expect(String(invalid.error)).toContain('@compose has been removed')
       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(state.events).toEqual([])
-      state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
+      state.write(`@theme {--paint-padding:3rem}
+`)
       const recovered = await state.next()
       expect(recovered.code, String(recovered.error)).toBe('BUNDLE_END');expect(state.output()).toContain('padding:3rem')
       writeFileSync(state.style, '.target{padding:4rem}')
@@ -55,7 +56,8 @@ for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'p
       // Assert the eventual authored output, not the identity of the next event.
       await vi.waitFor(() => expect(state.output()).toContain('padding:4rem'), { timeout: watchDeadline })
       const before = state.cacheFiles().map(file => [file, statSync(file).mtimeMs] as const)
-      state.write("@theme {:root, :host {--paint-padding:99rem}}\n")
+      state.write(`@theme {--paint-padding:99rem}
+`)
       await delay(350)
       for (const [file, mtime] of before) expect(statSync(file).mtimeMs).toBe(mtime)
       // Rolldown retains old watch files even when the next transform omits them.
@@ -73,7 +75,8 @@ test('closing a failed build releases its polling and owned cache files', async 
     expect(state.cacheFiles().length).toBeGreaterThan(0)
     await state.close()
     expect(state.cacheFiles()).toEqual([])
-    state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
+    state.write(`@theme {--paint-padding:3rem}
+`)
     await delay(250);expect(state.events).toEqual([])
   })
 })
@@ -81,7 +84,8 @@ test('closing a failed build releases its polling and owned cache files', async 
 test('build recovery respects excluded dependencies', async () => {
   await fixture("static", async state => {
     expect((await state.next()).code).toBe('ERROR')
-    state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
+    state.write(`@theme {--paint-padding:3rem}
+`)
     await delay(350);expect(state.events).toEqual([])
   }, ['**/tokens.css'])
 })
@@ -93,7 +97,8 @@ for (const filter of [
   const state = await setup("static", filter.exclude, false, filter.include)
   try {
     expect((await state.next()).code).toBe('ERROR')
-    state.write("@theme {:root, :host {--paint-padding:3rem}}\n")
+    state.write(`@theme {--paint-padding:3rem}
+`)
     expect((await state.next()).code).toBe('BUNDLE_END')
     expect(state.output()).toContain('padding:3rem')
   } finally { await state.close();rmSync(state.root, { recursive: true, force: true }) }

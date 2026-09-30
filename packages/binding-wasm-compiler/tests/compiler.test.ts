@@ -63,11 +63,16 @@ test('loads the isolated compiler Wasm surface', async () => {
     css: '.card {\n  color: red;\n}',
     nativeCSS: '.card {\n  color: red;\n}'
   })
-  const theme = [{ type: 'rule' as const, prelude: '.dark', children: [
+  const theme = [{ type: 'rule' as const, prelude: ':root,:host', children: [
     { type: 'declaration' as const, name: 'color-brand', value: '#fff' }
   ] }]
-  expect(compiler.compileCSSDirectives("@theme { .dark { --color-brand: #fff; } }\n")).toMatchObject({
-    manifestInput: { theme }, nativeCSS: ''
+  expect(compiler.compileCSSDirectives(`@theme {
+  --color-brand: #fff;
+}
+
+.dark { --color-brand: #fff; }
+`)).toMatchObject({
+    manifestInput: { theme }, nativeCSS: '.dark {\n  --color-brand: #fff;\n}'
   })
   expect(toPlainValue(compiler.compileManifestInput({
     theme,
@@ -90,8 +95,8 @@ test('loads the isolated compiler Wasm surface', async () => {
 ]
   }))).toMatchObject({
     manifest: {
-      version: 4 as const, languageVersion: 11 as const, theme,
-      variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: ['.dark'], value: '#fff' }] }] },
+      version: 4 as const, languageVersion: 12 as const, theme,
+      variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: '#fff' }] }] },
       mixins: [
   {
     "name": "--card",
@@ -113,11 +118,17 @@ test('loads the isolated compiler Wasm surface', async () => {
     entry: '/entry.css',
     files: {
       '/entry.css': '@import "./theme.css";.entry{display:block}',
-      '/theme.css': "@theme {:root, :host {--color-brand:red}}\n"
+      '/theme.css': `@theme {
+  --color-brand:red;
+}
+`
     },
     edges: [{ from: '/entry.css', specifier: './theme.css', resolved: '/theme.css' }]
   })).toMatchObject({
-    source: "@theme {:root, :host {--color-brand:red}}\n.entry{display:block}",
+    source: `@theme {
+  --color-brand:red;
+}
+.entry{display:block}`,
     dependencies: ['/entry.css', '/theme.css']
   })
   expect(compiler.filterCSSExtractionCandidates(
@@ -153,7 +164,9 @@ test('loads the isolated compiler Wasm surface', async () => {
 test('static mixins decode parameter identifiers and CSS function names in Wasm', async () => {
   const input = new Uint8Array(await readFile(new URL('../artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)))
   const compiler = await initCompilerWasm({ input })
-  const source = String.raw`@theme{:root{--step-hero:2rem}}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p)))}.caption{@apply --label("hero")}`
+  const source = `@theme {
+  --step-hero:2rem;
+}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))}.caption{@apply --label("hero")}`
   const result = toPlainValue(compiler.compileCSSStylesheetGraph({
     graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] },
     urls: { '/entry.css': '/out/entry.css' }

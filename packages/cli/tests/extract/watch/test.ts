@@ -29,7 +29,17 @@ const originHTMLText = dedent`
   </html>
 `
 
-const originConfigText = "@import \"@master/css\";\n\n@theme {:root, :host {\n  --color-primary: var(--color-blue);\n}}\n\n\n\n  @mixin --btn {\n    background-color: oklch(63.7% 0.237 25.331);\n  }\n\n"
+const originConfigText = `@import "@master/css";
+
+@theme {
+  --color-primary: var(--color-blue);
+}
+
+  @mixin --btn {
+    background-color: oklch(63.7% 0.237 25.331);
+  }
+
+`
 
 let workspacePath: string
 let HTMLFilepath: string

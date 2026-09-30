@@ -72,7 +72,7 @@ export async function verifyMonorepoExamples() {
   const files = fixture()
   try {
     const fences = deliveryFences(deliverySource('monorepo'))
-    files.write('index.css', '@theme { :root { --color-primary: #123456; } }')
+    files.write('index.css', '@theme { --color-primary: #123456;  }')
     for (const fence of fences.filter(f => f.language === 'css')) files.write(fence.name, fence.text)
     files.write('projects/admin/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
     const root = join(files.root, 'projects/admin')

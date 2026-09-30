@@ -6,11 +6,11 @@ fn relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_owne
     let base = json!({
         "graph": {"entry":"entry", "files": {
             "entry":"@import './child.css';.example{@apply --always{background-image:var(--hero);}}",
-            "child":"@theme{:root, :host {--hero:url(image.svg)}}"
+            "child":"@theme {--hero:url(image.svg)}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"./main.css","child":"./child.css"},
         "resourceURLs":{"child":{"image.svg":"./asset.svg?q=1#part"}},
-        "baseManifest":{"version":4,"languageVersion":11, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":4,"languageVersion":12, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     });
     let error =
         compile_css_stylesheet_graph(&serde_json::from_value(base.clone()).unwrap()).unwrap_err();

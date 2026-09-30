@@ -73,28 +73,30 @@ fn legacy_conditions_and_unknown_names_do_not_generate() {
 
 #[test]
 fn scoped_theme_and_variant_activation_are_independent() {
-    let mut e = engine(
-        r#"
+    let source = r#"
         @mixin --ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } }
-        @theme {
-            :root, :host { --color-surface: white; }
+        @theme { --color-surface: white;
+        }
             @supports (display: grid) { [data-theme="ocean"] { --color-surface: #082f49; } }
             :host([data-theme="ocean"]) { --color-surface: #082f49; }
-        }
-    "#,
-    )
-    .unwrap();
+    "#;
+    let native = compile_css_directives(source, &Default::default())
+        .unwrap()
+        .native_css
+        .replace([' ', '\n', '"'], "")
+        .replace(";}", "}");
+    let mut e = engine(source).unwrap();
     let output = css(&mut e, &["fg-surface", "padding:1px@apply(--ocean)"]);
     assert!(
         output.contains(":root,:host{--color-surface:white}"),
         "{output}"
     );
     assert!(
-        output.contains("[data-theme=ocean]{--color-surface:#082f49}"),
+        native.contains("[data-theme=ocean]{--color-surface:#082f49}"),
         "{output}"
     );
     assert!(
-        output.contains(":host([data-theme=ocean]){--color-surface:#082f49}"),
+        native.contains(":host([data-theme=ocean]){--color-surface:#082f49}"),
         "{output}"
     );
     assert!(
@@ -106,12 +108,18 @@ fn scoped_theme_and_variant_activation_are_independent() {
 
 #[test]
 fn variant_redefinition_preserves_authored_theme_order() {
-    let mut e = engine("@mixin --a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @theme { .b { --color-x: blue; } .a { --color-x: red; } }").unwrap();
+    let source = "@mixin --a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @theme {--color-x:blue; } .b { --color-x: blue; } .a { --color-x: red; }";
+    let native = compile_css_directives(source, &Default::default())
+        .unwrap()
+        .native_css
+        .replace([' ', '\n', '"'], "")
+        .replace(";}", "}");
+    let mut e = engine(source).unwrap();
     let output = css(&mut e, &["fg-x", "padding:1px@apply(--a)"]);
     assert!(!output.contains(".old"));
     assert!(output.contains(".new"), "{output}");
     assert!(
-        output.find(".b{").unwrap() < output.find(".a{").unwrap(),
+        native.find(".b{").unwrap() < native.find(".a{").unwrap(),
         "{output}"
     );
 }
@@ -125,7 +133,7 @@ fn invalid_modes_and_removed_settings_are_rejected() {
         "@mode a { @container (width>1px) { .a { @contents; } } }",
         "@mode a { @layer utilities { .a { @contents; } } }",
         "@theme missing { --color-x: red; }",
-        "@mode sm { .sm { @contents; } } @theme {:root, :host { --breakpoint-sm: 1rem; }}",
+        "@mode sm { .sm { @contents; } } @theme { --breakpoint-sm: 1rem; }",
         "@settings { root-size: 20; }",
         "@settings { default-mode: dark; }",
         "@settings { mode-trigger: class; }",
@@ -216,7 +224,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":11,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":4,"languageVersion":12,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

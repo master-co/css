@@ -258,7 +258,12 @@ describe('@master/css-mcp', () => {
         build: 'master-css src/index.html -o master.css'
       }
     })
-    writeFileSync(join(root, 'master.css'), "@import \"@master/css\";\n@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }\n@theme { :root, :host {\n  --color-brand: #123456;\n} }\n")
+    writeFileSync(join(root, 'master.css'), `@import "@master/css";
+@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }
+@theme {
+  --color-brand: #123456;
+ }
+`)
 
     const connection = await connect(root)
     try {

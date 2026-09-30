@@ -11,7 +11,8 @@ const require = createRequire(new URL('../../vite/package.json', import.meta.url
 const sassFile = createRequire(require.resolve('vite')).resolve('sass')
 async function fixture(run: (root: string) => Promise<void>) {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'next-output-map-')))
-  try { writeFileSync(join(root, 'master.css'), "@import url(\"@master/css\");@theme {:root, :host {--paint-padding:2rem}}\n"); await run(root) }
+  try { writeFileSync(join(root, 'master.css'), `@import url("@master/css");@theme {--paint-padding:2rem}
+`); await run(root) }
   finally { rmSync(root, { recursive: true, force: true }) }
 }
 function compile(root: string, file: string, source: string, options = {}, inputMap?: object) {
@@ -29,7 +30,9 @@ function origin(result: Awaited<ReturnType<typeof compile>>, token: string | Reg
 
 test('Next injected package entry retains pure CSS authoring lines in its callback map', async () => {
   await fixture(async root => {
-    const file = join(root, 'entry.css'), source = "@import url(\"@master/css\");@theme {:root, :host {--paint-padding:2rem}}\n\n.card{@media all {padding:var(--paint-padding);}}"
+    const file = join(root, 'entry.css'), source = `@import url("@master/css");@theme {--paint-padding:2rem}
+
+.card{@media all {padding:var(--paint-padding);}}`
     const result = await compile(root, file, source)
     expect(origin(result, '.card')).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: 0 })
     expect(result.sourceMap.sourcesContent).toContain(source)

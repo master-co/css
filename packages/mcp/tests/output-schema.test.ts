@@ -3,6 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv'
 import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import { variable } from '../src/semantic-schema'
 import { createMasterCSSMCPServer } from '../src/server'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
@@ -51,4 +52,11 @@ test('tools/list schemas validate success and errors without hidden refinements'
     malformed.result.data.variables = [{ key: 'red', variable: {} }]
     expect(validate(malformed).valid).toBe(false)
   } finally { await client.close(); await server.dispose(); rmSync(root, { recursive: true, force: true }) }
+})
+
+
+test('inspection schemas retain inline and static token metadata', () => {
+  const token = { key: 'brand', name: 'color-brand', namespace: 'color', type: 'color', dependencies: [],
+    values: [{ path: [':root,:host'], value: 'red', inline: true, static: true }] }
+  expect(variable.parse(token)).toEqual(token)
 })

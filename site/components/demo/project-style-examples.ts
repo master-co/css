@@ -10,21 +10,45 @@ export interface ProjectStyleExample {
 export const projectStyleExamples = {
   tokens: {
     title: 'A small project vocabulary',
-    source: "@theme { :root, :host {\n  --color-brand: var(--color-text-link);\n  --spacing-card: 1.5rem;\n  --radius-card: .75rem;\n} }\n",
+    source: `@theme {
+  --color-brand: var(--color-text-link);
+    --spacing-card: 1.5rem;
+    --radius-card: .75rem;
+}
+`,
     html: "<article class=\"p-card r-card border-width:1px border-style:solid b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"margin:0 font-family-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-weight-semibold fg-text-strong\">Room for the details</h2>\n  <p class=\"margin:0 text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
     caption: 'p-card reads spacing, r-card reads radius, and fg-brand reads color. Each class retains a reference to its theme variable.',
     guide: '/guide/theme',
   },
   spacing: {
     title: 'One spacing token, two consumers',
-    source: "@theme { :root, :host {\n  --spacing-card: 1.5rem;\n} }\n",
+    source: `@theme {
+  --spacing-card: 1.5rem;
+}
+`,
     html: "<div class=\"display:grid gap-md\">\n  <article class=\"p-card r-sm border-width:1px border-style:solid b-line-divider bg-surface-raised\">\n    <h2 class=\"margin:0 text-lg font-weight-semibold\">Collection</h2>\n    <p class=\"mt-xs margin-bottom:0 text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm border-width:1px border-style:solid b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
     caption: 'Both elements have 1.5rem of padding. A change to --spacing-card applies to both consumers.',
     guide: '/guide/variables-and-modes',
   },
   modes: {
     title: 'The same card in two modes',
-    source: "\n\n@theme { .light {\n  --color-surface-card: var(--color-white);\n  --color-text-card: var(--color-neutral-70);\n} }\n\n\n@theme { .dark {\n  --color-surface-card: var(--color-gray-90);\n  --color-text-card: var(--color-gray-20);\n} }\n",
+    source: `
+
+@theme {
+  --color-surface-card: var(--color-white);
+  --color-text-card: var(--color-neutral-70);
+}
+
+.light {
+  --color-surface-card: var(--color-white);
+  --color-text-card: var(--color-neutral-70);
+}
+
+.dark {
+  --color-surface-card: var(--color-gray-90);
+  --color-text-card: var(--color-gray-20);
+}
+`,
     html: "<article class=\"p-lg r-lg border-width:1px border-style:solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"margin:0 text-lg font-weight-semibold\">Collection details</h2>\n  <p class=\"mt-sm margin-bottom:0 text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
     caption: 'Theme switches the preview document’s light/dark class. The browser resolves the actual generated custom properties.',
     guide: '/guide/variables-and-modes#add-modes-after-the-shared-value-works',

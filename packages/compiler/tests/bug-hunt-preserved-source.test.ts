@@ -25,10 +25,12 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
-const source = "@theme {:root, :host {--color-unused:red}}\n\n" + native
+const source = `@theme {--color-unused:red}
+
+` + native
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`${binding} source preservation allows class lists and rejects explicit pruning`, async () => {

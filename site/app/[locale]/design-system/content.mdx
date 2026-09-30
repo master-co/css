@@ -864,12 +864,12 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <div data-stylesheet-gallery>
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme { :root, :host {\n  --color-brand: #4f46e5;\n} }\n\n\n.card {\n  background-color: var(--color-brand);\n}"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n.card {\n  background-color: var(--color-brand);\n}"}
 />
 
 <StylesheetExample
   title="A safelisted token"
-  source={"@theme { :root, :host {\n  --color-brand: #4f46e5;\n} }\n\n\n@safelist \"bg-brand\";"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n@safelist \"bg-brand\";"}
 />
 
 <StylesheetExample
@@ -885,7 +885,7 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 ```tsx
 <StylesheetExample
   title="A safelisted color token"
-  source={"@theme { :root, :host { --color-brand: #4f46e5; } }\n\n@safelist \"bg-brand\";"}
+  source={"@theme { --color-brand: #4f46e5;  }\n\n@safelist \"bg-brand\";"}
 />
 ```
 
@@ -985,12 +985,12 @@ For a new lesson, supply its actual configuration and complete HTML:
 
 ```jsx
 <DemoConfiguredExample name="project-spacing" title="A project spacing token"
-  source="@theme { :root { --spacing-card: 1.5rem; } }"
+  source="@theme { --spacing-card: 1.5rem;  }"
   html={'<article class="p-card">Collection details</article>'}
   caption="p-card references --spacing-card." />
 ```
 
-`theme` adds a real document-class switch; define explicit `.light` and `.dark` selectors inside `@theme` in the
+`theme` adds a real document-class switch; define explicit `.light` and `.dark` selectors outside `@theme` in the
 configuration when teaching that behavior. The default has no controls. `code={false}`
 is for a gallery specimen whose usage link leads to the complete source. These are
 server components; only the existing iframe controls hydrate. Use trusted site-authored

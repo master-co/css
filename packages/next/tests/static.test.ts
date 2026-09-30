@@ -210,7 +210,14 @@ describe('Next static mode', () => {
 
   it('replaces @master/css imports for dev CSS chunks and preserves ordinary CSS', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n      }}\n\n    ")
+    writeFileSync(join(root, 'app/globals.css'), `
+      @import url("@master/css");
+
+      @theme {
+        --color-primary: #ff0000;
+      }
+
+    `)
     const pagePath = join(root, 'app/page.tsx')
     writeFileSync(pagePath, "\n      export default function Page() {\n        return <main className=\"main display:block\">Hello</main>\n      }\n    ")
 
@@ -220,7 +227,18 @@ describe('Next static mode', () => {
     await prepareNextStatic({ mode: 'static' }, { projectDir: root })
     await scanStaticFixtureModule(statePath, pagePath)
 
-    const source = "\n      @import url(\"@master/css\");\n\n      .main {\n        color: var(--color-primary);\n      }\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n      }}\n\n    "
+    const source = `
+      @import url("@master/css");
+
+      .main {
+        color: var(--color-primary);
+      }
+
+      @theme {
+        --color-primary: #ff0000;
+      }
+
+    `
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), source)
     expect(replaced).toBe('@import "../.master/next.css";')
     expect(replaced).not.toContain('.main')
@@ -264,7 +282,8 @@ describe('Next static mode', () => {
 
   it('tracks original inputs without adding generated outputs as watcher dependencies', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'theme.css'), "@theme {:root, :host { --color-primary: #00f; }}\n")
+    writeFileSync(join(root, 'theme.css'), `@theme { --color-primary: #00f; }
+`)
     writeFileSync(join(root, 'app/globals.css'), `
       @import url("@master/css");
       @import "../theme.css";
@@ -293,7 +312,12 @@ describe('Next static mode', () => {
 
     await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
-    const source = "\n      @theme {:root, :host {\n        --color-primary: #00f;\n      }}\n\n    "
+    const source = `
+      @theme {
+        --color-primary: #00f;
+      }
+
+    `
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/theme.css'), source)
 
     expect(replaced).toBe(source)

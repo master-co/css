@@ -1,22 +1,28 @@
 
-@theme {:root, :host {
+@theme {
   --color-black: oklch(0% 0 none);
-}}
+}
 
 
-@theme {:root, :host {
+@theme {
   --color-white: oklch(100% 0 none);
-}}
+}
 
 
-@theme { .light {
+@theme {
   --color-focus: var(--color-black);
-} }
+}
+
+.light {
+  --color-focus: var(--color-black);
+}
 
 
-@theme { .dark {
+
+
+.dark {
   --color-focus: var(--color-white);
-} }
+}
 
 
 

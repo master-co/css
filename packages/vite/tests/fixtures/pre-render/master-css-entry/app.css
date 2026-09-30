@@ -1,10 +1,10 @@
 @import "@master/css";
 @custom-media --md (width >= 48rem);
 
-@theme {:root, :host {
+@theme {
   --color-brand: #123;
 
-}}
+}
 
 
 

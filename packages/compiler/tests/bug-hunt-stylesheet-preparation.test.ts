@@ -114,8 +114,12 @@ test('prepared Sass maps resolve relative references from an imported partial', 
     const file = join(root, 'entry.scss'), partial = join(root, 'parts/_rules.scss')
     const token = join(root, 'parts/tokens.css')
     writeFileSync(partial, "@reference \"./tokens.css\"; .card { @media all {padding:var(--paint-padding);} }")
-    writeFileSync(token, "@theme {:root, :host { --paint-padding: 2rem; }}\n\n")
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host { --paint-padding: 99rem; }}\n\n")
+    writeFileSync(token, `@theme { --paint-padding: 2rem; }
+
+`)
+    writeFileSync(join(root, 'tokens.css'), `@theme { --paint-padding: 99rem; }
+
+`)
     const prepared = await stylesheets.prepareStylesheet(file, '@use "parts/rules";', { projectDir: root })
     const result = await stylesheets.transformStylesheet('\0prepared:entry.css', prepared.source, {
       baseManifest: {
@@ -137,7 +141,7 @@ test('prepared Sass maps resolve relative references from an imported partial', 
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }, projectDir: root,
       delivery: { baseFile: prepared.baseFile, sourceMap: prepared.sourceMap,
         entryURL: '/entry.css', stylesheetURL: id => '/' + Buffer.from(id).toString('hex') + '.css', resourceURL: id => id }

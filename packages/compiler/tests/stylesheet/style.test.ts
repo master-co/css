@@ -116,7 +116,8 @@ describe('style CSS extraction helpers', () => {
     const entryPath = join(root, 'app/globals.css')
     const homePath = join(root, 'app/home.css')
     writeFileSync(homePath, [
-      "@theme {:root, :host { --color-active: #ff0000; }}\n",
+      `@theme { --color-active: #ff0000; }
+`,
       ' @mixin --active-card { animation: active-spin 1s infinite; } ',
       '@keyframes active-spin { to { opacity: .5; } }',
       '.native-card { color: var(--color-active); }'
@@ -151,9 +152,11 @@ describe('style CSS extraction helpers', () => {
     expect(hasMasterStyleEntrypoint('@master global;')).toBe(false)
     expect(hasMasterStyleEntrypoint('@master shake;')).toBe(false)
     expect(hasMasterStyleEntrypoint('@preserve native;')).toBe(false)
-    expect(hasMasterStyleEntrypoint("@theme {:root, :host { --color-primary: red; }}\n")).toBe(false)
+    expect(hasMasterStyleEntrypoint(`@theme { --color-primary: red; }
+`)).toBe(false)
     expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
-    expect(isMasterStyleSource("@theme {:root, :host { --color-primary: red; }}\n")).toBe(false)
+    expect(isMasterStyleSource(`@theme { --color-primary: red; }
+`)).toBe(false)
     expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
     expect(isMasterStyleSource(resolveStylesheetImportGraph(
       join(createFixture(), 'app/globals.css'),
@@ -264,7 +267,20 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+    writeFileSync(tokenPath, `@theme {
+  --spacing-card: 2rem;
+
+
+ }
+@keyframes pop {
+    to { opacity: 1; }
+  }
+
+@mixin --panel {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  }
+.referenced-native { color: red; }`)
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @apply --all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -285,7 +301,19 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --panel {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }")
+    writeFileSync(tokenPath, `@theme {
+  --spacing-card: 2rem;
+
+
+ }
+@keyframes pop {
+    to { opacity: 1; }
+  }
+
+@mixin --panel {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  }`)
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @apply --all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -391,7 +419,8 @@ describe('style CSS extraction helpers', () => {
     expect(result?.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
     expect(resolveMasterStyleSource(
       join(root, 'app/theme.css'),
-      "@theme {:root, :host { --color-primary: red; }}\n",
+      `@theme { --color-primary: red; }
+`,
       root
     )).toBeUndefined()
     expect(resolveMasterStyleSource(

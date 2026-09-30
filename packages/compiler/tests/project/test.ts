@@ -79,7 +79,12 @@ function writeCSSFixture(cwd: string) {
   mkdirSync(join(cwd, 'styles'), { recursive: true })
   const entry = join(cwd, 'index.css')
   const tokens = join(cwd, 'styles', 'tokens.css')
-  writeFileSync(tokens, "\n    @theme {:root, :host {\n      --color-primary: #123;\n    }}\n\n\n  ")
+  writeFileSync(tokens, `
+    @theme {
+      --color-primary: #123;
+    }
+
+  `)
   writeFileSync(entry, "\n    @import \"@master/css\";\n    @import './styles/tokens.css';\n\n    \n      @mixin --btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      }\n    \n  ")
   return { entry, tokens }
 }

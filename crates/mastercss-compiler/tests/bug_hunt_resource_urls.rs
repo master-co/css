@@ -5,7 +5,7 @@ use serde_json::json;
 fn resources_use_css_url_and_image_set_grammar_including_authoring_bodies() {
     let source = r#"/* 😀 url(fake-comment) */
 @import url(child.css);@namespace svg url(namespace-uri);@reference url(reference.css);
-@theme {:root, :host { --hero: u\72l("im\61ge.png?q=1#part"); }}
+@theme { --hero: u\72l("im\61ge.png?q=1#part"); }
  @mixin --paint { background: image-set("small.png" 1x, url(big.png) type("image/png") 2x); }
 .example { content:'url(fake-string)';mask:url(#mask);background:url('');src:URL(font.woff2);background-image:-webkit-image-set("retina.png" 2x); }
 "#;
@@ -51,11 +51,11 @@ fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
     let request = serde_json::from_value(json!({
         "graph": {"entry":"entry", "files": {
             "entry":"@import './child.css';.example{@apply --always{background-image:var(--hero);}}",
-            "child":"@theme{:root, :host {--hero:url(image.png)}}.native{background:image-set('small.png' 1x,url(big.png) 2x)}"
+            "child":"@theme {--hero:url(image.png)}.native{background:image-set('small.png' 1x,url(big.png) 2x)}"
         }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
         "urls":{"entry":"/output/main.css","child":"/output/child.css"},
         "resourceURLs":{"child":{"image.png":"/original/child/image.png","small.png":"/original/child/small.png","big.png":"/original/child/big.png"}},
-        "baseManifest":{"version":4,"languageVersion":11, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":4,"languageVersion":12, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     })).unwrap();
     let result = compile_css_stylesheet_graph(&request).unwrap();
     assert!(
@@ -85,7 +85,7 @@ fn source_owner_is_retained_when_theme_resource_is_used_in_another_file() {
 fn relocation_requires_complete_independent_mappings_and_preserves_local_fragments() {
     let base = json!({
         "graph":{"entry":"entry","files":{"entry":".a{background:url(image.png);mask:url(#mask);cursor:url(''),auto}"},"edges":[]},
-        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":11, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "urls":{"entry":"/output.css"},"baseManifest":{"version":4,"languageVersion":12, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{}
     });
     for (map, expected) in [
@@ -116,8 +116,8 @@ fn relocation_requires_complete_independent_mappings_and_preserves_local_fragmen
 #[test]
 fn theme_urls_are_resolved_before_manifest_merging_and_unmapped_absolute_urls_survive() {
     let request = serde_json::from_value(json!({
-        "graph":{"entry":"entry","files":{"entry":"@theme{:root, :host {--hero:url(images/hero.svg);--remote:url(https://assets.test/remote.svg)}}.a{background:url(data:image/svg+xml,%3Csvg%3E);filter:url(#filter)}"},"edges":[]},
-        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":11, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "graph":{"entry":"entry","files":{"entry":"@theme {--hero:url(images/hero.svg);--remote:url(https://assets.test/remote.svg)}.a{background:url(data:image/svg+xml,%3Csvg%3E);filter:url(#filter)}"},"edges":[]},
+        "urls":{"entry":"/moved.css"},"baseManifest":{"version":4,"languageVersion":12, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "resourceURLs":{"entry":{"images/hero.svg":"/original/images/hero.svg"}}
     })).unwrap();
     let output = compile_css_stylesheet_graph(&request).unwrap();
@@ -152,4 +152,28 @@ fn analysis_ranges_stay_in_original_source_across_removed_references_and_repeate
         let end = mastercss_lexer::utf16_to_byte_offset(source, resource.end).unwrap();
         assert_eq!(&source[start..end], "url(a.png)");
     }
+}
+
+#[test]
+fn inline_theme_urls_keep_definition_ownership_in_apply_and_classes() {
+    let request = serde_json::from_value(json!({
+        "graph": {"entry":"entry", "files": {
+            "entry":"@import './child.css';.example{@apply --surface}.native{background-image:var(--image-card)}",
+            "child":"@theme inline{--image-card:url(image.png)}@mixin --surface{background-image:var(--image-card)}"
+        }, "edges":[{"from":"entry","specifier":"./child.css","resolved":"child"}]},
+        "urls":{"entry":"/output/main.css","child":"/output/child.css"},
+        "resourceURLs":{"child":{"image.png":"/assets/child/image.png"}},
+        "baseManifest":{"version":4,"languageVersion":12}
+    })).unwrap();
+    let result = compile_css_stylesheet_graph(&request).unwrap();
+    let css = &result.stylesheets[0].css;
+    assert!(css.contains("/assets/child/image.png"), "{css}");
+    assert!(css.contains("var(--image-card)"), "{css}");
+    let mut engine = mastercss_engine::EngineSession::create(&result.manifest.to_string()).unwrap();
+    engine
+        .ensure_class_rules(["surface", "background-image:var(--image-card)"])
+        .unwrap();
+    let css = engine.css_text();
+    assert_eq!(css.matches("/assets/child/image.png").count(), 2, "{css}");
+    assert!(!css.contains("--image-card:"));
 }

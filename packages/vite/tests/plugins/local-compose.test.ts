@@ -8,7 +8,14 @@ import LocalStylesPlugin from '../../src/plugins/local-styles'
 function createFixture() {
   const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), 'master-css-vite-local-compose-')))
   mkdirSync(path.join(root, 'src'), { recursive: true })
-  writeFileSync(path.join(root, 'app.css'), "\n    @import url(\"@master/css\");\n\n    @theme {:root, :host { --color-brand: #123456; }}\n\n  ")
+  writeFileSync(path.join(root, 'app.css'), `
+    @import url("@master/css");
+
+    @theme {
+  --color-brand: #123456;
+}
+
+  `)
   return root
 }
 
@@ -124,7 +131,18 @@ describe('LocalStylesPlugin', () => {
     const root = createFixture()
     try {
       const themePath = path.join(root, 'src/theme.css')
-      writeFileSync(themePath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+      writeFileSync(themePath, `@theme {
+  --spacing-card: 2rem;
+}
+@keyframes pop {
+    to { opacity: 1; }
+  }
+
+@mixin --brand {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  }
+.referenced-native { color: red; }`)
       const context = createContext(root)
       const plugin = LocalStylesPlugin({} as any, context)
       const addWatchFile = vi.fn()
@@ -150,7 +168,15 @@ describe('LocalStylesPlugin', () => {
   test.each(['Button.css', 'Button.module.css'])('emits native token references in local %s without a utility class', async (name) => {
     const root = createFixture()
     try {
-      writeFileSync(path.join(root, 'app.css'), "@import url(\"@master/css\");\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
+      writeFileSync(path.join(root, 'app.css'), `@import url("@master/css");
+@theme {
+  --color-brand: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } }
+
+@media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } }
+`)
       const plugin = LocalStylesPlugin({} as any, createContext(root))
       const result = await (plugin as any).transform.call(
         { addWatchFile: vi.fn() },
@@ -160,7 +186,7 @@ describe('LocalStylesPlugin', () => {
 
       expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
       expect(result.code).toContain('--color-brand:#123456')
-      expect(result.code).toContain('--color-brand:#abcdef')
+      expect(result.code).not.toContain('--color-brand:#abcdef')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('master-css-slot')
     } finally {

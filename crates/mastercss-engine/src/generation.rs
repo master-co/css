@@ -14,6 +14,22 @@ impl EngineSession {
         if let Some(result) = self.application_rules(class_name) {
             return result.unwrap_or_default();
         }
+        let mut rules = self.generate_composition_rules_raw(class_name);
+        for declaration in rules.iter_mut().flat_map(|rule| &mut rule.declarations) {
+            if let Some(value) = declaration.value.as_str() {
+                declaration.value = super::inline_theme::substitute(value, &self.compiled).into();
+            }
+        }
+        rules
+    }
+
+    pub(crate) fn generate_composition_rules_raw(
+        &self,
+        class_name: &str,
+    ) -> Vec<EngineCompositionRuleIr> {
+        if let Some(result) = self.application_rules(class_name) {
+            return result.unwrap_or_default();
+        }
         if mastercss_lexer::decode_native_content(class_name).is_none() {
             return Vec::new();
         }
@@ -193,6 +209,8 @@ impl EngineSession {
                     let mut node_texts = Vec::with_capacity(emitted_rules.len());
                     let mut declaration_texts = Vec::with_capacity(emitted_rules.len());
                     for (_, declarations, selector, rule_conditions) in emitted_rules {
+                        let declarations =
+                            super::inline_theme::substitute(&declarations, &self.compiled);
                         let selector_text = create_selector_text(
                             class_name,
                             selector.as_deref(),
@@ -207,7 +225,17 @@ impl EngineSession {
                     }
                     let text = node_texts.concat();
                     let declarations = declaration_texts.join(";");
-                    let mut variable_names = matched.variable_names.clone();
+                    let mut variable_names = matched
+                        .variable_names
+                        .iter()
+                        .filter(|name| {
+                            self.compiled
+                                .compiled_variables
+                                .get(*name)
+                                .is_none_or(|variable| variable.inline_value.is_none())
+                        })
+                        .cloned()
+                        .collect::<Vec<_>>();
                     for name in collect_css_variable_names(&declarations) {
                         if self.compiled.compiled_variables.contains_key(&name)
                             && !variable_names.contains(&name)

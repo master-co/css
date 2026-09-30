@@ -59,7 +59,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_inspect_directives: {
     purpose: 'Inspect directive structure and compilation effects from an entry stylesheet or a CSS buffer. Provide `entryPath` or `content`; an empty arguments object cannot be compiled.',
     fields: { context, content: 'CSS buffer to inspect when `entryPath` is absent.', filePath: 'Virtual path for the CSS buffer. Defaults to `master.css`.', entryPath: 'Existing stylesheet path inside the workspace. Takes precedence over `content`.', preserveNativeCSS: 'Forward the native-CSS preservation option to compilation.' },
-    example: { content: '@theme { :root { --color-brand: blue; } }', filePath: 'app.css' }, exampleNote: 'Inspect an isolated token definition without changing the project entry.',
+    example: { content: '@theme { --color-brand: blue;  }', filePath: 'app.css' }, exampleNote: 'Inspect an isolated token definition without changing the project entry.',
     output: 'Read `status` and `diagnostics`, then `directiveEntries`, manifest and directive summaries, CSS sizes, dependencies, and warnings. Compilation failures return the error branch of the MCP envelope with diagnostics and `isError`.',
     lifecycle: readOnly
   },

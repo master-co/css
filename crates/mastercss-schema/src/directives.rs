@@ -213,9 +213,6 @@ impl ErrorCode {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CssDirectiveManifestInput {
-    /// Token catalog entries whose declarations remain in native stylesheets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub native_tokens: Option<Vec<NativeTokenDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub animation_variables: Option<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -240,6 +237,10 @@ pub enum ThemeNode {
     Declaration {
         name: String,
         value: String,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        inline: bool,
+        #[serde(default, rename = "static", skip_serializing_if = "std::ops::Not::not")]
+        is_static: bool,
     },
 }
 
@@ -248,24 +249,10 @@ pub enum ThemeNode {
 pub struct ScopedThemeValue {
     pub path: Vec<String>,
     pub value: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub delivery: Option<TokenDelivery>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum TokenDelivery {
-    Native,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct NativeTokenDefinition {
-    pub name: String,
-    pub path: Vec<String>,
-    pub value: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub source: Option<CssDirectiveSourceReference>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub inline: bool,
+    #[serde(default, rename = "static", skip_serializing_if = "std::ops::Not::not")]
+    pub is_static: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

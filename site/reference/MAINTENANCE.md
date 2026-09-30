@@ -285,8 +285,8 @@ Wasm locally and separately verify failed requests and disabled JavaScript.
 Framework fixtures compile the authored React, Vue and Lit components and load the
 resulting assets in browser tests. Lit checks the actual shadow-root runtime, class
 mutation and disconnect/reconnect cleanup. Its example explicitly loads the generated
-CSS entry and emits shared tokens with `@theme static`: a generated `:root` inside
-a shadow stylesheet does not select the host. The configured preview's `shadow`
+CSS entry and emits shared tokens with `@theme static` at `:root,:host`, including
+the shadow host. The configured preview's `shadow`
 variant is a generated-CSS appearance specimen, with that limitation stated in its
 caption; it is not the framework lifecycle test.
 

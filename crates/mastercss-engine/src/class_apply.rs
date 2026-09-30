@@ -57,7 +57,7 @@ impl EngineSession {
         if let Some(diagnostic) = diagnostics.first() {
             return Err(diagnostic.message.clone());
         }
-        let originals = self.generate_composition_rules(base);
+        let originals = self.generate_composition_rules_raw(base);
         if originals.is_empty() {
             return Err(format!("Unknown class body {base}"));
         }
@@ -179,23 +179,27 @@ impl EngineSession {
                     declarations: rule
                         .declarations
                         .into_iter()
-                        .map(|declaration| CssDeclaration {
-                            property: declaration.property.clone(),
-                            value: if important {
-                                super::render::format_declaration(
-                                    &declaration.property,
-                                    &declaration.value,
-                                    true,
-                                )
-                                .split_once(':')
-                                .expect("declaration")
-                                .1
-                                .to_owned()
-                                .into()
-                            } else {
-                                declaration.value.into()
-                            },
-                            source: declaration.source,
+                        .map(|mut declaration| {
+                            declaration.value =
+                                super::inline_theme::substitute(&declaration.value, &self.compiled);
+                            CssDeclaration {
+                                property: declaration.property.clone(),
+                                value: if important {
+                                    super::render::format_declaration(
+                                        &declaration.property,
+                                        &declaration.value,
+                                        true,
+                                    )
+                                    .split_once(':')
+                                    .expect("declaration")
+                                    .1
+                                    .to_owned()
+                                    .into()
+                                } else {
+                                    declaration.value.into()
+                                },
+                                source: declaration.source,
+                            }
                         })
                         .collect(),
                 }

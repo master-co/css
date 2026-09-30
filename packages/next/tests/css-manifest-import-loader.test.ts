@@ -56,7 +56,8 @@ describe('css manifest import loader', () => {
     const resourcePath = join(appDir, 'manifest.ts')
     const dependencies: string[] = []
     mkdirSync(appDir, { recursive: true })
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
     writeFileSync(resourcePath, '')
 
     const source = await runManifestImportLoader({
@@ -92,7 +93,8 @@ describe('css manifest import loader', () => {
         './theme.css': './theme.css'
       }
     }))
-    writeFileSync(join(packageDir, 'theme.css'), "@theme {:root, :host { --color-package: #456; }}\n")
+    writeFileSync(join(packageDir, 'theme.css'), `@theme { --color-package: #456; }
+`)
 
     const source = await runManifestImportLoader({
       source: 'import presetManifest from "@fixture/tokens/theme.css?master-css-manifest"\nexport default presetManifest',
@@ -138,10 +140,12 @@ describe('css manifest import loader', () => {
       source: 'export { default } from "./theme.css?master-css-manifest"',
       addDependency: (file: string) => dependencies.push(file)
     }
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-brand: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-brand: #123; }
+`)
     const first = await runManifestImportLoader(input)
     expect(readVirtualManifestModule(projectDir)).toContain('#123')
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-brand: #456; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-brand: #456; }
+`)
     expect(await runManifestImportLoader(input)).toBe(first)
     expect(readVirtualManifestModule(projectDir)).toContain('#456')
     expect(readVirtualManifestModule(projectDir)).not.toContain('#123')

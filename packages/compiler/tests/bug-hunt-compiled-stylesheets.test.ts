@@ -32,7 +32,7 @@ for (const item of cases) {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
     }
     using native = await createCompiler({ binding: 'native' })
@@ -76,7 +76,7 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
@@ -121,7 +121,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
     }
     expect(() => compiler.compileStylesheets(request)).toThrowError(expect.objectContaining({ code: 'CSS_IMPORT_ERROR' }))
@@ -144,7 +144,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 } })
     const result = compiler.compileStylesheets({ ...request, resolutionManifest: reference.manifest })
     expect(result.css).toContain('color:red')
@@ -167,7 +167,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 } })
     expect(result.manifest).toEqual(empty.manifest)
   }
@@ -178,7 +178,9 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
   const request: MasterCSSCompileStylesheetsRequest = {
     graph: { entry: 'entry', files: {
       entry: "@import './child.css';.example{@apply --all {background-image:var(--hero);}}",
-      child: "@theme {:root, :host {--hero:url(image.svg)}}\n\n.unscanned{color:blue}"
+      child: `@theme {--hero:url(image.svg)}
+
+.unscanned{color:blue}`
     }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
     urls: { entry: './entry.css', child: './child.css' },
     resourceURLs: { child: { 'image.svg': './asset.svg?q=1#part' } },
@@ -201,7 +203,7 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
   }
   using native = await createCompiler({ binding: 'native' })

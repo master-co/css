@@ -169,7 +169,8 @@ impl VariableTable {
         name: &str,
         path: &[String],
         value: &str,
-        native: bool,
+        inline: bool,
+        is_static: bool,
         namespaces: &[String],
     ) {
         let (_, key, namespace) = resolved_variable_name(Some(name), None, None, namespaces);
@@ -186,8 +187,11 @@ impl VariableTable {
         });
         let variable = self.get_mut(index);
         let mut scoped = json!({ "path": path, "value": value });
-        if native {
-            scoped["delivery"] = "native".into();
+        if inline {
+            scoped["inline"] = true.into();
+        }
+        if is_static {
+            scoped["static"] = true.into();
         }
         variable
             .get_mut("values")
@@ -241,8 +245,13 @@ pub(super) fn compile_variables(
                     visit(children, path, namespaces, variables)?;
                     path.pop();
                 }
-                mastercss_schema::ThemeNode::Declaration { name, value } => {
-                    variables.value(name, path, value, false, namespaces);
+                mastercss_schema::ThemeNode::Declaration {
+                    name,
+                    value,
+                    inline,
+                    is_static,
+                } => {
+                    variables.value(name, path, value, *inline, *is_static, namespaces);
                 }
             }
         }
@@ -254,9 +263,6 @@ pub(super) fn compile_variables(
         &namespaces,
         &mut variables,
     )?;
-    for token in input.native_tokens.iter().flatten() {
-        variables.value(&token.name, &token.path, &token.value, true, &namespaces);
-    }
     let mut variables = variables.into_variables();
     for variable in &mut variables {
         let namespace = variable.get("namespace").and_then(Value::as_str);

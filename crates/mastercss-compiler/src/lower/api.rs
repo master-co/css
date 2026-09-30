@@ -15,6 +15,9 @@ pub fn lower_css_directives(
     let resolution_base = options
         .resolution_manifest
         .clone()
+        .map(|manifest| {
+            crate::manifest::reference_context(manifest, options.base_manifest.as_ref())
+        })
         .or_else(|| options.base_manifest.clone());
     let resolution_manifest = compile_with_base(input, resolution_base.clone())?;
     let mut manifest = if resolution_base == options.base_manifest {

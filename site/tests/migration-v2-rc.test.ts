@@ -41,7 +41,7 @@ test('the portable guide preserves the upgrade workflow and labels historical sy
 })
 
 test('new guide examples follow the native and named-token contract', () => {
-  const source = '@theme { :root { --color-brand: #4f46e5; } }'
+  const source = '@theme { --color-brand: #4f46e5;  }'
   const cases = [
     ['font-family-mono', 'font-family:var(--font-family-mono)'],
     ['font-weight-bold', 'font-weight:var(--font-weight-bold)'],

@@ -1,7 +1,7 @@
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only] \{#overview\}
-Theme variables connect project vocabulary to ordinary CSS custom properties. Direct declarations in `@theme` use `:root, :host`; explicit selectors and native conditions define other scopes. Master CSS keeps the managed declarations needed by generated classes or native stylesheet references; the browser resolves inheritance, the cascade, and computed values. Native declarations outside `@theme` register the same token names and retain native delivery.
+Theme variables connect project vocabulary to ordinary CSS custom properties. Declarations in `@theme` use `:root, :host`; native CSS outside the block supplies scoped overrides. Master CSS keeps the managed declarations needed by generated classes or native stylesheet references; the browser resolves inheritance, the cascade, and computed values. Only `@theme` registers utility tokens. Native custom properties retain native delivery.
 
 ```css name=index.css
 @import '@master/css';
@@ -10,10 +10,10 @@ Theme variables connect project vocabulary to ordinary CSS custom properties. Di
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
   --color-surface-card: white;
+}
   @media (prefers-color-scheme: dark) {
     :root, :host { --color-surface-card: #111827; }
   }
-}
 ```
 
 ```html
@@ -27,9 +27,9 @@ Theme variables connect project vocabulary to ordinary CSS custom properties. Di
 
 <ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
-The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer theme` under `:root, :host`. When a variable is live, every managed scope and duplicate declaration for that name stays in source order. Dependencies referenced by any of those values are also retained. Scanning does not discard theme branches whose selectors are absent from markup. Native token declarations stay in their stylesheet and do not become managed output or resource counts; their references can retain managed dependencies.
+The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer theme` under `:root, :host`. When a variable is live, every duplicate declaration for that name stays in source order. Dependencies referenced by any of those values are also retained. Native overrides stay in their stylesheet and follow its pruning policy; their references can retain managed dependencies.
 
-Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports the authored scope paths and values, not a computed result.
+Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports token declarations and modes, not a computed result.
 
 Native keyframes outside `@theme` are delivered with their stylesheet. For on-demand keyframes, define them directly inside `@theme`; used animation names and declarations retain their dependencies through compilation, SSR and runtime.
 
@@ -38,13 +38,12 @@ Write custom properties as `--<namespace>-<key>`. Reference groups role values s
 
 ```css
 @theme {
-  :root, :host {
     --color-brand: #4f46e5;
     --color-text-action: var(--color-brand);
     --color-line-divider: rgb(0 0 0 / 12%);
     --spacing-card: 1.5rem;
     --radius-card: .75rem;
-  }
+
 }
 ```
 
@@ -70,27 +69,26 @@ Use the [complete family index](/reference/tokens/families) to look up every pre
 
 Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
 
-## Native values and unconditional declarations \{#inline-and-static-variables\}
-Token utilities retain `var()` references. For unconditional declarations, write native CSS:
+## Inline and static tokens \{#inline-and-static-variables\}
+Use `inline` to substitute a token's value in generated declarations and `static` to keep its custom property even without references:
 
 ```css
-@layer theme {
-  :root, :host { --color-brand: #4f46e5; }
-}
-@keyframes fade-in { to { opacity: 1; } }
+@theme inline { --color-brand: var(--app-brand); }
+@theme static { --spacing-integration: 1.5rem; }
+:root { --app-brand: #4f46e5; }
+.dark { --app-brand: #818cf8; }
 ```
 
-The native token enables `bg-brand` when its stylesheet is part of the compiler input. It ships independently of that class's usage. Removing the layer wrapper gives it ordinary unlayered precedence. The manifest records the name and scoped value; the application must still deliver the native stylesheet. `@reference` supplies resolution context without delivering that CSS.
+`bg-brand` uses `background-color:var(--app-brand)`, resolving on the consuming element. The token is replaced once; references inside its value retain native semantics. `--spacing-integration` always emits in the theme layer. Combine both behaviors with `@theme static inline`. Handwritten native CSS retains its original `var()` references. See [theme directives](/reference/directives/theme).
 
 ## Authored scopes \{#mode-buckets\}
-Selectors and queries express alternate values inside a single theme tree. The same class follows the browser's cascade:
+Native selectors and queries outside `@theme` express alternate values. The same class follows the browser's cascade:
 
 ```css
-@theme {
-  :root, :host { --color-panel: white; --color-text-panel: #111827; }
+@theme { --color-panel: white; --color-text-panel: #111827;
+}
   .dark { --color-panel: #111827; --color-text-panel: #f9fafb; }
   [data-theme="contrast"] { --color-panel: black; --color-text-panel: yellow; }
-}
 ```
 
 ### Derived scoped values \{#derived-mode-aware-values\}
@@ -98,24 +96,25 @@ Derived values remain CSS functions, including `var()` fallbacks and `color-mix(
 
 ```css
 @theme {
+  --color-link:var(--color-brand);
+  --color-link-hover:color-mix(in oklab, var(--color-brand), black 15%);
+}
   :root, .dark {
     --color-link: var(--color-brand);
     --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
   }
-}
 ```
 
 ## Theme activation and mixin wrappers \{#mode-triggers\}
-Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes the theme tree or inserts descendant selectors automatically.
+Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes token definitions or inserts descendant selectors automatically.
 
 ```css
 @mixin --ocean {
   &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
 }
-@theme {
-  :root, :host { --color-surface: white; }
-  [data-theme="ocean"] { --color-surface: #082f49; }
+@theme { --color-surface: white;
 }
+  [data-theme="ocean"] { --color-surface: #082f49; }
 ```
 
 `bg-surface` follows the variable wherever it inherits. `padding:1rem@apply(--ocean)` uses the explicitly authored mixin selector.
@@ -124,8 +123,7 @@ Theme selectors activate values. A separate selector `@mixin` defines where an `
 The full preset uses native `light-dark()` and `color-scheme`. Choose `data-theme="light"` or `data-theme="dark"` on the root or a nested region; the preset's native stylesheet sets that region's scheme. A custom adaptive token needs only one declaration:
 
 ```css
-@theme {
-  :root, :host { --color-panel: light-dark(white, #111827); }
+@theme { --color-panel: light-dark(white, #111827);
 }
 ```
 
@@ -139,9 +137,9 @@ Default theme declarations already include `:host`. For scoped host overrides, w
 
 ```css
 @theme {
+}
   :host { --color-panel: white; }
   :host([data-theme="dark"]) { --color-panel: #111827; }
-}
 ```
 
 See the [directive contract](/reference/directives/theme) for definition scope and resource delivery.

@@ -16,7 +16,9 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
       const dependencies: string[] = []
       await expect(Promise.resolve().then(() => load({ root, entries: [entry], baseManifest: defaultBuildManifest, onDependency: file => dependencies.push(file) }))).rejects.toThrow('tokens.css')
       expect(dependencies.filter(file => file.startsWith(root))).toEqual([entry, child, missing])
-      mkdirSync(join(root, 'nested'));writeFileSync(missing, "@theme {:root, :host {--space:7rem}}\n\n")
+      mkdirSync(join(root, 'nested'));writeFileSync(missing, `@theme {--space:7rem}
+
+`)
       const observed: string[] = []
       const result = await load({ root, entries: [entry], baseManifest: defaultBuildManifest, onDependency: file => observed.push(file) })
       expect(observed.filter(file => file.startsWith(root))).toEqual([entry, child, missing]);expect(new Set(result.dependencies)).toEqual(new Set(observed))
@@ -31,7 +33,9 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
       for (const entry of entries) writeFileSync(entry, "@import \"@master/css\";@reference \"./tokens.css\";@mixin --card {@apply --all {padding:7rem;}}")
       const result = await load({ root, entries, baseManifest: defaultBuildManifest, onDependency(file) {
         observed.push(file)
-        if (file === target) writeFileSync(target, "@theme {:root, :host {--space:7rem}}\n\n")
+        if (file === target) writeFileSync(target, `@theme {--space:7rem}
+
+`)
       } })
       expect(observed.filter(file => file.startsWith(root))).toEqual([entries[0], target, entries[1]])
       expect(JSON.stringify(result.manifest)).toContain('7rem')

@@ -69,11 +69,10 @@ Store the keyframe name and playback settings together in one shorthand token. D
 
 ```css name=index.css
 @theme {
-  :root, :host {
     --duration-enter: 180ms;
     --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
     --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
-  }
+
   @keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }
@@ -85,7 +84,7 @@ Store the keyframe name and playback settings together in one shorthand token. D
 <dialog class="animate-dialog-in@motion-safe">...</dialog>
 ```
 
-Managed keyframes are generated when an animation declaration references them. Static names, token scopes and fallbacks are tracked. Unresolved dynamic names retain all managed keyframes. Put always-delivered keyframes outside `@theme`; JavaScript-only names need native keyframes or `@safelist "animation-name:dialog-in";`. See the [keyframe contract](/guide/directives#theme-static).
+Managed keyframes are generated when an animation declaration references them. Static names, token references, native overrides and fallbacks are tracked. Unresolved dynamic names retain all managed keyframes. Put always-delivered keyframes outside `@theme`; JavaScript-only names need native keyframes or `@safelist "animation-name:dialog-in";`. See the [keyframe contract](/reference/directives/theme#theme-keyframes).
 
 ## Avoid motion noise
 Keep persistent controls still until feedback is needed. Reuse duration and easing tokens so related interactions share a rhythm.

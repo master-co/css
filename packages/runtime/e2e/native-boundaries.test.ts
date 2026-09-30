@@ -8,8 +8,11 @@ import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
 @mixin --ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @contents; } }
-@theme {:root, :host { --color-probe: white; }}
-@theme { .ocean, .blue { --color-probe: blue; } }
+@theme {
+  --color-probe: white;
+}
+
+.ocean, .blue { --color-probe: blue; }
 @mixin --amp { &[data-label="&"] { @contents; } }
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })

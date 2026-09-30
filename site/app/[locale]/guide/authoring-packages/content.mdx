@@ -40,12 +40,12 @@ No bundler, TypeScript build, manifest generation, or compiled CSS output is req
 Use `master.css` for shared vocabulary that should be available to consuming projects.
 
 ```css name=master.css
-@theme { :root, :host {
+@theme {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-action-x: 1rem;
   --radius-action: 0.5rem;
-} }
+ }
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 

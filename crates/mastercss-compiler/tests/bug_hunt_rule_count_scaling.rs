@@ -24,12 +24,12 @@ enum Shape {
 fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
     let prefix = match shape {
         Shape::Variant => "@source './src/**';",
-        Shape::Theme => "@source './src/**';@theme{:root{",
+        Shape::Theme => "@source './src/**';@theme {",
         Shape::Components => "@source './src/**';",
         Shape::Media | Shape::Resources => "",
     };
     let suffix = match shape {
-        Shape::Theme => "}}",
+        Shape::Theme => "}",
         _ => "",
     };
     prefix.to_owned()
@@ -87,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: Some(serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})),
+                    base_manifest: Some(serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})),
                 },
             )
             .unwrap();

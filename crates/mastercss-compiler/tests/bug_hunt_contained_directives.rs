@@ -36,7 +36,7 @@ fn rejects_directives_in_a_flattened_qualified_import() {
 #[test]
 fn reports_the_contained_directive_name() {
     assert_eq!(
-        error_for("@layer cards{@theme{:root, :host {--color-unused:red}}}"),
+        error_for("@layer cards{@theme {--color-unused:red}}"),
         "@theme must be top-level"
     );
 }

@@ -54,7 +54,7 @@ fn removed_recipes_expand_equivalently_with_every_modifier() {
 #[test]
 fn old_namespace_precedence_is_resolved_before_rewriting() {
     let result = migrate(
-        "@theme{:root{--color-muted:red;--color-text-muted:gray;--color-text-body:black;--color-divider:green;--color-line-divider:silver;--color-surface-base:white}}",
+        "@theme {--color-muted:red;--color-text-muted:gray;--color-text-body:black;--color-divider:green;--color-line-divider:silver;--color-surface-base:white}",
         &[
             "fg-muted",
             "fg-body/.5:hover",
@@ -90,7 +90,7 @@ fn old_namespace_precedence_is_resolved_before_rewriting() {
 #[test]
 fn custom_mixins_and_family_reservations_are_never_overwritten() {
     let result = migrate(
-        "@mixin --fit{color:red}@mixin --surface(--name <string>){color:red}@mixin --fg-body{color:blue}@theme{:root{--color-surface-base:white;--color-text-body:black}}",
+        "@mixin --fit{color:red}@mixin --surface(--name <string>){color:red}@mixin --fg-body{color:blue}@theme {--color-surface-base:white;--color-text-body:black}",
         &["fit", "surface-base", "fg-body"],
     );
     assert!(

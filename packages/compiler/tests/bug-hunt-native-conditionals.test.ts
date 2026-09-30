@@ -22,7 +22,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 const wrappers = ['@media(min-width:1px)', '@supports(display:grid)', '@container card (min-width:1px)', '@layer cards', '@layer', '@starting-style']
 

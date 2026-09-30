@@ -8,8 +8,8 @@ Master CSS directives describe token definitions, reusable utility names, named 
 
 @theme {
   --color-brand: #4f46e5;
-  [data-theme="ocean"] { --color-brand: #0369a1; }
 }
+  [data-theme="ocean"] { --color-brand: #0369a1; }
 
 @custom-media --wide (width >= 60rem);
 @mixin --card-layout { display: grid; gap: var(--spacing-md); }
@@ -117,7 +117,7 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions, and native token names and scoped values for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native token values and native keyframes need an actual `@import` or another delivered stylesheet; recognizing a token does not deliver its definition.
+A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions, for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides and native keyframes need an actual `@import` or another delivered stylesheet.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
@@ -127,40 +127,45 @@ The standalone API accepts absolute `referenceFiles` and `transformNativeStylesh
 
 ## Theme and conditions \{#theme-and-variants\}
 ### `@theme` \{#theme\}
-Declare on-demand custom properties. Direct declarations use the default `:root, :host` scope; use explicit native selectors for other scopes. A theme block must be top-level and has no prelude or modifiers.
+Declare utility tokens as custom properties. A theme block must be top-level and accepts only token declarations and direct `@keyframes` definitions.
 
 ```css
 @theme {
-  --color-panel: white;
-  --color-panel: oklch(98% .01 250);
-
-  @media (prefers-color-scheme: dark) {
-    :root, :host { --color-panel: #111827; }
-  }
-
-  [data-theme="ocean"] {
-    --color-panel: var(--color-ocean);
-  }
-
-  :root { --color-ocean: #082f49; }
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
 }
 ```
 
-The compiler wraps each consecutive run of direct declarations in `:root, :host` at its authored position. It preserves selector order, declaration order, repeated declarations, and native nesting. Explicit selectors remain independent rules, not descendants of the default selector. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`; declarations inside a condition still require an explicit selector unless already nested inside one. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules.
+Unknown or repeated modifiers are errors. The `static` and `inline` modifiers can appear in either order.
 
-Theme declarations are emitted in the `theme` layer. A used token retains every managed declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values, including native delivery metadata; it does not claim to know the value for a particular DOM element.
+| Declaration | Token delivery | Generated value |
+| --- | --- | --- |
+| `@theme` | On demand | `var(--token)` |
+| `@theme static` | Always | `var(--token)` |
+| `@theme inline` | On demand when directly referenced | Declared value |
+| `@theme static inline` | Always | Declared value |
 
-Native custom-property declarations also register tokens using the same namespaces and named-mixin rules. For example, `:root { --color-brand: red; }` enables `bg-brand` and `fg-brand`. Registration does not move the declaration, change its layer, make its value global, or emit it again. A token declared only under `.card` has a value only in that scope and its inheritance descendants. Keyframe-local declarations, `@property` descriptors and unexpanded mixin bodies do not register native tokens.
+Tokens emit in `@layer theme` under `:root, :host`. The compiler preserves declaration order and repeated values. Used tokens retain their transitive variable dependencies. Selectors and conditional rules belong in native CSS outside the block.
 
-Only stylesheets supplied to compilation or reference resolution participate in this catalog. Runtime `style` changes and a newly loaded browser stylesheet do not add names to an existing manifest. Use an explicit class such as `background-color:var(--color-brand)` for a variable supplied independently of the catalog.
+Only `@theme` registers named tokens for utility families and named mixins. A native declaration such as `:root { --app-brand: red; }` remains ordinary CSS; use it directly with `color:var(--app-brand)` or bridge it through an inline theme token.
 
-The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` media conditions continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting and browser support.
+### Native theme overrides \{#theme-mode\}
+Register the default value in `@theme`, then override the variable using native selectors or queries:
 
-### Authored theme scopes \{#theme-mode\}
-Put selectors and conditions inside `@theme`, as in the example above, or use native CSS for always-delivered overrides. Only direct theme declarations receive the default `:root, :host` selector; explicit selectors are preserved.
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+@media (prefers-color-scheme: dark) {
+  :root { --color-panel: #111827; }
+}
+```
+
+Native overrides retain their authored scope, layer, and stylesheet delivery. The browser resolves the cascade and inheritance. Unlayered normal overrides outrank normal theme-layer declarations on the same element. A later layer such as `defaults` also gives overrides priority while allowing component and utility layers to take precedence. Import the native stylesheet wherever its overrides are needed; `@reference` supplies definitions without delivering those rules.
+
+The preset uses native `light-dark()` for adaptive colors and shadows. Both variable branches remain dependencies. Its native base CSS sets the root to `color-scheme: light dark`, with light/dark `data-theme` selectors for elements and shadow hosts. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
 
 ### Theme activation and selector wrappers \{#mode\}
-Theme activation comes from native selectors and queries. Define a selector `@mixin` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
+Native selectors and queries activate theme overrides. A mixin can provide a matching class condition:
 
 ```css
 @mixin --ocean {
@@ -168,34 +173,35 @@ Theme activation comes from native selectors and queries. Define a selector `@mi
 }
 ```
 
-This enables `color:white@apply(--ocean)`. Theme declarations can independently use `[data-theme="ocean"]`. Add explicit `:host(...)` selectors where a shadow tree requires them.
+Use `color:white@apply(--ocean)`. Add explicit `:host(...)` selectors when targeting a shadow host.
 
-### Token references and the native cascade \{#theme-inline\}
-Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
-
-An alias such as `--color-action: var(--color-brand)` resolves in its declaring scope. Overriding only `--color-brand` in a descendant does not rebind an inherited `--color-action`; redeclare the alias there or override the semantic token directly.
-
-### Always-delivered native resources \{#theme-static\}
-Put tokens that should ship with their stylesheet in native CSS:
+### `@theme inline` \{#theme-inline\}
+Use `inline` to substitute a token's declared value into Master-generated declarations:
 
 ```css
-:root, :host {
-  --color-brand: #4f46e5;
-}
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
 ```
 
-This registers `bg-brand` without managed token pruning. Native CSS keeps its authored layer and position. Use `@layer theme { :root, :host { --color-brand: #4f46e5; } }` when it should share the theme layer: unlayered normal declarations otherwise outrank layered normal declarations on the same element. Explicit native pruning and stylesheet delivery options still apply.
+`bg-brand` emits `background-color:var(--app-brand)`, resolving the native variable on the element using the class. The same substitution applies to direct declaration classes, mixin classes, and native `@apply` expansion. Handwritten native declarations retain their authored `var()` references.
 
-A delivered native declaration that references a managed token retains that dependency even without a utility class. Keep large scoped token collections inside `@theme` when they should be pruned on demand. Native keyframes outside `@theme` ship with their stylesheet:
+Substitution runs once. Variables, functions, and fallbacks inside the replacement value keep native CSS semantics. Dependencies are collected from the resulting declarations; using an inline utility alone does not force its replaced token to emit. A direct native reference to the token can still retain its declaration.
+
+For repeated theme definitions, importance and then source order select the inline value and mode. Custom-property `!important` does not make the generated utility important. Ordinary aliases resolve in their declaring scope; use inline when a bridge must read another variable at its use site.
+
+### `@theme static` \{#theme-static\}
+Use `static` when tokens must be emitted even without a class or native reference:
 
 ```css
-@keyframes reveal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@theme static { --color-integration: #4f46e5; }
+@theme static inline { --color-brand: var(--app-brand); }
 ```
 
-For on-demand animation definitions, put `@keyframes` directly inside a top-level `@theme`, beside its selector rules:
+`static` controls token delivery; `inline` controls generated values. They can be combined in either order. A token with any static declaration stays retained, together with its dependencies, until its definition is removed. Referenced stylesheets do not become output roots merely because their tokens are static.
+
+### Managed keyframes \{#theme-keyframes\}
+Define on-demand keyframes directly inside `@theme`:
 
 ```css
 @theme {
@@ -207,14 +213,13 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 }
 ```
 
-`animate-reveal`, `animation-name:reveal`, or a retained native animation declaration retains this definition. Native `@apply` output is analyzed after expansion. Unused mixins and undelivered reference styles are not roots. Definitions emit as top-level keyframes after generated layer blocks, in final definition order. The last same-name managed definition completely replaces earlier ones; decoded identifiers and strings compare case-sensitively. A managed/native same-name collision in the delivered graph is an error with both source locations.
+Animation utilities, direct animation declarations, and retained native animation declarations keep their referenced keyframes and transitive token dependencies. Static animation tokens also retain their referenced definitions; static does not force every keyframe in the block to emit. Unresolved dynamic animation names conservatively retain all managed keyframes and produce an information diagnostic.
 
+Managed keyframes emit outside generated layers, in final definition order. A later same-name definition replaces the complete earlier definition; decoded names are case-sensitive. Delivered native and managed definitions with the same name are an error. Keyframes outside `@theme` retain native stylesheet delivery.
 
-Managed keyframes cannot be registered inside theme selectors, conditions, layers or mixins. Frames contain native declarations; mixin expansion with `@apply` inside frames is unsupported. Native keyframes remain available for these delivery requirements. JavaScript-created animations and later JavaScript changes to custom properties are not observed. Use native keyframes or `@safelist "animation-name:reveal";` for those names.
+Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Undelivered reference styles and unused mixins are not usage roots. For names introduced only by JavaScript, use a native definition or `@safelist "animation-name:reveal";`.
 
-HMR supplies a complete emitted-globals snapshot to `runtime.refresh(manifest, emittedGlobals)`. Engine callers can use `replaceEmittedGlobals()` for replacement or `registerEmittedGlobals()` for additional ownership. Hydration records separate variable and keyframe order, including when both resources share a name.
-
-CSS Modules may rename literal animation identifiers. To consume a global native keyframe across bundlers, declare a native animation variable in the global theme (for example `--motion-reveal: reveal .2s`) and use `animation: var(--motion-reveal)` inside the module. This retains normal variable inheritance and avoids depending on a bundler-specific `global()` animation syntax.
+Runtime HMR replaces the complete emitted-globals snapshot. Hydration records separate token and keyframe ownership so resources already delivered by a stylesheet are not emitted twice.
 
 ### `@custom-media` \{#custom-media\}
 Define named media queries using the [CSS Media Queries specification](https://drafts.csswg.org/mediaqueries-5/#custom-mq):
@@ -229,7 +234,7 @@ Define named media queries using the [CSS Media Queries specification](https://d
 @media (--reading) { .article { max-width: 70ch; } }
 ```
 
-Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, theme scopes, mixin definitions, and markup queries.
+Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, mixin definitions, and markup queries.
 
 Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
 
@@ -295,11 +300,10 @@ A mixin with exactly one `<string>` parameter gains a named family when a matchi
 
 ```css
 @theme {
-  :root, :host {
     --text-hero: var(--font-size-5xl);
     --text-hero--line-height: 1.15;
     --text-hero--letter-spacing: -.03em;
-  }
+
 }
 @mixin --text(--step <string>) {
   font-size: var(ident("--text-" var(--step)));
@@ -315,7 +319,7 @@ The rule is generic, with no engine-specific typography recipe. `font-size-sm` s
 Exact no-parameter mixins take priority. Families use the longest prefix; at the same prefix a named mixin wins over the built-in token mapping. A selected family with an unknown token reports an error and does not retry another interpretation. Built-in negative values and color opacity remain available where supported, but named mixins do not inherit those operations. `p-4` means the token named `4`; `grid-cols-3` does not imply a numeric argument.
 
 ### Static arguments \{#dynamic-values\}
-Arguments must be statically known. External `var()`, `attr()`, and other browser-dependent values cannot be passed as parameters. A known outer mixin parameter may be forwarded using `var(--parameter)`. Ordinary theme `var()` references in the mixin body remain native CSS and keep all authored scopes.
+Arguments must be statically known. External `var()`, `attr()`, and other browser-dependent values cannot be passed as parameters. A known outer mixin parameter may be forwarded using `var(--parameter)`. Theme references in the mixin body use the token mode: ordinary tokens retain `var()` references; inline tokens substitute their declared value once.
 
 ```css
 @mixin --pair(--size) {
@@ -378,13 +382,13 @@ The last definition with the same decoded name replaces the entire previous mixi
 ### Definition scope and imports \{#definition-scope-and-imports\}
 `@theme`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
 
-Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve every authored scope and transitive dependency. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
+Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v4 with languageVersion 11 and binding ABI 21. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v4 with languageVersion 12 and binding ABI 21. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
 
-<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
 <StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />
 
@@ -797,9 +801,9 @@ Stylesheet declarations and `@theme` values use native CSS token streams. Master
 Use lexical `var(--parameter)` references in a mixin body. `--value()` is always an ordinary native function. `--alpha()` has no compiler meaning. Use native `color-mix()` for opacity expressions:
 
 ```css
-@theme { :root {
+@theme {
   --color-muted: color-mix(in oklab, var(--color-primary) 50%, transparent);
-} }
+ }
 ```
 
 For queries outside the [simple class query subset](/guide/conditional-queries), define a `@custom-media` or a mixin wrapper in CSS. Authored CSS queries retain native syntax and do not decode class whitespace.

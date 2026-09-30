@@ -22,7 +22,7 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
             @media (prefers-color-scheme: dark) { @contents; }
         }
         @mixin --sm { @media (width >= 40rem) { @contents; } }
-        @theme { :root { --color-brand: red; --paint-brand: var(--color-brand); } }
+        @theme { --color-brand: red; --paint-brand: var(--color-brand);  }
         @mixin --paint(--key <string>) { color: var(ident("--paint-" var(--key))); }
         "#,
     );

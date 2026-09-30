@@ -258,11 +258,6 @@ pub fn compile_css_stylesheet_graph(
             *definition = refined.next().expect("one refined slot definition");
         }
         if let Some(css) = &relocated {
-            for token in result.manifest_input.native_tokens.iter_mut().flatten() {
-                if let Some(reference) = &mut token.source {
-                    css.restore_reference(original_source, reference);
-                }
-            }
             for definition in result.manifest_input.keyframes.iter_mut().flatten() {
                 if let Some(reference) = &mut definition.source {
                     css.restore_reference(original_source, reference);
@@ -319,9 +314,6 @@ pub fn compile_css_stylesheet_graph(
         combined.mixin_sources.extend(result.mixin_sources.clone());
         let mut delivered_input = result.manifest_input.clone();
         delivered_input.animation_variables = None;
-        for token in delivered_input.native_tokens.iter_mut().flatten() {
-            token.path.splice(0..0, path.iter().cloned());
-        }
         merge_input(&mut input, &delivered_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
@@ -378,6 +370,9 @@ pub fn compile_css_stylesheet_graph(
             base_manifest: request
                 .resolution_manifest
                 .clone()
+                .map(|manifest| {
+                    crate::manifest::reference_context(manifest, request.base_manifest.as_ref())
+                })
                 .or_else(|| request.base_manifest.clone()),
         },
     )?

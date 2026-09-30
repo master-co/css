@@ -69,7 +69,10 @@ test('loads the grammar through a dynamic Shiki language import', async () => {
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme {:root, :host { --color-primary: var(--value); }}\n"
+    const code = `@theme {
+  --color-primary: var(--value);
+}
+`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -90,7 +93,17 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@mixin --btn {\n        @safelist \"display:inline-flex fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
+    const code = `@theme {
+  --color-primary: var(--color-blue-60);
+}
+
+@mixin --btn {
+        @safelist "display:inline-flex fg-primary:hover@md";
+    }
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -109,7 +122,15 @@ test('preserves guide theme source through TextMate tokenization', async () => {
   })
 
   try {
-    const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
+    const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    /* Font families */
+    --tracking-tightest: -0.072em;
+}
+`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme

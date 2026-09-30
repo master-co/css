@@ -1,1 +1,1 @@
-@layer theme{@media (prefers-color-scheme:light){:root,:host{--color-primary:#000}}@media (prefers-color-scheme:dark){:root,:host{--color-primary:#fff}}}@layer utilities{.bg-primary{background-color:var(--color-primary)}}
+@layer theme{:root,:host{--color-primary:#000}}@layer utilities{.bg-primary{background-color:var(--color-primary)}}

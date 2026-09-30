@@ -226,7 +226,10 @@ describe('renderNextBuildOutputs', () => {
     const entryFile = join(projectDir, 'app/globals.css')
     mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryFile, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123456; }}\n\n.host { color: var(--color-primary); }")
+    writeFileSync(entryFile, `@import url("@master/css");
+@theme { --color-primary: #123456; }
+
+.host { color: var(--color-primary); }`)
     writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-primary">Hello</h1></body></html>')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))

@@ -228,11 +228,11 @@ Use viewport breakpoints when the whole page shell changes. Use container querie
 When a dimension becomes part of the product language, add a named container variable in the project CSS entry. Use explicit CSS lengths for fixed values; functions are preserved.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --container-sidebar: 17.5rem;
   --container-measure: 72ch;
   --container-panel: clamp(18rem, 50vw, 42rem);
-} }
+ }
 
 ```
 

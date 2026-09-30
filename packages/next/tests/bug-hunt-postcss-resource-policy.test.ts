@@ -15,9 +15,10 @@ interface Root {
 }
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
-const source = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old)}"
+const source = `@theme {--color-old:#111111;--color-late:#abcdef}
+.card{color:var(--color-old)}`
 function declarations(root: Root) {
   const values: [string, string][] = []
   root.walkDecls(declaration => values.push([declaration.prop, declaration.value]))

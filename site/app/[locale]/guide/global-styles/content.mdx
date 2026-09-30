@@ -17,10 +17,10 @@ Use the app stylesheet for project-wide styling inputs:
 ```css name=app.css
 @import "@master/css";
 
-@theme { :root, :host {
+@theme {
   --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
-} }
+ }
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 ```
@@ -87,12 +87,12 @@ Treat the app typeface as global vocabulary. Put reusable font families and Open
 ```css name=globals.css
 @import "@master/css";
 
-@theme { :root, :host {
+@theme {
   --font-sans: "Geist", "Noto Sans TC";
   --font-mono: "IBM Plex Mono";
   --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
   --font-feature-mono: "cv01", "cv02", "cv29";
-} }
+ }
 
 ```
 
@@ -127,10 +127,10 @@ Do not abstract just to shorten a class list. Abstract when the name improves pr
 When the repeated part is a value, make it a token instead of a class:
 
 ```css name=app.css
-@theme { :root, :host {
+@theme {
   --color-brand: var(--color-blue-60);
   --spacing-action-x: 1rem;
-} }
+ }
 
 ```
 

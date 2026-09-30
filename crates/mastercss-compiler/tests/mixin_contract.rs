@@ -32,7 +32,7 @@ fn css(source: &str, classes: &[&str]) -> String {
 
 const GRID: &str = "@mixin --grid-cols(--cols <integer>){display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr))}";
 const TEXT: &str = r#"
-@theme {:root,:host {--text-sm:.875rem;--text-sm--line-height:1.5;--text-sm--letter-spacing:0;--text-unused:3rem}}
+@theme {--text-sm:.875rem;--text-sm--line-height:1.5;--text-sm--letter-spacing:0;--text-unused:3rem}
 @mixin --text(--step <string>) {
   font-size:var(ident("--text-" var(--step)));
   line-height:var(ident("--text-" var(--step) "--line-height"),normal);
@@ -181,7 +181,7 @@ fn parameters_are_private_and_do_not_cross_element_boundaries() {
 
 #[test]
 fn token_maps_work_without_preset_utility_definitions() {
-    let source = "@theme{:root{--font-size-sm:.875rem;--font-family-sans:system-ui;--font-weight-bold:700;--spacing-md:1rem;--color-red-60:red;--color-surface-base:white}}";
+    let source = "@theme {--font-size-sm:.875rem;--font-family-sans:system-ui;--font-weight-bold:700;--spacing-md:1rem;--color-red-60:red;--color-surface-base:white}";
     let output = css(
         source,
         &[
@@ -203,7 +203,7 @@ fn token_maps_work_without_preset_utility_definitions() {
     ] {
         assert!(output.contains(declaration), "{declaration}: {output}");
     }
-    let session = engine("@theme{:root{--font-size-brand:1rem;--font-family-brand:serif}}");
+    let session = engine("@theme {--font-size-brand:1rem;--font-family-brand:serif}");
     assert!(
         session
             .inspect("font-brand")
@@ -298,7 +298,7 @@ fn functional_arguments_preserve_strings_escapes_and_nested_functions() {
 
 #[test]
 fn missing_companions_keep_css_fallbacks_and_do_not_create_named_classes() {
-    let source = r#"@theme{:root{--text-hero:3rem;--text-orphan--line-height:2}}@mixin --text(--step <string>){font-size:var(ident("--text-" var(--step)));line-height:var(ident("--text-" var(--step) "--line-height"),normal)}"#;
+    let source = r#"@theme {--text-hero:3rem;--text-orphan--line-height:2}@mixin --text(--step <string>){font-size:var(ident("--text-" var(--step)));line-height:var(ident("--text-" var(--step) "--line-height"),normal)}"#;
     let output = css(source, &["text-hero"]);
     assert!(
         output.contains("line-height:var(--text-hero--line-height,normal)"),
@@ -327,7 +327,7 @@ fn missing_companions_keep_css_fallbacks_and_do_not_create_named_classes() {
 
 #[test]
 fn explicit_mixin_families_reserve_the_longest_prefix() {
-    let source = r#"@theme{:root{--spacing-md:1rem;--p-brand:2rem;--p-wide-hero:4rem}}@mixin --p(--key <string>){margin:var(ident("--p-" var(--key)))}@mixin --p-wide(--key <string>){padding:var(ident("--p-wide-" var(--key)))}@mixin --p-brand{color:red}"#;
+    let source = r#"@theme {--spacing-md:1rem;--p-brand:2rem;--p-wide-hero:4rem}@mixin --p(--key <string>){margin:var(ident("--p-" var(--key)))}@mixin --p-wide(--key <string>){padding:var(ident("--p-wide-" var(--key)))}@mixin --p-brand{color:red}"#;
     assert!(css(source, &["p-brand"]).contains("color:red"));
     assert!(css(source, &["p-wide-hero"]).contains("padding:var(--p-wide-hero)"));
     for class in ["p-md", "p-wide-missing", "p-brand/.5", "-p-brand"] {
@@ -463,7 +463,7 @@ fn native_apply_dependencies_survive_dom_removal_and_hydration() {
 fn refreshing_theme_and_mixins_releases_previous_expanded_resources() {
     let mut session = engine(TEXT);
     session.ensure_class_rules(["text-sm"]).unwrap();
-    let replacement = compile("@theme{:root{--text-sm:2rem;--color-new:red}}@mixin --text(--step <string>){color:var(--color-new)}").unwrap();
+    let replacement = compile("@theme {--text-sm:2rem;--color-new:red}@mixin --text(--step <string>){color:var(--color-new)}").unwrap();
     session.refresh(&replacement.manifest.to_string()).unwrap();
     let snapshot = session.snapshot().unwrap();
     assert!(
@@ -547,7 +547,7 @@ fn same_element_selector_lists_and_ancestor_variants_keep_parameters() {
 
 #[test]
 fn builtin_function_names_and_escaped_parameter_identifiers_follow_css_rules() {
-    let source = r#"@theme{:root{--step-hero:2rem}}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p))) }@mixin --outer(--step <string>){@apply --label(VAR(--step))}"#;
+    let source = r#"@theme {--step-hero:2rem}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p))) }@mixin --outer(--step <string>){@apply --label(VAR(--step))}"#;
     let output = css(source, &["outer('hero')"]);
     assert!(output.contains("font-size:VAR(--step-hero)"), "{output}");
     assert!(output.contains("--step-hero:2rem"), "{output}");

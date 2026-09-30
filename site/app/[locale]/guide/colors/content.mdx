@@ -229,15 +229,15 @@ Brand values can use the same native selectors:
 
 ```css
 @theme {
+}
   [data-theme="ocean"], :host([data-theme="ocean"]) {
     --color-surface-base: light-dark(#eff6ff, #082f49);
   }
-}
 ```
 
 The ocean token remains adaptive to the inherited color scheme. To make ocean always dark, add a native `[data-theme="ocean"], :host([data-theme="ocean"]) { color-scheme: dark; }` rule. A nested light region changes the scheme but still inherits the ocean token; it does not reset every token to the default brand. If brand and scheme vary independently, use `[data-brand="ocean"]` for the brand and `data-theme="light"` or `data-theme="dark"` for the scheme. Restore a complete brand by explicitly redeclaring its role tokens at that boundary.
 
-Move a token definition outside `@theme` when it should always ship with its native stylesheet. It still provides the same named utilities. Native overrides keep their original cascade layer; see the [theme delivery contract](/reference/directives/theme#theme-static).
+Use `@theme static` when a token should always ship while providing named utilities. Native custom properties outside `@theme` do not register utility tokens. Native overrides keep their original cascade layer; see the [theme delivery contract](/reference/directives/theme#theme-static).
 
 The preset `@light` and `@dark` class suffixes still mean **system preference media queries**. A manual theme changes tokens and native controls but does not activate these suffixes. If an application needs a selector variant, declare a separate name:
 

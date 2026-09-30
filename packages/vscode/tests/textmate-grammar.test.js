@@ -223,7 +223,7 @@ test('does not change native CSS TextMate scopes when injected', () => {
 })
 
 test('delegates top-level keyframes and scoped theme declarations to native CSS', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@theme { :root { --font-sans: "Inter"; } }
+  const tokens = tokenizeWith(injectedCSSGrammar, `@theme { --font-sans: "Inter";  }
 @keyframes zoom { 0% { transform: scale(0); } to { transform: none; } }`)
   expectScope(tokens, 'zoom', 'variable.parameter.keyframe-list.css')
   expectScope(tokens, '0%', 'entity.other.keyframe-offset.percentage.css')
@@ -275,7 +275,7 @@ test('highlights all retained directive keywords', () => {
 @preserve native;
 @prune native;
 @reference "./tokens.css";
-@theme { :root { --color: red; } }
+@theme { --color: red;  }
 @mixin --box { display: block; }
 @custom-media --wide (width >= 48rem);
 @mixin --hocus { &:hover { @contents; } }

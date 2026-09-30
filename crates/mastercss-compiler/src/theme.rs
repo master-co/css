@@ -1,8 +1,7 @@
-//! Native theme trees are preserved in author order. Token liveness filters
-//! declarations, never selector branches; CSS computes the active scoped value.
+//! Theme tokens use one default scope; modes affect delivery and generated values.
 use super::{
     CompilerError, CssDirectiveManifestInput, CssRule, ParserOptions, StyleSheet, ThemeAtRule,
-    directive_error, minified_css,
+    directive_error,
 };
 use mastercss_schema::ThemeNode;
 
@@ -14,13 +13,41 @@ pub(crate) fn lower_theme_rule(
     rule: ThemeAtRule,
     input: &mut CssDirectiveManifestInput,
 ) -> Result<(), CompilerError> {
-    if !rule.prelude.parts.is_empty() {
-        return Err(directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme does not accept modes, inline or static; use explicit native selectors and conditions",
-        ));
+    let mut inline = false;
+    let mut is_static = false;
+    let prelude_end = rule
+        .body_start_byte
+        .unwrap_or(source.len())
+        .min(source.len());
+    let prelude_tokens =
+        mastercss_lexer::tokenize_css_syntax(&source[rule.start_byte..prelude_end]);
+    for (index, mode) in rule.prelude.parts.iter().enumerate() {
+        let error = |message: String| {
+            let token = prelude_tokens.get(index + 1);
+            let start = rule.start_byte + token.map_or(0, |token| token.bytes.start);
+            let end = rule.start_byte + token.map_or(6, |token| token.bytes.end);
+            crate::syntax::ranged_directive_diagnostic(
+                source,
+                filename,
+                start,
+                end,
+                mastercss_schema::ErrorCode::CssDirectiveError,
+                message,
+            )
+        };
+        let target = match mode.as_str() {
+            "inline" => &mut inline,
+            "static" => &mut is_static,
+            _ => {
+                return Err(error(
+                    "@theme accepts only static and inline modifiers".into(),
+                ));
+            }
+        };
+        if *target {
+            return Err(error(format!("Duplicate @theme modifier: {mode}")));
+        }
+        *target = true;
     }
     let body = rule.body.as_deref().ok_or_else(|| {
         directive_error(source, filename, rule.start_byte, "@theme requires a block")
@@ -29,6 +56,8 @@ pub(crate) fn lower_theme_rule(
         source,
         filename,
         body,
+        inline,
+        is_static,
         offset: rule.body_start_byte.unwrap_or(rule.start_byte),
     };
     let (native_body, mut ordered) = context.defaults()?;
@@ -105,25 +134,15 @@ pub(crate) fn lower_theme_rule(
                     ),
                 });
         } else {
-            let loc = match &child {
-                CssRule::Style(rule) => rule.loc,
-                CssRule::Media(rule) => rule.loc,
-                CssRule::Supports(rule) => rule.loc,
-                CssRule::Container(rule) => rule.loc,
-                CssRule::Scope(rule) => rule.loc,
-                CssRule::StartingStyle(rule) => rule.loc,
-                _ => {
-                    // Reuse the strict theme diagnostic for unsupported rules.
-                    context.rules(vec![child], false, &index)?;
-                    continue;
-                }
-            };
-            let start = index
-                .byte_offset_for_location(loc.line, loc.column)
-                .unwrap_or_default();
-            ordered.push((start, context.rules(vec![child], false, &index)?));
+            return Err(directive_error(
+                source,
+                filename,
+                context.offset,
+                "@theme only accepts custom-property declarations and direct @keyframes",
+            ));
         }
     }
+
     ordered.sort_by_key(|(start, _)| *start);
     input
         .theme
@@ -137,6 +156,8 @@ struct ThemeContext<'a> {
     filename: &'a str,
     body: &'a str,
     offset: usize,
+    inline: bool,
+    is_static: bool,
 }
 
 impl ThemeContext<'_> {
@@ -156,8 +177,32 @@ impl ThemeContext<'_> {
         let mut adjacent = false;
         for statement in children {
             if !statement.declaration {
+                let token = &tokens[statement.tokens.start];
+                if !matches!(&token.kind, mastercss_lexer::CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("keyframes"))
+                {
+                    return Err(crate::syntax::ranged_directive_diagnostic(
+                        self.source,
+                        self.filename,
+                        self.offset + token.bytes.start - 2,
+                        self.offset + token.bytes.end - 2,
+                        mastercss_schema::ErrorCode::CssDirectiveError,
+                        "@theme only accepts custom-property declarations and direct @keyframes",
+                    ));
+                }
                 adjacent = false;
                 continue;
+            }
+            let property = &tokens[statement.tokens.start];
+            if !matches!(&property.kind, mastercss_lexer::CssSyntaxKind::Ident(name) if name.starts_with("--") && name.len() > 2)
+            {
+                return Err(crate::syntax::ranged_directive_diagnostic(
+                    self.source,
+                    self.filename,
+                    self.offset + property.bytes.start - 2,
+                    self.offset + property.bytes.end - 2,
+                    mastercss_schema::ErrorCode::CssDirectiveError,
+                    "@theme only accepts custom-property declarations",
+                ));
             }
             let start = tokens[statement.tokens.start].bytes.start - 2;
             let end = tokens
@@ -194,7 +239,7 @@ impl ThemeContext<'_> {
                 range.start,
                 vec![ThemeNode::Rule {
                     prelude: ":root,:host".into(),
-                    children: self.declarations(&block, range.start, true)?,
+                    children: self.declarations(&block, range.start)?,
                 }],
             ));
             for byte in &mut masked[range] {
@@ -210,7 +255,6 @@ impl ThemeContext<'_> {
         &self,
         block: &lightningcss::declaration::DeclarationBlock<'_>,
         start: usize,
-        has_selector: bool,
     ) -> Result<Vec<ThemeNode>, CompilerError> {
         let mut declarations = crate::collect_ordered_declarations(block, self.filename)?;
         crate::declarations::preserve_ordered_declaration_sequence(
@@ -218,14 +262,6 @@ impl ThemeContext<'_> {
             start,
             &mut declarations,
         );
-        if !has_selector && !declarations.is_empty() {
-            return Err(directive_error(
-                self.source,
-                self.filename,
-                self.offset + start,
-                "@theme declarations require an explicit selector",
-            ));
-        }
         declarations
             .into_iter()
             .map(|declaration| {
@@ -252,94 +288,10 @@ impl ThemeContext<'_> {
                 Ok(ThemeNode::Declaration {
                     name: name.to_owned(),
                     value: value.to_owned(),
+                    inline: self.inline,
+                    is_static: self.is_static,
                 })
             })
             .collect()
-    }
-
-    fn rules(
-        &self,
-        rules: Vec<CssRule<'_>>,
-        has_selector: bool,
-        index: &crate::source_index::SourceIndex<'_>,
-    ) -> Result<Vec<ThemeNode>, CompilerError> {
-        if rules.is_empty() {
-            return Ok(Vec::new());
-        }
-        let mut output = Vec::new();
-        for rule in rules {
-            let (prelude, children) = match rule {
-                CssRule::Style(style) => {
-                    let start = index
-                        .byte_offset_for_location(style.loc.line, style.loc.column)
-                        .unwrap_or_default();
-                    let open =
-                        crate::pattern::css_statement_delimiter(self.body, start, self.body.len())
-                            .map(|(open, _)| open + 1)
-                            .unwrap_or(start);
-                    let mut children = self.declarations(&style.declarations, open, true)?;
-                    children.extend(self.rules(style.rules.0, true, index)?);
-                    (
-                        crate::printed_selectors(&style.selectors.0, self.filename)?.join(","),
-                        children,
-                    )
-                }
-                CssRule::NestedDeclarations(rule) => {
-                    let start = index
-                        .byte_offset_for_location(rule.loc.line, rule.loc.column)
-                        .unwrap_or_default();
-                    output.extend(self.declarations(&rule.declarations, start, has_selector)?);
-                    continue;
-                }
-                CssRule::Media(rule) => (
-                    format!("@media {}", minified_css(&rule.query, self.filename)?),
-                    self.rules(rule.rules.0, has_selector, index)?,
-                ),
-                CssRule::Supports(rule) => (
-                    format!(
-                        "@supports {}",
-                        minified_css(&rule.condition, self.filename)?
-                    ),
-                    self.rules(rule.rules.0, has_selector, index)?,
-                ),
-                CssRule::Container(rule) => {
-                    let mut parts = Vec::new();
-                    if let Some(name) = &rule.name {
-                        parts.push(minified_css(name, self.filename)?);
-                    }
-                    if let Some(condition) = &rule.condition {
-                        parts.push(minified_css(condition, self.filename)?);
-                    }
-                    (
-                        format!("@container {}", parts.join(" ")),
-                        self.rules(rule.rules.0, has_selector, index)?,
-                    )
-                }
-                CssRule::Scope(rule) => {
-                    let mut prelude = "@scope".to_owned();
-                    if let Some(start) = &rule.scope_start {
-                        prelude.push_str(&format!(" ({})", minified_css(start, self.filename)?));
-                    }
-                    if let Some(end) = &rule.scope_end {
-                        prelude.push_str(&format!(" to ({})", minified_css(end, self.filename)?));
-                    }
-                    (prelude, self.rules(rule.rules.0, has_selector, index)?)
-                }
-                CssRule::StartingStyle(rule) => (
-                    "@starting-style".into(),
-                    self.rules(rule.rules.0, has_selector, index)?,
-                ),
-                _ => {
-                    return Err(directive_error(
-                        self.source,
-                        self.filename,
-                        self.offset,
-                        "@theme only accepts native selectors, @media, @supports, @container, @scope and @starting-style; managed keyframes must be direct children of @theme",
-                    ));
-                }
-            };
-            output.push(ThemeNode::Rule { prelude, children });
-        }
-        Ok(output)
     }
 }

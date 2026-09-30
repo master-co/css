@@ -1,8 +1,8 @@
-@theme {:root, :host {
+@theme {
   --color-white: oklch(100% 0 none);
-}}
+}
 
 
-@theme {:root, :host {
+@theme {
   --secondary: var(--color-white);
-}}
+}

@@ -6,7 +6,7 @@ import highlightedCodeText from './highlighted-code-text'
 
 test('highlightCode renders Master CSS semantic spans only for CSS directive class lists', async () => {
   const hast = await highlightCode([
-    '@theme {',
+    "@theme {",
     '    :root { --color-primary: var(--color-blue-60); }',
     '}',
     '@safelist "display:inline-flex fg-text-red:hover@md";',
@@ -26,7 +26,9 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
 test('highlightCode keeps directive and query colors aligned with native CSS in both themes', async () => {
   const source = [
     '@import "base.css";',
-    '@theme { :root { --color-brand: red; } }',
+    `@theme {
+  --color-brand: red;
+}`,
     '@safelist "fg-red@md"; @layer components { .btn { @media (width < 40rem) { color: red; } } }',
     '@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }'
   ].join('\n')
@@ -44,7 +46,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   }
 
   assert.equal(highlightedCodeText(hast), source)
-  for (const keyword of ['@theme', '@layer', '@safelist', '@mixin', '@media', '@contents']) {
+  for (const keyword of ["@theme", '@layer', '@safelist', '@mixin', '@media', '@contents']) {
     assert.equal(styleOf(keyword), styleOf('@import'), keyword)
   }
   assert.equal(styleOf('@md', true), styleOf('@import'))
@@ -53,7 +55,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
 
 test('highlightCode leaves guide theme native values to TextMate without marking comments', async () => {
   const hast = await highlightCode([
-    '@theme light {',
+    "@theme light {",
     '    /* Font families */',
     '    --tracking-tightest: -0.072em;',
     '}'

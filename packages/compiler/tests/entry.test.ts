@@ -61,7 +61,9 @@ test('resolves package stylesheet entry before requiring the package JavaScript 
         }
       }
     }))
-    writeFileSync(join(packageRoot, 'src/index.css'), "@theme {:root, :host { --color-primary: #123456; }}\n\n")
+    writeFileSync(join(packageRoot, 'src/index.css'), `@theme { --color-primary: #123456; }
+
+`)
     writeFileSync(entryFile, '@import "@master/css";')
 
     const packageStyleEntry = join(realpathSync(packageRoot), 'src/index.css')

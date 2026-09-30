@@ -35,7 +35,15 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('preserves native CSS while rendering class names', async () => {
-    const result = await compileBrowserStylesheet("\n      @theme {:root, :host {\n        --color-card: #ffffff;\n      }}\n\n\n      .native {\n        color: var(--color-card);\n      }\n    ", {
+    const result = await compileBrowserStylesheet(`
+      @theme {
+        --color-card: #ffffff;
+      }
+
+      .native {
+        color: var(--color-card);
+      }
+    `, {
       baseManifest: defaultManifest,
       classNames: ["display:block"]
     })
@@ -46,7 +54,15 @@ describe('@master/css-compiler/stylesheet/browser', () => {
   })
 
   it('emits variables referenced by native CSS without class names', async () => {
-    const result = await compileBrowserStylesheet("\n      @theme {:root, :host {\n        --color-card: #ffffff;\n      }}\n\n\n      .native {\n        color: var(--color-card);\n      }\n    ", {
+    const result = await compileBrowserStylesheet(`
+      @theme {
+        --color-card: #ffffff;
+      }
+
+      .native {
+        color: var(--color-card);
+      }
+    `, {
       baseManifest: defaultManifest
     })
 
@@ -89,7 +105,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     await expect(compileBrowserStylesheet('@theme custom { --color-warning-test: #ff0033; }', {
       baseManifest: defaultManifest
     })).rejects.toMatchObject({
-      diagnostics: expect.arrayContaining([expect.objectContaining({ severity: 'error', message: expect.stringContaining('does not accept modes') })])
+      diagnostics: expect.arrayContaining([expect.objectContaining({ severity: 'error', message: expect.stringContaining('accepts only static and inline modifiers') })])
     })
   })
 })

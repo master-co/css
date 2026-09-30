@@ -13,11 +13,12 @@ const compiled = compileManifestSync(`
   --color-base: light-dark(white, black);
   --color-brand: red;
 }
+@theme inline { --color-alias: var(--color-base); --spacing-card: 12px; }
 @layer theme {
-  :root, :host { --color-alias: var(--color-base); --spacing-card: 12px; }
+
   [data-theme=ocean], :host([data-theme=ocean]) { --color-brand: blue; }
 }
-`, { baseManifest: { version: 4, languageVersion: 11 } })
+`, { baseManifest: { version: 4, languageVersion: 12 } })
 const { manifest } = compiled
 const nativeCSS = compiled.css
 const classes = ['bg-alias', 'bg-brand', 'p-card']
@@ -29,7 +30,7 @@ const html = `<!doctype html><html><head><style id="native">${nativeCSS}</style>
 </body></html>`
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
-  test(`${mode}: native catalog, nested data-theme and managed dependencies`, async ({ page }) => {
+  test(`${mode}: inline tokens, nested data-theme and managed dependencies`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' })
     const generated = renderClassNamesSync(classes, { manifest })
     expect(generated.cssText).toContain('--color-base:')
@@ -79,3 +80,38 @@ test('default shorthand and explicit native host overrides work inside shadow ro
   await page.locator('#host').evaluate(host => host.removeAttribute('data-theme'))
   await expect(page.locator('#shadow')).toHaveCSS('background-color', 'rgb(255, 0, 0)')
 })
+
+for (const hydrate of [false, true]) {
+  test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
+    const source = '@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@theme{--color-frame:blue;@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}}'
+    const { manifest } = compileManifestSync(source, { baseManifest: { version: 4, languageVersion: 12 } })
+    const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
+    using renderer = createServerRenderer({ manifest })
+    const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
+    expect(rendered.cssText).toContain('--color-fixed:red')
+    expect(rendered.cssText).toContain('@keyframes enter')
+    await page.setContent(hydrate ? rendered.html : content)
+    await page.evaluate(async ({ loader, manifest }) => {
+      const { startCSSRuntime } = await import(loader)
+      await startCSSRuntime({ manifest })
+    }, { loader: await getRuntimeLoaderURL(), manifest })
+    const resources = () => page.evaluate(() => ({
+      names: [...document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules]
+        .filter((rule): rule is CSSKeyframesRule => rule instanceof CSSKeyframesRule).map(rule => rule.name),
+      fixed: getComputedStyle(document.documentElement).getPropertyValue('--color-fixed').trim()
+    }))
+    expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
+    await page.locator('#target').evaluate(element => { element.className = 'bg-fixed animate-enter' })
+    await expect(page.locator('#target')).toHaveCSS('background-color', 'rgb(255, 0, 0)')
+    expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
+    await page.locator('#target').evaluate(element => { element.className = '' })
+    await expect(page.locator('#target')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.usageCount ?? 0)).toBe(0)
+    await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(true)
+    await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
+    expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
+    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 4, languageVersion: 12 } }).manifest
+    await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
+    expect(await resources()).toEqual({ names: [], fixed: '' })
+  })
+}

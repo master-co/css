@@ -22,11 +22,13 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 
 test('rendered stylesheet includes lowered native compose declarations', async () => {
-  const source = "@theme {:root, :host {--paint-padding:2rem}}\n\n.card{@apply --all {padding:var(--paint-padding);}}"
+  const source = `@theme {--paint-padding:2rem}
+
+.card{@apply --all {padding:var(--paint-padding);}}`
   const options = { baseManifest, preserveNativeCSS: true }
   expect((await compileStylesheet('/tmp/compose.css', source, options)).css).toContain('padding:var(--paint-padding)')
   const rendered = await compileRenderedStylesheet('/tmp/compose.css', source, options)
@@ -36,7 +38,9 @@ test('rendered stylesheet includes lowered native compose declarations', async (
 test('rendered stylesheet includes referenced compose without exporting reference definitions', async () => {
   const root = mkdtempSync(join(tmpdir(), 'rendered-compose-'))
   try {
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:3rem}}\n\n")
+    writeFileSync(join(root, 'tokens.css'), `@theme {--paint-padding:3rem}
+
+`)
     const result = await compileRenderedStylesheet(join(root, 'entry.css'), "@reference \"./tokens.css\";.card{@apply --all {padding:var(--paint-padding);}}", { baseManifest, projectDir: root, preserveNativeCSS: true })
     expect(result.css).toContain('--paint-padding:3rem')
     expect(JSON.stringify(result.manifest)).not.toContain('paint')
@@ -44,7 +48,9 @@ test('rendered stylesheet includes referenced compose without exporting referenc
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 test('rendered stylesheet preserves native rules alongside lowered rules without duplication', async () => {
-  const result = await compileRenderedStylesheet('/tmp/compose.css', "@theme {:root, :host {--paint-padding:2rem}}\n\n.plain{margin:1rem}.card{@apply --all {padding:var(--paint-padding);}}", { baseManifest, preserveNativeCSS: true })
+  const result = await compileRenderedStylesheet('/tmp/compose.css', `@theme {--paint-padding:2rem}
+
+.plain{margin:1rem}.card{@apply --all {padding:var(--paint-padding);}}`, { baseManifest, preserveNativeCSS: true })
   expect(result.css).toMatch(/margin:\s*1rem/)
   expect(result.css).toContain('padding:2rem')
   expect(result.css.match(/margin:\s*1rem/g)).toHaveLength(1)
@@ -53,7 +59,9 @@ test('rendered import graph retains child reference ownership and dependencies',
   const root = mkdtempSync(join(tmpdir(), 'rendered-import-'))
   try {
     writeFileSync(join(root, 'child.css'), "@reference \"./tokens.css\";.card{@apply --all {padding:var(--paint-padding);}}")
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:4rem}}\n\n")
+    writeFileSync(join(root, 'tokens.css'), `@theme {--paint-padding:4rem}
+
+`)
     const result = await compileRenderedStylesheet(join(root, 'entry.css'), '@import "./child.css";.plain{margin:1rem}', { baseManifest, projectDir: root, preserveNativeCSS: true })
     expect(result.css).toContain('--paint-padding:4rem')
     expect(result.css).toMatch(/margin:\s*1rem/)
@@ -69,7 +77,9 @@ test('rendered missing references register before failure and recover', async ()
     const source = "@reference \"./tokens.css\";.card{@apply --all {padding:var(--paint-padding);}}"
     await expect(compileRenderedStylesheet(join(root, 'entry.css'), source, options)).rejects.toThrow()
     expect(seen).toContain(missing)
-    writeFileSync(missing, "@theme {:root, :host {--paint-padding:5rem}}\n\n")
+    writeFileSync(missing, `@theme {--paint-padding:5rem}
+
+`)
     expect((await compileRenderedStylesheet(join(root, 'entry.css'), source, options)).css).toContain('padding:5rem')
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

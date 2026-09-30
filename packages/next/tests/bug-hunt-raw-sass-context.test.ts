@@ -27,12 +27,15 @@ for (const syntax of ['scss', 'sass']) test(`Next raw ${syntax} retains partial 
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax), partial = join(root, 'parts/_rules.scss'), token = join(root, 'parts/tokens.css')
     writeFileSync(partial, "@reference \"./tokens.css\";.card{@media all {padding:var(--paint-padding);}}")
-    writeFileSync(token, "@theme {:root, :host {--paint-padding:2rem}}\n")
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:99rem}}\n")
+    writeFileSync(token, `@theme {--paint-padding:2rem}
+`)
+    writeFileSync(join(root, 'tokens.css'), `@theme {--paint-padding:99rem}
+`)
     const source = syntax === 'sass' ? '@use "parts/rules"\n' : '@use "parts/rules";', dependencies: string[] = []
     expect(await compile(root, file, source, dependencies)).toContain('--paint-padding:2rem')
     expect(dependencies).toEqual(expect.arrayContaining([file, partial, token]))
-    writeFileSync(token, "@theme {:root, :host {--paint-padding:4rem}}\n")
+    writeFileSync(token, `@theme {--paint-padding:4rem}
+`)
     expect(await compile(root, file, source, [])).toContain('--paint-padding:4rem')
   })
 })
@@ -52,7 +55,8 @@ test('Next registers missing mapped CSS reference before error and recovers on c
     writeFileSync(join(root, 'parts/_rules.scss'), "@reference \"./missing.css\";.card{@media all {padding:var(--paint-padding);}}")
     await expect(compile(root, file, '@use "parts/rules";', dependencies)).rejects.toThrow()
     expect(dependencies).toContain(missing)
-    writeFileSync(missing, "@theme {:root, :host {--paint-padding:5rem}}\n")
+    writeFileSync(missing, `@theme {--paint-padding:5rem}
+`)
     expect(await compile(root, file, '@use "parts/rules";', [])).toContain('--paint-padding:5rem')
   })
 })

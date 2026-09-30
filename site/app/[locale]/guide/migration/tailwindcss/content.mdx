@@ -83,12 +83,11 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```css name=app.css
 @import "@master/css";
 
-@theme { :root, :host {
+@theme {
   --color-brand: oklch(0.62 0.2 265);
   --spacing-card: 1.5rem;
   --radius-card: 1rem;
-
-} }
+}
 
 @custom-media --dashboard (width >= 72rem);
 ```
@@ -109,10 +108,10 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 | `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
 | `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
 | `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | Defines viewport suffixes such as `@md`; custom properties do not register conditions. |
-| `@theme inline` | Scoped `@theme` or a fixed `@mixin` | Tokens retain `var()` references. Use a fixed utility for a literal declaration. |
-| `@theme static` | Native `@layer theme` | Native custom properties and top-level keyframes ship with their stylesheet. |
 
-Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme switch. Define selector mixins separately when markup uses `@apply(--manual-light)` or `@apply(--manual-dark)` suffixes.
+`@theme inline` substitutes token values once in generated declarations; `@theme static` retains tokens and their dependencies without a consumer. Both modifiers can be combined. Only custom-property declarations and direct managed keyframes belong inside a theme block.
+
+Put explicit `.light` and `.dark` selectors outside `@theme` for a manual theme switch. Define selector mixins separately when markup uses `@apply(--manual-light)` or `@apply(--manual-dark)` suffixes.
 
 ```css name=app.css
 @import "@master/css";
@@ -120,15 +119,20 @@ Put explicit `.light` and `.dark` selectors inside `@theme` for a manual theme s
 @mixin --manual-light { &:where(.light, .light *) { @contents; } }
 @mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
 
-@theme { .light {
+@theme {
+  --color-panel:#fff;
+  --color-text-body:#111827;
+}
+
+.light {
   --color-panel: #fff;
   --color-text-body: #111827;
-} }
+}
 
-@theme { .dark {
+.dark {
   --color-panel: #111827;
   --color-text-body: #f9fafb;
-} }
+}
 
 ```
 

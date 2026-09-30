@@ -44,7 +44,8 @@ describe('css manifest loader', () => {
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
@@ -62,7 +63,8 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
@@ -77,14 +79,15 @@ describe('css manifest loader', () => {
   it('exports standard ESM data without writing bundler output assets', async () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       rootContext: projectDir,
       getOptions: () => ({ module: true })
     })
     const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
-    expect(manifest.languageVersion).toBe(11)
+    expect(manifest.languageVersion).toBe(12)
     expect(JSON.stringify(manifest)).toContain('#123')
     expect(source).not.toContain('fetch(')
     expect(source).not.toContain('/_next/')
@@ -97,7 +100,8 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, "@theme {:root, :host { --color-primary: #123; }}\n")
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     try {
       env.NODE_ENV = 'development'
@@ -124,7 +128,13 @@ describe('css manifest loader', () => {
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, "@theme { :root, :host {\n    --color-primary: #123;\n} }\n\n@mixin --btn {\n        color: var(--color-primary);\n    }")
+    writeFileSync(manifestPath, `@theme {
+    --color-primary: #123;
+ }
+
+@mixin --btn {
+        color: var(--color-primary);
+    }`)
 
     const source = await runManifestLoader({
       resourcePath: `${manifestPath}?master-css-manifest`,
@@ -145,8 +155,17 @@ describe('css manifest loader', () => {
     const entryPath = join(projectDir, 'app/globals.css')
     const preserveOnlyPath = join(projectDir, 'app/preserve.css')
     const dependencies: string[] = []
-    writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme { :root, :host {\n    --color-primary: #123;\n} }\n\n@mixin --btn { color: var(--color-primary); }")
-    writeFileSync(preserveOnlyPath, "@preserve native;\n@theme { :root, :host {\n    --color-ignored: #456;\n} }\n")
+    writeFileSync(entryPath, `@import url("@master/css");
+@theme {
+    --color-primary: #123;
+ }
+
+@mixin --btn { color: var(--color-primary); }`)
+    writeFileSync(preserveOnlyPath, `@preserve native;
+@theme {
+    --color-ignored: #456;
+ }
+`)
 
     const source = await runManifestLoader({
       resourcePath: join(projectDir, 'node_modules/.master-css/master-css-manifest.js'),
@@ -169,7 +188,11 @@ describe('css manifest loader', () => {
     const entryPath = join(projectDir, 'app/globals.css')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123; }}\n\n@theme { @keyframes fade { to { opacity: 0; } } }\n.host { color: var(--color-primary); animation: fade 1s; }")
+    writeFileSync(entryPath, `@import url("@master/css");
+@theme { --color-primary: #123; }
+
+@theme { @keyframes fade { to { opacity: 0; } } }
+.host { color: var(--color-primary); animation: fade 1s; }`)
 
     const source = await runManifestLoader({
       resourcePath: join(projectDir, 'node_modules/.master-css/master-css-emitted-globals.js'),

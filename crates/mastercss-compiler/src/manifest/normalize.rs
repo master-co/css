@@ -43,7 +43,7 @@ pub(super) fn merge_records(base: Option<&Value>, next: Option<&Value>) -> Optio
     (!merged.is_empty()).then_some(Value::Object(merged))
 }
 
-pub(super) fn flatten_variables(value: Option<&Value>) -> Vec<Value> {
+pub(crate) fn flatten_variables(value: Option<&Value>) -> Vec<Value> {
     let mut flattened = Vec::new();
     for (namespace, definitions) in value
         .and_then(Value::as_object)
@@ -393,4 +393,67 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         *definition = serde_json::to_value(parsed).expect("mixin");
     }
     normalize_manifest_for_json(&Value::Object(preset))
+}
+
+/// Reference context supplies definitions, never additional unconditional roots.
+/// Local definitions are merged after this view; delivered base roots remain live.
+pub(crate) fn reference_context(mut resolution: Value, base: Option<&Value>) -> Value {
+    let mut roots = std::collections::HashSet::new();
+    for variable in flatten_variables(base.and_then(|base| base.get("variables"))) {
+        if variable["values"]
+            .as_array()
+            .is_some_and(|values| values.iter().any(|value| value["static"] == true))
+            && let Some(name) = variable["name"].as_str()
+        {
+            roots.insert(name.to_owned());
+        }
+    }
+    if let Some(groups) = resolution
+        .get_mut("variables")
+        .and_then(Value::as_object_mut)
+    {
+        for (namespace, variables) in groups {
+            for variable in variables.as_array_mut().into_iter().flatten() {
+                let name = variable["name"]
+                    .as_str()
+                    .map(str::to_owned)
+                    .unwrap_or_else(|| {
+                        let key = variable["key"].as_str().unwrap_or_default();
+                        if namespace.is_empty() {
+                            key.into()
+                        } else if key.is_empty() {
+                            namespace.clone()
+                        } else {
+                            format!("{namespace}-{key}")
+                        }
+                    });
+                if !roots.contains(&name) {
+                    for value in variable["values"].as_array_mut().into_iter().flatten() {
+                        if let Some(value) = value.as_object_mut() {
+                            value.shift_remove("static");
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fn strip(nodes: &mut Value, roots: &std::collections::HashSet<String>) {
+        for node in nodes.as_array_mut().into_iter().flatten() {
+            if let Some(children) = node.get_mut("children") {
+                strip(children, roots);
+            }
+            if node["type"] == "declaration"
+                && !node["name"]
+                    .as_str()
+                    .is_some_and(|name| roots.contains(name))
+                && let Some(node) = node.as_object_mut()
+            {
+                node.shift_remove("static");
+            }
+        }
+    }
+    if let Some(theme) = resolution.get_mut("theme") {
+        strip(theme, &roots);
+    }
+    resolution
 }

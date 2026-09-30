@@ -26,7 +26,15 @@ describe('resolveMasterCSSBuildState', () => {
     const dispose = vi.spyOn(MasterCSSScanner.prototype, 'dispose')
     const root = createFixtureDir()
     const entry = join(root, 'app/globals.css')
-    writeFileSync(entry, "@import url(\"@master/css\");\n\n@theme {:root, :host { --color-host: #123456; }}\n\n.host { color: var(--color-host); }\n\n.hidden-card {\n    @media all {display:none;}\n}")
+    writeFileSync(entry, `@import url("@master/css");
+
+@theme { --color-host: #123456; }
+
+.host { color: var(--color-host); }
+
+.hidden-card {
+    @media all {display:none;}
+}`)
 
     const result = await resolveMasterCSSBuildState(root, ['hidden-card'])
 

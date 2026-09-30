@@ -205,25 +205,23 @@ Direct declarations in `@theme` use `:root, :host`. Used managed tokens are emit
 
 A local brand can change a token without changing any consuming class. This example also separates brand from light and dark appearance:
 
-<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: oklch(55% 0.18 255);\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n  [data-brand="plum"] { --color-brand: oklch(58% 0.2 315); }\n}\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="margin:0 text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-weight-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="margin:0 text-sm">Nested light surface</p><p class="mt-sm margin-bottom:0 font-weight-semibold fg-brand">The same inherited plum accent</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand. Its fg-brand class is unchanged. The outer section keeps its dark surface." />
+<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: oklch(55% 0.18 255);\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: oklch(58% 0.2 315); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="margin:0 text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-weight-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="margin:0 text-sm">Nested light surface</p><p class="mt-sm margin-bottom:0 font-weight-semibold fg-brand">The same inherited plum accent</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand. Its fg-brand class is unchanged. The outer section keeps its dark surface." />
 
-An explicit selector in `@theme` keeps its meaning; it is not nested beneath `:root, :host`. A condition without an existing selector must contain one:
+Keep selectors and conditions outside `@theme`. A native media query can override a registered token:
 
-<ConfiguredExample source={'@theme {\n  --spacing-panel: 1rem;\n  @media (width >= 48rem) {\n    :root, :host { --spacing-panel: 2rem; }\n  }\n}'} html={'<section class="p-panel">Room to read</section>'} />
+<ConfiguredExample source={'@theme {\n  --spacing-panel: 1rem;\n}\n  @media (width >= 48rem) {\n    :root, :host { --spacing-panel: 2rem; }\n  }'} html={'<section class="p-panel">Room to read</section>'} />
 
-Using `p-panel` retains every managed scope for that token. The browser chooses the value from matching selectors and conditions; scanning does not choose a single theme branch. Theme selectors contain custom-property declarations. Write ordinary styling declarations in native CSS outside `@theme`.
+Using `p-panel` retains the token default. The media query is delivered as native CSS, and the browser chooses the matching value.
 
 ### Registration is different from delivery
 
-The compiler also recognizes token declarations in native CSS that it receives:
+Only `@theme` registers utility tokens. Use an inline token to connect a utility name to a variable whose value belongs to a native scope:
 
-<ConfiguredExample source={'@layer components {\n  .workspace { --color-accent: rebeccapurple; }\n}'} html={'<section class="workspace"><button type="button" class="fg-accent">Save</button></section>'} />
+<ConfiguredExample source={'@theme inline { --color-accent: var(--workspace-accent); }\n@layer components {\n  .workspace { --workspace-accent: rebeccapurple; }\n}'} html={'<section class="workspace"><button type="button" class="fg-accent">Save</button></section>'} />
 
-`fg-accent` resolves because the compiler knows `--color-accent`. Its definition stays in `.workspace`, in the `components` layer, at its native location; registration does not generate a second definition. Outside that scope, the same class can exist while its variable has no value. An unresolved `var()` without a fallback makes the consuming declaration invalid at computed-value time.
+`fg-accent` emits `color:var(--workspace-accent)`, so the browser resolves the native variable on the consuming element. Inline substitution happens once; variables and fallbacks inside the declared value remain native CSS. Handwritten declarations retain their original `var()` references.
 
-An `@import` delivers native CSS. An `@reference` provides definition information without delivering the referenced native declarations. A reference can therefore make `fg-accent` recognizable while leaving delivery of `.workspace` to another stylesheet. Variables added later through browser JavaScript do not extend the compiled manifest. Use a fixed direct class such as `color:var(--live-accent)` for a value whose name is not part of the compiled vocabulary.
-
-Native declarations inside keyframes, `@property` descriptors and unexpanded mixin bodies do not register token families. See the [theme contract](/reference/directives/theme) for the exact registration and resource boundaries.
+Use `@theme static` when integrations need tokens even without a utility class. Combine it with `inline` when both behaviors are needed. Native `@import` delivers CSS; `@reference` supplies definitions without making static tokens unconditional output roots. See the [theme contract](/reference/directives/theme).
 
 ### Let inheritance do the work you intend
 
@@ -370,7 +368,7 @@ Paths are resolved from the stylesheet declaring them. Source directives select 
 
 ### Know which resources are managed
 
-A used managed token retains its authored scopes and transitive token dependencies. Animation declarations retain referenced managed keyframes and their dependencies. Unresolved dynamic animation names conservatively retain all managed keyframes. Keep keyframes as direct children of top-level `@theme` when they should be managed; native keyframes outside it travel with their stylesheet.
+A used managed token retains its ordered declarations and transitive token dependencies. Animation declarations retain referenced managed keyframes and their dependencies. Unresolved dynamic animation names conservatively retain all managed keyframes. Keep keyframes as direct children of top-level `@theme` when they should be managed; native keyframes outside it travel with their stylesheet.
 
 Delivered native declarations can also keep managed resources alive, even without a utility class. By contrast, a definition-only reference does not deliver native rules or turn them into usage roots. `@import` supplies stylesheet delivery; `@reference` supplies compilation context. A runtime class or token still needs the appropriate manifest and CSS in its document or shadow root.
 

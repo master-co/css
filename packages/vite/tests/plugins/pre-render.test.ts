@@ -118,7 +118,13 @@ describe('PreRenderPlugin', () => {
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
       writeFileSync(themePath, "@mixin --card { color: #123456; }")
-      writeFileSync(entryPath, "@import url(\"@master/css\");\n@import \"./theme.css\";\n\n@theme { :root, :host {\n    --color-brand: #123;\n} }\n")
+      writeFileSync(entryPath, `@import url("@master/css");
+@import "./theme.css";
+
+@theme {
+    --color-brand: #123;
+ }
+`)
 
       const plugins = masterCSS({
         mode: 'pre-render'
@@ -166,7 +172,10 @@ describe('PreRenderPlugin', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-globals-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, "@import url(\"@master/css\");\n@theme {:root, :host { --color-primary: #123456; }}\n\n.host { color: var(--color-primary); }")
+      writeFileSync(entryPath, `@import url("@master/css");
+@theme { --color-primary: #123456; }
+
+.host { color: var(--color-primary); }`)
       const plugins = masterCSS({ mode: 'pre-render' })
       const viteConfig = {
         root,

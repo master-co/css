@@ -20,9 +20,10 @@ interface Root { append(node: unknown): void; walkDecls(callback: (declaration: 
 interface Output { source: string; sourceMap: string; globalAnimations: string[]; processedGlobals?: Required<MasterCSSEmittedGlobals> }
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
-const source = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef;--color-child:#010203;--shape-late:url(\"../late.svg?rev=1#shape\")}}\n.card{color:var(--color-old)}"
+const source = `@theme {--color-old:#111111;--color-late:#abcdef;--color-child:#010203;--shape-late:url("../late.svg?rev=1#shape")}
+.card{color:var(--color-old)}`
 
 /** Run the owned input pitch, the dispatcher and Next's installed PostCSS loader as the Webpack chain does. */
 async function runHostChain(projectDir: string, file: string, snapshot: { source: string, sourceMap?: string, generatedCSS?: string, resources?: NextPostCSSResourcePolicy }, plugins: unknown[], scoped: boolean) {

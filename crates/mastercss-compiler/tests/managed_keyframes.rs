@@ -11,15 +11,15 @@ fn engine(source: &str) -> EngineSession {
             .manifest;
     EngineSession::create(&manifest.to_string()).unwrap()
 }
-const SOURCE: &str = "@theme{:root{--animate-fade:fade 1s;--color-brand:red}@keyframes fade{from{opacity:0}to{opacity:1;color:var(--color-brand)}}@keyframes pop{to{transform:scale(2)}}}";
+const SOURCE: &str = "@theme {--animate-fade:fade 1s;--color-brand:red;@keyframes fade{from{opacity:0}to{opacity:1;color:var(--color-brand)}}@keyframes pop{to{transform:scale(2)}}}";
 
 #[test]
 fn animation_family_tracks_lists_scopes_nested_variables_and_dynamic_names() {
     let mut engine = engine(&format!(
         "{SOURCE}@theme{{--duration-enter:.2s;--motion:fade var(--duration-enter) ease-out both;\
         --animate-enter:var(--motion), pop 1s;--animate-scoped:fade 1s;\
-        --animate-dynamic:var(--external);--animate-bare:fade;\
-        .dark{{--animate-scoped:pop 2s}}}}"
+        --animate-dynamic:var(--external);--animate-bare:fade;}}\
+        .dark{{--animate-scoped:pop 2s}}"
     ));
     for class in ["animate-enter", "animate-scoped", "animate-dynamic"] {
         engine.ensure_class_rules([class]).unwrap();
@@ -78,7 +78,7 @@ fn dynamic_names_keep_all_until_the_root_disappears() {
 
 #[test]
 fn all_scopes_and_nested_fallbacks_are_kept() {
-    let mut engine = engine(&format!("{SOURCE}@theme{{.dark{{--animate-fade:pop 2s}}}}"));
+    let mut engine = engine(&format!("{SOURCE}.dark{{--animate-fade:pop 2s}}"));
     engine
         .ensure_class_rules(["animation:var(--animate-fade)"])
         .unwrap();
@@ -142,7 +142,7 @@ fn only_animation_declarations_create_roots() {
 #[test]
 fn rejects_nested_registration_and_contents_directives() {
     for source in [
-        "@theme{:root{@keyframes x{to{opacity:1}}}}",
+        "@theme {:root{@keyframes x{to{opacity:1}}}}",
         "@theme{@media all{@keyframes x{to{opacity:1}}}}",
         "@theme{@keyframes x{to{@apply --x;}}}",
     ] {
@@ -251,7 +251,7 @@ fn externally_delivered_keyframes_still_own_unprovided_body_tokens() {
 #[test]
 fn cyclic_animation_and_body_tokens_release_with_the_last_root() {
     let mut engine = engine(
-        "@theme{:root{--motion:var(--cycle);--cycle:var(--motion);--a:var(--b);--b:var(--a)}@keyframes one{to{opacity:var(--a,1)}}@keyframes two{to{opacity:0}}}",
+        "@theme {--motion:var(--cycle);--cycle:var(--motion);--a:var(--b);--b:var(--a);@keyframes one{to{opacity:var(--a,1)}}@keyframes two{to{opacity:0}}}",
     );
     engine
         .ensure_class_rules(["animation:var(--motion)"])

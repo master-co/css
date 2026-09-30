@@ -46,7 +46,7 @@ fn preset_normalization_cannot_upgrade_old_executable_data_silently() {
         "containerConditions",
         "breakpointConditions",
     ] {
-        let mut manifest = serde_json::json!({"version":4,"languageVersion":11});
+        let mut manifest = serde_json::json!({"version":4,"languageVersion":12});
         manifest[field] = serde_json::json!([]);
         assert!(mastercss_compiler::normalize_default_manifest_for_json(&manifest).is_err());
     }
@@ -79,7 +79,7 @@ fn finite_nested_calls_of_the_same_mixin_are_not_recursion() {
 #[test]
 fn ignored_contents_and_unused_fallback_do_not_retain_resources() {
     let output = css(
-        "@theme{:root{--color-unused:red;--color-fallback:blue}} @mixin --ignore{order:1} @mixin --fallback{@contents{color:var(--color-fallback)}} .a{@apply --ignore{color:var(--color-unused)} @apply --fallback{order:2}}",
+        "@theme {--color-unused:red;--color-fallback:blue} @mixin --ignore{order:1} @mixin --fallback{@contents{color:var(--color-fallback)}} .a{@apply --ignore{color:var(--color-unused)} @apply --fallback{order:2}}",
     );
     assert!(!output.contains("--color-unused"), "{output}");
     assert!(!output.contains("--color-fallback"), "{output}");
@@ -201,7 +201,7 @@ fn builtin_layers_and_starting_style_work_without_a_preset() {
     }
     assert!(compile("@custom-media --starting-style (width>1px);").is_err());
     assert!(mastercss_engine::EngineSession::create(
-        r#"{"version":4,"languageVersion":11,"customMedia":{"--starting-style":{"type":"true"}}}"#
+        r#"{"version":4,"languageVersion":12,"customMedia":{"--starting-style":{"type":"true"}}}"#
     ).is_err());
 }
 
@@ -255,7 +255,7 @@ fn contents_urls_and_spans_retain_the_calling_file_across_imports() {
         "graph":{"entry":"entry","files":{"entry":caller,"defs":definitions},"edges":[{"from":"entry","specifier":"./defs.css","resolved":"defs"}]},
         "urls":{"entry":"/output/entry.css","defs":"/output/defs.css"},
         "resourceURLs":{"entry":{"card.png":"/caller/card.png"},"defs":{"mask.svg":"/definition/mask.svg","unused.png":"/definition/unused.png"}},
-        "baseManifest":{"version":4,"languageVersion":11}
+        "baseManifest":{"version":4,"languageVersion":12}
     })).unwrap();
     let result = mastercss_compiler::compile_css_stylesheet_graph(&request).unwrap();
     let output = result

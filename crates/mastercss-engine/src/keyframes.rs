@@ -121,8 +121,7 @@ impl EngineSession {
             .collect::<Vec<_>>();
         for definition in definitions {
             let floor = self
-                .emitted_globals
-                .keyframes
+                .keyframe_floors
                 .get(&definition.name)
                 .copied()
                 .unwrap_or_default();

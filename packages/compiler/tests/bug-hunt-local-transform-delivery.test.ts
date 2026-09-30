@@ -37,7 +37,9 @@ test.each([false, true])('BH-0004 local graph keeps reference globals and dedupl
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'local-reference-')))
   const entry = join(root, 'entry.css'), reference = join(root, 'reference.css')
   try {
-    writeFileSync(reference, "@theme {:root, :host {--spacing-local:3rem}}\n\n@mixin --pad {padding:var(--spacing-local)}.never{color:red}")
+    writeFileSync(reference, `@theme {--spacing-local:3rem}
+
+@mixin --pad {padding:var(--spacing-local)}.never{color:red}`)
     const result = await transformStylesheet(entry, "@reference \"./reference.css\";.root{@apply --all {padding:var(--spacing-local);}}", { baseManifest, projectDir: root,
       emittedGlobals: published ? { variables: { 'spacing-local': 1 } } : undefined,
       delivery: { entryURL: '/entry.css', stylesheetURL: file => '/' + basename(file), resourceURL: file => '/' + basename(file) }

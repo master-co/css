@@ -22,7 +22,9 @@ afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: 
 
 test.each(['serve', 'build'])('scoped Vue styles keep project globals outside scoping in %s', async command => {
   const { root, context, plugin } = fixture(command)
-  writeFileSync(join(root, 'app.css'), "@import url(\"@master/css\");@theme { :root, :host {--color-brand:red;} }\n@keyframes pop{to{opacity:.5}}\n")
+  writeFileSync(join(root, 'app.css'), `@import url("@master/css");@theme {--color-brand:red; }
+@keyframes pop{to{opacity:.5}}
+`)
   const id = join(root, 'src/Card.vue') + '?vue&type=style&index=0&scoped=abc&lang.css'
   const result = await plugin.transform.call({ addWatchFile: vi.fn() }, '.card{color:var(--color-brand);animation:pop 1s}', id)
   expect(result.code).toMatch(/\.card\s*\{/)
@@ -45,7 +47,7 @@ test('native no-ops are invalidated when project entries are added, changed and 
   const transform = () => plugin.transform.call({ addWatchFile: vi.fn() }, source, id)
   expect(await transform()).toBeUndefined()
   for (const [type, color] of [['create', 'red'], ['update', 'blue'], ['delete', '']] as const) {
-    if (color) writeFileSync(entry, `@import url("@master/css");@theme{:root, :host {--color-new:${color}}}`)
+    if (color) writeFileSync(entry, `@import url("@master/css");@theme {--color-new:${color}}`)
     else rmSync(entry)
     expect(await plugin.hotUpdate.call({ environment }, { type, file: entry, modules: [] })).toEqual([module])
     const output = await transform()
@@ -69,7 +71,7 @@ test('development server refreshes native consumers after a project entry is add
     expect(await read()).not.toContain('--color-future:')
     const send = vi.spyOn(server.ws, 'send')
     const entry = join(root, 'app.css')
-    writeFileSync(entry, "@import url(\"@master/css\");@theme{:root, :host {--color-future:blue}}")
+    writeFileSync(entry, "@import url(\"@master/css\");@theme {--color-future:blue}")
     await vi.waitFor(async () => expect(await read()).toContain('--color-future:blue'), { timeout: watchDeadline })
     expect(send).toHaveBeenCalled()
     send.mockClear()

@@ -14,7 +14,7 @@ function fixture(kind: string, missing: string) {
   mkdirSync(root); mkdirSync(external)
   const reference = join(external, missing === 'reference-directory' ? 'deep/tokens.css' : 'tokens.css')
   const resource = join(external, missing === 'resource-file' ? 'pixel.svg' : 'deep/pixel.svg')
-  const tokens = `@theme{:root, :host {--paint-padding:7rem;--paint-background-image:url("./${normalizePath(relative(dirname(reference), resource))}?v=1#icon")}}.never{color:red}`
+  const tokens = `@theme {--paint-padding:7rem;--paint-background-image:url("./${normalizePath(relative(dirname(reference), resource))}?v=1#icon")}.never{color:red}`
   if (missing !== 'reference-directory') writeFileSync(reference, tokens)
   writeFileSync(join(root, 'style.css'), `${kind === 'entry' ? "@import url(\"@master/css\");@preserve native;" : ''}@reference "../${normalizePath(relative(parent, reference))}";.target{@media all{background-image:var(--paint-background-image);padding:var(--paint-padding);}}`)
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')

@@ -3,13 +3,13 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 11 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 12 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v9 authoring contracts', () => {
+describe('directive language v12 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
-      @theme { :root { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green; } }
+      @theme { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green;  }
       @mixin --card { color: red; &:hover { color: blue; } }
       @mixin --pair(--value) { width: var(--value); height: var(--value); }
 
@@ -17,7 +17,7 @@ describe('directive language v9 authoring contracts', () => {
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(11)
+    expect(manifest.languageVersion).toBe(12)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
@@ -66,7 +66,7 @@ describe('directive language v9 authoring contracts', () => {
   })
 
   test('does not infer named media from breakpoint variables', () => {
-    const { manifest } = compile('@theme { :root { --breakpoint-card: 40rem; } }')
+    const { manifest } = compile('@theme { --breakpoint-card: 40rem;  }')
     expect(flattenMasterCSSManifestVariables(manifest.variables)).toHaveLength(1)
     expect(manifest.customMedia).toBeUndefined()
     const css = createTestCSS(manifest)
@@ -78,9 +78,9 @@ describe('directive language v9 authoring contracts', () => {
     '@master entry;', '@settings { important: true; }', '@mode dark { .dark { @contents; } }',
     '@utilities { card { display: block; } }', '@dark { .card { color: red; } }',
     '.card { @variant media((width>=40rem)) { display: block; } }',
-    '@theme inline { --color-brand: red; }', '@theme static { --color-brand: red; }',
+    '@theme inline inline { --color-brand: red; }', '@theme static static { --color-brand: red; }',
     '@theme dark { --color-brand: red; }',
-    '@theme { :root { color: red; } }',
+    '@theme { color: red;  }',
     '@utility align-<left|right> { text-align: --master-value(); }',
     '@utility pair:<*> { width: --master-value(); }',
     '@utility pair:* { width: --master-value(1px); }',

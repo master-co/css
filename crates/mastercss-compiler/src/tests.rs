@@ -47,7 +47,7 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
                 ),
                 (
                     "/theme.css".into(),
-                    "@reference \"./tokens.css\";\n@import \"./utilities.css\";\n@theme{:root, :host {--color-brand:red}}".into(),
+                    "@reference \"./tokens.css\";\n@import \"./utilities.css\";\n@theme {--color-brand:red}".into(),
                 ),
                 (
                     "/utilities.css".into(),
@@ -152,9 +152,10 @@ fn filters_native_selectors_without_losing_discovered_classes() {
 #[test]
 fn lowers_theme_tokens_and_preserves_native_css() {
     let result = compile_css_directives(
-        "@theme { :root, :host { --color-brand: rgb(0 128 255); --leading-tight: 1.0; }}\n.card { color: red; }",
+        "@theme { --color-brand: rgb(0 128 255); --leading-tight: 1.0; }\n.card { color: red; }",
         &CompileNativeCssOptions::default(),
-    ).unwrap();
+    )
+    .unwrap();
     assert_eq!(
         serde_json::to_value(result.manifest_input).unwrap(),
         serde_json::json!({
@@ -168,21 +169,20 @@ fn lowers_theme_tokens_and_preserves_native_css() {
 }
 
 #[test]
-fn theme_preserves_all_scopes_and_repeated_declarations() {
+fn theme_keeps_repeated_tokens_and_native_overrides_separate() {
     let result = compile_css_directives(
-        "@theme{:root{--color-brand:#111;--color-accent:#222}[data-theme=dark]{--color-brand:#333}:root{--color-brand:#444}}",
+        "@theme {--color-brand:#111;--color-accent:#222;--color-brand:#444}[data-theme=dark]{--color-brand:#333}",
         &CompileNativeCssOptions::default(),
     ).unwrap();
     let theme = serde_json::to_value(result.manifest_input).unwrap()["theme"].clone();
-    assert_eq!(theme.as_array().unwrap().len(), 3);
+    assert_eq!(theme.as_array().unwrap().len(), 1);
     assert_eq!(theme[0]["children"][0]["value"], "#111");
-    assert_eq!(theme[1]["prelude"], "[data-theme=dark]");
-    assert_eq!(theme[1]["children"][0]["value"], "#333");
-    assert_eq!(theme[2]["children"][0]["value"], "#444");
+    assert_eq!(theme[0]["children"][2]["value"], "#444");
+    assert!(result.native_css.contains("data-theme"));
 }
 
 #[test]
-fn rejects_removed_theme_modifiers_with_original_ranges() {
+fn rejects_unknown_theme_modifiers_with_original_ranges() {
     let error = compile_css_directives(
         "/*😀*/\n@theme dark inline { --color-brand: #fff; }",
         &CompileNativeCssOptions::default(),
@@ -191,18 +191,18 @@ fn rejects_removed_theme_modifiers_with_original_ranges() {
     assert!(
         error
             .to_string()
-            .contains("does not accept modes, inline or static")
+            .contains("accepts only static and inline modifiers")
     );
     assert_eq!(
         error.diagnostic().range,
-        Some(SourceRange { start: 7, end: 13 })
+        Some(SourceRange { start: 14, end: 18 })
     );
 }
 
 #[test]
 fn keyframes_have_distinct_native_and_managed_ownership() {
     let result = compile_css_directives(
-        "@theme{:root{--color-brand:#123}}@keyframes fade{from,50%{opacity:0}to{opacity:1}}",
+        "@theme {--color-brand:#123}@keyframes fade{from,50%{opacity:0}to{opacity:1}}",
         &CompileNativeCssOptions::default(),
     )
     .unwrap();
@@ -225,7 +225,7 @@ fn keyframes_have_distinct_native_and_managed_ownership() {
 #[test]
 fn preserves_native_theme_functions_dollars_and_pipes() {
     let result = compile_css_directives(
-        r#"@theme{:root{--color-muted:--alpha(var(--color-primary) / .5);--content-quoted:"a | b";--content-piped:a | b;--money:$100;--pipe:a|b}}.data{--value:--value();--money:$100;--pipe:a|b}"#,
+        r#"@theme {--color-muted:--alpha(var(--color-primary) / .5);--content-quoted:"a | b";--content-piped:a | b;--money:$100;--pipe:a|b}.data{--value:--value();--money:$100;--pipe:a|b}"#,
         &CompileNativeCssOptions::default(),
     ).unwrap();
     let theme = serde_json::to_value(result.manifest_input).unwrap();

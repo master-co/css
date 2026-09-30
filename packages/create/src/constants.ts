@@ -26,7 +26,7 @@ export const AGENT_RULES_BLOCK = `## Master CSS
 - Use https://rc.css.master.co as the source of truth.
 - Inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, mixins, custom media, and validation commands before editing styles.
 - Prefer existing @theme tokens and native CSS in @layer defaults or @layer components. Use @mixin for on-demand recipes and native property names for direct declarations. Write native declarations and selectors in stylesheets; @utility and @compose have been removed.
-- Use named tokens with hyphens and native values with colons; write complete native queries and use @custom-media for named media queries and native selectors in @theme for theme activation.
+- Use named tokens with hyphens and native values with colons; write complete native queries and use @custom-media for named media queries and native selectors outside @theme for theme activation.
 - Reuse selector and conditional wrappers with @mixin, @contents and @apply; classes use @apply(--name(...)). Keep wrapper suffixes in their authored nesting order. Choose a class layer with @layer(base|defaults|components|utilities), and use outer @layer blocks in CSS. Do not use removed variant directives or implicit wrapper aliases.
 - Use static rendering by default, explicit CSS variables for dynamic values, and enable native pruning only when intended.
 - Use the Master CSS MCP server with project context when available. A manifest load failure is an error, never permission to switch to the preset.

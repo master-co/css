@@ -61,13 +61,13 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 ```css name=app.css
 @import "@master/css";
 
-@theme { :root, :host {
+@theme {
   --color-primary: #2563eb;
   --color-body: #172033;
   --spacing-card: 1.5rem;
   --radius-card: .75rem;
 
-} }
+ }
 
 @custom-media --dashboard (width >= 72rem);
 ```

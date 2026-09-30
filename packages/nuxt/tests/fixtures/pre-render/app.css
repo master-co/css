@@ -1,9 +1,9 @@
 @import '@master/css';
 @source './app.vue';
 
-@theme {:root, :host {
+@theme {
   --color-host: #123456;
-}}
+}
 
 
 @layer components {

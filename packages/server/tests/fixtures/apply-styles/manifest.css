@@ -1,6 +1,6 @@
-@theme {:root, :host {
+@theme {
   --breakpoint-sm: 52.125rem;
-}}
+}
 
 
 

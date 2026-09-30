@@ -11,17 +11,24 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
   --color-text-action: var(--color-brand);
   --spacing-lg: 1.5rem;
   --radius-lg: 1rem;
-
   --container-md: 28rem;
 }
 
-@theme { @media (prefers-color-scheme: light) { :root, :host {
-  --color-surface-card: #ffffff;
-} } }
+@theme {
+  --color-surface-card:#ffffff;
+}
 
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+@media (prefers-color-scheme: light) {
+  :root, :host {
+  --color-surface-card: #ffffff;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root, :host {
   --color-surface-card: #111827;
-} } }
+  }
+}
 
 @custom-media --md (width >= 48rem);
 ```
@@ -34,7 +41,7 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
 </section>
 ```
 
-Master CSS resolves token names when generating class rules. Values stay as CSS custom properties; the browser computes the active value in each scope. A referenced token retains all authored selectors, native conditions, and transitive dependencies.
+Master CSS resolves token names when generating class rules. Values stay as CSS custom properties; the browser computes the active value in each scope. A referenced token retains its declarations and transitive dependencies. Native overrides follow stylesheet delivery.
 
 ---
 
@@ -55,29 +62,37 @@ The important part is the graph, not a special file name. Theme tokens can live 
 ---
 
 ## Define tokens
-Write custom properties directly in `@theme` for on-demand tokens in the default `:root, :host` scope. Use explicit selectors inside the block for scoped overrides. Write the full token name with the leading `--`; the prefix places the value in a namespace that Master CSS utilities already understand. Native stylesheet declarations register the same token names and retain their native delivery.
+Write custom properties directly in `@theme` for on-demand tokens in the default `:root, :host` scope. Use native selectors outside the block for scoped overrides. Write the full token name with the leading `--`; the prefix places the value in a namespace that Master CSS utilities already understand. Only theme declarations register named utility tokens.
 
 ```css name=index.css
 @theme {
+  --color-surface-card: #ffffff;
   --content-hash: " #";
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-lg: 1.5rem;
   --font-family-sans: Geist, ui-sans-serif, system-ui, sans-serif;
   --radius-lg: 1rem;
-
   --container-md: 28rem;
 }
 
-@theme { @media (prefers-color-scheme: light) { :root, :host {
+@theme {
+  --shadow-card:0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+}
+
+@media (prefers-color-scheme: light) {
+  :root, :host {
   --color-surface-card: #ffffff;
   --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
-} } }
+  }
+}
 
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+@media (prefers-color-scheme: dark) {
+  :root, :host {
   --color-surface-card: #111827;
   --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
-} } }
+  }
+}
 
 @custom-media --md (width >= 48rem);
 ```
@@ -129,20 +144,30 @@ Use overrides intentionally. If the whole product should use a different `blue` 
 ---
 
 ## Add mode-aware values
-Use native media queries or selectors inside `@theme` when the same token should change by system preference or by a local theme switch.
+Use native media queries or selectors outside `@theme` when the same token should change by system preference or by a local theme switch.
 
 ```css name=index.css
-@theme { @media (prefers-color-scheme: light) { :root, :host {
+@theme {
+  --color-surface-card: #ffffff;
+  --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
+  --color-text-card:#111827;
+}
+
+@media (prefers-color-scheme: light) {
+  :root, :host {
   --color-surface-card: #ffffff;
   --color-text-card: #111827;
   --shadow-card: 0 0 0 1px rgb(15 23 42 / .06), 0 16px 40px rgb(15 23 42 / .12);
-} } }
+  }
+}
 
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+@media (prefers-color-scheme: dark) {
+  :root, :host {
   --color-surface-card: #111827;
   --color-text-card: #f9fafb;
   --shadow-card: 0 0 0 1px rgb(255 255 255 / .06), 0 16px 40px rgb(0 0 0 / .36);
-} } }
+  }
+}
 
 ```
 
@@ -159,24 +184,22 @@ These media queries follow the system preference. For colors that also respond t
 
 <a id="use-inline-and-static-tokens" />
 
-## Keep shared values dynamic
-Token utilities preserve `var()` references.
-
-For a reusable recipe, write native declarations in `@mixin`:
+## Choose token delivery and value substitution
+Ordinary tokens emit on demand and utilities reference their custom properties. Use `static` for values consumed by integrations independently of utility classes:
 
 ```css
-@mixin --brand-fill { background-color: #4f46e5; }
+@theme static { --color-integration-brand: #4f46e5; }
 ```
 
-For custom properties that must always ship, use native CSS:
+Use `inline` to bridge a native variable that should resolve on the element using the utility:
 
 ```css
-@layer theme {
-  :root, :host { --color-integration-brand: #4f46e5; }
-}
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
 ```
 
-This enables `bg-integration-brand` while the declaration ships even when that class is unused. The layer wrapper is optional; omitting it keeps normal unlayered CSS precedence. The compiler needs this stylesheet in its input graph to register the name, and the browser still needs the native stylesheet delivered alongside generated utilities.
+`bg-brand` emits `background-color:var(--app-brand)`. Combine the independent behaviors with `@theme static inline`. Inline substitution also applies to mixin classes and `@apply`; handwritten native CSS keeps its authored references.
 
 ---
 

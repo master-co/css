@@ -1,8 +1,8 @@
 export const agentStyleExample = {
   title: 'Reuse a project button',
-  source: `@theme { :root {
+  source: `@theme {
   --color-brand: var(--color-blue-60);
-} }
+ }
 
 @layer components {
   .btn {

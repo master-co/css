@@ -121,7 +121,39 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      @theme {:root, :host {\n        --color-primary: #ff0000;\n        --animation-main: scale 1s;\n      }}\n\n\n      @keyframes native-fade {\n        from {\n          opacity: 0;\n        }\n\n        to {\n          opacity: 1;\n        }\n      }\n\n      @layer components {\n        .btn {\n          display: grid;\n        }\n      }\n\n      .main {\n        color: var(--color-primary);\n        animation-name: native-fade;\n      }\n\n      .unused {\n        color: var(--color-primary);\n      }\n    ", { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @import "@master/css";
+
+      @theme {
+        --color-primary: #ff0000;
+        --animation-main: scale 1s;
+      }
+
+      @keyframes native-fade {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @layer components {
+        .btn {
+          display: grid;
+        }
+      }
+
+      .main {
+        color: var(--color-primary);
+        animation-name: native-fade;
+      }
+
+      .unused {
+        color: var(--color-primary);
+      }
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), "<main class=\"btn display:block main fg-red\"></main>")
 
     const css = await createExtractedCSS({
@@ -182,7 +214,46 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --animation-main: scale 1s;\n        --color-primary: #ff0000;\n\n        \n\n        \n\n        \n      } }\n@keyframes native-fade {\n          from {\n            opacity: 0;\n          }\n\n          to {\n            opacity: 1;\n          }\n        }\n@keyframes slide {\n          to {\n            transform: translateX(1rem);\n          }\n        }\n@keyframes scale {\n          to {\n            transform: scale(1.1);\n          }\n        }\n\n\n      .main {\n        color: var(--color-primary);\n        animation-name: native-fade,slide;\n      }\n\n      .main-animated {\n        animation: var(--animation-main);\n      }\n    ", { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @theme {
+        --animation-main: scale 1s;
+        --color-primary: #ff0000;
+
+
+
+
+
+
+       }
+@keyframes native-fade {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+@keyframes slide {
+          to {
+            transform: translateX(1rem);
+          }
+        }
+@keyframes scale {
+          to {
+            transform: scale(1.1);
+          }
+        }
+
+      .main {
+        color: var(--color-primary);
+        animation-name: native-fade,slide;
+      }
+
+      .main-animated {
+        animation: var(--animation-main);
+      }
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
     const result = await createExtractedCSSResult({
@@ -211,7 +282,12 @@ describe('style CSS extraction helpers', () => {
     await scanner.init()
 
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @theme { :root, :host {\n        --color-primary: #ff0000;\n      } }\n\n    ", { baseManifest: defaultManifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @theme {
+        --color-primary: #ff0000;
+       }
+
+    `, { baseManifest: defaultManifest })
     await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg-primary"></main>')
 
     const result = await createExtractedCSSResult({

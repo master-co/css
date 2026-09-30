@@ -5,7 +5,7 @@ import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-
 
 const minimal: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const,
+  "languageVersion": 12 as const,
   "mixins": [
     {
       "name": "--audit-block",
@@ -28,10 +28,10 @@ const minimal: MasterCSSManifest = {
 test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered declarations and resource lifetimes', async (binding) => {
   using compiler = await createCompiler({ binding })
   const { manifest, css: nativeCSS } = compiler.compileManifest(`
-    @theme { :root {
+    @theme {
       --color-root: red;
       --color-brand: var(--color-root);
-    } }
+     }
     @keyframes audit-fade { from { color: var(--color-brand); } to { opacity: 1; } }
     @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; }
     @mixin --audit-motion { animation: audit-fade 1s; }

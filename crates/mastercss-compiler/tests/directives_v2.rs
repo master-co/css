@@ -19,7 +19,7 @@ fn engine(source: &str) -> EngineSession {
 fn utility_definitions_use_native_preludes_and_whole_value_parameters() {
     let mut engine = engine(
         r#"
-        @theme { :root, :host { --color-line-brand: red; } }
+        @theme { --color-line-brand: red;  }
         @mixin --content-auto { content-visibility: auto; }
         @mixin --equal-cols(--value) { display: grid; grid-template-columns: repeat(var(--value), minmax(0, 1fr)); }
     "#,
@@ -37,26 +37,26 @@ fn utility_definitions_use_native_preludes_and_whole_value_parameters() {
 }
 
 #[test]
-fn scoped_tokens_retain_all_branches_duplicates_and_dependencies() {
-    let mut engine = engine(
-        r#"
-        @theme {
-            :root, :host { --color-ink: red; --color-ink: oklch(50% .2 20); }
-            [data-theme="ocean"] { --color-ink: var(--color-ocean); }
-            @media (prefers-contrast: more) { :root, :host { --color-ink: CanvasText; } }
-            :root { --color-ocean: blue; --color-unused: green; }
-        }
-    "#,
-    );
+fn tokens_preserve_duplicates_and_native_overrides_keep_dependencies() {
+    let source = r#"@theme { --color-ink:red; --color-ink:oklch(50% .2 20); --color-ocean:blue; --color-unused:green; }
+        [data-theme="ocean"] { --color-ink:var(--color-ocean); }
+        @media (prefers-contrast:more) { :root,:host { --color-ink:CanvasText; } }"#;
+    let parsed = compile_css_directives(source, &Default::default()).unwrap();
+    let mut engine = engine(source);
+    engine
+        .ensure_stylesheet_resources(&parsed.native_css)
+        .unwrap();
     engine.ensure_class_rules(["fg-ink"]).unwrap();
     let text = engine.css_text();
     assert!(text.contains("--color-ink:red;--color-ink:oklch"), "{text}");
-    assert!(text.contains("[data-theme=ocean]"), "{text}");
-    assert!(text.contains("prefers-contrast:more"), "{text}");
+    assert!(!text.contains("data-theme"));
+    assert!(parsed.native_css.contains("[data-theme=\"ocean\"]"));
+    assert!(parsed.native_css.contains("prefers-contrast"));
     assert!(text.contains("--color-ocean:blue"), "{text}");
-    assert!(!text.contains("--color-unused"), "{text}");
+    assert!(!text.contains("--color-unused"));
     engine.delete_class_rules(["fg-ink"]).unwrap();
-    assert!(engine.css_text().is_empty());
+    assert!(!engine.css_text().contains("--color-ink:"));
+    assert!(engine.css_text().contains("--color-ocean:blue"));
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn removed_directives_are_ranged_errors_but_literals_remain_native() {
         "@mode dark {}",
         "@utilities { box {display:block} }",
         ".x { @dark { color:red; } }",
-        "@theme inline { --x: red; }",
+        "@theme inline inline { --x: red; }",
         ".x { @variant media((width > 1px)) { color:red; } }",
     ] {
         let error =
@@ -135,7 +135,7 @@ fn parameters_are_tokens_only_in_parameterized_declaration_values() {
         "@mixin --box(--value) { width: --master-value(1); }",
         "@mixin --box(--value) { @media (width > var(--value)) { width: 1px; } }",
         "@mixin --box(--value) { &:nth-child(var(--value)) { width: 1px; } }",
-        "@theme { :root { @variant dark { --color: red; } } }",
+        "@theme {--color:red;  } @variant dark { --color: red; }",
         "@media print { @variant dark { color: red; } }",
     ] {
         let error =
@@ -145,7 +145,7 @@ fn parameters_are_tokens_only_in_parameterized_declaration_values() {
     for source in [
         "@mixin --box { width: var(--value); }",
         ".box { width: var(--value); }",
-        "@theme { :root { --x: var(--value); } }",
+        "@theme { --x: var(--value);  }",
     ] {
         assert!(compile_css_directives(source, &CompileNativeCssOptions::default()).is_ok());
     }
@@ -189,7 +189,7 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
 fn theme_dependencies_handle_css_escapes_comments_and_nested_fallbacks() {
     let mut engine = engine(
         r#"
-        @theme { :root { --color-a: VAR(/* x */ --color-b, var(--color-c)); --color-b: red; --color-c: blue; --unused: green; } }
+        @theme { --color-a: VAR(/* x */ --color-b, var(--color-c)); --color-b: red; --color-c: blue; --unused: green;  }
     "#,
     );
     engine.ensure_class_rules(["fg-a"]).unwrap();
@@ -243,8 +243,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":4,"languageVersion":11,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":4,"languageVersion":11,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":4,"languageVersion":12,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":4,"languageVersion":12,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }
@@ -252,8 +252,7 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
 
 #[test]
 fn theme_retains_important_and_escaped_custom_property_identifiers() {
-    let mut engine =
-        engine(r"@theme {:root { --color-br\61 nd: red !important; --color-brand: blue; }}");
+    let mut engine = engine(r"@theme { --color-br\61 nd: red !important; --color-brand: blue; }");
     engine
         .ensure_class_rules(["color:var(--color-brand)"])
         .unwrap();

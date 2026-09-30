@@ -8,7 +8,7 @@ class string
   -> match native declarations, built-in token families, and Manifest v4 mixins
   -> parse values, variables, selectors, and conditions
   -> calculate stable priority and layer indexes
-  -> insert referenced tokens with all authored scopes and dependencies
+  -> insert retained token declarations and transitive dependencies
   -> transition / snapshot / resource IR
   -> @master/css TypeScript host applies CSS text or CSSOM mutations
 ```
@@ -31,13 +31,13 @@ Risks:
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
 Manifest envelopes are v4; hydration, transition and engine snapshot envelopes are v3. Executable data must carry
-`languageVersion: 11` (binding ABI 21). Reject missing or unsupported language versions before
+`languageVersion: 12` (binding ABI 21). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
 
-Conditions retain their ordered native wrappers and authored units. Named
-Custom media names and mixin names are independent. The engine reserves the starting-style media name. Wrapper mixins use the same ordered contents IR as stylesheet applications; layers remain at call sites. Direct `@theme` declarations lower to ordered `:root,:host` runs; explicit selectors and conditions retain native scope. Native stylesheet custom properties register token values with `delivery: "native"`, retaining their native CSS rather than managed resource counts. Dependencies cross both delivery types. The browser computes variable values. Modes and inline/static variables remain removed. Keyframes directly inside top-level `@theme` are managed on demand; native keyframes outside it ship unchanged. Preset adaptive colors and shadow colors use native light-dark(); both branches remain live, and color-scheme is ordinary CSS. General hue aliases are fixed swatches.
+Conditions retain their ordered native wrappers and authored units.
+Custom media names and mixin names are independent. The engine reserves the starting-style media name. Wrapper mixins use the same ordered contents IR as stylesheet applications; layers remain at call sites. Top-level `@theme` contains only token declarations and direct managed keyframes. Tokens lower to ordered `:root,:host` runs. `static` retains tokens and their resources; `inline` substitutes the winning declaration value once in Master-generated declarations. Native selectors and conditions remain outside `@theme`, preserve their delivery, and do not register utility tokens. Reference-only static tokens supply context without unconditional output roots. Keyframes directly inside top-level `@theme` are managed on demand; native keyframes outside it ship unchanged. Preset adaptive colors and shadow colors use native light-dark(); both branches remain live, and color-scheme is ordinary CSS. General hue aliases are fixed swatches.
 
 ## CSS Authoring To Manifest
 

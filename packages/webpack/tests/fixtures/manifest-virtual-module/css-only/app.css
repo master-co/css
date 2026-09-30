@@ -1,5 +1,5 @@
 @import "@master/css";
 
-@theme {:root, :host {
+@theme {
   --color-primary: #123;
-}}
+}

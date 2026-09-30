@@ -38,6 +38,9 @@ pub(crate) fn compile_manifest(
         ));
     }
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
+    projection.has_inline_tokens = compiled_variables
+        .values()
+        .any(|variable| variable.inline_value.is_some());
     projection.compiled_variables = compiled_variables;
     projection.compiled_variable_order = compiled_variable_order;
     for (name, query) in &projection.custom_media {
@@ -193,7 +196,8 @@ pub(crate) fn compile_variables(
                     name,
                     key,
                     namespace: namespace.clone(),
-                    managed: values.iter().any(|value| value.delivery.is_none()),
+                    inline_value: super::inline_theme::selected_value(&values),
+                    is_static: values.iter().any(|value| value.is_static),
                     values,
                     numeric: object.get("numeric").cloned(),
                     variable_type,

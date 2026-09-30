@@ -282,7 +282,13 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const homePath = path.join(root, 'home.css')
     const pagePath = path.join(root, 'page.tsx')
     try {
-      writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @mixin --active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
+      writeFileSync(homePath, `@theme {
+  --color-active: #ff0000;
+}
+
+ @mixin --active-card { animation: active-spin 1s infinite; }
+@keyframes active-spin { to { opacity: .5; } }
+.native-card { color: var(--color-active); }`)
       writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./home.css\";")
 
       const transformed = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
@@ -345,7 +351,11 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const modulePath = path.join(root, 'Button.module.css')
     try {
-      writeFileSync(entryPath, "@import \"@master/css\";\n@theme {:root, :host { --color-brand: #123456; }}\n")
+      writeFileSync(entryPath, `@import "@master/css";
+@theme {
+  --color-brand: #123456;
+}
+`)
 
       const result = await transformStyleSource(modulePath, ".button { @media all {display:inline-flex;background-color:var(--color-brand);color:white;} }", {
         projectDir: root,
@@ -420,7 +430,18 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const modulePath = path.join(root, 'Button.module.css')
     const tokenPath = path.join(root, 'tokens.css')
     try {
-      writeFileSync(tokenPath, "@theme { :root, :host {\n  --spacing-card: 2rem;\n\n  \n} }\n@keyframes pop {\n    to { opacity: 1; }\n  }\n\n@mixin --brand {\n    padding: var(--spacing-card);\n    animation: pop 1s;\n  }\n.referenced-native { color: red; }")
+      writeFileSync(tokenPath, `@theme {
+  --spacing-card: 2rem;
+}
+@keyframes pop {
+    to { opacity: 1; }
+  }
+
+@mixin --brand {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  }
+.referenced-native { color: red; }`)
 
       const result = await transformStyleSource(modulePath, "@reference \"./tokens.css\"; .button { @media all {padding:var(--spacing-card);animation:pop 1s;} }", {
         projectDir: root,
@@ -445,7 +466,15 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const localPath = path.join(root, name)
     try {
-      writeFileSync(entryPath, "@import \"@master/css\";\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
+      writeFileSync(entryPath, `@import "@master/css";
+@theme {
+  --color-brand: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } }
+
+@media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } }
+`)
       const result = await transformStyleSource(localPath, '.button { color: var(--color-brand); }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
@@ -454,7 +483,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       expect(result.code).toMatch(/\.button\s*\{\s*color:\s*var\(--color-brand\);?\s*\}/)
       const globals = result.globalStylesheet?.css ?? result.code
       expect(globals).toContain('--color-brand:#123456')
-      expect(globals).toContain('--color-brand:#abcdef')
+      expect(globals).not.toContain('--color-brand:#abcdef')
       expect(result.code).not.toContain('@reference')
       expect(result.dependencies).toContain(entryPath)
     } finally {
@@ -483,7 +512,11 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const themePath = path.resolve(__dirname, '../../core/src/theme.css')
     const result = await transformStyleSource(
       themePath,
-      "@theme {:root, :host { --color-primary: red; }}\n\n:root { color: red; }",
+      `@theme {
+  --color-primary: red;
+}
+
+:root { color: red; }`,
       {
         projectDir: path.resolve(__dirname, '../../../examples/webpack')
       }

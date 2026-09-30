@@ -1,18 +1,18 @@
-@theme {:root, :host {
+@theme {
   --full: 100%;
-}}
+}
 
 
-@theme {:root, :host {
+@theme {
   --spacing-md: 20;
-}}
+}
 
 
-@theme {:root, :host {
+@theme {
   --color-black: #000;
-}}
+}
 
 
-@theme {:root, :host {
+@theme {
   --color-primary: var(--color-black);
-}}
+}

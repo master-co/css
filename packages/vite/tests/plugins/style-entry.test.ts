@@ -243,7 +243,8 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@theme { :root { --color-card: red; } }\n.card { color: red }',
+      `@theme { --color-card: red;  }
+.card { color: red }`,
       '/project/src/style.css'
     )
 

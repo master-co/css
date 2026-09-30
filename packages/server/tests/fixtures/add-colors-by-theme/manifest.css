@@ -1,14 +1,18 @@
 
-@theme {:root, :host {
+@theme {
   --color-primary: #ff0000;
-}}
+}
 
 
-@theme { @media (prefers-color-scheme: light) { :root, :host {
+
+
+@media (prefers-color-scheme: light) { :root, :host {
   --color-primary: #000000;
-} } }
+} }
 
 
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #ffffff;
-} } }
+} }

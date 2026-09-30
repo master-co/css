@@ -86,7 +86,16 @@ test.each(['local.css', 'local.module.css'])('delivers project theme variables w
   const root = fixture()
   try {
     writeFileSync(join(root, 'entry.js'), `import "./entry.css"; import "./${localName}"`)
-    writeFileSync(join(root, 'entry.css'), "@import \"@master/css\";@theme { @media (prefers-color-scheme: light) { :root, :host {--color-brand:#123456} } }\n@theme { @media (prefers-color-scheme: dark) { :root, :host {--color-brand:#abcdef} } }\n@theme {}\n@keyframes pop{to{opacity:.5}}\n")
+    writeFileSync(join(root, 'entry.css'), `@import "@master/css";@theme {
+  --color-brand: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host {--color-brand:#123456} }
+
+@media (prefers-color-scheme: dark) { :root, :host {--color-brand:#abcdef} }
+
+@keyframes pop{to{opacity:.5}}
+`)
     writeFileSync(join(root, localName), ('.button{color:var(--color-brand);--own:2rem;padding:var(--own);animation:pop 1s}.other{animation:own 1s}@keyframes own{to{opacity:1}}').replace('animation:pop', localName.endsWith('.module.css') ? 'animation: global(pop)' : 'animation:pop'))
     const result = await build(root)
     const css = Object.values(result.contents).join('\n')

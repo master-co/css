@@ -73,5 +73,5 @@ pub use preset::{compile_default_preset_manifest, compile_manifest_input_with_st
 #[cfg(test)]
 mod tests;
 
-pub(crate) use normalize::compile_manifest_fragment;
+pub(crate) use normalize::{compile_manifest_fragment, flatten_variables, reference_context};
 pub(crate) use variables::manifest_error as definition_error;

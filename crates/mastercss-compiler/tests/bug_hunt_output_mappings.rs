@@ -3,7 +3,7 @@ use serde_json::Value;
 
 #[test]
 fn native_output_retains_original_rule_locations_after_consumed_directives() {
-    let source = "/* 😀 */\n@source './src/**';\n@theme {:root, :host { --gap: 2rem; }}\n.card { padding: 1rem; }";
+    let source = "/* 😀 */\n@source './src/**';\n@theme { --gap: 2rem; }\n.card { padding: 1rem; }";
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -120,7 +120,7 @@ fn lower_output_retains_compose_and_native_declaration_origins() {
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap();
     let value = serde_json::to_value(&result).unwrap();
@@ -224,7 +224,7 @@ fn composed_declaration_mappings_preserve_the_important_and_fallback_declaration
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap();
     assert_eq!(
@@ -259,7 +259,7 @@ fn wrapped_lowered_selectors_map_after_generated_condition_prefixes() {
         &parsed.manifest_input,
         &parsed.style_definitions.unwrap(),
         &[],
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap();
     let generated = lowered

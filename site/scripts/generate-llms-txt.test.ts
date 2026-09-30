@@ -163,7 +163,7 @@ test('configured recipes validate their full markup and retain actual token and 
   assert.match(componentCSS, /--color-blue-60:/)
   assert.match(componentCSS, /--color-blue-70:/)
   const modes = projectStyleExamples.modes
-  assert.match(configuredExampleCSS(modes.source, configuredMarkupClasses(modes.html)), /\.dark\{/)
+  assert.match(configuredExampleCSS(modes.source, configuredMarkupClasses(modes.html)), /\.dark\s*\{/)
   assert.throws(() => projectStyleExample('toString'), /Unknown project style/)
 })
 
@@ -171,7 +171,7 @@ test('direct configured demo props export literal HTML and CSS without executing
   const root = await mkdtemp(path.join(os.tmpdir(), 'project-style-export-'))
   try {
     const file = path.join(root, 'content.mdx')
-    await writeFile(file, '<DemoConfiguredExample name="spacing" title="Padding" source="@theme { :root { --spacing-card: 1.5rem; } }" html={\'<article class="p-card">Collection</article>\'} caption="Shared padding." />')
+    await writeFile(file, '<DemoConfiguredExample name="spacing" title="Padding" source="@theme { --spacing-card: 1.5rem;  }" html={\'<article class="p-card">Collection</article>\'} caption="Shared padding." />')
     const result = await extractReferenceMdx(file)
     assert.deepEqual(result.notes, [])
     assert.match(result.markdown, /<article class="p-card">Collection<\/article>/)
@@ -425,7 +425,7 @@ test('hygiene distinguishes current diffs and native CSS from migration teaching
   const current = 'Classes removed from the DOM release their usage counts.\n\nCompare before/after CSS.\n\n```css\n@page { size: A4; }\n```\n\n| Prompt | Use |\n| --- | --- |\n| `migrate-to-mastercss` | Plan external-system conversion. |'
   assert.deepEqual(documentationHygieneIssues(current, false, true), [])
   assert.ok(documentationHygieneIssues('| Prompt | Use |\n| --- | --- |\n| `migrate-to-mastercss` | Convert Tailwind CSS to Master CSS. |').length)
-  for (const historical of ['`@theme inline` is removed.', '| Previous name | Replacement |', 'Follow [Migration](/guide/migration/v2-rc).', 'Migrate a Tailwind CSS project in these steps.', 'Convert Tailwind CSS classes to Master CSS.', 'Replace Sass with Master CSS.', 'Convert existing CSS to Master CSS.', 'Tailwind CSS to current Master CSS conversion tutorial.', 'Use `$name` or `base-unit`.']) {
+  for (const historical of ['`@theme dark` is removed.', '| Previous name | Replacement |', 'Follow [Migration](/guide/migration/v2-rc).', 'Migrate a Tailwind CSS project in these steps.', 'Convert Tailwind CSS classes to Master CSS.', 'Replace Sass with Master CSS.', 'Convert existing CSS to Master CSS.', 'Tailwind CSS to current Master CSS conversion tutorial.', 'Use `$name` or `base-unit`.']) {
     assert.ok(documentationHygieneIssues(historical).length, historical)
   }
   for (const command of ['master-css migrate src --from rc-legacy', 'Convert Tailwind CSS classes to Master CSS.']) {

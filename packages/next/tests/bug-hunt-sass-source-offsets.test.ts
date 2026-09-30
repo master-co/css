@@ -71,8 +71,10 @@ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} entry preserves impo
   await fixture(async root => {
     const file = join(root, 'entry.' + syntax), partial = join(root, 'parts/_entry.scss')
     writeFileSync(partial, "@reference \"./tokens.css\";.card{@media all {padding:var(--paint-padding);}}")
-    writeFileSync(join(root, 'parts/tokens.css'), "@theme {:root, :host {--paint-padding:2rem}}\n")
-    writeFileSync(join(root, 'tokens.css'), "@theme {:root, :host {--paint-padding:99rem}}\n")
+    writeFileSync(join(root, 'parts/tokens.css'), `@theme {--paint-padding:2rem}
+`)
+    writeFileSync(join(root, 'tokens.css'), `@theme {--paint-padding:99rem}
+`)
     const source = syntax === 'sass' ? "@use \"parts/entry\"\n@import url(\"@master/css\")\n" : "@use \"parts/entry\";@import url(\"@master/css\");"
     const result = await compile(root, file, source, [], { implementation: sassFile })
     expect(result).toContain('padding:2rem')

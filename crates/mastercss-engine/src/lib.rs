@@ -75,6 +75,8 @@ struct ManifestProjection {
     #[serde(skip)]
     compiled_variables: HashMap<String, CompiledVariable>,
     #[serde(skip)]
+    has_inline_tokens: bool,
+    #[serde(skip)]
     compiled_variable_order: Vec<String>,
     #[serde(skip)]
     token_utilities: HashMap<String, Vec<usize>>,
@@ -188,7 +190,8 @@ struct CompiledVariable {
     numeric: Option<Value>,
     variable_type: String,
     dependencies: Vec<String>,
-    managed: bool,
+    inline_value: Option<String>,
+    is_static: bool,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -297,6 +300,8 @@ pub struct EngineSession {
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
     keyframe_counts: HashMap<String, u32>,
+    variable_floors: HashMap<String, u32>,
+    keyframe_floors: HashMap<String, u32>,
     keyframe_texts: Vec<(String, String)>,
     stylesheet_sources: Vec<String>,
     theme_variable_names: Vec<String>,
@@ -314,6 +319,7 @@ const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
 ];
 
 mod animation;
+mod inline_theme;
 pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;
 mod condition;

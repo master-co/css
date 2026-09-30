@@ -23,7 +23,9 @@ test('css-loader Modules reference theme tokens while native keyframes require a
     response.end(request.url === '/main.js' ? readFileSync(join(root, 'out/main.js')) : '<!doctype html><body><script src="/main.js"></script></body>')
   })
   try {
-    writeFileSync(join(root, 'app.css'), "@import \"@master/css\";@theme { :root, :host {--color-brand:#123456;} }\n@keyframes pop{from{opacity:.5}to{opacity:.5}}\n.never{color:red}")
+    writeFileSync(join(root, 'app.css'), `@import "@master/css";@theme {--color-brand:#123456; }
+@keyframes pop{from{opacity:.5}to{opacity:.5}}
+.never{color:red}`)
     writeFileSync(join(root, 'card.module.css'), '.card{color:var(--color-brand);animation:pop 1s linear infinite;--local:3px;padding:var(--local)}.other{animation:own 1s linear infinite}@keyframes own{from{opacity:.75}to{opacity:.75}}')
     writeFileSync(join(root, 'main.js'), 'import styles from "./card.module.css";document.body.innerHTML=`<div id="card" class="${styles.card}">Card</div><div id="other" class="${styles.other}">Other</div>`')
     await new Promise<void>((resolve, reject) => compiler.run((error, stats) => {

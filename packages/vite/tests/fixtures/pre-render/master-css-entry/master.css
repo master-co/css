@@ -1,7 +1,7 @@
-@theme {:root, :host {
+@theme {
   --color-brand: #123;
   --breakpoint-md: 48rem;
-}}
+}
 
 
 

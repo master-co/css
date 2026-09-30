@@ -149,7 +149,7 @@ impl CssImportProvider for DefiningChild {
 fn qualified_imports_reject_global_master_definitions() {
     for source in [
         "@custom-media --wide (width > 40rem);",
-        "@theme {:root, :host { --color-card: red; }}",
+        "@theme { --color-card: red; }",
         "@mixin --print { @media print { @contents; } }",
         " @mixin --card { padding: 1rem; } ",
         " @mixin --card { padding: 1rem; } ",

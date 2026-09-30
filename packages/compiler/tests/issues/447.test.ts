@@ -6,11 +6,11 @@ import preset from '@master/css-preset/default-manifest.json' with { type: 'json
 
 const baseManifest = preset as unknown as MasterCSSManifest
 const source = `
-@theme { :root {
+@theme {
   --spacing-probe: 1rem;
   --font-family-probe: monospace;
   --font-size-probe: 2rem;
-} }
+ }
 @mixin --audit-dark {
   @media (prefers-color-scheme: dark) { @contents; }
 }
@@ -89,7 +89,7 @@ test('447: compiler and engine binding combinations agree on the language contra
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')

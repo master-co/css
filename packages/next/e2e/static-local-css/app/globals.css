@@ -1,7 +1,8 @@
 @import '@master/css';
 @theme {
-  :root, :host { --color-probe: #123456; }
-  @media (prefers-color-scheme: dark) {
+  --color-probe: #123456;
+}
+
+@media (prefers-color-scheme: dark) {
     :root, :host { --color-probe: #abcdef; }
   }
-}

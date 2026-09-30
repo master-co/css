@@ -63,12 +63,12 @@ The `spacing` variable namespace is shared across padding, margin, gap, inset, s
 This lets spacing-related utilities use `md`, `lg`, or project token names without the `spacing-` prefix.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --spacing-sm: 0.75rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-wide: 6rem;
-} }
+ }
 
 ```
 
@@ -118,10 +118,10 @@ Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a va
 (x) Avoid defining spacing tokens with numeric keys.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --spacing-1: 0.25rem; /* [!code --] */
   --spacing-2: 0.5rem; /* [!code --] */
-} }
+ }
 
 ```
 
@@ -130,11 +130,11 @@ Numeric keys are easy to confuse with low-level CSS values. Prefer semantic toke
 (o) Use descriptive scale or role keys.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --spacing-sm: 0.75rem;
   --spacing-compact: 1.25rem;
   --spacing-relaxed: 6rem;
-} }
+ }
 
 ```
 

@@ -5,7 +5,7 @@ import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
-@theme { :root, :host { --color-obsolete: red; } }
+@theme { --color-obsolete: red;  }
 @mixin --panel { @media all { padding:5px; display:block; } width:var(--dimension); height:var(--dimension); }
 @mixin --cleared { color:var(--color-obsolete); &:hover { padding:100px; } }
 @mixin --cleared { }
@@ -27,7 +27,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
     expect(rendered.cssText).not.toContain('--color-obsolete')
     expect(rendered.cssText).not.toContain('padding:100px')
-    expect(rendered.hydrationManifest.languageVersion).toBe(11)
+    expect(rendered.hydrationManifest.languageVersion).toBe(12)
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {

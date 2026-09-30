@@ -99,7 +99,7 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
       scene.html = tokens.map(token => `<section>${label(namespace, token)}<p>DOM order: 1, 2, 3.</p><div class="display:flex flex-wrap:wrap gap-sm"><div data-ui="tile">1 · Notes</div><div data-ui="tile" class="order-${token.key}">2 · Featured</div><div data-ui="tile">3 · Archive</div></div></section>`).join('')
       scene.css = 'section + section { margin-top:32px; }'
     } else {
-      scene.css = '@theme { :root { --order-featured: -1; } }'
+      scene.css = '@theme { --order-featured: -1;  }'
       scene.html = '<p>No preset values. Project-defined example:</p><div class="display:flex gap-sm"><span>Notes</span><span class="order-featured">Featured</span></div>'
     }
   }

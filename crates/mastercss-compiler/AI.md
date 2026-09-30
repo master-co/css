@@ -8,7 +8,7 @@ and compiler report IR.
 ## Module Routing
 
 - `directives.rs`, `syntax.rs`, `mixins.rs`, `theme.rs`, `variant.rs`: authoring IR.
-- `imports.rs`, `native_style.rs`, `native_tokens.rs`: import, native CSS processing, and native token cataloging.
+- `imports.rs`, `native_style.rs`: import and native CSS processing. `theme.rs` owns token registration and modes.
 - `manifest/`: normalization, preset merge, mixins, variants, and variables.
 - `lower/`: public lowering API, resolution, merge, render, and focused tests.
 - `pattern.rs`: pattern semantics shared by compiler domains.
@@ -17,9 +17,9 @@ and compiler report IR.
 
 TypeScript supplies files and package resolution; Rust remains the semantic source.
 Directive behavior changes require compiler tests and the public directive guide.
-Direct `@theme` declarations lower to ordered `:root,:host` groups. Native custom
-properties supply catalog values without transferring CSS delivery to the engine.
-Keep native descriptors, keyframe locals, and unexpanded mixin bodies out of that catalog.
+`@theme` accepts only ordered custom properties and direct managed keyframes.
+Tokens use `:root,:host`; static retains them and inline substitutes values once in
+Master-generated declarations. Native custom properties do not register tokens.
 
 ## Validation
 

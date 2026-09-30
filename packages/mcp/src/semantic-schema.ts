@@ -14,7 +14,7 @@ export const browserSupport = z.enum(['supported', 'unsupported', 'unknown', 'no
 const numeric = z.object({ value: z.number(), unit: z.string().optional() })
 export const variable = z.object({
   key: z.string(), name: z.string(), namespace: z.string().optional(), type: z.string(),
-  values: z.array(z.object({ path: strings, value: z.string() })),
+  values: z.array(z.object({ path: strings, value: z.string(), inline: z.boolean().optional(), static: z.boolean().optional() })),
   numeric: numeric.optional(), dependencies: strings
 })
 const bound = z.object({ value: z.number(), inclusive: z.boolean() }).nullable()

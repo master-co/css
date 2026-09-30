@@ -17,7 +17,8 @@ for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) 
     try {
       mkdirSync(join(root, 'node_modules'));symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
       mkdirSync(join(root, 'nested'))
-      writeFileSync(join(root, 'nested/tokens.css'), "@theme {:root, :host {--paint-padding:2rem;--paint-background:url(\"./pixel.svg?v=1#icon\")}}\n")
+      writeFileSync(join(root, 'nested/tokens.css'), `@theme {--paint-padding:2rem;--paint-background:url("./pixel.svg?v=1#icon")}
+`)
       writeFileSync(join(root, 'nested/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg" data-owner="nested"/>')
       writeFileSync(join(root, `nested/child.${syntax}`), syntax === 'scss' ? "@reference \"./tokens.css\";.target{@media all {background:var(--paint-background);padding:var(--paint-padding);}}" : '@reference "./tokens.css"\n.target\n  @media all\n    background: var(--paint-background)\n    padding: var(--paint-padding)\n')
       writeFileSync(join(root, 'style.module.css'), `@import "./nested/child.${syntax}" layer(owner);`)
@@ -59,7 +60,8 @@ for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) 
       }
       const loaded = await server.ssrLoadModule('/entry.js')
       expect(Object.keys(loaded.default)).toEqual(['target'])
-      writeFileSync(join(root, 'nested/tokens.css'), "@theme {:root, :host {--paint-padding:7rem;--paint-background:url(\"./pixel.svg?v=1#icon\")}}\n")
+      writeFileSync(join(root, 'nested/tokens.css'), `@theme {--paint-padding:7rem;--paint-background:url("./pixel.svg?v=1#icon")}
+`)
       await vi.waitFor(async () => expect(await collect(true)).toMatch(/padding:\s*7rem/), { timeout: watchDeadline })
     } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(root, { recursive: true, force: true }) }
   })

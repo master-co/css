@@ -339,9 +339,9 @@ Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, a
 Pruned native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a manifest animation name, Master CSS includes the required manifest output.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --color-primary: #175cff;
-} }
+ }
 
 @keyframes fade-in {
   from {

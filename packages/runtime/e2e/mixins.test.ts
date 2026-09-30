@@ -8,7 +8,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const baseManifest = preset as unknown as MasterCSSManifest
-const source = `@theme { :root, :host { --text-hero: 30px; --text-unused: 100px; } }
+const source = `@theme { --text-hero: 30px; --text-unused: 100px;  }
 @mixin --nested(--count <integer>) { @apply --grid-cols(var(--count)); }
 @mixin --unused { @apply --text("unused"); }`
 const manifest = compileManifestSync(source, { baseManifest }).manifest

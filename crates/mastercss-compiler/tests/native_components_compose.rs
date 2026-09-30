@@ -14,7 +14,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":11,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":4,"languageVersion":12,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap()
 }
@@ -117,7 +117,7 @@ fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
 #[test]
 fn segmented_rules_keep_sort_classification_and_resource_lifetimes() {
     let result = compile(
-        "@theme{:root,:host{--color-accent:red;}}@keyframes spin{to{opacity:1}}@mixin --one {display:block}@mixin --fallback {display:block;display:made-up-value}@mixin --resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}",
+        "@theme {--color-accent:red;}@keyframes spin{to{opacity:1}}@mixin --one {display:block}@mixin --fallback {display:block;display:made-up-value}@mixin --resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}",
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     let one = engine.inspect("one").unwrap();

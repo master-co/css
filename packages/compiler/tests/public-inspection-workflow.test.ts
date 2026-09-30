@@ -14,8 +14,8 @@ test('public project, codec, query and validation APIs preserve execution contex
   const root = mkdtempSync(join(tmpdir(), 'master-public-contract-'))
   try {
     writeFileSync(join(root, 'app.css'), `@import "@master/css";
-@theme { :root { --color-brand: red; } }
-@theme { :root { --paint-brand: var(--color-brand); } }
+@theme { --color-brand: red;  }
+@theme { --paint-brand: var(--color-brand);  }
 @mixin --paint(--name <string>) { color: var(ident("--paint-" var(--name))); }
 `)
     const project = await loadProjectManifest({
@@ -23,7 +23,7 @@ test('public project, codec, query and validation APIs preserve execution contex
       entries: [join(root, 'app.css')],
       baseManifest: {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
     })
     const manifest: MasterCSSManifest = JSON.parse(serializeMasterCSSManifest(project.manifest))
@@ -58,7 +58,7 @@ test('canonical suggestions do not replace raw display with a different cascade 
 test('public inspection example distinguishes an empty result, validation states and a failed project', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-public-example-'))
   try {
-    writeFileSync(join(root, 'app.css'), '@import "@master/css"; @theme { :root { --color-brand: red; } }')
+    writeFileSync(join(root, 'app.css'), '@import "@master/css"; @theme { --color-brand: red;  }')
     const empty = await inspectProject(root, 'app.css', [])
     expect(empty).toMatchObject({ status: 'ready', tokens: expect.arrayContaining(['color-brand']), classes: [], diagnostics: [] })
 

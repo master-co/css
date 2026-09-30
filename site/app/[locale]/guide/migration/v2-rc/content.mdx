@@ -141,9 +141,9 @@ Each replacement receives the original conditions and `!`. `r-pill` uses `calc(i
 
 Use `bg-surface-base`, `fg-text-muted`, `b-line-divider`, `outline-line-divider` and `stroke-line-divider`. Implicit text/line role lookup is removed for every color property. A real `--color-muted` still supports `fg-muted`; the migrator checks the saved resolver instead of replacing by spelling. `text-*` remains typography only, and non-color token families keep their existing lookup.
 
-Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/reference/directives/theme#theme-static) for references, JavaScript, source ownership and HMR.
+Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/reference/directives/theme#theme-keyframes) for references, JavaScript, source ownership and HMR.
 
-This guide upgrades saved RC contracts to language **v11** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
+This guide upgrades saved RC contracts to language **v12** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -193,7 +193,7 @@ The RC column below is historical reference text, not executable new syntax. `br
 | `grid-cols:3` | `grid-cols(3)` | Static integer mixin argument; the count must be positive. |
 | RC `size:20px` | `width:20px height:20px` | The paired sizing family is removed; review cascade order. |
 
-Token classes retain `var()` references. The removed `@theme inline` modifier has no compiler substitution replacement.
+Token classes reference `var()` by default. `@theme inline` substitutes the winning declared value once; `@theme static` retains tokens without a consumer. Native selectors and queries control scoped overrides.
 
 CSS keywords keep native meaning. `color:red` means the CSS color `red`; `fg-red` selects the project's color token. `font-family:mono` specifies a font named `mono` and does not resolve `--font-family-mono`.
 
@@ -211,7 +211,7 @@ font:mono:hover@sm!
 For this new example, define the project color token explicitly:
 
 ```css
-@theme { :root { --color-brand: #4f46e5; } }
+@theme { --color-brand: #4f46e5;  }
 ```
 
 ```text name="New v2 syntax"
@@ -300,7 +300,7 @@ Define reusable combinations with root-level mixins. Built-in token families suc
   height: var(--size);
 }
 
-@theme { :root { --pair-card: var(--container-md); } }
+@theme { --pair-card: var(--container-md);  }
 @mixin --pair-token(--name <string>) {
   width: var(ident("--pair-" var(--name)));
   height: var(ident("--pair-" var(--name)));
@@ -313,9 +313,9 @@ Use `pair(2rem)` or `pair-token("card")`. To expose a named `pair-card` family i
 
 Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
-- Manifest **v4**, language **v11**, binding ABI **21**, hydration **v3** and engine transition **v3** reject incompatible data.
+- Manifest **v4**, language **v12**, binding ABI **21**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
-- Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use explicit theme scopes, `customMedia` and variants.
+- Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use default theme tokens, native overrides, `customMedia` and mixins.
 - Recompile into Manifest v4 / language 11 / ABI 21. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
@@ -425,18 +425,17 @@ manual behavior decision, not an equivalence claim.
 
 ### Replace global mode settings
 
-Remove `@settings`, `@mode` and named theme preludes. Put explicit selectors and native queries inside `@theme`. Define a selector mixin when markup needs an explicit `@apply(--manual-dark)` suffix:
+Remove `@settings`, `@mode` and named theme preludes. Put token declarations in `@theme` and selectors and native queries outside it. Define a selector mixin when markup needs an explicit `@apply(--manual-dark)` suffix:
 
 ```css
 @mixin --manual-dark { &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; } }
-@theme {
-  :root, :host { --color-panel: white; }
-  [data-theme="dark"] { --color-panel: #111827; }
+@theme { --color-panel: white;
 }
+  [data-theme="dark"] { --color-panel: #111827; }
 [data-theme="dark"] { color-scheme: dark; }
 ```
 
-Copy old default values into an explicit base selector. Review overlapping themes, inheritance and specificity against saved browser output. The compiler does not insert root selectors, descendant guards or `color-scheme` declarations. Move unconditional properties to native CSS. Register on-demand keyframes directly inside top-level `@theme`; leave always-delivered keyframes outside it. Use per-class `!` instead of global importance, and native selectors instead of global scope.
+Define token defaults directly in `@theme`. Review overlapping themes, inheritance and specificity against saved browser output. Token defaults use `:root,:host`; native selectors and `color-scheme` control theme activation. Move unconditional properties to native CSS. Register on-demand keyframes directly inside top-level `@theme`; leave always-delivered keyframes outside it. Use per-class `!` instead of global importance, and native selectors instead of global scope.
 
 Define viewport aliases with `@custom-media --sm (width >= 52.125rem);`; `--breakpoint-sm` no longer registers `@sm`. Replace the removed `@master entry;` marker with `@import "@master/css";`, which loads the full preset. Every relative `@source` pattern is relative to its declaring stylesheet, including bare patterns.
 
@@ -665,7 +664,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 21), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 11; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 21), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 12; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors

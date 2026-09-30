@@ -795,7 +795,7 @@ function usesLocallyDefinedToken(candidate: string, context: string): boolean {
   const declarations = [...context.replaceAll('\\n', '\n').matchAll(/(?<=^|[;{])\s*(--[a-z][\w-]*\s*:\s*[^;{}]+;)/gm)].map(match => match[1])
   if (!declarations.length) return false
   try {
-    configuredExampleCSS(`@theme { :root { ${declarations.join(' ')} } }`, [candidate])
+    configuredExampleCSS(`@theme { ${declarations.join(' ')}  }`, [candidate])
     return true
   } catch { return false }
 }

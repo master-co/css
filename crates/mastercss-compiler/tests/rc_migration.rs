@@ -351,7 +351,7 @@ fn named_rc_settings_become_explicit_modes_base_values_and_scheme() {
     assert!(
         result
             .configuration_css
-            .contains(":root,:host{--color-surface:black;}")
+            .contains("@theme{--color-surface:black;}")
     );
     assert!(result.configuration_css.contains("color-scheme:dark"));
     assert!(

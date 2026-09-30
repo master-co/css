@@ -1,9 +1,9 @@
 @import './styles/button.css';
 
-@theme {:root, :host {
+@theme {
   --color-primary: #123;
   --breakpoint-md: 48;
-}}
+}
 
 
 

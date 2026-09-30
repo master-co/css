@@ -12,7 +12,7 @@ beforeAll(() => {
 
 const manifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const,
+  "languageVersion": 12 as const,
   "mixins": [
     {
       "name": "--block",

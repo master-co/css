@@ -1,6 +1,5 @@
 use super::*;
 use mastercss_engine::EngineSession;
-use serde_json::json;
 
 fn compile(source: &str) -> (CompileCssDirectivesResult, Value) {
     let result = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
@@ -10,199 +9,247 @@ fn compile(source: &str) -> (CompileCssDirectivesResult, Value) {
             .manifest;
     (result, manifest)
 }
-
-#[test]
-fn direct_theme_declarations_match_explicit_defaults() {
-    let (_, short) = compile("@theme{--color-brand:red;--color-brand:blue;--spacing-card:2rem;}");
-    let (_, explicit) =
-        compile("@theme{:root,:host{--color-brand:red;--color-brand:blue;--spacing-card:2rem;}}");
-    assert_eq!(short, explicit);
+fn engine(source: &str) -> EngineSession {
+    EngineSession::create(&compile(source).1.to_string()).unwrap()
 }
 
 #[test]
-fn default_runs_preserve_scope_order_keyframes_and_dependencies() {
-    let (result, manifest) = compile(
-        r#"@theme {
-        --color-base:red; --color-brand:var(--color-base);
-        [data-theme=dark] {--color-brand:black}
-        --color-brand:blue;
-        @media (width > 1px) {:root {--color-brand:green}}
-        @keyframes turn {to{color:var(--color-brand)}}
-        --animate-turn:turn;
-    }"#,
-    );
-    assert!(result.native_css.is_empty());
-    let theme = manifest["theme"].as_array().unwrap();
-    assert_eq!(theme.len(), 5);
-    assert_eq!(theme[0]["prelude"], ":root,:host");
-    assert_eq!(theme[1]["prelude"], "[data-theme=dark]");
-    assert_eq!(theme[2]["children"][0]["value"], "blue");
-    assert_eq!(manifest["keyframes"][0]["name"], "turn");
+fn theme_modes_and_ordered_defaults() {
+    let (_, manifest) =
+        compile("@theme static inline{--color-brand:red;--color-brand:blue;--spacing-card:2rem}");
+    assert_eq!(manifest["languageVersion"], 12);
+    assert_eq!(manifest["theme"][0]["prelude"], ":root,:host");
+    assert_eq!(manifest["theme"][0]["children"][0]["inline"], true);
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
-    engine.ensure_class_rules(["bg-brand"]).unwrap();
-    let text = engine.snapshot().unwrap().text;
-    assert!(text.contains("--color-base:red"));
-    assert!(text.contains("[data-theme=dark]{--color-brand:black}"));
-    assert!(!text.contains("--animate-turn"));
-}
-
-#[test]
-fn native_tokens_register_without_managed_delivery() {
-    let (result, manifest) = compile(
-        r#"@layer theme {
-        :root,:host {--color-brand:red;--spacing-card:2rem}
-        @media (width > 1px) {[data-theme=dark] {--color-brand:blue}}
-    }"#,
-    );
-    assert!(result.native_css.contains("--color-brand"));
-    assert!(manifest.get("theme").is_none());
-    let values = &manifest["variables"]["color"][0]["values"];
-    assert_eq!(values[0]["delivery"], "native");
-    assert_eq!(
-        values[1]["path"],
-        json!(["@layer theme", "@media (width > 1px)", "[data-theme=dark]"])
-    );
-    assert_eq!(
-        result.manifest_input.native_tokens.as_ref().unwrap()[0]
-            .source
-            .as_ref()
-            .unwrap()
-            .file
-            .as_deref(),
-        Some("master.css")
-    );
-    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
-    engine.ensure_class_rules(["bg-brand", "p-card"]).unwrap();
-    let snapshot = engine.snapshot().unwrap();
-    assert!(
-        snapshot
-            .text
-            .contains("background-color:var(--color-brand)")
-    );
-    assert!(snapshot.text.contains("padding:var(--spacing-card)"));
-    assert!(snapshot.resources.variables.is_empty());
     assert!(
         engine
-            .emitted_globals_snapshot()
-            .unwrap()
-            .variables
-            .is_empty()
+            .css_text()
+            .contains("--color-brand:red;--color-brand:blue")
     );
-}
-
-#[test]
-fn native_aliases_retain_managed_dependencies_and_scopes_only() {
-    let (_, manifest) = compile(
-        r#"
-        @theme {--color-base:red;--color-brand:white;[data-theme=dark]{--color-brand:black}}
-        :root{--color-alias:var(--color-base)}
-        [data-theme=ocean]{--color-brand:blue}
-    "#,
-    );
-    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
-    engine.ensure_class_rules(["bg-alias", "bg-brand"]).unwrap();
-    let text = engine.snapshot().unwrap().text;
-    assert!(text.contains("--color-base:red"));
-    assert!(text.contains("[data-theme=dark]{--color-brand:black}"));
-    assert!(!text.contains("--color-brand:blue"));
-    assert!(!text.contains("--color-alias:"));
+    engine.ensure_class_rules(["bg-brand"]).unwrap();
+    assert!(engine.css_text().contains("background-color:blue"));
+    engine.delete_class_rules(["bg-brand"]).unwrap();
     assert!(
-        !engine
-            .emitted_globals_snapshot()
-            .unwrap()
-            .variables
-            .contains_key("color-alias")
+        engine
+            .css_text()
+            .contains("--color-brand:red;--color-brand:blue")
     );
-    engine.delete_class_rules(["bg-alias", "bg-brand"]).unwrap();
-    assert!(engine.snapshot().unwrap().text.is_empty());
+    assert_eq!(
+        compile("@theme inline static{--color-brand:red}").1,
+        compile("@theme static inline{--color-brand:red}").1
+    );
 }
 
 #[test]
-fn native_catalog_excludes_descriptors_keyframe_locals_and_mixin_bodies() {
+fn only_theme_registers_tokens_and_native_css_keeps_delivery() {
     let (result, manifest) = compile(
-        r#"
-        @property --color-registered {syntax:"<color>";inherits:true;initial-value:red}
-        @keyframes local {to{--color-frame:red}}
-        @mixin --local {--color-parameter:red}
-        .card {--color-real:red;--empty:;--data:{"nested":"var(--ignored)"};}
-    "#,
+        "@theme{--color-brand:white}:root{--color-native:red}[data-theme=ocean]{--color-brand:blue}",
     );
-    let names = result
-        .manifest_input
-        .native_tokens
-        .unwrap()
-        .into_iter()
-        .map(|token| token.name)
-        .collect::<Vec<_>>();
-    assert_eq!(names, ["color-real", "empty", "data"]);
+    assert!(
+        result
+            .native_css
+            .replace(' ', "")
+            .contains("--color-native:red")
+    );
     assert_eq!(manifest["variables"]["color"].as_array().unwrap().len(), 1);
+    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
+    engine
+        .ensure_class_rules(["bg-native", "bg-brand"])
+        .unwrap();
+    assert!(!engine.css_text().contains("bg-native"));
+    assert!(
+        engine
+            .css_text()
+            .contains("background-color:var(--color-brand)")
+    );
+    assert!(!engine.css_text().contains("ocean"));
 }
 
 #[test]
-fn rejected_theme_forms_remain_explicit() {
+fn inline_is_one_pass_and_recomputes_dependencies() {
+    let mut e = engine(
+        "@theme{--color-base:red}@theme inline{--color-brand:var(--color-base);--color-alias:var(--color-brand)}",
+    );
+    e.ensure_class_rules(["bg-brand", "color:var(--color-alias)"])
+        .unwrap();
+    let css = e.css_text().replace(' ', "");
+    assert!(css.contains("background-color:var(--color-base)"));
+    assert!(css.contains("color:var(--color-brand)"));
+    assert!(css.contains("--color-base:red"));
+    assert!(css.contains("--color-brand:var(--color-base)"));
+    assert!(!css.contains("--color-alias:"));
+    e.delete_class_rules(["color:var(--color-alias)"]).unwrap();
+    assert!(!e.css_text().contains("--color-brand:"));
+    e.delete_class_rules(["bg-brand"]).unwrap();
+    assert!(e.css_text().is_empty());
+}
+
+#[test]
+fn inline_preserves_external_variables_fallbacks_and_opaque_strings() {
+    let mut e = engine(
+        "@theme inline{--color-brand:var(--app-brand,red)}@mixin --card{color:var(--color-brand,blue);content:\"var(--color-brand)\"}",
+    );
+    e.ensure_class_rules(["bg-brand", "card"]).unwrap();
+    let css = e.css_text().replace(' ', "");
+    assert!(css.contains("background-color:var(--app-brand,red)"));
+    assert!(css.contains("color:var(--app-brand,red)"));
+    assert!(css.contains("content:\"var(--color-brand)\""));
+    assert!(!css.contains("@layer theme"));
+}
+
+#[test]
+fn inline_importance_selects_value_and_mode_without_important_leaking() {
+    let mut e = engine(
+        "@theme inline{--color-brand:red!important;--color-brand:blue}@theme{--color-brand:green}",
+    );
+    e.ensure_class_rules(["bg-brand"]).unwrap();
+    assert!(e.css_text().contains("background-color:red}"));
+    let mut e = engine("@theme{--color-brand:red!important}@theme inline{--color-brand:blue}");
+    e.ensure_class_rules(["bg-brand"]).unwrap();
+    assert!(e.css_text().contains("background-color:var(--color-brand)"));
+}
+
+#[test]
+fn inline_applies_to_native_apply_but_not_authored_declarations() {
+    let input = compile_css_directives("@theme inline{--color-brand:var(--app-brand)}@mixin --paint{color:var(--color-brand)}.card{border-color:var(--color-brand);@apply --paint}", &CompileNativeCssOptions::default()).unwrap();
+    let lowered = lower_css_directives_request(
+        &LowerCssDirectivesRequest {
+            native_output: input.native_output,
+            manifest_input: input.manifest_input,
+            style_definitions: input.style_definitions.unwrap_or_default(),
+            ..Default::default()
+        },
+        &Default::default(),
+    )
+    .unwrap();
+    let css = lowered.css.unwrap();
+    assert!(css.contains("border-color:var(--color-brand)"));
+    assert!(css.contains("color:var(--app-brand)"));
+}
+
+#[test]
+fn static_animation_retains_only_referenced_keyframes_and_dependencies() {
+    let mut e = engine(
+        "@theme static{--animate-reveal:reveal 1s}@theme{--color-brand:red;@keyframes reveal{to{color:var(--color-brand)}}@keyframes unused{to{opacity:0}}}",
+    );
+    let initial = e.css_text();
+    assert!(initial.contains("@keyframes reveal"));
+    assert!(initial.contains("--color-brand:red"));
+    assert!(!initial.contains("@keyframes unused"));
+    e.ensure_class_rules(["animate-reveal", "bg-brand"])
+        .unwrap();
+    e.delete_class_rules(["animate-reveal", "bg-brand"])
+        .unwrap();
+    assert_eq!(e.css_text(), initial);
+    e.replace_emitted_globals(
+        r#"{"variables":{"animate-reveal":1,"color-brand":1},"keyframes":{"reveal":1}}"#,
+    )
+    .unwrap();
+    assert!(e.css_text().is_empty());
+    e.replace_emitted_globals("{}").unwrap();
+    assert_eq!(e.css_text(), initial);
+}
+
+#[test]
+fn static_hmr_replaces_roots_without_leaking_counts() {
+    let mut e = engine("@theme static{--color-brand:red}@theme{--color-unused:blue}");
+    e.ensure_class_rules(["bg-brand"]).unwrap();
+    e.refresh(&compile("@theme static{--color-brand:green}").1.to_string())
+        .unwrap();
+    e.delete_class_rules(["bg-brand"]).unwrap();
+    assert!(e.css_text().contains("--color-brand:green"));
+    e.refresh(&compile("@theme{--color-brand:black}").1.to_string())
+        .unwrap();
+    assert!(e.css_text().is_empty());
+}
+
+#[test]
+fn only_tokens_and_direct_keyframes_are_accepted() {
     for source in [
         "@theme{color:red}",
-        "@theme static{--color-brand:red}",
-        "@theme inline{--color-brand:red}",
-        "@theme dark{--color-brand:red}",
-        ".x{@theme{--color-brand:red}}",
-        "@theme{@media all{--color-brand:red}}",
+        "@theme{:root{--x:red}}",
+        "@theme{.dark{--x:red}}",
+        "@theme{@media all{--x:red}}",
+        "@theme{@supports(display:grid){--x:red}}",
+        "@theme{@container card{--x:red}}",
+        "@theme{@scope (.card){--x:red}}",
+        "@theme{@starting-style{--x:red}}",
+        "@theme dark{--x:red}",
+        "@theme inline inline{--x:red}",
+        "@theme static static{--x:red}",
+        "@theme;",
     ] {
         assert!(
-            compile_css_directives(source, &CompileNativeCssOptions::default()).is_err(),
+            compile_css_directives(source, &Default::default()).is_err(),
             "{source}"
         );
     }
+    let (result, _) = compile(
+        "/*😀*/@theme{--label:\"夜\";@keyframes turn{to{opacity:1}}--animate-turn:turn 1s}",
+    );
+    assert!(result.native_css.is_empty());
+    assert_eq!(result.manifest_input.keyframes.unwrap()[0].name, "turn");
 }
 
 #[test]
-fn native_animation_tokens_retain_managed_animation_dependencies() {
-    let (_, manifest) = compile(
-        r#"
-        :root { --animate-turn: turn 2s; }
-        @theme {
-            --color-brand: red;
-            @keyframes turn { to { color: var(--color-brand); } }
-            @keyframes unused { to { opacity: 0; } }
-        }
-        "#,
-    );
-    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
-    engine.ensure_class_rules(["animate-turn"]).unwrap();
-    let snapshot = engine.snapshot().unwrap();
-    assert!(snapshot.text.contains("@keyframes turn"));
-    assert!(snapshot.text.contains("--color-brand:red"));
-    assert!(
-        snapshot.text.contains("animation:var(--animate-turn)"),
-        "{}",
-        snapshot.text
-    );
-    assert!(!snapshot.text.contains("--animate-turn:"));
-    assert!(!snapshot.text.contains("@keyframes unused"));
-    assert_eq!(snapshot.resources.variables.len(), 1);
-    engine.delete_class_rules(["animate-turn"]).unwrap();
-    assert!(engine.snapshot().unwrap().text.is_empty());
+fn reference_static_tokens_are_context_not_unconditional_roots() {
+    let reference = compile("@theme static{--color-brand:red;--color-unused:blue}").1;
+    let lowered = lower_css_directives_request(
+        &Default::default(),
+        &LowerCssDirectivesOptions {
+            resolution_manifest: Some(reference),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let mut e = EngineSession::create(&lowered.resolution_manifest.to_string()).unwrap();
+    assert!(e.css_text().is_empty());
+    e.ensure_stylesheet_resources(".card{color:var(--color-brand)}")
+        .unwrap();
+    assert!(e.css_text().contains("--color-brand:red"));
+    assert!(!e.css_text().contains("--color-unused:"));
 }
 
 #[test]
-fn default_runs_keep_escaped_names_importance_and_unicode_offsets() {
-    let source = "/*😀*/@theme{--label:\"😀夜\";--color-\\62rand:red!important;--color-brand:blue;[data-theme=夜]{--color-brand:black}--color-brand:green;@keyframes turn{to{opacity:1}}}";
-    let (result, manifest) = compile(source);
-    assert_eq!(manifest["variables"]["color"][0]["name"], "color-brand");
+fn invalid_theme_declarations_point_to_the_offending_unicode_position() {
+    let source = "/*😀*/@theme{--label:夜;color:red}";
+    let error = compile_css_directives(source, &Default::default()).unwrap_err();
+    let start = source[..source.find("color:red").unwrap()]
+        .encode_utf16()
+        .count() as u32;
     assert_eq!(
-        manifest["theme"][0]["children"][1]["value"],
-        "red !important"
+        error.diagnostic().range,
+        Some(mastercss_schema::SourceRange {
+            start,
+            end: start + 5
+        })
     );
-    assert_eq!(manifest["theme"][0]["children"][2]["value"], "blue");
-    assert_eq!(manifest["theme"][1]["prelude"], "[data-theme=夜]");
-    assert_eq!(manifest["theme"][2]["children"][0]["value"], "green");
-    let keyframe = &result.manifest_input.keyframes.unwrap()[0];
-    assert_eq!(keyframe.text, "@keyframes turn{to{opacity:1}}");
-    let native = crate::native_tokens::collect("/*😀*/:root{--color-\\62rand:red;}", "tokens.css");
-    assert_eq!(native[0].name, "color-brand");
-    assert_eq!(native[0].value, "red");
-    assert_eq!(
-        native[0].source.as_ref().unwrap().file.as_deref(),
-        Some("tokens.css")
+}
+
+#[test]
+fn inline_wrapper_applications_substitute_each_authored_reference_once() {
+    let mut e = engine(
+        "@theme inline{--color-base:red;--color-alias:var(--color-base)}@mixin --hover{&:hover{@contents}}@mixin --paint{color:var(--color-alias)}",
     );
+    e.ensure_class_rules([
+        "bg-alias@apply(--hover)",
+        "paint@apply(--hover)",
+        "color:var(--color-alias)@apply(--hover)",
+    ])
+    .unwrap();
+    let css = e.css_text();
+    assert_eq!(css.matches("color:var(--color-base)").count(), 3, "{css}");
+    assert!(css.contains("--color-base:red"));
+    assert!(!css.contains("--color-alias:"));
+}
+
+#[test]
+fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
+    let base = serde_json::json!({
+        "version":4,"languageVersion":12,
+        "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
+        "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
+    });
+    let context = crate::manifest::reference_context(base.clone(), Some(&base));
+    assert_eq!(context, base);
 }

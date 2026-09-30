@@ -53,7 +53,10 @@ describe('Next style CSS loader', () => {
     const image = join(root, 'app/pattern.svg')
     const tokens = join(root, 'app/tokens.css')
     writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg"/>')
-    writeFileSync(tokens, "@theme {:root, :host { --image-probe: url(\"./pattern.svg\"); }}\n")
+    writeFileSync(tokens, `@theme {
+  --image-probe: url("./pattern.svg");
+}
+`)
     const file = join(root, 'app/Pattern.module.css')
     const result = await runStylesheetLoader(root, file, '@reference "./tokens.css"; .card { background-image: var(--image-probe); }')
     const entry = fileURLToPath(new URL(result.code.match(/@import "([^"]+)"/)![1], pathToFileURL(file)))
@@ -69,7 +72,10 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const tokens = join(root, 'app/tokens.css')
     const source = '@reference "./tokens.css"; .card { color: var(--color-shared); }'
-    writeFileSync(tokens, "@theme {:root, :host { --color-shared: red; }}\n")
+    writeFileSync(tokens, `@theme {
+  --color-shared: red;
+}
+`)
     const a = join(root, 'app/A.module.css')
     const b = join(root, 'app/B.module.css')
     const first = await runStylesheetLoader(root, a, source)
@@ -78,7 +84,10 @@ describe('Next style CSS loader', () => {
     expect(asset(a, first.code)).toBe(asset(b, second.code))
     expect(second.dependencies).toContain(tokens)
     expect(second.dependencies).toContain(asset(b, second.code))
-    writeFileSync(tokens, "@theme {:root, :host { --color-shared: blue; }}\n")
+    writeFileSync(tokens, `@theme {
+  --color-shared: blue;
+}
+`)
     const changed = await runStylesheetLoader(root, a, source)
     expect(asset(a, changed.code)).not.toBe(asset(a, first.code))
     expect(changed.content).toContain('--color-shared:blue')
@@ -112,7 +121,13 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const homePath = join(root, 'app/home.css')
-    writeFileSync(homePath, "@theme {:root, :host { --color-active: #ff0000; }}\n\n @mixin --active-card { animation: active-spin 1s infinite; } \n@keyframes active-spin { to { opacity: .5; } }\n.native-card { color: var(--color-active); }")
+    writeFileSync(homePath, `@theme {
+  --color-active: #ff0000;
+}
+
+ @mixin --active-card { animation: active-spin 1s infinite; }
+@keyframes active-spin { to { opacity: .5; } }
+.native-card { color: var(--color-active); }`)
 
     const result = await runStylesheetLoader(root, entryPath, [
       '@import url("@master/css");',
@@ -192,7 +207,15 @@ describe('Next style CSS loader', () => {
   it.each(['button.css', 'button.module.css'])('emits mode variables used by native CSS in referenced %s', async (name) => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')
-    writeFileSync(globalsPath, "@import url(\"@master/css\");\n@theme { @media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } } }\n\n@theme { @media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } } }\n")
+    writeFileSync(globalsPath, `@import url("@master/css");
+@theme {
+  --color-brand: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host { --color-brand: #123456; } }
+
+@media (prefers-color-scheme: dark) { :root, :host { --color-brand: #abcdef; } }
+`)
 
     const result = await runStylesheetLoader(
       root,
@@ -202,7 +225,7 @@ describe('Next style CSS loader', () => {
 
     expect(result.content).toMatch(/color:\s*var\(--color-brand\)/)
     expect(result.content).toContain('--color-brand:#123456')
-    expect(result.content).toContain('--color-brand:#abcdef')
+    expect(result.content).not.toContain('--color-brand:#abcdef')
     expect(result.content).not.toContain('@reference')
     if (name.endsWith('.module.css')) {
       expect(result.code).toMatch(/^@import /)

@@ -119,7 +119,15 @@ function collectHastElementsByClass(node: any, className: string) {
 }
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
-  const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
+  const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    /* Font families */
+    --tracking-tightest: -0.072em;
+}
+`
   const transformer = transformerMasterCSS({ matchCSSSyntaxStyles: false })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -131,7 +139,14 @@ test.concurrent('does not attach semantic metadata to guide theme CSS directive 
 })
 
 test.concurrent('does not resolve guide theme CSS directive syntax through semantic scope styles', () => {
-  const code = "@theme { .light {\n    --tracking-tightest: -0.072em;\n} }\n"
+  const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    --tracking-tightest: -0.072em;
+}
+`
   const transformer = transformerMasterCSS({ manifest })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -830,7 +845,12 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
   const htmlOptions = {
     lang: 'html'
   }
-  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@mixin --card { @safelist \"bg-blue fg-brand:hover\"; }"
+  const cssCode = `@theme {
+  --color-primary: #4f46e5;
+    --spacing-card: 24;
+}
+
+@mixin --card { @safelist "bg-blue fg-brand:hover"; }`
   const cssOptions = {
     lang: 'css'
   }
@@ -905,7 +925,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
       className: 'mcss-semantic mcss-semantic-modifier mcss-semantic-role-selector-pseudoClass-name mcss-semantic-modifier-pseudoClass'
     }
   ]))
-  expect(cssTokens?.some((token) => token.content === '@theme' && token.className)).toBe(false)
+  expect(cssTokens?.some((token) => token.content === "@theme" && token.className)).toBe(false)
   expect(cssTokens?.some((token) => token.content === '--color-primary' && token.className)).toBe(false)
 })
 

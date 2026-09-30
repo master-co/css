@@ -154,7 +154,10 @@ test('supports Shiki dynamic language imports', async () => {
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme {:root, :host { --color-primary: var(--value); }}\n"
+    const code = `@theme {
+  --color-primary: var(--value);
+}
+`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -175,7 +178,17 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
   try {
     expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
 
-    const code = "@theme { :root, :host {\n    --color-primary: var(--color-blue-60);\n} }\n\n@mixin --btn {\n        @safelist \"text-gradient fg-primary:hover@md\";\n    }\n@keyframes fade {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}"
+    const code = `@theme {
+  --color-primary: var(--color-blue-60);
+}
+
+@mixin --btn {
+        @safelist "text-gradient fg-primary:hover@md";
+    }
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -194,7 +207,15 @@ test('keeps guide theme snippets correct with TextMate only', async () => {
   })
 
   try {
-    const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
+    const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    /* Font families */
+    --tracking-tightest: -0.072em;
+}
+`
     const result = highlighter.codeToTokens(code, {
       lang: 'css',
       theme: shikiSmokeTheme
@@ -207,7 +228,15 @@ test('keeps guide theme snippets correct with TextMate only', async () => {
 })
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
-  const code = "@theme { .light {\n    /* Font families */\n    --tracking-tightest: -0.072em;\n} }\n"
+  const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    /* Font families */
+    --tracking-tightest: -0.072em;
+}
+`
   const transformer = transformerMasterCSS({ matchCSSSyntaxStyles: false })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -219,7 +248,14 @@ test.concurrent('does not attach semantic metadata to guide theme CSS directive 
 })
 
 test.concurrent('does not resolve guide theme CSS directive syntax through semantic scope styles', () => {
-  const code = "@theme { .light {\n    --tracking-tightest: -0.072em;\n} }\n"
+  const code = `@theme {
+  --tracking-tightest: -0.072em;
+}
+
+.light {
+    --tracking-tightest: -0.072em;
+}
+`
   const transformer = transformerMasterCSS({ manifest })
   const transformedTokens = transformer.tokens.call({
     source: code,
@@ -533,7 +569,12 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
   const htmlOptions = {
     lang: 'html'
   }
-  const cssCode = "@theme { :root, :host {\n  --color-primary: #4f46e5;\n  --spacing-card: 24;\n} }\n\n@mixin --card { @safelist \"bg-blue fg-brand:hover\"; }"
+  const cssCode = `@theme {
+  --color-primary: #4f46e5;
+    --spacing-card: 24;
+}
+
+@mixin --card { @safelist "bg-blue fg-brand:hover"; }`
   const cssOptions = {
     lang: 'css'
   }
@@ -608,7 +649,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
       className: 'mcss-semantic mcss-semantic-modifier mcss-semantic-role-selector-pseudoClass-name mcss-semantic-modifier-pseudoClass'
     }
   ]))
-  expect(cssTokens?.some((token) => token.content === '@theme' && token.className)).toBe(false)
+  expect(cssTokens?.some((token) => token.content === "@theme" && token.className)).toBe(false)
   expect(cssTokens?.some((token) => token.content === '--color-primary' && token.className)).toBe(false)
 })
 

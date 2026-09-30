@@ -36,7 +36,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 11, bindingAbiVersion: 21 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 12, bindingAbiVersion: 21 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -51,7 +51,7 @@ it('explicit preset context reports matching separately from validity and browse
 })
 
 it('keeps complete retired-token alternatives in both structured and JSON output', async () => {
-  const context = project("@import \"@master/css\"; @theme {:root, :host { --font-family-brand: Brand; --font-size-brand: 1rem; }}")
+  const context = project("@import \"@master/css\"; @theme { --font-family-brand: Brand; --font-size-brand: 1rem; }")
   try {
     const result = await inspectClass(context, { className: 'font-brand' })
     expect(result.matchStatus).toBe('syntax-error')

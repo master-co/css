@@ -10,14 +10,21 @@ test('builds native project variables without references in local CSS and a CSS 
   try {
     writeFileSync(join(root, 'index.html'), '<!doctype html><div class="plain"></div><div class="module"></div><script type="module" src="./client.js"></script>')
     writeFileSync(join(root, 'client.js'), 'import "./app.css"; import "./plain.css"; import "./local.module.css"')
-    writeFileSync(join(root, 'app.css'), "@import url(\"@master/css\");@theme { @media (prefers-color-scheme: light) { :root, :host {--color-brand:#123456} } }\n@theme { @media (prefers-color-scheme: dark) { :root, :host {--color-brand:#abcdef} } }\n")
+    writeFileSync(join(root, 'app.css'), `@import url("@master/css");@theme {
+  --color-brand: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host {--color-brand:#123456} }
+
+@media (prefers-color-scheme: dark) { :root, :host {--color-brand:#abcdef} }
+`)
     writeFileSync(join(root, 'plain.css'), '.plain{color:var(--color-brand)}')
     writeFileSync(join(root, 'local.module.css'), '.module{color:var(--color-brand)}')
     await build({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }), build: { minify: false, cssMinify: false } })
     const css = readdirSync(join(root, 'dist/assets')).filter(file => file.endsWith('.css'))
       .map(file => readFileSync(join(root, 'dist/assets', file), 'utf8')).join('\n')
     expect(css).toContain('--color-brand:#123456')
-    expect(css).toContain('--color-brand:#abcdef')
+    expect(css).toMatch(/--color-brand:\s*#abcdef/)
     expect(css).toMatch(/\.plain\s*\{\s*color:\s*var\(--color-brand\)/)
     expect(css).toMatch(/\._module_[\w-]+\s*\{\s*color:\s*var\(--color-brand\)/)
     expect(css).not.toContain('@reference')

@@ -49,7 +49,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 }
 
 test.concurrent('does not render semantic tokens for native CSS-only documents', () => {
-  const { tokens } = renderTokens("\n    @charset \"utf-8\";\n    @import url(\"base.css\") layer(theme) supports(display: grid);\n    @namespace svg url(\"http://www.w3.org/2000/svg\");\n    /* @theme { .should remain a native comment */\n\n    @font-face {\n      font-family: \"Inter\";\n      src: url(\"/fonts/inter.woff2\") format(\"woff2\");\n      font-display: swap;\n    } }\n\n\n    @property --angle {\n      syntax: \"<angle>\";\n      inherits: false;\n      initial-value: 0deg;\n    }\n\n    @counter-style bullets {\n      system: cyclic;\n      symbols: \"*\" \"\\2022\";\n      suffix: \" \";\n    }\n\n    @font-feature-values Inter {\n      @styleset {\n        nice: 1;\n      }\n    }\n\n    @font-palette-values --brand {\n      font-family: \"Bixa\";\n      base-palette: 1;\n      override-colors: 0 #0f172a;\n    }\n\n    @page :first {\n      margin: 1cm;\n      @top-left {\n        content: \"Chapter\";\n      }\n    }\n\n    @position-try --bottom {\n      inset-area: bottom;\n      margin: 1rem;\n    }\n\n    @view-transition {\n      navigation: auto;\n    }\n\n    @scope (.card) to (.content) {\n      :scope {\n        color: red;\n      }\n    }\n\n    @starting-style {\n      .card {\n        opacity: 0;\n      }\n    }\n\n    @document url(\"https://example.com/\") {\n      body {\n        color: red;\n      }\n    }\n\n    @keyframes fade {\n      from {\n        opacity: 0;\n        transform: translateX(0);\n      }\n\n      to {\n        opacity: 1;\n        transform: translateX(var(--distance));\n      }\n    }\n\n    @layer reset, theme, components;\n\n    @media (width >= 48rem) {\n      .card:hover::before {\n        --distance: calc(100% - 1rem);\n        color: red;\n        content: \"@utilities\";\n      }\n    }\n\n    @supports (container-type: inline-size) {\n      @container card (width > 30rem) {\n        @layer utilities {\n          .card:is(.active, #featured) {\n            animation: fade 1s ease-in-out;\n          }\n        }\n      }\n    }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @charset \"utf-8\";\n    @import url(\"base.css\") layer(theme) supports(display: grid);\n    @namespace svg url(\"http://www.w3.org/2000/svg\");\n    /* \n\n.should remain a native comment */\n\n    @font-face {\n      font-family: \"Inter\";\n      src: url(\"/fonts/inter.woff2\") format(\"woff2\");\n      font-display: swap;\n    }\n\n\n    @property --angle {\n      syntax: \"<angle>\";\n      inherits: false;\n      initial-value: 0deg;\n    }\n\n    @counter-style bullets {\n      system: cyclic;\n      symbols: \"*\" \"\\2022\";\n      suffix: \" \";\n    }\n\n    @font-feature-values Inter {\n      @styleset {\n        nice: 1;\n      }\n    }\n\n    @font-palette-values --brand {\n      font-family: \"Bixa\";\n      base-palette: 1;\n      override-colors: 0 #0f172a;\n    }\n\n    @page :first {\n      margin: 1cm;\n      @top-left {\n        content: \"Chapter\";\n      }\n    }\n\n    @position-try --bottom {\n      inset-area: bottom;\n      margin: 1rem;\n    }\n\n    @view-transition {\n      navigation: auto;\n    }\n\n    @scope (.card) to (.content) {\n      :scope {\n        color: red;\n      }\n    }\n\n    @starting-style {\n      .card {\n        opacity: 0;\n      }\n    }\n\n    @document url(\"https://example.com/\") {\n      body {\n        color: red;\n      }\n    }\n\n    @keyframes fade {\n      from {\n        opacity: 0;\n        transform: translateX(0);\n      }\n\n      to {\n        opacity: 1;\n        transform: translateX(var(--distance));\n      }\n    }\n\n    @layer reset, theme, components;\n\n    @media (width >= 48rem) {\n      .card:hover::before {\n        --distance: calc(100% - 1rem);\n        color: red;\n        content: \"@utilities\";\n      }\n    }\n\n    @supports (container-type: inline-size) {\n      @container card (width > 30rem) {\n        @layer utilities {\n          .card:is(.active, #featured) {\n            animation: fade 1s ease-in-out;\n          }\n        }\n      }\n    }\n  ", 'css')
 
   expect(tokens).toEqual([])
 })
@@ -74,7 +74,10 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
     '}',
     '.card:hover::before { color: red; }'
   ].join('\n')
-  const themeDirective = "@theme { :root, :host {\n    --color-primary: --alpha(var(--color-blue-60) / 80%);\n} }\n"
+  const themeDirective = `@theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+`
   const nativeBetween = [
     '@layer reset, theme, components;',
     '@media (width >= 48rem) {',
@@ -146,16 +149,61 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
 })
 
 test.concurrent('renders CSS directives in SCSS-like sources', () => {
-  const { tokens } = renderTokens("\n    $color: red;\n\n    @theme { :root, :host {\n      --color-primary: #123;\n    } }\n\n\n    .btn {\n      @safelist \"sr-only\";\n    }\n  ", 'scss')
+  const { tokens } = renderTokens(`
+    $color: red;
+
+    @theme {
+  --color-primary: #123;
+}
+
+    .btn {
+      @safelist "sr-only";
+    }
+  `, 'scss')
 
   expectToken(tokens, "sr-only", 'enumMember')
-  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: "@theme", type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
-  const { tokens } = renderTokens("\n    @source not \"src/**/*.{ts,tsx}\";\n    @reference \"./tokens.css\";\n    @blocklist \"debug-*\";\n    @safelist \"sr-only fg-red:hover@md\";\n\n    @theme { .static brand {\n      --color-primary: --alpha(var(--color-blue-60) / 80%);\n      --radius-card: 1rem;\n    } }\n\n\n    @mixin --headings { @media (--all) { @contents; } }\n\n    @mixin --btn {\n        @safelist \"text-gradient align-items:center fg-primary:hover@md\";\n\n        @media (--h)>=sm&h<lg {\n          @safelist \"sr-only\";\n        }\n\n        ::scrollbar-thumb:hover {\n          @media (prefers-color-scheme: dark) {\n            @safelist \"fg-primary\";\n          }\n        }\n      }\n\n    @utility text-decoration-* from(--color-*) {\n        text-decoration: var(--value);\n      }\n  ", 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
+  const { tokens } = renderTokens(`
+    @source not "src/**/*.{ts,tsx}";
+    @reference "./tokens.css";
+    @blocklist "debug-*";
+    @safelist "sr-only fg-red:hover@md";
+
+    @theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+  --radius-card: 1rem;
+}
+
+.static brand {
+      --color-primary: --alpha(var(--color-blue-60) / 80%);
+      --radius-card: 1rem;
+    }
+
+    @mixin --headings { @media (--all) { @contents; } }
+
+    @mixin --btn {
+        @safelist "text-gradient align-items:center fg-primary:hover@md";
+
+        @media (--h)>=sm&h<lg {
+          @safelist "sr-only";
+        }
+
+        ::scrollbar-thumb:hover {
+          @media (prefers-color-scheme: dark) {
+            @safelist "fg-primary";
+          }
+        }
+      }
+
+    @utility text-decoration-* from(--color-*) {
+        text-decoration: var(--value);
+      }
+  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', values: [{ path: [':root,:host'], value: '#4f46e5' }] }] }) })
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -170,7 +218,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: "@theme", type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'static', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'brand', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
@@ -197,13 +245,29 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
 })
 
 test.concurrent('renders CSS directives in LESS-like sources', () => {
-  const { tokens } = renderTokens("\n    @color: red;\n\n    @theme {:root, :host {\n      --color-primary: oklch(99% 0.0033 72);\n    }}\n\n\n    \n      @utility font:<~font-size|number> {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-primary);\n        }\n      }\n    \n  ", 'less')
+  const { tokens } = renderTokens(`
+    @color: red;
+
+    @theme {
+  --color-primary: oklch(99% 0.0033 72);
+}
+
+
+      @utility font:<~font-size|number> {
+        font-size: var(--value);
+
+        @media (prefers-color-scheme: light) {
+          color: var(--color-primary);
+        }
+      }
+
+  `, 'less')
 
   expect(tokens).toEqual([])
 })
 
 test.concurrent('does not synthesize a closing directive brace for incomplete CSS blocks', () => {
-  const { tokens } = renderTokens('@theme { --color-primary: red;', 'css')
+  const { tokens } = renderTokens("@theme { --color-primary: red;", 'css')
 
   expect(tokens).toEqual([])
 })
@@ -264,7 +328,13 @@ test.concurrent('skips full embedded semantic tokens in active mode', () => {
 })
 
 test.concurrent('does not render active semantic tokens for CSS directive syntax at a position', () => {
-  const content = "@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n.btn { color: red; }"
+  const content = `@theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+
+.dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }
+
+.btn { color: red; }`
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
@@ -319,14 +389,20 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
-  const content = "@theme { .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); } }\n\n@mixin --btn { @safelist \"sr-only\"; }"
+  const content = `@theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+
+.dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }
+
+@mixin --btn { @safelist "sr-only"; }`
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
   expectToken(tokens, "sr-only", 'enumMember')
-  expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: "@theme", type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })

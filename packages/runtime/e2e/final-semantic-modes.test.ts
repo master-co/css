@@ -6,7 +6,7 @@ import defaultManifestJSON from '@master/css-preset/default-manifest.json' with 
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
-const manifest = compileManifestSync(`
+const compiled = compileManifestSync(`
 @mixin --light {
   @media (prefers-color-scheme: light) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @contents; } }
   &:where([data-theme="light"], [data-theme="light"] *) { @contents; }
@@ -20,14 +20,18 @@ const manifest = compileManifestSync(`
   :host([data-theme="ocean"]) & { @contents; }
 }
 @theme {
-  :root, :host { --color-probe: white; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme]) { --color-probe: black; } }
-  [data-theme="dark"] { --color-probe: black; }
-  [data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
+  --color-probe: white;
 }
-`, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest }).manifest
+
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --color-probe: black; } }
+
+[data-theme="dark"] { --color-probe: black; }
+
+[data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
+`, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest })
+const { manifest } = compiled
 const classes = ['bg-probe', 'padding:11px@apply(--dark)', 'color:red@apply(--ocean)', 'padding:9px@media((width>=800px))@media((hover:hover))']
-const html = '<!doctype html><html class="bg-probe padding:11px@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style></head><body>'
+const html = '<!doctype html><html class="bg-probe padding:11px@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style>' + `<style>${compiled.nativeCSS}</style></head><body>`
   + '<div id="outside" class="bg-probe padding:11px@apply(--dark)">Outside</div>'
   + '<section data-theme="ocean" id="ocean" class="bg-probe color:red@apply(--ocean)"><div id="nested" class="bg-probe padding:11px@apply(--dark) color:red@apply(--ocean)">Nested</div></section>'
   + '<div id="query" class="padding:9px@media((width>=800px))@media((hover:hover))">Query</div></body></html>'
@@ -76,7 +80,7 @@ test('explicit host mode guards apply to shadow descendants without crossing bou
   await page.locator('#host').evaluate((element, css) => {
     const root = element.attachShadow({ mode: 'open' })
     root.innerHTML = `<style>${css}</style><div id="inside" class="bg-probe color:red@apply(--ocean)">Inside</div>`
-  }, generated.cssText)
+  }, compiled.nativeCSS + generated.cssText)
   await expect(page.locator('#inside')).toHaveCSS('background-color', 'rgb(0, 0, 255)')
   await expect(page.locator('#inside')).toHaveCSS('color', 'rgb(255, 0, 0)')
   await expect(page.locator('#outside')).not.toHaveCSS('color', 'rgb(255, 0, 0)')

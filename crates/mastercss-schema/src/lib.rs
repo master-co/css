@@ -15,7 +15,7 @@ use serde_json::Value;
 use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 4;
-pub const LANGUAGE_VERSION: u32 = 11;
+pub const LANGUAGE_VERSION: u32 = 12;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 3;
 pub const BINDING_ABI_VERSION: u32 = 21;
 pub const ENGINE_TRANSITION_VERSION: u32 = 3;

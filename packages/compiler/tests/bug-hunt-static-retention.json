@@ -1,7 +1,7 @@
 [
   {
     "id": "chain",
-    "css": "@theme{:root{--color-base:red;--color-mid:var(--color-base);--color-brand:var(--color-mid)}}",
+    "css": "@theme {--color-base:red;--color-mid:var(--color-base);--color-brand:var(--color-mid)}",
     "names": [
       "color-base",
       "color-brand",
@@ -10,7 +10,7 @@
   },
   {
     "id": "alias",
-    "css": "@theme{:root{--color-base:red;--color-alias:var(--color-base);--color-brand:var(--color-alias)}}",
+    "css": "@theme {--color-base:red;--color-alias:var(--color-base);--color-brand:var(--color-alias)}",
     "names": [
       "color-alias",
       "color-base",
@@ -19,7 +19,7 @@
   },
   {
     "id": "shared",
-    "css": "@theme{:root{--color-base:red;--color-brand:var(--color-base);--color-other:var(--color-base)}}",
+    "css": "@theme {--color-base:red;--color-brand:var(--color-base);--color-other:var(--color-base)}",
     "names": [
       "color-base",
       "color-brand"
@@ -27,16 +27,18 @@
   },
   {
     "id": "scopes",
-    "css": "@theme{:root{--color-base:red;--color-dark:blue}.light{--color-brand:var(--color-base)}.dark{--color-brand:var(--color-dark)}}",
+    "css": "@theme{--color-base:red;--color-dark:blue;--color-brand:var(--color-base)}.dark{--color-brand:var(--color-dark)}",
     "names": [
       "color-base",
-      "color-brand",
+      "color-brand"
+    ],
+    "nativeNames": [
       "color-dark"
     ]
   },
   {
     "id": "cycle",
-    "css": "@theme{:root{--color-other:var(--color-brand);--color-brand:var(--color-other)}}",
+    "css": "@theme {--color-other:var(--color-brand);--color-brand:var(--color-other)}",
     "names": [
       "color-brand",
       "color-other"

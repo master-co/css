@@ -19,7 +19,7 @@ impl EngineSession {
             let mut text = String::new();
             for node in nodes {
                 match node {
-                    mastercss_schema::ThemeNode::Declaration { name, value }
+                    mastercss_schema::ThemeNode::Declaration { name, value, .. }
                         if active.contains(name.as_str()) =>
                     {
                         text.push_str(&format!(
@@ -90,6 +90,23 @@ impl EngineSession {
                 }
             }
         }
+        let roots = self
+            .compiled
+            .compiled_variable_order
+            .iter()
+            .filter(|name| self.compiled.compiled_variables[*name].is_static)
+            .cloned()
+            .collect::<Vec<_>>();
+        for name in roots {
+            self.register_variable(&name, &mut HashSet::new());
+            if self.compiled.compiled_variables[&name].namespace == "animate" {
+                let animation =
+                    self.declaration_animation_references(&format!("animation:var(--{name})"));
+                self.register_keyframes(&animation.names, animation.retain_all);
+            }
+        }
+        self.variable_floors = self.variable_counts.clone();
+        self.keyframe_floors = self.keyframe_counts.clone();
     }
 
     pub(crate) fn parse_native_declaration_candidate(
@@ -231,9 +248,6 @@ impl EngineSession {
                 continue;
             };
             pending.extend(variable.dependencies.iter().rev().cloned());
-            if !variable.managed {
-                continue;
-            }
             let count = self.variable_counts.entry(name.clone()).or_default();
             *count = count.saturating_add(1);
             if *count == 1 {
@@ -263,10 +277,7 @@ impl EngineSession {
                 continue;
             };
             pending.extend(variable.dependencies.iter().rev().cloned());
-            if !variable.managed {
-                continue;
-            }
-            let host_count = self.emitted_globals.variable_count(&name);
+            let host_count = self.variable_floors.get(&name).copied().unwrap_or_default();
             let remove = match self.variable_counts.get_mut(&name) {
                 Some(count) if *count > host_count => {
                     if host_count == 0 && *count == 1 {

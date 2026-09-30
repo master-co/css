@@ -6,6 +6,6 @@ body {
   min-height: 100%;
 }
 
-@theme {:root, :host {
+@theme {
   --color-primary: #0070f3;
-}}
+}

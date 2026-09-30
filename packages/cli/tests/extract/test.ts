@@ -14,7 +14,13 @@ it('basic extract', async () => {
   try {
     fs.writeFileSync(join(cwd, 'a.html'), '<h1 class="bg-primary fg-primary">Hello World</h1>', { flag: 'w' })
     fs.writeFileSync(join(cwd, 'b.html'), "<h1 class=\"margin:3rem text-align:center font-family-sans font-weight-heavy font-size:48px\">Hello World</h1>", { flag: 'w' })
-    fs.writeFileSync(join(cwd, 'main.css'), "\n      @import \"@master/css\";\n      @theme {:root, :host {\n        --color-primary: var(--blue);\n      }}\n\n    ", { flag: 'w' })
+    fs.writeFileSync(join(cwd, 'main.css'), `
+      @import "@master/css";
+      @theme {
+        --color-primary: var(--blue);
+      }
+
+    `, { flag: 'w' })
     execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'generate'], { cwd })
     expect(readFileSync(join(cwd, 'master.css')).toString()).toMatch(/(fg-primary|margin\\:3rem|text-align\\:center|font-family-sans|font-weight-heavy|font-size\\:48px)/)
   } finally {

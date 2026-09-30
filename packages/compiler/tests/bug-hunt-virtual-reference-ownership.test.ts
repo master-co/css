@@ -21,7 +21,7 @@ function fixture() {
     mkdirSync(directory)
     const owner = join(directory, 'owner.scss'), reference = join(directory, 'tokens #.css'), resource = join(directory, 'pixel.svg')
     writeFileSync(resource, `<svg data-owner="${side}"/>`)
-    writeFileSync(reference, `@theme{:root, :host {--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}}.never-${side}{color:red}`)
+    writeFileSync(reference, `@theme {--paint-${side}-padding:${index + 2}rem;--paint-${side}-background:url("./pixel.svg?q=${side}#icon")}.never-${side}{color:red}`)
     return { owner, reference, resource, source: `@reference "./tokens%20%23.css?v=1#theme";.${side}{@apply --all{padding:var(--paint-${side}-padding);background:var(--paint-${side}-background);}}` }
   })
   writeFileSync(join(root, 'tokens #.css'), '@mixin --paint-a {padding:99rem}@mixin --paint-b {padding:99rem}')
@@ -42,7 +42,9 @@ test('BH-0004 missing virtual reference reports its attempted path and registrat
     await expect(collection.register(f.scanner, id, source, options)).rejects.toThrow('ENOENT')
     expect(f.dependencies).toContain(item.reference)
     expect(collection.snapshot()).toEqual(before)
-    writeFileSync(item.reference, "@theme {:root, :host {--paint-a-padding:7rem}}\n\n")
+    writeFileSync(item.reference, `@theme {--paint-a-padding:7rem}
+
+`)
     await collection.register(f.scanner, id, source, options)
     const output = await collection.compose({ ...options, scanner: f.scanner })
     expect(output.css).toContain('padding:7rem')

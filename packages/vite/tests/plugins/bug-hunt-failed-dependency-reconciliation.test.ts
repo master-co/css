@@ -12,7 +12,7 @@ function fixture(resource = false) {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, resource ? 'one/two/pixel.svg' : 'one/two/tokens.css')
-  const tokens = `@theme{:root, :host {--paint-padding:7rem;${resource ? '--paint-background-image:url("./one/two/pixel.svg?v=1#icon")' : ''}}}`
+  const tokens = `@theme {--paint-padding:7rem;${resource ? '--paint-background-image:url("./one/two/pixel.svg?v=1#icon")' : ''}}`
   if (resource) writeFileSync(join(external, 'tokens.css'), tokens)
   writeFileSync(join(root, 'style.css'), `${resource ? "@import url(\"@master/css\");@preserve native;" : ''}@reference "../external/${resource ? 'tokens.css' : 'one/two/tokens.css'}";.target{@media all{padding:var(--paint-padding);background-image:var(--paint-background-image);}}`)
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')
@@ -147,7 +147,8 @@ test('BH-0004 two failed owners recover independently in one environment', async
     await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     expect(result.transform.mock.calls.some(([url]) => url.includes('second.css'))).toBe(false)
     const first = await fetch(new URL('style.css', result.origin));expect(first.status).toBe(200);expect(await first.text()).toContain('7rem')
-    result.send.mockClear();mkdirSync(dirname(second), { recursive: true });writeFileSync(second, "@theme {:root, :host {--paint-padding:9rem}}\n")
+    result.send.mockClear();mkdirSync(dirname(second), { recursive: true });writeFileSync(second, `@theme {--paint-padding:9rem}
+`)
     await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const recovered = await fetch(new URL('second.css', result.origin));expect(recovered.status).toBe(200);expect(await recovered.text()).toContain('9rem')
   } finally { await stop(f, result) }

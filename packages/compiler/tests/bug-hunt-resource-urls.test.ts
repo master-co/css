@@ -5,7 +5,9 @@ import { createCompilerBindingSession } from '../src/session'
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: 'entry', files: {
     entry: "@import './child.css';.example{@apply --all {background:var(--hero);}}",
-    child: "@theme {:root, :host {--hero:url(hero.svg?q=1#part)}}\n\n.native{background:image-set(\"small.png\" 1x,url(big.png) 2x)}"
+    child: `@theme {--hero:url(hero.svg?q=1#part)}
+
+.native{background:image-set("small.png" 1x,url(big.png) 2x)}`
   }, edges: [{ from: 'entry', specifier: './child.css', resolved: 'child' }] },
   urls: { entry: '/output/main.css', child: '/output/child.css' },
   resourceURLs: { child: { 'hero.svg?q=1#part': '/source/child/hero.svg?q=1#part', 'small.png': '/source/child/small.png', 'big.png': '/source/child/big.png' } },
@@ -28,7 +30,7 @@ const request: MasterCSSCompileStylesheetsRequest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 }
 

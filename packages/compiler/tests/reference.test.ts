@@ -7,7 +7,7 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const,
+  "languageVersion": 12 as const,
   mixins: [
   {
     "name": "--all",
@@ -39,7 +39,27 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, "\n        @theme {:root, :host {\n          --color-brand: #123456;\n        }}\n\n\n        @mixin --wide {\n          @media (width >= 640px) {\n            @contents;\n          }\n        }\n\n        \n          @mixin --brand {\n            color: var(--color-brand);\n          }\n        \n\n        .referenced-native {\n          color: red;\n        }\n      ")
+      writeFileSync(tokensPath, `
+        @theme {
+          --color-brand: #123456;
+        }
+
+        @mixin --wide {
+          @media (width >= 640px) {
+            @contents;
+          }
+        }
+
+
+          @mixin --brand {
+            color: var(--color-brand);
+          }
+
+
+        .referenced-native {
+          color: red;
+        }
+      `)
       writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        .button {\n          @apply --all {color:var(--color-brand);}\n\n          @apply --wide {\n            @apply --all {color:var(--color-brand);}\n          }\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath, { baseManifest })
@@ -105,9 +125,9 @@ describe('CSS @reference', () => {
         '@import "@master/css";',
         '@import "fake-font/index.css";',
         '',
-        '@theme { :root, :host {',
+        '@theme {',
         '    --color-primary: #123456;',
-        '} }'
+        ' }'
       ].join('\n'))
 
       const result = compileProjectManifest([entryPath])

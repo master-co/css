@@ -20,7 +20,21 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       const scanner = new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
       await scanner.init()
       const stylesheets = createStylesheetCollection()
-      await stylesheets.register(scanner, join(root, 'app/globals.css'), "\n        @theme {:root, :host {\n          --color-primary: #ff0000;\n        }}\n\n\n        @theme { @keyframes fade {\n          from { opacity: 0; }\n          to { opacity: 1; }\n        } }\n\n        .main {\n          color: var(--color-primary);\n          animation-name: fade;\n        }\n      ", {
+      await stylesheets.register(scanner, join(root, 'app/globals.css'), `
+        @theme {
+          --color-primary: #ff0000;
+        }
+
+        @theme { @keyframes fade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        } }
+
+        .main {
+          color: var(--color-primary);
+          animation-name: fade;
+        }
+      `, {
         baseManifest: defaultBuildManifest,
         projectDir: root
       })

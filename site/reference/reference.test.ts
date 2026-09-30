@@ -327,8 +327,9 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
   assert.equal(generated.length, tutorial.examples.length + 2)
   const used = (className: string) => tutorial.examples.find(example => example.classes.includes(className))!
   assert.match(used('p-action').css, /:root,:host\{--color-brand:.*--spacing-action:1rem/)
-  assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--color-accent:\s*rebeccapurple/)
-  assert.equal(used('fg-accent').css.match(/--color-accent:/g)?.length, 1)
+  assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--workspace-accent:\s*rebeccapurple/)
+  assert.doesNotMatch(used('fg-accent').css, /--color-accent:/)
+  assert.match(used('fg-accent').css, /color:var\(--workspace-accent\)/)
   const animation = used('animate-reveal@motion-safe').css
   assert.match(animation, /animation:var\(--animate-reveal\)/)
   assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
@@ -481,7 +482,7 @@ test('changing a configured token updates class output, extracted Markdown and s
   const directory = await mkdtemp(path.join(tmpdir(), 'reference-example-'))
   try {
     for (const value of ['1.5rem', '2rem']) {
-      const source = `@theme { :root { --spacing-card: ${value}; } }`
+      const source = `@theme { --spacing-card: ${value};  }`
       const file = path.join(directory, 'content.mdx')
       await writeFile(file, `<ConfiguredExample source={${JSON.stringify(source)}} classes={['p-card']} />`)
       const extracted = await extractReferenceMdx(file)
@@ -491,7 +492,7 @@ test('changing a configured token updates class output, extracted Markdown and s
       assert.ok(extractSearchNodesFromMdx(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
     }
   } finally { await rm(directory, { recursive: true, force: true }) }
-  assert.throws(() => configuredExampleCSS('@theme { :root { --spacing-card: 1.5rem; } }', ['p:missing-reference-token']), /Invalid configured documentation class/)
+  assert.throws(() => configuredExampleCSS('@theme { --spacing-card: 1.5rem;  }', ['p:missing-reference-token']), /Invalid configured documentation class/)
 })
 
 test('tool references preserve every public input, complete raw contracts and stable headings', async () => {

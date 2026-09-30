@@ -152,6 +152,7 @@ function registerPrompts(server: McpServer) {
               'Named tokens use hyphens; colon values use full native CSS properties and explicit var() references. Verify target syntax against the current project manifest, preserve cascade behavior, and leave uncertain dynamic or custom syntax for manual review.',
               'Inspect the workspace, identify the framework, package manager, current styling systems, stylesheet entries, source extraction coverage, existing theme tokens, component classes, and available validation commands.',
               'Produce a migration plan with the recommended rendering mode, the first reviewable migration batch, CSS output risks, manual visual checks, and the formatter, lint, type-check, test, or build commands to run.',
+              'Define utility tokens as direct custom properties in top-level @theme, with optional static retention or inline substitution. Keep selectors and conditions in native CSS outside @theme. Native custom properties do not register utility names.',
               'Preserve CSS output unless a deliberate behavior change is requested, keep vendor or generated CSS in place, and use write previews only for safe, scoped changes.'
             ].join('\n')
           }

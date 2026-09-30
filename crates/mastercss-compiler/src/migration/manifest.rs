@@ -230,8 +230,8 @@ pub(super) fn upgrade(manifest: &mut Value) {
 }
 
 pub(super) fn css(manifest: &Value, original: &Value) -> String {
-    fn nodes(nodes: &Value) -> String {
-        nodes
+    fn nodes(value: &Value) -> String {
+        value
             .as_array()
             .into_iter()
             .flatten()
@@ -246,21 +246,44 @@ pub(super) fn css(manifest: &Value, original: &Value) -> String {
                     format!(
                         "{}{{{}}}",
                         node["prelude"].as_str().unwrap_or_default(),
-                        nodes_string(&node["children"])
+                        nodes(&node["children"])
                     )
                 }
             })
             .collect()
     }
-    fn nodes_string(value: &Value) -> String {
-        nodes(value)
+    let mut defaults = String::new();
+    let mut overrides = String::new();
+    for node in manifest["theme"].as_array().into_iter().flatten() {
+        if node["type"] == "declaration" {
+            defaults.push_str(&nodes(&json!([node])));
+        } else if node["prelude"].as_str().is_some_and(|prelude| {
+            matches!(prelude.replace(' ', "").as_str(), ":root" | ":root,:host")
+        }) {
+            defaults.push_str(&nodes(&node["children"]));
+        } else {
+            overrides.push_str(&nodes(&json!([node])));
+        }
     }
-    let theme = nodes(&manifest["theme"]);
-    let mut output = if theme.is_empty() {
-        String::new()
-    } else {
-        format!("@theme{{{theme}}}\n")
-    };
+    // A scoped-only saved value still needs a token declaration in the vocabulary.
+    for variable in crate::manifest::flatten_variables(manifest.get("variables")) {
+        let name = variable["name"].as_str().unwrap_or_default();
+        let property = format!("--{}:", mastercss_lexer::css_escape(name));
+        if !defaults.contains(&property)
+            && let Some(value) = variable["values"]
+                .as_array()
+                .and_then(|values| values.first())
+        {
+            defaults.push_str(&format!("{property}{};", text(&value["value"])));
+        }
+    }
+    let mut output = String::new();
+    if !defaults.is_empty() {
+        output.push_str(&format!("@theme{{{defaults}}}\n"));
+    }
+    if !overrides.is_empty() {
+        output.push_str(&format!("@layer theme{{{overrides}}}\n"));
+    }
     for (name, query) in manifest
         .get("customMedia")
         .and_then(Value::as_object)

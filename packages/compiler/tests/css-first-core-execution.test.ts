@@ -5,23 +5,25 @@ import { createTestCSS } from './helpers/rust-engine'
 
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('CSS-first scoped execution', () => {
-  test('keeps all authored scopes, duplicate declarations and transitive dependencies live', () => {
-    const { manifest } = compile(`
+  test('keeps ordered token declarations and native scopes separate', () => {
+    const { manifest, nativeCSS } = compile(`
       @theme {
-        :root { --color-source: red; --color-brand: var(--color-source); --color-brand: color-mix(in oklab, var(--color-source), white); --unused: blue; }
-        .dark { --color-brand: black; }
-        @media (width >= 40rem) { .preview { --color-brand: green; } }
-      }
+  --color-source: red; --color-brand: var(--color-source); --color-brand: color-mix(in oklab, var(--color-source), white); --unused: blue;
+}
+
+.dark { --color-brand: black; }
+
+@media (width >= 40rem) { .preview { --color-brand: green; } }
       @mixin --card { color: var(--color-brand); }
     `)
     const variable = flattenMasterCSSManifestVariables(manifest.variables).find(variable => variable.name === 'color-brand')!
     expect(variable.values.map(value => value.path)).toEqual([
-      [':root'], [':root'], ['.dark'], ['@media (width>=40rem)', '.preview']
+      [':root,:host'], [':root,:host']
     ])
     expect(variable.dependencies).toEqual(['color-source'])
     const css = createTestCSS(manifest)
@@ -29,26 +31,34 @@ describe('CSS-first scoped execution', () => {
     css.ensureClassRules('card')
     expect(css.themeLayer.text).toContain('--color-source:red')
     expect(css.themeLayer.text).toContain('--color-brand:var(--color-source);--color-brand:')
-    expect(css.themeLayer.text).toContain('.dark{--color-brand:black}')
-    expect(css.themeLayer.text).toContain('.preview{--color-brand:green}')
+    expect(nativeCSS.replace(/\s+/g, '')).toContain('.dark{--color-brand:black;}')
+    expect(nativeCSS.replace(/\s+/g, '')).toContain('.preview{--color-brand:green;}')
     expect(css.themeLayer.text).not.toContain('--unused:')
     css.deleteClassRules('card')
     expect(css.themeLayer.text).toBe('')
     css.dispose()
   })
 
-  test('retains authored scopes when a base manifest is extended', () => {
-    const first = compile('@theme { :root { --color-brand: red; } }')
-    const second = compileCSSManifest('@theme { .dark { --color-brand: blue; } } @mixin --card { color: var(--color-brand); }', { baseManifest: first.manifest })
+  test('preserves token declaration order when a base manifest is extended', () => {
+    const first = compile(`@theme {
+  --color-brand: red;
+}`)
+    const second = compileCSSManifest(`@theme {
+  --color-brand: blue;
+}
+
+.dark { --color-brand: blue; } @mixin --card { color: var(--color-brand); }`, { baseManifest: first.manifest })
     const css = createTestCSS(second.manifest).ensureClassRules('card')
-    expect(css.themeLayer.text).toContain(':root{--color-brand:red}')
-    expect(css.themeLayer.text).toContain('.dark{--color-brand:blue}')
+    expect(css.themeLayer.text).toContain(':root,:host{--color-brand:red}')
+    expect(second.nativeCSS.replace(/\s+/g, '')).toContain('.dark{--color-brand:blue;}')
     css.dispose()
   })
 
   test('preserves native keyframes independently of utility lifecycle', () => {
     const result = compileCSSManifest(`
-      @theme { :root { --color-brand: red; } }
+      @theme {
+  --color-brand: red;
+}
       @keyframes fade { to { background: var(--color-brand); opacity: 1; } }
       @mixin --card { animation: fade 1s; }
     `, { baseManifest })
@@ -102,7 +112,9 @@ describe('CSS-first scoped execution', () => {
 
   test('preserves CSS variable cycles and ignores quoted references', () => {
     const { manifest } = compile(`
-      @theme { :root { --a: var(--b); --b: var(--a); --quoted: "var(--missing)"; } }
+      @theme {
+  --a: var(--b); --b: var(--a); --quoted: "var(--missing)";
+}
       @mixin --card { --value: var(--a); content: var(--quoted); }
     `)
     const variables = flattenMasterCSSManifestVariables(manifest.variables)
@@ -122,7 +134,7 @@ test('preserves arbitrary native function arguments and custom-property data', (
     '--alpha(var(--color-blue-60) / foo)', '--alpha(var(--color-blue-60) / 50% / 20%)',
     '--alpha(var(--color-blue-60))'
   ]) {
-    const compiled = compile(`@theme { :root { --color-brand: ${value}; } } @mixin --paint { color: var(--color-brand); }`)
+    const compiled = compile(`@theme { --color-brand: ${value}; } @mixin --paint { color: var(--color-brand); }`)
     const css = createTestCSS(compiled.manifest).ensureClassRules('paint')
     expect(css.themeLayer.text).toContain(`--color-brand:${value}`)
     css.dispose()

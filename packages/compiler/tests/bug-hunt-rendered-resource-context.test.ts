@@ -21,9 +21,11 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 11 as const
+  "languageVersion": 12 as const
 }
-const definitions = "@theme {:root{--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;}}\n\n@keyframes audit{from{opacity:0}to{opacity:1}}"
+const definitions = `@theme {--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;}
+
+@keyframes audit{from{opacity:0}to{opacity:1}}`
 const initialSource = definitions + '.card{color:var(--color-old)}'
 // A host has modified the old generated value and introduced new resources.
 const processed = '.card{color:var(--color-old);background:var(--color-late);animation:audit 1s}@layer theme{:root{--color-old:#123456}}'

@@ -47,7 +47,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
       const example = { id: 'composition', title: 'Combine a state, breakpoint and color token', classes, css }
       doc.examples.unshift(example)
       doc.aliases = classes
-      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg-red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Project theme scopes and named conditions can override the preset.\n\n### Complete generated CSS\n\n${fence('css disclosure=generated-css', css)}\n\n${doc.markdown}`
+      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg-red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Project theme tokens and native scoped overrides customize the preset; custom media define named conditions.\n\n### Complete generated CSS\n\n${fence('css disclosure=generated-css', css)}\n\n${doc.markdown}`
     }
     doc.headings = documentHeadings(doc.markdown)
     documents.push(doc)
@@ -60,7 +60,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
-    'theme': 'Declare scoped custom properties, custom media and reusable mixins.',
+    'theme': 'Declare utility tokens, static and inline behavior, custom media and reusable mixins.',
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',

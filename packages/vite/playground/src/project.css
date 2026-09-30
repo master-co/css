@@ -1,17 +1,19 @@
-@theme {:root, :host {
+@theme {
   --color-primary: #0061ff;
-  --color-surface-base: #f6f8fb;
-  --color-surface-raised: #fff;
-  --color-ink: #172033;
-  --color-muted: #637083;
-  --color-panel: #f6f8fb;
-  --color-ring: #d9e2ef;
-  --radius-card: 18px;
-  --radius-pill: 999px;
-  --spacing-card: 24px;
-}}
+    --color-surface-base: #f6f8fb;
+    --color-surface-raised: #fff;
+    --color-ink: #172033;
+    --color-muted: #637083;
+    --color-panel: #f6f8fb;
+    --color-ring: #d9e2ef;
+    --radius-card: 18px;
+    --radius-pill: 999px;
+    --spacing-card: 24px;
+}
 
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #8fb5ff;
   --color-surface-base: #182233;
   --color-surface-raised: #111827;
@@ -19,7 +21,7 @@
   --color-muted: #aab6c7;
   --color-panel: #182233;
   --color-ring: #31415a;
-} } }
+} }
 
 @custom-media --md (width >= 48rem);
 @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }

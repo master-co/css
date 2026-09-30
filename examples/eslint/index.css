@@ -30,32 +30,41 @@
   }
 }
 
-@theme { :root, :host {
+@theme {
   --font-sans: 'Inter';
-  --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
-  --tracking-tightest: -0.072em;
+    --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
+    --tracking-tightest: -0.072em;
 
-  /* Color palettes */
-  --color-stone-0: oklch(99% 0.0033 72);
-} }
+    /* Color palettes */
+    --color-stone-0: oklch(99% 0.0033 72);
+}
 
 /* Light mode colors */
-@theme { @media (prefers-color-scheme: light) { :root, :host {
+@theme {
   --shadow-xs: 0 1px 2px -1px oklch(0% 0 none / .08);
   --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
-} } }
+}
+
+@media (prefers-color-scheme: light) { :root, :host {
+  --shadow-xs: 0 1px 2px -1px oklch(0% 0 none / .08);
+  --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+} }
 
 /* Dark mode colors */
-@theme { @media (prefers-color-scheme: dark) { :root, :host {
+@theme {
+  --color-surface-base: var(--color-gray-100);
+}
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --shadow-xs: 0 0 0 1px oklch(100% 0 none / .05), 0 1px 2px -1px oklch(0% 0 none / .30);
   --color-surface-base: var(--color-gray-100);
-} } }
+} }
 
 /* Theme aliases */
-@theme { :root, :host {
+@theme {
   --full: 100%;
-  --fit: fit-content;
-  --order-first: -999999;
-  --color-black: oklch(0% 0 none);
-  --color-current: currentColor;
-} }
+    --fit: fit-content;
+    --order-first: -999999;
+    --color-black: oklch(0% 0 none);
+    --color-current: currentColor;
+}
