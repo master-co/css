@@ -15,7 +15,6 @@ describe.concurrent('sorting', () => {
     '@3xs',
     '@4xl',
     '@4xs',
-    '@apply(--animate())',
     '@apply(--clamp-lines())',
     '@apply(--font-antialiased)',
     '@apply(--font-subpixel-antialiased)',

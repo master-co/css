@@ -214,17 +214,13 @@ Keep named viewport conditions broad and product-wide. Use container tokens when
 ---
 
 ## Define motion tokens
-Motion values can be tokens too. Put reusable animation recipes, durations, and easing curves in `@theme`. Write keyframes as native top-level CSS and import their stylesheet wherever the animation is needed.
+Motion values can be tokens too. Put complete animation shorthands, durations, and easing curves in `@theme`. Write keyframes as native top-level CSS and import their stylesheet wherever the animation is needed.
 
 ```css name=index.css
 @theme {
   --duration-enter: 180ms;
   --easing-standard: cubic-bezier(.4, 0, .2, 1);
-  --animate-dialog-in: dialog-in;
-  --animate-dialog-in--duration: var(--duration-enter);
-  --animate-dialog-in--timing-function: var(--easing-standard);
-  --animate-dialog-in--iteration-count: 1;
-  --animate-dialog-in--fill-mode: both;
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-standard) both;
 
 }
 @keyframes dialog-in {
@@ -239,7 +235,7 @@ Motion values can be tokens too. Put reusable animation recipes, durations, and 
 <dialog class="animate-dialog-in"></dialog>
 ```
 
-Keyframes ship with the imported stylesheet, independently of class usage. `@reference` does not import them. Animation utilities generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation](/reference/animate).
+Keyframes ship with the imported stylesheet, independently of class usage. `@reference` does not import them. Animation utilities generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation tokens](/reference/tokens/animate).
 
 ---
 

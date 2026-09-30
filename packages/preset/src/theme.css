@@ -177,19 +177,16 @@
   --easing-spring: cubic-bezier(.68, -.6, .32, 1.6);
 
   /* Animations */
-  --animate-fade: fade;
-  --animate-flash: flash;
-  --animate-float: float;
-  --animate-float--duration: 3s;
-  --animate-float--timing-function: ease-in-out;
-  --animate-heart: heart;
-  --animate-jump: jump;
-  --animate-ping: ping;
-  --animate-pulse: pulse;
-  --animate-rotate: rotate;
-  --animate-rotate--timing-function: linear;
-  --animate-shake: shake;
-  --animate-zoom: zoom;
+  --animate-fade: fade 1s infinite;
+  --animate-flash: flash 1s infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-heart: heart 1s infinite;
+  --animate-jump: jump 1s infinite;
+  --animate-ping: ping 1s infinite;
+  --animate-pulse: pulse 1s infinite;
+  --animate-rotate: rotate 1s linear infinite;
+  --animate-shake: shake 1s infinite;
+  --animate-zoom: zoom 1s infinite;
 
 
   /* On-demand animation resources. */

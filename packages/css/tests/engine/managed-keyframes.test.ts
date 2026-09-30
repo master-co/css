@@ -34,18 +34,16 @@ test('native and Wasm retain identical managed resources through usage and HMR',
   } finally { engines.forEach(engine => engine.dispose()) }
 })
 
-test.each(['fade', 'flash', 'float', 'heart', 'jump', 'ping', 'pulse', 'rotate', 'shake', 'zoom'])('animate-%s emits independent settings with native/Wasm parity', async (name) => {
+test.each(['fade', 'flash', 'float', 'heart', 'jump', 'ping', 'pulse', 'rotate', 'shake', 'zoom'])('animate-%s emits one shorthand with native/Wasm parity', async (name) => {
   const native = await createEngine({ manifest, binding: 'native' })
   const wasm = await createEngine({ manifest, binding: 'wasm' })
   try {
     for (const engine of [native, wasm]) {
       engine.ensureClassRules([`animate-${name}`])
       const text = engine.snapshot().text
-      expect(text).toContain(`animation-name:var(--animate-${name})`)
-      expect(text).toContain(`animation-duration:var(--animate-${name}--duration, 1s)`)
-      expect(text).toContain(`animation-timing-function:var(--animate-${name}--timing-function, ease)`)
-      expect(text).toContain(`animation-iteration-count:var(--animate-${name}--iteration-count, infinite)`)
-      expect(text).not.toContain('{animation:')
+      expect(text).toContain(`.animate-${name}{animation:var(--animate-${name})}`)
+      expect(text).not.toContain('animation-duration:var(--animate-')
+      expect(engine.inspect(`animate-${name}`).rules[0].text).toBe(`.animate-${name}{animation:var(--animate-${name})}`)
       expect(engine.snapshot().resources.keyframes.map(frame => frame.name)).toEqual([name])
     }
     expect(wasm.snapshot()).toEqual(native.snapshot())
@@ -56,37 +54,25 @@ test.each(['fade', 'flash', 'float', 'heart', 'jump', 'ping', 'pulse', 'rotate',
   } finally { native.dispose(); wasm.dispose() }
 })
 
-test('animation companion tokens override timing without creating additional recipes', async () => {
-  const custom: MasterCSSManifest = {
-    ...manifest,
-    theme: [...manifest.theme!, { type: 'rule', prelude: ':root,:host', children: [
-      { type: 'declaration', name: 'animate-fade--duration', value: '2s' },
-      { type: 'declaration', name: 'animate-fade--timing-function', value: 'linear' },
-      { type: 'declaration', name: 'animate-fade--iteration-count', value: '3' },
-      { type: 'declaration', name: 'animate-orphan--duration', value: '4s' }
-    ] }],
-    variables: {
-      ...manifest.variables,
-      animate: [...manifest.variables!.animate,
-        ...[
-          ['fade--duration', '2s'], ['fade--timing-function', 'linear'],
-          ['fade--iteration-count', '3'], ['orphan--duration', '4s']
-        ].map(([key, value]) => ({ key, values: [{ path: [':root,:host'], value }], dependencies: [] }))
-      ]
-    }
-  }
-  const native = await createEngine({ manifest: custom, binding: 'native' })
-  const wasm = await createEngine({ manifest: custom, binding: 'wasm' })
+test('animation tokens use general ordering and direct longhands override the shorthand', async () => {
+  const native = await createEngine({ manifest, binding: 'native' })
+  const wasm = await createEngine({ manifest, binding: 'wasm' })
+  const classes = ['animate-fade', 'animation-duration-fast', 'animation-duration:var(--duration-slow)', 'animation-iteration-count:1']
   try {
-    for (const engine of [native, wasm]) {
-      expect(engine.inspect('animate-orphan').matchStatus).not.toBe('matched')
-      engine.ensureClassRules(['animate-fade', 'animation-duration:5s'])
-      const text = engine.snapshot().text
-      expect(text).toContain('--animate-fade--duration:2s')
-      expect(text).toContain('--animate-fade--timing-function:linear')
-      expect(text).toContain('--animate-fade--iteration-count:3')
-      expect(text.indexOf('animation-duration:var(')).toBeLessThan(text.indexOf('animation-duration:5s'))
-    }
+    native.ensureClassRules(classes)
+    wasm.ensureClassRules(classes)
     expect(wasm.snapshot()).toEqual(native.snapshot())
+    wasm.deleteClassRules(classes)
+    wasm.ensureClassRules([...classes].reverse())
+    expect(wasm.snapshot().text).toBe(native.snapshot().text)
+    const text = native.snapshot().text
+    expect(text.indexOf('animation-duration:var(--duration-fast)')).toBeLessThan(text.indexOf('animation:var(--animate-fade)'))
+    expect(text.indexOf('animation:var(--animate-fade)')).toBeLessThan(text.indexOf('animation-duration:var(--duration-slow)'))
+    for (const engine of [native, wasm]) {
+      expect(engine.inspect('animate("fade")').matchStatus).not.toBe('matched')
+      expect(engine.inspect('animation-fade').matchStatus).not.toBe('matched')
+      expect(engine.inspect('animate:fade').matchStatus).not.toBe('matched')
+      expect(engine.inspect('animation:fade|2s').rules[0].text).toContain('animation:fade 2s')
+    }
   } finally { native.dispose(); wasm.dispose() }
 })

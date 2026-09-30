@@ -34,7 +34,7 @@ All ten existing/planned public recipe pages now mount a scene beside its exact 
 | `grid-column`, `grid-row` | A featured region spans two tracks beside remaining cells. |
 | `clamp-lines` | Same paragraph shown complete and limited to three lines. |
 | `text-size` | Complete title, body and metadata hierarchy. |
-| `animate` | Finite card entrance with playback controls and reduced-motion conditions. |
+| `animate` token family | Complete animation specimens in `tokens/animate`; finite card entrances in Guide Motion, with playback controls and reduced-motion conditions. |
 | `text-gradient` | A readable headline with actual gradient text clipping. |
 
 ## Data and implementation boundaries

@@ -59,17 +59,3 @@
   line-height: var(ident("--text-" var(--step) "--line-height"), normal);
   letter-spacing: var(ident("--text-" var(--step) "--letter-spacing"), normal);
 }
-
-@mixin --animate(--name <string>) {
-  animation-name: var(ident("--animate-" var(--name)));
-  animation-duration: var(ident("--animate-" var(--name) "--duration"), 1s);
-  animation-timing-function: var(ident("--animate-" var(--name) "--timing-function"), ease);
-  animation-delay: var(ident("--animate-" var(--name) "--delay"), 0s);
-  animation-iteration-count: var(ident("--animate-" var(--name) "--iteration-count"), infinite);
-  animation-direction: var(ident("--animate-" var(--name) "--direction"), normal);
-  animation-fill-mode: var(ident("--animate-" var(--name) "--fill-mode"), none);
-  animation-play-state: var(ident("--animate-" var(--name) "--play-state"), running);
-  animation-timeline: auto;
-  animation-range-start: normal;
-  animation-range-end: normal;
-}

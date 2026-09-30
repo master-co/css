@@ -199,9 +199,7 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 
 ```css
 @theme {
-  --animate-reveal: reveal;
-  --animate-reveal--duration: .2s;
-  --animate-reveal--timing-function: ease-out;
+  --animate-reveal: reveal .2s ease-out;
   @keyframes reveal {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -832,7 +830,7 @@ Use explicit width and height declarations for paired dimensions, or author a pa
 
 ### Animation recipes
 
-The preset `animate-*` classes use a single `<string>` parameter mixin and a same-name primary token. For example, `--animate-fade: fade` names the keyframe; `--animate-fade--duration: 2s` customizes its duration. Companion tokens alone do not create classes. Native CSS declarations inside stylesheets and authored mixins keep ordinary CSS syntax.
+The built-in `animate-*` token family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/animate).
 
 ## Token family names
 

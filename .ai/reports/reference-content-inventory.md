@@ -75,7 +75,7 @@ These slugs are relative to `/reference/tokens/`. Keep current URLs except for t
 
 `families` covers all public canonical prefixes, target properties and namespaces, including consumers with no preset values. Full property names and prefixes both retrieve the same entry; searchable identifiers are not alternate legal token spellings. Namespace pages include complete values, scopes, modes, dependencies and relevant family/property consumers.
 
-Color role groups remain useful lookup collections; they must not imply alternate prefixes or independent resolution namespaces for families that use the canonical color namespace. `tokens/text` and `tokens/animate` own their value/companion-token catalogs, while recipe pages own expansion behavior. Reuse data and cross-link these distinct tasks without duplicating full catalogs.
+Color role groups remain useful lookup collections; they must not imply alternate prefixes or independent resolution namespaces for families that use the canonical color namespace. `tokens/text` owns typography values and companions; `tokens/animate` owns complete animation shorthand values and their family contract. Recipe pages own mixin expansion behavior. Reuse data and cross-link these distinct tasks without duplicating full catalogs.
 
 `breakpoints` describes actual custom media definitions, not `--breakpoint-*` theme properties. `tokens/container` describes size values and sizing consumers. Retire `tokens/containers`: query contracts go to `rules/conditions`, and component adaptation belongs in `/guide/containers`. Literal container-query thresholds do not read or automatically track theme tokens.
 
@@ -93,7 +93,7 @@ Keep the nine existing paths and focus their titles/content on the actual recipe
 | `grid-row` | `grid-row-span(n)` | Retain recipe; move general Grid positioning instruction |
 | `clamp-lines` | `clamp-lines(n)` | Retain |
 | `text-size` | `text-*` | Retain treatment contract |
-| `animate` | `animate-*` | Retain playback and resource contract |
+| `animate` | `animate-*` | Token family; playback and resource contract live in `tokens/animate` |
 | `text-gradient` | `text-gradient` | Add missing preset recipe contract |
 
 ### Stylesheet directives: 8

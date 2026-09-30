@@ -14,6 +14,36 @@ fn engine(source: &str) -> EngineSession {
 const SOURCE: &str = "@theme{:root{--animate-fade:fade 1s;--color-brand:red}@keyframes fade{from{opacity:0}to{opacity:1;color:var(--color-brand)}}@keyframes pop{to{transform:scale(2)}}}";
 
 #[test]
+fn animation_family_tracks_lists_scopes_nested_variables_and_dynamic_names() {
+    let mut engine = engine(&format!(
+        "{SOURCE}@theme{{--duration-enter:.2s;--motion:fade var(--duration-enter) ease-out both;\
+        --animate-enter:var(--motion), pop 1s;--animate-scoped:fade 1s;\
+        --animate-dynamic:var(--external);--animate-bare:fade;\
+        .dark{{--animate-scoped:pop 2s}}}}"
+    ));
+    for class in ["animate-enter", "animate-scoped", "animate-dynamic"] {
+        engine.ensure_class_rules([class]).unwrap();
+        assert_eq!(
+            engine.snapshot().unwrap().resources.keyframes.len(),
+            2,
+            "{class}"
+        );
+        if class == "animate-enter" {
+            assert!(engine.css_text().contains("--duration-enter:.2s"));
+            assert!(engine.css_text().contains("--color-brand:red"));
+        }
+        engine.delete_class_rules([class]).unwrap();
+        assert!(engine.css_text().is_empty());
+    }
+    engine.ensure_class_rules(["animate-bare"]).unwrap();
+    let css = engine.css_text();
+    assert!(css.contains("--animate-bare:fade"));
+    assert!(css.contains(".animate-bare{animation:var(--animate-bare)}"));
+    assert!(!css.contains("infinite"));
+    assert!(!css.contains("animation-duration:"));
+}
+
+#[test]
 fn managed_keyframes_follow_last_usage_and_keep_body_tokens() {
     let mut engine = engine(SOURCE);
     assert!(engine.css_text().is_empty());

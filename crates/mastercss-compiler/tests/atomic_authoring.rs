@@ -78,7 +78,7 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
 }
 
 #[test]
-fn all_animation_recipes_emit_longhands_and_retain_only_referenced_keyframes() {
+fn all_animation_tokens_emit_shorthand_and_retain_only_referenced_keyframes() {
     for name in [
         "fade", "flash", "float", "heart", "jump", "ping", "pulse", "rotate", "shake", "zoom",
     ] {
@@ -87,14 +87,16 @@ fn all_animation_recipes_emit_longhands_and_retain_only_referenced_keyframes() {
         let inspected = engine.inspect(&class).unwrap();
         assert_eq!(inspected.match_status, MatchStatus::Matched, "{name}");
         let rule = &inspected.rules[0];
-        assert_eq!(rule.utility_type, -2);
+        assert_eq!(rule.utility_type, 0);
         assert!(
             rule.text
-                .contains(&format!("animation-name:var(--animate-{name})"))
+                .contains(&format!("animation:var(--animate-{name})"))
         );
-        assert!(rule.text.contains("animation-duration:"));
-        assert!(rule.text.contains("animation-iteration-count:"));
-        assert!(!rule.text.contains("{animation:"));
+        assert_eq!(
+            rule.text,
+            format!(".animate-{name}{{animation:var(--animate-{name})}}")
+        );
+        assert!(!rule.text.contains("animation-duration:"));
         engine.ensure_class_rules([class.as_str()]).unwrap();
         let css = engine.css_text();
         assert!(css.contains(&format!("@keyframes {name}")), "{name}: {css}");
@@ -126,7 +128,30 @@ fn atomic_overrides_follow_general_value_source_order() {
     assert_eq!(left.css_text(), right.css_text());
     let css = left.css_text();
     assert!(css.find("padding-top:var(").unwrap() < css.find("padding:8px").unwrap());
-    assert!(
-        css.find("animation-duration:var(").unwrap() < css.find("animation-duration:2s").unwrap()
-    );
+    assert!(css.find("animation:var(").unwrap() < css.find("animation-duration:2s").unwrap());
+}
+
+#[test]
+fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
+    let classes = [
+        "animate-fade",
+        "animation-duration-fast",
+        "animation-duration:var(--duration-slow)",
+        "animation-iteration-count:1",
+    ];
+    let mut left = engine();
+    let mut right = engine();
+    left.ensure_class_rules(classes).unwrap();
+    right.ensure_class_rules(classes.into_iter().rev()).unwrap();
+    let css = left.css_text();
+    assert_eq!(css, right.css_text());
+    let shorthand = css.find("animation:var(--animate-fade)").unwrap();
+    assert!(css.find("animation-duration:var(--duration-fast)").unwrap() < shorthand);
+    assert!(shorthand < css.find("animation-duration:var(--duration-slow)").unwrap());
+    for class in ["animate(\"fade\")", "animation-fade", "animate:fade"] {
+        assert_ne!(
+            left.inspect(class).unwrap().match_status,
+            MatchStatus::Matched
+        );
+    }
 }

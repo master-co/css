@@ -36,11 +36,7 @@ export function FoundationDialog() {
   return <Specimen name="dialog-entrance" title="Motion follows a real action" scene={{ sizing: 'viewport', height: 340, css: `@theme { :root {
   --duration-enter: 180ms;
   --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
-  --animate-dialog-in: dialog-in;
-  --animate-dialog-in--duration: var(--duration-enter);
-  --animate-dialog-in--timing-function: var(--easing-emphasized);
-  --animate-dialog-in--iteration-count: 1;
-  --animate-dialog-in--fill-mode: both;
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
 } }
   @keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }

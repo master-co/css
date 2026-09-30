@@ -38,7 +38,7 @@ export const specimenCaption: Record<string, string> = {
   leading: 'The same multi-line paragraph at every line height. Compare reading rhythm and block height.',
   tracking: 'The same long phrase at every letter spacing. Compare the space between glyphs without changing size.',
   'font-feature': 'Compare proportional and tabular digits using the same font, size and numbers. Feature support depends on the chosen font.',
-  animate: 'Every primary animation starts paused. Play, Pause and Replay control the native timelines; reduced motion keeps the content still. Companion values are listed with their primary token below.',
+  animate: 'Every animation specimen starts paused. Play, Pause and Replay control the native timelines; reduced motion keeps the content still. Complete shorthand values are listed below.',
   duration: 'All markers travel the same path with linear timing; only duration changes. Start paused, then Play or Replay together. Reduced motion keeps them still.',
   easing: 'All markers travel the same path over one second; only timing changes. Overshoot and rewind may pass the endpoints. Reduced motion keeps them still.',
   content: 'An empty generated content value creates the decorative dot; the status remains real text in the document.',

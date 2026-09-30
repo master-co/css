@@ -156,14 +156,10 @@ fn rejected_theme_forms_remain_explicit() {
 }
 
 #[test]
-fn native_named_recipes_retain_managed_animation_dependencies() {
+fn native_animation_tokens_retain_managed_animation_dependencies() {
     let (_, manifest) = compile(
         r#"
-        @mixin --animate(--name <string>) {
-            animation-name: var(ident("--animate-" var(--name)));
-            animation-duration: var(ident("--animate-" var(--name) "--duration"), 1s);
-        }
-        :root { --animate-turn: turn; --animate-turn--duration: 2s; }
+        :root { --animate-turn: turn 2s; }
         @theme {
             --color-brand: red;
             @keyframes turn { to { color: var(--color-brand); } }
@@ -177,9 +173,7 @@ fn native_named_recipes_retain_managed_animation_dependencies() {
     assert!(snapshot.text.contains("@keyframes turn"));
     assert!(snapshot.text.contains("--color-brand:red"));
     assert!(
-        snapshot
-            .text
-            .contains("animation-duration:var(--animate-turn--duration"),
+        snapshot.text.contains("animation:var(--animate-turn)"),
         "{}",
         snapshot.text
     );

@@ -52,7 +52,7 @@ A single value may express one decision, as with `p-sm`, `gap-md`, `overflow:hid
 
 ### Motion properties \{#motion-properties\}
 
-Use `animation-name:*`, `animation-duration:*`, `transition-property:*` and `transition-duration:*` to express independent settings. Named `animate-*` recipes are explicit mixins whose emitted properties can be overridden independently.
+Use `animation-name:*`, `animation-duration:*`, `transition-property:*` and `transition-duration:*` to express independent settings. Named `animate-*` tokens contain complete animation shorthands. To override one field, combine them with a full-property declaration such as `animation-duration:var(--duration-fast)`. See [animation tokens](/reference/tokens/animate) for ordering and defaults.
 
 ### Property abbreviations \{#property-abbreviations\}
 <Abbreviations />

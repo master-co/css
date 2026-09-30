@@ -8,10 +8,10 @@ Use motion to explain a state change or show progress. Choose a short duration f
 <FoundationMotion />
 
 ## Choose motion tokens
-### Animation recipes
-The `animate-*` recipes emit independent animation properties. A primary `--animate-*` token names a keyframe; companion tokens provide timing and playback settings.
+### Animation tokens
+Each `--animate-*` token contains a complete native `animation` shorthand. The matching `animate-*` class emits one declaration, such as `animation: var(--animate-fade)`.
 
-Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progress. See [all animation values](/reference/tokens/animate) and the [recipe contract](/reference/animate).
+Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progress. See [all animation values and their contract](/reference/tokens/animate).
 
 ### Duration scale
 Share duration tokens across animation and transition properties.
@@ -31,14 +31,16 @@ See the complete [values and consumers](/reference/tokens/easing) in Reference.
 `animation-duration-` and `transition-duration-` share duration tokens; `transition-timing-function-` reads easing tokens. See [all consumers](/reference/tokens/families).
 
 ## Use motion tokens
-Use a named recipe and override individual settings when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.
+Use a named animation token and override individual settings with full-property declarations when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.
 
 ```html
-<div class="animate-fade animation-duration-fast animation-iteration-count:1">Ready</div>
-<svg class="animate-rotate@motion-safe animation-duration-slowest@motion-safe">...</svg>
+<div class="animate-fade animation-duration:var(--duration-fast) animation-iteration-count:1">Ready</div>
+<svg class="animate-rotate@motion-safe animation-duration:var(--duration-slowest)@motion-safe">...</svg>
 ```
 
-<Class2CSS>{['animate-fade', 'animation-duration-fast', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration-slowest@motion-safe']}</Class2CSS>
+<Class2CSS>{['animate-fade', 'animation-duration:var(--duration-fast)', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration:var(--duration-slowest)@motion-safe']}</Class2CSS>
+
+Token classes follow the general declaration order. At the same layer and conditions, `animation-duration-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `animation-duration:var(--duration-fast)` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
 
 ## Transition properties
 
@@ -63,18 +65,14 @@ Use `@motion-safe` so nonessential motion only runs when the user has not reques
 ## Customize motion tokens
 
 <FoundationDialog />
-Define the keyframe name and each playback setting explicitly. Companion tokens customize a recipe without creating additional class names.
+Store the keyframe name and playback settings together in one shorthand token. Duration and easing tokens can be referenced with `var()`. Omitted fields use native CSS defaults; this entrance runs once and keeps both fill states.
 
 ```css name=index.css
 @theme {
   :root, :host {
     --duration-enter: 180ms;
     --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
-    --animate-dialog-in: dialog-in;
-    --animate-dialog-in--duration: var(--duration-enter);
-    --animate-dialog-in--timing-function: var(--easing-emphasized);
-    --animate-dialog-in--iteration-count: 1;
-    --animate-dialog-in--fill-mode: both;
+    --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
   }
   @keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }

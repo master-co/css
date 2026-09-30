@@ -707,19 +707,15 @@ conditions, recipes, value sources and deterministic ordering still apply. Repla
 overlapping edge settings with explicit edges instead of depending on the old
 property-category priority. Partial-conflict diagnostics no longer rewrite classes.
 
-The ten `animate-*` names remain available as named recipes. Primary `--animate-*`
-tokens now contain keyframe names. Put duration, easing, delay, repetition and other
-playback settings in companion tokens; existing combined token values require
-manual migration. For example:
+The ten `animate-*` classes consume complete `animation` shorthand tokens through
+an engine token family. Combine any animation companion settings into the primary
+token. For example, replace `--animate-reveal: reveal`,
+`--animate-reveal--duration: 200ms`, `--animate-reveal--timing-function: ease-out`
+and `--animate-reveal--iteration-count: 1` with:
 
 ```css
 @theme {
-  :root, :host {
-    --animate-reveal: reveal;
-    --animate-reveal--duration: 200ms;
-    --animate-reveal--timing-function: ease-out;
-    --animate-reveal--iteration-count: 1;
-  }
+  --animate-reveal: reveal 200ms ease-out;
   @keyframes reveal {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -727,9 +723,17 @@ manual migration. For example:
 }
 ```
 
-Use `animate-reveal@motion-safe` with this theme. Native CSS and full-property
-class values still use their usual syntax; no value expansion is performed.
-See [motion recipes](/guide/motion) for companion overrides and resource ownership.
+Use `animate-reveal@motion-safe`. It emits `animation: var(--animate-reveal)`;
+omitted fields use native CSS defaults, including one iteration. Preset tokens
+include `infinite` explicitly. Companion tokens no longer configure animation
+fields. Replace preset `animate("reveal")` calls with `animate-reveal`, and
+`@apply --animate("reveal");` with `animation: var(--animate-reveal);`.
+
+At the same layer and conditions, a token longhand such as `animation-duration-fast`
+sorts before the animation shorthand. For an override, use
+`animation-duration:var(--duration-fast)` or change the complete animation token.
+Class attribute order does not change the cascade. See [animation tokens](/reference/tokens/animate)
+for defaults and resource ownership.
 
 
 ## Project settings \{#project-settings\}

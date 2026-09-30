@@ -882,6 +882,13 @@ export const builtinTokenFamilies: readonly MasterCSSBuiltinTokenFamily[] = Obje
     ]
   },
   {
+    "prefix": "animate",
+    "property": "animation",
+    "namespaces": [
+      "animate"
+    ]
+  },
+  {
     "prefix": "animation-delay",
     "property": "animation-delay",
     "namespaces": [
@@ -1977,6 +1984,14 @@ export const builtinTokenNamespaces = Object.freeze(
     ],
     "variableAliasRefs": [
       "~shadow"
+    ]
+  },
+  {
+    "properties": [
+      "animation"
+    ],
+    "variableAliasRefs": [
+      "~animate"
     ]
   },
   {

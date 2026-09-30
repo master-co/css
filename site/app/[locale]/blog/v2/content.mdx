@@ -18,43 +18,24 @@ Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at
 ## New Configuration API
 
 ### Managed keyframes
-You can now customize CSS [animations](/guide/motion#customize-motion-tokens) in the project CSS entry:
+Store complete [animation tokens](/reference/tokens/animate) and their managed keyframes in the project CSS entry:
 ```css name=index.css
 @theme {
-
-}
-@keyframes fade {
-    0% {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
+  --animate-reveal: reveal .5s ease;
+  @keyframes reveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-
+}
 ```
-Apply the `fade` keyframe via [animation syntax](/reference/animate):
+Apply the token with its matching class:
 ```html
-<!-- @MARK animation-name:fade animation-duration:0.5s animation-timing-function:ease -->
-<div class="animation-name:fade animation-duration:0.5s animation-timing-function:ease"></div>
+<!-- @MARK animate-reveal -->
+<div class="animate-reveal"></div>
 ```
-It only generates the CSS keyframe rule used:
-```css
-@keyframes fade {
-  0% {
-    opacity: 0
-  }
-
-  to {
-    opacity: 1
-  }
-}
-
-.animation\:fade\|\.5s\|ease {
-  animation: fade .5s ease
-}
-```
+The class emits `animation: var(--animate-reveal)`. The token and managed keyframes
+are generated when used. This shorthand runs once because it omits a repetition
+count; preset animation tokens include `infinite` explicitly.
 
 ---
 
@@ -66,4 +47,4 @@ It only generates the CSS keyframe rule used:
 <div class="animation-iteration-count:infinite">
 <div class="animation-direction:alternate">
 ```
-To learn more, check out the [animation](/reference/animate) documentation.
+To learn more, check out the [animation](/reference/tokens/animate) documentation.

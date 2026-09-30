@@ -52,8 +52,8 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 89)
-  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 10)
+  assert.equal(catalog.documents.length, 88)
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 9)
   assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   for (const family of foundationFamilies) {
@@ -61,12 +61,23 @@ test('catalog covers every public family and preset recipe without indexing reti
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
     assert.ok(families.headings.some(heading => heading.id === `family-${family.prefix}`))
   }
-  for (const slug of ['display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)
     for (const id of doc.related) assert.ok(catalog.documents.some(doc => doc.id === id), `${doc.id} → ${id}`)
     for (const [identifier, anchor] of Object.entries(doc.identifierAnchors ?? {})) assert.ok(doc.headings.some(heading => heading.id === anchor), `${doc.id}: ${identifier} → ${anchor}`)
+  }
+})
+
+test('animation lookup owns the shorthand family and all ten preset values', () => {
+  const animation = catalog.documents.find(doc => doc.id === 'tokens/animate')!
+  assert.match(animation.markdown, /animation: var\(--animate-<name>\)/)
+  assert.match(animation.markdown, /family-animate/)
+  assert.match(animation.markdown, /animation-duration:var\(--duration-fast\)/)
+  assert.doesNotMatch(animation.markdown, /companion|reference\/animate|@apply --animate/)
+  for (const name of ['fade', 'flash', 'float', 'heart', 'jump', 'pulse', 'ping', 'rotate', 'shake', 'zoom']) {
+    assert.ok(animation.identifierAnchors?.[`--animate-${name}`], name)
   }
 })
 
@@ -319,8 +330,8 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
   assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--color-accent:\s*rebeccapurple/)
   assert.equal(used('fg-accent').css.match(/--color-accent:/g)?.length, 1)
   const animation = used('animate-reveal@motion-safe').css
-  assert.match(animation, /animation-name:var\(--animate-reveal\)/)
-  assert.match(animation, /animation-iteration-count:var\(--animate-reveal--iteration-count/)
+  assert.match(animation, /animation:var\(--animate-reveal\)/)
+  assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
   assert.match(animation, /@keyframes note-reveal/)
   assert.match(used('display:grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
   const priority = used('inset').css

@@ -81,7 +81,7 @@ Completion requires full family/mixin coverage; successful property, prefix and 
 - Move visual content and interactions with the lookup data; validate the public destination before removing the source presentation. Gallery-only retention is insufficient.
 - `components/demo/foundations/FoundationTokens.tsx` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to previews, Guide export adapters and Reference examples. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
 - Reference uses complete collections; Guide passes explicit keys. Reuse typography, role, scale and numeric-table designs with equal care for either selection. A subset has no arbitrary count limit.
-- `recipe-specimens.ts` supplies the ten live recipes and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
+- `recipe-specimens.ts` supplies the nine live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
 - Verify semantic effects as well as layout: actual text and border colors, multi-line leading, unclipped actual font sizes, distinguishable shadows in both modes, and actual timing values. Keep animation controls paused initially and respect reduced motion.
 - [Restoration inventory](../../.ai/reports/foundation-visual-restoration.md) maps the pre-migration baseline to public destinations and records comparison evidence. Update it when a presentation moves.
 

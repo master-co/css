@@ -14,6 +14,17 @@ export const inspect = (target: string, settings: Settings = {}) => {
   return languageService.inspectSyntax(doc, range?.start as Position)
 }
 
+test('animation token hover shows the complete shorthand', () => {
+  const hover = inspect('animate-fade')
+  expect(hover?.contents).toMatchObject({
+    kind: 'markdown',
+    value: expect.stringContaining('animation: var(--animate-fade)')
+  })
+  expect(hover?.contents).toMatchObject({
+    value: expect.not.stringContaining('animation-duration:')
+  })
+})
+
 test.concurrent("text-align:center", async () => {
   const target = "text-align:center"
   const hover = inspect(target)

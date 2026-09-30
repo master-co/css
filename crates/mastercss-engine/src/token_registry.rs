@@ -131,6 +131,7 @@ token_families! {
     ("text-decoration", "text-decoration-color", "~color"),
     ("text-stroke", "-webkit-text-stroke-color", "~color"),
     ("shadow", "box-shadow", "~shadow"),
+    ("animate", "animation", "~animate"),
     ("animation-delay", "animation-delay", "~duration"),
     ("animation-duration", "animation-duration", "~duration"),
     ("transition-delay", "transition-delay", "~duration"),
