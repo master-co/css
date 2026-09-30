@@ -27,7 +27,7 @@ await generateReference(process.cwd(), searchPages, basePages)
 
 const guideCategories = JSON.parse(await readFile(new URL('./.categories/guide.json', import.meta.url), 'utf8'))
 const guideOverviewNodes = extractSearchNodesFromMdx(guideOverviewMarkdown(guideCategories))
-const syntaxTutorialNodes = extractSearchNodesFromMdx((await syntaxTutorialContent(process.cwd())).markdown)
+const syntaxTutorialNodes = extractSearchNodesFromMdx((await syntaxTutorialContent(process.cwd())).searchMarkdown)
 const guideContentNodes = new Map<string, ReturnType<typeof extractSearchNodesFromMdx>>(await Promise.all(foundationGuideSlugs.map(async slug => [
   `/guide/${slug}`, extractSearchNodesFromMdx((await foundationGuideContent(process.cwd(), slug)).searchMarkdown)
 ] as const)))

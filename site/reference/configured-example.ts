@@ -8,8 +8,8 @@ export function configuredMarkupClasses(html: string) {
   return [...new Set([...html.matchAll(/\bclass="([^"]*)"/g)].flatMap(match => match[1].split(/\s+/)).filter(Boolean))]
 }
 
-export function configuredMarkupMarkdown(source: string, html: string) {
-  return `${source.trim() ? `\`\`\`css\n${source}\n\`\`\`\n\n` : ''}\`\`\`html\n${html}\n\`\`\`\n\n\`\`\`css\n${configuredExampleCSS(source, configuredMarkupClasses(html))}\n\`\`\``
+export function configuredMarkupMarkdown(source: string, html: string, css = configuredExampleCSS(source, configuredMarkupClasses(html))) {
+  return `${source.trim() ? `\`\`\`css\n${source}\n\`\`\`\n\n` : ''}\`\`\`html\n${html}\n\`\`\`\n\n\`\`\`css disclosure=generated-css\n${css}\n\`\`\``
 }
 
 export function configuredExampleHTML(classes: string[], element: 'div' | 'button' = 'div', label = 'Example') {

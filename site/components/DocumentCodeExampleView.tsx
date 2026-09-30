@@ -1,5 +1,6 @@
 import '~/site/styles/documentation-values.css'
 import DocumentCopyButton from './DocumentCopyButton'
+import GeneratedCSS from './GeneratedCSS'
 
 export interface DocumentCodeExampleViewProps {
   title: string
@@ -7,13 +8,18 @@ export interface DocumentCodeExampleViewProps {
   source: string
   result?: string
   resultCode?: React.ReactNode
+  resultKind?: 'generated-css'
   sourceLabel?: string
   resultLabel?: string
   diagnostic?: { severity: 'Warning' | 'Error', rule: string, message: string }
 }
 
 /** Static, verified source/output pair. It does not simulate an editor or execute code. */
-export default function DocumentCodeExampleView({ title, sourceCode, source, result, resultCode, sourceLabel = 'Source', resultLabel = 'Result', diagnostic }: DocumentCodeExampleViewProps) {
+export default function DocumentCodeExampleView({ title, sourceCode, source, result, resultCode, resultKind, sourceLabel = 'Source', resultLabel = 'Result', diagnostic }: DocumentCodeExampleViewProps) {
+  const output = result !== undefined && <div className="doc-code-example-part">
+    <div className="doc-code-example-bar"><span>{resultLabel}</span><DocumentCopyButton text={result} label={`${title} — ${resultKind === 'generated-css' ? 'Generated CSS' : resultLabel}`} /></div>
+    {resultCode}
+  </div>
   return <figure className="doc-code-example" aria-label={title}>
     <figcaption>{title}</figcaption>
     <div className="doc-code-example-part">
@@ -25,9 +31,6 @@ export default function DocumentCodeExampleView({ title, sourceCode, source, res
       <code>{diagnostic.rule}</code>
       <p>{diagnostic.message}</p>
     </div>}
-    {result !== undefined && <div className="doc-code-example-part">
-      <div className="doc-code-example-bar"><span>{resultLabel}</span><DocumentCopyButton text={result} label={`${title} — ${resultLabel}`} /></div>
-      {resultCode}
-    </div>}
+    {output && (resultKind === 'generated-css' ? <GeneratedCSS>{output}</GeneratedCSS> : output)}
   </figure>
 }

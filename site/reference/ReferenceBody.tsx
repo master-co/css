@@ -7,6 +7,7 @@ import DocumentDeclarationView from '../components/DocumentDeclarationView'
 import DocumentIdentifier from '../components/DocumentIdentifier'
 import DocumentParameters from '../components/DocumentParameters'
 import DocumentDisclosure from '../components/DocumentDisclosure'
+import GeneratedCSS from '../components/GeneratedCSS'
 import DocumentOptions from '../components/DocumentOptions'
 import DocumentCodeExampleView from '../components/DocumentCodeExampleView'
 import type { ReferenceRenderDocument } from './render-document'
@@ -47,6 +48,7 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
         const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined
         const titles = { 'input-schema': 'Complete input schema', 'output-schema': 'Complete output schema', 'command-help': 'Complete command help' }
         const code = <CodeView key={key} {...referenceCodeProps(node)} prepared={node.data.prepared} />
+        if (/\bdisclosure=generated-css\b/.test(node.meta ?? '')) return <GeneratedCSS key={key}>{code}</GeneratedCSS>
         return disclosure ? <DocumentDisclosure key={key} title={titles[disclosure]}>{code}</DocumentDisclosure> : code
       }
       case 'heading': {
@@ -125,6 +127,7 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
       const [title, source, result] = tree.children.slice(index, index + 3) as any[]
       if (isStylesheetExample(title, source, result)) {
         content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')} source={source.value} result={result.value}
+          resultKind="generated-css"
           sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}
           resultCode={<CodeView {...referenceCodeProps(result, true)} prepared={result.data.prepared} />}
         />)

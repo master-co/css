@@ -40,12 +40,9 @@ Write the unprefixed class:
 <div class="backdrop-filter:blur(16px)">…</div>
 ```
 
-<details open>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['backdrop-filter:blur(16px)']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['backdrop-filter:blur(16px)']}
+</Class2CSS>
 
 ### CSS selectors
 
@@ -53,12 +50,9 @@ Write the unprefixed class:
 <div class="background-color:#000::-webkit-scrollbar">…</div>
 ```
 
-<details open>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['background-color:#000::-webkit-scrollbar']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['background-color:#000::-webkit-scrollbar']}
+</Class2CSS>
 
 ---
 
@@ -72,12 +66,9 @@ Write a property-like class when the declaration is already valid CSS:
 <article class="transition-behavior:allow-discrete field-sizing:content interpolate-size:allow-keywords view-transition-name:card">…</article>
 ```
 
-<details open>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
+</Class2CSS>
 
 Custom properties can use the same direct declaration form:
 
@@ -86,12 +77,9 @@ Custom properties can use the same direct declaration form:
 <section class="--card-gap:1rem">…</section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['--card-gap:1rem']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['--card-gap:1rem']}
+</Class2CSS>
 
 ### Native declarations and Master utilities
 Complete CSS properties such as `margin:1rem` keep their native value semantics. Native declarations such as `margin-top:1rem` target that property, while named classes such as `mt-md` select theme tokens. Static mixin calls use their declared parameters. Colon values retain native CSS value semantics.
@@ -101,12 +89,9 @@ Complete CSS properties such as `margin:1rem` keep their native value semantics.
 <div class="mx-md mb-md margin-top:1rem bg-red-60">…</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['margin-top:1rem', 'margin:1rem', 'bg-red-60']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['margin-top:1rem', 'margin:1rem', 'bg-red-60']}
+</Class2CSS>
 
 This preserves the expected syntax model:
 
@@ -124,12 +109,9 @@ Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it
 <div class="scroll-timeline-name:--cards interpolate-size:allow-keywords paint-order:stroke|fill">…</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
+</Class2CSS>
 
 Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
 
@@ -141,12 +123,9 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 <form class="outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)">…</form>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)']}
+</Class2CSS>
 
 ---
 

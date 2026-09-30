@@ -30,12 +30,9 @@ The demo uses Master CSS classes to name the snapshots that should transition in
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['view-transition-name:panel', 'view-transition-name:title']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['view-transition-name:panel', 'view-transition-name:title']}
+</Class2CSS>
 
 Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and native view-transition pseudo-elements directly in class names:
 
@@ -112,18 +109,15 @@ document.querySelector('[data-read-more]').addEventListener('click', () => {
 })
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {[
+<Class2CSS>
+  {[
       'view-transition-name:article-image',
       'view-transition-name:article-date',
       'view-transition-name:article-title',
       'view-transition-class:article',
       'animation-duration:.52s::view-transition-group(.article)'
     ]}
-  </Class2CSS>
-</details>
+</Class2CSS>
 
 (i) Only one rendered element can use the same `view-transition-name` at a time. The list uses article-specific names such as `article-aurora-image`, `article-studio-image`, and `article-coast-image` so the selected card can match the detail page without colliding with other cards.
 
@@ -168,16 +162,13 @@ In Master CSS, write the pseudo-element after the declaration:
 ">
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {[
+<Class2CSS>
+  {[
       'animation-duration-slow::view-transition-group(hero)',
       'animation-name:fade::view-transition-old(hero) animation-duration:var(--duration-fast)::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)',
       'animation-name:fade::view-transition-new(hero) animation-duration:var(--duration-fast)::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)'
     ]}
-  </Class2CSS>
-</details>
+</Class2CSS>
 
 (i) Apply these classes to the `html` element when you style global view-transition pseudo-elements. The pseudo-element tree is generated from the document root, so a class on an ordinary descendant will generate CSS but will not match the root transition pseudo-elements.
 

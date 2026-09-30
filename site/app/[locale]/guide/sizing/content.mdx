@@ -49,12 +49,9 @@ Use one-axis rules when the element is rectangular by role. Set both dimensions 
 </main>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'max-w-7xl', 'min-height:100dvh', 'margin-inline:auto']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'max-w-7xl', 'min-height:100dvh', 'margin-inline:auto']}
+</Class2CSS>
 
 ---
 
@@ -73,12 +70,9 @@ Most layout should fill the space it receives and then stop at a cap. A fluid wr
 </article>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'max-w-7xl', 'margin-inline:auto', 'px-md', 'px-xl@md', 'max-width:72ch']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'max-w-7xl', 'margin-inline:auto', 'px-md', 'px-xl@md', 'max-width:72ch']}
+</Class2CSS>
 
 Use `width:100%` when the element should follow its parent, percentages such as `width:50%` for proportional regions, `max-width:*` for caps, and CSS functions such as `clamp()` when the bound itself should be fluid.
 
@@ -111,12 +105,9 @@ See the complete [values and consumers](/reference/tokens/container) in Referenc
 <aside class="w-md max-width:100%">...</aside>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'max-w-5xl', 'margin-inline:auto', 'w-md', 'max-width:100%']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'max-w-5xl', 'margin-inline:auto', 'w-md', 'max-width:100%']}
+</Class2CSS>
 
 Use container tokens for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `rem`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
 
@@ -135,12 +126,9 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 <figure class="height:5rem width:9rem">...</figure>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:2.5rem height:2.5rem', 'width:9rem', 'height:5rem']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:2.5rem height:2.5rem', 'width:9rem', 'height:5rem']}
+</Class2CSS>
 
 ---
 
@@ -168,12 +156,9 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 <div class="height:3.5rem width:100%">...</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:3.5rem height:3.5rem', 'width:100%', 'height:3.5rem']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:3.5rem height:3.5rem', 'width:100%', 'height:3.5rem']}
+</Class2CSS>
 
 When an element should keep a non-square ratio, use [aspect ratio](/guide/sizing#pair-axes-deliberately) with a width instead of locking both dimensions.
 
@@ -208,12 +193,9 @@ Min and max rules are often more stable than fixed widths. They let content, con
 </article>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:flex', 'gap-md', 'max-width:24rem', 'width:2.5rem height:2.5rem', 'flex:0', 'min-width:0']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:flex', 'gap-md', 'max-width:24rem', 'width:2.5rem height:2.5rem', 'flex:0', 'min-width:0']}
+</Class2CSS>
 
 In flex and grid layouts, `min-width:0` is the common fix for text or media that refuses to shrink. Without it, intrinsic content can force a row wider than its container even when the parent has a max width.
 
@@ -234,12 +216,9 @@ Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](
 </article>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'width:50%@sm', 'max-w-7xl@lg', 'container-type:inline-size', 'width:2rem height:2rem', 'width:2.5rem@container((width>=28rem)) height:2.5rem@container((width>=28rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'width:50%@sm', 'max-w-7xl@lg', 'container-type:inline-size', 'width:2rem height:2rem', 'width:2.5rem@container((width>=28rem)) height:2.5rem@container((width>=28rem))']}
+</Class2CSS>
 
 Use viewport breakpoints when the whole page shell changes. Use container queries when a reusable component should adapt to the space it receives in a sidebar, modal, card grid, or main content column.
 

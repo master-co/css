@@ -288,28 +288,87 @@ test('all 121 retired Guide anchors target an existing contract or migration sec
   assert.equal(count, 121)
 })
 
-test('Syntax Tutorial exports its complete configured button, CSS, headings and searchable output', async () => {
+test('Syntax Tutorial exports every working example, stable anchor and searchable output', async () => {
   const tutorial = await syntaxTutorialContent(root)
   assert.deepEqual(tutorial.notes, [])
-  assert.doesNotMatch(tutorial.markdown, /Look up a rule|<ButtonPreview|MCSS_EXPRESSION|\{#/)
-  for (const anchor of ['declarations', 'states', 'conditions', 'composition', 'project-settings', 'complete-button']) assert.ok(tutorial.markdown.includes(`id="${anchor}"`), anchor)
-  const example = tutorial.examples.find(example => example.configuration)!
-  assert.ok(example.configuration?.includes("@import '@master/css'"))
-  const expectedHTML = `<button type="button" class="${example.classes.join(' ')}">Save</button>`
-  assert.ok(tutorial.markdown.includes(expectedHTML))
-  assert.equal(configuredExampleHTML(example.classes, 'button', 'Save'), expectedHTML)
-  assert.ok(tutorial.markdown.includes(example.css))
-  assert.match(example.css, /--spacing-action:1rem/)
-  assert.match(example.css, /:hover\{color:var\(--color-blue-60\)/)
-  assert.match(example.css, /:focus-visible\{color:var\(--color-blue-60\)/)
-  assert.match(example.css, /@media \(width\s*>=\s*52\.125rem\)/)
-  assert.match(configuredExampleCSS(example.configuration!.replace('1rem', '1.25rem'), example.classes), /--spacing-action:1.25rem/)
+  assert.deepEqual(documentationHygieneIssues(tutorial.markdown), [])
+  assert.doesNotMatch(tutorial.markdown, /<ButtonPreview|MCSS_EXPRESSION|\{#|\/guide\/migration/)
+  for (const anchor of ['declarations', 'composition', 'values', 'token-families', 'states', 'conditions', 'project-settings', 'mixins', 'contents', 'cascade', 'delivery', 'complete-button']) {
+    assert.ok(tutorial.markdown.includes(`id="${anchor}"`), anchor)
+  }
+  for (const example of tutorial.examples) {
+    assert.equal(example.css, configuredExampleCSS(example.configuration ?? '', example.classes), example.title)
+    assert.ok(tutorial.markdown.includes(example.css), example.title)
+  }
+  const { foundationFamilies } = await import('../common/foundation-data/tokens')
+  for (const prefix of ['p', 'gap', 'fg', 'font-size']) {
+    const family = foundationFamilies.find(family => family.prefix === prefix)!
+    assert.ok(tutorial.markdown.includes(`| \`${family.property}\` | \`${family.namespaces[0]}\` |`), prefix)
+  }
+  for (const match of tutorial.markdown.matchAll(/\]\((\/reference\/[^)#]+)(?:#([^)]*))?\)/g)) {
+    const doc = catalog.documents.find(doc => doc.url === match[1])
+    assert.ok(doc, match[1])
+    if (match[2]) assert.ok(doc.headings.some(heading => heading.id === match[2]), match[0])
+  }
+  const nodes = markdownTree(tutorial.markdown).children
+  const generated = nodes.filter(node => node.type === 'code').filter(node => node.meta?.includes('disclosure=generated-css'))
+  // Every class/configuration output and both native stylesheet expansions survive extraction.
+  assert.equal(generated.length, tutorial.examples.length + 2)
+  const used = (className: string) => tutorial.examples.find(example => example.classes.includes(className))!
+  assert.match(used('p-action').css, /:root,:host\{--color-brand:.*--spacing-action:1rem/)
+  assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--color-accent:\s*rebeccapurple/)
+  assert.equal(used('fg-accent').css.match(/--color-accent:/g)?.length, 1)
+  const animation = used('animate-reveal@motion-safe').css
+  assert.match(animation, /animation-name:var\(--animate-reveal\)/)
+  assert.match(animation, /animation-iteration-count:var\(--animate-reveal--iteration-count/)
+  assert.match(animation, /@keyframes note-reveal/)
+  assert.match(used('display:grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
+  const priority = used('inset').css
+  assert.ok(priority.indexOf('padding:2rem') < priority.indexOf('padding:var(--spacing-md)'))
+  assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:12px'))
+  assert.equal(priority, configuredExampleCSS(used('inset').configuration!, [...used('inset').classes].reverse()))
+  const native = generated.filter(node => node.type === 'code' && node.meta?.includes('stylesheet=result'))
+  assert.match(native[0].value!, /opacity: 0\.8/)
+  assert.match(native[0].value!, /color: rebeccapurple/)
+  assert.doesNotMatch(native[0].value!, /\.empty/)
+  assert.match(native[1].value!, /@media \(width\s*>=\s*48rem\)/)
+  assert.doesNotMatch(native[1].value!, /@contents|@apply|@mixin/)
   for (const locale of ['en', 'tw']) {
     const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     const canonical = (url: string) => url.replace(/^\/(en|tw)(?=\/)/, '')
     const page = searchPages.find((page: any) => canonical(page.url) === '/guide/syntax-tutorial')
-    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.markdown))
+    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.searchMarkdown))
+    for (const id of ['declarations', 'composition', 'states', 'conditions', 'project-settings', 'complete-button']) {
+      assert.ok(page.nodes.some((node: { id?: string }) => node.id === id), `${locale}: ${id}`)
+    }
     for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!searchPages.some((page: any) => canonical(page.url) === `/guide/${slug}`))
+  }
+})
+
+test('generated output metadata preserves source/result pairing and prepared highlights', async () => {
+  for (const doc of catalog.documents) {
+    const nodes = markdownTree(doc.markdown).children
+    for (const example of doc.examples) {
+      // Directive documents inherit examples outside their extracted section.
+      if (!doc.markdown.includes(example.css)) continue
+      assert.ok(nodes.some(node => node.type === 'code' && node.value === example.css && node.meta?.includes('disclosure=generated-css')), `${doc.id}: ${example.title}`)
+    }
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index]
+      if (node.type !== 'code' || !node.meta?.includes('stylesheet=result')) continue
+      assert.ok(isStylesheetExample(nodes[index - 2], nodes[index - 1], node), doc.id)
+      assert.ok(node.meta.includes('disclosure=generated-css'), doc.id)
+    }
+  }
+  const tutorial = await syntaxTutorialContent(root)
+  const document = { ...catalog.documents[0], kind: 'rule' as const, markdown: tutorial.markdown }
+  const payload = await createReferenceRenderDocument(document, 'generated-css-test')
+  for (let index = 0; index < payload.tree.children.length; index++) {
+    const node = payload.tree.children[index]
+    if (node.type !== 'code' || !node.meta?.includes('disclosure=generated-css')) continue
+    const paired = isStylesheetExample(payload.tree.children[index - 2], payload.tree.children[index - 1], node)
+    const props = referenceCodeProps(node, paired)
+    assert.deepEqual((node.data as any).prepared, await prepareCode(await highlightCode(node.value, { lang: props.lang, beautify: !!props.beautify, dedent: props.dedent })))
   }
 })
 

@@ -1,5 +1,6 @@
 import Code from '~/site/docs-shell/components/Code'
 import { generatePresetCSS } from '../common/generate-preset-css'
+import GeneratedCSS from './GeneratedCSS'
 
 function normalizeClasses(classes: unknown) {
   const input = Array.isArray(classes) ? classes : [classes]
@@ -10,7 +11,7 @@ const Class2CSS = (props: any) => {
   const { children: classes } = props
   const generatedCSS = generatePresetCSS(normalizeClasses(classes))
   return (
-    <Code {...props} lang="css" beautify>{generatedCSS}</Code>
+    <GeneratedCSS><Code {...props} lang="css" beautify>{generatedCSS}</Code></GeneratedCSS>
   )
 }
 

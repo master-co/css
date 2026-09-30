@@ -35,12 +35,9 @@ Append `@<breakpoint>` to a utility when that declaration should start at a view
 <h1 class="font-size-2xl font-size-3xl@md">Build for the current viewport</h1>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['font-size-2xl', 'font-size-3xl@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['font-size-2xl', 'font-size-3xl@md']}
+</Class2CSS>
 
 Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.
 
@@ -73,12 +70,9 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['grid-cols(4)', 'grid-cols(8)@sm', 'grid-cols(12)@md', 'gap-md', 'gap-lg@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['grid-cols(4)', 'grid-cols(8)@sm', 'grid-cols(12)@md', 'gap-md', 'gap-lg@md']}
+</Class2CSS>
 
 ---
 
@@ -90,12 +84,9 @@ Use a complete [native media query](/reference/rules/conditions#mediafeature) wh
 <aside class="display:none@media((52.125rem<=width<=64rem))">...</aside>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:none@media((52.125rem<=width<=64rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:none@media((52.125rem<=width<=64rem))']}
+</Class2CSS>
 
 Ranges should be rare. If a rule appears at one size, disappears, and returns later, check whether the component is really responding to its container or whether the layout hierarchy should change.
 

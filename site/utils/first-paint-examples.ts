@@ -35,5 +35,5 @@ export function firstPaintCSS() {
 }
 
 export function firstPaintMarkdown() {
-  return `Browser defaults and CSS applied use the same HTML:\n\n\`\`\`html\n${firstPaintHTML}\n\`\`\`\n\nGenerated CSS for the styled preview:\n\n\`\`\`css\n${firstPaintCSS()}\n\`\`\``
+  return `Browser defaults and CSS applied use the same HTML:\n\n\`\`\`html\n${firstPaintHTML}\n\`\`\`\n\nGenerated CSS for the styled preview:\n\n\`\`\`css disclosure=generated-css\n${firstPaintCSS()}\n\`\`\``
 }

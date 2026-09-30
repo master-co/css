@@ -23,12 +23,9 @@ Add `container-type:inline-size` to an ancestor whose inline size comes from the
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
+</Class2CSS>
 
 <FoundationContainerGrid />
 
@@ -49,12 +46,9 @@ Use native CSS range and logical operators when a component needs a bounded rang
 <div class="display:none@container((24rem<=width<=28rem))">...</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:none@container((24rem<=width<=28rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:none@container((24rem<=width<=28rem))']}
+</Class2CSS>
 
 For repeated conditions, define `@mixin --card-wide { @container (width>=28rem) { @contents; } }` and use `@apply(--card-wide)`. Container names are explicit inside the full query; an unknown `@name` never becomes a container query.
 
@@ -71,12 +65,9 @@ Use named containers when a descendant should query a specific ancestor instead 
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
+</Class2CSS>
 
 Named containers are useful in nested layouts, but do not add names everywhere. The default nearest-container behavior is simpler and easier to move between compositions.
 

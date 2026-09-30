@@ -57,12 +57,9 @@ Use `shadow-<token>` for common elevation levels. The utility resolves values fr
 </div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['shadow-sm', 'shadow-lg']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['shadow-sm', 'shadow-lg']}
+</Class2CSS>
 
 Use `shadow-<token>` for named product tokens. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
@@ -88,12 +85,9 @@ State elevation should communicate interaction, not decoration. A hover shadow c
 </article>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@media(print)']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@media(print)']}
+</Class2CSS>
 
 Keep state changes small. Moving from `shadow-sm` to `shadow-md` is usually enough for hover. Jumping from `shadow-sm` to `shadow-2xl` makes a normal card feel like a modal.
 

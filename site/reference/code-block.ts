@@ -12,8 +12,8 @@ export type ReferenceCodeNode = Code & { data: { prepared: PreparedCode } }
 export function isStylesheetExample(title: ReferenceMarkdownNode, source?: ReferenceMarkdownNode, result?: ReferenceMarkdownNode): boolean {
   return title.type === 'paragraph' && title.children.length === 1 && title.children[0].type === 'strong'
     && title.children[0].children.every(child => child.type === 'text')
-    && source?.type === 'code' && source.lang === 'css' && source.meta === 'name=Source stylesheet=source'
-    && result?.type === 'code' && result.lang === 'css' && result.meta === 'name=Result stylesheet=result'
+    && source?.type === 'code' && source.lang === 'css' && /\bstylesheet=source\b/.test(source.meta ?? '')
+    && result?.type === 'code' && result.lang === 'css' && /\bstylesheet=result\b/.test(result.meta ?? '')
 }
 
 export function referenceCodeProps(node: Code, stylesheetExample = false): CodeProp {

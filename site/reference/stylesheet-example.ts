@@ -20,5 +20,5 @@ export async function stylesheetExampleCSS(source: string) {
 }
 
 export async function stylesheetExampleMarkdown(title: string, source: string) {
-  return `**${title}**\n\n\`\`\`css name=Source stylesheet=source\n${source}\n\`\`\`\n\n\`\`\`css name=Result stylesheet=result\n${await stylesheetExampleCSS(source)}\n\`\`\``
+  return `**${title}**\n\n\`\`\`css name=Source stylesheet=source\n${source}\n\`\`\`\n\n\`\`\`css name=Result stylesheet=result disclosure=generated-css\n${await stylesheetExampleCSS(source)}\n\`\`\``
 }

@@ -31,12 +31,9 @@ Use a complete [native media query](/reference/rules/conditions#mediafeature) to
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
 <div class="display:none@media((52.125rem<=width<=64rem))">…</div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:none@media((52.125rem<=width<=64rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:none@media((52.125rem<=width<=64rem))']}
+</Class2CSS>
 
 ### Creating responsive wrappers
 Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
@@ -73,12 +70,9 @@ The `container-type:inline-size` declaration establishes an inline-size query co
   <div class="display:flex flex-direction:column@container((width<=18rem))">…</div>
 </div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
+</Class2CSS>
 Choose component thresholds from the space the content needs. Changing a [container size token](/reference/tokens/container) does not update a literal query. Reuse a condition with a CSS mixin wrapper when needed; see [Container queries](/guide/containers).
 
 ### Querying container ranges
@@ -87,12 +81,9 @@ Use a complete [native container query](/reference/rules/conditions#containersiz
 <!-- @MARK @media((52.125rem<=width<=64rem)) -->
 <div class="display:none@container((24rem<=width<=28rem))">…</div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:none@container((24rem<=width<=28rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:none@container((24rem<=width<=28rem))']}
+</Class2CSS>
 
 ### Creating named containers
 Set `container-name` and `container-type` on the ancestor. Include its name and a size condition in the descendant’s query.
@@ -103,12 +94,9 @@ Set `container-name` and `container-type` on the ancestor. Include its name and 
   <div class="display:none@container(card|(width>=16rem))"></div>
 </div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-name:card container-type:inline-size', 'display:none@container(card|(width>=16rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-name:card container-type:inline-size', 'display:none@container(card|(width>=16rem))']}
+</Class2CSS>
 
 ---
 
@@ -135,12 +123,9 @@ Gradually adjust the UI for larger viewports.
 <!-- @MARK font-size-3xl@md -->
 <p class="font-size-2xl font-size-3xl@md …">
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['font-size-2xl', 'font-size-3xl@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['font-size-2xl', 'font-size-3xl@md']}
+</Class2CSS>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
 - Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
 
@@ -162,12 +147,9 @@ Gradually adjust the UI for smaller viewports.
 <!-- @MARK font-size-2xl@media((width<64rem)) -->
 <p class="font-size-3xl font-size-2xl@media((width<64rem)) …">
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['font-size-3xl', 'font-size-2xl@media((width<64rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['font-size-3xl', 'font-size-2xl@media((width<64rem))']}
+</Class2CSS>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
 - Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
 

@@ -128,7 +128,10 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       if (name === 'DemoConfiguredExample') {
         const configuration = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value) as string
         const html = typeof attrs.html === 'string' ? attrs.html : await expression(attrs.html.value) as string
-        return `${configuredMarkupMarkdown(configuration, html)}${typeof attrs.caption === 'string' ? `\n\n${attrs.caption}` : ''}`
+        const classes = configuredMarkupClasses(html)
+        const css = configuredExampleCSS(configuration, classes)
+        examples.push({ id: `example-${examples.length + 1}`, title: attrs.title ?? classes.join(' '), classes, configuration, css })
+        return `${configuredMarkupMarkdown(configuration, html, css)}${typeof attrs.caption === 'string' ? `\n\n${attrs.caption}` : ''}`
       }
       if (name === 'ConfiguredExample') {
         const configuration = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value) as string
@@ -136,7 +139,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         const classes = html !== undefined ? configuredMarkupClasses(html) : await expression(attrs.classes.value) as string[]
         const css = configuredExampleCSS(configuration, classes)
         examples.push({ id: `example-${examples.length + 1}`, title: classes.join(' '), classes, configuration, css })
-        return `${configuration ? `\`\`\`css\n${configuration}\n\`\`\`\n\n` : ''}\`\`\`html\n${html ?? configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css\n${css}\n\`\`\``
+        return `${configuration ? `\`\`\`css\n${configuration}\n\`\`\`\n\n` : ''}\`\`\`html\n${html ?? configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css disclosure=generated-css\n${css}\n\`\`\``
       }
       if (name === 'TextHeirs') return getVariableNamespacePublicKeys('color-text').map(key => `\`${key}:\``).join(', ')
       if (name === 'VariableNamespaceSources') return variableNamespaceSourcesMarkdown()
@@ -147,7 +150,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         const classes = (Array.isArray(value) ? value : [value]).flatMap(item => String(item).split(/\s+/)).filter(Boolean)
         const css = generatePresetCSS(classes)
         examples.push({ id: `example-${examples.length + 1}`, title: classes.join(' '), classes, css })
-        return `\`\`\`css\n${css}\n\`\`\``
+        return `\`\`\`css disclosure=generated-css\n${css}\n\`\`\``
       }
       if (name === 'Code') {
         try { return `\`\`\`${typeof attrs.lang === 'string' ? attrs.lang : ''}\n${await expression(inner)}\n\`\`\`` }

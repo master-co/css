@@ -119,7 +119,7 @@ Use this as the normal override path: keep reusable product styles in `component
 ## Defaults stay below local decisions \{#summary\}
 Defaults rules are useful for descendants because they can establish defaults without blocking local classes.
 
-For example, set paragraph text to `1rem` across an article, then override one paragraph with `text:1.5rem`.
+For example, set paragraph text to `1rem` across an article, then override one paragraph with `font-size:1.5rem`.
 
 <ConfiguredExample source="" html={overridingDefaultsTemplate} />
 
@@ -186,20 +186,16 @@ size is 16px:
 | `padding:8px@layer(base)! padding:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
 | Unlayered `.outside { padding: 32px; }` and `padding:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
 | Component-layer `padding: 24px !important` and `padding:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
-| `padding:8px padding-top:12px` | Top padding is `12px`; other sides are `8px` | The property supplies the more specific property override. |
 
 Selector and condition scope still matter. A hover or breakpoint rule only
 participates while its selector and conditions match. Direct values do not
 universally override tokens in other layers or scopes.
 
-Groups retain each member's property and value source. Native declarations retain
-properties omitted from its value, just as it does in CSS. Use native declarations and selectors in stylesheets and utilities directly in
-markup.
-
-Canonical spelling changes must preserve cascade behavior as well as declaration
-values. A tool cannot safely rewrite a class merely because its isolated CSS looks
-equivalent. Internal ordering keys and final deterministic tie-breakers are not
-extension APIs.
+When a recipe, token and direct declaration target the same property in the same
+layer and scope, their generated order lets the direct declaration override the
+token, and the token override the recipe. Importance and native specificity still
+apply. Use separate classes for independent decisions and inspect the emitted
+rules when properties overlap; HTML class order does not resolve that overlap.
 
 ## Layer checklist \{#layer-checklist\}
 Use the five layers in their declared order:

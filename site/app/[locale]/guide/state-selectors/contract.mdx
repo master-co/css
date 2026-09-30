@@ -179,12 +179,9 @@ Use `,` when the same declaration should apply to several selectors.
 <!-- @MARK , -->
 <div class="content:'“'::before,::after">quotes</div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {[`content:'“'::before,::after`]}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {[`content:'“'::before,::after`]}
+</Class2CSS>
 Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
 ```html
 <!-- @MARK , -->
@@ -193,12 +190,9 @@ Selector groups also work with combinators. In this example, the declaration app
   <span>Second child</span>
 </div>
 ```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:block>div,>span']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:block>div,>span']}
+</Class2CSS>
 
 ## Pseudo-classes \{#pseudo-classes\}
 ### `:hover`, `:active`, `:focus` \{#hover--active--focus\}

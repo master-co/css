@@ -3,7 +3,8 @@ import { test } from 'node:test'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
-import { configuredExampleHTML } from '../reference/configured-example'
+import { markdownTree } from '../docs-shell/utils/markdown-tree'
+import { extractSearchNodesFromMdx } from '../docs-shell/utils/search-pages'
 import { legacySyntaxPages, localizeSyntaxURL } from '../utils/legacy-syntax'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
 
@@ -35,15 +36,15 @@ test('page registry and sitemap publish only the new tutorial', async () => {
 
 test('static tutorial HTML retains the same complete example and CSS as its text export', async () => {
   const tutorial = await syntaxTutorialContent(fileURLToPath(new URL('../', import.meta.url)))
-  const example = tutorial.examples.find(example => example.configuration)!
+  const examples = markdownTree(tutorial.markdown).children.filter(node => node.type === 'code').filter(node => node.lang === 'html' || node.meta?.includes('disclosure=generated-css'))
   const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }
   const normalizeCSS = (css: string) => css.replace(/\s/g, '').replace(/;}/g, '}')
   for (const locale of ['', 'en', 'tw']) {
     const html = await readFile(new URL(`../out/${locale ? `${locale}/` : ''}guide/syntax-tutorial.html`, import.meta.url), 'utf8')
     for (const id of ['declarations', 'states', 'conditions', 'composition', 'project-settings', 'complete-button']) assert.ok(html.includes(`id="${id}"`))
+    for (const node of extractSearchNodesFromMdx(tutorial.searchMarkdown)) if (node.id) assert.ok(html.includes(`id="${node.id}"`), `${locale}: search target ${node.id}`)
     const blocks = [...html.matchAll(/<pre\b[^>]*>([\s\S]*?)<\/pre>/g)].map(match => match[1].replace(/<[^>]+>/g, '').replace(/&#x([\da-f]+);|&#(\d+);|&(amp|lt|gt|quot|apos);/gi, (_, hex, decimal, named) => hex ? String.fromCodePoint(parseInt(hex, 16)) : decimal ? String.fromCodePoint(Number(decimal)) : entities[named]))
-    assert.ok(blocks.includes(configuredExampleHTML(example.classes, 'button', 'Save')))
-    assert.ok(blocks.some(block => normalizeCSS(block) === normalizeCSS(example.css)))
+    for (const example of examples) assert.ok(blocks.some(block => normalizeCSS(block) === normalizeCSS(example.value!)), `${locale}: ${example.value!.slice(0, 120)}`)
   }
 })
 
@@ -85,4 +86,21 @@ test('published static articles keep the same migration boundary as text and sea
     }
   }
   assert.deepEqual(failures, [])
+})
+
+
+test('all published generated outputs are native closed disclosures with one summary', async () => {
+  const pages = JSON.parse(await readFile(new URL('../.pages.json', import.meta.url), 'utf8')) as { pathname: string }[]
+  let count = 0
+  for (const { pathname } of pages) {
+    if (!/^\/(?:guide|reference|design-system)(?:\/|$)/.test(pathname)) continue
+    const html = (await readFile(new URL(`../out${pathname}.html`, import.meta.url), 'utf8')).replace(/<script\b[\s\S]*?<\/script>/g, '')
+    for (const match of html.matchAll(/<details([^>]*)><summary>Generated CSS<\/summary>([\s\S]*?)<\/details>/g)) {
+      count++
+      assert.doesNotMatch(match[1], /\bopen(?:=|\s|$)/, pathname)
+      assert.doesNotMatch(match[2], /<details|<summary>Generated CSS/, pathname)
+      assert.match(match[2], /<pre\b/, pathname)
+    }
+  }
+  assert.ok(count > 100, `Only ${count} generated output disclosures were found`)
 })

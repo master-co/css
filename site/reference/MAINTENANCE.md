@@ -22,6 +22,15 @@ The declarations, selectors, conditions and directives Guide routes redirect thr
 
 Private document payloads also contain the parsed Markdown tree and prepared code HTML, copy text and preformatted-element attributes. `prepare-app` reuses these trees when the Markdown, document kind and rendering inputs have not changed. The rendering fingerprint includes the local parser/highlighter/formatters, package and TypeScript resolution configuration, lockfile, preset, language/tooling sources and native/Wasm artifacts. Run `prepare-app` after editing those inputs; Guide MDX continues to highlight live. Public Markdown, search and catalogs retain their original content model.
 
+Generated output uses `GeneratedCSS`, a closed native `DocumentDisclosure` titled
+**Generated CSS**. `Class2CSS`, configured examples and demos already supply it;
+do not add an outer disclosure. Source/result examples opt in with
+`resultKind="generated-css"`; ordinary tool results remain visible. Normalized
+output fences carry `disclosure=generated-css`, including `stylesheet=result`
+fences. Pair recognition must accept that extra metadata, and prepared highlights
+must match the live rendering path. Keep the full CSS in server HTML, search and
+portable exports. Playground retains its dedicated output panel.
+
 General Reference, token and recipe pages have separate Next route entries, with the same public URLs and shared `ReferencePage` shell. Keep specimen imports in their owning route entry so ordinary rules and package pages do not compile the specimen graph. Brand icons belong to the pages that request them: explicitly import `create-header-icon` and pass its element to `createPage({ icon })` or `createLayout({ icon })`; the generic page factory and article header must not import the brand registry. File badges use the existing public SVG URLs at their existing CSS dimensions; other SVG components still use SVGR.
 
 The current source revision and semantic/content digests identify the build inputs. Current-version URLs can change between builds; these are not historical version snapshots. A local dirty checkout is not a published immutable document.
@@ -225,8 +234,9 @@ paragraph. Only the exact Setting/Default/Effect table shape becomes
 `DocumentOptions`; inline code and links remain part of the description.
 
 Stylesheet pairs use explicit `stylesheet=source` and `stylesheet=result` fence
-metadata beneath their bold title. The renderer recognizes only that exact trio
-and reuses `DocumentCodeExample` with native keyboard copy buttons. Plain fences
+metadata beneath their bold title. The renderer recognizes that trio independently
+of additional disclosure metadata and reuses `DocumentCodeExampleView` with prepared
+highlights and native keyboard copy buttons. Plain source fences
 retain their normal code rendering. Keep source strings literal; JSON string
 expressions preserve indentation that MDX can strip from multiline attributes.
 

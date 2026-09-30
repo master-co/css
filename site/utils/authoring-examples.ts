@@ -11,5 +11,5 @@ export function authoringCSS() {
 export function authoringExampleMarkdown(part: string) {
   if (part === 'source') return `\`\`\`css name=master.css\n${authoringSource}\n\`\`\``
   if (part !== 'preview') throw new Error(`Unknown package example: ${part}`)
-  return `\`\`\`html\n${authoringHTML}\n\`\`\`\n\nGenerated CSS:\n\n\`\`\`css\n${authoringCSS()}\n\`\`\``
+  return `\`\`\`html\n${authoringHTML}\n\`\`\`\n\nGenerated CSS:\n\n\`\`\`css disclosure=generated-css\n${authoringCSS()}\n\`\`\``
 }

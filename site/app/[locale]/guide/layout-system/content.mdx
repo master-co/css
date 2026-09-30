@@ -30,12 +30,9 @@ In Master CSS, those decisions stay close to the markup and share the same found
 </main>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'max-w-3xl', 'margin-inline:auto', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-sm', 'gap-md@2xs', 'grid-col-span(4)', 'grid-col-span(8)@2xs', 'grid-col-span(4)@2xs', 'grid-col-span(5)@2xs', 'grid-col-span(3)@2xs']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'max-w-3xl', 'margin-inline:auto', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-sm', 'gap-md@2xs', 'grid-col-span(4)', 'grid-col-span(8)@2xs', 'grid-col-span(4)@2xs', 'grid-col-span(5)@2xs', 'grid-col-span(3)@2xs']}
+</Class2CSS>
 
 ---
 
@@ -64,12 +61,9 @@ The container defines the live area for the layout. Use `width:100%` so the wrap
 </main>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['width:100%', 'max-w-7xl', 'margin-inline:auto', 'px-md', 'px-xl@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['width:100%', 'max-w-7xl', 'margin-inline:auto', 'px-md', 'px-xl@md']}
+</Class2CSS>
 
 Use the wrapper for page-level alignment. Use inner grids for content relationships. This keeps outer margins, columns, and card padding from competing with each other.
 
@@ -90,12 +84,9 @@ Use `grid-cols(<count>)` to create equal-width columns. It also sets `display:gr
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['grid-cols(4)', 'grid-cols(8)@2xs', 'grid-cols(12)@md', 'gap-lg', 'grid-col-span(4)', 'grid-col-span(5)@2xs', 'grid-col-span(8)@md', 'grid-col-span(3)@2xs', 'grid-col-span(4)@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['grid-cols(4)', 'grid-cols(8)@2xs', 'grid-cols(12)@md', 'gap-lg', 'grid-col-span(4)', 'grid-col-span(5)@2xs', 'grid-col-span(8)@md', 'grid-col-span(3)@2xs', 'grid-col-span(4)@md']}
+</Class2CSS>
 
 Start with the smallest layout that works, then add breakpoint-specific column counts and spans only where the relationship changes. This keeps the markup readable and avoids maintaining unused breakpoints.
 
@@ -113,12 +104,9 @@ Use `gap:*` when both axes share the same rhythm. Use `column-gap:*` and `row-ga
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['grid-cols(1)', 'grid-cols(3)@md', 'gap-md', 'gap-x-lg@md', 'gap-y-xl@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['grid-cols(1)', 'grid-cols(3)@md', 'gap-md', 'gap-x-lg@md', 'gap-y-xl@md']}
+</Class2CSS>
 
 (x) Do not use arbitrary gutters as the default language of a design system.
 
@@ -154,12 +142,9 @@ Grid placement should describe the region's role in the layout, not the visual s
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['grid-cols(12)', 'gap-lg', 'grid-col-span(12)', 'grid-column-start:3@md grid-column-end:11@md', 'grid-row-span(2)@md']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['grid-cols(12)', 'gap-lg', 'grid-col-span(12)', 'grid-column-start:3@md grid-column-end:11@md', 'grid-row-span(2)@md']}
+</Class2CSS>
 
 For regular content pages, spans are usually easier to maintain than exact line numbers. Use exact lines for editorial layouts, dashboards, and app shells where the page has a stable structural grid.
 
@@ -208,12 +193,9 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 </article>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-type:inline-size', 'display:flex', 'flex-direction:column', 'flex-direction:row@container((width>=18rem))', 'gap-md', 'width:100%', 'width:9rem@container((width>=18rem))', 'flex:0@container((width>=18rem))', 'min-width:0', 'flex:1']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-type:inline-size', 'display:flex', 'flex-direction:column', 'flex-direction:row@container((width>=18rem))', 'gap-md', 'width:100%', 'width:9rem@container((width>=18rem))', 'flex:0@container((width>=18rem))', 'min-width:0', 'flex:1']}
+</Class2CSS>
 
 `min-width:0` is important for flexible text regions. It allows long content to shrink inside a flex or grid item instead of forcing the whole layout wider than the container.
 
@@ -233,12 +215,9 @@ Add `container-type:inline-size` to the component boundary, then use `@container
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=18rem))', 'gap-md', 'gap-lg@container((width>=18rem))']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=18rem))', 'gap-md', 'gap-lg@container((width>=18rem))']}
+</Class2CSS>
 
 Use viewport breakpoints for global decisions such as page shell, navigation mode, and maximum canvas width. Use container queries for cards, forms, media objects, and reusable panels.
 
@@ -255,12 +234,9 @@ Use viewport breakpoints for global decisions such as page shell, navigation mod
 </section>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['display:grid', 'grid-template-columns:4.5rem|minmax(0,1fr)', 'gap-md', 'min-width:0']}
-  </Class2CSS>
-</details>
+<Class2CSS>
+  {['display:grid', 'grid-template-columns:4.5rem|minmax(0,1fr)', 'gap-md', 'min-width:0']}
+</Class2CSS>
 
 Use explicit tracks for app shells, data views, split panes, and content that has a real fixed region. For ordinary responsive content, equal columns plus spans are usually more flexible.
 
