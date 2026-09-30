@@ -6,6 +6,8 @@ use super::{
 };
 use mastercss_schema::ThemeNode;
 
+type LocatedThemeNodes = (usize, Vec<ThemeNode>);
+
 pub(crate) fn lower_theme_rule(
     source: &str,
     filename: &str,
@@ -21,15 +23,17 @@ pub(crate) fn lower_theme_rule(
         ));
     }
     let body = rule.body.as_deref().ok_or_else(|| {
-        directive_error(
-            source,
-            filename,
-            rule.start_byte,
-            "@theme requires a block with explicit selectors",
-        )
+        directive_error(source, filename, rule.start_byte, "@theme requires a block")
     })?;
-    let sheet = StyleSheet::parse(
+    let context = ThemeContext {
+        source,
+        filename,
         body,
+        offset: rule.body_start_byte.unwrap_or(rule.start_byte),
+    };
+    let (native_body, mut ordered) = context.defaults()?;
+    let sheet = StyleSheet::parse(
+        &native_body,
         ParserOptions {
             filename: filename.into(),
             ..ParserOptions::default()
@@ -40,17 +44,12 @@ pub(crate) fn lower_theme_rule(
             source,
             filename,
             rule.start_byte,
-            format!("@theme requires explicit selectors: {error}"),
+            format!("Invalid @theme body: {error}"),
         )
     })?;
-    let context = ThemeContext {
-        source,
-        filename,
-        body,
-        offset: rule.body_start_byte.unwrap_or(rule.start_byte),
-    };
-    let mut native_theme_rules = Vec::new();
-    let index = crate::source_index::SourceIndex::new(body);
+    // Parser columns belong to the masked text. It preserves byte offsets, but
+    // replacing non-ASCII declarations changes the corresponding UTF-16 columns.
+    let index = crate::source_index::SourceIndex::new(&native_body);
     for child in sheet.rules.0 {
         if let CssRule::Keyframes(keyframe) = child {
             let start = index
@@ -106,13 +105,30 @@ pub(crate) fn lower_theme_rule(
                     ),
                 });
         } else {
-            native_theme_rules.push(child);
+            let loc = match &child {
+                CssRule::Style(rule) => rule.loc,
+                CssRule::Media(rule) => rule.loc,
+                CssRule::Supports(rule) => rule.loc,
+                CssRule::Container(rule) => rule.loc,
+                CssRule::Scope(rule) => rule.loc,
+                CssRule::StartingStyle(rule) => rule.loc,
+                _ => {
+                    // Reuse the strict theme diagnostic for unsupported rules.
+                    context.rules(vec![child], false, &index)?;
+                    continue;
+                }
+            };
+            let start = index
+                .byte_offset_for_location(loc.line, loc.column)
+                .unwrap_or_default();
+            ordered.push((start, context.rules(vec![child], false, &index)?));
         }
     }
+    ordered.sort_by_key(|(start, _)| *start);
     input
         .theme
         .get_or_insert_default()
-        .extend(context.rules(native_theme_rules, false)?);
+        .extend(ordered.into_iter().flat_map(|(_, nodes)| nodes));
     Ok(())
 }
 
@@ -124,6 +140,72 @@ struct ThemeContext<'a> {
 }
 
 impl ThemeContext<'_> {
+    /// Mask only direct declarations so native rules retain their original byte
+    /// locations. Each consecutive declaration run gets its own default scope.
+    fn defaults(&self) -> Result<(String, Vec<LocatedThemeNodes>), CompilerError> {
+        use mastercss_lexer::{collect_css_syntax_statements, tokenize_css_syntax};
+        let wrapped = format!("x{{{}}}", self.body);
+        let tokens = tokenize_css_syntax(&wrapped);
+        let statements = collect_css_syntax_statements(&tokens);
+        let mut children = statements
+            .iter()
+            .filter(|statement| statement.parent == Some(0))
+            .collect::<Vec<_>>();
+        children.sort_by_key(|statement| statement.tokens.start);
+        let mut runs: Vec<std::ops::Range<usize>> = Vec::new();
+        let mut adjacent = false;
+        for statement in children {
+            if !statement.declaration {
+                adjacent = false;
+                continue;
+            }
+            let start = tokens[statement.tokens.start].bytes.start - 2;
+            let end = tokens
+                .get(statement.tokens.end)
+                .filter(|token| token.kind == mastercss_lexer::CssSyntaxKind::Delim(';'))
+                .map_or_else(
+                    || tokens[statement.tokens.end - 1].bytes.end,
+                    |token| token.bytes.end,
+                )
+                - 2;
+            if adjacent {
+                runs.last_mut().expect("declaration run").end = end;
+            } else {
+                runs.push(start..end);
+            }
+            adjacent = true;
+        }
+        let mut masked = self.body.as_bytes().to_vec();
+        let mut nodes = Vec::new();
+        for range in runs {
+            let block = super::DeclarationBlock::parse_string(
+                &self.body[range.clone()],
+                ParserOptions::default(),
+            )
+            .map_err(|error| {
+                directive_error(
+                    self.source,
+                    self.filename,
+                    self.offset + range.start,
+                    format!("Invalid @theme declaration: {error}"),
+                )
+            })?;
+            nodes.push((
+                range.start,
+                vec![ThemeNode::Rule {
+                    prelude: ":root,:host".into(),
+                    children: self.declarations(&block, range.start, true)?,
+                }],
+            ));
+            for byte in &mut masked[range] {
+                if !matches!(*byte, b'\r' | b'\n') {
+                    *byte = b' ';
+                }
+            }
+        }
+        Ok((String::from_utf8(masked).expect("masked UTF-8"), nodes))
+    }
+
     fn declarations(
         &self,
         block: &lightningcss::declaration::DeclarationBlock<'_>,
@@ -179,11 +261,11 @@ impl ThemeContext<'_> {
         &self,
         rules: Vec<CssRule<'_>>,
         has_selector: bool,
+        index: &crate::source_index::SourceIndex<'_>,
     ) -> Result<Vec<ThemeNode>, CompilerError> {
         if rules.is_empty() {
             return Ok(Vec::new());
         }
-        let index = crate::source_index::SourceIndex::new(self.body);
         let mut output = Vec::new();
         for rule in rules {
             let (prelude, children) = match rule {
@@ -196,7 +278,7 @@ impl ThemeContext<'_> {
                             .map(|(open, _)| open + 1)
                             .unwrap_or(start);
                     let mut children = self.declarations(&style.declarations, open, true)?;
-                    children.extend(self.rules(style.rules.0, true)?);
+                    children.extend(self.rules(style.rules.0, true, index)?);
                     (
                         crate::printed_selectors(&style.selectors.0, self.filename)?.join(","),
                         children,
@@ -211,14 +293,14 @@ impl ThemeContext<'_> {
                 }
                 CssRule::Media(rule) => (
                     format!("@media {}", minified_css(&rule.query, self.filename)?),
-                    self.rules(rule.rules.0, has_selector)?,
+                    self.rules(rule.rules.0, has_selector, index)?,
                 ),
                 CssRule::Supports(rule) => (
                     format!(
                         "@supports {}",
                         minified_css(&rule.condition, self.filename)?
                     ),
-                    self.rules(rule.rules.0, has_selector)?,
+                    self.rules(rule.rules.0, has_selector, index)?,
                 ),
                 CssRule::Container(rule) => {
                     let mut parts = Vec::new();
@@ -230,7 +312,7 @@ impl ThemeContext<'_> {
                     }
                     (
                         format!("@container {}", parts.join(" ")),
-                        self.rules(rule.rules.0, has_selector)?,
+                        self.rules(rule.rules.0, has_selector, index)?,
                     )
                 }
                 CssRule::Scope(rule) => {
@@ -241,11 +323,11 @@ impl ThemeContext<'_> {
                     if let Some(end) = &rule.scope_end {
                         prelude.push_str(&format!(" to ({})", minified_css(end, self.filename)?));
                     }
-                    (prelude, self.rules(rule.rules.0, has_selector)?)
+                    (prelude, self.rules(rule.rules.0, has_selector, index)?)
                 }
                 CssRule::StartingStyle(rule) => (
                     "@starting-style".into(),
-                    self.rules(rule.rules.0, has_selector)?,
+                    self.rules(rule.rules.0, has_selector, index)?,
                 ),
                 _ => {
                     return Err(directive_error(

@@ -23,7 +23,7 @@ test.each(['native', 'wasm'] as const)('preserves selector literals while loweri
   }
 ],
   "version": 4 as const,
-  "languageVersion": 10 as const
+  "languageVersion": 11 as const
 }, preserveNativeCSS: true }
   const result = binding === 'native'
     ? await compileRenderedStylesheet('/tmp/selector-literals.css', source, options)

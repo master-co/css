@@ -188,6 +188,7 @@ struct CompiledVariable {
     numeric: Option<Value>,
     variable_type: String,
     dependencies: Vec<String>,
+    managed: bool,
 }
 
 #[derive(Debug, Clone, Default)]

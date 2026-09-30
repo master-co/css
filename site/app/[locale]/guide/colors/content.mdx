@@ -182,10 +182,8 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 
 ```css name=index.css
 @theme {
-  :root, :host {
-    --color-surface-base: light-dark(var(--color-white), var(--color-gray-95));
-    --color-text-body: light-dark(var(--color-neutral-70), var(--color-gray-30));
-  }
+  --color-surface-base: light-dark(var(--color-white), var(--color-gray-95));
+  --color-text-body: light-dark(var(--color-neutral-70), var(--color-gray-30));
 }
 ```
 
@@ -214,6 +212,32 @@ The preset sets `:root { color-scheme: light dark; }`. Its 45 adaptive semantic 
 ```
 
 `data-theme="light"` and `data-theme="dark"` work on the root, nested regions, and shadow hosts. Direct `color-scheme: light` or `color-scheme: dark` works too. A shadow host inherits its ancestor's scheme unless it makes an explicit choice; load the preset native CSS and generated CSS inside the shadow tree. Changing the scheme needs no recompilation.
+
+For a page-level light, dark or system control, change only the root attribute:
+
+```js
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === "system") root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme", theme); // light or dark
+}
+```
+
+With no root attribute, CSS follows system changes automatically. Persist the choice in application storage, or use a cookie for SSR. Apply a stored client preference before the first paint and keep hydration consistent with that choice. Removing an attribute from a nested region restores inheritance from its parent; it does not independently reset that region to the system preference.
+
+Brand values can use the same native selectors:
+
+```css
+@theme {
+  [data-theme="ocean"], :host([data-theme="ocean"]) {
+    --color-surface-base: light-dark(#eff6ff, #082f49);
+  }
+}
+```
+
+The ocean token remains adaptive to the inherited color scheme. To make ocean always dark, add a native `[data-theme="ocean"], :host([data-theme="ocean"]) { color-scheme: dark; }` rule. A nested light region changes the scheme but still inherits the ocean token; it does not reset every token to the default brand. If brand and scheme vary independently, use `[data-brand="ocean"]` for the brand and `data-theme="light"` or `data-theme="dark"` for the scheme. Restore a complete brand by explicitly redeclaring its role tokens at that boundary.
+
+Move a token definition outside `@theme` when it should always ship with its native stylesheet. It still provides the same named utilities. Native overrides keep their original cascade layer; see the [theme delivery contract](/reference/directives/theme#theme-static).
 
 The preset `@light` and `@dark` class suffixes still mean **system preference media queries**. A manual theme changes tokens and native controls but does not activate these suffixes. If an application needs a selector variant, declare a separate name:
 

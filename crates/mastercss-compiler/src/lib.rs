@@ -5,6 +5,7 @@ mod lower;
 mod manifest;
 mod migration;
 mod mixins;
+mod native_tokens;
 pub use migration::{
     RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
 };
@@ -713,6 +714,8 @@ pub use stylesheet_graph::{
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod theme_tests;
 
 mod declarations;
 mod mixin_sources;

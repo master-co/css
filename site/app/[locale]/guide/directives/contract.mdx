@@ -7,7 +7,7 @@ Master CSS directives describe token definitions, reusable utility names, named 
 @import "@master/css";
 
 @theme {
-  :root, :host { --color-brand: #4f46e5; }
+  --color-brand: #4f46e5;
   [data-theme="ocean"] { --color-brand: #0369a1; }
 }
 
@@ -120,7 +120,7 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used tokens and managed keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native keyframes outside `@theme` need an actual `@import` or another delivered stylesheet.
+A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions, and native token names and scoped values for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native token values and native keyframes need an actual `@import` or another delivered stylesheet; recognizing a token does not deliver its definition.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
@@ -130,14 +130,12 @@ The standalone API accepts absolute `referenceFiles` and `transformNativeStylesh
 
 ## Theme and conditions \{#theme-and-variants\}
 ### `@theme` \{#theme\}
-Declare custom properties under explicit native selectors. A theme block must be top-level and has no prelude or modifiers.
+Declare on-demand custom properties. Direct declarations use the default `:root, :host` scope; use explicit native selectors for other scopes. A theme block must be top-level and has no prelude or modifiers.
 
 ```css
 @theme {
-  :root, :host {
-    --color-panel: white;
-    --color-panel: oklch(98% .01 250);
-  }
+  --color-panel: white;
+  --color-panel: oklch(98% .01 250);
 
   @media (prefers-color-scheme: dark) {
     :root, :host { --color-panel: #111827; }
@@ -151,14 +149,18 @@ Declare custom properties under explicit native selectors. A theme block must be
 }
 ```
 
-The compiler preserves selector order, declaration order, repeated declarations, and native nesting. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules. `@variant` is not accepted inside a theme.
+The compiler wraps each consecutive run of direct declarations in `:root, :host` at its authored position. It preserves selector order, declaration order, repeated declarations, and native nesting. Explicit selectors remain independent rules, not descendants of the default selector. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`; declarations inside a condition still require an explicit selector unless already nested inside one. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules. `@variant` is not accepted inside a theme.
 
-Theme declarations are emitted in the `theme` layer. A used token retains every authored declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values; it does not claim to know the value for a particular DOM element.
+Theme declarations are emitted in the `theme` layer. A used token retains every managed declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values, including native delivery metadata; it does not claim to know the value for a particular DOM element.
+
+Native custom-property declarations also register tokens using the same namespaces and named-mixin rules. For example, `:root { --color-brand: red; }` enables `bg-brand` and `fg-brand`. Registration does not move the declaration, change its layer, make its value global, or emit it again. A token declared only under `.card` has a value only in that scope and its inheritance descendants. Keyframe-local declarations, `@property` descriptors and unexpanded mixin bodies do not register native tokens.
+
+Only stylesheets supplied to compilation or reference resolution participate in this catalog. Runtime `style` changes and a newly loaded browser stylesheet do not add names to an existing manifest. Use an explicit class such as `background-color:var(--color-brand)` for a variable supplied independently of the catalog.
 
 The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` media conditions continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting, browser support and migration.
 
 ### Native selectors replace theme modes \{#theme-mode\}
-`@theme dark` and other mode preludes are removed. Put the selectors and conditions inside `@theme`, as in the example above. No implicit `:root` or `:host` selector is inserted.
+`@theme dark` and other mode preludes are removed. Put the selectors and conditions inside `@theme`, as in the example above, or use native CSS for always-delivered overrides. Only direct theme declarations receive the default `:root, :host` selector; explicit selectors are preserved.
 
 ### Native activation replaces `@mode` \{#mode\}
 `@mode` is removed. Theme activation comes from native selectors and queries. Define a selector `@mixin` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
@@ -174,8 +176,20 @@ This enables `color:white@apply(--ocean)`. Theme declarations can independently 
 ### Native custom properties replace inline expansion \{#theme-inline\}
 `@theme inline` is removed. Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
 
+An alias such as `--color-action: var(--color-brand)` resolves in its declaring scope. Overriding only `--color-brand` in a descendant does not rebind an inherited `--color-action`; redeclare the alias there or override the semantic token directly.
+
 ### Native styles replace static resources \{#theme-static\}
-`@theme static` is removed. Put properties that must always be delivered in native CSS, for example `@layer theme { :root { --app-version: 1; } }`. Native keyframes outside `@theme` are always delivered:
+`@theme static` is removed. Put tokens that should ship with their stylesheet in native CSS:
+
+```css
+:root, :host {
+  --color-brand: #4f46e5;
+}
+```
+
+This registers `bg-brand` without managed token pruning. Native CSS keeps its authored layer and position. Use `@layer theme { :root, :host { --color-brand: #4f46e5; } }` when it should share the theme layer: unlayered normal declarations otherwise outrank layered normal declarations on the same element. Explicit native pruning and stylesheet delivery options still apply.
+
+A delivered native declaration that references a managed token retains that dependency even without a utility class. Keep large scoped token collections inside `@theme` when they should be pruned on demand. Native keyframes outside `@theme` ship with their stylesheet:
 
 ```css
 @keyframes reveal {
@@ -188,7 +202,9 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 
 ```css
 @theme {
-  :root, :host { --animate-reveal: reveal; --animate-reveal--duration: .2s; --animate-reveal--timing-function: ease-out; }
+  --animate-reveal: reveal;
+  --animate-reveal--duration: .2s;
+  --animate-reveal--timing-function: ease-out;
   @keyframes reveal {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -371,7 +387,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 10 and binding ABI 20. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 11 and binding ABI 21. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
 

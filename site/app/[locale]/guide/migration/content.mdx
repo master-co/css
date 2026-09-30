@@ -99,7 +99,9 @@ Review the migration as code and as UI.
 
 ## Custom engine and binding migration
 
-The current binding ABI is **20**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v4 / languageVersion 10 and hydration v3 data with the upgraded packages. Engine snapshots and transitions are v3; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+The current binding ABI is **21**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v4 / languageVersion 11 and hydration v3 data with the upgraded packages. Engine snapshots and transitions are v3; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+
+Language version 11 accepts direct custom-property declarations in `@theme`; they use `:root,:host`. Existing explicit selectors remain valid. Native stylesheet custom properties now register named tokens too, while retaining native delivery. For example, `:root { --color-brand: red; }` enables `bg-brand` without requiring `@theme static`. Previously unknown classes can therefore become valid when their tokens exist in the compiler's stylesheet graph. Native CSS must still be delivered separately from the manifest; `@reference` supplies resolution context only. See the [theme contract](/reference/directives/theme) for scope, layers, dependencies, and pruning.
 
 `MasterCSSEngine` and its binding session also require `executionState(classNames)`.
 

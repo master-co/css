@@ -213,6 +213,9 @@ impl ErrorCode {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CssDirectiveManifestInput {
+    /// Token catalog entries whose declarations remain in native stylesheets.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native_tokens: Option<Vec<NativeTokenDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub animation_variables: Option<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -225,8 +228,8 @@ pub struct CssDirectiveManifestInput {
     pub custom_media: Option<Vec<CustomMediaDefinition>>,
 }
 
-/// Ordered native CSS inside @theme. Declaration nodes occur only inside an
-/// explicit selector, including native conditional/nesting descendants.
+/// Ordered managed CSS. Lowering supplies :root,:host for direct @theme
+/// declarations; the executable tree always has an explicit selector.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase", deny_unknown_fields)]
 pub enum ThemeNode {
@@ -245,6 +248,24 @@ pub enum ThemeNode {
 pub struct ScopedThemeValue {
     pub path: Vec<String>,
     pub value: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delivery: Option<TokenDelivery>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TokenDelivery {
+    Native,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct NativeTokenDefinition {
+    pub name: String,
+    pub path: Vec<String>,
+    pub value: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<CssDirectiveSourceReference>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

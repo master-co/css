@@ -1,17 +1,15 @@
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only] \{#overview\}
-Theme variables connect project vocabulary to ordinary CSS custom properties. Write explicit selectors and native conditions inside `@theme`. Master CSS keeps the declarations needed by generated classes or native stylesheet references; the browser resolves inheritance, the cascade, and computed values.
+Theme variables connect project vocabulary to ordinary CSS custom properties. Direct declarations in `@theme` use `:root, :host`; explicit selectors and native conditions define other scopes. Master CSS keeps the managed declarations needed by generated classes or native stylesheet references; the browser resolves inheritance, the cascade, and computed values. Native declarations outside `@theme` register the same token names and retain native delivery.
 
 ```css name=index.css
 @import '@master/css';
 
 @theme {
-  :root, :host {
-    --color-brand: #4f46e5;
-    --spacing-card: 1.5rem;
-    --color-surface-card: white;
-  }
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+  --color-surface-card: white;
   @media (prefers-color-scheme: dark) {
     :root, :host { --color-surface-card: #111827; }
   }
@@ -27,9 +25,9 @@ Theme variables connect project vocabulary to ordinary CSS custom properties. Wr
 ## Variable lifecycle \{#variable-lifecycle\}
 ### Check a custom spacing token \{#custom-spacing-example\}
 
-<ConfiguredExample source={'@theme { :root, :host { --spacing-card: 1.5rem; } }'} classes={['p-card']} />
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
-The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer theme` under the authored selector. When a variable is live, every authored scope and duplicate declaration for that name stays in source order. Dependencies referenced by any of those values are also retained. Scanning does not discard theme branches whose selectors are absent from markup.
+The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer theme` under `:root, :host`. When a variable is live, every managed scope and duplicate declaration for that name stays in source order. Dependencies referenced by any of those values are also retained. Scanning does not discard theme branches whose selectors are absent from markup. Native token declarations stay in their stylesheet and do not become managed output or resource counts; their references can retain managed dependencies.
 
 Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports the authored scope paths and values, not a computed result.
 
@@ -77,10 +75,12 @@ Built-in token families own namespace lookup in the Rust engine. `outline-line-d
 
 ```css
 @layer theme {
-  :root, :host { --app-version: 1; }
+  :root, :host { --color-brand: #4f46e5; }
 }
 @keyframes fade-in { to { opacity: 1; } }
 ```
+
+The native token enables `bg-brand` when its stylesheet is part of the compiler input. It ships independently of that class's usage. Removing the layer wrapper gives it ordinary unlayered precedence. The manifest records the name and scoped value; the application must still deliver the native stylesheet. `@reference` supplies resolution context without delivering that CSS.
 
 ## Authored scopes \{#mode-buckets\}
 Selectors and queries express alternate values inside a single theme tree. The same class follows the browser's cascade:
@@ -135,7 +135,7 @@ Preset `@dark` and `@light` suffixes still test system media preferences. Manual
 Local selectors participate in the normal cascade. If themes overlap or nest, selector specificity, layer order and source order decide which declaration wins. Master CSS retains those authored relationships.
 
 ### Shadow DOM
-Use `:host` explicitly when a theme is intended for a shadow tree. Load the native stylesheet and any keyframes in the tree where they are consumed.
+Default theme declarations already include `:host`. For scoped host overrides, write `:host(...)` explicitly. Load the native stylesheet, generated CSS and any native keyframes in the tree where they are consumed.
 
 ```css
 @theme {

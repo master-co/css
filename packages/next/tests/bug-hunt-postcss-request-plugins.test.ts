@@ -28,7 +28,7 @@ interface Helpers { result: Result; postcss: typeof postcss }
 const phases = ['Once', 'Declaration', 'OnceExit'] as const
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 10 as const
+  "languageVersion": 11 as const
 }
 const initialSource = "@theme {:root, :host {--color-old:#111111;--color-late:#abcdef}}\n.card{color:var(--color-old);audit-trigger:1}"
 

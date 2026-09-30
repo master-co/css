@@ -42,6 +42,8 @@ export type MasterCSSManifestVariableEntry = MasterCSSManifestVariable & {
 export interface MasterCSSScopedThemeValue {
   path: string[]
   value: string
+  /** Native values are catalog entries, never managed theme output. */
+  delivery?: 'native'
 }
 
 export type MasterCSSThemeNode =
@@ -62,7 +64,7 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 4
-  languageVersion: 10
+  languageVersion: 11
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]

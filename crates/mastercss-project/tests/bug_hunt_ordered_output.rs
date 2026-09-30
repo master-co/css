@@ -18,7 +18,7 @@ fn flat_project_css_uses_ordered_output_while_preserving_metadata_views() {
     fs::create_dir_all(&root).unwrap();
     let entry = root.join("entry.css");
     fs::write(&entry, r###"@import '@master/css';@mixin --always{@contents;}@mixin --paint {padding:2rem!important}@mixin --low {padding:1rem!important}@layer{.a{@apply --always{padding:2rem!important;}}.b{@apply --always{padding:1rem!important;}}}"###).unwrap();
-    let result = load_project_manifest_entries(&[entry], json!({"version":4,"languageVersion":10}));
+    let result = load_project_manifest_entries(&[entry], json!({"version":4,"languageVersion":11}));
     fs::remove_dir_all(root).unwrap();
     let result = result.unwrap();
     assert_eq!(result.css.matches("@layer").count(), 1, "{}", result.css);

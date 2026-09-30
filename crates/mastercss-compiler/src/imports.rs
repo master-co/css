@@ -14,7 +14,7 @@ pub(crate) fn imported_css_wrappers(
     statement: &str,
     source: &str,
     filename: &str,
-) -> Result<(String, String), CompilerError> {
+) -> Result<(String, String, Vec<String>), CompilerError> {
     let stylesheet = StyleSheet::parse(statement, ParserOptions::default()).map_err(|error| {
         CompilerError::Parse {
             message: error.to_string(),
@@ -62,6 +62,7 @@ pub(crate) fn imported_css_wrappers(
     };
     let mut prefix = String::new();
     let mut suffix = String::new();
+    let mut path = Vec::new();
     if let Some(layer) = &import.layer {
         let name = layer
             .as_ref()
@@ -70,6 +71,7 @@ pub(crate) fn imported_css_wrappers(
             .map_err(print_error)?
             .unwrap_or_default();
         prefix = format!("@layer {name}{{{prefix}");
+        path.push(format!("@layer {name}").trim().to_owned());
         suffix.push('}');
     }
     if !import.media.media_queries.is_empty() {
@@ -78,6 +80,7 @@ pub(crate) fn imported_css_wrappers(
             .to_css_string(PrinterOptions::default())
             .map_err(print_error)?;
         prefix = format!("@media {media}{{{prefix}");
+        path.push(format!("@media {media}"));
         suffix.push('}');
     }
     if let Some(supports) = &import.supports {
@@ -85,9 +88,11 @@ pub(crate) fn imported_css_wrappers(
             .to_css_string(PrinterOptions::default())
             .map_err(print_error)?;
         prefix = format!("@supports {supports}{{{prefix}");
+        path.push(format!("@supports {supports}"));
         suffix.push('}');
     }
-    Ok((prefix, suffix))
+    path.reverse();
+    Ok((prefix, suffix, path))
 }
 
 /// Named cascade layers in authored first-appearance order, or `None` when the
@@ -392,7 +397,7 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
                 stack,
                 references,
             )?;
-            let (prefix, suffix) = imported_css_wrappers(&import.statement, &source.text, id)?;
+            let (prefix, suffix, _) = imported_css_wrappers(&import.statement, &source.text, id)?;
             if prefix.is_empty() {
                 output.push(source);
             } else {

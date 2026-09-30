@@ -105,7 +105,15 @@ fn resolve(
         .compiled_variables
         .get(&name)
         .into_iter()
-        .flat_map(|variable| variable.values.iter().map(|value| value.value.clone()))
+        // Native catalog entries describe vocabulary, not stylesheet delivery.
+        // Only the delivered animation_variables map supplies native values.
+        .flat_map(|variable| {
+            variable
+                .values
+                .iter()
+                .filter(|value| value.delivery.is_none())
+                .map(|value| value.value.clone())
+        })
         .collect::<Vec<_>>();
     options.extend(variables.get(&name).into_iter().flatten().cloned());
     // A fallback does not prove that an externally supplied property is absent.

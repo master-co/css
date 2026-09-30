@@ -17,7 +17,7 @@ fn manifest(cycle: bool) -> String {
         .push(json!("color-c"));
     variables.push(json!({"key":"c","values":[{"path":[root],"value":"blue"}],"dependencies":[]}));
     let theme = variables.iter().flat_map(|variable| variable["values"].as_array().unwrap().iter().map(|value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("color-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]}))).collect::<Vec<_>>();
-    json!({"version":4,"languageVersion":10,"variables":{"color":variables},"theme":theme,"mixins":[]}).to_string()
+    json!({"version":4,"languageVersion":11,"variables":{"color":variables},"theme":theme,"mixins":[]}).to_string()
 }
 fn counts(engine: &EngineSession) -> Vec<(String, u32)> {
     let mut values = engine

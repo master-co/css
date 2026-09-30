@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 10 as const,
+  "languageVersion": 11 as const,
   "mixins": [
     {
       "name": "--block",
@@ -32,6 +32,18 @@ const factories = {
   'native async': () => createLanguageSession({ manifest, binding: 'native' }),
   wasm: () => createLanguageSession({ manifest, binding: 'wasm' })
 }
+
+it('native token catalogs have identical native and Wasm language behavior', async () => {
+  const manifest: MasterCSSManifest = {
+    version: 4, languageVersion: 11,
+    variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root'], value: 'red', delivery: 'native' }] }] }
+  }
+  using native = createLanguageSessionSync({ manifest })
+  using wasm = await createLanguageSession({ manifest, binding: 'wasm' })
+  expect(wasm.completionIndex()).toEqual(native.completionIndex())
+  expect(wasm.inspectClassName('bg-brand')).toEqual(native.inspectClassName('bg-brand'))
+  expect(wasm.inspectClassName('bg-brand')).toMatchObject({ matchStatus: 'matched' })
+})
 
 for (const [name, create] of Object.entries(factories)) {
   describe(name, () => {

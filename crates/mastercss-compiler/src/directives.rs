@@ -145,7 +145,9 @@ fn compile_css_directives_impl(
         .visit(&mut native_class_collector)
         .unwrap_or_else(|error| match error {});
 
+    let native_tokens = crate::native_tokens::collect(source, &options.from);
     let mut manifest_input = CssDirectiveManifestInput {
+        native_tokens: (!native_tokens.is_empty()).then_some(native_tokens),
         custom_media: (!custom_media.is_empty()).then_some(custom_media),
         ..CssDirectiveManifestInput::default()
     };

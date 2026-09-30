@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "languageVersion": 10,
+  "languageVersion": 11,
   "source": "@import \"@master/css\";\n@theme { :root, :host { --font-family-brand: ui-monospace; --font-size-brand: 1rem; } }\n\n@mixin --erased { color:red; }\n@mixin --erased {}\n@mixin --pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {

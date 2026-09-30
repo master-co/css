@@ -56,7 +56,7 @@ const result = compiler.compileStylesheets({
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },
   urls: { app: '/styles/app.css', theme: '/styles/theme.css' },
-  baseManifest: { version: 4, languageVersion: 10, mixins: [] }
+  baseManifest: { version: 4, languageVersion: 11, mixins: [] }
 })
 ```
 

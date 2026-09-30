@@ -6,14 +6,14 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
 ```css name=index.css
 @import '@master/css';
 
-@theme { :root, :host {
+@theme {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
   --spacing-lg: 1.5rem;
   --radius-lg: 1rem;
 
   --container-md: 28rem;
-} }
+}
 
 @theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-surface-card: #ffffff;
@@ -44,9 +44,9 @@ A project needs a CSS entry that marks the Master CSS graph. Put shared tokens i
 ```css name=index.css
 @import '@master/css';
 
-@theme { :root, :host {
+@theme {
   --color-brand: #4f46e5;
-} }
+}
 
 ```
 
@@ -55,10 +55,10 @@ The important part is the graph, not a special file name. Theme tokens can live 
 ---
 
 ## Define tokens
-Theme tokens are CSS custom property declarations inside explicit selectors in `@theme` blocks. Write the full token name with the leading `--`. The prefix places the value in a namespace that Master CSS utilities already understand.
+Write custom properties directly in `@theme` for on-demand tokens in the default `:root, :host` scope. Use explicit selectors inside the block for scoped overrides. Write the full token name with the leading `--`; the prefix places the value in a namespace that Master CSS utilities already understand. Native stylesheet declarations register the same token names and retain their native delivery.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --content-hash: " #";
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
@@ -67,7 +67,7 @@ Theme tokens are CSS custom property declarations inside explicit selectors in `
   --radius-lg: 1rem;
 
   --container-md: 28rem;
-} }
+}
 
 @theme { @media (prefers-color-scheme: light) { :root, :host {
   --color-surface-card: #ffffff;
@@ -104,21 +104,23 @@ For a deeper explanation of namespace resolution and contextual lookup, see [Var
 ## Alias and override tokens
 Use native CSS `var()` when a token should reference another token. This keeps semantic roles tied to a smaller set of foundation values.
 
+Aliases resolve where they are declared. If `--color-text-action` is declared at the root, overriding only `--color-brand` in a descendant does not rebind that inherited alias. Redeclare the alias in the descendant scope or override the semantic token directly.
+
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-brand);
-} }
+}
 
 ```
 
 Define the same token key as a preset token when you want to override it. Declarations retain author order, including duplicate fallbacks. Normal CSS specificity, conditions, and cascade order determine the winning value.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --color-blue: #4589ff;
   --spacing-lg: 1.625rem;
-} }
+}
 
 ```
 
@@ -151,7 +153,7 @@ Use native media queries or selectors inside `@theme` when the same token should
 
 Keep the token name mode-neutral. Markup should say `bg-surface-card` or `fg-text-card`, not `dark-card`.
 
-For manual switches and local theme islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
+These media queries follow the system preference. For colors that also respond to manual light/dark switches, use `light-dark()` values with native `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for `data-theme`, system mode, and nested theme islands.
 
 ---
 
@@ -170,9 +172,11 @@ For custom properties that must always ship, use native CSS:
 
 ```css
 @layer theme {
-  :root, :host { --integration-brand: #4f46e5; }
+  :root, :host { --color-integration-brand: #4f46e5; }
 }
 ```
+
+This enables `bg-integration-brand` while the declaration ships even when that class is unused. The layer wrapper is optional; omitting it keeps normal unlayered CSS precedence. The compiler needs this stylesheet in its input graph to register the name, and the browser still needs the native stylesheet delivered alongside generated utilities.
 
 ---
 
@@ -180,12 +184,12 @@ For custom properties that must always ship, use native CSS:
 Define viewport conditions with `@custom-media`. Container tokens remain available for container query thresholds and width caps. A `--breakpoint-*` custom property does not register a condition.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
 
   --container-sm: 24rem;
   --container-md: 28rem;
   --container-lg: 32rem;
-} }
+}
 
 @custom-media --sm (width >= 40rem);
 @custom-media --md (width >= 48rem);
@@ -213,7 +217,7 @@ Keep named viewport conditions broad and product-wide. Use container tokens when
 Motion values can be tokens too. Put reusable animation recipes, durations, and easing curves in `@theme`. Write keyframes as native top-level CSS and import their stylesheet wherever the animation is needed.
 
 ```css name=index.css
-@theme { :root, :host {
+@theme {
   --duration-enter: 180ms;
   --easing-standard: cubic-bezier(.4, 0, .2, 1);
   --animate-dialog-in: dialog-in;
@@ -222,7 +226,7 @@ Motion values can be tokens too. Put reusable animation recipes, durations, and 
   --animate-dialog-in--iteration-count: 1;
   --animate-dialog-in--fill-mode: both;
 
-} }
+}
 @keyframes dialog-in {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }

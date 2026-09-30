@@ -193,6 +193,7 @@ pub(crate) fn compile_variables(
                     name,
                     key,
                     namespace: namespace.clone(),
+                    managed: values.iter().any(|value| value.delivery.is_none()),
                     values,
                     numeric: object.get("numeric").cloned(),
                     variable_type,

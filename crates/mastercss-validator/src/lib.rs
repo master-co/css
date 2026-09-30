@@ -76,7 +76,7 @@ impl ValidatorSession {
 mod tests {
     use super::*;
 
-    const MANIFEST: &str = r#"{"version":4,"languageVersion":10,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
+    const MANIFEST: &str = r#"{"version":4,"languageVersion":11,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
 
     #[test]
     fn generates_batches_without_retaining_class_rules() {
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn preserves_native_declarations_regardless_of_host_support() {
         let mut session =
-            ValidatorSession::create(r#"{"version":4,"languageVersion":10}"#).unwrap();
+            ValidatorSession::create(r#"{"version":4,"languageVersion":11}"#).unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block", "display:banana"])
             .unwrap();

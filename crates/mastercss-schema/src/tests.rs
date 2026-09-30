@@ -2,13 +2,17 @@ use super::*;
 
 #[test]
 fn validates_manifest_v1_without_dropping_unknown_fields() {
-    let source = r#"{"version":4,"languageVersion":10,"future":{"value":true}}"#;
+    let source = r#"{"version":4,"languageVersion":11,"future":{"value":true}}"#;
     let manifest = MasterCssManifest::parse(source).unwrap();
     assert_eq!(manifest.to_json().unwrap(), source);
 }
 
 #[test]
 fn rejects_legacy_manifest_shapes() {
+    assert!(matches!(
+        MasterCssManifest::parse(r#"{"version":4,"languageVersion":10}"#),
+        Err(SchemaError::UnsupportedLanguageVersion)
+    ));
     assert!(matches!(
         MasterCssManifest::parse(r#"{"version":4,"languageVersion":7}"#),
         Err(SchemaError::UnsupportedLanguageVersion)
@@ -18,11 +22,11 @@ fn rejects_legacy_manifest_shapes() {
         Err(SchemaError::UnsupportedManifestVersion)
     ));
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":4,"languageVersion":10,"variables":[]}"#),
+        MasterCssManifest::parse(r#"{"version":4,"languageVersion":11,"variables":[]}"#),
         Err(SchemaError::UnsupportedVariablesFormat)
     ));
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":4,"languageVersion":10,"utilityBuckets":{}}"#),
+        MasterCssManifest::parse(r#"{"version":4,"languageVersion":11,"utilityBuckets":{}}"#),
         Err(SchemaError::UnsupportedUtilityBuckets)
     ));
 }

@@ -105,7 +105,7 @@ pub(crate) fn inline_stylesheet_imports_mapped(
                     && (!relative_base[target]
                         || same_resource_base(&assets[index].href, &assets[target].href))
                 {
-                    let (prefix, suffix) = crate::imports::imported_css_wrappers(
+                    let (prefix, suffix, _) = crate::imports::imported_css_wrappers(
                         &import.statement,
                         &assets[target].css,
                         &node.id,

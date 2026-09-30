@@ -104,6 +104,7 @@ export type CSSDirectiveConditionPathEntry =
 
 export interface CSSDirectiveManifestInput {
   keyframes?: MasterCSSKeyframeDefinition[]
+  nativeTokens?: { name: string, path: string[], value: string, source?: CSSDirectiveSourceReference }[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]

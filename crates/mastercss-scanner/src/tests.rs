@@ -1,7 +1,7 @@
 use super::*;
 use mastercss_schema::is_css_class_blocklisted;
 fn manifest() -> &'static str {
-    r#"{"version":4,"languageVersion":10,"variables":{"spacing":[{"key":"md","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#
+    r#"{"version":4,"languageVersion":11,"variables":{"spacing":[{"key":"md","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#
 }
 fn options(owner: &str) -> ScannerSourceOptions {
     ScannerSourceOptions {

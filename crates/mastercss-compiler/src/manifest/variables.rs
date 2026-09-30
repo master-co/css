@@ -164,6 +164,43 @@ pub(super) struct VariableTable {
 }
 
 impl VariableTable {
+    fn value(
+        &mut self,
+        name: &str,
+        path: &[String],
+        value: &str,
+        native: bool,
+        namespaces: &[String],
+    ) {
+        let (_, key, namespace) = resolved_variable_name(Some(name), None, None, namespaces);
+        let index = self.position(name).unwrap_or_else(|| {
+            let mut variable = Map::new();
+            variable.insert("name".into(), name.into());
+            variable.insert("key".into(), key.into());
+            if let Some(namespace) = namespace {
+                variable.insert("namespace".into(), namespace.into());
+            }
+            variable.insert("values".into(), json!([]));
+            variable.insert("dependencies".into(), json!([]));
+            self.insert(variable)
+        });
+        let variable = self.get_mut(index);
+        let mut scoped = json!({ "path": path, "value": value });
+        if native {
+            scoped["delivery"] = "native".into();
+        }
+        variable
+            .get_mut("values")
+            .and_then(Value::as_array_mut)
+            .expect("values")
+            .push(scoped);
+        let mut dependencies = string_array(variable.get("dependencies"));
+        for dependency in variable_dependencies(value) {
+            push_unique(&mut dependencies, dependency);
+        }
+        variable.insert("dependencies".into(), json!(dependencies));
+    }
+
     pub(super) fn position(&self, slot: &str) -> Option<usize> {
         self.slots.get(slot).copied()
     }
@@ -205,30 +242,7 @@ pub(super) fn compile_variables(
                     path.pop();
                 }
                 mastercss_schema::ThemeNode::Declaration { name, value } => {
-                    let (_, key, namespace) =
-                        resolved_variable_name(Some(name), None, None, namespaces);
-                    let index = variables.position(name).unwrap_or_else(|| {
-                        let mut variable = Map::new();
-                        variable.insert("name".into(), name.clone().into());
-                        variable.insert("key".into(), key.into());
-                        if let Some(namespace) = namespace {
-                            variable.insert("namespace".into(), namespace.into());
-                        }
-                        variable.insert("values".into(), json!([]));
-                        variable.insert("dependencies".into(), json!([]));
-                        variables.insert(variable)
-                    });
-                    let variable = variables.get_mut(index);
-                    variable
-                        .get_mut("values")
-                        .and_then(Value::as_array_mut)
-                        .expect("values")
-                        .push(json!({ "path": path, "value": value }));
-                    let mut dependencies = string_array(variable.get("dependencies"));
-                    for dependency in variable_dependencies(value) {
-                        push_unique(&mut dependencies, dependency);
-                    }
-                    variable.insert("dependencies".into(), json!(dependencies));
+                    variables.value(name, path, value, false, namespaces);
                 }
             }
         }
@@ -240,6 +254,9 @@ pub(super) fn compile_variables(
         &namespaces,
         &mut variables,
     )?;
+    for token in input.native_tokens.iter().flatten() {
+        variables.value(&token.name, &token.path, &token.value, true, &namespaces);
+    }
     let mut variables = variables.into_variables();
     for variable in &mut variables {
         let namespace = variable.get("namespace").and_then(Value::as_str);

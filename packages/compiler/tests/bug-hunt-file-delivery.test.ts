@@ -32,7 +32,7 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) print
   }
 ],
   "version": 4 as const,
-  "languageVersion": 10 as const
+  "languageVersion": 11 as const
 }, preserveNativeCSS: true,
         delivery: { entryURL: '/output/main.css', stylesheetURL: (file: string) => `/output/${basename(file)}`, resourceURL: (file: string) => `/output/${basename(file)}` }
       }
@@ -83,7 +83,7 @@ for (const preserveNativeCSS of [undefined, true]) {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 10 as const
+  "languageVersion": 11 as const
 },
         delivery: { entryURL: '/published/main.css', stylesheetURL: file => `/published/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
       })
@@ -127,7 +127,7 @@ test('BH-0004 file delivery rejects missing resources and URL collisions before 
   }
 ],
   "version": 4 as const,
-  "languageVersion": 10 as const
+  "languageVersion": 11 as const
 }, delivery: {
       entryURL: '/entry.css', stylesheetURL: () => '/entry.css', resourceURL: () => '/resource.svg', onDependency: (file: string) => dependencies.push(file)
     } }

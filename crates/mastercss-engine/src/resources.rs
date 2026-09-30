@@ -231,6 +231,9 @@ impl EngineSession {
                 continue;
             };
             pending.extend(variable.dependencies.iter().rev().cloned());
+            if !variable.managed {
+                continue;
+            }
             let count = self.variable_counts.entry(name.clone()).or_default();
             *count = count.saturating_add(1);
             if *count == 1 {
@@ -260,6 +263,9 @@ impl EngineSession {
                 continue;
             };
             pending.extend(variable.dependencies.iter().rev().cloned());
+            if !variable.managed {
+                continue;
+            }
             let host_count = self.emitted_globals.variable_count(&name);
             let remove = match self.variable_counts.get_mut(&name) {
                 Some(count) if *count > host_count => {

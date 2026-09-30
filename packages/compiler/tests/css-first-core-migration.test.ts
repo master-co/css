@@ -3,7 +3,7 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 10 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 11 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('directive language v9 authoring contracts', () => {
@@ -17,7 +17,7 @@ describe('directive language v9 authoring contracts', () => {
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(10)
+    expect(manifest.languageVersion).toBe(11)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
@@ -79,7 +79,7 @@ describe('directive language v9 authoring contracts', () => {
     '@utilities { card { display: block; } }', '@dark { .card { color: red; } }',
     '.card { @variant media((width>=40rem)) { display: block; } }',
     '@theme inline { --color-brand: red; }', '@theme static { --color-brand: red; }',
-    '@theme dark { --color-brand: red; }', '@theme { --color-brand: red; }',
+    '@theme dark { --color-brand: red; }',
     '@theme { :root { color: red; } }',
     '@utility align-<left|right> { text-align: --master-value(); }',
     '@utility pair:<*> { width: --master-value(); }',

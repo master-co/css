@@ -44,7 +44,7 @@ test('preserves native aliases that share a declaration across cached pages', ()
     }
   ],
   "version": 4 as const,
-  "languageVersion": 10 as const,
+  "languageVersion": 11 as const,
   "variables": {
     "": [
       {
