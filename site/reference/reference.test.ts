@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test, before } from 'node:test'
-import { readFile, readdir, mkdtemp, writeFile, rm } from 'node:fs/promises'
+import { readFile, readdir, mkdtemp, writeFile, rm, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -26,6 +26,10 @@ import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
 import { documentHeadings } from './headings'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
+import { createReferenceRenderDocument, referenceRenderVersion } from './render-document'
+import { referenceCodeProps, isStylesheetExample } from './code-block'
+import highlightCode from '../docs-shell/utils/highlight-code-core'
+import { prepareCode } from '../docs-shell/utils/prepared-code'
 import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
@@ -321,13 +325,86 @@ test('machine index and localized Markdown identify the same content and source 
   }
 })
 
-test('route index and individual documents preserve the complete Reference catalog', async () => {
+test('route payloads preserve Reference content and its parsed render tree', async () => {
   const routeIndex = JSON.parse(await readFile(path.join(root, '.generated/reference-route-index.json'), 'utf8'))
   assert.deepEqual(routeIndex, catalog.documents.map(({ id, kind, title, description, category, url }) => ({ id, kind, title, description, category, url })))
-  for (const id of ['rules/modes', 'tokens/color', 'animate']) {
-    const document = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(id)}.json`), 'utf8'))
-    assert.deepEqual(document, catalog.documents.find(doc => doc.id === id))
+  for (const doc of catalog.documents) {
+    const { tree, renderDigest, ...document } = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(doc.id)}.json`), 'utf8'))
+    assert.deepEqual(document, JSON.parse(JSON.stringify(doc)))
+    assert.match(renderDigest, /^[a-f0-9]{64}$/)
+    function withoutHighlights(node: any): any {
+      if (node.type === 'code') {
+        assert.ok(node.data.prepared.properties.className.includes('code-wrapper'), `${doc.id}: ${node.lang}`)
+        const { data: _data, ...source } = node
+        return source
+      }
+      return node.children ? { ...node, children: node.children.map(withoutHighlights) } : node
+    }
+    assert.deepEqual(withoutHighlights(tree), markdownTree(doc.markdown), doc.id)
+    assert.deepEqual(document.headings, documentHeadings(doc.markdown), doc.id)
   }
+  const publicCatalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
+  assert.deepEqual(publicCatalog, JSON.parse(JSON.stringify(catalog)))
+})
+
+test('prepared Reference highlights match live code, declarations and source/result pairs', async () => {
+  for (const id of ['rules/modes', 'tokens/color', 'packages/css-tooling', 'directives/theme', 'tools/mcp/mastercss_inspect_class']) {
+    const doc = catalog.documents.find(doc => doc.id === id)!
+    const payload = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(id)}.json`), 'utf8'))
+    async function verify(nodes: any[], compact = false) {
+      for (let index = 0; index < nodes.length; index++) {
+        const node = nodes[index]
+        if (!compact && isStylesheetExample(node, nodes[index + 1], nodes[index + 2])) {
+          await verifyCode(nodes[++index], true)
+          await verifyCode(nodes[++index], true)
+        } else if (node.type === 'code') await verifyCode(node)
+        else if (node.children) await verify(node.children)
+      }
+    }
+    async function verifyCode(node: any, example = false) {
+      const props = referenceCodeProps(node, example)
+      assert.deepEqual(node.data.prepared, await prepareCode(await highlightCode(node.value, {
+        lang: props.lang, beautify: !!props.beautify, dedent: props.dedent
+      })), `${id}: ${node.lang} ${node.meta ?? ''}`)
+    }
+    await verify(payload.tree.children, doc.kind === 'tokens')
+  }
+})
+
+test('prepared trees reuse stable highlights and invalidate Markdown or renderer inputs', async () => {
+  const doc = catalog.documents.find(doc => doc.id === 'rules/modes')!
+  const first = await createReferenceRenderDocument(doc, 'version-one')
+  const reused = await createReferenceRenderDocument({ ...doc, title: 'Updated title' }, 'version-one', first)
+  assert.equal(reused.tree, first.tree)
+  assert.equal(reused.title, 'Updated title')
+  const changedMarkdown = await createReferenceRenderDocument({ ...doc, markdown: `${doc.markdown}\n\nAdditional prose.` }, 'version-one', first)
+  assert.notEqual(changedMarkdown.renderDigest, first.renderDigest)
+  assert.notEqual(changedMarkdown.tree, first.tree)
+  const changedPipeline = await createReferenceRenderDocument(doc, 'version-two', first)
+  assert.notEqual(changedPipeline.renderDigest, first.renderDigest)
+  assert.notEqual(changedPipeline.tree, first.tree)
+  assert.deepEqual(changedPipeline.tree, first.tree)
+})
+
+test('render fingerprint tracks grammar, native artifact and module resolution inputs', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'reference-render-'))
+  const siteRoot = path.join(directory, 'site')
+  const grammar = path.join(directory, 'packages/language-service/syntaxes/master-css.tmLanguage.json')
+  const native = path.join(directory, 'packages/binding/native/tooling.node')
+  try {
+    for (const file of [path.join(siteRoot, 'tsconfig.json'), grammar, native]) {
+      await mkdir(path.dirname(file), { recursive: true })
+      await writeFile(file, '{}')
+    }
+    let previous = await referenceRenderVersion(siteRoot)
+    assert.equal(await referenceRenderVersion(siteRoot), previous)
+    for (const file of [grammar, native, path.join(siteRoot, 'tsconfig.json')]) {
+      await writeFile(file, 'updated input')
+      const next = await referenceRenderVersion(siteRoot)
+      assert.notEqual(next, previous, file)
+      previous = next
+    }
+  } finally { await rm(directory, { recursive: true, force: true }) }
 })
 
 test('changing a configured token updates class output, extracted Markdown and search together', async () => {

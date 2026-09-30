@@ -16,6 +16,7 @@ import { writeIfChanged } from '../scripts/write-if-changed'
 import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
 import { buildTokenContracts } from './token-contracts'
+import { createReferenceRenderDocument, referenceRenderVersion, type ReferenceRenderDocument } from './render-document'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
 const fence = (lang: string, value: string) => `\`\`\`${lang}\n${value}\n\`\`\``
@@ -103,10 +104,15 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
   const documentDir = path.join(siteRoot, '.generated/reference-documents')
   await mkdir(documentDir, { recursive: true })
   const expectedDocuments = new Set<string>()
+  const renderVersion = await referenceRenderVersion(siteRoot)
   for (const doc of catalog.documents) {
     const filename = path.join(documentDir, `${encodeURIComponent(doc.id)}.json`)
     expectedDocuments.add(filename)
-    await writeIfChanged(filename, JSON.stringify(doc))
+    const previous = await readFile(filename, 'utf8').then(value => JSON.parse(value) as ReferenceRenderDocument).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === 'ENOENT') return undefined
+      throw error
+    })
+    await writeIfChanged(filename, JSON.stringify(await createReferenceRenderDocument(doc, renderVersion, previous)))
   }
   await removeStaleGeneratedFiles(documentDir, expectedDocuments)
   for (const locale of ['en', 'tw']) {

@@ -1,26 +1,24 @@
 import { createElement, Fragment } from 'react'
-import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import Link from '~/site/docs-shell/components/Link'
-import Code from '~/site/docs-shell/components/Code'
+import { PreparedCodeView as CodeView } from '~/site/docs-shell/components/CodeView'
+import { isStylesheetExample, referenceCodeProps } from './code-block'
 import DocumentAPIIndex from '../components/DocumentAPIIndex'
-import DocumentDeclaration from '../components/DocumentDeclaration'
+import DocumentDeclarationView from '../components/DocumentDeclarationView'
 import DocumentIdentifier from '../components/DocumentIdentifier'
 import DocumentParameters from '../components/DocumentParameters'
 import DocumentDisclosure from '../components/DocumentDisclosure'
 import DocumentOptions from '../components/DocumentOptions'
-import DocumentCodeExample from '../components/DocumentCodeExample'
-import { documentHeadings } from './headings'
+import DocumentCodeExampleView from '../components/DocumentCodeExampleView'
+import type { ReferenceRenderDocument } from './render-document'
 import { tokenValueEntry } from './value-entry'
 import { DocumentCodeTable, DocumentKeyList, DocumentNamespaceTable, DocumentValueList, type DocumentValueRow } from '../components/DocumentValues'
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
-export default function ReferenceMarkdown({ children, compactValues = false, introHeadingId, specimenNamespace, recipeSpecimen, tokenSpecimen }: { children: string, compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string, recipeSpecimen?: React.ReactNode, tokenSpecimen?: React.ReactNode }) {
-  const headings = documentHeadings(children)
+export default function ReferenceMarkdown({ tree, headings, compactValues = false, introHeadingId, specimenNamespace, recipeSpecimen, tokenSpecimen }: Pick<ReferenceRenderDocument, 'tree' | 'headings'> & { compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string, recipeSpecimen?: React.ReactNode, tokenSpecimen?: React.ReactNode }) {
   let headingIndex = 0
   let entrypoint = ''
   let specimenSummary = false
   const definitions = new Map<string, any>()
-  const tree = markdownTree(children)
   for (const node of tree.children) if (node.type === 'definition') definitions.set(node.identifier, node)
   function render(node: any, key: number): React.ReactNode {
     // The complete visual already includes this same caption and per-token advice.
@@ -45,10 +43,10 @@ export default function ReferenceMarkdown({ children, compactValues = false, int
       case 'delete': return <del key={key}>{body}</del>
       case 'inlineCode': return <code key={key}>{node.value}</code>
       case 'code': {
-        if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclaration key={key} label={`${entrypoint} — ${headings[headingIndex - 1]?.title ?? 'API'}`}>{node.value}</DocumentDeclaration>
+        if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclarationView key={key} label={`${entrypoint} — ${headings[headingIndex - 1]?.title ?? 'API'}`} source={node.value}><CodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
         const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined
         const titles = { 'input-schema': 'Complete input schema', 'output-schema': 'Complete output schema', 'command-help': 'Complete command help' }
-        const code = <Code key={key} lang={node.lang || 'plaintext'} name={node.meta?.match(/name=(\S+)/)?.[1] || node.lang?.toUpperCase()} beautify={node.lang === 'css' || node.lang === 'html'} dedent={node.lang === 'sh' ? false : undefined}>{node.value}</Code>
+        const code = <CodeView key={key} {...referenceCodeProps(node)} prepared={node.data.prepared} />
         return disclosure ? <DocumentDisclosure key={key} title={titles[disclosure]}>{code}</DocumentDisclosure> : code
       }
       case 'heading': {
@@ -125,11 +123,11 @@ export default function ReferenceMarkdown({ children, compactValues = false, int
     const content: React.ReactNode[] = []
     for (let index = 0; index < tree.children.length; index++) {
       const [title, source, result] = tree.children.slice(index, index + 3) as any[]
-      if (title.type === 'paragraph' && title.children.length === 1 && title.children[0].type === 'strong'
-        && title.children[0].children.every((child: any) => child.type === 'text')
-        && source?.type === 'code' && source.lang === 'css' && source.meta === 'name=Source stylesheet=source'
-        && result?.type === 'code' && result.lang === 'css' && result.meta === 'name=Result stylesheet=result') {
-        content.push(<DocumentCodeExample key={index} title={title.children[0].children.map((child: any) => child.value).join('')} language="css" source={source.value} result={result.value} />)
+      if (isStylesheetExample(title, source, result)) {
+        content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')} source={source.value} result={result.value}
+          sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}
+          resultCode={<CodeView {...referenceCodeProps(result, true)} prepared={result.data.prepared} />}
+        />)
         index += 2
       } else content.push(render(title, index))
     }

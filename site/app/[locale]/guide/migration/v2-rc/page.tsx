@@ -1,3 +1,4 @@
+import createHeaderIcon from '~/site/docs-shell/factories/create-header-icon'
 import createPage from '~/site/docs-shell/factories/create-page'
 import Layout from '~/site/layouts/doc'
 import metadata from './metadata'
@@ -8,7 +9,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
   metadata,
   dictionaries,
   categories,
-  icon: 'mastercss',
+  icon: createHeaderIcon('mastercss'),
   categoryLink: '/guide/migration#frameworks',
   content: import('./content.mdx'),
   Layout,

@@ -1,3 +1,4 @@
+import createHeaderIcon from '~/site/docs-shell/factories/create-header-icon'
 import createLayout from '~/site/docs-shell/factories/create-layout'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
@@ -14,7 +15,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categories,
   noTOC: true,
   categoryLink: '/guide/installation/integrations',
-  icon: 'rails',
+  icon: createHeaderIcon('rails'),
   content: ({ $ }) =>
     <Tabs className="mb-xl">
       <Tab href='/guide/installation/rails'>{$('Static Rendering')}</Tab>

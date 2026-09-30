@@ -1,3 +1,4 @@
+import createHeaderIcon from '~/site/docs-shell/factories/create-header-icon'
 import createPage from '~/site/docs-shell/factories/create-page'
 import Layout from '~/site/layouts/doc'
 import metadata from './metadata'
@@ -9,7 +10,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
   dictionaries,
   categories,
   noTOC: true,
-  icon: 'shopify',
+  icon: createHeaderIcon('shopify'),
   categoryLink: '/guide/installation/integrations',
   content: import('./content.mdx'),
   Layout,

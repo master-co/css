@@ -5,16 +5,7 @@ import clsx from 'clsx'
 import type { CSSProperties } from 'react'
 import { createTranslation } from '../utils/i18n'
 import PackageBadges from './PackageBadges'
-import brands from '../data/brands'
 
-const headerIconClassName = 'display:block width:100% height:100% max-width:100% max-height:100%'
-const headerIconStyle = {
-  display: 'block',
-  width: '100%',
-  height: '100%',
-  maxWidth: '100%',
-  maxHeight: '100%'
-} satisfies CSSProperties
 const headerIconOuterStyle = {
   alignSelf: 'center',
   flex: '0 0 auto',
@@ -47,13 +38,6 @@ export default async function ArticleHeader(props: any) {
         )
         : <div className={categoryClasses}>{$(children)}</div>
     )
-  }
-  if (typeof icon === 'string') {
-    const brand = brands[icon as keyof typeof brands]
-    if (!brand) {
-      throw new Error(`Brand ${icon} not found`)
-    }
-    icon = <brand.src className={clsx(headerIconClassName, brand.headerClassName)} style={headerIconStyle} />
   }
   return (
     <>

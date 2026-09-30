@@ -3,7 +3,6 @@ import { Props } from '../types/Props'
 import generate from '../utils/generate-metadata'
 import type { ResolvingMetadata } from 'next'
 import { createTranslation } from '../utils/i18n'
-import brands from '../data/brands'
 import translatedContentRegistry from '~/site/.translations/content-registry'
 
 interface Options {
@@ -15,7 +14,7 @@ interface Options {
   Layout?: any
   dictionaries: any
   categoryLink?: string
-  icon?: React.ReactElement | keyof typeof brands
+  icon?: React.ReactElement
   noTOC?: boolean
   subtitle?: string
 }

@@ -1,4 +1,4 @@
-import FoundationTokens from '../components/demo/foundations/FoundationTokens'
+import FoundationTokens from '../components/demo/foundations/FoundationTokensView'
 
 /** Each subject uses the same specimens as Guide, with the complete preset selection. */
 export default function TokenSpecimens({ namespace }: { namespace: string }) {
