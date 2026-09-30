@@ -69,15 +69,11 @@ These read-only tools are for Master CSS repository contributors, AI coding agen
 | --- | --- |
 | `debug-missing-css` | Debug scanner coverage, manifest loading, invalid syntax, native CSS pruning, and stylesheet entry configuration. |
 | `review-mastercss-classes` | Review class lists and propose only safe, scoped write previews. |
-| `migrate-to-mastercss` | Audit an existing styling system and produce an incremental migration plan before editing. |
-
-Use `migrate-to-mastercss` when an MCP-capable AI client is helping migrate CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, or Master CSS v1. The prompt asks the agent to inspect the workspace first, identify stylesheet entries and source extraction coverage, recommend a rendering mode, choose the first reviewable migration batch, and list validation commands and visual review risks.
-
-The migration prompt is a planning workflow, not a one-shot converter. Keep the previous styling system in place until each migrated slice builds, runs, and visually matches the old UI.
+| `migrate-to-mastercss` | Plan a conversion from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS or component-library styling to current Master CSS. |
 
 ## Machine-readable results
 
-Project scan, lint, setup audit, directive inspection, class extraction, class tracing, CSS comparison, manifest query, and contributor routing reports use `version: 1`. Tooling can rely on stable top-level fields such as `version`, `root`, `manifest`, `inputs`, `files`, `diagnostics`, `risks`, `validation`, and `summary` when present. Nested diagnostic `data` objects may gain additional fields over time.
+Every tool returns a `version: 3` envelope with `metadata`, `diagnostics` and `result`. Success data lives in `result.data`; failures have `result.status: "error"` and an error code and message, and set MCP `isError`. JSON text matches `structuredContent`. Metadata identifies the actual context, manifest and package contracts; read the tool’s published output schema for its payload.
 
 ## Safety
 

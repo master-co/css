@@ -25,11 +25,15 @@ import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
 import { documentHeadings } from './headings'
+import { documentationHygieneIssues } from '../tests/document-hygiene'
 import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 let catalog: ReferenceCatalog
-before(async () => { catalog = await generateReference(root) })
+before(async () => {
+  const pages = JSON.parse(await readFile(path.join(root, '.pages.json'), 'utf8'))
+  catalog = await generateReference(root, undefined, [...pages, { pathname: '/reference/tools/cli/migrate' }])
+})
 
 test('Reference and shared search styles use defined site theme variables', async () => {
   const theme = await readFile(path.join(root, 'styles/docs-shell/theme.css'), 'utf8')
@@ -44,7 +48,7 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 90)
+  assert.equal(catalog.documents.length, 89)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 10)
   assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
@@ -79,6 +83,21 @@ test('30 acceptance queries find the intended document in the first three result
       for (const identifier of page.identifiers) assert.ok(search(identifier.text, 1).length, `${identifier.text} has no results`)
     }
   }
+})
+
+test('current Reference excludes upgrade workflows and obsolete syntax identifiers', async () => {
+  assert.ok(!catalog.documents.some(doc => doc.id === 'tools/cli/migrate'))
+  const pages = JSON.parse(await readFile(path.join(root, '.pages.json'), 'utf8')) as { pathname: string }[]
+  assert.ok(!pages.some(page => page.pathname === '/reference/tools/cli/migrate'))
+  for (const doc of catalog.documents) {
+    assert.deepEqual(documentationHygieneIssues(doc.markdown), [], doc.id)
+    for (const name of ['@utility', '@compose', '@settings', '@mode', '@custom-variant']) assert.ok(!doc.aliases.includes(name), `${doc.id}: ${name}`)
+  }
+  const guide = await readFile(path.join(root, 'app/[locale]/guide/migration/v2-rc/content.mdx'), 'utf8')
+  const { execFileSync } = await import('node:child_process')
+  const help = execFileSync(process.execPath, [path.join(root, '../packages/cli/dist/bin/index.js'), 'migrate', '--help'], { encoding: 'utf8' })
+  for (const option of help.matchAll(/(?:^|\n) {2}(--[\w-]+)/g)) assert.ok(guide.includes(option[1]), option[1])
+  for (const name of ['bg-surface-muted', 'bg-surface-overlay', 'b-line-divider', 'master-entry', 'custom-variant']) assert.ok(guide.includes(name), name)
 })
 
 test('namespace consumer tables cover the registry including color role groups', async () => {
@@ -258,7 +277,7 @@ test('all 121 retired Guide anchors target an existing contract or migration sec
     if (doc) assert.ok(doc.headings.some(heading => heading.id === anchor), target)
     else {
       const text = await readFile(path.join(root, `app/[locale]${url}/content.mdx`), 'utf8')
-      assert.ok(text.includes(`{#${anchor}`), target)
+      assert.ok(text.includes(`{#${anchor}`) || text.includes(`id="${anchor}"`), target)
     }
     count++
   }

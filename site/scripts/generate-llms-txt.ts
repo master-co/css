@@ -230,7 +230,9 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
 export async function generate(siteRoot: string): Promise<{ index: string; full: string }> {
   const localeRoot = path.join(siteRoot, 'app', `[${'locale'}]`)
   const catalog = await generateReference(siteRoot)
-  const pages = (await loadPages(localeRoot)).filter(page => page.section !== 'reference')
+  const published = new Set<string>((JSON.parse(await readFile(path.join(siteRoot, '.pages.json'), 'utf8')) as { pathname: string }[]).map(page => page.pathname))
+  const pages = (await loadPages(localeRoot)).filter(page => page.section !== 'reference'
+    && published.has(page.url.replace(/^\/(en|tw)(?=\/)/, '')))
   const overview = pages.find(page => page.url === '/en/guide')
   if (overview) {
     const { guideOverviewMarkdown } = await import('../utils/guide-overview')

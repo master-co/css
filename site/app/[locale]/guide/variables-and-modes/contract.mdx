@@ -71,7 +71,7 @@ Use the [complete family index](/reference/tokens/families) to look up every pre
 Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
 
 ## Native values and unconditional declarations \{#inline-and-static-variables\}
-`@theme inline` and `@theme static` are removed. Token utilities retain `var()` references. For unconditional declarations, write native CSS:
+Token utilities retain `var()` references. For unconditional declarations, write native CSS:
 
 ```css
 @layer theme {
@@ -106,7 +106,7 @@ Derived values remain CSS functions, including `var()` fallbacks and `color-mix(
 ```
 
 ## Theme activation and mixin wrappers \{#mode-triggers\}
-`@mode` is removed. Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes the theme tree or inserts descendant selectors automatically.
+Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes the theme tree or inserts descendant selectors automatically.
 
 ```css
 @mixin --ocean {
@@ -144,7 +144,4 @@ Default theme declarations already include `:host`. For scoped host overrides, w
 }
 ```
 
-## Removed project settings \{#project-settings\}
-`@settings` is removed. Use native selectors for scoping, explicit CSS units, and the per-class `!` modifier for importance. Use `@custom-media` for named media conditions; theme variables do not register breakpoint suffixes.
-
-See the [directive contract](/reference/directives/theme) and [RC migration guide](/guide/migration/v2-rc) for the coordinated compiler, runtime and tooling upgrade.
+See the [directive contract](/reference/directives/theme) for definition scope and resource delivery.

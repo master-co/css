@@ -28,16 +28,6 @@ export const cliEditorial: Record<string, CLIEditorial> = {
       { description: 'Inspect a source buffer on stdin without modifying its virtual file:', command: "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md display:flex\">\n  Save\n</button>\nHTML" }
     ]
   },
-  migrate: {
-    introduction: 'Upgrade a project from its saved v2 RC language contract. Choose `--from rc-legacy` before named tokens or `--from rc-named` after named tokens and before the final conditions/modes contract, or `--from rc-native` after explicit modes and before simple-query/source-lifecycle changes. Record the actual original package version with `--source-version`; the example version must be replaced if it differs. Save the resolved original manifest before upgrading; RC versions can differ. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).',
-    effects: 'The default operation only proposes edits. `--write` applies verified edits only when the entire selected batch has no review diagnostics. Dynamic classes, selector references, ambiguous names, and uncertain cascade changes require manual review. Missing or invalid original configuration stops the command before writing. Complex queries can produce stable custom-variant definitions; select `--entry` when more than one CSS entry is available.',
-    output: 'JSON stdout contains `version: 2`, `from`, `sourceVersion`, `configurationCSS`, `notes`, `mode`, `manifest`, and per-file `edits`, `review`, and `written` results. Read all review diagnostics. `--manifest` selects the saved RC manifest; `--target-manifest` supplies a migrated manifest for custom utilities. Without a target file, the new preset is combined with original project token resources for equivalence checking.',
-    examples: [
-      { description: 'Preview an upgrade using the saved original manifest:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json' },
-      { description: 'Apply a reviewed batch with no unresolved diagnostics:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json --write' },
-      { description: 'Verify custom definitions against their migrated manifest:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json --target-manifest master.v2.manifest.json' }
-    ]
-  },
   inspect: {
     introduction: sourceScope + ' Use this report to connect missing CSS to source discovery, stylesheet entries, and generated output.',
     effects: 'This command reads sources and composes an inspection report without publishing CSS or rewriting source files. `--classes` requests checks against the scan output; it does not add those classes to source or safelist them. `--include-css` adds the generated text to the report.\n\nInspect the returned stylesheet entries and diagnostics for project configuration. In the current standalone path, entry discovery and inspection have limitations with package-backed entries; an empty result does not prove that no CSS is needed. See [Authoring Packages](/guide/authoring-packages#use-the-package) for the documented boundary.',

@@ -83,7 +83,7 @@ Options:
 | `-o, --output <path>` | `string` | `master.css` | Generated CSS output path. |
 | `-v, --verbose <level>` | `number` | `1` | Logging level. Use `0` to silence terminal output. |
 | `-w, --watch` | `boolean` | `false` | Watch files and rebuild continuously. |
-| `--binding <binding>` | `auto`, `native`, or `wasm` | `auto` | Select the execution binding for diagnostics and migration testing. |
+| `--binding <binding>` | `auto`, `native`, or `wasm` | `auto` | Select the execution binding for diagnostics. |
 | `--no-export` | `boolean` | `false` | Print generated CSS instead of writing a file. |
 
 File-export watch mode reports missing imported stylesheets and resources while
@@ -178,29 +178,6 @@ Options:
 | `--format <format>` | `json` or `stylish` | `json` | Print machine-readable diagnostics or human-readable output. |
 | `--exit-code <mode>` | `diagnostics` or `never` | `diagnostics` | Control whether diagnostics set a non-zero exit code. |
 | `--max-warnings <number>` | `number` | none | Exit with a non-zero status when warnings exceed this count. |
-
-### `npx @master/css-cli migrate [source paths]`
-
-Preview the v2 RC syntax upgrade using the project's saved, resolved RC manifest:
-
-```bash
-npx @master/css-cli migrate src --manifest master.rc.manifest.json
-npx @master/css-cli migrate src --manifest master.rc.manifest.json --write
-```
-
-The default manifest path is `master.rc.manifest.json`. Missing or invalid configuration
-stops migration; the command never substitutes default settings after a read failure.
-Length `x` conversion uses the original `baseUnit` and `rootSize`, and preserves native
-resolution descriptors. Token names, declaration intent, and conditions must remain equivalent.
-
-JSON output lists proposed `edits`, manual `review` diagnostics, and `written` status for
-each file. `--write` leaves the entire selected batch unchanged if any file needs review.
-Dynamic classes, selector references, ambiguous tokens, and changed cascade order must
-be resolved manually. For custom definitions, supply `--target-manifest migrated.json`
-to check against their migrated manifest. Repeating a completed migration produces no edits.
-
-Follow the [Master CSS v2 RC upgrade guide](https://rc.css.master.co/guide/migration/v2-rc)
-for the coordinated package, artifact, source, and hydration upgrade.
 
 ## Related docs
 

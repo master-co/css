@@ -8,13 +8,15 @@
 
 - MCP server lifecycle and stdio transport wiring.
 - MCP tool, resource, and prompt registration.
+- `migrate-to-mastercss` plans external styling-system conversions to current Master CSS only. Do not add Master CSS version-upgrade workflows, historical manifest conversion or CLI migration orchestration to this prompt.
+- Public MCP docs may list this prompt's name and external-system purpose. Detailed conversion workflows and comparisons belong only in the site's Migration Guide.
 - Version 3 fixed-object envelopes with required result unions, concrete payload schemas, identical JSON/structuredContent and isError on failures.
 - Project context by default; manifest load failure never falls back to a preset. Metadata records actual context and unavailable values explicitly.
 - Workspace root containment and two-step write confirmation for generated fixes.
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
 - Contributor routing across npm workspaces and Rust crates, including Cargo manifests, crate-local AI notes, risk packs, and scoped validation commands.
 
-- Utility queries expose language v8 native properties, mixin calls and named token families; never suggest removed raw aliases, `@utility`, or `=namespace`.
+- Utility queries expose native properties, mixin calls and named token families; never suggest removed raw aliases, `@utility`, or `=namespace`.
 
 ## Does Not Own
 

@@ -68,7 +68,7 @@ Ordering is a formatting policy. It does not change generated CSS, but it makes 
 
 (x) Invalid value for `font` property.
 
-By default, unmatched classes are ignored so teams can mix Master CSS with existing global classes during migration.
+By default, unmatched classes are ignored so teams can mix Master CSS with native global classes.
 
 Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest:
 
@@ -114,7 +114,7 @@ margin:16px display:block@sm@dark <!-- [!code ++] -->
 ```
 
 
-Use the explicit [v2 RC migration command](/guide/migration/v2-rc#6-preview-and-apply-migration-proposals) for historical token syntax. Canonical linting does not guess the meaning of old colon tokens.
+Canonical linting preserves token identity, value source and ordering. It does not substitute currently equal tokens for literals or convert units.
 
 
 ### No conflicting classes

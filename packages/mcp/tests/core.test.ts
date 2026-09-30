@@ -185,6 +185,12 @@ describe('@master/css-mcp', () => {
       expect(migrationText).toContain('plan a migration')
       expect(migrationText).toContain('recommended rendering mode')
       expect(migrationText).toContain('Preserve CSS output')
+      for (const source of ['CSS Modules', 'Sass', 'Tailwind CSS', 'CSS-in-JS', 'component-library styling']) {
+        expect(migrationText).toContain(source)
+      }
+      expect(migrationText).toContain('external styling systems only')
+      expect(migrationText).toContain('Do not propose Master CSS version upgrades')
+      expect(migrationText).not.toMatch(/Master CSS v1|Master CSS v2 RC|master-css migrate|base-unit|root-size|saved.*manifest/i)
 
       const resource = await connection.client.readResource({ uri: 'mastercss://workspace/manifest' })
       expect(resource.contents[0]).toEqual(expect.objectContaining({

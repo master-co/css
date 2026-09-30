@@ -133,9 +133,8 @@ Errors that do not provide a source range remain unlocated.
 
 CLI `generate --output dist/output.css` publishes these sibling CSS/resource
 assets automatically. Deploy the full output asset set, not only output.css.
-The legacy file/project/build APIs and `--no-export` still use their existing
-single-string paths; their remaining graph-delivery limitations are not removed
-by the standalone CLI export path.
+The file/project/build APIs and `--no-export` still use their existing
+single-string paths; their graph-delivery limitations remain independent of the standalone CLI export path.
 
 ## Compose a stylesheet bundle
 
@@ -199,7 +198,7 @@ or import placement currently produce diagnostics. This API returns assets;
 Vite production builds publish these assets automatically. Vite development CSS
 entries serve retained graph assets through the development server; virtual/local
 composition paths and graph lifecycle coverage remain incomplete. Webpack
-integration remains separate migration work.
+asset publishing is not integrated with this delivery path.
 
 `collectStylesheetEmittedGlobals()` compiles the managed import/reference graph
 without flattening it. Qualified local imports may retain external imports in
@@ -267,7 +266,7 @@ Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
 Omitting `preserveNativeCSS` retains the file API's existing default of removing
 raw native CSS while preserving compiled native `@apply` and its conditions.
-Omitting `delivery` continues to use the legacy single-string file path, whose
+Omitting `delivery` continues to use the single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.
 
@@ -284,8 +283,6 @@ compiler.dispose()
 The browser entry loads only `binding-wasm-compiler`. Browser compilation cannot resolve
 filesystem `@reference` directives unless the host provides a prepared graph.
 
-The former TypeScript `core`, `lowerCSSDirectives`, and
-`createMasterCSSManifest` semantic exports are removed.
 
 ## Project, stylesheet, and inspection APIs
 
@@ -316,8 +313,7 @@ from the file that declares them, including imported files. Bare patterns resolv
 from the project root. Explicit project entries merge in the supplied order.
 These APIs return a manifest and metadata; they do not publish native CSS assets.
 
-These are cohesive compiler host responsibilities. The former project, stylesheet,
-and diagnostics package identities are retired.
+These are cohesive compiler host responsibilities.
 
 
 Build hosts can supply asynchronous CSS file resolution through

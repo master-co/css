@@ -1,5 +1,3 @@
-Master CSS does not define a length multiplier unit. Write a native length such as `margin:1rem`, or select a configured spacing token such as `m-md`.
+Write a native length such as `margin:1rem`, or select a configured spacing token such as `m-md`.
 
-Native CSS still uses `x` for resolution. Values such as `background-image:image-set(url(a.png)|1x,url(b.png)|2x)` are preserved without length conversion.
-
-For an older project using Master length multipliers, follow [the v2 RC migration guide](/guide/migration/v2-rc). The conversion requires that project's original `base-unit` and `root-size`; do not assume their defaults.
+Native CSS uses `x` for resolution. Values such as `background-image:image-set(url(a.png)|1x,url(b.png)|2x)` are preserved without length conversion.

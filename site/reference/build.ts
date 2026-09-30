@@ -52,19 +52,17 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     documents.push(doc)
   }
   documents.push(...buildTokenContracts())
-  // Directive sections are maintained once, in the existing directive source during migration.
+  // Directive sections share one authored source with all public exports.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Stylesheet directives')
   const sections = directive.markdown.split(/(?=^## )/m)
   const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Theme and conditions': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
-    'settings': 'Migrate removed global settings to native CSS and per-class importance.',
     'theme': 'Declare scoped custom properties, custom media and reusable mixins.',
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',
-    'compose': 'Migrate removed @compose statements to native CSS declarations and selectors.',
     'variant': 'Use native conditions and explicit mixin wrappers inside style rules.',
     'preserve': 'Keep a stylesheet’s native class rules when source-based pruning would remove them.'
 }
@@ -141,7 +139,9 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
   expectedFiles.add(indexFile)
   await writeIfChanged(indexFile, JSON.stringify(index, null, 2))
   const pagesFile = path.join(siteRoot, '.pages.json')
-  const pages = pageEntries ?? JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]'))
+  const currentRoutes = new Set(catalog.documents.map(doc => doc.url))
+  const pages = (pageEntries ?? JSON.parse(await readFile(pagesFile, 'utf8').catch(() => '[]')))
+    .filter((page: { pathname: string }) => !page.pathname.startsWith('/reference/') || currentRoutes.has(page.pathname))
   for (const doc of catalog.documents) if (!pages.some((page: any) => page.pathname === doc.url)) pages.push({ pathname: doc.url })
   await writeIfChanged(pagesFile, JSON.stringify(pages))
   for (const kind of [...new Set(catalog.documents.map(doc => doc.kind))]) {

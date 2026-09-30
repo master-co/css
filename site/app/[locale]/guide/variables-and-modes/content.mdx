@@ -15,7 +15,7 @@ This example compiles the theme with the current preset before generating the cl
 3. Add alternate mode values where the design requires them.
 4. Test the project's explicit mode activation and inherited CSS variables.
 
-The [Variables & modes reference](/reference/rules/modes) owns the native cascade, theme activation and removed inline/static modifiers.
+The [Variables & modes reference](/reference/rules/modes) owns the native cascade, theme activation and unconditional declarations.
 
 ## Look up a rule
 
@@ -24,12 +24,14 @@ The [Variables & modes reference](/reference/rules/modes) owns the native cascad
 - <a id="namespace-resolution"></a> [Namespace resolution](/reference/rules/modes#namespace-resolution)
 - <a id="default-namespace-sources"></a> [Default namespace sources](/reference/rules/modes#default-namespace-sources)
 - <a id="contextual-token-lookup"></a> [Contextual token lookup](/reference/rules/modes#contextual-token-lookup)
-- <a id="inline-and-static-variables"></a> [Inline and static variables](/reference/rules/modes#inline-and-static-variables)
+- <a id="inline-and-static-variables"></a> [Native values and unconditional declarations](/reference/rules/modes#inline-and-static-variables)
 - <a id="mode-buckets"></a> [Mode buckets](/reference/rules/modes#mode-buckets)
 - <a id="derived-mode-aware-values"></a> [Derived mode-aware values](/reference/rules/modes#derived-mode-aware-values)
 - <a id="mode-triggers"></a> [Mode activation](/reference/rules/modes#mode-triggers)
-- <a id="project-settings"></a> [Project settings](/reference/rules/modes#project-settings)
 - <a id="custom-spacing-example"></a> [Check a custom spacing token](/reference/rules/modes#custom-spacing-example)
 - <a id="system-preference-with-a-manual-override"></a> [System preference with a manual override](/reference/rules/modes#system-preference-with-a-manual-override)
 - <a id="local-themes-and-overlap"></a> [Local themes and overlap](/reference/rules/modes#local-themes-and-overlap)
 - <a id="shadow-dom"></a> [Shadow DOM](/reference/rules/modes#shadow-dom)
+
+<a id="project-settings"></a>
+Use native selectors to scope styles, explicit CSS units for lengths and the per-class `!` modifier when importance is required.

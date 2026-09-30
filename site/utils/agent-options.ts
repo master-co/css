@@ -104,7 +104,7 @@ export const agentOptions = {
       },
       {
         "name": "migrate-to-mastercss",
-        "description": "Audit an existing styling system and produce an incremental migration plan before editing."
+        "description": "Plan a conversion from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS or component-library styling to current Master CSS."
       }
     ]
   },

@@ -113,7 +113,7 @@
     "anchors": {
       "overview": "/reference/directives/entry#entry-markers",
       "entry-markers": "/reference/directives/entry#entry-markers",
-      "master-entry": "/reference/directives/entry#master-entry",
+      "master-entry": "/guide/migration/v2-rc#master-entry",
       "import-mastercss": "/reference/directives/entry#import-mastercss",
       "reference-context": "/reference/directives/reference#reference-context",
       "reference": "/reference/directives/reference#reference",
@@ -124,7 +124,7 @@
       "theme-mode": "/reference/directives/theme#theme-mode",
       "theme-inline": "/reference/directives/theme#theme-inline",
       "theme-static": "/reference/directives/theme#theme-static",
-      "custom-variant": "/reference/directives/theme#custom-variant",
+      "custom-variant": "/guide/migration/v2-rc#custom-variant",
       "managed-definitions": "/reference/directives/definitions#managed-definitions",
       "defaults": "/reference/directives/definitions#defaults",
       "components": "/reference/directives/definitions#components",

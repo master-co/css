@@ -30,9 +30,6 @@ The package import is the only project entry marker. It loads the preset's nativ
 
 Explicit standalone compiler and manifest APIs remain available. A manifest alone does not load native CSS; applications using runtime or server rendering must also deliver the relevant native stylesheet.
 
-### Removed lightweight entry marker \{#master-entry\}
-`@master entry;` is removed and reports an error. Replace it with the package import. There is no replacement lightweight marker.
-
 ### Local file URLs
 
 Node file compilation reads CSS import names using CSS escaping and case rules.
@@ -149,7 +146,7 @@ Declare on-demand custom properties. Direct declarations use the default `:root,
 }
 ```
 
-The compiler wraps each consecutive run of direct declarations in `:root, :host` at its authored position. It preserves selector order, declaration order, repeated declarations, and native nesting. Explicit selectors remain independent rules, not descendants of the default selector. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`; declarations inside a condition still require an explicit selector unless already nested inside one. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules. `@variant` is not accepted inside a theme.
+The compiler wraps each consecutive run of direct declarations in `:root, :host` at its authored position. It preserves selector order, declaration order, repeated declarations, and native nesting. Explicit selectors remain independent rules, not descendants of the default selector. Supported conditional wrappers are `@media`, `@supports`, `@container`, `@scope`, and `@starting-style`; declarations inside a condition still require an explicit selector unless already nested inside one. Theme selectors contain only custom-property declarations. Managed `@keyframes` may be direct children of the top-level `@theme`; use native stylesheets for other declarations or layer rules.
 
 Theme declarations are emitted in the `theme` layer. A used token retains every managed declaration of that token in every scope, plus transitive token dependencies. Source scanning never selects one theme scope or removes a branch. The browser computes the winning value through its ordinary cascade and inheritance. Tooling exposes authored scoped values, including native delivery metadata; it does not claim to know the value for a particular DOM element.
 
@@ -157,13 +154,13 @@ Native custom-property declarations also register tokens using the same namespac
 
 Only stylesheets supplied to compilation or reference resolution participate in this catalog. Runtime `style` changes and a newly loaded browser stylesheet do not add names to an existing manifest. Use an explicit class such as `background-color:var(--color-brand)` for a variable supplied independently of the catalog.
 
-The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` media conditions continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting, browser support and migration.
+The default preset uses native `light-dark()` for adaptive color and shadow tokens. Both `var()` branches remain live. Its native CSS sets the root to `color-scheme: light dark`, with explicit light/dark `data-theme` selectors for elements and shadow hosts. The host otherwise inherits its ancestor's scheme. These declarations are ordinary CSS outside `@theme`; neither the compiler nor runtime chooses a color branch. Preset `@light` / `@dark` media conditions continue to test system preference, independently of manual `color-scheme`. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for nesting and browser support.
 
-### Native selectors replace theme modes \{#theme-mode\}
-`@theme dark` and other mode preludes are removed. Put the selectors and conditions inside `@theme`, as in the example above, or use native CSS for always-delivered overrides. Only direct theme declarations receive the default `:root, :host` selector; explicit selectors are preserved.
+### Authored theme scopes \{#theme-mode\}
+Put selectors and conditions inside `@theme`, as in the example above, or use native CSS for always-delivered overrides. Only direct theme declarations receive the default `:root, :host` selector; explicit selectors are preserved.
 
-### Native activation replaces `@mode` \{#mode\}
-`@mode` is removed. Theme activation comes from native selectors and queries. Define a selector `@mixin` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
+### Theme activation and selector wrappers \{#mode\}
+Theme activation comes from native selectors and queries. Define a selector `@mixin` if markup needs a matching named condition; its selector is explicit and does not automatically include descendants or insert `:where()`.
 
 ```css
 @mixin --ocean {
@@ -173,13 +170,13 @@ The default preset uses native `light-dark()` for adaptive color and shadow toke
 
 This enables `color:white@apply(--ocean)`. Theme declarations can independently use `[data-theme="ocean"]`. Add explicit `:host(...)` selectors where a shadow tree requires them.
 
-### Native custom properties replace inline expansion \{#theme-inline\}
-`@theme inline` is removed. Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
+### Token references and the native cascade \{#theme-inline\}
+Token classes emit `var(--name)` references. Functions, fallbacks, cycles, inheritance, and scoped values retain native custom-property behavior; Master CSS does not substitute a selected theme value into each declaration.
 
 An alias such as `--color-action: var(--color-brand)` resolves in its declaring scope. Overriding only `--color-brand` in a descendant does not rebind an inherited `--color-action`; redeclare the alias there or override the semantic token directly.
 
-### Native styles replace static resources \{#theme-static\}
-`@theme static` is removed. Put tokens that should ship with their stylesheet in native CSS:
+### Always-delivered native resources \{#theme-static\}
+Put tokens that should ship with their stylesheet in native CSS:
 
 ```css
 :root, :host {
@@ -215,7 +212,7 @@ For on-demand animation definitions, put `@keyframes` directly inside a top-leve
 `animate-reveal`, `animation-name:reveal`, or a retained native animation declaration retains this definition. Native `@apply` output is analyzed after expansion. Unused mixins and undelivered reference styles are not roots. Definitions emit as top-level keyframes after generated layer blocks, in final definition order. The last same-name managed definition completely replaces earlier ones; decoded identifiers and strings compare case-sensitively. A managed/native same-name collision in the delivered graph is an error with both source locations.
 
 
-Managed keyframes cannot be registered inside theme selectors, conditions, layers or mixins. Frames contain native declarations; `@apply` and `@variant` inside frames are unsupported. Native keyframes remain available for these delivery requirements. JavaScript-created animations and later JavaScript changes to custom properties are not observed. Use native keyframes or `@safelist "animation-name:reveal";` for those names.
+Managed keyframes cannot be registered inside theme selectors, conditions, layers or mixins. Frames contain native declarations; mixin expansion with `@apply` inside frames is unsupported. Native keyframes remain available for these delivery requirements. JavaScript-created animations and later JavaScript changes to custom properties are not observed. Use native keyframes or `@safelist "animation-name:reveal";` for those names.
 
 HMR supplies a complete emitted-globals snapshot to `runtime.refresh(manifest, emittedGlobals)`. Engine callers can use `replaceEmittedGlobals()` for replacement or `registerEmittedGlobals()` for additional ownership. Hydration records separate variable and keyframe order, including when both resources share a name.
 
@@ -240,8 +237,8 @@ Definitions support query lists, forward references, `true`, `false`, nested boo
 
 Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. Media and mixin names are independent: `@name` selects media, while `@apply(--name)` invokes a mixin. `--starting-style` is reserved because `@starting-style` is built in. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
 
-### Removed variants \{#custom-variant\}
-`@custom-variant`, `@variant`, and `@slot` are removed and report migration diagnostics. Use `@custom-media` for named media queries. Use a mixin with `@contents` for selector, supports, container, or combined wrappers.
+### Mixin wrappers \{#mixin-wrappers\}
+Use `@custom-media` for named media queries. Use a mixin with `@contents` for selector, supports, container, or combined wrappers.
 
 ```css
 @mixin --hocus() {
@@ -255,10 +252,10 @@ Undefined, cyclic, and invalid references are compilation errors. A later same-n
 
 ## Utilities and native styles \{#managed-definitions\}
 ### Native defaults \{#defaults\}
-Write native defaults in `@layer defaults`. The removed `@defaults` directive remains an error.
+Write native defaults in `@layer defaults`.
 
 ### Native components \{#components\}
-Write native component selectors in `@layer components`. The removed `@components` directive remains an error.
+Write native component selectors in `@layer components`.
 
 ```css
 @layer components {
@@ -291,7 +288,7 @@ Master implements a static compilation subset of the experimental [CSS Mixins sp
 Use `card-layout` and `grid-cols(3)@sm` in markup. A no-parameter mixin may also be called with empty parentheses. Positional parameters may be untyped or use `<integer>`, `<number>`, `<string>`, or `<custom-ident>`. Static defaults use a colon, for example `--cols <integer>: 2`. Numbers must be numeric literals; grid counts and spans must also be positive integers. Strings require quotes: `text("sm")` is valid, `text(sm)` is not.
 
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
-Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Raw property abbreviations and single-declaration preset aliases are removed. Genuine native names such as SVG `r` retain their native meaning.
+Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Genuine native names such as SVG `r` retain their native meaning.
 
 Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. Rust owns these mappings; presets define their values in `@theme`, without per-family registration directives. Every family has one canonical prefix and reads one namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*` for typography tokens.
 
@@ -345,7 +342,7 @@ Apply a mixin inside a native style rule or another mixin:
 }
 ```
 
-Expansion occurs at the original declaration position, preserving duplicates, importance, nested selectors and conditions. It does not generate a separate `.text-sm` rule. `@apply` accepts one mixin call, not a utility class list. `@compose` remains removed.
+Expansion occurs at the original declaration position, preserving duplicates, importance, nested selectors and conditions. It does not generate a separate `.text-sm` rule. `@apply` accepts one mixin call, not a utility class list.
 
 Parameters may be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported parameter types report compilation errors. Unknown mixins and invalid arity or types include source diagnostics. Relative URLs preserve the defining or calling file's ownership.
 
@@ -387,7 +384,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-`@utility`, its `from()` mapping syntax, and `--master-value()` are removed and report errors. Use the `rc-mixins` migration profile with the saved Manifest v2. Current manifests are v4 with languageVersion 11 and binding ABI 21. Hydration, engine snapshots and transitions are v3; inspection remains v2. Recompile old semantic data. Use `rc-preset` with a saved Manifest v3 to migrate the removed preset recipes and implicit color role names.
+Compile definitions into Manifest v4 with languageVersion 11 and binding ABI 21. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { :root { --color-brand: #4f46e5; } .dark { --color-brand: #111827; } } .card { color: var(--color-brand); }"} />
 
@@ -471,7 +468,7 @@ Use native conditions directly, and name reusable wrappers with mixins:
 }
 ```
 
-`@dark`, `@light`, and query-form `@media (--media)(...)` blocks are removed. Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
+Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
 
 ## CLI stylesheet assets \{#cli-stylesheet-assets\}
 
@@ -527,7 +524,7 @@ and returns assets without writing output files. `css`, `nativeCSS` and
 Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
 Omitting `preserveNativeCSS` preserves native CSS across compiler APIs. Explicit `false` suppresses the native portion; it does not enable pruning.
-Omitting `delivery` continues to use the legacy single-string file path, whose
+Omitting `delivery` continues to use the single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.
 
@@ -775,7 +772,7 @@ Query units remain authored: `800px` is not rewritten to `50rem`. Pipes decode
 to spaces outside quoted strings and escapes. Repeated wrappers retain their
 nesting and order. Comparable ranges with identical units use range priority;
 other queries use stable normalized syntax without assuming a browser root size.
-are removed. Undefined mode or variant references are diagnosed.
+Undefined named media or mixin references are diagnosed.
 
 The engine emits structurally valid native declarations independently of host
 support databases and `CSS.supports()`. Tooling checks every expanded declaration,
@@ -799,7 +796,7 @@ remain distinct from native value validity.
 
 Stylesheet declarations and `@theme` values use native CSS token streams. Master CSS preserves `$`, `|`, strings, escapes and custom functions. Untyped custom properties such as `--pipe: a|b` and `--money: $100` have an unknown value grammar; that does not prevent generation.
 
-`--master-value()` is removed. Use lexical `var(--parameter)` references in a mixin body. `--value()` is always an ordinary native function. `--alpha()` has no compiler meaning. Use native `color-mix()` for opacity expressions:
+Use lexical `var(--parameter)` references in a mixin body. `--value()` is always an ordinary native function. `--alpha()` has no compiler meaning. Use native `color-mix()` for opacity expressions:
 
 ```css
 @theme { :root {
@@ -809,7 +806,7 @@ Stylesheet declarations and `@theme` values use native CSS token streams. Master
 
 For queries outside the [simple class query subset](/guide/conditional-queries), define a `@custom-media` or a mixin wrapper in CSS. Authored CSS queries retain native syntax and do not decode class whitespace.
 
-Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report` as the default. Report mode preserves declarations and returns diagnostics. Error mode rejects the entire result for definite syntax or value errors; unknown capabilities alone do not fail the build. The former `cssValuePolicy` option produces a configuration error.
+Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report` as the default. Report mode preserves declarations and returns diagnostics. Error mode rejects the entire result for definite syntax or value errors; unknown capabilities alone do not fail the build.
 
 
 ### Source ownership and document extraction
@@ -823,15 +820,15 @@ Markdown and MDX prose, inline code, fences and frontmatter are excluded from au
 Automatic discovery respects project/workspace `.gitignore` files and excludes generated/dependency/output directories. Explicit `@source` may include normally ignored source files; explicit exclusions and Master/bundler outputs remain excluded.
 
 
-## Definition ownership and removed preset sizes
+## Definition ownership
 
 A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
 
 An exact zero-parameter mixin wins over named token families. Otherwise the longest family prefix wins, and a named string mixin wins over a built-in token mapping with the same prefix. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
 
-`font-brand` is removed. Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
+Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
 
-The preset has no `size`, `min-size` or `max-size` recipe. Use explicit width and height declarations, or author a parameter mixin such as `--box`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning. See the [RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution).
+Use explicit width and height declarations for paired dimensions, or author a parameter mixin such as `--box`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning.
 
 ### Animation recipes
 
@@ -839,4 +836,4 @@ The preset `animate-*` classes use a single `<string>` parameter mixin and a sam
 
 ## Token family names
 
-Built-in named-token families have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Full-property token aliases are removed. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. Custom mixins are explicit project definitions, not a built-in alias registry.
+Built-in named-token families have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. Custom mixins are explicit project definitions, not a built-in alias registry.

@@ -160,7 +160,7 @@ These media queries follow the system preference. For colors that also respond t
 <a id="use-inline-and-static-tokens" />
 
 ## Keep shared values dynamic
-Token utilities preserve `var()` references. `@theme inline` and `@theme static` are removed.
+Token utilities preserve `var()` references.
 
 For a reusable recipe, write native declarations in `@mixin`:
 
@@ -255,4 +255,4 @@ Use this page when you need to define or override project tokens. Continue into 
 * [Breakpoints](/guide/breakpoints)
 * [Containers](/guide/containers)
 
-The preset no longer publishes `--breakpoint-*` custom properties. Replace layout references with native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role. Named viewport queries remain explicit `@custom-media` declarations.
+Use native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role for layout width caps. Named viewport queries remain explicit `@custom-media` declarations.

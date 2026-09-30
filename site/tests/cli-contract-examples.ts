@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import { once } from 'node:events'
 import preset from '../utils/preset-manifest'
 import { cliEditorial } from '../reference/cli-editorial'
+import { migrationFences } from './migration-examples'
 
 const quote = (text: string) => "'" + text.replaceAll("'", "'\\''") + "'"
 const bin = fileURLToPath(new URL('../../packages/cli/dist/bin/index.js', import.meta.url))
@@ -86,7 +87,12 @@ export async function verifyCLIContractExamples() {
     writeFileSync(file, rcSource)
     writeFileSync(join(root, 'master.rc.manifest.json'), readFileSync(new URL('../../crates/mastercss-compiler/tests/fixtures/v2-rc-before-named-tokens.manifest.json', import.meta.url)))
     writeFileSync(join(root, 'master.v2.manifest.json'), JSON.stringify(preset))
-    const [migrationPreview, migrationWrite, migrationTarget] = cliEditorial.migrate.examples.map(example => example.command)
+    const examples = migrationFences('v2-rc').filter(fence => fence.language === 'sh').map(fence => fence.text.trim().replaceAll('YOUR_ACTUAL_RC_VERSION', '2.0.0-rc.87'))
+    const proposal = examples.filter(command => command.startsWith('master-css migrate src app.css --from rc-legacy') && !command.includes('\n'))
+    const migrationPreview = proposal.find(command => !command.includes('--write') && !command.includes('--target-manifest'))!
+    const migrationWrite = proposal.find(command => command.includes('--write'))!
+    const migrationTarget = proposal.find(command => command.includes('--target-manifest'))!
+    assert.ok(migrationPreview && migrationWrite && migrationTarget, 'Migration Guide supplies all three executable CLI examples')
     for (const preview of [migrationPreview, migrationTarget]) {
       const result = run(preview)
       assert.equal(result.status, 0, result.stderr)

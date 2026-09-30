@@ -163,9 +163,9 @@ export default defineConfig([
 ])
 ```
 
-For example, equivalent property aliases can shorten `margin-md` to `m-md` while retaining the same token. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`width-sm height-sm`); the preset no longer supplies the `size`, `min-size`, or `max-size` families. Version upgrades belong to `master-css migrate` with the saved RC manifest.
+For example, condition sorting changes `display:block@dark@sm` to `display:block@sm@dark`. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`w-sm h-sm`).
 
-`@compose` and `configs.stylesheet` are removed. Canonicalization applies to class lists in markup and class builders; stylesheet declarations use native CSS.
+Canonicalization applies to class lists in markup and class builders; stylesheet declarations use native CSS.
 
 Standalone CSS files are included by default when using `@master/eslint-config-css`:
 
@@ -233,7 +233,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule reports `font-size:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
+For example, this rule reports `font-size:15px`, `margin:17px`, and `color:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
 
 ## Settings
 

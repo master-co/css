@@ -556,6 +556,6 @@ CSS value and browser support `not-checked`. Use the validator from
 `@master/css-tooling` for value validation; a matched rule alone is not a validation
 result. Inspection results are immutable and do not register classes with the engine.
 
-A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v1, hydration v1 and transition v1 keep their existing shapes.
+A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v4, hydration v3 and transition v3 define the data consumed by the engine.
 
-Custom engine or binding implementations must add this query when upgrading to the [current binding ABI 13](/guide/migration#custom-engine-and-binding-migration).
+Custom engine or binding implementations must provide this query under binding ABI 21.

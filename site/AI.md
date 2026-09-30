@@ -85,9 +85,15 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 ## Content Strategy
 
+### Current documentation and migration ownership
+
+Public Guide, Reference, Blog, examples and package READMEs describe current behavior. Version differences, retired syntax/API names, replacement tables and upgrade steps belong only in `app/[locale]/guide/migration/`. Describe supported syntax directly rather than teaching its history. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
+
+MCP Guide and README may list `migrate-to-mastercss` and its purpose of converting external styling systems to current Master CSS. Keep its instructions, examples and comparisons in Migration Guide. The prompt does not support Master CSS version upgrades. Ordinary CSS diffs, fix previews and class-to-generated-CSS teaching remain valid. Preserve native CSS concepts and current failure conditions; do not ban words such as “before”, “after” or “removed” indiscriminately.
+
 ### Guide and Reference ownership
 
-The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented 90-page Reference and the disposition of all existing first-level pages. That number describes current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
+The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented Reference catalog and the disposition of all existing first-level pages. Its size follows current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
 
 | Content | Primary owner | Use in Guide |
 | --- | --- | --- |

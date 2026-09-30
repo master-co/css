@@ -38,10 +38,6 @@ export const agentPrompts = {
   "inspect": {
     "title": "Inspect before editing",
     "text": "Use the Master CSS MCP server to inspect this workspace.\n\nCall mastercss_workspace_info and mastercss_setup_audit. Confirm the root and entry stylesheets before inspecting classes or linting the affected files.\n\nIf fixes are needed, create a scoped preview and explain the diff before applying it. Verify the changed UI after applying a reviewed preview."
-  },
-  "migration": {
-    "title": "Plan a migration",
-    "text": "Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.\n\nInspect the styling inventory, framework, CSS entries, tokens, source discovery, and available checks.\n\nFor an existing Master CSS v2 RC project, read /guide/migration/v2-rc, record the exact RC versions, and save its resolved manifest and original base-unit/root-size before upgrading. Preview master-css migrate with that manifest; do not run old and new runtimes together.\n\nReturn a plan with the rendering mode, first migration batch, CSS output risks, validation commands, and visual checks. Keep this step read-only."
   }
 } satisfies Record<string, DocumentPromptProps>
 

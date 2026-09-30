@@ -28,6 +28,7 @@ import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundatio
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-content'
 import { migrationGuides } from '../utils/migration-guides'
+import { documentationHygieneIssues } from '../tests/document-hygiene'
 import { projectStyleExamples, projectStyleExample } from '../components/demo/project-style-examples'
 import { configuredExampleCSS, configuredMarkupClasses, configuredMarkupMarkdown } from '../reference/configured-example'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
@@ -404,6 +405,34 @@ test('tooling guides retain every option, diagnostic and source/result pair in s
   }
 })
 
+test('current public documents keep historical teaching in Migration Guide', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const failures: string[] = []
+  for (const page of pages) {
+    const url = page.url.replace(/^\/(en|tw)(?=\/)/, '')
+    if (/^\/guide\/migration(?:\/|$)/.test(url)) continue
+    const navigation = ['/guide', '/reference', '/design-system'].includes(url)
+    failures.push(...documentationHygieneIssues(page.body, navigation, url === '/guide/mcp-server').map(issue => `${url}: ${issue}`))
+  }
+  const { default: glob } = await import('fast-glob')
+  const files = await glob(['packages/*/README*', 'examples/**/README*', 'site/README.md'], { cwd: path.dirname(root), ignore: ['**/node_modules/**', '**/vendor/**'] })
+  for (const file of files) failures.push(...documentationHygieneIssues(await readFile(path.join(root, '..', file), 'utf8'), false, file === 'packages/mcp/README.md').map(issue => `${file}: ${issue}`))
+  assert.deepEqual(failures, [])
+})
+
+test('hygiene distinguishes current diffs and native CSS from migration teaching', () => {
+  const current = 'Classes removed from the DOM release their usage counts.\n\nCompare before/after CSS.\n\n```css\n@page { size: A4; }\n```\n\n| Prompt | Use |\n| --- | --- |\n| `migrate-to-mastercss` | Plan external-system conversion. |'
+  assert.deepEqual(documentationHygieneIssues(current, false, true), [])
+  assert.ok(documentationHygieneIssues('| Prompt | Use |\n| --- | --- |\n| `migrate-to-mastercss` | Convert Tailwind CSS to Master CSS. |').length)
+  for (const historical of ['`@theme inline` is removed.', '| Previous name | Replacement |', 'Follow [Migration](/guide/migration/v2-rc).', 'Migrate a Tailwind CSS project in these steps.', 'Convert Tailwind CSS classes to Master CSS.', 'Replace Sass with Master CSS.', 'Convert existing CSS to Master CSS.', 'Tailwind CSS to current Master CSS conversion tutorial.', 'Use `$name` or `base-unit`.']) {
+    assert.ok(documentationHygieneIssues(historical).length, historical)
+  }
+  for (const command of ['master-css migrate src --from rc-legacy', 'Convert Tailwind CSS classes to Master CSS.']) {
+    assert.ok(documentationHygieneIssues(`\`\`\`text\n${command}\n\`\`\``).length, command)
+  }
+})
+
 test('agent guides export complete prompts, tool catalogs, preview workflow and native examples', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const pages = await loadPages(path.join(root, 'app/[locale]'))
@@ -436,7 +465,7 @@ test('tool references export readable parameters, complete schemas and literal e
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'tool')
-  assert.equal(docs.length, 24)
+  assert.equal(docs.length, 23)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {

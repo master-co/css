@@ -645,7 +645,7 @@ list semantics. Keep the whole row as one link; do not nest controls inside it.
 ```
 
 `MigrationGuides` adds the existing brand artwork and reads the same seven entries
-used by search and Markdown exports. See the [migration overview](/guide/migration#frameworks).
+used by search and Markdown exports.
 Use `DocumentationIndex` for large catalogs that need categories and alphabetical
 navigation. These navigation components sit outside teaching layouts.
 
@@ -661,26 +661,26 @@ This static wrapper keeps native table headers and does not add demo geometry.
 
 <DocumentComparison>
 
-| Existing CSS | Master CSS |
+| Master CSS class | Native CSS effect |
 | --- | --- |
-| `border-radius: .75rem` | `border-radius:.75rem` preserves the same length. |
-| `width: var(--progress)` | `width:var(--progress)` reads the same runtime property. |
-| `@media (width >= 72rem)` | Define `@custom-media --dashboard (width >= 72rem);`, then use `@dashboard`. |
+| `border-radius:.75rem` | Sets `border-radius: .75rem`. |
+| `width:var(--progress)` | Reads the runtime `--progress` custom property. |
+| `display:grid@dashboard` | Uses the project’s `@custom-media --dashboard` condition. |
 
 </DocumentComparison>
 
 ```mdx
 <DocumentComparison>
 
-| Existing CSS | Master CSS |
+| Master CSS class | Native CSS effect |
 | --- | --- |
-| `border-radius: .75rem` | `border-radius:.75rem` |
+| `border-radius:.75rem` | Sets `border-radius: .75rem`. |
 
 </DocumentComparison>
 ```
 
-See [migration utility mappings](/guide/migration/tailwindcss#translate-utilities)
-and [rendering choices](/guide/migration/v1#install-the-current-setup).
+See [token family mappings](/reference/tokens/families) and
+[rendering choices](/guide/rendering-modes).
 
 ### Syntax mappings
 

@@ -141,7 +141,7 @@ Each replacement receives the original conditions and `!`. `r-pill` uses `calc(i
 
 Use `bg-surface-base`, `fg-text-muted`, `b-line-divider`, `outline-line-divider` and `stroke-line-divider`. Implicit text/line role lookup is removed for every color property. A real `--color-muted` still supports `fg-muted`; the migrator checks the saved resolver instead of replacing by spelling. `text-*` remains typography only, and non-color token families keep their existing lookup.
 
-Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/guide/directives#theme-static) for references, JavaScript, source ownership and HMR.
+Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/reference/directives/theme#theme-static) for references, JavaScript, source ownership and HMR.
 
 This guide upgrades saved RC contracts to language **v11** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
 
@@ -284,6 +284,14 @@ These changes reduce special language rules. They are not a claim that AI genera
 
 ## 5. Update directives, manifests, and custom hosts
 
+### Entry and wrapper syntax \{#master-entry\}
+
+Replace `@master entry;` with `@import "@master/css";`, which loads the preset's native stylesheet and marks the project entry. There is no lightweight replacement marker.
+
+<a id="custom-variant"></a>
+
+Replace `@custom-variant`, `@variant` and `@slot` with `@custom-media` for named media queries or a mixin with `@contents` for selector, supports, container and combined wrappers. Replace the old media names `@all`, `@speech`, `@print`, `@screen`, `@motion` and `@reduce-motion` with native query suffixes or explicitly defined custom media.
+
 Define reusable combinations with root-level mixins. Built-in token families such as `font-family-sans` need no preset mapping directive.
 
 ```css name="Current mixins"
@@ -312,11 +320,29 @@ Regenerate artifacts from their source definitions and deploy a coordinated pack
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
+The compiler's former TypeScript `core`, `lowerCSSDirectives` and `createMasterCSSManifest` exports are unavailable. Use compiler sessions from `@master/css-compiler`, project loading from `@master/css-compiler/project`, stylesheet orchestration from `@master/css-compiler/stylesheet` and inspection from `@master/css-compiler/diagnostics`. The former standalone project, stylesheet and diagnostics packages are consolidated into these subpaths.
+
 See the [stylesheet directives](/reference#directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
 
 ---
 
 ## 6. Preview and apply migration proposals
+
+### Command options \{#migration-command-options\}
+
+Run `master-css migrate [options] [paths...]` from the project root. Paths select source files, directories or quoted glob patterns. Use `master-css migrate --help` to inspect the installed command.
+
+| Option | Meaning |
+| --- | --- |
+| `--from <profile>` | Saved starting contract: `rc-legacy`, `rc-named`, `rc-native`, `rc-managed`, `rc-utilities`, `rc-sizing`, `rc-mixins` or `rc-preset`. |
+| `--source-version <version>` | Actual saved RC package version; optional only when manifest metadata provides it. |
+| `--manifest <path>` | Original resolved manifest. Defaults to `master.rc.manifest.json`. |
+| `--entry <path>` | CSS entry for generated mixins; required when more than one entry exists. |
+| `--target-manifest <path>` | Compiled target project manifest used to verify custom definitions. |
+| `--write` | Apply safe edits only when the entire selected batch has no review diagnostics. |
+| `-h`, `--help` | Display command help. |
+
+JSON stdout has `version: 2`, `from`, `sourceVersion`, `configurationCSS`, `notes`, `behaviorChanges`, `mode`, `manifest` and `files`. Each file reports `path`, proposed `edits`, manual `review` items and `written`. Missing or invalid original configuration stops the command without substituting defaults. Inputs are checked again before writes; rerunning a completed conversion produces no edits.
 
 Save the resolved original manifest as `master.rc.manifest.json` before upgrading. Run the migration command from the project root; `--manifest` selects that saved file. Missing, unreadable, or invalid configuration stops migration before any writes:
 
@@ -328,6 +354,12 @@ The default operation proposes changes without writing source files. Inspect the
 
 ```sh
 master-css migrate src app.css --from rc-legacy --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json --write
+```
+
+To verify custom definitions against their compiled target manifest, preview with both files:
+
+```sh
+master-css migrate src app.css --from rc-legacy --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json --target-manifest master.v2.manifest.json
 ```
 
 Automatic changes must preserve the token identity, declaration intent, state, and conditions. Length conversion uses the RC settings rather than the new defaults. Equal current numbers do not justify replacing literals with tokens or converting unrelated `px` values to `rem`. Remove the retired canonical lint options `preferThemeTokens`, `preferVariableReferences`, and `preferMultiValueTokens`; token migration now uses this explicit command.
@@ -640,7 +672,18 @@ Rebuild native/Wasm bindings (ABI 21), preset manifests and hydration alongside 
 
 The preset now uses `light-dark()` for 45 semantic color tokens and the colors inside six shadows. General hue aliases retain their previous light values in both schemes; all 390 numbered palette colors are unchanged. Use `text-*` hue aliases for readable adaptive foregrounds. `data-theme="light"` / `data-theme="dark"` selects native `color-scheme` on roots, nested regions, and shadow hosts. Preset `@light` / `@dark` suffixes continue to mean system preference.
 
-Rename `surface-muted` to `surface-inset`, `surface-overlay` to `surface-floating`, `b-base` to `b-divider`, and `b-strong` to `b-control`, including their underlying custom properties. Removed `line-muted`, `text-subtle`, and `text-placeholder` need a contextual replacement; no old-name aliases remain. See the [color migration table and contrast limits](/guide/colors#contrast-and-migration). Chrome 123, Firefox 120, or Safari 17.5 is required for these native adaptive values.
+Update the surface, line and text role names and their underlying custom properties. The old names have no compatibility aliases:
+
+| Previous name | Replacement |
+| --- | --- |
+| `bg-surface-muted` | `bg-surface-inset` |
+| `bg-surface-overlay` | `bg-surface-floating` |
+| `line-base`, `b-base` | `line-divider`, `b-line-divider` |
+| `line-strong`, `b-strong` | `line-control`, `b-line-control` with stronger values |
+| `line-muted` | Choose subtle, divider, or control by purpose |
+| `text-subtle`, `text-placeholder` | Use fg-text-muted on approved surfaces, or fg-text-body |
+
+Choose replacements by their UI role. See [Colors](/guide/colors#contrast) for current contrast constraints. Chrome 123, Firefox 120, or Safari 17.5 is required for these native adaptive values.
 
 The preset no longer publishes `--breakpoint-*` custom properties. Replace layout references with native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role. Named viewport queries remain explicit `@custom-media` declarations.
 

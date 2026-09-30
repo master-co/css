@@ -145,7 +145,7 @@ See the complete [values and consumers](/reference/tokens/color-text) in Referen
 The 30 general hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
 
 ### Base hue aliases
-Base hue aliases retain their former light value in every scheme. They are accents and swatches, with no text contrast guarantee.
+Base hue aliases use the same value in every scheme. They are accents and swatches, with no text contrast guarantee.
 
 <FoundationTokens namespace="color" keys={["yellow"]} />
 
@@ -251,7 +251,7 @@ This selector also matches inside nested light regions; it is an explicit applic
 
 Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset does not ship a parallel media-query fallback for older browsers. See [Chrome 123](https://developer.chrome.com/blog/new-in-chrome-123), [Firefox 120](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/120), and [Safari 17.5](https://webkit.org/blog/15383/webkit-features-in-safari-17-5/).
 
-## Contrast and migration
+## Contrast
 
 - `fg-text-body`, `fg-text-strong`, links, and all 30 `fg-text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `fg-text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
 - `fg-text-muted` is for base, inset, and raised surfaces. Use `fg-text-body` on floating surfaces. `fg-text-disabled` is reserved for genuinely disabled controls.
@@ -259,13 +259,4 @@ Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset do
 - Pair `bg-surface-inverse` with `fg-text-inverse`. Keep link underlines or another non-color cue; `fg-text-link-hover` needs `:hover` explicitly.
 - Recheck transparency, gradients, and custom backgrounds in their actual context; the opaque preset contrast matrix does not cover them.
 
-| Previous name | Replacement |
-| --- | --- |
-| `bg-surface-muted` | `bg-surface-inset` |
-| `bg-surface-overlay` | `bg-surface-floating` |
-| `line-base`, `b-base` | `line-divider`, `b-line-divider` |
-| `line-strong`, `b-strong` | `line-control`, `b-line-control` with stronger values |
-| `line-muted` | Choose subtle, divider, or control by purpose |
-| `text-subtle`, `text-placeholder` | Use fg-text-muted on approved surfaces, or fg-text-body |
-
-The old names are removed without compatibility aliases. Inputs still need a visible label independent of placeholder text. General hue aliases now stay fixed; explicit numbered palette steps and all 390 underlying colors retain their values.
+Inputs need a visible label independent of placeholder text. General hue aliases stay fixed across schemes; numbered palette steps supply explicit colors.

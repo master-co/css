@@ -28,7 +28,7 @@ The preset's `media.css` provides eleven breakpoints and six preference/orientat
 @custom-media --wide-screen screen and (width >= 50rem);
 ```
 
-Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and `@layer(...)` are engine built-ins and work without a preset. The old `@all`, `@speech`, `@print`, `@screen`, `@motion`, and `@reduce-motion` names are removed.
+Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and `@layer(...)` are engine built-ins and work without a preset.
 
 ### Breakpoints \{#sm--md--lg--and-more\}
 The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them.
@@ -74,7 +74,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 | Named container | `@container(card\|(width>=40rem))` |
 | Style container | `@container(style(--density:compact))` |
 
-`|` encodes whitespace in query syntax. Quoted strings and escaped characters retain their literal content. CSS's resolution unit `x` stays native; Master CSS has no length multiplier unit.
+`|` encodes whitespace in query syntax. Quoted strings and escaped characters retain their literal content. CSS's resolution unit `x` retains its native meaning.
 
 ### Media \{#mediafeature\}
 

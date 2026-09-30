@@ -3,7 +3,7 @@ import brands from '~/site/docs-shell/data/brands'
 
 Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. Treat the work as a product styling change: inspect the existing styling systems, add Master CSS beside them, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
 
-If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. When your client supports MCP, connect the [Master CSS MCP server](/guide/mcp-server) and use the `migrate-to-mastercss` prompt so the agent can inspect the workspace before planning migration batches. This page keeps the migration-specific checklist and fallback prompt focused on converting an existing project.
+If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. When your client supports MCP, connect the [Master CSS MCP server](/guide/mcp-server) and use the `migrate-to-mastercss` prompt for an external styling system so the agent can inspect the workspace before planning migration batches. This page keeps the migration-specific checklist and fallback prompt focused on converting an existing project.
 
 ---
 
@@ -32,7 +32,19 @@ CSS migration depends on project context. A static checklist cannot reliably kno
 
 Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
 
-For MCP-capable agents, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
+For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. Master CSS version upgrades follow their dedicated v1 or v2 RC guide; they are outside that prompt’s scope. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
+
+### Plan an external-system conversion with MCP
+
+The `migrate-to-mastercss` prompt asks the agent to inspect the workspace first and return its framework, stylesheet entries, extraction coverage and existing vocabulary, followed by a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow; retain existing styles until each converted slice builds and matches the intended UI.
+
+```text name=prompt
+Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, CSS entries, tokens, source discovery and available checks. Do not edit yet.
+
+Return an incremental plan with the rendering mode, first conversion batch, CSS output risks, validation commands and visual checks.
+```
 
 ---
 

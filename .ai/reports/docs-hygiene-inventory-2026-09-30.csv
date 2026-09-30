@@ -1,0 +1,240 @@
+public_path,source,disposition,segments_or_owner
+/blog,site/app/[locale]/blog/metadata.ts,retain,Verified current teaching or navigation; no relocation needed
+/brand,site/app/[locale]/brand/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/design-system,site/app/[locale]/design-system/content.mdx,rewrite + retain,Use current class/native-effect table; retain migration navigation gallery
+/guide,site/app/[locale]/guide/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/play,site/app/[locale]/play/metadata.ts,retain,Verified current teaching or navigation; no relocation needed
+/reference,site/app/[locale]/reference/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/sponsor,site/app/[locale]/sponsor/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/blog/bootstrapping-master-css-with-vite,site/app/[locale]/blog/bootstrapping-master-css-with-vite/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/blog/master-css-next,site/app/[locale]/blog/master-css-next/content.mdx,rewrite,Use current integration framing and hydration v3
+/guide/ai-coding,site/app/[locale]/guide/ai-coding/content.mdx,rewrite + delete,Keep current AI workflow; remove old syntax and upgrade prompt/link prose
+/guide/authoring-packages,site/app/[locale]/guide/authoring-packages/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/benchmarks,site/app/[locale]/guide/benchmarks/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/breakpoints,site/app/[locale]/guide/breakpoints/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/cascade-layers,site/app/[locale]/guide/cascade-layers/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/code-linting,site/app/[locale]/guide/code-linting/content.mdx,rewrite,Describe current native properties and diagnostics directly
+/guide/colors,site/app/[locale]/guide/colors/content.mdx,rewrite + relocate,Keep contrast teaching; move prior role names and replacements to v2 RC native-adaptive-colors
+/guide/compatibility,site/app/[locale]/guide/compatibility/content.mdx,rewrite + delete,Keep native units and browser limits; remove version-history prose and migration links
+/guide/containers,site/app/[locale]/guide/containers/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/corner-radius,site/app/[locale]/guide/corner-radius/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/elevation,site/app/[locale]/guide/elevation/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/flash-of-unstyled-content,site/app/[locale]/guide/flash-of-unstyled-content/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/global-styles,site/app/[locale]/guide/global-styles/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/introduction,site/app/[locale]/guide/introduction/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/language-service,site/app/[locale]/guide/language-service/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/layout-system,site/app/[locale]/guide/layout-system/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/mcp-server,site/app/[locale]/guide/mcp-server/content.mdx,rewrite + relocate,Keep external-source prompt catalog; move conversion workflow and prompt example to Migration overview
+/guide/migration,site/app/[locale]/guide/migration/content.mdx,extend,Own external-system audit and MCP conversion example; explicitly exclude Master CSS upgrades from MCP
+/guide/monorepo,site/app/[locale]/guide/monorepo/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/motion,site/app/[locale]/guide/motion/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/native-css-pruning,site/app/[locale]/guide/native-css-pruning/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/preload-critical-resources,site/app/[locale]/guide/preload-critical-resources/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/rendering-modes,site/app/[locale]/guide/rendering-modes/content.mdx,rewrite + delete,Correct current Manifest/ABI/hydration/transition claims; remove upgrade link
+/guide/responsive-design,site/app/[locale]/guide/responsive-design/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/route-level-styles,site/app/[locale]/guide/route-level-styles/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/scanning-latent-classes,site/app/[locale]/guide/scanning-latent-classes/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/sizing,site/app/[locale]/guide/sizing/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/spacing,site/app/[locale]/guide/spacing/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/syntax-tutorial,site/app/[locale]/guide/syntax-tutorial/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/theme,site/app/[locale]/guide/theme/content.mdx,rewrite + delete,Teach current theme declarations and custom media; remove former modifiers and breakpoint-token history
+/guide/typography,site/app/[locale]/guide/typography/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/variables-and-modes,site/app/[locale]/guide/variables-and-modes/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/view-transitions,site/app/[locale]/guide/view-transitions/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation,site/app/[locale]/guide/installation/(main)/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/angular,site/app/[locale]/guide/installation/angular/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/aspnet-core,site/app/[locale]/guide/installation/aspnet-core/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/astro,site/app/[locale]/guide/installation/astro/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/blazor,site/app/[locale]/guide/installation/blazor/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/express,site/app/[locale]/guide/installation/express/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/laravel,site/app/[locale]/guide/installation/laravel/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/lit,site/app/[locale]/guide/installation/lit/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nextjs,site/app/[locale]/guide/installation/nextjs/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nuxtjs,site/app/[locale]/guide/installation/nuxtjs/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/php,site/app/[locale]/guide/installation/php/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rails,site/app/[locale]/guide/installation/rails/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/react,site/app/[locale]/guide/installation/react/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/react-router,site/app/[locale]/guide/installation/react-router/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rsbuild,site/app/[locale]/guide/installation/rsbuild/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rspack,site/app/[locale]/guide/installation/rspack/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/shopify,site/app/[locale]/guide/installation/shopify/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/storybook,site/app/[locale]/guide/installation/storybook/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/svelte,site/app/[locale]/guide/installation/svelte/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/tanstack-start,site/app/[locale]/guide/installation/tanstack-start/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/vite,site/app/[locale]/guide/installation/vite/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/vscode,site/app/[locale]/guide/installation/vscode/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/vuejs,site/app/[locale]/guide/installation/vuejs/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/webpack,site/app/[locale]/guide/installation/webpack/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/wordpress,site/app/[locale]/guide/installation/wordpress/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/migration/bootstrap,site/app/[locale]/guide/migration/bootstrap/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/css,site/app/[locale]/guide/migration/css/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/css-in-js,site/app/[locale]/guide/migration/css-in-js/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/material-ui,site/app/[locale]/guide/migration/material-ui/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/sass,site/app/[locale]/guide/migration/sass/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/tailwindcss,site/app/[locale]/guide/migration/tailwindcss/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/v1,site/app/[locale]/guide/migration/v1/content.mdx,retain,Verified current article/catalog; existing Migration Guide content retains historical teaching
+/guide/migration/v2-rc,site/app/[locale]/guide/migration/v2-rc/content.mdx,merge + verify,"Own entry/wrapper history, compiler API history, role-name replacements and full CLI migrate options/report/examples"
+/guide/installation/cdn,site/app/[locale]/guide/installation/(main)/cdn/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/cli,site/app/[locale]/guide/installation/(main)/cli/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/integrations,site/app/[locale]/guide/installation/(main)/integrations/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/angular/runtime,site/app/[locale]/guide/installation/angular/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/aspnet-core/runtime,site/app/[locale]/guide/installation/aspnet-core/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/astro/progressive,site/app/[locale]/guide/installation/astro/progressive/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/astro/runtime,site/app/[locale]/guide/installation/astro/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/blazor/runtime,site/app/[locale]/guide/installation/blazor/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/express/progressive,site/app/[locale]/guide/installation/express/progressive/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nextjs/progressive,site/app/[locale]/guide/installation/nextjs/progressive/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nextjs/runtime,site/app/[locale]/guide/installation/nextjs/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nuxtjs/progressive,site/app/[locale]/guide/installation/nuxtjs/progressive/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/nuxtjs/runtime,site/app/[locale]/guide/installation/nuxtjs/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/php/runtime,site/app/[locale]/guide/installation/php/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rails/runtime,site/app/[locale]/guide/installation/rails/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/react/runtime,site/app/[locale]/guide/installation/react/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/react-router/runtime,site/app/[locale]/guide/installation/react-router/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rsbuild/runtime,site/app/[locale]/guide/installation/rsbuild/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/rspack/runtime,site/app/[locale]/guide/installation/rspack/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/tanstack-start/runtime,site/app/[locale]/guide/installation/tanstack-start/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/vite/runtime,site/app/[locale]/guide/installation/vite/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/vuejs/runtime,site/app/[locale]/guide/installation/vuejs/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/webpack/runtime,site/app/[locale]/guide/installation/webpack/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/guide/installation/wordpress/runtime,site/app/[locale]/guide/installation/wordpress/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
+/reference/font-smooth,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/screen-readers,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-columns,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-rows,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-column,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-row,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/clamp-lines,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/text-size,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/animate,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/text-gradient,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/rules/declarations,site/app/[locale]/guide/style-declarations/contract.mdx,rewrite,Teach full native properties and canonical named tokens directly
+/reference/rules/selectors,site/app/[locale]/guide/state-selectors/contract.mdx,rewrite,Keep current selector composition; remove obsolete selector-history sentence
+/reference/rules/conditions,site/app/[locale]/guide/conditional-queries/contract.mdx,rewrite,Keep supported condition contracts; remove retired condition/group syntax history
+/reference/rules/modes,site/app/[locale]/guide/variables-and-modes/contract.mdx,rewrite,"Delete old settings chapter; describe native cascade, authored scopes and activation directly"
+/reference/rules/layers,site/app/[locale]/guide/cascade-layers/contract.mdx,rewrite,Keep native layer order/declaration teaching; remove compose upgrade advice
+/reference/rules/extraction,site/app/[locale]/guide/scanning-latent-classes/contract.mdx,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/families,crates/mastercss-engine/src/token_registry.rs,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/animate,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/color,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/color-line,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/color-surface,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/color-text,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/container,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/content,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/duration,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/easing,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/font-family,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/font-feature,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/font-size,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/font-weight,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/leading,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/order,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/radius,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/shadow,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/spacing,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/text,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/tracking,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tokens/breakpoints,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/directives/entry,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/reference,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/theme,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/definitions,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/source,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/candidates,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/variant,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/directives/preserve,site/app/[locale]/guide/directives/contract.mdx,rewrite,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+/reference/tools/mcp/mastercss_workspace_info,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_setup_audit,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_inspect_class,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_trace_class,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_extract_classes,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_inspect_directives,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_render_css,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_scan_project,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_repo_context,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_change_impact,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_test_router,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_package_graph,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_manifest_query,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_css_compare,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_lint_project,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_lint_content,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_suggest_syntax,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_preview_fixes,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_preview_directive_format,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/mcp/mastercss_apply_preview,packages/mcp/src/server.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/cli/generate,packages/cli/src/core.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/cli/lint,packages/cli/src/core.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/tools/cli/inspect,packages/cli/src/core.ts,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-astro,packages/astro/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-compiler,packages/compiler/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/create-css,packages/create/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css,packages/css/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-svelte-addon,packages/css-sv/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/eslint-config-css,packages/eslint-config/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/eslint-plugin-css,packages/eslint-plugin/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-language-server,packages/language-server/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-language-service,packages/language-service/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-mcp,packages/mcp/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-next,packages/next/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-nuxt,packages/nuxt/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-preset,packages/preset/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-runtime,packages/runtime/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-schema,packages/schema/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-server,packages/server/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-svelte,packages/svelte/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-tooling,packages/tooling/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-vite,packages/vite/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/packages/css-webpack,packages/webpack/package.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+shared source,site/app/[locale]/guide/directives/contract.mdx,rewrite + retain,Rewrite current directive sections; remove master-entry/settings/compose/custom-variant history; preserve useful anchors and move historical entry/wrappers to v2 RC
+shared source,site/app/[locale]/guide/variables-and-modes/contract.mdx,rewrite + retain,"Delete old settings chapter; describe native cascade, authored scopes and activation directly"
+shared source,site/app/[locale]/guide/variables-and-modes/content.mdx,rewrite + retain,Keep lookup entrances; rename history heading; replace settings link with current native scoping/unit/importance guidance
+shared source,site/app/[locale]/guide/style-declarations/contract.mdx,rewrite + retain,Teach full native properties and canonical named tokens directly
+shared source,site/app/[locale]/guide/style-declarations/components/Abbreviations.mdx,rewrite + retain,Rewrite alias history as native properties and canonical token-family rules
+shared source,site/app/[locale]/guide/style-declarations/components/Functions.mdx,rewrite + retain,Keep native CSS functions; remove unsupported historical shortcut narrative
+shared source,site/app/[locale]/guide/style-declarations/components/MultiplierUnits.mdx,rewrite + retain,Remove length-multiplier teaching; preserve native resolution x
+shared source,site/app/[locale]/guide/style-declarations/components/UnitConversion.mdx,rewrite + retain,Teach explicit native units and references directly
+shared source,site/app/[locale]/guide/style-declarations/components/Utilities.mdx,rewrite + retain,Teach current utilities and mixin combinations directly
+shared source,site/app/[locale]/guide/cascade-layers/contract.mdx,rewrite + retain,Keep native layer order/declaration teaching; remove compose upgrade advice
+shared source,site/app/[locale]/guide/conditional-queries/contract.mdx,rewrite + retain,Keep supported condition contracts; remove retired condition/group syntax history
+shared source,site/app/[locale]/guide/state-selectors/contract.mdx,rewrite + retain,Keep current selector composition; remove obsolete selector-history sentence
+shared source,site/app/[locale]/guide/spacing/content.mdx,rewrite + retain,Keep spacing design teaching and native units; remove old length-multiplier sentence
+public README,examples/angular/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/astro/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/cdn/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/lit/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/next.js/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/nuxt.js/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/react/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/svelte/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/vite/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,examples/webpack/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/astro/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/cli/README.md,rewrite,Delete migrate tutorial/link; full command guide belongs in v2 RC; preserve binary
+public README,packages/compiler/README.md,rewrite,Delete unavailable former export/package narrative; keep current compiler interfaces and delivery limits
+public README,packages/create/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/css-sv/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/css/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/eslint-config/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/eslint-plugin/README.md,rewrite,Replace obsolete alias examples with current canonical condition/dimension examples
+public README,packages/figma/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/internal/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/language-server/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/language-service/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/mcp/README.md,rewrite,Remove historical workflow; retain external prompt catalog; correct envelope v3
+public README,packages/next/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/nuxt/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/preset/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/runtime/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/schema/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/server/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/svelte/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/tooling/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/vite/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/vscode/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,packages/webpack/README.md,retain,Current public package/example/site guidance; no relocation needed
+public README,site/README.md,retain,Current public package/example/site guidance; no relocation needed
+/reference/tools/cli/migrate,site/reference/cli-editorial.ts; site/reference/tool-contracts.ts,retire + relocate,Do not generate a route or redirect; command options/report/examples owned by v2 RC guide
+/blog/v2,site/app/[locale]/blog/v2/content.mdx,keep unpublished,Historical draft has no public route; remove from LLM exports
+internal parity/architecture/reports,parity/; .ai/,retain,Historical evidence remains internal and outside public editorial policy

@@ -106,7 +106,7 @@ When your AI client supports the Model Context Protocol, connect it to the [Mast
 
 Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately; an unknown value is not a failed match, and an unchecked browser is not verified support. Manifest load failure requires fixing the project context rather than silently answering from a preset.
 
-Keep compound media queries in `@custom-media` and other complex wrappers in CSS mixins. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes. See the four saved-version profiles in the [v2 RC migration guide](/guide/migration/v2-rc).
+Keep compound media queries in `@custom-media` and other complex wrappers in CSS mixins. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
 
 The shared CLI/editor/MCP workflow fixtures check tool consistency. They do not measure model generation accuracy.
 
@@ -261,19 +261,17 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 - Use [Code linting](/guide/code-linting) for validation and class sorting.
 - Use [Style declarations](/reference/rules/declarations) when you need syntax details.
 - Use [Theme Tokens](/guide/theme) and [Global Styles](/guide/global-styles#shared-vocabulary) when AI suggestions reveal repeated product vocabulary.
-- Use [Migration](/guide/migration) when an AI coding agent is converting an existing styling system to Master CSS.
 
 
 ## Named tokens and native values
 
 
-Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Do not generate `$name`, Master length `x`, or `base-unit`. Native resolution `x` in `image-set()` remains valid. Do not invent numeric names such as `p-4` unless the project defines that token.
+Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Use native CSS units for lengths and resolution descriptors in `image-set()`. Do not invent numeric names such as `p-4` unless the project defines that token.
 
 Resolve ambiguous short names with an explicit prefix, for example `font-family-brand` or `font-size-brand`. Check compiler diagnostics and generated declarations; the revised spelling alone does not establish CSS validity or improved AI accuracy.
 
-Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. The preset no longer supplies `size`, `min-size`, or `max-size`; a project may explicitly define those names. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
-
-When upgrading an existing v2 RC project, use [Migrating from Master CSS v2 RC](/guide/migration/v2-rc), preserve the original manifest and settings, and review migration proposals before applying them.
+Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
 
 
-Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Do not invent `@name()` wrapper aliases or restore `@custom-variant`, `@variant`, `@slot`, or `variants.css`.
+
+Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.

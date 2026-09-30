@@ -154,22 +154,7 @@ Prompt templates guide common AI workflows without asking the client to infer th
 | --- | --- |
 | `debug-missing-css` | Inspect scanner coverage, manifest loading, syntax, native CSS pruning, and stylesheet entry configuration when classes do not produce CSS. |
 | `review-mastercss-classes` | Run class diagnostics and propose only safe, scoped write previews. |
-| `migrate-to-mastercss` | Audit an existing styling system and produce an incremental migration plan before editing. |
-
-Use `migrate-to-mastercss` when a project is moving from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, Master CSS v1, or [Master CSS v2 RC](/guide/migration/v2-rc). A v2 RC upgrade saves the original manifest and browser baseline before coordinating package, artifact, and source updates; it does not run old and new runtimes together. The prompt should make the agent inspect the workspace first, then return a plan with:
-
-- the current framework, package manager, and styling systems
-- stylesheet entries, source extraction coverage, and existing Master CSS tokens or component classes
-- the recommended rendering mode and first reviewable migration batch
-- CSS output risks, validation commands, and manual visual checks
-
-The migration prompt is a planning workflow, not a one-shot converter. Keep the previous styling system in place until each migrated slice builds, runs, and visually matches the old UI. Use write previews only for safe, scoped changes that can be reviewed before applying.
-
-```text name=prompt
-Use the Master CSS MCP prompt `migrate-to-mastercss` for this workspace.
-
-Inspect the project with MCP tools first. Do not edit yet. Return an incremental migration plan with the current styling inventory, recommended rendering mode, first migration batch, validation commands, and visual review risks.
-```
+| `migrate-to-mastercss` | Plan a conversion from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS or component-library styling to current Master CSS. |
 
 ---
 
@@ -180,7 +165,7 @@ Every tool returns a version 3 object with `metadata`, `diagnostics` and a requi
 
 Class inspection separates `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport`. Check records identify their name, version, phase and scope. A CSS grammar error is different from an unknown future capability; `var()` does not establish a computed value. Browser support stays `not-checked` unless a browser check was actually executed. Preserve diagnostics, dependency arrays and ambiguous-name alternatives when consuming reports.
 
-Known CSS math types are checked without computing lengths or converting units. Distinct token definitions remain ambiguous even when their current values are equal. A `REMOVED_PRESET_UTILITY` notice identifies the removed built-in paired dimensions; inspect the project definition before proposing changes to a custom same-name utility. Use [the RC sizing migration](/guide/migration/v2-rc#sizing-and-resolution) for version upgrades, rather than applying ordinary canonical fixes.
+Known CSS math types are checked without computing lengths or converting units. Distinct token definitions remain ambiguous even when their current values are equal. Inspect project definitions and reported diagnostics before proposing changes to custom recipes.
 
 Markdown/MDX extraction distinguishes live markup and code from display text, and returns original UTF-16 occurrence ranges with inclusion/exclusion reasons. The CLI, editor and MCP share Rust extraction and matching. CLI report versions are independent of the MCP envelope; read each report's declared version.
 

@@ -94,7 +94,7 @@ Custom properties can use the same direct declaration form:
 </details>
 
 ### Native declarations and Master utilities
-Complete CSS properties such as `margin:1rem` keep their native value semantics. Master CSS key aliases such as `margin-top:1rem` map to a specific property, while named utilities such as `mt-md` select theme tokens. Registered parameter utilities and transforms keep their documented behavior; colon values do not infer token names or convert the former Master length multiplier `x`.
+Complete CSS properties such as `margin:1rem` keep their native value semantics. Native declarations such as `margin-top:1rem` target that property, while named classes such as `mt-md` select theme tokens. Static mixin calls use their declared parameters. Colon values retain native CSS value semantics.
 
 ```html
 <!-- @MARK margin-top:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
@@ -225,7 +225,7 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. N
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use native declaration syntax for valid CSS declarations; use separate classes for combinations, or `@mixin` for reusable and ordered declarations.
-- Use named utilities for tokens and direct declarations for explicit CSS values. Master CSS no longer converts the former length multiplier `x` or infers token names from colon values.
+- Use named utilities for tokens and direct declarations for explicit CSS values. Colon values retain native CSS value semantics.
 - Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

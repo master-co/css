@@ -6,11 +6,6 @@
       "depth": 2
     },
     {
-      "id": "master-entry",
-      "title": "@master entry",
-      "depth": 3
-    },
-    {
       "id": "import-mastercss",
       "title": "@import \"@master/css\"",
       "depth": 3
@@ -102,8 +97,8 @@
       "depth": 3
     },
     {
-      "id": "custom-variant",
-      "title": "@custom-variant",
+      "id": "mixin-wrappers",
+      "title": "Mixin wrappers",
       "depth": 3
     },
     {

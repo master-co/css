@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { configuredExampleHTML } from '../reference/configured-example'
 import { legacySyntaxPages, localizeSyntaxURL } from '../utils/legacy-syntax'
+import { documentationHygieneIssues } from '../tests/document-hygiene'
 
 // Run after the static site build, including postbuild canonical route copies.
 test('retired static routes have noindex, tutorial canonical and usable no-JavaScript links', async () => {
@@ -52,10 +53,36 @@ test('retired Reference content is absent from navigation and machine indexes', 
   const sitemap = await readFile(new URL('../out/sitemap.xml', import.meta.url), 'utf8')
   const llms = await readFile(new URL('../out/llms.txt', import.meta.url), 'utf8')
   const search = JSON.parse(await readFile(new URL('../out/search/en.json', import.meta.url), 'utf8')) as { url: string }[]
-  for (const slug of ['display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose']) {
+  assert.ok(!llms.includes('/blog/v2'), 'Unpublished blog drafts stay out of the machine index')
+  for (const slug of ['display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose', 'tools/cli/migrate']) {
     assert.ok(!pages.some(page => page.pathname === `/reference/${slug}`), slug)
     assert.ok(!sitemap.includes(`/reference/${slug}<`), slug)
     assert.ok(!llms.includes(`/reference/${slug}.md`), slug)
     assert.ok(!search.some(page => page.url === `/reference/${slug}`), slug)
   }
+})
+
+test('published static articles keep the same migration boundary as text and search exports', async () => {
+  const pages = JSON.parse(await readFile(new URL('../.pages.json', import.meta.url), 'utf8')) as { pathname: string }[]
+  const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' }
+  const failures: string[] = []
+  for (const { pathname } of pages) {
+    if (!/^\/(?:guide|reference|blog)\//.test(pathname) || /^\/guide\/migration(?:\/|$)/.test(pathname)) continue
+    for (const locale of ['', 'en', 'tw']) {
+      const html = await readFile(new URL(`../out/${locale}${pathname}.html`, import.meta.url), 'utf8')
+      const start = html.indexOf('<article ')
+      assert.ok(start >= 0, `${locale}${pathname}: article`)
+      let article = html.slice(start, html.lastIndexOf('</article>'))
+      // PageNavs belongs to document navigation, outside the editorial body.
+      article = article.replace(/<hr class="hr"\/?><div class="display:flex gap:2\.5rem[\s\S]*$/, '')
+      article = article.replace(/<script\b[\s\S]*?<\/script>/g, '')
+      if (pathname === '/guide/mcp-server') article = article.replace(/<tr\b[^>]*>[\s\S]*?<\/tr>/g, row => row.includes('migrate-to-mastercss') ? '' : row)
+      article = article.replace(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g, (_, href, text) => `[${text}](${href})`)
+      article = article.replace(/<pre\b[^>]*>/g, '\n```\n').replace(/<\/pre>/g, '\n```\n')
+      const text = article.replace(/<\/(?:p|h[1-6]|pre|tr|li)>/g, '\n\n').replace(/<[^>]+>/g, '')
+        .replace(/&#x([\da-f]+);|&#(\d+);|&(amp|lt|gt|quot|apos|nbsp);/gi, (_, hex, decimal, named) => hex ? String.fromCodePoint(parseInt(hex, 16)) : decimal ? String.fromCodePoint(Number(decimal)) : entities[named])
+      failures.push(...documentationHygieneIssues(text).map(issue => `${locale}${pathname}: ${issue}`))
+    }
+  }
+  assert.deepEqual(failures, [])
 })
