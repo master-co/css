@@ -1,3 +1,4 @@
+import '../scripts/typescript-tooling-compat.mjs'
 import { readFileSync } from 'node:fs'
 import { extname, resolve } from 'node:path'
 import { defineConfig, type TsdownInputOption, type TsdownPlugin } from 'tsdown'
@@ -30,7 +31,7 @@ const entryByPackageName: Record<string, TsdownInputOption> = {
   '@master/css-binding-wasm-tooling': ['src/provider.ts', 'src/provider-node.ts'],
   '@master/css-language-server': ['src/index.ts', 'src/server.ts'],
   '@master/css-mcp': ['src/index.ts', 'src/bin/index.ts'],
-  '@master/eslint-plugin-css': ['src/**/*.{js,ts}'],
+  '@master/eslint-plugin-css': ['src/**/*.{js,ts}', '!src/**/*.d.ts'],
   '@master/css-svelte': ['src/lib/*.ts']
 }
 
@@ -118,5 +119,7 @@ export default defineConfig({
     externalVirtualModules,
     ...(packageJSON.name === '@master/css-language-service' ? [externalLanguageSyntaxJSON] : [])
   ],
-  dts: Boolean(packageJSON.types || hasExportTypes(packageJSON.exports))
+  // TS7 emits imported files outside rootDir beside their source, escaping its
+  // temporary outDir. The compatible compiler API emits declarations in memory.
+  dts: packageJSON.types || hasExportTypes(packageJSON.exports) ? { generator: 'tsc' } : false
 })

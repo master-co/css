@@ -53,6 +53,13 @@ Use the real scripts in each package `package.json`. Some packages have `test`, 
 
 For package-local TypeScript checks, most packages use `tsc -b tsconfig.typecheck.json` and emit declaration-only cache output under `.tsbuild/typecheck`. Vue stays on `vue-tsc --noEmit`.
 
+Shared tsdown package builds use the existing TypeScript 6 compatibility API to
+emit declarations in memory before writing `dist`. Keep the explicit `tsc`
+generator: TS7's native emitter can write imported sources outside `rootDir` back
+beside their source files, escaping the temporary `outDir`. Do not emit duplicate
+`.d.ts` files beside `.ts` sources; preserve ambient and generated JSON
+declarations. Verify this boundary with `node --test scripts/tsdown-package.test.mjs`.
+
 For site-local checks, stay in the repository root and let pnpm set the workspace cwd:
 
 ```sh

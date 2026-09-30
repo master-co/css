@@ -16,6 +16,7 @@ const legacyCompilerApiPackages = [
     '@typescript-eslint/type-utils',
     '@typescript-eslint/typescript-estree',
     'mkdist',
+    'rolldown-plugin-dts',
     'rollup-plugin-dts',
     'svelte-check',
     'svelte2tsx',
