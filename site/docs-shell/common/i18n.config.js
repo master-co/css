@@ -5,7 +5,7 @@ const i18n = {
     tw: 'zh-TW'
   },
   nameOfLocale: {
-    tw: '中文 (台灣)',
+    tw: '中文 (臺灣)',
     en: 'English'
   }
 }
