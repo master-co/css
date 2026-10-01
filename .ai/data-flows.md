@@ -31,7 +31,7 @@ Risks:
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
 Manifest envelopes are v4; hydration, transition and engine snapshot envelopes are v3. Executable data must carry
-`languageVersion: 12` (binding ABI 21). Reject missing or unsupported language versions before
+`languageVersion: 12` (binding ABI 22). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.

@@ -18,6 +18,7 @@ import { previewDirectiveFormat } from './format'
 import { compareCSS } from './compare'
 import { jsonResourceResult, executeTool } from './result'
 import { toolOutputSchema } from './output-schema'
+import { projectSnapshot } from './project-comparison-schema'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -319,12 +320,13 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_scan_project',
     {
       title: 'Scan Master CSS Project',
-      description: 'Scan source files, register stylesheet entries, and report scanner state and generated CSS metadata.',
+      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
-        includeCss: z.boolean().optional()
+        includeCss: z.boolean().optional(),
+        includeSnapshot: z.boolean().optional()
       },
       outputSchema: toolOutputSchema('mastercss_scan_project'),
       annotations: {
@@ -447,7 +449,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_css_compare',
     {
       title: 'Compare Master CSS Output',
-      description: 'Compare generated CSS for before/after class lists, HTML fragments, or source buffers.',
+      description: 'Compare class lists or source buffers under one manifest, or pass beforeSnapshot and afterSnapshot to compare resolved projects, including changed definitions and known consumers. Does not verify browser rendering.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         beforeClassList: z.string().optional(),
@@ -456,6 +458,8 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         afterHtml: z.string().optional(),
         beforeContent: z.string().optional(),
         afterContent: z.string().optional(),
+        beforeSnapshot: projectSnapshot.optional(),
+        afterSnapshot: projectSnapshot.optional(),
         filePath: z.string().optional()
       },
       outputSchema: toolOutputSchema('mastercss_css_compare'),

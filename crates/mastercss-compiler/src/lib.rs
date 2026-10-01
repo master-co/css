@@ -5,8 +5,13 @@ mod lower;
 mod manifest;
 mod migration;
 mod mixins;
+mod project_comparison;
 pub use migration::{
     RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
+};
+pub use project_comparison::{
+    ProjectAsset, ProjectComparison, ProjectComparisonRequest, ProjectSnapshot, ProjectSource,
+    compare_project_snapshots,
 };
 
 pub use lower::{

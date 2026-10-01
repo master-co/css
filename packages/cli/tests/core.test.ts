@@ -41,6 +41,25 @@ function runFailedCLI(args: string[], options: { cwd?: string, input?: string } 
 }
 
 describe('root command', () => {
+  it('captures a project and compares definitions without changing class strings', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-cli-impact-'))
+    try {
+      const file = resolve(cwd, 'app.css')
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-brand:red;--color-information:red}')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="bg-brand fg-information"></div>')
+      const before = runCLI(['inspect', '*.html', '--snapshot'], { cwd })
+      expect(JSON.parse(before).version).toBe(1)
+      fs.writeFileSync(resolve(cwd, 'before.json'), before)
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-brand:blue;--color-information:red}')
+      const report = JSON.parse(runCLI(['inspect', '*.html', '--compare', 'before.json'], { cwd }))
+      expect(report.classes.map((item: { className: string }) => item.className)).toEqual(['bg-brand'])
+      expect(report.coverage.browser).toBe('not-checked')
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-information:red}')
+      const removal = JSON.parse(runCLI(['inspect', '*.html', '--compare', 'before.json'], { cwd }))
+      expect(removal.classes[0]).toMatchObject({ className: 'bg-brand', afterMatchStatus: 'syntax-error', afterRules: [] })
+      expect(runFailedCLI(['inspect', '--snapshot', '--compare', 'before.json'], { cwd }).status).toBe(1)
+    } finally { fs.rmSync(cwd, { recursive: true, force: true }) }
+  })
   it('generates CSS only through the explicit generate command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
     try {

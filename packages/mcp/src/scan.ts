@@ -2,7 +2,7 @@ import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { renderClassNamesSync } from '@master/css/node'
-import { createMasterCSSInspectionReport } from '@master/css-compiler/diagnostics'
+import { createMasterCSSInspectionReport, captureMasterCSSProject } from '@master/css-compiler/diagnostics'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
@@ -16,6 +16,7 @@ export interface ScanProjectOptions {
   patterns?: string[]
   classes?: string[]
   includeCss?: boolean
+  includeSnapshot?: boolean
 }
 
 export interface RenderCSSOptions {
@@ -42,15 +43,20 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
   const manifest = await loadWorkspaceManifest(context, options.context)
-  const report = await createMasterCSSInspectionReport({
+  const inspectionOptions = {
     manifest: requireWorkspaceManifest(manifest),
     cwd: context.root,
     patterns: options.patterns,
     classes: options.classes,
     includeCss: options.includeCss,
-    resolveExistingFile: (filePath) => context.resolveExistingFile(filePath),
-    validatePatterns: (patterns) => context.validateGlobPatterns(patterns)
-  })
+    resolveExistingFile: (filePath: string) => context.resolveExistingFile(filePath),
+    validatePatterns: (patterns: readonly string[]) => context.validateGlobPatterns(patterns)
+  }
+  if (options.includeSnapshot) {
+    const { report, snapshot } = await captureMasterCSSProject(inspectionOptions)
+    return { ...report, root: context.root, manifest: manifestMetadata(manifest), snapshot }
+  }
+  const report = await createMasterCSSInspectionReport(inspectionOptions)
   return { ...report, root: context.root, manifest: manifestMetadata(manifest) }
 }
 

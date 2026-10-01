@@ -135,6 +135,8 @@ struct LintRawValuePolicyRequest {
     #[serde(default)]
     allow_properties: Vec<String>,
     #[serde(default)]
+    require_properties: Vec<String>,
+    #[serde(default)]
     allowed_patterns: Vec<String>,
 }
 
@@ -306,6 +308,10 @@ impl ToolingLintSession {
                     policy.allow_properties,
                     policy.allowed_patterns,
                 )
+                .map(|mut result| {
+                    result.require_properties = policy.require_properties;
+                    result
+                })
             })
             .transpose()
             .map_err(invalid_lint_request)?;

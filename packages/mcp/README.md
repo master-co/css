@@ -44,7 +44,7 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_render_css` | Generate CSS from HTML or a class list. |
 | `mastercss_scan_project` | Scan sources, check optional classes, and report scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics. |
 | `mastercss_manifest_query` | Query active manifest tokens, utilities, variants, modes, conditions, and aliases. |
-| `mastercss_css_compare` | Compare generated CSS for before/after class lists, HTML fragments, or source buffers. |
+| `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
 | `mastercss_lint_project` | Run class-list diagnostics for workspace files without writing files. |
 | `mastercss_lint_content` | Run class-list diagnostics on an in-memory source buffer without writing files. |
 | `mastercss_suggest_syntax` | Return language-service completions and hover context. |
@@ -87,3 +87,12 @@ Concurrent applies coordinate across MCP processes for the same OS user through 
 
 - [MCP Server guide](https://rc.css.master.co/guide/mcp-server)
 - [AI Coding guide](https://rc.css.master.co/guide/ai-coding)
+
+
+## Compare a project before and after editing
+
+Call `mastercss_scan_project` with `includeSnapshot: true` before editing and save `result.data.snapshot`. Repeat after editing, then pass the two objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`. Both are required; snapshot inputs cannot be mixed with class/content, `filePath` or `context` inputs.
+
+The project result is `{ version: 3, mode: 'project', comparison }` inside the usual version 3 envelope. `comparison.version` is 1. It reports changed definitions, known class consumers and files, before/after generated rules, native references, output assets and delivery order. Read `coverage` even when there are no differences: dynamic sources, remote content, binary assets and final browser behavior are not exhaustively checked. Native consumers are conservative at stylesheet granularity.
+
+These tools use the installed compiler. Check workspace package versions, language/binding versions and manifest metadata before using documentation or examples; use the project-local, lockfile-pinned MCP package for reproducible sessions.

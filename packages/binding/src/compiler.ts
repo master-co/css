@@ -46,6 +46,7 @@ export function loadNativeCompilerBinding(
           JSON.stringify(baseManifest),
           JSON.stringify(graphs)
         )),
+      compareProjectSnapshots: (request) => parse(nativeBinding.compareProjectSnapshotsJson(JSON.stringify(request))),
       migrateRC: (request) => parse(nativeBinding.migrateRcJson(JSON.stringify(request))),
       inspectCSS: (source) => parse(nativeBinding.inspectCssJson(source)),
       compileNativeCSS: (source, options) =>
@@ -127,3 +128,5 @@ export {
   type MasterCSSStylesheetError,
   type MasterCSSStylesheetInspection
 } from './protocol'
+
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from './protocol'

@@ -9,6 +9,7 @@ import type { MasterCSSBindingInfo } from './protocol'
 
 type MasterCSSCompilerWasmProviderSession = Pick<
   MasterCSSCompilerBindingSession,
+  | 'compareProjectSnapshots'
   | 'migrateRC'
   | 'inspectCSS'
   | 'compileNativeCSS'
@@ -74,6 +75,7 @@ export async function createCompilerWasmBindingSession(
   const wasm = await provider(options, providerFactory)
   const session = await wasm.createSession()
   return bindCompilerBindingSession('wasm', {
+    compareProjectSnapshots: (request) => session.compareProjectSnapshots(request),
     migrateRC: (request) => session.migrateRC(request),
     inspectCSS: (source) => session.inspectCSS(source),
     compileNativeCSS: (source, compileOptions) =>

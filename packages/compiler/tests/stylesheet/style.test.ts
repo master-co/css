@@ -466,7 +466,7 @@ describe('style CSS extraction helpers', () => {
     expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-native.css'))).toBe(false)
     expect(hostSource.source).toBe(expectedCSS)
     expect(hostSource.source).toContain('@layer base')
-    expect(hostSource.source).toContain('text-rendering: geometricprecision')
+    expect(hostSource.source).not.toContain('text-rendering: geometricprecision')
     expect(hostSource.source).toContain('--font-family-sans:var(--font-sans, ui-sans-serif)')
     expect(hostSource.source).toContain('--font-family-mono:var(--font-mono, ui-monospace)')
     expect(hostSource.source).not.toContain('@master/css/base.css')

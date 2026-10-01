@@ -94,3 +94,5 @@ export function createCompilerRenderBindingSession(
     )
   )
 }
+
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from './protocol'

@@ -253,6 +253,10 @@ font-size:15px margin:17px color:#123456
 
 (!) Unexpected raw value `"15px"` in `"font-size:15px"`. Use a token or allow it explicitly.
 
+To regulate selected native properties, set `requireProperties: ['color', 'background-color']`. Omit it or use an empty array to check every token-backed property. `allowProperties` and `allowedPatterns` remain explicit exceptions; `allowRawValues` disables this policy. Native custom-property references remain valid.
+
+The shared diagnostic identifies `no-unapproved-raw-values`, the applicable property scope and canonical token families in its `data`. The rule has no autofix: matching a token's current value cannot establish whether `brand`, `information` or another role is appropriate. This policy checks vocabulary use, not visual or design correctness.
+
 Use editor sort-on-save for low-friction cleanup:
 
 ```json name=.vscode/settings.json

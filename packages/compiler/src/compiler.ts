@@ -255,6 +255,11 @@ export class MasterCSSCompiler implements Disposable {
     return Object.freeze(this.#session.renderCSSStylesheetBundle(request).map(asset => Object.freeze({ ...asset })))
   }
 
+  compareProjectSnapshots(request: import('./index').MasterCSSProjectComparisonRequest): import('./index').MasterCSSProjectComparison {
+    this.assertActive()
+    return Object.freeze(this.#session.compareProjectSnapshots(request))
+  }
+
   compileStylesheets(request: MasterCSSCompileStylesheetsRequest, options: MasterCSSCompileOptions = {}): MasterCSSCompileStylesheetsResult {
     this.assertActive()
     const result = this.#session.compileCSSStylesheetGraph(request)

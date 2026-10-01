@@ -99,7 +99,7 @@ In static mode, import the generated stylesheet from a source stylesheet.
 @import '@master/css';
 ```
 
-Source stylesheets that import `@master/css` are treated as native CSS pruning roots by default. Ordinary CSS outside Master CSS directives is pruned against detected classes, and the import inserts generated Master CSS. Add `@preserve native;` when native CSS must be preserved.
+Static mode is the default and does not inject the browser runtime. Source stylesheets that import `@master/css` receive generated Master CSS and the complete preset. Ordinary native CSS is preserved. Enable `pruneNativeCSS: true` only for intentional project pruning, or use `@prune native;` for one stylesheet. With pruning enabled, `@preserve native;` protects one stylesheet.
 
 ## Production CSS asset names
 
@@ -339,8 +339,9 @@ Pass the `options` object to `masterCSS(options)`.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` | Enables the integration. Use `false` to disable it. |
-| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render'` | `'runtime'` | Integration rendering mode. |
+| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render'` | `'static'` | Integration rendering mode. |
 | `scanner` | `MasterCSSScannerConfiguration` | `{}` | Class usage scanning configuration. |
-| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | `{ enabled: true, avoidFOUC: true }` | Runtime injection and FOUC behavior. |
+| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | Mode-dependent | Enabled for runtime and progressive modes; disabled for static and pre-render modes. |
+| `pruneNativeCSS` | `boolean` | `false` | Opt into pruning native CSS in project-owned sources. |
 
 See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite) for a full project setup.

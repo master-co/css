@@ -27,6 +27,9 @@ const registryFieldManifest = createPresetManifest({
 
 jsxTester.run('no unapproved raw values', rule, {
   valid: [
+    { code: '<div class="font-size:15px">Unregulated property</div>', options: [{ requireProperties: ['color'] }] },
+    { code: '<div class="color:red">Explicit exception wins</div>', options: [{ requireProperties: ['color'], allowProperties: ['color'] }] },
+    { code: '<div class="color:var(--color-brand)">Native variable</div>', options: [{ requireProperties: ['color'] }] },
     { code: "<div class=\"font-size-md m-md margin:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-align:center\">Tokens and static utilities</div>" },
     { code: `<div class="font: unknown-class">Invalid and unknown classes are ignored</div>` },
     {
@@ -51,6 +54,7 @@ jsxTester.run('no unapproved raw values', rule, {
     },
   ],
   invalid: [
+    { code: '<div class="font-size:15px color:#123456">Scoped policy</div>', options: [{ requireProperties: ['color'] }], output: null, errors: [{ messageId: 'unapprovedRawValue' }] },
     {
       code: "<div class=\"font-size:15px margin:17px color:#123456\">Raw values</div>",
       errors: [

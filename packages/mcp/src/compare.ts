@@ -5,6 +5,7 @@ import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import { createMCPToolingSession, compactClassInspection } from './tooling-session'
+import { compareProjectSnapshots, type MasterCSSProjectSnapshot } from '@master/css-compiler/diagnostics'
 
 const CSS_COMPARE_VERSION = 2
 
@@ -17,6 +18,8 @@ export interface CompareCSSOptions {
   beforeContent?: string
   afterContent?: string
   filePath?: string
+  beforeSnapshot?: MasterCSSProjectSnapshot
+  afterSnapshot?: MasterCSSProjectSnapshot
 }
 
 function unique(values: readonly string[]) {
@@ -97,6 +100,13 @@ function createTextDiff(before: string, after: string) {
 }
 
 export async function compareCSS(context: MasterCSSMCPContext, options: CompareCSSOptions) {
+  if (options.beforeSnapshot || options.afterSnapshot) {
+    if (!options.beforeSnapshot || !options.afterSnapshot) throw new Error('Project comparison requires both beforeSnapshot and afterSnapshot.')
+    if (Object.entries(options).some(([key, value]) => key !== 'beforeSnapshot' && key !== 'afterSnapshot' && value !== undefined)) {
+      throw new Error('Project snapshots cannot be combined with class, content, filePath or context inputs.')
+    }
+    return { version: 3, mode: 'project' as const, comparison: await compareProjectSnapshots({ before: options.beforeSnapshot, after: options.afterSnapshot }) }
+  }
   const manifest = await loadWorkspaceManifest(context, options.context)
   const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
   const activeManifest = requireWorkspaceManifest(manifest)

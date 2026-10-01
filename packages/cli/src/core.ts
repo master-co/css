@@ -67,6 +67,8 @@ export default async function runProgram(argv: string[] = process.argv) {
     .argument('[source paths...]', 'The glob pattern paths to inspect')
     .option('--classes <classes>', 'Whitespace-separated class names to verify in generated CSS.')
     .option('--include-css', 'Include generated CSS text in the JSON report.')
+    .option('--snapshot', 'Capture a resolved project snapshot as JSON.')
+    .option('--compare <snapshot>', 'Compare a saved JSON snapshot with the current project.')
     .option('--format <format>', 'Diagnostic output format: json or stylish.', 'json')
     .option('--exit-code <mode>', 'Exit code behavior: diagnostics or never.', 'diagnostics')
     .option('--max-warnings <number>', 'Exit with a non-zero status if warnings exceed this count.')

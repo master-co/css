@@ -164,7 +164,7 @@ describe('style CSS extraction helpers', () => {
     })
 
     expect(css).toContain('@layer base')
-    expect(css).toContain('text-rendering: geometricprecision')
+    expect(css).not.toContain('text-rendering: geometricprecision')
     expect(css).toContain('.main')
     expect(css).toContain('.unused')
     expect(css).toContain('--color-primary:red')
@@ -464,7 +464,7 @@ describe('style CSS extraction helpers', () => {
 
     expect(css).toContain('.card')
     expect(css).toContain('@layer base')
-    expect(css).toContain('text-rendering: geometricprecision')
+    expect(css).not.toContain('text-rendering: geometricprecision')
     expect(css).not.toContain(".display\\:block{display:block}")
   })
 
@@ -492,7 +492,7 @@ describe('style CSS extraction helpers', () => {
     })
 
     expect(css).toContain('@layer base')
-    expect(css).toContain('text-rendering: geometricprecision')
+    expect(css).not.toContain('text-rendering: geometricprecision')
     expect(css).toMatch(/font-family:\s*var\(--font-family-sans\)/)
     expect(css).not.toContain(".display\\:block{display:block}")
     expect(css).not.toContain('@master/css')

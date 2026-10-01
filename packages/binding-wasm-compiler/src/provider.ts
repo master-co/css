@@ -18,6 +18,7 @@ export interface MasterCSSWasmCompilerLoadOptions {
 
 interface MasterCSSCompilerWasmProviderSession {
   readonly info: unknown
+  compareProjectSnapshots(request: unknown): unknown
   inspectCSS(source: string): unknown
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown

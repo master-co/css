@@ -273,7 +273,7 @@ Write native component selectors in `@layer components`.
 Native rules are delivered according to the stylesheet import graph. A mixin definition is available to markup and native `@apply`; it emits nothing until used.
 
 ### `@mixin` \{#utilities\}
-Master implements a static compilation subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule), not a complete browser polyfill. Definitions have dashed names and must be unconditional stylesheet-level rules.
+Master implements a static compilation subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule), not a complete browser polyfill. Definitions have dashed names and must be unconditional stylesheet-level rules. This is the Master static recipe subset; code is not guaranteed to run unchanged in a future browser implementation. Dynamic parameter evaluation, private-property emulation and general-purpose functions are outside this contract.
 
 ```css
 @mixin --card-layout {

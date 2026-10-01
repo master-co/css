@@ -187,7 +187,7 @@ describe('StyleEntryPlugin', () => {
     )
 
     expect(result.code).toContain('@layer base')
-    expect(result.code).toContain('text-rendering: geometricprecision')
+    expect(result.code).not.toContain('text-rendering: geometricprecision')
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain(SLOT)
     expect(result.code).not.toContain('.fg-red')

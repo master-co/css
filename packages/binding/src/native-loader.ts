@@ -154,6 +154,7 @@ export interface NativeBinding {
   prepareCssStylesheetBundleJson(requestJSON: string): string
   renderCssStylesheetBundleJson(requestJSON: string): string
   compileCssStylesheetGraphJson(requestJSON: string): string
+  compareProjectSnapshotsJson(requestJSON: string): string
   migrateRcJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string

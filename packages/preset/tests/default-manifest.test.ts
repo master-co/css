@@ -207,7 +207,9 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect(normalizeLineEndings(readFileSync(nativeCSSFile, 'utf8'))).toBe(nativeCSS)
     expect(nativeCSS).toContain('@layer base')
-    expect(nativeCSS).toContain('text-rendering: geometricprecision')
+    for (const opinion of ['text-rendering:', '-webkit-font-smoothing:', '-moz-osx-font-smoothing:', '100dvh', '-webkit-fill-available', '-moz-available', 'user-select: none']) {
+      expect(nativeCSS).not.toContain(opinion)
+    }
     expect(nativeCSS).toContain('font-family: var(--font-family-sans)')
     expect(nativeCSS).toContain('font-feature-settings: var(--font-feature-sans, normal)')
     expect(nativeCSS).toContain('font-family: var(--font-family-mono)')

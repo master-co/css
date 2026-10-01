@@ -104,3 +104,5 @@ export async function createCompilerRenderBindingSession(
     throw normalizeBindingError(cause, 'compiler')
   }
 }
+
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from './protocol'

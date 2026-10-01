@@ -29,6 +29,34 @@ The universal entry prefers the native binding in Node and falls back to
 `binding-wasm-compiler`. It never runs a TypeScript parser, lowerer, or CSS transformer.
 Session methods are synchronous after asynchronous initialization.
 
+## Compare project changes
+
+`compiler.compareProjectSnapshots({ before, after })` compares two resolved
+version 1 snapshots with independent Manifest v4 definitions. Each snapshot has
+`manifest`, `sources: [{ path, classes }]`, `stylesheets: [{ path, css }]`,
+`outputs: [{ path, css }]`, `excluded` and `unresolved`. Stylesheets contain
+delivered native CSS after directive lowering. Asset arrays preserve delivery
+order and require unique identities.
+
+Node hosts can call `captureMasterCSSProject({ cwd, manifest, patterns })` from
+`@master/css-compiler/diagnostics` to obtain `{ report, snapshot }` through the
+existing scanner and stylesheet delivery pipeline. Capture rejects failed project
+resolution, stylesheet compilation or extraction. Class validation diagnostics
+remain in `report`, allowing comparison of consumers whose tokens were deleted.
+`compareProjectSnapshots({ before, after })` on that same entrypoint is
+an asynchronous convenience around the universal compiler method. Editors with
+unsaved buffers can supply their own resolved snapshots to the universal method.
+
+Reports include changed definitions, known consuming classes and files, rule
+IR before/after (declarations, conditions and layers), transitive variable and
+recipe dependencies, asset text and order changes, and explicit coverage limits.
+A token edit can affect consumers even when class names and generated rules stay
+unchanged. Native references are conservative at stylesheet granularity. The
+report does not compute the DOM cascade, execute dynamic sources, compare binary
+resource contents, fetch remote stylesheets, or verify visual/accessibility behavior.
+Capture uses local file URLs as stable asset identities; compare deployment
+outputs by supplying snapshots with the host's actual delivery URLs instead.
+
 The session exposes batched Rust operations for CSS inspection, directive compilation,
 theme compilation, dependency analysis, extraction-policy merging, manifest lowering
 and normalization, default-preset compilation, and prepared import graphs.

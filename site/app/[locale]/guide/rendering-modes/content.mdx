@@ -3,7 +3,7 @@ import ModeImg from '~/site/docs-shell/components/ModeImg'
 import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
 
 ## Overview [sr-only]
-Official build integrations default to `static`. Choose an explicit mode when browser rule generation or server pre-rendering is needed. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
+Official build integrations default to `static`. Toggling known classes, changing themes and updating custom properties all work with static CSS. Choose an explicit runtime mode when new class names first become known in the browser, such as a visual editor or playground. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -15,6 +15,8 @@ Official build integrations default to `static`. Choose an explicit mode when br
 Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, defaults, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
 Runtime and progressive rendering optimize what CSS is delivered up front. They do not make browser style calculation free: when a highly interactive screen creates many first-time utility rules during one interaction, the browser still needs to account for those new stylesheet rules before it can paint the updated DOM.
+
+Measure runtime JavaScript, Wasm, manifest delivery, initialization, DOM observation and CSSOM work together. A compressed JavaScript file alone does not describe runtime cost.
 
 For page-level CSS size and delivery measurements, see the [benchmarks](/guide/benchmarks).
 

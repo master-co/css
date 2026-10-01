@@ -47,3 +47,5 @@ export function createCompilerBindingSessionSync(
     throw normalizeBindingError(cause, 'compiler')
   }
 }
+
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from './protocol'

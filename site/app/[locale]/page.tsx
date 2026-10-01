@@ -22,6 +22,6 @@ export default function Page() {
 }
 
 export const metadata = {
-  title: 'Master CSS - The CSS language and framework',
-  description: 'The CSS language and framework for rapidly building modern and high-performance websites.'
+  title: 'Master CSS - Maintainable styles in markup',
+  description: 'Compose CSS and project design rules in markup, trace the impact of changes, and check generated styles.'
 }

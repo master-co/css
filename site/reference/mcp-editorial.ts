@@ -14,6 +14,18 @@ const filePath = 'Virtual workspace-relative path used to infer the source langu
 const ttlMs = 'Preview lifetime in milliseconds. Omit to use the server’s `--preview-ttl` setting, which defaults to 300000 (5 minutes).'
 const previewLife = 'Workspace files stay unchanged until `mastercss_apply_preview`. A nonempty preview stores a token in this server process; expiry, restart, or successful application requires a new preview. An unchanged result has no confirmation token.'
 const readOnly = 'This operation does not write workspace files.'
+const snapshotFields = Object.fromEntries(['beforeSnapshot', 'afterSnapshot'].flatMap(side => [
+  [side, 'Resolved project snapshot. Supply both snapshots without class/content, filePath or context inputs.'],
+  [`${side}.version`, 'Snapshot wire version, currently 1.'],
+  [`${side}.manifest`, 'Independent execution manifest for this snapshot; validated by the compiler.'],
+  [`${side}.manifest.version`, 'Execution manifest wire version.'],
+  [`${side}.manifest.languageVersion`, 'Master class language version.'],
+  [`${side}.sources`, 'Known source identities and their complete class candidates.'],
+  [`${side}.stylesheets`, 'Resolved native CSS assets after lowering, with unique paths in delivery order.'],
+  [`${side}.outputs`, 'Final CSS assets with unique paths in delivery order.'],
+  [`${side}.excluded`, 'Excluded paths or patterns retained as coverage evidence.'],
+  [`${side}.unresolved`, 'Dynamic or unavailable sources which could not be enumerated.']
+]))
 const contributorFields = {
   task: 'Description of the contributor task. It helps select context packs; it does not select changed paths.',
   paths: 'Changed repository-relative paths. These are combined with paths extracted from `diff`.',
@@ -72,21 +84,21 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   },
   mastercss_scan_project: {
     purpose: 'Inspect scanned files, stylesheet entries, generated CSS, and optional missing-class checks for a chosen source scope.',
-    fields: { context, patterns, classes: 'Complete class names to check against the generated output. This does not add classes to source or safelist them.', includeCss: 'Include the generated stylesheet in `css.text`. Omitted by default.' },
+    fields: { context, patterns, includeSnapshot: 'Capture a version 1 project snapshot in the same inspection session. Compilation errors prevent capture.', classes: 'Complete class names to check against the generated output. This does not add classes to source or safelist them.', includeCss: 'Include the generated stylesheet in `css.text`. Omitted by default.' },
     example: { patterns: ['src/button.html'], classes: ['p-md'], includeCss: true }, exampleNote: 'Use an existing source file. The requested class is checked against actual scan output.',
-    output: 'Read `summary` and `diagnostics`, then `files`, `stylesheets`, scanner state, `css`, and `missingCSS`. The report includes the configured `root` and manifest status. Check the discovered stylesheet entries before attributing a missing rule to extraction.',
+    output: 'With includeSnapshot, snapshot contains resolved definitions, known source classes, native stylesheets, CSS assets and coverage limits. Read `summary` and `diagnostics`, then `files`, `stylesheets`, scanner state, `css`, and `missingCSS`. The report includes the configured `root` and manifest status. Check the discovered stylesheet entries before attributing a missing rule to extraction.',
     lifecycle: readOnly
   },
   mastercss_manifest_query: {
-    purpose: 'Look up registered tokens, utilities, variants, conditions, and aliases in the active manifest.',
-    fields: { context, query: 'Case-insensitive substring query. Omit for all entries in the selected kinds.', kind: 'Category to return. Defaults to `all`.', namespace: 'Exact namespace filter for tokens and utilities. Other categories are not filtered by namespace.', limit: 'Maximum entries returned per category, not across the whole response. Defaults to 50.' },
+    purpose: 'Look up tokens, static mixins, custom media and canonical token families in the active manifest.',
+    fields: { context, query: 'Case-insensitive substring query. Omit for all entries in the selected kinds.', kind: 'Category to return. Defaults to `all`.', namespace: 'Exact namespace filter for tokens. Other categories are not filtered by namespace.', limit: 'Maximum entries returned per category, not across the whole response. Defaults to 50.' },
     example: { kind: 'token', namespace: 'color', query: 'brand', limit: 10 }, exampleNote: 'This query returns a brand color only if the loaded manifest defines one.',
-    output: '`results` groups tokens, utilities, variants, conditions, and aliases. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
+    output: '`results` groups tokens, mixins, customMedia and families. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
     lifecycle: readOnly
   },
   mastercss_css_compare: {
-    purpose: 'Compare two class selections using the same active manifest. The result explains generated CSS differences; it does not establish visual equivalence.',
-    fields: { context,
+    purpose: 'Supply both project snapshots to compare independent definitions and known consumers, including edits with unchanged markup. Otherwise, compare two class selections using the same active manifest. The result explains generated CSS differences; it does not establish visual equivalence.',
+    fields: { ...snapshotFields, context,
       beforeClassList: 'Whitespace-separated classes before the change. Takes precedence over the before HTML and source buffer.',
       afterClassList: 'Whitespace-separated classes after the change. Takes precedence over the after HTML and source buffer.',
       beforeHtml: 'Before HTML fragment, used when `beforeClassList` is absent.', afterHtml: 'After HTML fragment, used when `afterClassList` is absent.',
@@ -94,7 +106,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
       filePath: filePath + ' Defaults to `index.html`.'
     },
     example: { beforeClassList: 'p-sm', afterClassList: 'p-md' }, exampleNote: 'Compare two spacing values under the same manifest.',
-    output: '`classes` and `rules` describe additions and removals, `invalid` lists rejected classes, and `css` includes before/after text and a diff. The current `bytes` and `bytesDelta` fields count UTF-16 code units with JavaScript string lengths, not UTF-8 bytes or compressed transfer sizes.',
+    output: 'Snapshot mode returns version 3, mode project, and a version 1 comparison report with definitions, classes, rule evidence, dependencies, assets, delivery order and coverage. It does not evaluate DOM styles or fetch remote CSS/binary resources. In class/content mode, `classes` and `rules` describe additions and removals, `invalid` lists rejected classes, and `css` includes before/after text and a diff. The `bytes` and `bytesDelta` fields count UTF-8 CSS bytes, not compressed transfer sizes.',
     lifecycle: readOnly
   },
   mastercss_lint_project: {

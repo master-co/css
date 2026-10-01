@@ -186,6 +186,7 @@ pub struct CanonicalClassGroupSuggestionsIr {
 pub struct RawValuePolicy {
     pub allow_raw_values: bool,
     pub allow_properties: Vec<String>,
+    pub require_properties: Vec<String>,
     pub allowed_patterns: Vec<regex::Regex>,
 }
 
@@ -205,6 +206,7 @@ impl RawValuePolicy {
         Ok(Self {
             allow_raw_values,
             allow_properties,
+            require_properties: Vec::new(),
             allowed_patterns,
         })
     }

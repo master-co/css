@@ -178,6 +178,12 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
         "Raw value \"17px\" is not approved for class \"margin:var(--spacing-md)|17px\". Use a token or allow the value explicitly."
     );
     assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
+    assert_eq!(
+        diagnostic.data["policy"]["rule"],
+        "no-unapproved-raw-values"
+    );
+    assert_eq!(diagnostic.data["tokenFamilies"][0]["prefix"], "m");
+    assert!(diagnostic.fix.is_none());
 
     let approved = session
         .analyze_class_list(

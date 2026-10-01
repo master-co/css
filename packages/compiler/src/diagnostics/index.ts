@@ -11,6 +11,8 @@ import { discoverManifestEntries, loadProjectManifest } from '../project/manifes
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+import type { MasterCSSProjectSnapshot } from '@master/css-binding/compiler'
 import {
   createCompilerBindingSession,
   MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
@@ -187,9 +189,7 @@ function inspectSourceFile(
   }
 }
 
-export async function createMasterCSSInspectionReport(
-  options: CreateMasterCSSInspectionReportOptions
-): Promise<MasterCSSInspectionReport> {
+async function inspectProject(options: CreateMasterCSSInspectionReportOptions, capture: boolean) {
   const cwd = path.resolve(options.cwd || process.cwd())
   const classChecks = parseClassChecks(options.classes)
   const specifiedPatterns = options.patterns
@@ -206,6 +206,7 @@ export async function createMasterCSSInspectionReport(
   const firstSourceByClass = new Map<string, string>()
   let reportInput: MasterCSSDiagnosticsReportInput
   let stylesheetInspection: Awaited<ReturnType<typeof registerManagedCSSEntries>> | undefined
+  let snapshot: MasterCSSProjectSnapshot | undefined
 
   try {
     let projectManifest = options.manifest
@@ -239,14 +240,53 @@ export async function createMasterCSSInspectionReport(
     const files = sourcePaths.map((source, index) => inspectSourceFile(
       classes, source, resolvedSourcePaths[index], scans[index], firstSourceByClass
     ))
+    const entry = pathToFileURL(path.join(cwd, 'master.snapshot.css')).href
+    const delivery = capture ? {
+      entryURL: entry,
+      stylesheetURL: (file: string, variant?: string) => `${pathToFileURL(file).href}${variant ? `?variant=${encodeURIComponent(variant)}` : ''}`,
+      resourceURL: (file: string) => pathToFileURL(file).href
+    } : undefined
     const cssResult = await createExtractedCSSResult({
       scanner,
       stylesheetSources,
       baseManifest: options.manifest,
-      projectDir: scanner.cwd
+      projectDir: scanner.cwd,
+      delivery
     })
     const safelist = scanner.options.safelist ?? []
     const blocklist = scanner.options.blocklist ?? []
+    if (capture) {
+      if (stylesheetInspection.errors.length) throw new Error('Cannot capture a project with stylesheet errors.')
+      // Reuse the resolved scanner and delivery pipeline; do not infer CSS semantics here.
+      const delivered = cssResult
+      const native = await createExtractedCSSResult({ scanner, stylesheetSources, baseManifest: options.manifest, projectDir: cwd, delivery, includeGeneratedCSS: false })
+      const resolvedSources = new Map(files.map(file => [file.source, file.filePath]))
+      const consumers = new Map<string, Set<string>>()
+      for (const source of scanner.sources) {
+        const identity = source.parentSource ?? source.source
+        const file = resolvedSources.get(identity) ?? identity
+        const candidates = consumers.get(file) ?? new Set<string>()
+        for (const name of source.candidates) {
+          if (Object.values(classes).some(group => group.has(name))) candidates.add(name)
+        }
+        consumers.set(file, candidates)
+      }
+      snapshot = {
+        version: 1,
+        manifest: scanner.manifest,
+        sources: [
+          ...[...consumers].map(([path, classes]) => ({ path, classes: [...classes] })),
+          { path: 'master:safelist', classes: [...safelist] }
+        ],
+        stylesheets: [{ path: entry, css: native.css }, ...(native.stylesheets ?? []).map(asset => ({ path: asset.href, css: asset.css }))],
+        outputs: [{ path: entry, css: delivered.css }, ...(delivered.stylesheets ?? []).map(asset => ({ path: asset.href, css: asset.css }))],
+        excluded: [...(options.ignore ?? scanner.options.exclude ?? []), ...blocklist.map(String)],
+        unresolved: [
+          'Class names constructed dynamically and remote content are not exhaustively enumerated.',
+          `Only source patterns ${JSON.stringify(sourcePatterns)} and discovered stylesheet entries are included.`
+        ]
+      }
+    }
     reportInput = {
       version: MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
       cwd,
@@ -276,6 +316,7 @@ export async function createMasterCSSInspectionReport(
       firstSourceByClass: Object.fromEntries(firstSourceByClass)
     }
   } catch (error) {
+    snapshot = undefined
     reportInput = {
       version: MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
       cwd,
@@ -290,5 +331,23 @@ export async function createMasterCSSInspectionReport(
   } finally {
     await scanner.dispose()
   }
-  return await createBindingInspectionReport(reportInput)
+  return { report: await createBindingInspectionReport(reportInput), snapshot }
 }
+
+export async function createMasterCSSInspectionReport(options: CreateMasterCSSInspectionReportOptions): Promise<MasterCSSInspectionReport> {
+  return (await inspectProject(options, false)).report
+}
+
+/** Capture known project consumers and resolved CSS assets in one inspection session. */
+export async function captureMasterCSSProject(options: CreateMasterCSSInspectionReportOptions) {
+  const { report, snapshot } = await inspectProject(options, true)
+  // Class diagnostics are evidence for comparison, including consumers of deleted
+  // definitions. Only a failed project resolution or extraction prevents capture.
+  if (!snapshot) {
+    throw new Error(`Cannot capture project snapshot: ${report.diagnostics.map(item => item.message).join('; ')}`)
+  }
+  return { report, snapshot }
+}
+
+export { compareProjectSnapshots } from './project-comparison'
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison } from '../index'

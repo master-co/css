@@ -383,3 +383,4 @@ mod tests;
 
 #[cfg(test)]
 use state::selector_token_to_template;
+mod definition_references;

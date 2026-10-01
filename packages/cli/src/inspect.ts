@@ -1,10 +1,15 @@
 import {
   createMasterCSSInspectionReport,
+  captureMasterCSSProject,
+  compareProjectSnapshots,
+  type MasterCSSProjectSnapshot,
+  type MasterCSSProjectComparison,
   type MasterCSSInspectionReport
 } from '@master/css-compiler/diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import path from 'node:path'
+import { readFile } from 'node:fs/promises'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -15,6 +20,8 @@ export interface InspectOptions {
   includeCss?: boolean
   exitCode?: 'diagnostics' | 'never'
   maxWarnings?: string | number
+  snapshot?: boolean
+  compare?: string
 }
 
 function parseMaxWarnings(value: string | number | undefined) {
@@ -46,17 +53,31 @@ function outputReport(report: MasterCSSInspectionReport, format: 'json' | 'styli
   }
 }
 
+export default function runInspect(specifiedSourcePaths?: string[], options?: InspectOptions & { snapshot?: false, compare?: undefined }): Promise<MasterCSSInspectionReport>
+export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions & { snapshot: true, compare?: undefined }): Promise<MasterCSSProjectSnapshot>
+export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions & { compare: string, snapshot?: false }): Promise<MasterCSSProjectComparison>
+export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions): Promise<MasterCSSInspectionReport | MasterCSSProjectSnapshot | MasterCSSProjectComparison>
 export default async function runInspect(specifiedSourcePaths: string[] = [], options: InspectOptions = {}) {
   const cwd = path.resolve(options.cwd || process.cwd())
   const format = options.format || 'json'
   const exitCode = options.exitCode || 'diagnostics'
-  const report = await createMasterCSSInspectionReport({
+  const inspectionOptions = {
     manifest: defaultManifest,
     cwd,
     patterns: specifiedSourcePaths.length ? specifiedSourcePaths : undefined,
     classes: options.classes,
     includeCss: Boolean(options.includeCss)
-  })
+  }
+  if (options.snapshot || options.compare) {
+    if (options.snapshot && options.compare) throw new Error('Choose either --snapshot or --compare.')
+    const { snapshot } = await captureMasterCSSProject(inspectionOptions)
+    const result = options.compare
+      ? await compareProjectSnapshots({ before: JSON.parse(await readFile(path.resolve(cwd, options.compare), 'utf8')) as MasterCSSProjectSnapshot, after: snapshot })
+      : snapshot
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)
+    return result
+  }
+  const report = await createMasterCSSInspectionReport(inspectionOptions)
 
   outputReport(report, format)
   if (exitCode !== 'never' && (report.summary.errors || report.summary.warnings > parseMaxWarnings(options.maxWarnings))) {

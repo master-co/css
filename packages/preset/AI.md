@@ -80,3 +80,7 @@ The preset contains ten mixins. `fit`, `full`, `center`, `middle`, and `round` a
 ## Atomic class authoring
 
 `animate-*` is the built-in token family for `animation`, using the `animate` namespace. Each `--animate-name` token contains a complete native shorthand. Preset values include their duration and infinite repetition; custom values use native CSS defaults. There is no preset animation mixin or companion-setting mechanism. Use full-property declarations such as `animation-duration:var(--duration-fast)` for overrides; token longhands follow the general order and may be reset by the shorthand. Engine declarations have no shorthand priority or value inference.
+
+Browser regression for base-style decisions is separate from unit tests:
+`pnpm --filter @master/css-preset exec vitest run --config vitest.e2e.config.ts`.
+It requires Playwright Chromium, Firefox and WebKit and checks both defaults and explicit opt-in classes.

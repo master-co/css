@@ -2,7 +2,7 @@ import Overview from './components/Overview.mdx'
 
 ## Overview [sr-only]
 <Overview />
-Master CSS is a markup-driven CSS language and framework. This quick introduction shows the basic class syntax, the project CSS entry, the main delivery choices, and the next guides to read.
+Master CSS lets teams compose CSS and project design rules in markup, trace the impact of changes, and check generated styles. It is built for interfaces that will be edited and maintained over time.
 
 ---
 
@@ -33,7 +33,7 @@ Start with local styling in markup. This is enough for a first screen, prototype
 
 Master CSS reads those class names, validates them against the active project vocabulary, and emits CSS for the classes that are actually used.
 
-When a value or pattern becomes shared across the product, promote it later. Repeated values usually belong in [theme tokens](/guide/theme), and repeated product roles can become [component classes](/guide/global-styles#component-classes).
+When a value or pattern becomes shared across the product, promote it later. Values that should change together belong in [theme tokens](/guide/theme); equal values can still represent different product decisions. Stable product roles can become [component classes](/guide/global-styles#component-classes).
 
 ---
 
@@ -42,15 +42,11 @@ After [Installation](/guide/installation), follow the [Syntax Tutorial](/guide/s
 ---
 
 ## Choose how CSS is delivered
-Master CSS uses the same class syntax across different delivery modes. Choose the mode that fits the app:
+Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or Wasm engine.
 
-- Runtime rendering watches class names in the browser and generates CSS as elements appear or change.
-- Static rendering scans source files during the build and emits CSS before deployment.
-- Server or pre-rendered CSS generates CSS from rendered HTML.
-- Progressive rendering sends first-page CSS early, then lets the runtime handle later dynamic classes.
+Changing state does not require compiling CSS in the browser. Toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime when a playground, visual editor or deployed content introduces previously unknown class names. Server pre-rendering and progressive delivery remain available for those specific needs; see [Rendering Modes](/guide/rendering-modes).
 
-You can start with the recommended setup for your framework, then revisit delivery once the project shape is clearer. See [Rendering Modes](/guide/rendering-modes) when you need to compare the tradeoffs.
-
+Generated CSS, syntax diagnostics and dependency reports provide different kinds of evidence. They do not establish the final appearance, interaction behavior or accessibility of a page.
 ---
 
 ## Keep going

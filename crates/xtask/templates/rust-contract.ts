@@ -579,6 +579,8 @@ export interface MasterCSSLintHostValidation {
 export interface MasterCSSLintRawValuePolicy {
   allowRawValues?: boolean
   allowProperties?: readonly string[]
+  /** Limit enforcement to these native properties; omitted or empty means all token-backed properties. */
+  requireProperties?: readonly string[]
   allowedPatterns?: readonly string[]
 }
 
@@ -1058,4 +1060,51 @@ export interface MasterCSSDiagnostic {
   source?: string
   range?: MasterCSSSourceRange
   notes?: string[]
+}
+
+/** Resolved project state. Native stylesheets and output assets retain delivery order. */
+export interface MasterCSSProjectSnapshot {
+  readonly version: 1
+  readonly manifest: import('@master/css-schema/manifest').MasterCSSManifest
+  readonly sources: readonly { readonly path: string; readonly classes: readonly string[] }[]
+  readonly stylesheets: readonly { readonly path: string; readonly css: string }[]
+  readonly outputs: readonly { readonly path: string; readonly css: string }[]
+  readonly excluded: readonly string[]
+  readonly unresolved: readonly string[]
+}
+export interface MasterCSSProjectComparisonRequest {
+  readonly before: MasterCSSProjectSnapshot
+  readonly after: MasterCSSProjectSnapshot
+}
+export interface MasterCSSProjectAssetChange {
+  readonly path: string
+  readonly before: string | null
+  readonly after: string | null
+  readonly changedDependencies: readonly string[]
+}
+export interface MasterCSSProjectComparison {
+  readonly version: 1
+  readonly definitions: readonly { readonly id: string; readonly before: unknown; readonly after: unknown }[]
+  readonly classes: readonly {
+    readonly className: string
+    readonly files: readonly string[]
+    readonly reasons: readonly string[]
+    readonly changedDependencies: readonly string[]
+    readonly beforeMatchStatus: MasterCSSMatchStatus | null
+    readonly afterMatchStatus: MasterCSSMatchStatus | null
+    readonly beforeRules: readonly import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
+    readonly afterRules: readonly import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
+  }[]
+  readonly stylesheets: readonly MasterCSSProjectAssetChange[]
+  readonly outputs: readonly MasterCSSProjectAssetChange[]
+  readonly stylesheetOrderChanged: boolean
+  readonly outputOrderChanged: boolean
+  readonly files: readonly string[]
+  readonly coverage: {
+    readonly scope: 'known-sources'
+    readonly browser: 'not-checked'
+    readonly excluded: readonly string[]
+    readonly unresolved: readonly string[]
+    readonly notes: readonly string[]
+  }
 }

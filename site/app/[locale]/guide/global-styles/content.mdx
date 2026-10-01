@@ -27,13 +27,7 @@ Use the app stylesheet for project-wide styling inputs:
 
 Load this stylesheet once from the app root, framework layout, or build entry. Do not import it again from page-level CSS. A second import duplicates global native CSS and makes ownership harder to trace.
 
-Use the lightweight marker only when a stylesheet should be a generated CSS entry without loading the package defaults:
-
-```css
-@import "@master/css";
-```
-
-`@import "@master/css";` is the only project entry form and loads the full preset. Use `@reference` when a local stylesheet needs definition context without native CSS delivery.
+Use `@reference` when a local stylesheet needs definition context without delivering the referenced native CSS.
 
 ---
 
@@ -69,7 +63,7 @@ Write browser normalization and structural baselines in `@layer base`. Put broad
 }
 ```
 
-`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer still connects the configured font tokens to the document's baseline typography.
+`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography. It leaves document height, text rendering precision, font smoothing and button text selection to the application and platform. Use `min-height:100dvh` for a screen that needs it, `font-antialiased` for an intentional font rendering choice, or `user-select:none` on a particular interaction surface.
 
 Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
 
@@ -108,9 +102,9 @@ Reusable styling is an ownership decision. Keep local choices in markup while a 
 Use this order:
 
 1. Keep one-off styling in markup utilities.
-2. Move repeated values into theme tokens.
+2. Give shared product decisions theme tokens; keep independent roles separate even when their current values match.
 3. Write native global CSS for global selectors and app-wide stylesheet surfaces.
-4. Create custom utilities for reusable low-level primitives.
+4. Use a static mixin only when a parameterized combination has a clear shared responsibility.
 5. Create component classes for repeated product UI roles.
 6. Write broad native defaults in `@layer defaults`.
 
@@ -315,3 +309,67 @@ styles/
 Keep project-wide tokens, variants, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Route-level styles](/guide/route-level-styles), and promote them here only after they become shared.
 
 Use native declarations and selectors for component styles. Share design values through CSS custom properties; use shared native classes or component interfaces for common behavior.
+
+
+## Keep responsibilities clear when editing
+
+In this panel, local adjustments stay in markup, colors carry product roles, the container controls layout, and shared button behavior lives in native CSS. The stack recipe has one explicit parameter. Progress changes through a custom property, so it does not need new class names or runtime compilation.
+
+```css name=maintenance.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --color-information: #4f46e5;
+}
+
+@mixin --panel-stack(--gap <number>: 1) {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 1rem);
+}
+
+@layer components {
+  .card-region { container-type: inline-size; }
+  .card { display: grid; gap: 1rem; }
+  @container (width >= 30rem) {
+    .card { grid-template-columns: 1fr 1fr; }
+  }
+  .button {
+    padding: .625rem 1rem;
+    background-color: var(--color-brand);
+    color: white;
+  }
+  .button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  .button:disabled { opacity: .5; cursor: not-allowed; }
+  .progress-fill {
+    transform-origin: left;
+    transform: scaleX(var(--progress, 0));
+    transition: transform 150ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress-fill { transition: none; }
+  }
+}
+
+[data-theme='dark'] { --color-brand: #818cf8; color-scheme: dark; }
+```
+
+```html name=maintenance.html&verify=compile
+<section class="card-region p-lg">
+  <article class="card">
+    <div class="panel-stack(1.5)">
+      <h2 class="margin:0 fg-brand">Workspace</h2>
+      <p class="fg-information">Your files stay available during updates.</p>
+      <button class="button" type="button" disabled>Saving</button>
+    </div>
+    <div aria-hidden="true">
+      <div class="progress-fill height:.5rem bg-brand" style="--progress:.4"></div>
+    </div>
+  </article>
+</section>
+```
+
+Change `--color-brand` without changing `--color-information`, even though they start with the same value. The dark override is a separate product decision. Update `--progress` from application state; use semantic progress text or a native progress element when the value must be communicated to users. A style or token name cannot establish accessible interaction behavior.
+
+Use the same card in different container widths and verify it in the browser. For token and recipe edits, the [project comparison workflow](/guide/ai-coding#review-the-second-change) identifies known consumers and discloses the limits of static analysis.

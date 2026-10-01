@@ -148,3 +148,5 @@ export async function migrateRC(request: MasterCSSRCMigrationRequest): Promise<M
   const session = await createCompilerBindingSession()
   try { return session.migrateRC(request) } finally { session.dispose() }
 }
+
+export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from '@master/css-binding/compiler'

@@ -10,7 +10,7 @@
     </picture>
   </a>
 </p>
-<p align="center">The CSS language and framework for rapidly building modern and high-performance websites</p>
+<p align="center">Compose CSS and project design rules in markup, with tools to trace changes and verify generated styles.</p>
 
 <p align="center">
   <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

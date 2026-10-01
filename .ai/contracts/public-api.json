@@ -94,8 +94,12 @@
           "MasterCSSLowerDirectivesResult",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSPrepareStylesheetBundleRequest",
+          "MasterCSSProjectAssetChange",
+          "MasterCSSProjectComparison",
+          "MasterCSSProjectComparisonRequest",
           "MasterCSSProjectEntryGraph",
           "MasterCSSProjectManifest",
+          "MasterCSSProjectSnapshot",
           "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
@@ -125,8 +129,12 @@
           "MasterCSSLowerDirectivesRequest",
           "MasterCSSLowerDirectivesResult",
           "MasterCSSNativeBindingLoadOptions",
+          "MasterCSSProjectAssetChange",
+          "MasterCSSProjectComparison",
+          "MasterCSSProjectComparisonRequest",
           "MasterCSSProjectEntryGraph",
           "MasterCSSProjectManifest",
+          "MasterCSSProjectSnapshot",
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
           "createCompilerBindingSessionSync"
@@ -193,7 +201,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "d77d0faee6b98cb6"
+      "surface": "06d03432100d5ba2"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -348,6 +356,10 @@
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerOptions",
           "MasterCSSPrepareStylesheetBundleRequest",
+          "MasterCSSProjectAssetChange",
+          "MasterCSSProjectComparison",
+          "MasterCSSProjectComparisonRequest",
+          "MasterCSSProjectSnapshot",
           "MasterCSSRCMigrationRequest",
           "MasterCSSRCMigrationResult",
           "MasterCSSRenderStylesheetBundleRequest",
@@ -460,13 +472,18 @@
           "MasterCSSMissingCSSReason",
           "MasterCSSMissingCSSResult",
           "MasterCSSMissingCSSStatus",
+          "MasterCSSProjectComparison",
+          "MasterCSSProjectComparisonRequest",
+          "MasterCSSProjectSnapshot",
           "MasterCSSSourceInspection",
           "MasterCSSStylesheetError",
           "MasterCSSStylesheetInspection",
+          "captureMasterCSSProject",
+          "compareProjectSnapshots",
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "ef2ef9d00e3f6704"
+      "surface": "3cd86d20fdf9380e"
     },
     "@master/create-css": {
       "directory": "create",

@@ -129,6 +129,8 @@ struct LintRawValuePolicyRequest {
     #[serde(default)]
     allow_properties: Vec<String>,
     #[serde(default)]
+    require_properties: Vec<String>,
+    #[serde(default)]
     allowed_patterns: Vec<String>,
 }
 

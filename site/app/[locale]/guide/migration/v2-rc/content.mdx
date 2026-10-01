@@ -2,7 +2,7 @@
 
 ## Canonical token families (language 11)
 
-Direct values use full native properties, while each built-in named-token family has exactly one canonical prefix. This is a breaking language contract: regenerate manifests and hydration data with matching packages. Manifest remains v4; the binding ABI is 21.
+Direct values use full native properties, while each built-in named-token family has exactly one canonical prefix. This is a breaking language contract: regenerate manifests and hydration data with matching packages. Manifest remains v4; the binding ABI is 22.
 
 Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
 
@@ -121,7 +121,7 @@ There is no new automatic migration profile for this change. Update project sour
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 11 and ABI 21. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 12 and ABI 22. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 
@@ -313,7 +313,7 @@ Use `pair(2rem)` or `pair-token("card")`. To expose a named `pair-card` family i
 
 Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
-- Manifest **v4**, language **v12**, binding ABI **21**, hydration **v3** and engine transition **v3** reject incompatible data.
+- Manifest **v4**, language **v12**, binding ABI **22**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use default theme tokens, native overrides, `customMedia` and mixins.
 - Recompile into Manifest v4 / language 11 / ABI 21. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
@@ -664,7 +664,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 21), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 12; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 22), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 12; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors

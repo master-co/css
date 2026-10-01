@@ -124,7 +124,7 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
 | `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. |
 | `mastercss_manifest_query` | Query active manifest tokens, utilities, variants, modes, conditions, and aliases. |
-| `mastercss_css_compare` | Compare generated CSS for before/after class lists, HTML fragments, or source buffers. |
+| `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
 | `mastercss_lint_project` | Run Master CSS class-list diagnostics for workspace files and return fix proposals without writing files. |
 | `mastercss_lint_content` | Run Master CSS class-list diagnostics on an in-memory source buffer without writing files. |
 | `mastercss_suggest_syntax` | Return language-service completions and hover context for a document position. |
@@ -216,3 +216,12 @@ npx @master/css-cli inspect --format json --exit-code never
 - Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
 - Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
 - Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.
+
+
+## Compare a project before and after editing
+
+Call `mastercss_scan_project` with `includeSnapshot: true` before editing and save `result.data.snapshot`. Repeat after editing, then pass the two objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`. Both are required; snapshot inputs cannot be mixed with class/content, `filePath` or `context` inputs.
+
+The project result is `{ version: 3, mode: 'project', comparison }` inside the usual version 3 envelope. `comparison.version` is 1. It reports changed definitions, known class consumers and files, before/after generated rules, native references, output assets and delivery order. Read `coverage` even when there are no differences: dynamic sources, remote content, binary assets and final browser behavior are not exhaustively checked. Native consumers are conservative at stylesheet granularity.
+
+These tools use the installed compiler. Check workspace package versions, language/binding versions and manifest metadata before using documentation or examples; use the project-local, lockfile-pinned MCP package for reproducible sessions.

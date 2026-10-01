@@ -1,32 +1,18 @@
 @layer theme, base, defaults, components, utilities;
 
 @layer base {
-  /* Improve text rendering precision across browsers. */
-  * {
-    text-rendering: geometricPrecision;
-  }
-
-  /* Normalize body text metrics and font smoothing. */
+  /* Normalize body text metrics; font rasterization follows the platform. */
   body {
     line-height: 1.2;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
   }
 
   /* Remove touch delay from common interactive elements. */
   a, button {
     touch-action: manipulation;
-  }
-
-  /* Prevent accidental text selection on button-like controls. */
-  [role=button], summary,
-  button, [type=button] {
-    -webkit-user-select: none;
-    user-select: none;
   }
 
   /* Use border-box sizing for all elements and pseudo-elements. */
@@ -47,13 +33,6 @@
   }
 
   /* consistent */
-
-  /* Keep the root viewport height consistent on modern and WebKit browsers. */
-  html, body {
-    height: 100dvh;
-    height: -webkit-fill-available;
-    height: -moz-available;
-  }
 
   /* Ensure abbreviated text with titles has a consistent underline style. */
   abbr[title] {

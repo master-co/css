@@ -57,12 +57,14 @@ function resolveRawValuePolicy(
     return {
       allowRawValues: true,
       allowProperties: options.allowProperties || [],
+    requireProperties: options.requireProperties || [],
       allowedPatterns: []
     }
   }
   return {
     allowRawValues: false,
     allowProperties: options.allowProperties || [],
+    requireProperties: options.requireProperties || [],
     allowedPatterns: options.allowedPatterns || []
   }
 }

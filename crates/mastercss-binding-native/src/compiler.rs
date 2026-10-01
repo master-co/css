@@ -92,6 +92,16 @@ pub fn inspect_css_json(source: String) -> Result<String> {
 }
 
 #[napi]
+pub fn compare_project_snapshots_json(request_json: String) -> Result<String> {
+    let request =
+        serde_json::from_str::<mastercss_compiler::ProjectComparisonRequest>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(
+        &mastercss_compiler::compare_project_snapshots(&request).map_err(compiler_to_napi_error)?,
+    )
+}
+
+#[napi]
 pub fn create_inspection_report_json(input_json: String) -> Result<String> {
     mastercss_diagnostics::create_inspection_report_json(&input_json).map_err(|error| {
         Error::new(

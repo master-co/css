@@ -27,6 +27,11 @@ export default createRule({
           items: { type: 'string' },
           uniqueItems: true
         },
+        requireProperties: {
+          type: 'array',
+          items: { type: 'string' },
+          uniqueItems: true
+        },
         allowedPatterns: {
           type: 'array',
           items: { type: 'string' },

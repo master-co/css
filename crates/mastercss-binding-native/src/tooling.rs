@@ -107,6 +107,10 @@ impl NodeLintSession {
                     policy.allow_properties,
                     policy.allowed_patterns,
                 )
+                .map(|mut result| {
+                    result.require_properties = policy.require_properties;
+                    result
+                })
             })
             .transpose()
             .map_err(invalid_lint_request)?;

@@ -1,3 +1,4 @@
+import './maintenance-examples.test'
 import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'
@@ -212,11 +213,23 @@ test('docs example classes are valid default preset classes or locally defined c
 
   for (const file of files) {
     const content = await readFile(file, 'utf8')
+    // Opted-in paired fences are checked with their actual project definitions,
+    // rather than accepting a custom class solely because its name appears nearby.
+    const compiledRanges: [number, number][] = []
+    for (const html of content.matchAll(/```html name=([^&\n]+)&verify=compile\n([\s\S]*?)```/g)) {
+      const cssName = html[1].replace(/\.html$/, '.css')
+      const css = [...content.matchAll(/```css name=([^\n]+)\n([\s\S]*?)```/g)].find(match => match[1] === cssName)
+      assert.ok(css, `Missing paired CSS example ${cssName}`)
+      const classes = tooling.extractSource({ files: [{ source: html[1], content: html[2], kind: 'html' }] }).files[0].candidates
+      configuredExampleCSS(css[2], [...classes])
+      compiledRanges.push([lineAt(content, html.index), lineAt(content, html.index + html[0].length)])
+    }
     for (const example of stylesheetExamples(content)) {
       const css = await stylesheetExampleCSS(example.source)
       assert.deepEqual(validateCSS(css), [], `${file}: ${example.title}`)
     }
     for (const eachCandidate of extractExampleCandidates(file, content)) {
+      if (compiledRanges.some(([start, end]) => eachCandidate.line >= start && eachCandidate.line <= end)) continue
       const result = validate(eachCandidate.candidate)
       if (result.matched && result.errors.length === 0) continue
       if (isAllowedPresetValidatorGap(eachCandidate.candidate, result)) continue

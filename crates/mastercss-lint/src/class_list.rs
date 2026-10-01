@@ -109,6 +109,14 @@ fn create_raw_value_diagnostics(
     }
     let mut diagnostics = Vec::new();
     for candidate in candidates {
+        if !policy.require_properties.is_empty()
+            && !candidate
+                .properties
+                .iter()
+                .any(|property| policy.require_properties.contains(property))
+        {
+            continue;
+        }
         if policy.allow_properties.contains(&candidate.key)
             || candidate
                 .properties
@@ -145,6 +153,8 @@ fn create_raw_value_diagnostics(
             ),
             range,
             data: serde_json::Map::from_iter([
+                ("policy".into(), serde_json::json!({"rule": "no-unapproved-raw-values", "requireProperties": policy.require_properties})),
+                ("tokenFamilies".into(), serde_json::json!(mastercss_engine::builtin_token_families().filter(|(_, property, _)| candidate.properties.iter().any(|item| item == property)).map(|(prefix, property, namespaces)| serde_json::json!({"prefix": prefix,"property": property,"namespaces":namespaces.iter().map(|namespace| namespace.trim_start_matches('~')).collect::<Vec<_>>()})).collect::<Vec<_>>())),
                 (
                     "className".into(),
                     serde_json::Value::String(candidate.class_name.clone()),

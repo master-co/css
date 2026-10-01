@@ -1,6 +1,6 @@
 AI coding works best when the agent can see the same styling system your team uses: the framework, the CSS entry, the theme tokens, the reusable component vocabulary, and the checks that keep class strings valid.
 
-Master CSS gives an agent a compact styling language. Classes map closely to CSS declarations, token values, selector states, conditional queries, and generated CSS output. That makes it easier for an AI coding agent to suggest useful markup, but the workflow still needs product judgment from a developer.
+Master CSS gives people and agents the same project vocabulary and Rust-backed checks. Local declarations, named tokens and static recipes can be traced to generated CSS. Evaluate the result through subsequent changes, review and browser checks; class length and first-draft speed do not establish maintainability.
 
 Use AI to move faster through routine styling decisions, generate first drafts, compare alternatives, and review class strings. Keep decisions about semantics, shared tokens, reusable components, and visual quality with the person reviewing the change.
 
@@ -72,7 +72,7 @@ Use a prompt like this from the project root:
 ```text name=prompt
 You are working in a Master CSS project.
 
-Use the official Master CSS documentation as the source of truth:
+Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
 Documentation: https://rc.css.master.co
 
 Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
@@ -80,7 +80,7 @@ Before editing, inspect the framework, package manager, CSS entry, theme tokens,
 When styling markup:
 - use valid Master CSS syntax
 - prefer existing theme tokens and component classes
-- use explicit CSS-like classes when the shorter alias is unclear
+- use full native property names for direct declarations and canonical token families for project vocabulary
 - do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
 - keep semantic HTML and accessibility behavior unchanged
 - explain any value that should become a shared token
@@ -106,7 +106,7 @@ When your AI client supports the Model Context Protocol, connect it to the [Mast
 
 Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately; an unknown value is not a failed match, and an unchecked browser is not verified support. Manifest load failure requires fixing the project context rather than silently answering from a preset.
 
-Keep compound media queries in `@custom-media` and other complex wrappers in CSS mixins. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
+Keep complex selectors and container relationships in native CSS. Use `@custom-media` for shared media conditions and static mixins only for meaningful parameterized combinations. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
 
 The shared CLI/editor/MCP workflow fixtures check tool consistency. They do not measure model generation accuracy.
 
@@ -119,7 +119,7 @@ For recurring work, add a short Master CSS rules block to the project's agent in
 
 ```text name=AGENTS.md
 When editing Master CSS:
-- Use https://rc.css.master.co as the source of truth.
+- Inspect installed package/language/binding versions and the active manifest before consulting matching documentation at https://rc.css.master.co.
 - Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
 - Put resets and normalization in @layer base, broad project visual defaults in @layer defaults, and named UI classes in @layer components.
 - For example, put button font inheritance in base, the page text color in defaults, and a .btn design in components; defaults does not mean browser defaults.
@@ -275,3 +275,28 @@ Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can 
 
 
 Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
+
+
+## Review the second change
+
+Before changing shared definitions, save a project snapshot. The next inspection can compare it with the current project even when markup has not changed:
+
+```bash name=Terminal
+npx @master/css-cli inspect --snapshot > before.json
+npx @master/css-cli inspect --compare before.json > impact.json
+```
+
+Run the second command after editing. Review changed definitions, known consumers, generated rules, native stylesheet references and output delivery in `impact.json`. Read the coverage limits, then check affected layouts and states in the browser. In MCP, use `mastercss_scan_project` with `includeSnapshot: true` and pass both snapshots to `mastercss_css_compare`.
+
+Evaluate maintenance with repeatable tasks, using the same requirements, model version and resource limits for native CSS, current Master CSS, and the candidate change. Include a markup framework baseline when useful.
+
+| Second change | Evidence to collect |
+| --- | --- |
+| Change brand color while retaining an equal information color | Only consumers of the intended role change. |
+| Put one card in a main region and a sidebar | The card responds to its container. |
+| Restyle a button | Applicable focus-visible, disabled, dark and reduced-motion states still work. |
+| Change a token or recipe | Known consumers appear in the impact report; unknown scope is disclosed. |
+| Introduce changing progress or coordinates | Stable classes and custom properties handle dynamic values. |
+| Mix native, vendor and Master CSS | Cascade, import boundaries, declaration order, duplicates and resource URLs are retained. |
+
+Record first-edit time, second-edit time, human review, corrections, verification time and unresolved failures. Repeat trials; one successful output is not evidence of a general advantage. The repository's compiler and browser fixtures establish mechanical correctness, not a measured reduction in team maintenance time.
