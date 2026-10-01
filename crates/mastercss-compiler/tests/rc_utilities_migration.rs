@@ -61,6 +61,10 @@ fn converts_only_safe_patterns_and_retains_native_values() {
         );
     }
     assert!(output.contains("@mixin --size(--value)"), "{output}");
+    assert!(
+        output.contains("@mixin --gap(--spacing){gap:var(--spacing)}"),
+        "{output}"
+    );
     assert!(!output.contains("@utility"), "{output}");
     assert!(output.contains("--alpha(red,.5)"));
     let rerun = migrate_rc(&request(vec![], vec![&output])).unwrap();
@@ -71,6 +75,14 @@ fn converts_only_safe_patterns_and_retains_native_values() {
         assert!(!result.stylesheets[0].notes.is_empty());
         assert!(result.stylesheets[0].edits.is_empty());
     }
+}
+
+#[test]
+fn non_native_declarations_do_not_silently_lose_a_migrated_family() {
+    let source = "@utilities{local-<=spacing>{--local:--value()}}";
+    let result = migrate_rc(&request(vec![], vec![source])).unwrap();
+    assert!(result.stylesheets[0].edits.is_empty());
+    assert!(!result.stylesheets[0].notes.is_empty());
 }
 #[test]
 fn combines_adjacent_static_definitions_in_original_order() {
@@ -143,7 +155,7 @@ fn unchanged_declarations_do_not_hide_changed_resource_values() {
     let mut request = request(vec![vec!["card"]], vec![]);
     let definition = json!({"id":"card","type":-2,"emit":{"type":"declarations","declarations":["color:var(--color-brand)"]},"matchers":[{"type":"static","name":"card"}]});
     request.manifest = json!({"version":1,"languageVersion":2,"variables":{"color":[{"key":"brand","value":"red"}]},"utilities":[definition.clone()]});
-    request.target_manifest = json!({"version":4,"languageVersion":12,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
+    request.target_manifest = json!({"version":4,"languageVersion":13,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
     let result = migrate_rc(&request).unwrap();
     assert_eq!(result.class_lists[0][0].status, "review");
     assert!(

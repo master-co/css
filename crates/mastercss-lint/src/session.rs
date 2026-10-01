@@ -112,6 +112,7 @@ impl LintSession {
             class_names,
             analysis,
             class_list::ClassListPolicy {
+                token_families: self.engine.token_families()?,
                 matches: &matches,
                 validation_errors: policy.validation_errors,
                 disallow_unknown_class: policy.disallow_unknown_class,

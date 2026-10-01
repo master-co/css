@@ -1,43 +1,12 @@
 use super::{
-    BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES, CompiledVariable,
-    ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering, StoredRule,
-    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
-    UtilityMatcherType, collect_css_variable_names, format_standard_number,
-    normalize_css_math_functions,
+    BUILTIN_NATIVE_DECLARATION_PROPERTIES, CompiledVariable, ConditionFeature, GeneratedRuleIr,
+    HashMap, ManifestProjection, Ordering, StoredRule, UtilityDefinition, UtilityEmit,
+    UtilityLayerName, UtilityMatch, UtilityMatcher, UtilityMatcherType, collect_css_variable_names,
+    format_standard_number, normalize_css_math_functions,
 };
 
-pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    for (prefix, property, namespaces) in super::builtin_token_families() {
-        utilities.push(UtilityDefinition {
-            id: format!("token:{prefix}:{property}"),
-            name: Some(format!("{prefix}-")),
-            utility_type: 0,
-            order: Some(0),
-            layer: UtilityLayerName::Utilities,
-            keys: Vec::new(),
-            alias_groups: Vec::new(),
-            variable_aliases: Vec::new(),
-            variable_alias_refs: namespaces.iter().map(|name| (*name).into()).collect(),
-            variables: Default::default(),
-            variable_entries: Vec::new(),
-            native_fallback: false,
-            builtin_token: true,
-            emit: UtilityEmit::Property {
-                property: property.into(),
-            },
-            matchers: vec![UtilityMatcher::Token {
-                prefix: format!("{prefix}-"),
-            }],
-        });
-    }
-}
-
 pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    let properties = BUILTIN_NATIVE_DECLARATION_PROPERTIES.iter().chain(
-        BUILTIN_TOKEN_NAMESPACES
-            .iter()
-            .flat_map(|(properties, _)| properties.iter()),
-    );
+    let properties = BUILTIN_NATIVE_DECLARATION_PROPERTIES.iter();
     for property in properties {
         let id = format!("native:{property}");
         if utilities.iter().any(|utility| utility.id == id) {
@@ -56,7 +25,6 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             variables: HashMap::new(),
             variable_entries: Vec::new(),
             native_fallback: true,
-            builtin_token: false,
             emit: UtilityEmit::Property {
                 property: (*property).into(),
             },

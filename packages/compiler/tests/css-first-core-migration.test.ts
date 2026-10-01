@@ -3,21 +3,22 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 4 as const, languageVersion: 12 as const, mixins: [] }
+const baseManifest = { version: 4 as const, languageVersion: 13 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
-describe('directive language v12 authoring contracts', () => {
+describe('directive language v13 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green;  }
       @mixin --card { color: red; &:hover { color: blue; } }
+      @mixin --outline(--color) {outline-color:var(--color)}
       @mixin --pair(--value) { width: var(--value); height: var(--value); }
 
       @mixin --align-left { text-align: left; }
       @mixin --align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(4)
-    expect(manifest.languageVersion).toBe(12)
+    expect(manifest.languageVersion).toBe(13)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')

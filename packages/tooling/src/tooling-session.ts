@@ -54,6 +54,7 @@ import type {
   MasterCSSLanguageColorPresentation,
   MasterCSSLanguageColorTokens,
   MasterCSSLanguageCompletionIndex,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSLanguageInspection
 } from './language/contracts'
 import { freezeToolingResult } from './immutable'
@@ -194,6 +195,11 @@ export class MasterCSSToolingSession implements Disposable {
   inspectClassName(className: string): MasterCSSLanguageInspection {
     this.assertActive()
     return freezeToolingResult(this.parts.language.inspectClassName(className))
+  }
+
+  tokenFamilies(): MasterCSSLanguageTokenFamilies {
+    this.assertActive()
+    return freezeToolingResult(this.parts.language.tokenFamilies())
   }
 
   completionIndex(): MasterCSSLanguageCompletionIndex {

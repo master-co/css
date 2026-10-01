@@ -727,6 +727,19 @@ export interface MasterCSSLanguageCompletionEntry {
   triggerSuggest: boolean
 }
 
+export interface MasterCSSTokenFamily {
+  readonly mixin: string
+  readonly prefix: string
+  readonly namespace: string
+  readonly argument: 'value' | 'key'
+  readonly properties: readonly string[]
+}
+
+export interface MasterCSSLanguageTokenFamilies {
+  readonly version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  readonly families: readonly MasterCSSTokenFamily[]
+}
+
 export interface MasterCSSLanguageCompletionIndex {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   classEntries: MasterCSSLanguageCompletionEntry[]

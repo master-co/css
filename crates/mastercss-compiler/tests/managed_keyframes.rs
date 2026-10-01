@@ -4,7 +4,8 @@ use mastercss_compiler::{
 use mastercss_engine::EngineSession;
 
 fn engine(source: &str) -> EngineSession {
-    let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
+    let source = format!("{source}@mixin --animate(--animate){{animation:var(--animate)}}");
+    let parsed = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let manifest =
         compile_manifest_input(&parsed.manifest_input, &CompileManifestOptions::default())
             .unwrap()

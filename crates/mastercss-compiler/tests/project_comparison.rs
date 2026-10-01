@@ -6,7 +6,10 @@ use mastercss_compiler::{
 use serde_json::{Value, json};
 
 fn snapshot(css: &str, classes: &[&str]) -> Value {
-    let parsed = compile_css_directives(css, &CompileNativeCssOptions::default()).unwrap();
+    let css = format!(
+        "{css}@mixin --bg(--color){{background-color:var(--color)}}@mixin --fg(--color){{color:var(--color)}}"
+    );
+    let parsed = compile_css_directives(&css, &CompileNativeCssOptions::default()).unwrap();
     let lowered = lower_css_directives_request(
         &LowerCssDirectivesRequest {
             mixin_sources: parsed.mixin_sources,

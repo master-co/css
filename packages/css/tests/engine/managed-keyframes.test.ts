@@ -69,7 +69,7 @@ test('animation tokens use general ordering and direct longhands override the sh
     expect(text.indexOf('animation-duration:var(--duration-fast)')).toBeLessThan(text.indexOf('animation:var(--animate-fade)'))
     expect(text.indexOf('animation:var(--animate-fade)')).toBeLessThan(text.indexOf('animation-duration:var(--duration-slow)'))
     for (const engine of [native, wasm]) {
-      expect(engine.inspect('animate("fade")').matchStatus).not.toBe('matched')
+      expect(engine.inspect('animate(var(--animate-fade))').rules[0].text).toContain('animation:var(--animate-fade)')
       expect(engine.inspect('animation-fade').matchStatus).not.toBe('matched')
       expect(engine.inspect('animate:fade').matchStatus).not.toBe('matched')
       expect(engine.inspect('animation:fade|2s').rules[0].text).toContain('animation:fade 2s')

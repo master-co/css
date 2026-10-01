@@ -67,30 +67,13 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
     if !namespaces.is_empty() {
         let value = parameter(body, "--value", "var(--value)");
         let definition = crate::mixins::definition("--migration(--value)", &value)?;
-        if let [
-            mastercss_schema::MixinNode::Declaration {
-                property, value, ..
-            },
-        ] = definition.body.as_slice()
-            && mastercss_engine::evaluate_mixin_value(
-                value,
-                &std::collections::HashMap::from([("--value".into(), "MIGRATION".into())]),
-            )? == "MIGRATION"
-            && mastercss_engine::builtin_token_namespaces()
-                .iter()
-                .any(|(properties, refs)| {
-                    properties.contains(&property.as_str())
-                        && refs
-                            .iter()
-                            .map(|reference| reference.trim_start_matches('~'))
-                            .eq(namespaces.iter().map(|namespace| &namespace[1..]))
-                })
-            && (property == key
-                || super::legacy_registry::builtin_token_aliases()
-                    .iter()
-                    .any(|(alias, target)| *alias == key && *target == property))
+        if let Some((_, property)) = mastercss_engine::direct_value_mixin(&definition)
+            && namespaces.len() == 1
         {
-            return Ok(String::new());
+            let namespace = &namespaces[0][1..];
+            return Ok(format!(
+                "@mixin --{key}(--{namespace}){{{property}:var(--{namespace})}}"
+            ));
         }
         if namespaces.len() == 1 && &namespaces[0][1..] == key {
             let body = parameter(

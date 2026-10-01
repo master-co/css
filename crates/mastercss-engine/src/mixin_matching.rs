@@ -5,6 +5,7 @@ use super::{
 use mastercss_schema::MixinParameterSyntax;
 
 pub(crate) fn register(manifest: &mut ManifestProjection) {
+    manifest.token_families = super::token_family::infer(&manifest.mixins);
     for definition in &manifest.mixins {
         let name = definition.name.trim_start_matches("--");
         let mut matchers = vec![UtilityMatcher::Function { name: name.into() }];
@@ -18,7 +19,7 @@ pub(crate) fn register(manifest: &mut ManifestProjection) {
                 prefix: format!("{name}-"),
             });
         }
-        manifest.utilities.push(UtilityDefinition {
+        let utility = UtilityDefinition {
             id: definition.name.clone(),
             name: Some(name.into()),
             utility_type: -2,
@@ -35,12 +36,27 @@ pub(crate) fn register(manifest: &mut ManifestProjection) {
             variables: Default::default(),
             variable_entries: Vec::new(),
             native_fallback: false,
-            builtin_token: false,
             emit: UtilityEmit::Mixin {
                 name: definition.name.clone(),
             },
             matchers,
-        });
+        };
+        if let Some((parameter, property)) = super::direct_value_mixin(definition) {
+            // Specialize only the named call. Ordinary function calls still bind
+            // arguments through the same mixin evaluator as native @apply.
+            let mut token = utility.clone();
+            token.name = Some(format!("{name}-"));
+            token.utility_type = 0;
+            token.variable_alias_refs = vec![format!("~{}", &parameter[2..])];
+            token.emit = UtilityEmit::Property {
+                property: property.into(),
+            };
+            token.matchers = vec![UtilityMatcher::Token {
+                prefix: format!("{name}-"),
+            }];
+            manifest.utilities.push(token);
+        }
+        manifest.utilities.push(utility);
     }
 }
 

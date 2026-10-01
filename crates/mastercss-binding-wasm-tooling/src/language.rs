@@ -131,6 +131,15 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = tokenFamilies)]
+    pub fn token_families(&self) -> Result<JsValue, JsValue> {
+        self.inner
+            .token_families()
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     #[wasm_bindgen(js_name = completionIndex)]
     pub fn completion_index(&self) -> Result<JsValue, JsValue> {
         self.inner

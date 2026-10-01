@@ -3,8 +3,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createEngineBindingSession } from '../src/engine-binding'
 
-test('native and Wasm agree on entry replacement, equal-value ambiguity and removed sizes', async () => {
-  const manifest: MasterCSSManifest = { version: 4, languageVersion: 12,
+test('native and Wasm agree on entry replacement, theme-only isolation and removed sizes', async () => {
+  const manifest: MasterCSSManifest = { version: 4, languageVersion: 13,
     variables: { 'font-size': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }], 'font-family': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }] },
     mixins: [
       ...['size', 'box'].map(name => ({ name: `--${name}`, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property: 'width', value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }] })),
@@ -14,7 +14,7 @@ test('native and Wasm agree on entry replacement, equal-value ambiguity and remo
   using native = await createEngineBindingSession({ manifest }, { binding: 'native' })
   using wasm = await createEngineBindingSession({ manifest }, { binding: 'wasm' })
   for (const session of [native, wasm]) {
-    expect(session.inspect('font-brand').matchStatus).toBe('ambiguous')
+    expect(session.inspect('font-brand').matchStatus).toBe('unmatched')
     session.ensureClassRules(['size(20px)', 'box(30px)', 'max-size:40px'])
     expect(session.snapshot().text).toContain('.size\\(20px\\){height:20px}')
     expect(session.snapshot().text).toContain('.box\\(30px\\){width:30px}')
@@ -28,7 +28,7 @@ test('ABI 16 exposes rc-sizing migration with identical native and Wasm decision
   using wasm = await createCompilerBindingSession({ binding: 'wasm' })
   const targetManifest = {
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 }
   const request = { from: 'rc-sizing' as const, sourceVersion: '2.0.0-rc.sizing', targetManifest,
     manifest: { ...targetManifest, version: 1 as const, languageVersion: 3 as const, utilities: [{ id: 'size:<*>', type: -1,
@@ -44,7 +44,7 @@ test('migration providers preserve a custom entry that shadows a historical sizi
   using native = await createCompilerBindingSession({ binding: 'native' })
   using wasm = await createCompilerBindingSession({ binding: 'wasm' })
   const custom = { id: 'project-min', type: -1, matchers: [{ type: 'key' as const, keys: ['min'] }], emit: { type: 'property' as const, property: 'inline-size' } }
-  const targetManifest: MasterCSSManifest = { version: 4, languageVersion: 12, mixins: [{ name: '--min', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'inline-size', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }] }
+  const targetManifest: MasterCSSManifest = { version: 4, languageVersion: 13, mixins: [{ name: '--min', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'inline-size', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }] }
   const request = { from: 'rc-sizing' as const, sourceVersion: '2.0.0-rc.sizing', targetManifest,
     manifest: { ...targetManifest, version: 1 as const, languageVersion: 3 as const, utilities: [custom, { id: 'min-size:<*>', type: -1,
       matchers: [{ type: 'key' as const, keys: ['min-size'] }], emit: { type: 'static' as const, rules: [{ declarations: { 'min-width': null, 'min-height': null } }] } }] },

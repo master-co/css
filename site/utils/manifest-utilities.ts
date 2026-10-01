@@ -1,22 +1,22 @@
-import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import type { MasterCSSTokenFamily } from '@master/css-tooling/language'
+import catalog from '../.generated/preset-token-families.json'
 
-/** Read-only engine projection plus generic single-string mixin families. */
-export const tokenFamilies = [
-  ...builtinTokenFamilies,
-  ...(defaultManifest.mixins ?? []).filter(mixin => mixin.parameters?.length === 1 && mixin.parameters[0].syntax === 'string')
-    .map(mixin => ({ prefix: mixin.name.slice(2), property: '', namespaces: [mixin.name.slice(2)] }))
-]
+/** Build-time Rust analysis; client code only reads serializable display facts. */
+export const tokenFamilies = (catalog.families as MasterCSSTokenFamily[]).map(family => ({
+  ...family,
+  property: family.properties.join(', '),
+  namespaces: [family.namespace]
+}))
 
 export function getVariableNamespacePublicKeys(namespace: string) {
-  return Array.from(new Set(tokenFamilies.filter(family => family.namespaces.includes(namespace)).map(family => family.prefix))).sort()
+  return tokenFamilies.filter(family => family.namespace === namespace).map(family => family.prefix).sort()
 }
 
 export function getTokenNamespacePublicKeys(namespace: string) {
-  return Array.from(new Set(builtinTokenFamilies.filter(family => family.namespaces.includes(namespace)).map(family => family.prefix))).sort()
+  return tokenFamilies.filter(family => family.argument === 'value' && family.namespace === namespace).map(family => family.prefix).sort()
 }
 
-/** Keep curated documentation groups aligned with the public namespace consumers. */
+/** Keep curated documentation groups aligned with the loaded namespace consumers. */
 export function filterNamespaceKeys(group: { keys: string[], namespace?: string, namespaces?: string[] }) {
   const namespaces = group.namespaces || (group.namespace ? [group.namespace] : [])
   if (!namespaces.length) return group.keys

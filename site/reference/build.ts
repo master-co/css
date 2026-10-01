@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { documentHeadings } from './headings'
 import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
-import { builtinTokenFamilies, builtinTokenNamespaces } from '@master/css-tooling/builtins'
+import { tokenFamilies } from '../utils/manifest-utilities'
 import preset from '../utils/preset-manifest'
 import { extractReferenceMdx, portableMarkdown } from './markdown'
 import { ruleSources } from './editorial'
@@ -86,7 +86,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     sourceState = execFileSync('git', ['status', '--porcelain', '--', 'site', 'packages'], { cwd: path.dirname(siteRoot), encoding: 'utf8' }).trim() ? 'working-tree' : 'revision'
   } catch { /* source archives have no git metadata */ }
   const version = process.env.NEXT_PUBLIC_VERSION ?? JSON.parse(await readFile(path.join(siteRoot, '.generated/public-env.json'), 'utf8').catch(() => '{}')).NEXT_PUBLIC_VERSION ?? `workspace-${revision.slice(0, 7)}`
-  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, builtinTokenFamilies, builtinTokenNamespaces })), documents }
+  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, tokenFamilies })), documents }
 }
 
 export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: ReferenceCatalog, locale = 'en') {

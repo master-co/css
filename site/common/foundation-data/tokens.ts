@@ -1,10 +1,10 @@
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import { tokenFamilies } from '../../utils/manifest-utilities'
 import preset from '../../utils/preset-manifest'
 
 /** Authored facts only: scope/dependency resolution remains owned by the engine. */
 export const foundationTokens = flattenMasterCSSManifestVariables(preset.variables)
-export const foundationFamilies = builtinTokenFamilies
+export const foundationFamilies = tokenFamilies
 export function namespaceTokens(namespace: string) {
   return foundationTokens.filter(token => token.namespace === namespace)
 }

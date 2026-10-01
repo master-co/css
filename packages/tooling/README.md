@@ -18,7 +18,6 @@ import { validateClassNames } from '@master/css-tooling/validator'
 import { lintClassNames } from '@master/css-tooling/lint'
 import { analyzeDocument } from '@master/css-tooling/language'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
 ```
 
 Every semantic operation requires an explicit manifest. Use
@@ -27,6 +26,14 @@ lint, and language operations. Feature subpaths provide async one-shot APIs; the
 `./node` entries provide native synchronous counterparts with a `Sync` suffix.
 `MasterCSSScanner` is available only from `./scanner/node` and owns filesystem/watch
 graph lifecycle.
+
+Both language sessions and composite tooling sessions expose `tokenFamilies()`.
+The readonly result is `{ version, families }`, derived from the active manifest's
+loaded mixins. Each family has `mixin`, `prefix`, `namespace`, `properties`, and
+`argument: 'value' | 'key'`. Definitions are included even without current token
+values; class completions still require tokens. Direct-value families forward a
+CSS value, while string recipes receive a token key. The old `./builtins` export
+has been removed. Theme-only manifests must load or define mixins explicitly.
 
 `scanner.scanSource(source, content)` uses the same built-in adapters and Rust
 scanner as `scan`, returning a `MasterCSSScannerSourceResult` with `changed` and

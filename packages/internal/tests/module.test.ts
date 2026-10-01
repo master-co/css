@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":4,"languageVersion":12}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":4,"languageVersion":13}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,12 +42,12 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":4,"languageVersion":12}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":4,"languageVersion":13}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {} };')
     expect(toManifestJSON({
   "version": 4 as const,
-  "languageVersion": 12 as const
-})).toBe('{"version":4,"languageVersion":12}')
+  "languageVersion": 13 as const
+})).toBe('{"version":4,"languageVersion":13}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
   })
@@ -103,7 +103,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 })
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -115,7 +115,7 @@ describe('@master/css-internal module helpers', () => {
       status: 200,
       json: async () => ({
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
@@ -130,7 +130,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)

@@ -293,10 +293,24 @@ Use `card-layout` and `grid-cols(3)@sm` in markup. A no-parameter mixin may also
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
 Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Genuine native names such as SVG `r` retain their native meaning.
 
-Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. Rust owns these mappings; presets define their values in `@theme`, without per-family registration directives. Every family has one canonical prefix and reads one namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*` for typography tokens.
+Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. The loaded preset defines these families as ordinary `@mixin` definitions and their values in `@theme`. Rust derives class adapters from the parsed definitions. Each value family has one canonical prefix and reads one namespace. A stylesheet containing only `@theme` does not register any families; import `"@master/css/mixins.css"` or define your own mixins. The full `"@master/css"` import includes both tokens and mixins. Use `font-size-*`, `font-family-*`, and `font-weight-*` for typography tokens.
 
 ### Named mixin families \{#named-token-patterns\}
-A mixin with exactly one `<string>` parameter gains a named family when a matching primary theme token exists:
+Two native mixin shapes support named Master classes. These conventions affect class calls only; native `@apply` always receives the authored CSS arguments.
+
+A direct-value family has exactly one untyped parameter without a default and one native property declaration whose complete value is `var(--parameter)`. The mixin name supplies the class prefix and the parameter supplies the token namespace:
+
+```css
+@mixin --p(--spacing) { padding: var(--spacing); }
+@mixin --m(--spacing) { margin: var(--spacing); }
+@mixin --fg(--color) { color: var(--color); }
+```
+
+`p-md` calls `--p(var(--spacing-md))`; `-m-md` calls `--m(calc(var(--spacing-md) * -1))`; `fg-red/.5` calls `--fg(color-mix(in oklab,var(--color-red) 50%,transparent))`. Negative calls require a supported property and numeric token; `-p-md` is invalid. Opacity requires the `color` namespace and a value from zero through one. Value families accept numeric and Unicode token keys and do not exclude keys containing `--`.
+
+Fallbacks, types, defaults, additional declarations, nested rules, conditions and `@apply` prevent this direct-value classification. Other parameter types retain function calls: `grid-row-span(3)` does not create `grid-row-span-3`.
+
+A mixin with exactly one `<string>` parameter gains a string-key family when a matching primary theme token exists:
 
 ```css
 @theme {
@@ -316,10 +330,10 @@ A mixin with exactly one `<string>` parameter gains a named family when a matchi
 
 The rule is generic, with no engine-specific typography recipe. `font-size-sm` sets only font size; `text-sm` also sets line height and letter spacing. Typography recipes do not set family, weight, or color. The preset's explicit typography scale is an intentional visual change; check headings, paragraphs and wrapping at desktop and mobile widths.
 
-Exact no-parameter mixins take priority. Families use the longest prefix; at the same prefix a named mixin wins over the built-in token mapping. A selected family with an unknown token reports an error and does not retry another interpretation. Built-in negative values and color opacity remain available where supported, but named mixins do not inherit those operations. `p-4` means the token named `4`; `grid-cols-3` does not imply a numeric argument.
+Exact no-parameter mixins take priority. Families use the longest prefix. A selected family with an unknown token reports an error and does not retry another interpretation. Negative values and color opacity are capabilities of direct-value families; string-key recipes do not inherit them. `p-4` means the token named `4`; `grid-cols-3` does not imply a numeric argument.
 
 ### Static arguments \{#dynamic-values\}
-Arguments must be statically known. External `var()`, `attr()`, and other browser-dependent values cannot be passed as parameters. A known outer mixin parameter may be forwarded using `var(--parameter)`. Theme references in the mixin body use the token mode: ordinary tokens retain `var()` references; inline tokens substitute their declared value once.
+Arguments must be statically known, except for the exact direct-value shape above. That shape also accepts external `var()` references, fallbacks inside the argument, and CSS expressions wrapping them. Both `@apply --p(var(--space, 2rem))` and `p(var(--space,2rem))` preserve the caller’s variable reference for browser evaluation; they never capture the callee parameter or read the current theme value during argument binding. Other mixins still reject external `var()`, `attr()`, and browser-dependent arguments. A known outer mixin parameter may be forwarded using `var(--parameter)`. Theme references in the mixin body use the token mode: ordinary tokens retain `var()` references; inline tokens substitute their declared value once.
 
 ```css
 @mixin --pair(--size) {
@@ -386,7 +400,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v4 with languageVersion 12 and binding ABI 21. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v4 with languageVersion 13 and binding ABI 23. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
@@ -826,7 +840,7 @@ Automatic discovery respects project/workspace `.gitignore` files and excludes g
 
 A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
 
-An exact zero-parameter mixin wins over named token families. Otherwise the longest family prefix wins, and a named string mixin wins over a built-in token mapping with the same prefix. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
+An exact zero-parameter mixin wins over named token families. Otherwise the longest family prefix wins. Replacing a mixin also replaces its inferred family; there is no hidden built-in definition to fall back to. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
 
 Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
 
@@ -834,8 +848,8 @@ Use explicit width and height declarations for paired dimensions, or author a pa
 
 ### Animation recipes
 
-The built-in `animate-*` token family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/animate).
+The preset’s direct-value `animate-*` family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/animate).
 
 ## Token family names
 
-Built-in named-token families have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. Custom mixins are explicit project definitions, not a built-in alias registry.
+Preset named-token families are defined in `mixins.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `mixin`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. The former `@master/css-tooling/builtins` subpath and `utilities.css` preset entry have been removed. Manifest v4 now uses language version 13 and binding ABI 23; recompile older artifacts.

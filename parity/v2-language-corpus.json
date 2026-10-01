@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-12-theme-token-modes",
+  "semanticBaseline": "language-13-mixin-token-families",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -931,7 +931,7 @@
             }
           ]
         },
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -977,7 +977,35 @@
             ]
           }
         ],
-        "customMedia": {}
+        "customMedia": {},
+        "mixins": [
+          {
+            "name": "--bg",
+            "parameters": [
+              {
+                "name": "--color"
+              }
+            ],
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background-color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "steps": [
         {
@@ -1146,7 +1174,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--float-left",
@@ -1318,7 +1346,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--card",
@@ -1382,7 +1410,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1449,7 +1477,7 @@
             }
           ]
         },
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -1496,7 +1524,7 @@
             }
           ]
         },
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -2990,12 +3018,12 @@
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -3152,12 +3180,12 @@
       "source": "@theme { --color-brand: $color-blue-50;  }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -3197,12 +3225,12 @@
       "source": "@theme { --spacing--card: -12;  }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -3246,12 +3274,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12
+        "languageVersion": 13
       }
     },
     {
@@ -3273,12 +3301,12 @@
             ]
           }
         ],
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12
+        "languageVersion": 13
       }
     },
     {
@@ -3287,12 +3315,12 @@
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -3361,12 +3389,12 @@
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "theme": [
           {
             "type": "rule",
@@ -3506,12 +3534,12 @@
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3660,12 +3688,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--card",
@@ -3758,12 +3786,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 4,
-        "languageVersion": 12,
+        "languageVersion": 13,
         "mixins": [
           {
             "name": "--btn",
@@ -3862,5 +3890,5 @@
     "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered.",
     "Language 7 removes executable variant definitions and their manifest indexes. Current cases use native custom media, explicit layer suffixes and ordered mixin contents; the frozen RC oracle remains unchanged."
   ],
-  "languageVersion": 12
+  "languageVersion": 13
 }

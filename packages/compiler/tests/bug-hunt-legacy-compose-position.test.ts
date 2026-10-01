@@ -24,7 +24,7 @@ const baseManifest = {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 }
 const definitions = '@mixin --paint {color:red}'
 const cases = [

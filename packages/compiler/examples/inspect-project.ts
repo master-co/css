@@ -15,7 +15,7 @@ export async function inspectProject(root: string, entry: string, classNames: re
     const project = await loadProjectManifest({
       root,
       entries: [resolve(root, entry)],
-      baseManifest: { version: 4, languageVersion: 12 }
+      baseManifest: { version: 4, languageVersion: 13 }
     })
     const manifest = JSON.parse(serializeMasterCSSManifest(project.manifest)) as MasterCSSManifest
     using engine = createEngineSync({ manifest })

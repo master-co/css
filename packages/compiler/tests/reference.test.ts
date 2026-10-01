@@ -7,7 +7,7 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   mixins: [
   {
     "name": "--all",
@@ -34,6 +34,21 @@ function createFixture() {
 }
 
 describe('CSS @reference', () => {
+  test('expands referenced value mixins without publishing their named families', () => {
+    const root = createFixture()
+    try {
+      const entry = join(root, 'src/component.css')
+      writeFileSync(join(root, 'tokens.css'), '@theme {--spacing-md:1rem}@mixin --p(--spacing){padding:var(--spacing)}')
+      writeFileSync(entry, '@reference "../tokens.css";.button{@apply --p(var(--spacing-md,2rem))}')
+      const result = compileCSSManifestFile(entry, { baseManifest })
+      expect(result.css).toContain('.button{padding:var(--spacing-md,2rem)}')
+      expect(result.css).not.toContain('--spacing-md:1rem')
+      expect(result.manifest.mixins?.some(mixin => mixin.name === '--p') ?? false).toBe(false)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('uses referenced CSS as compose and variant context without outputting it', () => {
     const root = createFixture()
     try {

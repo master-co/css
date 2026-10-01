@@ -24,6 +24,7 @@ fn custom_recipes_and_canonical_token_keys_are_not_retired_aliases() {
             --font-brand: 500;
             --spacing-md: 1rem;
          }
+        @mixin --text-stroke(--color) { -webkit-text-stroke-color:var(--color); }
         @mixin --font(--key <string>) { font-weight: var(ident("--font-" var(--key))); }
         @mixin --padding(--key <string>) { padding: var(ident("--padding-" var(--key))); }
         @mixin --padding-md { padding: 3rem; }

@@ -111,6 +111,7 @@ export interface NativeLanguageSession {
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
   inspectClassName(className: string, nativeSupport?: boolean[]): string
+  tokenFamilies(): string
   completionIndex(): string
   colorPresentation(colorToken: string): string
   colorTokens(candidatesJSON: string): string

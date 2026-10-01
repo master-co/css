@@ -4,7 +4,10 @@ use mastercss_compiler::{
 use mastercss_engine::EngineSession;
 
 fn engine(source: &str) -> EngineSession {
-    let css = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
+    let source = format!(
+        "{source}@mixin --fg(--color){{color:var(--color)}}@mixin --outline(--color){{outline-color:var(--color)}}"
+    );
+    let css = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let compiled = compile_manifest_input(
         &css.manifest_input,
         &CompileManifestOptions {
@@ -243,8 +246,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":4,"languageVersion":12,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":4,"languageVersion":12,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":4,"languageVersion":13,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":4,"languageVersion":13,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

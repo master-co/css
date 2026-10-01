@@ -17,7 +17,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
       './media.css': 'Preset reusable conditions.',
-      './utilities.css': 'Preset mixin recipes.'
+      './mixins.css': 'Preset mixin recipes.'
     }
   },
   '@master/css-compiler': {
@@ -94,7 +94,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
       './media.css': 'Preset reusable conditions.',
-      './utilities.css': 'Preset mixin recipes.'
+      './mixins.css': 'Preset mixin recipes.'
     }
   },
   '@master/css-runtime': {
@@ -135,7 +135,6 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     entries: {
       '.': 'Reusable asynchronous tooling session spanning analysis capabilities.',
       './node': 'Synchronous native session and native declaration support.',
-      './builtins': 'Built-in property aliases and value namespaces.',
       './lexer': 'Class-list and CSS source analysis.',
       './lexer/node': 'Synchronous native class-list analysis.',
       './source': 'Source candidate extraction and source-range types.',

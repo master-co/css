@@ -5,14 +5,14 @@ import { expect, test } from 'vitest'
 import { captureMasterCSSProject, compareProjectSnapshots } from '../src/diagnostics'
 import { compileManifest, createCompiler } from '../src'
 
-const manifest = { version: 4, languageVersion: 12 } as const
+const manifest = { version: 4, languageVersion: 13 } as const
 
 test('captures resolved files and compares token edits without changing markup', async () => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-impact-')))
   try {
     mkdirSync(join(root, 'node_modules/@master/css'), { recursive: true })
     writeFileSync(join(root, 'node_modules/@master/css/package.json'), '{"name":"@master/css","style":"./index.css"}')
-    writeFileSync(join(root, 'node_modules/@master/css/index.css'), '@layer theme,base,defaults,components,utilities;')
+    writeFileSync(join(root, 'node_modules/@master/css/index.css'), '@layer theme,base,defaults,components,utilities;@mixin --bg(--color){background-color:var(--color)}@mixin --fg(--color){color:var(--color)}')
     const source = '@import "@master/css";@import "./native.css";@source "./extra/*.html";@theme{--color-brand:red;--color-information:red}'
     writeFileSync(join(root, 'app.css'), source)
     writeFileSync(join(root, 'native.css'), '@import "https://example.com/vendor.css";@layer components{.card{color:var(--color-brand);color:var(--color-brand,red)}}')

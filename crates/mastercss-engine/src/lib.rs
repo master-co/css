@@ -69,6 +69,8 @@ struct ManifestProjection {
     #[serde(default)]
     mixins: Vec<mastercss_schema::MixinDefinition>,
     #[serde(skip)]
+    token_families: Vec<TokenFamily>,
+    #[serde(skip)]
     function_utilities: HashMap<String, usize>,
     #[serde(default)]
     variables: Map<String, Value>,
@@ -114,8 +116,6 @@ struct UtilityDefinition {
     variable_entries: Vec<(String, String)>,
     #[serde(skip)]
     native_fallback: bool,
-    #[serde(skip)]
-    builtin_token: bool,
     emit: UtilityEmit,
     #[serde(default)]
     matchers: Vec<UtilityMatcher>,
@@ -336,14 +336,16 @@ pub use mixin::{
     validate_mixin_argument, validate_mixins,
 };
 mod mixin_matching;
+mod token_family;
+pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
+mod removed_syntax;
 mod render;
 mod resources;
 mod session;
 mod state;
 mod stylesheet_resources;
 mod theme_batch;
-mod token_registry;
 mod utility;
 mod value_syntax;
 
@@ -363,18 +365,14 @@ pub(crate) use render::{
 pub(crate) use state::{resolve_state_branches, resolve_style_selector_aliases, split_top_level};
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
-    append_builtin_native_declaration_utilities, append_builtin_token_utilities,
-    compare_stored_rules, compile_utility_variables, layer_index, resolve_value_components,
-    split_dynamic_value_state,
+    append_builtin_native_declaration_utilities, compare_stored_rules, compile_utility_variables,
+    layer_index, resolve_value_components, split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
     find_matching_parenthesis, native_declaration_head, normalize_css_math_functions,
 };
 
 pub use condition::{condition_priority, native_query_features};
-pub(crate) use token_registry::BUILTIN_TOKEN_NAMESPACES;
-pub use token_registry::builtin_token_families;
-pub use token_registry::builtin_token_namespaces;
 pub use utility::compare_condition_features;
 pub use utility::{compare_rule_priority, natural_compare};
 

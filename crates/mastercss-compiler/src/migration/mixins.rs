@@ -189,6 +189,16 @@ fn stylesheet(source: &str) -> RcStylesheetMigration {
             continue;
         };
         let prelude = source[first.bytes.end..open.bytes.start].trim();
+        if let Some(after) = value_family(prelude, &source[open.bytes.end..close.bytes.start]) {
+            add_edit(
+                &mut result,
+                source,
+                first.bytes.start,
+                close.bytes.end,
+                after,
+            );
+            continue;
+        }
         let (name, parameterized) = prelude
             .strip_suffix(":*")
             .map_or((prelude, false), |name| (name, true));
@@ -254,6 +264,44 @@ fn stylesheet(source: &str) -> RcStylesheetMigration {
         );
     }
     result
+}
+
+// Recognize one old namespace and one forwarded native declaration. Keep
+// ambiguous namespace precedence in the manual migration path.
+fn value_family(prelude: &str, body: &str) -> Option<String> {
+    let tokens = tokenize_css_syntax(prelude);
+    let [prefix, star, from, namespace, namespace_star, close] = tokens.as_slice() else {
+        return None;
+    };
+    let (
+        Kind::Ident(prefix),
+        Kind::Delim('*'),
+        Kind::Function(from),
+        Kind::Ident(namespace),
+        Kind::Delim('*'),
+        Kind::Delim(')'),
+    ) = (
+        &prefix.kind,
+        &star.kind,
+        &from.kind,
+        &namespace.kind,
+        &namespace_star.kind,
+        &close.kind,
+    )
+    else {
+        return None;
+    };
+    if !from.eq_ignore_ascii_case("from") {
+        return None;
+    }
+    let name = prefix.strip_suffix('-')?;
+    let namespace = namespace.strip_prefix("--")?.strip_suffix('-')?;
+    let body = body.replace("--master-value()", "var(--value)");
+    let definition = crate::mixins::definition("--migration(--value)", &body).ok()?;
+    let (_, property) = mastercss_engine::direct_value_mixin(&definition)?;
+    Some(format!(
+        "@mixin --{name}(--{namespace}){{{property}:var(--{namespace})}}"
+    ))
 }
 
 pub(super) fn migrate(

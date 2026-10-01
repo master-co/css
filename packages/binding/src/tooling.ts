@@ -122,6 +122,7 @@ export function loadNativeToolingBinding(
               className,
               nativeSupport ? [...nativeSupport] : undefined
             )),
+          tokenFamilies: () => parse(session.tokenFamilies()),
           completionIndex: () => parse(session.completionIndex()),
           colorPresentation: (colorToken) => parse(session.colorPresentation(colorToken)),
           colorTokens: (candidates) => parse(session.colorTokens(request(candidates))),

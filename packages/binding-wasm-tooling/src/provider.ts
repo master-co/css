@@ -50,6 +50,7 @@ interface MasterCSSToolingWasmLanguageProviderSession {
   nativeDeclarationCandidates(classNames: string[]): unknown
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
   inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): unknown
+  tokenFamilies(): unknown
   completionIndex(): unknown
   colorPresentation(colorToken: string): unknown
   colorTokens(candidates: unknown[]): unknown

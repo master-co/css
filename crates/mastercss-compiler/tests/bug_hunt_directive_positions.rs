@@ -17,8 +17,8 @@ fn diagnostics_after_removed_directives_retain_original_utf16_offsets() {
             let request = serde_json::from_value(json!({
                 "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
                 "urls":{"entry.css":"/entry.css"},
-                "baseManifest":{"version":4,"languageVersion":12,"mixins":[]},
-                "resolutionManifest":{"version":4,"languageVersion":12,"mixins":[]}
+                "baseManifest":{"version":4,"languageVersion":13,"mixins":[]},
+                "resolutionManifest":{"version":4,"languageVersion":13,"mixins":[]}
             }))
             .unwrap();
             let error = compile_css_stylesheet_graph(&request)

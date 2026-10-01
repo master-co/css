@@ -371,6 +371,13 @@ impl LanguageSession {
         })
     }
 
+    pub fn token_families(&self) -> Result<LanguageTokenFamiliesIr, LanguageError> {
+        Ok(LanguageTokenFamiliesIr {
+            version: LANGUAGE_BATCH_VERSION,
+            families: self.engine.token_families()?.to_vec(),
+        })
+    }
+
     pub fn completion_index(&self) -> Result<LanguageCompletionIndexIr, LanguageError> {
         let candidates = self.engine.class_completion_candidates()?;
         let documentation_class_names = candidates

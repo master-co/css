@@ -88,13 +88,9 @@ pub(crate) fn token_candidates(
     let Some(indexes) = manifest.token_utilities.get(prefix) else {
         return Vec::new();
     };
-    let has_explicit = indexes
-        .iter()
-        .any(|index| !manifest.utilities[*index].builtin_token);
     indexes
         .iter()
         .copied()
-        .filter(|index| !has_explicit || !manifest.utilities[*index].builtin_token)
         .filter_map(|index| {
             match_utility_filtered(source, &manifest.utilities[index], manifest, |matcher| {
                 matches!(matcher, UtilityMatcher::Token { .. })
@@ -120,12 +116,12 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         notes: Vec::new(),
     };
     if let Some((_, property)) = super::native_declaration_head(source)
-        && let Some(message) = super::token_registry::removed_recipe(&property)
+        && let Some(message) = super::removed_syntax::removed_recipe(&property)
     {
         return vec![error(super::ErrorCode::ClassSyntaxError, message)];
     }
     if let Some((_, property)) = super::native_declaration_head(source)
-        && let Some(target) = super::token_registry::removed_raw_alias(&property)
+        && let Some(target) = super::removed_syntax::removed_raw_alias(&property)
     {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
@@ -346,9 +342,17 @@ pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection)
         return None;
     }
     let mut replacements = Vec::new();
-    let families = super::builtin_token_families()
-        .filter(|(prefix, property, _)| prefix != property)
-        .map(|(prefix, property, _)| (property, prefix))
+    let families = manifest
+        .token_families
+        .iter()
+        .filter(|family| family.argument == super::TokenFamilyArgument::Value)
+        .filter_map(|family| {
+            family
+                .properties
+                .first()
+                .map(|property| (property.as_str(), family.prefix.as_str()))
+        })
+        .filter(|(property, prefix)| property != prefix)
         .chain([
             ("font", "font-size"),
             ("font", "font-family"),

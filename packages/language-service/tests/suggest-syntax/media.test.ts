@@ -8,23 +8,13 @@ for (const suffix of ['@sm&', '@sm&>', '@sm&>=', '@sm&<', '@sm&<=', '@>']) {
 test.concurrent('registered mode', () => expect(hint("display:none@")?.map(({ label }) => label)).toContain('@dark'))
 
 describe.concurrent('sorting', () => {
-  test.concurrent('@', () => expect(hint("display:none@")?.map(({ label }) => label)).toEqual([
+  test.concurrent('@', () => expect(hint("display:none@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply('))).toEqual([
     '@2xl',
     '@2xs',
     '@3xl',
     '@3xs',
     '@4xl',
     '@4xs',
-    '@apply(--clamp-lines())',
-    '@apply(--font-antialiased)',
-    '@apply(--font-subpixel-antialiased)',
-    '@apply(--grid-col-span())',
-    '@apply(--grid-cols())',
-    '@apply(--grid-row-span())',
-    '@apply(--grid-rows())',
-    '@apply(--sr-only)',
-    '@apply(--text-gradient)',
-    '@apply(--text())',
     '@dark',
     '@landscape',
     '@layer(base)',
@@ -45,4 +35,11 @@ describe.concurrent('sorting', () => {
     '@media()',
     '@supports()',
   ]))
+})
+
+test('offers each loaded mixin as an apply completion', () => {
+  const labels = hint("display:none@")?.map(({ label }) => label).filter(label => label.startsWith('@apply(')) ?? []
+  expect(labels).toHaveLength(149)
+  expect(labels).toContain('@apply(--p())')
+  expect(labels).toEqual([...labels].sort((a, b) => a.replace('()', '').localeCompare(b.replace('()', ''))))
 })

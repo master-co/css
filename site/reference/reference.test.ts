@@ -54,7 +54,7 @@ test('catalog covers every public family and preset recipe without indexing reti
   const { recipes } = await import('./recipes')
   assert.equal(catalog.documents.length, 88)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 9)
-  assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.map(mixin => mixin.name).sort())
+  assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.mixin === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   for (const family of foundationFamilies) {
     assert.ok(families.markdown.includes(`Property: \`${family.property}\``), family.prefix)

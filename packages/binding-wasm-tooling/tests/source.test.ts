@@ -53,7 +53,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "mixins": [
     {
       "name": "--block",
@@ -86,7 +86,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "mixins": [
     {
       "name": "--block",
@@ -130,7 +130,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "variables": {
     "spacing": [
       {
@@ -148,6 +148,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     ]
   },
   "mixins": [
+    { name: "--m", parameters: [{ name: "--spacing" }], body: [{ type: "declaration" as const, property: "margin", value: [{ type: "function" as const, name: "var", value: [{ type: "text" as const, value: "--spacing" }] }] }] },
     {
       "name": "--block",
       "body": [
@@ -264,7 +265,9 @@ test('loads the isolated source tooling Wasm surface', async () => {
       className: "margin:var(--spacing-md)|17px",
       value: '17px',
       key: 'margin',
-      properties: ['margin']
+      properties: ['margin'],
+      policy: { rule: 'no-unapproved-raw-values', requireProperties: [] },
+      tokenFamilies: [{ mixin: '--m', prefix: 'm', namespace: 'spacing', argument: 'value', properties: ['margin'] }]
     }
   })
   lint.dispose()
@@ -272,7 +275,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "mixins": [
     {
       "name": "--block",

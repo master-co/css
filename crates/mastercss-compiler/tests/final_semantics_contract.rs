@@ -74,6 +74,7 @@ fn legacy_conditions_and_unknown_names_do_not_generate() {
 #[test]
 fn scoped_theme_and_variant_activation_are_independent() {
     let source = r#"
+        @mixin --fg(--color) {color:var(--color)}
         @mixin --ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } }
         @theme { --color-surface: white;
         }
@@ -224,7 +225,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":4,"languageVersion":12,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":4,"languageVersion":13,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

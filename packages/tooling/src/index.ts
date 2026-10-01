@@ -4,6 +4,8 @@ export {
   type MasterCSSToolingSessionOptions
 } from './tooling-session'
 export type {
+  MasterCSSTokenFamily,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
   MasterCSSFormatDirectivesRequest,

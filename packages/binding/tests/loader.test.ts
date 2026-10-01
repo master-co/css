@@ -90,7 +90,7 @@ describe('native target resolution', () => {
     const lint = loadNativeToolingBinding({ required: true })!
       .createLintSession({
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
@@ -119,7 +119,8 @@ describe('native target resolution', () => {
     }
   ],
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
+  mixins: [{ name: "--m", parameters: [{ name: "--spacing" }], body: [{ type: "declaration" as const, property: "margin", value: [{ type: "function" as const, name: "var", value: [{ type: "text" as const, value: "--spacing" }] }] }] }],
   "variables": {
     "spacing": [
       {
@@ -167,7 +168,7 @@ describe('native target resolution', () => {
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "mixins": [
     {
       "name": "--block",

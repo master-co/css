@@ -173,3 +173,5 @@ export interface MasterCSSLanguageColorTokens {
   readonly version: 5
   readonly tokens: readonly MasterCSSLanguageColorToken[]
 }
+
+export type { MasterCSSTokenFamily, MasterCSSLanguageTokenFamilies } from '@master/css-binding/tooling'

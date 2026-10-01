@@ -56,6 +56,8 @@ export {
   MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
 } from './semantic/scopes'
 export type {
+  MasterCSSTokenFamily,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
   MasterCSSFormatDirectivesRequest,

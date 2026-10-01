@@ -125,8 +125,8 @@ impl EngineSession {
         }
         let (colon, decoded) = native_declaration_head(semantic_class_name)?;
         let property = &semantic_class_name[..colon];
-        if super::token_registry::removed_raw_alias(&decoded).is_some()
-            || super::token_registry::removed_recipe(&decoded).is_some()
+        if super::removed_syntax::removed_raw_alias(&decoded).is_some()
+            || super::removed_syntax::removed_recipe(&decoded).is_some()
         {
             return None;
         }
@@ -175,7 +175,6 @@ impl EngineSession {
             variables: HashMap::new(),
             variable_entries: Vec::new(),
             native_fallback: true,
-            builtin_token: false,
             emit: UtilityEmit::Property {
                 property: candidate.ir.property,
             },

@@ -5,7 +5,8 @@ import createDoc from '../src/utils/create-doc'
 
 test('inline tokens provide completion and substituted hover without token output', () => {
   const manifest: MasterCSSManifest = {
-    version: 4, languageVersion: 12,
+    version: 4, languageVersion: 13,
+    mixins: [{ name: '--bg', parameters: [{ name: '--color' }], body: [{ type: 'declaration', property: 'background-color', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--color' }] }] }] }],
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }
   using service = new CSSLanguageService({ manifest })

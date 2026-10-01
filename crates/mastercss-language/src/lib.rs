@@ -172,6 +172,13 @@ pub struct LanguageCompletionIndexIr {
     pub class_entries: Vec<LanguageCompletionEntryIr>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageTokenFamiliesIr {
+    pub version: u32,
+    pub families: Vec<mastercss_engine::TokenFamily>,
+}
+
 #[derive(Debug, Deserialize)]
 struct MdnCompletionRegistry {
     pseudos: Vec<String>,

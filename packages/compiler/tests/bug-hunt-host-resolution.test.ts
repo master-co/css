@@ -30,7 +30,7 @@ function fixture() {
   }
 ],
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, entry, child, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }

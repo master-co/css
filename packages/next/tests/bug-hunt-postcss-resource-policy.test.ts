@@ -15,7 +15,7 @@ interface Root {
 }
 const baseManifest = {
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 }
 const source = `@theme {--color-old:#111111;--color-late:#abcdef}
 .card{color:var(--color-old)}`

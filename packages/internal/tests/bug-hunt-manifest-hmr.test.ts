@@ -6,7 +6,7 @@ for (const importedManifest of [false, true]) test(`BH-0004 manifest updates ret
   const file = '/project/style.css'
   const plugin = createMasterCSSManifestVirtualModulePlugin(async () => ({ manifest: {
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 }, entries: [file], dependencies: [file], diagnostics: [] }))
   plugin.configResolved({ command: 'serve', root: '/project' })
   await plugin.buildStart.call({})

@@ -1,28 +1,26 @@
-use mastercss_engine::{EngineSession, builtin_token_families};
+use mastercss_engine::EngineSession;
 use mastercss_schema::{LANGUAGE_VERSION, MatchStatus};
 use serde_json::json;
 use std::collections::HashSet;
 
+fn baseline() -> Vec<serde_json::Value> {
+    serde_json::from_str(include_str!("fixtures/token-family-baseline.json")).unwrap()
+}
+
 fn engine() -> EngineSession {
-    let mut variables = serde_json::Map::new();
-    for (_, _, namespaces) in builtin_token_families() {
-        for namespace in namespaces {
-            variables.insert(
-                namespace.trim_start_matches('~').into(),
-                json!([
-                    {"key":"proof","type":"string","values":[{"path":[":root"],"value":"1rem"}]}
-                ]),
-            );
-        }
-    }
-    EngineSession::create(
-        &json!({"version":4,"languageVersion":LANGUAGE_VERSION,"variables":variables}).to_string(),
-    )
-    .unwrap()
+    let variables = baseline().into_iter().map(|family| (
+        family["namespace"].as_str().unwrap().to_owned(),
+        json!([{ "key":"proof", "type":"string", "values":[{"path":[":root"],"value":"1rem"}] }]),
+    )).collect::<serde_json::Map<_, _>>();
+    let preset: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
+    EngineSession::create(&json!({"version":4,"languageVersion":LANGUAGE_VERSION,"variables":variables,"mixins":preset["mixins"]}).to_string()).unwrap()
 }
 
 #[test]
-fn every_builtin_family_has_exactly_one_entry() {
+fn every_preset_value_family_preserves_the_frozen_builtin_contract() {
     let engine = engine();
     let mut prefixes = HashSet::new();
     let mut properties = HashSet::new();
@@ -32,10 +30,12 @@ fn every_builtin_family_has_exactly_one_entry() {
         .into_iter()
         .map(|entry| entry.label)
         .collect::<HashSet<_>>();
-    for (prefix, property, namespaces) in builtin_token_families() {
-        assert!(prefixes.insert(prefix), "{prefix}");
-        assert!(properties.insert(property), "{property}");
-        assert_eq!(namespaces.len(), 1);
+    assert_eq!(baseline().len(), 139);
+    for family in baseline() {
+        let prefix = family["prefix"].as_str().unwrap();
+        let property = family["property"].as_str().unwrap();
+        assert!(prefixes.insert(prefix.to_owned()), "{prefix}");
+        assert!(properties.insert(property.to_owned()), "{property}");
         let canonical = format!("{prefix}-proof");
         let result = engine.inspect(&canonical).unwrap();
         assert_eq!(
@@ -44,10 +44,18 @@ fn every_builtin_family_has_exactly_one_entry() {
             "{canonical}: {:?}",
             result.diagnostics
         );
-        assert!(result.rules[0].text.contains(&format!(
-            "{property}:var(--{}-proof)",
-            namespaces[0].trim_start_matches('~')
-        )));
+        assert_eq!(result.rules[0].text, family["css"].as_str().unwrap());
+        let call = format!(
+            "{prefix}(var(--{}-proof))",
+            family["namespace"].as_str().unwrap()
+        );
+        let expanded = engine.inspect(&call).unwrap();
+        assert_eq!(expanded.match_status, MatchStatus::Matched, "{call}");
+        assert_eq!(
+            expanded.rules[0].text.split_once('{').unwrap().1,
+            result.rules[0].text.split_once('{').unwrap().1,
+            "{call}"
+        );
         assert!(labels.contains(&canonical), "{canonical}");
         if prefix != property {
             for suffix in ["", ":hover", ":hover@layer(utilities)!"] {

@@ -7,7 +7,7 @@ fn definition(name: &str, property: &str, value: &str) -> Value {
 }
 fn engine(mixins: Vec<Value>, variables: Value) -> EngineSession {
     let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, entries)| entries.as_array().unwrap().iter().flat_map(move |entry| entry["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",entry["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
-    EngineSession::create(&json!({"version":4,"languageVersion":12,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":4,"languageVersion":13,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
 }
 
 #[test]
@@ -59,7 +59,13 @@ fn empty_replacement_clears_old_rules_and_resources() {
 fn retired_font_prefix_reports_explicit_families() {
     for value in ["1rem", "sans-serif"] {
         let session = engine(
-            vec![],
+            serde_json::from_str::<Value>(include_str!(
+                "../../../packages/preset/src/default-manifest.json"
+            ))
+            .unwrap()["mixins"]
+                .as_array()
+                .unwrap()
+                .clone(),
             json!({"font-size":[{"key":"brand","values":[{"path":[":root"],"value":"1rem"}]}],"font-family":[{"key":"brand","values":[{"path":[".dark"],"value":value}]}]}),
         );
         let result = session.inspect("font-brand").unwrap();

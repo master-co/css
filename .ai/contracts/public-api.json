@@ -154,6 +154,7 @@
           "MasterCSSLanguageBindingSession",
           "MasterCSSLanguageClassifications",
           "MasterCSSLanguageInspection",
+          "MasterCSSLanguageTokenFamilies",
           "MasterCSSLexerBatch",
           "MasterCSSLexerBatchRequest",
           "MasterCSSLexerBindingSession",
@@ -180,6 +181,7 @@
           "MasterCSSSourceOccurrence",
           "MasterCSSSourceRange",
           "MasterCSSSyntaxStatus",
+          "MasterCSSTokenFamily",
           "MasterCSSToolingBinding",
           "MasterCSSToolingBindingSession",
           "MasterCSSValidatorBatch",
@@ -201,7 +203,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "06d03432100d5ba2"
+      "surface": "a9428341120cd94f"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -519,9 +521,9 @@
         "./client",
         "./index.css",
         "./media.css",
+        "./mixins.css",
         "./node",
-        "./theme.css",
-        "./utilities.css"
+        "./theme.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -752,8 +754,8 @@
         "./default-manifest.json",
         "./index.css",
         "./media.css",
-        "./theme.css",
-        "./utilities.css"
+        "./mixins.css",
+        "./theme.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -988,7 +990,6 @@
       "directory": "tooling",
       "exports": [
         ".",
-        "./builtins",
         "./language",
         "./language/node",
         "./lexer",
@@ -1011,6 +1012,8 @@
           "MasterCSSFormatDirectivesResult",
           "MasterCSSLanguageClassListContext",
           "MasterCSSLanguageClassPosition",
+          "MasterCSSLanguageTokenFamilies",
+          "MasterCSSTokenFamily",
           "MasterCSSToolingSession",
           "MasterCSSToolingSessionOptions",
           "createToolingSession"
@@ -1024,13 +1027,6 @@
           "cssValueStatus",
           "getToolingBindingInfo",
           "validateRuleDeclarations"
-        ],
-        "./builtins": [
-          "MasterCSSBuiltinTokenFamily",
-          "MasterCSSBuiltinTokenNamespace",
-          "MasterCSSBuiltinTokenNamespaces",
-          "builtinTokenFamilies",
-          "builtinTokenNamespaces"
         ],
         "./lexer": [
           "MasterCSSCSSAnalysis",
@@ -1170,7 +1166,9 @@
           "MasterCSSLanguageCompletionKind",
           "MasterCSSLanguageInspection",
           "MasterCSSLanguageSession",
+          "MasterCSSLanguageTokenFamilies",
           "MasterCSSLanguageVariable",
+          "MasterCSSTokenFamily",
           "QUERY_COMPARISON_OPERATORS",
           "QUERY_LOGICAL_OPERATORS",
           "QUERY_TRIGGER_CHARACTERS",
@@ -1199,7 +1197,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "30838410b622d576"
+      "surface": "a7aec66c8f8d14b0"
     },
     "@master/css-vite": {
       "directory": "vite",

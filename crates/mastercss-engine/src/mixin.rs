@@ -22,12 +22,20 @@ pub struct ExpandedMixinDeclaration {
 }
 
 pub fn validate_mixin_argument(parameter: &MixinParameter, value: &str) -> Result<(), String> {
+    validate_argument(parameter, value, false)
+}
+
+fn validate_argument(
+    parameter: &MixinParameter,
+    value: &str,
+    allow_var: bool,
+) -> Result<(), String> {
     let tokens = tokenize_css_syntax(value);
     if tokens.is_empty() {
         return Err(format!("Missing argument {}", parameter.name));
     }
     if tokens.iter().any(|token| matches!(&token.kind, Kind::Function(name)
-        if matches!(name.to_ascii_lowercase().as_str(), "var" | "attr" | "env" | "random" | "random-item") || name.starts_with("--"))) {
+        if (name.eq_ignore_ascii_case("var") && !allow_var) || matches!(name.to_ascii_lowercase().as_str(), "attr" | "env" | "random" | "random-item") || name.starts_with("--"))) {
         return Err(format!("Argument {} must be static; express dynamic values in native CSS", parameter.name));
     }
     if tokens
@@ -373,7 +381,11 @@ impl Expansion<'_> {
                 .get(index)
                 .or(parameter.default.as_ref())
                 .ok_or_else(|| format!("Missing argument {} for {name}", parameter.name))?;
-            validate_mixin_argument(parameter, value)?;
+            validate_argument(
+                parameter,
+                value,
+                super::direct_value_mixin(definition).is_some(),
+            )?;
             environment.insert(parameter.name.clone(), value.clone());
         }
         let mut forbidden = forbidden.clone();

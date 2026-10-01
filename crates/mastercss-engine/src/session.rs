@@ -560,10 +560,7 @@ impl EngineSession {
         Ok(super::named::matching_utilities(source, &self.compiled)
             .iter()
             .find_map(|(index, _)| {
-                let super::UtilityEmit::Mixin { name } = &self.compiled.utilities[*index].emit
-                else {
-                    return None;
-                };
+                let name = &self.compiled.utilities[*index].id;
                 self.compiled
                     .mixins
                     .iter()
@@ -699,18 +696,28 @@ impl EngineSession {
     pub fn has_named_tokens_for_key(&self, key: &str) -> bool {
         // Native-property policy queries resolve the property's canonical family;
         // this does not register another token spelling.
-        let key = super::builtin_token_families()
-            .find_map(|(prefix, property, _)| (property == key).then_some(prefix))
-            .unwrap_or(key);
-        let prefix = format!("{key}-");
         self.compiled
-            .token_utilities
-            .get(&prefix)
-            .is_some_and(|indexes| {
-                indexes
-                    .iter()
-                    .any(|index| !self.compiled.utilities[*index].variable_entries.is_empty())
+            .token_families
+            .iter()
+            .filter(|family| {
+                family.prefix == key || family.properties.iter().any(|property| property == key)
             })
+            .any(|family| {
+                self.compiled
+                    .token_utilities
+                    .get(&format!("{}-", family.prefix))
+                    .is_some_and(|indexes| {
+                        indexes.iter().any(|index| {
+                            !self.compiled.utilities[*index].variable_entries.is_empty()
+                        })
+                    })
+            })
+    }
+
+    /// Effective named families, including definitions without any current tokens.
+    pub fn token_families(&self) -> Result<&[super::TokenFamily], EngineError> {
+        self.ensure_active()?;
+        Ok(&self.compiled.token_families)
     }
 
     pub fn class_variable_keys(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
@@ -853,7 +860,17 @@ impl EngineSession {
     pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {
         self.ensure_active()?;
         let generated = self.generate_class_rules(class_name);
-        if generated.is_empty() || generated.iter().all(|rule| rule.ir.utility_type == -2) {
+        let value_family =
+            super::named::token_prefix(class_name, &self.compiled).is_some_and(|prefix| {
+                self.compiled.token_families.iter().any(|family| {
+                    family.argument == super::TokenFamilyArgument::Value
+                        && prefix.strip_suffix('-') == Some(family.prefix.as_str())
+                })
+            });
+        if !generated.iter().any(|rule| {
+            rule.matcher_type == Some(UtilityMatcherType::Key)
+                || (value_family && rule.matcher_type == Some(UtilityMatcherType::Token))
+        }) {
             return Ok(Vec::new());
         }
         Ok(collect_engine_color_tokens(class_name, &self.compiled))

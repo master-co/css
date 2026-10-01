@@ -87,8 +87,10 @@ fn rewrites_safe_definitions_and_reports_cross_namespace_families() {
         result.stylesheets[1].edits[0].after,
         "@mixin --tile(--value) {width:var(--value)}"
     );
-    assert!(result.stylesheets[2].edits.is_empty());
-    assert!(result.stylesheets[2].notes[0].contains("primary token"));
+    assert_eq!(
+        result.stylesheets[2].edits[0].after,
+        "@mixin --font(--font-size){font-size:var(--font-size)}"
+    );
 }
 
 #[test]

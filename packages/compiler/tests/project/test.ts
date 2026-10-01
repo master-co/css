@@ -388,7 +388,7 @@ test('resolves Master CSS workspace packages and optional language server', () =
         '@master/css-preset': '^1.2.3'
       }
     }, {
-      'index.js': 'export const builtinTokenFamilies = []; export const builtinTokenNamespaces = []'
+      'index.js': 'export const createToolingSession = () => ({})'
     })
     const presetDir = writeNodePackage(cssDir, '@master/css-preset', {
       exports: {

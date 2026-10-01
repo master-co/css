@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "mixins": [
     {
       "name": "--block",
@@ -33,9 +33,40 @@ const factories = {
   wasm: () => createLanguageSession({ manifest, binding: 'wasm' })
 }
 
+it('derives readonly family metadata from the effective manifest in both bindings', async () => {
+  const preset = createPresetManifest()
+  const manifest: MasterCSSManifest = {
+    version: 4, languageVersion: 13,
+    mixins: [
+      ...(preset.mixins ?? []),
+      { name: '--space', parameters: [{ name: '--custom-space' }], body: [
+        { type: 'declaration', property: 'margin', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--custom-space' }] }] }
+      ] },
+      { name: '--p', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }
+    ]
+  }
+  using native = createLanguageSessionSync({ manifest })
+  using wasm = await createLanguageSession({ manifest, binding: 'wasm' })
+  using full = createToolingSessionSync({ manifest })
+  const result = native.tokenFamilies()
+  expect(wasm.tokenFamilies()).toEqual(result)
+  expect(full.tokenFamilies()).toEqual(result)
+  expect(result.families).toContainEqual({ mixin: '--space', prefix: 'space', namespace: 'custom-space', argument: 'value', properties: ['margin'] })
+  expect(result.families).toContainEqual({ mixin: '--text', prefix: 'text', namespace: 'text', argument: 'key', properties: ['font-size', 'line-height', 'letter-spacing'] })
+  expect(result.families.some(family => family.prefix === 'p')).toBe(false)
+  expect(result.families.some(family => family.prefix === 'grid-row-span')).toBe(false)
+  expect(Object.isFrozen(result)).toBe(true)
+  expect(Object.isFrozen(result.families)).toBe(true)
+  expect(result.families.every(family => Object.isFrozen(family) && Object.isFrozen(family.properties))).toBe(true)
+  expect(native.inspectClassName('p-md').rules).toEqual([])
+  using empty = createLanguageSessionSync({ manifest: { version: 4, languageVersion: 13 } })
+  expect(empty.tokenFamilies().families).toEqual([])
+})
+
 it('inline tokens have identical native and Wasm language behavior', async () => {
   const manifest: MasterCSSManifest = {
-    version: 4, languageVersion: 12,
+    version: 4, languageVersion: 13,
+    mixins: createPresetManifest().mixins,
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }
   using native = createLanguageSessionSync({ manifest })
@@ -62,6 +93,7 @@ for (const [name, create] of Object.entries(factories)) {
         expect(JSON.stringify(result)).toBe(saved)
         const classes = ['block', 'display:flex', 'unknown']
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
+        expect(session.tokenFamilies()).toEqual(full.tokenFamilies())
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
         expect(session.formatDirectives({ source: " @mixin --box { display:block; } " })).toEqual(
           full.formatDirectives({ source: " @mixin --box { display:block; } " })
@@ -78,6 +110,7 @@ for (const [name, create] of Object.entries(factories)) {
       session[Symbol.dispose]()
       session.dispose()
       expect(() => session.completionIndex()).toThrow(/disposed/)
+      expect(() => session.tokenFamilies()).toThrow(/disposed/)
       expect(() => session.analyzeDocument({ source: '', languageId: 'html' })).toThrow(/disposed/)
       expect(() => session.classifyClassNames(['block'])).toThrow(/disposed/)
     })

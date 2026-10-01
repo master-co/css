@@ -31,7 +31,7 @@ analysis, and the dependency-light diagnostics bridge.
 - `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
   `./node` entries for native sync execution.
 - Node filesystem scanner under `./scanner/node`.
-- `./builtins` for Rust-generated canonical token-family and namespace registries.
+- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from loaded mixins, including namespaces without tokens. There is no `./builtins` export.
 
 Subpaths are responsibility boundaries inside one package, not independent packages.
 Avoid adding convenience re-export files unless they define a deliberate documented

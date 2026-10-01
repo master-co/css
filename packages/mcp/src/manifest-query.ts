@@ -1,4 +1,4 @@
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import { createMCPToolingSession } from './tooling-session'
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSMixinDefinition
@@ -11,7 +11,7 @@ import {
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 4
+const MANIFEST_QUERY_VERSION = 5
 
 export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'custom-media' | 'family'
 
@@ -66,9 +66,10 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
 
   const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
 
-  const families = builtinTokenFamilies
-    .map(({ prefix, property, namespaces }) => ({ type: 'token-family' as const, prefix, property, namespaces }))
-    .filter(family => !namespace || family.namespaces.includes(namespace))
+  using tooling = createMCPToolingSession(activeManifest)
+  const families = tooling.tokenFamilies().families
+    .map(family => ({ type: 'token-family' as const, ...family }))
+    .filter(family => !namespace || family.namespace === namespace)
     .filter((family) => matchesAny(Object.values(family), query))
 
   const allResults = {

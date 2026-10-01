@@ -16,6 +16,7 @@ import type {
   MasterCSSLanguageColorPresentation,
   MasterCSSLanguageColorTokens,
   MasterCSSLanguageCompletionIndex,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSLanguageInspection
 } from './contracts'
 
@@ -28,6 +29,7 @@ interface BindingLanguageSession {
   nativeDeclarationCandidates(classNames: string[]): unknown
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
   inspectClassName(className: string, nativeSupport?: boolean[]): unknown
+  tokenFamilies(): unknown
   completionIndex(): unknown
   colorPresentation(colorToken: string): unknown
   colorTokens(candidates: unknown): unknown
@@ -40,6 +42,7 @@ export interface LanguageSession extends Disposable {
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications
   inspectClassName(className: string): MasterCSSLanguageInspection
+  tokenFamilies(): MasterCSSLanguageTokenFamilies
   completionIndex(): MasterCSSLanguageCompletionIndex
   colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation
   colorTokens(candidates: readonly MasterCSSLanguageColorCandidate[]): MasterCSSLanguageColorTokens
@@ -109,6 +112,10 @@ export function bindLanguageSession(
       const candidates = session.nativeDeclarationCandidates([className]) as MasterCSSNativeDeclarationCandidate[]
       const result = parse<MasterCSSLanguageInspection>(session.inspectClassName(className))
       return validate(withCSSValueValidation({ ...result, diagnostics: [...(nativeClasses.has(className) && !result.rules.length ? [] : result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(className, candidates, nativeClasses) : [])] }))
+    },
+    tokenFamilies() {
+      assertActive()
+      return validate(parse<MasterCSSLanguageTokenFamilies>(session.tokenFamilies()))
     },
     completionIndex() {
       assertActive()

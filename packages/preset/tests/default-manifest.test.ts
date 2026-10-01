@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import { UtilityType } from '@master/css-schema/utility-type'
 import {
   createDefaultManifestFromSourceFile,
@@ -192,9 +192,9 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(4)
- expect(manifest.languageVersion).toBe(12)
- expect(manifest.mixins).toHaveLength(10)
- expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(10)
+ expect(manifest.languageVersion).toBe(13)
+ expect(manifest.mixins).toHaveLength(149)
+ expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(149)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
  expect(manifest.mixins?.find(mixin => mixin.name === '--text')?.parameters).toEqual([{ name: '--step', syntax: 'string' }])
@@ -259,16 +259,16 @@ describe('@master/css-preset defaultManifest', () => {
     )
   })
 
-  it('exposes Rust token families independently of preset recipes', () => {
- const families = builtinTokenFamilies.filter(family => ['font-size', 'font-family', 'font-weight', 'bg', 'p', 'surface'].includes(family.prefix))
- expect(families).toEqual(expect.arrayContaining([
-  {prefix:'font-size',property:'font-size',namespaces:['font-size']},
-  {prefix:'font-family',property:'font-family',namespaces:['font-family']},
-  {prefix:'font-weight',property:'font-weight',namespaces:['font-weight']},
-  {prefix:'p',property:'padding',namespaces:['spacing']},
-  {prefix:'bg',property:'background-color',namespaces:['color']}
- ]))
-})
+  it('derives token families from preset mixins, including empty namespaces', () => {
+    using tooling = createLanguageSessionSync({ manifest: defaultManifest })
+    const families = tooling.tokenFamilies().families
+    expect(families.filter(family => family.argument === 'value')).toHaveLength(139)
+    expect(families).toEqual(expect.arrayContaining([
+      { mixin: '--p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
+      { mixin: '--bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
+      { mixin: '--order', prefix: 'order', properties: ['order'], namespace: 'order', argument: 'value' }
+    ]))
+  })
 
   it('preserves the compiled default registry', () => {
     const css = createTestCSS(defaultManifest)

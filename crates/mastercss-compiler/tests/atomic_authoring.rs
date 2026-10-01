@@ -8,7 +8,7 @@ fn engine() -> EngineSession {
     let source = format!(
         "{}\n{}",
         include_str!("../../../packages/preset/src/theme.css"),
-        include_str!("../../../packages/preset/src/utilities.css")
+        include_str!("../../../packages/preset/src/mixins.css")
     );
     let directives = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let manifest = compile_manifest_input(
@@ -54,7 +54,6 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
     for class in [
         "b-1",
         "b-solid",
-        "b(1)",
         "border-red",
         "animation-fast",
         "transition-smooth",
@@ -148,7 +147,7 @@ fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
     let shorthand = css.find("animation:var(--animate-fade)").unwrap();
     assert!(css.find("animation-duration:var(--duration-fast)").unwrap() < shorthand);
     assert!(shorthand < css.find("animation-duration:var(--duration-slow)").unwrap());
-    for class in ["animate(\"fade\")", "animation-fade", "animate:fade"] {
+    for class in ["animation-fade", "animate:fade"] {
         assert_ne!(
             left.inspect(class).unwrap().match_status,
             MatchStatus::Matched

@@ -17,8 +17,10 @@ Most applications should import preset styles through `@master/css`. Use this pa
 @import '@master/css-preset/base.css';
 @import '@master/css-preset/theme.css';
 @import '@master/css-preset/media.css';
-@import '@master/css-preset/utilities.css';
+@import '@master/css-preset/mixins.css';
 ```
+
+`mixins.css` defines 139 direct-value families and 10 recipes. A custom theme needs this entry or its own mixins to enable named classes. The former `utilities.css` entry is removed.
 
 The default index entry contains:
 
@@ -26,7 +28,7 @@ The default index entry contains:
 @import "./base.css";
 @import "./theme.css";
 @import "./media.css";
-@import "./utilities.css";
+@import "./mixins.css";
 ```
 
 `base.css` declares the stable cascade layer order:
@@ -48,5 +50,5 @@ The generated manifest is derived from the preset CSS source. Do not edit genera
 ## Related packages
 
 - `@master/css` re-exports the preset CSS entries for application use.
-- `@master/css` owns built-in key aliases and native value namespaces.
+- `@master/css` derives token-family class calls from loaded mixins.
 - `@master/css-compiler` compiles preset CSS source into manifest data.

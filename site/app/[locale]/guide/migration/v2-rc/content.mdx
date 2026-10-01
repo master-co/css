@@ -112,7 +112,7 @@ Pseudo-elements are no longer translated into vendor names. To preserve the form
 
 Math spacing is consistent across `calc`, `min`, `max`, and `clamp`; `clamp` no longer gains an extra `calc` wrapper. Quoted math text, URLs, attribute underscores and escaped identifiers retain their literal meaning. These are intentional CSS output corrections.
 
-Remove `preferPropertyAliases` from lint options. `builtinTokenAliases` and its type are removed; use `builtinTokenFamilies`. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 4.
+Remove `preferPropertyAliases` from lint options. `builtinTokenAliases`, `builtinTokenFamilies`, and the `./builtins` export are removed; use `tokenFamilies()` on the active language or tooling session. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 5. Families come from loaded mixins, so theme-only stylesheets must load `@master/css/mixins.css` or define their own families. The former `utilities.css` preset entry is removed.
 
 There is no new automatic migration profile for this change. Update project sources using the tables, review custom definitions, and rebuild. Existing historical RC profiles report outputs requiring further manual changes instead of treating unsupported current syntax as successful.
 
@@ -696,7 +696,7 @@ Review the proposal, then add `--write` to apply safe edits. The profile rewrite
 
 Named tokens use canonical prefixes such as `p-md`, `font-size-sm`, `font-family-sans`, and `bg-red-60`. Replace every `font-*` token with its explicit font family. `text-sm` sets font size, line height and letter spacing using primary and companion tokens; old `text-red` color usage becomes `fg-text-red`. Review typography on desktop and mobile because the old formulas are removed.
 
-Static mixin calls cannot receive external `var()` or `attr()` values. Move dynamic recipes to ordinary CSS declarations. Only used classes and delivered native `@apply` roots emit CSS and retain tokens. Unused definitions and undelivered `@reference` styles do not retain resources.
+General static recipes cannot receive external `var()` or `attr()` values. Exact direct-value mixins may forward external `var()` expressions unchanged; move other dynamic recipes to ordinary CSS declarations. Only used classes and delivered native `@apply` roots emit CSS and retain tokens. Unused definitions and undelivered `@reference` styles do not retain resources.
 
 
 ## Atomic class and animation tokens \{#atomic-class-and-animation-tokens\}
@@ -707,7 +707,7 @@ overlapping edge settings with explicit edges instead of depending on the old
 property-category priority. Partial-conflict diagnostics no longer rewrite classes.
 
 The ten `animate-*` classes consume complete `animation` shorthand tokens through
-an engine token family. Combine any animation companion settings into the primary
+the preset direct-value `--animate(--animate)` mixin. Combine any animation companion settings into the primary
 token. For example, replace `--animate-reveal: reveal`,
 `--animate-reveal--duration: 200ms`, `--animate-reveal--timing-function: ease-out`
 and `--animate-reveal--iteration-count: 1` with:

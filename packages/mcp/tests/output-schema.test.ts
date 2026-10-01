@@ -2,7 +2,9 @@ import { expect, test } from 'vitest'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv'
-import { builtinTokenFamilies } from '@master/css-tooling/builtins'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
+import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { variable } from '../src/semantic-schema'
 import { createMasterCSSMCPServer } from '../src/server'
 import { mkdtempSync, rmSync } from 'node:fs'
@@ -29,9 +31,11 @@ test('tools/list schemas validate success and errors without hidden refinements'
     const familiesResponse = await client.callTool({ name: 'mastercss_manifest_query', arguments: { kind: 'family', context: 'preset', limit: 200 } })
     expect(familiesResponse.isError).not.toBe(true)
     const familyData = (familiesResponse.structuredContent as any).result.data
-    expect(familyData.version).toBe(4)
-    expect(familyData.results.families).toEqual(builtinTokenFamilies.map(family => ({ type: 'token-family', ...family })))
-    expect(familyData.summary.families).toBe(builtinTokenFamilies.length)
+    expect(familyData.version).toBe(5)
+    using tooling = createLanguageSessionSync({ manifest: preset as MasterCSSManifest })
+    const families = tooling.tokenFamilies().families
+    expect(familyData.results.families).toEqual(families.map(family => ({ type: 'token-family', ...family })))
+    expect(familyData.summary.families).toBe(families.length)
     expect(familyData.results).not.toHaveProperty('aliases')
     const familyTool = listed.tools.find(tool => tool.name === 'mastercss_manifest_query')!
     const validateFamily = validator.getValidator(familyTool.outputSchema!)

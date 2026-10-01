@@ -41,6 +41,8 @@ export type {
   MasterCSSLintRawValueCandidates,
   MasterCSSLanguageClassifications,
   MasterCSSLanguageInspection,
+  MasterCSSTokenFamily,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSNativeDeclarationCandidate,
   MasterCSSSourceBatch,
   MasterCSSSourceBatchRequest,

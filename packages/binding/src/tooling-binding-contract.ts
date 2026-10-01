@@ -24,6 +24,7 @@ import type {
   MasterCSSLanguageColorPresentation,
   MasterCSSLanguageColorTokens,
   MasterCSSLanguageCompletionIndex,
+  MasterCSSLanguageTokenFamilies,
   MasterCSSLanguageDocument,
   MasterCSSLanguageDocumentRequest,
   MasterCSSLanguageFormatEdits,
@@ -89,6 +90,7 @@ export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBinding
     className: string,
     nativeSupport?: readonly boolean[]
   ): MasterCSSLanguageInspection
+  tokenFamilies(): MasterCSSLanguageTokenFamilies
   completionIndex(): MasterCSSLanguageCompletionIndex
   colorPresentation(colorToken: string): MasterCSSLanguageColorPresentation
   colorTokens(candidates: readonly MasterCSSLanguageColorCandidateInput[]): MasterCSSLanguageColorTokens

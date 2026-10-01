@@ -45,11 +45,6 @@
       "import": "./dist/node.js",
       "default": "./dist/node.js"
     },
-    "./builtins": {
-      "types": "./dist/builtins.d.ts",
-      "import": "./dist/builtins.js",
-      "default": "./dist/builtins.js"
-    },
     "./lexer": {
       "types": "./dist/lexer/index.d.ts",
       "import": "./dist/lexer/index.js",

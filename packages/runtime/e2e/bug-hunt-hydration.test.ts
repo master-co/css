@@ -9,7 +9,7 @@ test('BH-0008: external hydration works with modules and Wasm allowed but unsafe
     headers: { 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify({
   "version": 3 as const,
-  "languageVersion": 12 as const,
+  "languageVersion": 13 as const,
   "rules": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })

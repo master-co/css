@@ -1,8 +1,8 @@
 use super::{
-    BUILTIN_TOKEN_NAMESPACES, CompiledVariable, EngineClassCompletionCandidate,
-    EngineClassCompletionKind, EngineColorToken, EngineError, EngineSession, HashSet,
-    ManifestProjection, UtilityDefinition, UtilityLayerName, UtilityMatcher, Value,
-    add_unique_string, find_matching_parenthesis, split_dynamic_value_state, utf16_len,
+    CompiledVariable, EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken,
+    EngineError, EngineSession, HashSet, ManifestProjection, UtilityDefinition, UtilityLayerName,
+    UtilityMatcher, Value, add_unique_string, find_matching_parenthesis, split_dynamic_value_state,
+    utf16_len,
 };
 
 pub(crate) fn utility_completion_metadata(
@@ -215,7 +215,7 @@ pub(crate) fn collect_class_completion_candidates(
     }
 
     for utility in &manifest.utilities {
-        if utility.utility_type == -2 {
+        if matches!(utility.emit, super::UtilityEmit::Mixin { .. }) {
             let is_component = utility.layer == UtilityLayerName::Components;
             let static_detail = Some("mixin".into());
             for matcher in &utility.matchers {
@@ -296,11 +296,6 @@ pub(crate) fn collect_class_completion_candidates(
         }
     }
 
-    for (properties, _) in BUILTIN_TOKEN_NAMESPACES {
-        for property in *properties {
-            push_property_completion_candidate(&mut candidates, &mut labels, property, None);
-        }
-    }
     for key in ambiguous_keys {
         push_property_completion_candidate(
             &mut candidates,

@@ -1,8 +1,7 @@
 use super::{
     CompiledVariable, EngineError, EngineVariableIr, HashMap, ManifestProjection, Map,
     MasterCssManifest, UtilityLayerName, UtilityMatcher, Value,
-    append_builtin_native_declaration_utilities, append_builtin_token_utilities,
-    compile_utility_variables, split_top_level,
+    append_builtin_native_declaration_utilities, compile_utility_variables, split_top_level,
 };
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
@@ -52,7 +51,6 @@ pub(crate) fn compile_manifest(
         crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
     }
     super::mixin_matching::register(&mut projection);
-    append_builtin_token_utilities(&mut projection.utilities);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
     projection.utilities = projection
@@ -238,38 +236,7 @@ pub(crate) fn single_native_declaration(declarations: &str) -> Option<(String, S
     Some((property.to_owned(), value.to_owned()))
 }
 
-pub(crate) const BUILTIN_NATIVE_DECLARATION_PROPERTIES: &[&str] = &[
-    "background",
-    "background-image",
-    "font",
-    "line-clamp",
-    "outline-width",
-    "stroke-width",
-    "border-block-end-style",
-    "border-block-end-width",
-    "border-block-start-style",
-    "border-block-start-width",
-    "border-block-style",
-    "border-block-width",
-    "border-bottom-style",
-    "border-bottom-width",
-    "border-inline-end-style",
-    "border-inline-end-width",
-    "border-inline-start-style",
-    "border-inline-style",
-    "border-inline-width",
-    "border-left-style",
-    "border-left-width",
-    "border-right-style",
-    "border-right-width",
-    "border-style",
-    "border-top-style",
-    "border-top-width",
-    "border-width",
-    "overflow",
-    "scroll-snap-type",
-    "text-overflow",
-];
+pub(crate) use mastercss_schema::NATIVE_CSS_PROPERTIES as BUILTIN_NATIVE_DECLARATION_PROPERTIES;
 
 pub(crate) fn add_unique_string(target: &mut Vec<String>, value: &str) {
     if !target.iter().any(|existing| existing == value) {

@@ -8,7 +8,7 @@ import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } fro
 
 const baseManifest: MasterCSSManifest = {
   "version": 4 as const,
-  "languageVersion": 12 as const
+  "languageVersion": 13 as const
 }
 const roots: string[] = []
 function fixture() {

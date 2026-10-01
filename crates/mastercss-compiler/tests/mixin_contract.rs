@@ -180,10 +180,15 @@ fn parameters_are_private_and_do_not_cross_element_boundaries() {
 }
 
 #[test]
-fn token_maps_work_without_preset_utility_definitions() {
+fn token_maps_require_explicit_mixin_definitions() {
     let source = "@theme {--font-size-sm:.875rem;--font-family-sans:system-ui;--font-weight-bold:700;--spacing-md:1rem;--color-red-60:red;--color-surface-base:white}";
+    assert!(css(source, &["p-md", "bg-red-60", "font-size-sm"]).is_empty());
     let output = css(
-        source,
+        &format!(
+            "{}{}",
+            include_str!("../../../packages/preset/src/mixins.css"),
+            source
+        ),
         &[
             "font-size-sm",
             "font-family-sans",
@@ -203,7 +208,9 @@ fn token_maps_work_without_preset_utility_definitions() {
     ] {
         assert!(output.contains(declaration), "{declaration}: {output}");
     }
-    let session = engine("@theme {--font-size-brand:1rem;--font-family-brand:serif}");
+    let session = engine(
+        "@theme {--font-size-brand:1rem;--font-family-brand:serif}@mixin --font-size(--font-size){font-size:var(--font-size)}@mixin --font-family(--font-family){font-family:var(--font-family)}",
+    );
     assert!(
         session
             .inspect("font-brand")
@@ -552,7 +559,9 @@ fn builtin_function_names_and_escaped_parameter_identifiers_follow_css_rules() {
     assert!(output.contains("font-size:VAR(--step-hero)"), "{output}");
     assert!(output.contains("--step-hero:2rem"), "{output}");
     for argument in ["VAR(--external)", "AtTr(data-step)", r"v\61 r(--external)"] {
-        let source = format!("@mixin --x(--n){{width:var(--n)}}.x{{@apply --x({argument})}}");
+        let source = format!(
+            "@mixin --x(--n){{width:var(--n);height:var(--n)}}.x{{@apply --x({argument})}}"
+        );
         assert!(compile(&source).is_err(), "{argument}");
     }
     for source in [

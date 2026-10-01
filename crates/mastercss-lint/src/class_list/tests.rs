@@ -21,6 +21,7 @@ fn preserves_raw_tokens_and_whitespace_while_sorting() {
         ],
         analysis(),
         ClassListPolicy {
+            token_families: &[],
             matches: &[true, true, true],
             validation_errors: &[],
             disallow_unknown_class: false,
@@ -43,6 +44,7 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
         &["😀".into(), "margin:1x".into(), "margin:2x".into()],
         full,
         ClassListPolicy {
+            token_families: &[],
             matches: &[false, true, true],
             validation_errors: &[],
             disallow_unknown_class: false,
@@ -63,6 +65,7 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
         &["margin-inline:md".into(), "margin-left:lg".into()],
         partial,
         ClassListPolicy {
+            token_families: &[],
             matches: &[true, true],
             validation_errors: &[],
             disallow_unknown_class: false,
@@ -100,6 +103,7 @@ fn creates_invalid_and_unknown_class_diagnostics() {
             partial_conflicts: Vec::new(),
         },
         ClassListPolicy {
+            token_families: &[],
             matches: &[true, false, false],
             validation_errors: &[vec![
                 "Invalid value for `text-decoration-color` property".into(),

@@ -23,6 +23,7 @@ struct ValidationContext<'a> {
 }
 
 pub(crate) struct ClassListPolicy<'a> {
+    pub token_families: &'a [mastercss_engine::TokenFamily],
     pub matches: &'a [bool],
     pub validation_errors: &'a [Vec<String>],
     pub disallow_unknown_class: bool,
@@ -87,6 +88,7 @@ pub(crate) fn create_class_list_ir(
             &items,
             policy.raw_value_candidates,
             raw_value_policy,
+            policy.token_families,
         ));
     }
     LintClassListIr {
@@ -103,6 +105,7 @@ fn create_raw_value_diagnostics(
     items: &[ClassListItem],
     candidates: &[RawValueCandidateIr],
     policy: &RawValuePolicy,
+    token_families: &[mastercss_engine::TokenFamily],
 ) -> Vec<LintDiagnosticIr> {
     if policy.allow_raw_values {
         return Vec::new();
@@ -154,7 +157,7 @@ fn create_raw_value_diagnostics(
             range,
             data: serde_json::Map::from_iter([
                 ("policy".into(), serde_json::json!({"rule": "no-unapproved-raw-values", "requireProperties": policy.require_properties})),
-                ("tokenFamilies".into(), serde_json::json!(mastercss_engine::builtin_token_families().filter(|(_, property, _)| candidate.properties.iter().any(|item| item == property)).map(|(prefix, property, namespaces)| serde_json::json!({"prefix": prefix,"property": property,"namespaces":namespaces.iter().map(|namespace| namespace.trim_start_matches('~')).collect::<Vec<_>>()})).collect::<Vec<_>>())),
+                ("tokenFamilies".into(), serde_json::json!(token_families.iter().filter(|family| family.properties.iter().any(|property| candidate.properties.contains(property))).collect::<Vec<_>>())),
                 (
                     "className".into(),
                     serde_json::Value::String(candidate.class_name.clone()),

@@ -22,8 +22,8 @@ This is a working-tree inventory, not an audit of a published deployment. The ba
 | --- | --- |
 | Current catalog ownership and generation | [reference/build.ts](../../site/reference/build.ts), local ignored `site/.generated/reference.json` |
 | First-level authored pages | `site/app/[locale]/reference/*/metadata.ts` and adjacent MDX/syntax files |
-| 138 canonical token families | [token_registry.rs](../../crates/mastercss-engine/src/token_registry.rs); public tooling builtins are the site-facing projection |
-| 11 preset mixins | [utilities.css](../../packages/preset/src/utilities.css) |
+| 139 value token families | [mixins.css](../../packages/preset/src/mixins.css); build-time language-session `tokenFamilies()` is the site-facing projection |
+| 10 preset recipes | [mixins.css](../../packages/preset/src/mixins.css) |
 | Foundation data and portable rendering | [foundation-content.ts](../../site/utils/foundation-content.ts), [theme-variables.ts](../../site/utils/theme-variables.ts) |
 | Tool and package inventories | [tool-contracts.ts](../../site/reference/tool-contracts.ts), [package-contracts.ts](../../site/reference/package-contracts.ts), public registrations and API census |
 
@@ -229,7 +229,7 @@ Public source migration now uses shared preset facts, an exhaustive family index
 
 ## Implementation and verification
 
-- Generated catalog: 90 content documents; 138 canonical families; 10 recipe pages covering all 11 preset mixins. Native/property MDX and obsolete Guide catalogs are removed.
+- Generated catalog: 90 content documents; 138 canonical families; 10 recipe pages covering all 10 preset recipes. Native/property MDX and obsolete Guide catalogs are removed.
 - Shared facts: `site/common/foundation-data/tokens.ts`; HTML and portable Guide selections both call the same selector. Reference reads complete scoped values and dependency names.
 - Existing Design System gallery examples were relocated to `site/components/demo/specimens/` before deleting their former article sources. Typography and Corner Radius lessons now own their included MDX.
 - Per the user’s implementation clarification, retired Reference routes are removed without redirects. Active links use actual content owners, including native CSS sources where appropriate. Removed settings/composition contracts live in the RC migration guide.
