@@ -51,7 +51,7 @@ fn preserves_siblings_and_containers_around_lowered_slots() {
 #[test]
 fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
     let source = r###"@theme {--color-x:red}
-@mixin --brand {color:red}
+@mixin --brand {color:red} @utility brand {color:red}
 .button{@apply --always{color:red;}}"###;
     let result = compile_css_directives(
         source,

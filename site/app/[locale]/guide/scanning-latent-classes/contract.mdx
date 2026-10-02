@@ -118,7 +118,7 @@ After candidate scanning, Master CSS validates each class against the active man
 
 `hero-title` and `btn` are valid because the project CSS entry defines them. `display:grid`, `gap-xl`, `bg-blue-60`, and `fg-white` are validated through the utility engine.
 
-Native `.btn` rules inside `@layer components` are delivered by default. Scanning controls generated utilities and mixins; native class removal applies only when native pruning is explicitly enabled.
+Native `.btn` rules inside `@layer components` are delivered by default. Scanning controls generated utility classes; native class removal applies only when native pruning is explicitly enabled.
 
 ## Complete classes \{#complete-classes\}
 Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.

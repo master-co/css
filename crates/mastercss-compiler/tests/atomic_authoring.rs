@@ -8,7 +8,7 @@ fn engine() -> EngineSession {
     let source = format!(
         "{}\n{}",
         include_str!("../../../packages/preset/src/theme.css"),
-        include_str!("../../../packages/preset/src/mixins.css")
+        include_str!("../../../packages/preset/src/utilities.css")
     );
     let directives = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let manifest = compile_manifest_input(

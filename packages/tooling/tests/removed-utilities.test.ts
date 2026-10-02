@@ -15,7 +15,7 @@ test('validator and editor report removed builtins without changing generation',
 })
 
 test.each([[], ['width', 'height']])('custom size definitions including empty ones have no removed-builtin hint', (...properties) => {
-  const manifest = { ...preset, mixins: [...preset.mixins, { name: '--size', parameters: [{ name: '--value' }], body: properties.map(property => ({ type: 'declaration', property, value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] })) }] } as unknown as MasterCSSManifest
+  const manifest = { ...preset, utilities: [...preset.utilities, { kind: 'function', name: 'size', parameters: [{ name: '--value' }], body: properties.map(property => ({ type: 'declaration', property, value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] })) }] } as unknown as MasterCSSManifest
   const session = createToolingSessionSync({ manifest })
   try {
     expect(session.validateClassNames(['size(20px)']).classes[0].diagnostics?.some(d => d.code === 'REMOVED_PRESET_UTILITY')).toBe(false)

@@ -659,7 +659,7 @@ export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
-  | 'mixin'
+  | 'utility'
   | 'declaration'
   | 'token'
 
@@ -730,7 +730,7 @@ export interface MasterCSSLanguageCompletionEntry {
 }
 
 export interface MasterCSSTokenFamily {
-  readonly mixin: string
+  readonly utility: string
   readonly prefix: string
   readonly namespace: string
   readonly argument: 'value' | 'key'
@@ -807,7 +807,7 @@ export interface MasterCSSDirectiveExtractionPolicy {
 }
 
 export interface MasterCSSDirectiveCompilation {
-  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
+  definitionSources?: import('@master/css-schema/css-directives').CSSDefinitionSource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   extractionPolicy: MasterCSSDirectiveExtractionPolicy
@@ -893,7 +893,7 @@ export interface MasterCSSCompileDefaultPresetResult {
 }
 
 export interface MasterCSSLowerDirectivesRequest {
-  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
+  definitionSources?: import('@master/css-schema/css-directives').CSSDefinitionSource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
@@ -953,7 +953,7 @@ export interface MasterCSSResolvedImportGraph {
 }
 
 export interface MasterCSSCompileStylesheetGraphRequest {
-  mixinSources?: import('@master/css-schema/css-directives').CSSMixinSource[]
+  definitionSources?: import('@master/css-schema/css-directives').CSSDefinitionSource[]
   /** Unresolved imports already emitted by the host, keyed by original stylesheet ID. */
   hostImports?: Record<string, string[]>
   /** Inline compatible local children; retained boundaries still require asset delivery. */

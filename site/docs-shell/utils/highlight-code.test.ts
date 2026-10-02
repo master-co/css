@@ -30,7 +30,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   --color-brand: red;
 }`,
     '@safelist "fg-red@md"; @layer components { .btn { @media (width < 40rem) { color: red; } } }',
-    '@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }'
+    '@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } } @utility motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }'
   ].join('\n')
   const hast = await highlightCode(source, { lang: 'css' })
   const styleOf = (text: string, semantic = false) => {

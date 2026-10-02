@@ -35,7 +35,7 @@ describe('Rust-owned default preset', () => {
     expect(variables.some(({ name }) => name === 'spacing-md')).toBe(true)
     expect(readFileSync(resolve(import.meta.dirname, '../src/default-native.css'), 'utf8')).not.toContain('@keyframes fade')
     expect(defaultManifest.keyframes?.some(({ name }) => name === 'fade')).toBe(true)
-    expect(defaultManifest.mixins?.some(({ name }) => name === '--center')).toBe(false)
+    expect(defaultManifest.utilities?.some(({ name }) => name === 'center')).toBe(false)
   })
 
   it('renders representative classes through the native Rust engine', () => {

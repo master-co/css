@@ -8,9 +8,9 @@ test('native and Wasm retain ordered native output, resource references and migr
   const definitions = '/utilities.css'
   const files = {
     [entry]: "@import \"./utilities.css\";@layer components{.button{@apply --always {color:var(--color-accent);animation:1s spin;display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;color:red;color:blue;}}}",
-    [definitions]: `@mixin --always { @media all { @contents; } }@theme {--color-accent:red; }
+    [definitions]: `@mixin --always { @media all { @contents; } } @utility always { @media all { @contents; } }@theme {--color-accent:red; }
 @keyframes spin{to{opacity:1}}
-@mixin --paint-red {color:var(--color-accent);animation:spin 1s}@mixin --paint-blue {color:var(--color-accent);animation:spin 1s}@mixin --paint-small {font-size:small}@mixin --paint-large {font-size:large}`
+@mixin --paint-red {color:var(--color-accent);animation:spin 1s} @utility paint-red {color:var(--color-accent);animation:spin 1s}@mixin --paint-blue {color:var(--color-accent);animation:spin 1s} @utility paint-blue {color:var(--color-accent);animation:spin 1s}@mixin --paint-small {font-size:small} @utility paint-small {font-size:small}@mixin --paint-large {font-size:large} @utility paint-large {font-size:large}`
   }
   const request = { graph: { entry, files, edges: [{ from: entry, specifier: './utilities.css', resolved: definitions }] }, urls: { [entry]: entry, [definitions]: definitions } }
   const result = native.compileCSSStylesheetGraph(request)
@@ -28,8 +28,8 @@ test('native and Wasm retain ordered native output, resource references and migr
     from: 'rc-managed' as const, sourceVersion: '2.0.0-rc.managed',
     manifest: { version: 1 as const, languageVersion: 3 as const, utilities: [] },
     targetManifest: {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 },
     stylesheets: ['@components{button{display:block}}.a{@compose button;}'],
     classLists: [['button:hover']], documents: []

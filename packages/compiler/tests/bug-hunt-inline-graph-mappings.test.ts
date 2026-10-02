@@ -10,7 +10,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`${binding} inline graph preserves qualified native compose and original output maps`, async () => {
     using compiler = await createCompiler({ binding })
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
-      const entry = `@import "./child.css"${qualifier};@mixin --paint {padding:2rem}/* 😀 */\n.after{margin:1px}`
+      const entry = `@import "./child.css"${qualifier};@mixin --paint {padding:2rem} @utility paint {padding:2rem}/* 😀 */\n.after{margin:1px}`
       const child = "/* child */\n.card{@apply --all {padding:2rem;}}\n.card{padding:3rem}"
       const request = { graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }, urls: { '/entry.css': '/entry.css', '/child.css': '/child.css' }, baseManifest: {
   mixins: [
@@ -30,9 +30,9 @@ for (const binding of ['native', 'wasm'] as const) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, inlineImports: true }
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
       expect(result.manifest.mixins?.some(utility => utility.name === '--paint')).toBe(true)
@@ -48,7 +48,7 @@ test('Node manifest files and references reject qualified global definitions', a
   const root = mkdtempSync(join(tmpdir(), 'master-inline-reference-'))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
-    writeFileSync(child, '@mixin --paint {padding:2rem}')
+    writeFileSync(child, '@mixin --paint {padding:2rem} @utility paint {padding:2rem}')
     for (const qualifier of [' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) screen']) {
       writeFileSync(entry, `@import "./child.css"${qualifier};`)
       expect(() => compileManifestFileSync(entry, { baseManifest: {
@@ -69,9 +69,9 @@ test('Node manifest files and references reject qualified global definitions', a
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })).toThrow(/Qualified import.*global @mixin/)
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).toThrow(/Qualified import.*global @mixin/)
       await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@apply --all{padding:2rem;}}", { projectDir: root, baseManifest: {
   mixins: [
   {
@@ -90,9 +90,9 @@ test('Node manifest files and references reject qualified global definitions', a
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })).rejects.toThrow(/Qualified import.*global @mixin/)
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).rejects.toThrow(/Qualified import.*global @mixin/)
 
     }
   } finally { rmSync(root, { recursive: true, force: true }) }

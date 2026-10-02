@@ -39,7 +39,7 @@ test('BH-0004 metadata discovery does not compile native or managed CSS or load 
   const fixture = project()
   try {
     const entry = fixture.file('entry.css', "@import './child.css' screen;@reference './missing.css';@source './entry/*.html';")
-    fixture.file('child.css', "@mixin --broken {@compose unregistered;}.native{unknown:???}@media screen{@source './ignored/*.html';}@source './child/*.html';")
+    fixture.file('child.css', "@mixin --broken {@compose unregistered;} @utility broken {@compose unregistered;}.native{unknown:???}@media screen{@source './ignored/*.html';}@source './child/*.html';")
     const result = collectStylesheetDirectivesFromCSSGraph(entry, undefined, fixture.root)
     expect([...result.directives.include].sort()).toEqual(['child/*.html', 'entry/*.html'])
     expect(result.dependencies).toHaveLength(2)

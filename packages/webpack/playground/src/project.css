@@ -28,7 +28,7 @@
 @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }
 
 
-  @mixin --content-auto {
+  @utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 28rem;
   }

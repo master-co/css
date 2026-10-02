@@ -5,16 +5,16 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
-const parameterMixin = (name: string, property: string) => ({
-  name: `--${name}`, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property, value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }]
+const parameterUtility = (name: string, property: string) => ({
+  kind: 'function' as const, name, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property, value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }]
 })
-const manifest = { ...preset, mixins: [...preset.mixins,
-  parameterMixin('tile', 'width'), parameterMixin('box', 'width'), parameterMixin('tile', 'height')
+const manifest = { ...preset, utilities: [...preset.utilities,
+  parameterUtility('tile', 'width'), parameterUtility('box', 'width'), parameterUtility('tile', 'height')
 ] } as unknown as MasterCSSManifest
 const classes = ['width:20px height:20px', 'size:99px', 'tile(40px)', 'box(30px)', 'display:flex', 'flex:1', 'display:flex:hover'].flatMap(value => value.split(' '))
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
-  test(`${mode}: independent mixin replacement and explicit paired dimensions survive hydration and updates`, async ({ page }) => {
+  test(`${mode}: independent utility replacement and explicit paired dimensions survive hydration and updates`, async ({ page }) => {
     const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body><div id="pair" class="width:20px height:20px"></div><div id="fallback" class="size:99px"></div><div id="native" style="size:99px"></div><div id="alias" class="tile(40px) box(30px)"></div><div id="display" class="display:flex flex:1"></div></body></html>'
     const rendered = renderClassNamesSync(classes, { manifest })
     expect(rendered.cssText).toContain('size:99px')

@@ -7,7 +7,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding} directives and references retain original diagnostic ranges`, async () => {
     using compiler = await createCompiler({ binding })
     for (const prefix of ["@import \"@master/css\";\n", "@reference \"./😀.css\";\r\n@import \"@master/css\";@preserve native;\n", "@source \"./😀.html\";\n/*😀*/@import \"@master/css\";\n"]) {
-      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', '@compose'], ["@utilities {paint {color:red}}", '@utilities'], ['@mixin --paint {@compose unknown-utility;}', '@compose']]) {
+      for (const [body, token] of [['.example {\n  @compose unknown-utility;\n}', '@compose'], ["@utilities {paint {color:red}}", '@utilities'], ['@mixin --paint {@compose unknown-utility;}', '@compose'], ['@utility paint {@compose unknown-utility;}', '@compose']]) {
         const source = prefix + body
         const start = source.indexOf(token!)
         const position = (offset: number) => {
@@ -36,9 +36,9 @@ for (const binding of ['native', 'wasm'] as const) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, resolutionManifest: {
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, resolutionManifest: {
   mixins: [
   {
     "name": "--all",
@@ -56,9 +56,9 @@ for (const binding of ['native', 'wasm'] as const) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
           })
         } catch (error) { caught = error }
         expect(caught).toBeInstanceOf(MasterCSSError)
@@ -88,9 +88,9 @@ test('BH-0004 local stylesheet lowering retains source text for diagnostics', as
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })).rejects.toMatchObject({
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).rejects.toMatchObject({
     diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })
 })

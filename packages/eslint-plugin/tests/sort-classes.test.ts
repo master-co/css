@@ -31,7 +31,7 @@ createTester({
     ]
   }
 ],
-      }),
+       utilities: [{"name":"zDialog","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"z-index","value":[{"type":"text" as const,"value":"10000"}]}]}],"kind":"static" as const}] }),
     },
   },
 }).run('sort classes', rule, {

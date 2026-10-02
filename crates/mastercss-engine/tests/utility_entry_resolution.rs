@@ -3,11 +3,11 @@ use mastercss_schema::MatchStatus;
 use serde_json::{Value, json};
 
 fn definition(name: &str, property: &str, value: &str) -> Value {
-    json!({"name":name,"body":[{"type":"declaration","property":property,"value":[{"type":"text","value":value}]}]})
+    json!({"kind":"static","name":name.trim_start_matches("--"),"body":[{"type":"declaration","property":property,"value":[{"type":"text","value":value}]}]})
 }
 fn engine(mixins: Vec<Value>, variables: Value) -> EngineSession {
     let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, entries)| entries.as_array().unwrap().iter().flat_map(move |entry| entry["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",entry["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
-    EngineSession::create(&json!({"version":5,"languageVersion":14,"mixins":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":6,"languageVersion":15,"utilities":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
 }
 
 #[test]
@@ -33,7 +33,7 @@ fn empty_replacement_clears_old_rules_and_resources() {
         vec![
             definition("--card", "color", "var(--color-old)"),
             definition("--panel", "color", "var(--color-old)"),
-            json!({"name":"--card","body":[]}),
+            json!({"kind":"static","name":"card","body":[]}),
         ],
         json!({"color":[{"key":"old","values":[{"path":[":root,:host"],"value":"blue"}]}]}),
     );
@@ -62,7 +62,7 @@ fn retired_font_prefix_reports_explicit_families() {
             serde_json::from_str::<Value>(include_str!(
                 "../../../packages/preset/src/default-manifest.json"
             ))
-            .unwrap()["mixins"]
+            .unwrap()["utilities"]
                 .as_array()
                 .unwrap()
                 .clone(),

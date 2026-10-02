@@ -117,7 +117,7 @@ describe('PreRenderPlugin', () => {
     const themePath = path.join(root, 'theme.css')
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
-      writeFileSync(themePath, "@mixin --card { color: #123456; }")
+      writeFileSync(themePath, "@mixin --card { color: #123456; } @utility card { color: #123456; }")
       writeFileSync(entryPath, `@import url("@master/css");
 @import "./theme.css";
 
@@ -150,7 +150,7 @@ describe('PreRenderPlugin', () => {
       let html = typeof result === 'string' ? result : result.html
       expect(html).toContain('.card{color:#123456}')
 
-      writeFileSync(themePath, "@mixin --card { color: #abcdef; }")
+      writeFileSync(themePath, "@mixin --card { color: #abcdef; } @utility card { color: #abcdef; }")
       const send = vi.fn()
       await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
       expect(send).toHaveBeenCalledWith({ type: 'full-reload' })

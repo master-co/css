@@ -1,5 +1,5 @@
 import type { MasterCSSKeyframeDefinition } from './keyframes.js'
-import type { MasterCSSMixinDefinition, MasterCSSMixinValue, MasterCSSMixinNode } from './mixin.js'
+import type { MasterCSSMixinDefinition, MasterCSSUtilityDefinition, MasterCSSMixinValue, MasterCSSMixinNode } from './mixin.js'
 import type {
   MasterCSSThemeNode,
   MasterCSSManifestUtilityLayerName
@@ -109,6 +109,7 @@ export interface CSSDirectiveManifestInput {
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
   mixins?: MasterCSSMixinDefinition[]
+  utilities?: MasterCSSUtilityDefinition[]
 }
 
 export interface CSSDirectiveExtractionPolicy {
@@ -175,7 +176,8 @@ export interface CSSNativeOutput {
   slots: { start: number, end: number, marker: string, definitions: CSSDirectiveStyleDefinition[] }[]
 }
 
-export interface CSSMixinSource {
+export interface CSSDefinitionSource {
+  kind: 'utility' | 'mixin'
   name: string
   identity: string
   replacedBy?: CSSDirectiveSourceReference
@@ -191,7 +193,7 @@ export interface CSSDirectiveNotice {
 export interface CSSDirectiveResult {
   suppressedKeyframes?: string[]
   notices?: CSSDirectiveNotice[]
-  mixinSources?: CSSMixinSource[]
+  definitionSources?: CSSDefinitionSource[]
   nativeOutput?: CSSNativeOutput
   outputMappings?: CSSOutputMapping[]
   /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */

@@ -7,8 +7,8 @@ import plugin from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 // Explicit local recipes keep escape-decoding cases independent of preset aliases.
-const manifest = createPresetManifest({ mixins: ['block', 'hidden'].map(name => ({
-  name: `--${name}`, body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: name === 'block' ? 'block' : 'none' }] }]
+const manifest = createPresetManifest({ utilities: ['block', 'hidden'].map(name => ({
+  kind: 'static', name, body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: name === 'block' ? 'block' : 'none' }] }]
 })) })
 function linter(rules: Record<string, any>, fix = false, languageOptions: any = {}) {
   return new ESLint({ fix, overrideConfigFile: true, overrideConfig: [{

@@ -7,7 +7,7 @@ import { createTestCSS } from './helpers/rust-engine'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test.concurrent('universal compileManifest lowers directives with a base manifest', async () => {
-  const result = await compileManifest("\n    @mixin --btn {\n        @apply --all {display:flex;}\n        color: red;\n      }\n  ", {
+  const result = await compileManifest("\n    @mixin --btn {\n        @apply --all {display:flex;}\n        color: red;\n      } @utility btn {\n        @apply --all {display:flex;}\n        color: red;\n      }\n  ", {
     baseManifest: defaultManifest
   })
   const css = createTestCSS(result.manifest)

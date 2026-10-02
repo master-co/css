@@ -17,6 +17,7 @@ pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
         "reference",
         "theme",
         "mixin",
+        "utility",
         "apply",
         "custom-media",
         "contents",

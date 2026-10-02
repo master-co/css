@@ -77,7 +77,7 @@ function directiveSummary(result: CompileCSSResult) {
         countKeys.map((key) => [key, countRecordValue(manifestInput[key])])
       ))
     }),
-    styleDefinitions: (result.styleDefinitions?.length ?? 0) + (result.manifestInput.mixins ?? []).reduce((count, definition) => count + (definition.body?.length ?? 0), 0),
+    styleDefinitions: (result.styleDefinitions?.length ?? 0) + [...(result.manifestInput.mixins ?? []), ...(result.manifestInput.utilities ?? [])].reduce((count, definition) => count + (definition.body?.length ?? 0), 0),
     extractionPolicy: freezeExtractionPolicy(result.extractionPolicy)
   })
 }
@@ -194,7 +194,7 @@ export class MasterCSSCompiler implements Disposable {
     }
     const lowered = this.#session.lowerCSSDirectives({
       manifestInput: rawDirectives.manifestInput,
-      mixinSources: rawDirectives.mixinSources || [],
+      definitionSources: rawDirectives.definitionSources || [],
       nativeOutput: rawDirectives.nativeOutput,
       styleDefinitions: rawDirectives.styleDefinitions || [],
       warnings: rawDirectives.warnings

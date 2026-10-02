@@ -2,8 +2,8 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { compileManifestSync } from '@master/css-compiler/node'
 import rule from '../src/rules/no-invalid-classes'
 
-const { manifest } = compileManifestSync('@mixin --bg(--color){background-color:var(--color)}@mixin --p(--spacing){padding:var(--spacing)}@theme{--color-brand:red;--spacing-card:1rem}:root{--color-native:red}', {
-  baseManifest: { version: 5, languageVersion: 14 }
+const { manifest } = compileManifestSync('@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}@theme{--color-brand:red;--spacing-card:1rem}:root{--color-native:red}', {
+  baseManifest: { version: 6, languageVersion: 15 }
 })
 const tester = new RuleTester({
   languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },

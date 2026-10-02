@@ -1,4 +1,6 @@
 
   @mixin --fixture-card {
     display: block;
+  } @utility fixture-card {
+    display: block;
   }

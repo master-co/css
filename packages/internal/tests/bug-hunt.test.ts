@@ -8,8 +8,8 @@ test('audit control: failed manifest loads retain watch dependencies and recover
     onDependency('/project/theme.css')
     if (fail) throw new Error('temporary invalid manifest')
     return { manifest: {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
   })
   const allow: string[] = []
@@ -23,7 +23,7 @@ test('audit control: failed manifest loads retain watch dependencies and recover
   expect(plugin.handleHotUpdate({ file: '/project/theme.css', server })).toEqual([module])
   expect(server.moduleGraph.invalidateModule).toHaveBeenCalledWith(module)
   fail = false
-  expect(await plugin.load.call(context, RESOLVED_VIRTUAL_MANIFEST_ID)).toContain('"version":5')
+  expect(await plugin.load.call(context, RESOLVED_VIRTUAL_MANIFEST_ID)).toContain('"version":6')
   expect(allow).toHaveLength(1)
   expect(plugin.handleHotUpdate({ file: '/project/unrelated.css', server })).toBeUndefined()
 })

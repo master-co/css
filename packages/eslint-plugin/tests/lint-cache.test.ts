@@ -119,9 +119,9 @@ test('new, edited and removed CSS entries invalidate unchanged source diagnostic
   const lint = async () => (await eslint.lintText(code, { filePath: 'index.jsx' }))[0].errorCount
   expect(await lint()).toBe(1)
   const entry = join(root, 'index.css')
-  writeFileSync(entry, '@import "@master/css"; @mixin --fixture-one { color: red; }')
+  writeFileSync(entry, '@import "@master/css"; @mixin --fixture-one { color: red; } @utility fixture-one { color: red; }')
   expect(await lint()).toBe(0)
-  writeFileSync(entry, '@import "@master/css"; @mixin --fixture-two { color: red; }')
+  writeFileSync(entry, '@import "@master/css"; @mixin --fixture-two { color: red; } @utility fixture-two { color: red; }')
   expect(await lint()).toBe(1)
   rmSync(entry)
   expect(await lint()).toBe(1)
@@ -132,25 +132,25 @@ test('CSS files becoming entries and imported dependency edits are observed', as
   const entry = join(root, 'index.css')
   const imported = join(root, 'tokens.css')
   writeFileSync(entry, ':root { color: red; }')
-  writeFileSync(imported, '@mixin --fixture-one { color: red; }')
+  writeFileSync(imported, '@mixin --fixture-one { color: red; } @utility fixture-one { color: red; }')
   const eslint = linter(root)
   const lint = async () => (await eslint.lintText('<div className="fixture-one" />', { filePath: 'index.jsx' }))[0].errorCount
   expect(await lint()).toBe(1)
   writeFileSync(entry, '@import "@master/css"; @import "./tokens.css";')
   expect(await lint()).toBe(0)
-  writeFileSync(imported, '@mixin --fixture-two { color: red; }')
+  writeFileSync(imported, '@mixin --fixture-two { color: red; } @utility fixture-two { color: red; }')
   expect(await lint()).toBe(1)
 })
 
 test('imports outside the discovery root invalidate cached native sessions', async () => {
   const root = workspace()
   const imported = join(workspace(), 'external.css')
-  writeFileSync(imported, '@mixin --fixture-one { color: red; }')
+  writeFileSync(imported, '@mixin --fixture-one { color: red; } @utility fixture-one { color: red; }')
   writeFileSync(join(root, 'index.css'), `@import "@master/css"; @import "${relative(root, imported).split(sep).join('/')}";`)
   const eslint = linter(root)
   const lint = async () => (await eslint.lintText('<div className="fixture-one" />', { filePath: 'index.jsx' }))[0].errorCount
   expect(await lint()).toBe(0)
-  writeFileSync(imported, '@mixin --fixture-two { color: red; }')
+  writeFileSync(imported, '@mixin --fixture-two { color: red; } @utility fixture-two { color: red; }')
   expect(await lint()).toBe(1)
 })
 
@@ -159,7 +159,7 @@ test('package metadata changes and new directories refresh workspace ownership',
   const child = join(root, 'child')
   mkdirSync(child)
   writeFileSync(join(root, 'package.json'), JSON.stringify({ dependencies: { '@master/css': '*' } }))
-  writeFileSync(join(root, 'index.css'), '@import "@master/css"; @mixin --fixture-one { color: red; }')
+  writeFileSync(join(root, 'index.css'), '@import "@master/css"; @mixin --fixture-one { color: red; } @utility fixture-one { color: red; }')
   writeFileSync(join(child, 'package.json'), '{}')
   const eslint = linter(root)
   const lint = async () => (await eslint.lintText('<div className="fixture-one" />', { filePath: 'child/index.jsx' }))[0].errorCount
@@ -167,7 +167,7 @@ test('package metadata changes and new directories refresh workspace ownership',
   writeFileSync(join(child, 'package.json'), JSON.stringify({ dependencies: { '@master/css': '*' } }))
   expect(await lint()).toBe(1)
   mkdirSync(join(child, 'styles'))
-  writeFileSync(join(child, 'styles/index.css'), '@import "@master/css"; @mixin --fixture-one { color: red; }')
+  writeFileSync(join(child, 'styles/index.css'), '@import "@master/css"; @mixin --fixture-one { color: red; } @utility fixture-one { color: red; }')
   expect(await lint()).toBe(0)
 })
 

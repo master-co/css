@@ -24,10 +24,10 @@ fn custom_recipes_and_canonical_token_keys_are_not_retired_aliases() {
             --font-brand: 500;
             --spacing-md: 1rem;
          }
-        @mixin --text-stroke(--color) { -webkit-text-stroke-color:var(--color); }
-        @mixin --font(--key <string>) { font-weight: var(ident("--font-" var(--key))); }
-        @mixin --padding(--key <string>) { padding: var(ident("--padding-" var(--key))); }
-        @mixin --padding-md { padding: 3rem; }
+        @mixin --text-stroke(--color) { -webkit-text-stroke-color:var(--color); } @utility text-stroke(--color) { -webkit-text-stroke-color:var(--color); }@utility text-stroke-(--color) { -webkit-text-stroke-color:var(--color); }
+        @mixin --font(--key <string>) { font-weight: var(ident("--font-" var(--key))); } @utility font(--key <string>) { font-weight: var(ident("--font-" var(--key))); }@utility font-(--font <string>) { font-weight: var(ident("--font-" var(--font))); }
+        @mixin --padding(--key <string>) { padding: var(ident("--padding-" var(--key))); } @utility padding(--key <string>) { padding: var(ident("--padding-" var(--key))); }@utility padding-(--padding <string>) { padding: var(ident("--padding-" var(--padding))); }
+        @mixin --padding-md { padding: 3rem; } @utility padding-md { padding: 3rem; }
     "#,
     );
     for class in [

@@ -1,9 +1,10 @@
 import type { MasterCSSKeyframeDefinition } from './keyframes.js'
 export type { MasterCSSKeyframeDefinition } from './keyframes.js'
 import type { PropertiesHyphen } from 'csstype'
-import type { MasterCSSMixinDefinition } from './mixin.js'
+import type { MasterCSSMixinDefinition, MasterCSSUtilityDefinition } from './mixin.js'
 export type {
   MasterCSSMixinDefinition,
+  MasterCSSUtilityDefinition,
   MasterCSSMixinParameter,
   MasterCSSMixinParameterSyntax,
   MasterCSSMixinNode,
@@ -63,14 +64,15 @@ export interface MasterCSSManifest {
    * This is not a legacy Config compatibility marker; engines must reject
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
-  version: 5
-  languageVersion: 14
+  version: 6
+  languageVersion: 15
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: Record<string, MasterCSSMediaQueryExpression>
   variables?: MasterCSSManifestVariables
   mixins?: MasterCSSMixinDefinition[]
+  utilities?: MasterCSSUtilityDefinition[]
   debug?: Record<string, unknown>
 }
 

@@ -5,7 +5,7 @@ use mastercss_engine::EngineSession;
 
 fn engine(source: &str) -> EngineSession {
     let source = format!(
-        "{source}@mixin --fg(--color){{color:var(--color)}}@mixin --outline(--color){{outline-color:var(--color)}}"
+        "{source}@mixin --fg(--color){{color:var(--color)}} @utility fg(--color) {{color:var(--color)}}@utility fg-(--color) {{color:var(--color)}}@mixin --outline(--color){{outline-color:var(--color)}} @utility outline(--color) {{outline-color:var(--color)}}@utility outline-(--color) {{outline-color:var(--color)}}"
     );
     let css = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let compiled = compile_manifest_input(
@@ -23,8 +23,8 @@ fn utility_definitions_use_native_preludes_and_whole_value_parameters() {
     let mut engine = engine(
         r#"
         @theme { --color-line-brand: red;  }
-        @mixin --content-auto { content-visibility: auto; }
-        @mixin --equal-cols(--value) { display: grid; grid-template-columns: repeat(var(--value), minmax(0, 1fr)); }
+        @mixin --content-auto { content-visibility: auto; } @utility content-auto { content-visibility: auto; }
+        @mixin --equal-cols(--value) { display: grid; grid-template-columns: repeat(var(--value), minmax(0, 1fr)); } @utility equal-cols(--value) { display: grid; grid-template-columns: repeat(var(--value), minmax(0, 1fr)); }
     "#,
     );
     engine
@@ -92,7 +92,7 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
         @custom-media --small (width >= 48rem);
         @custom-media --off false;
         @custom-media --outside not (--wide);
-        @mixin --visible-wide { @media (--wide) { visibility: visible; } }
+        @mixin --visible-wide { @media (--wide) { visibility: visible; } } @utility visible-wide { @media (--wide) { visibility: visible; } }
     "#;
     let mut engine = engine(source);
     engine
@@ -135,9 +135,9 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
 #[test]
 fn parameters_are_tokens_only_in_parameterized_declaration_values() {
     for source in [
-        "@mixin --box(--value) { width: --master-value(1); }",
-        "@mixin --box(--value) { @media (width > var(--value)) { width: 1px; } }",
-        "@mixin --box(--value) { &:nth-child(var(--value)) { width: 1px; } }",
+        "@mixin --box(--value) { width: --master-value(1); } @utility box(--value) { width: --master-value(1); }",
+        "@mixin --box(--value) { @media (width > var(--value)) { width: 1px; } } @utility box(--value) { @media (width > var(--value)) { width: 1px; } }",
+        "@mixin --box(--value) { &:nth-child(var(--value)) { width: 1px; } } @utility box(--value) { &:nth-child(var(--value)) { width: 1px; } }",
         "@theme {--color:red;  } @variant dark { --color: red; }",
         "@media print { @variant dark { color: red; } }",
     ] {
@@ -146,14 +146,14 @@ fn parameters_are_tokens_only_in_parameterized_declaration_values() {
         assert!(error.diagnostic().range.is_some(), "{source}: {error}");
     }
     for source in [
-        "@mixin --box { width: var(--value); }",
+        "@mixin --box { width: var(--value); } @utility box { width: var(--value); }",
         ".box { width: var(--value); }",
         "@theme { --x: var(--value);  }",
     ] {
         assert!(compile_css_directives(source, &CompileNativeCssOptions::default()).is_ok());
     }
     let mut engine = engine(
-        r#"@mixin --box(--value) { width: var(--value); content: "var(--value)"; color: --value(); }"#,
+        r#"@mixin --box(--value) { width: var(--value); content: "var(--value)"; color: --value(); } @utility box(--value) { width: var(--value); content: "var(--value)"; color: --value(); }"#,
     );
     engine.ensure_class_rules(["box(10px)"]).unwrap();
     assert!(engine.css_text().contains("width:10px"));
@@ -168,8 +168,8 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
         @custom-media --a (width >= 30em), (orientation: landscape);
         @custom-media --b screen and (--a);
         @custom-media --off false;
-        @mixin --named { @media (--b) { @contents; } }
-        @mixin --box { @media (--off) { color: red; } display: block; }
+        @mixin --named { @media (--b) { @contents; } } @utility named { @media (--b) { @contents; } }
+        @mixin --box { @media (--off) { color: red; } display: block; } @utility box { @media (--off) { color: red; } display: block; }
     "#,
     );
     engine
@@ -205,7 +205,7 @@ fn theme_dependencies_handle_css_escapes_comments_and_nested_fallbacks() {
 #[test]
 fn same_category_condition_redefinitions_replace_the_entire_definition() {
     let mut engine = engine(
-        "@custom-media --wide false;@custom-media --wide (width>1px);@mixin --named{@media print{@contents;}}@mixin --named{&:hover{@contents;}}",
+        "@custom-media --wide false;@custom-media --wide (width>1px);@mixin --named{@media print{@contents;}} @utility named {@media print{@contents;}}@mixin --named{&:hover{@contents;}} @utility named {&:hover{@contents;}}",
     );
     engine
         .ensure_class_rules(["color:red@wide", "color:blue@apply(--named)"])
@@ -246,8 +246,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":5,"languageVersion":14,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":5,"languageVersion":14,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":6,"languageVersion":15,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":6,"languageVersion":15,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

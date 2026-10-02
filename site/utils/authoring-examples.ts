@@ -9,7 +9,7 @@ export const authoringSource = `@theme {
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
-@mixin --content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }

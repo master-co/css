@@ -54,7 +54,8 @@ pub(crate) fn compile_utility_variables(
             };
             if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace)
                 && !utility.variables.contains_key(&key)
-                && !(matches!(utility.emit, UtilityEmit::Mixin { .. }) && key.contains("--"))
+                && !(matches!(utility.emit, UtilityEmit::Recipe { key: true, .. })
+                    && key.contains("--"))
             {
                 utility.variables.insert(key.clone(), variable.name.clone());
                 utility.variable_entries.push((key, variable.name.clone()));
@@ -281,8 +282,8 @@ pub(crate) fn match_utility_filtered(
                     continue;
                 }
                 let token = if negative { format!("-{value}") } else { value };
-                let resolved = if matches!(utility.emit, UtilityEmit::Mixin { .. }) {
-                    super::mixin_matching::named_value(&token, utility)
+                let resolved = if matches!(utility.emit, UtilityEmit::Recipe { .. }) {
+                    super::utility_matching::named_value(&token, utility)
                 } else {
                     resolve_utility_alias_value(&token, utility, manifest)
                 };

@@ -88,6 +88,13 @@ fn validate_argument(
 /// Validate the final registry, including unused definitions. Generation being
 /// lazy must not hide malformed definitions or recursive call graphs.
 pub fn validate_mixins(definitions: &[MixinDefinition]) -> Result<(), String> {
+    validate_recipe_definitions(definitions, None)
+}
+
+fn validate_recipe_definitions(
+    definitions: &[MixinDefinition],
+    utility_root: Option<&str>,
+) -> Result<(), String> {
     let registry = definitions
         .iter()
         .map(|definition| (definition.name.as_str(), definition))
@@ -189,7 +196,9 @@ pub fn validate_mixins(definitions: &[MixinDefinition]) -> Result<(), String> {
     }
     let mut done = HashSet::new();
     for name in registry.keys() {
-        if !name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]) {
+        if utility_root != Some(name)
+            && (!name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]))
+        {
             return Err(format!("Invalid mixin name {name}"));
         }
         visit(name, &registry, &mut HashSet::new(), &mut done)?;
@@ -344,6 +353,7 @@ struct Placement<'a> {
 
 struct Expansion<'a> {
     registry: HashMap<&'a str, &'a MixinDefinition>,
+    symbolic_root: Option<&'a str>,
     stack: Vec<String>,
     output: Vec<ExpandedMixinRule>,
     steps: usize,
@@ -384,7 +394,7 @@ impl Expansion<'_> {
             validate_argument(
                 parameter,
                 value,
-                super::direct_value_mixin(definition).is_some(),
+                super::direct_value_mixin(definition).is_some() || self.symbolic_root == Some(name),
             )?;
             environment.insert(parameter.name.clone(), value.clone());
         }
@@ -610,6 +620,7 @@ pub fn expand_mixin_with_contents(
     contents: Option<&[MixinNode]>,
 ) -> Result<Vec<ExpandedMixinRule>, String> {
     let mut expansion = Expansion {
+        symbolic_root: None,
         registry: definitions
             .iter()
             .map(|definition| (definition.name.as_str(), definition))
@@ -661,6 +672,7 @@ pub(crate) fn expand_body(
     body: &[MixinNode],
 ) -> Result<Vec<ExpandedMixinRule>, String> {
     let mut expansion = Expansion {
+        symbolic_root: None,
         registry: definitions
             .iter()
             .map(|definition| (definition.name.as_str(), definition))
@@ -682,4 +694,80 @@ pub(crate) fn expand_body(
         None,
     )?;
     Ok(expansion.output)
+}
+
+/// Utility recipes have their own registration namespace. Only token-value
+/// binding permits symbolic arguments for general bodies; native calls retain
+/// their existing static evaluation contract.
+pub fn expand_utility(
+    mixins: &[MixinDefinition],
+    definition: &mastercss_schema::UtilityDefinition,
+    arguments: &[String],
+) -> Result<Vec<ExpandedMixinRule>, String> {
+    let recipe = &definition.recipe;
+    let mut expansion = Expansion {
+        registry: mixins
+            .iter()
+            .map(|item| (item.name.as_str(), item))
+            .collect(),
+        symbolic_root: (definition.kind == mastercss_schema::UtilityKind::Token
+            && recipe.parameters[0].syntax.is_none())
+        .then_some(recipe.name.as_str()),
+        stack: Vec::new(),
+        output: Vec::new(),
+        steps: 0,
+        depth: 0,
+    };
+    expansion.registry.insert(&recipe.name, recipe);
+    expansion.call(
+        &recipe.name,
+        arguments,
+        &HashMap::new(),
+        Placement {
+            selector: "&",
+            conditions: &[],
+        },
+        &HashSet::new(),
+        None,
+    )?;
+    Ok(expansion.output)
+}
+
+pub fn validate_utilities(
+    mixins: &[MixinDefinition],
+    definitions: &[mastercss_schema::UtilityDefinition],
+) -> Result<(), String> {
+    use mastercss_schema::UtilityKind;
+    for definition in definitions {
+        let recipe = &definition.recipe;
+        if recipe.name.starts_with("--")
+            || !mastercss_lexer::valid_utility_name(&recipe.name)
+            || recipe.name.ends_with('-')
+        {
+            return Err(format!("Invalid utility name {}", recipe.name));
+        }
+        match definition.kind {
+            UtilityKind::Static if !recipe.parameters.is_empty() => {
+                return Err("Static utilities cannot have parameters".into());
+            }
+            UtilityKind::Token => {
+                let [parameter] = recipe.parameters.as_slice() else {
+                    return Err("Token patterns require exactly one parameter".into());
+                };
+                if parameter.default.is_some()
+                    || !matches!(parameter.syntax, None | Some(MixinParameterSyntax::String))
+                {
+                    return Err(
+                        "Token patterns accept an untyped value or <string> key, without defaults"
+                            .into(),
+                    );
+                }
+            }
+            _ => {}
+        }
+        let mut registry = mixins.to_vec();
+        registry.push(recipe.clone());
+        validate_recipe_definitions(&registry, Some(&recipe.name))?;
+    }
+    Ok(())
 }

@@ -22,9 +22,9 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {
     test(`Node project retains imported definitions: ${qualifier || 'unqualified'}, compose=${compose}`, () => {
@@ -32,10 +32,10 @@ for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)
       try {
         const entry = join(root, 'entry.css'), child = join(root, 'child.css')
         writeFileSync(entry, `@import "./child.css"${qualifier};.after{margin:1px}`)
-        writeFileSync(child, '@mixin --paint {padding:2rem}\n' + (compose ? ".composed{@apply --all {padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        writeFileSync(child, '@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n' + (compose ? ".composed{@apply --all {padding:2rem;}}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         if (qualifier) {
           expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @mixin/)
-          writeFileSync(entry, `@import "./child.css"${qualifier};@mixin --paint {padding:2rem}.after{margin:1px}`)
+          writeFileSync(entry, `@import "./child.css"${qualifier};@mixin --paint {padding:2rem} @utility paint {padding:2rem}.after{margin:1px}`)
           writeFileSync(child, (compose ? ".composed{padding:2rem;}" : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
         }
         const result = compileProjectManifest([entry], { root, baseManifest, preserveNativeCSS: true, classes: ['composed', 'card', 'after'] })
@@ -56,10 +56,10 @@ test('Node project merges prior entries while resolving child-owned references a
   const root = mkdtempSync(join(tmpdir(), 'project-graph-reference-'))
   try {
     const first = join(root, 'first.css'), second = join(root, 'second.css'), child = join(root, 'child.css'), reference = join(root, 'tokens.css')
-    writeFileSync(first, '@mixin --paint {padding:2rem}')
+    writeFileSync(first, '@mixin --paint {padding:2rem} @utility paint {padding:2rem}')
     writeFileSync(second, '@import "./child.css" layer(cards);')
     writeFileSync(child, "@reference \"./tokens.css\";@safelist \"paint\";@source \"./index.html\";.card{@apply --all {color:red;padding:2rem;}}")
-    writeFileSync(reference, '@mixin --accent {color:red}')
+    writeFileSync(reference, '@mixin --accent {color:red} @utility accent {color:red}')
     const result = compileProjectManifest([first, second], { root, baseManifest, preserveNativeCSS: true, classes: ['card'] })
     expect(result.manifest.mixins?.some(utility => utility.name === '--paint')).toBe(true)
     expect(result.css).toMatch(/padding:\s*2rem/)

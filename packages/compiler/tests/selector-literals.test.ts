@@ -3,7 +3,7 @@ import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
 test.each(['native', 'wasm'] as const)('preserves selector literals while lowering @apply through %s', async (binding) => {
-  const source = String.raw`@mixin --paint {display:block}[data-state=":first"]:first{@apply --all{display:block;}}.literal\:before:before{@apply --all{display:block;}}:is(:first,[data-state=':last']){@apply --all{display:block;}}`
+  const source = String.raw`@mixin --paint {display:block} @utility paint {display:block}[data-state=":first"]:first{@apply --all{display:block;}}.literal\:before:before{@apply --all{display:block;}}:is(:first,[data-state=':last']){@apply --all{display:block;}}`
   const options = { baseManifest: {
   mixins: [
   {
@@ -22,9 +22,9 @@ test.each(['native', 'wasm'] as const)('preserves selector literals while loweri
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, preserveNativeCSS: true }
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, preserveNativeCSS: true }
   const result = binding === 'native'
     ? await compileRenderedStylesheet('/tmp/selector-literals.css', source, options)
     : await compileBrowserStylesheet(source, options)

@@ -130,7 +130,7 @@ impl LanguageSession {
                 "class",
                 &["declaration", "component"],
             ),
-            ClassSemanticKind::Mixin => {
+            ClassSemanticKind::Utility => {
                 if let (Some(key), Some(value)) = (
                     semantics.key_token.as_deref(),
                     semantics.value_token.as_deref(),
@@ -359,8 +359,8 @@ impl LanguageSession {
             important: semantics.important,
             matcher_types: semantics.matcher_types,
             definition_source: engine
-                .class_mixin_definition(class_name)?
-                .and_then(|definition| definition.source)
+                .class_utility_definition(class_name)?
+                .and_then(|definition| definition.recipe.source)
                 .or(engine
                     .class_keyframe_definition(class_name)?
                     .and_then(|definition| definition.source)),
@@ -396,11 +396,12 @@ impl LanguageSession {
             .map(|candidate| LanguageCompletionEntryIr {
                 insert_text: if candidate.kind == EngineClassCompletionKind::Function {
                     self.engine
-                        .class_mixin_definition(&candidate.label)
+                        .class_utility_definition(&candidate.label)
                         .ok()
                         .flatten()
                         .map(|definition| {
                             let arguments = definition
+                                .recipe
                                 .parameters
                                 .iter()
                                 .enumerate()
@@ -428,10 +429,7 @@ impl LanguageSession {
                                 })
                                 .collect::<Vec<_>>()
                                 .join(",");
-                            format!(
-                                "{}({arguments})$0",
-                                definition.name.trim_start_matches("--")
-                            )
+                            format!("{}({arguments})$0", definition.recipe.name)
                         })
                 } else {
                     None

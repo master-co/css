@@ -60,7 +60,7 @@ pub fn lower_css_directives(
             &manifest,
             &generated_mappings,
         )?,
-        mixin_sources: Vec::new(),
+        definition_sources: Vec::new(),
         css: None,
         output_mappings: Vec::new(),
         input: input.clone(),
@@ -83,8 +83,8 @@ pub fn lower_css_directives_request(
         &request.warnings,
         options,
     )?;
-    result.mixin_sources = request.mixin_sources.clone();
-    crate::mixin_sources::resolve(&mut result.mixin_sources);
+    result.definition_sources = request.definition_sources.clone();
+    crate::definition_sources::resolve(&mut result.definition_sources);
     if let Some(output) = &request.native_output {
         super::output::assemble_native_output(output, options, &mut result)?;
     }

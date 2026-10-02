@@ -85,7 +85,7 @@ function writeCSSFixture(cwd: string) {
     }
 
   `)
-  writeFileSync(entry, "\n    @import \"@master/css\";\n    @import './styles/tokens.css';\n\n    \n      @mixin --btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      }\n    \n  ")
+  writeFileSync(entry, "\n    @import \"@master/css\";\n    @import './styles/tokens.css';\n\n    \n      @mixin --btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      } @utility btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      }\n    \n  ")
   return { entry, tokens }
 }
 
@@ -133,7 +133,7 @@ test('compiles explicit CSS project entries', async () => {
     expect(result).toMatchObject({
       dependencies: expect.arrayContaining([entry, tokens])
     })
-    expect(result.manifest.version).toBe(5)
+    expect(result.manifest.version).toBe(6)
     expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
       name: 'color-primary',
       namespace: 'color',
@@ -161,7 +161,7 @@ test('loads CSS manifest resources', async () => {
     expect(result).toMatchObject({
       dependencies: expect.arrayContaining([entry, tokens])
     })
-    expect(result.manifest.version).toBe(5)
+    expect(result.manifest.version).toBe(6)
     expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
       name: 'color-primary',
       namespace: 'color',
@@ -189,7 +189,7 @@ test('compiles explicit CSS project entries synchronously', () => {
     expect(result).toMatchObject({
       dependencies: expect.arrayContaining([entry, tokens])
     })
-    expect(result.manifest.version).toBe(5)
+    expect(result.manifest.version).toBe(6)
     expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
       name: 'color-primary',
       namespace: 'color',
@@ -214,7 +214,7 @@ test('loads CSS manifest resources synchronously', () => {
     expect(result).toMatchObject({
       dependencies: expect.arrayContaining([entry, tokens])
     })
-    expect(result.manifest.version).toBe(5)
+    expect(result.manifest.version).toBe(6)
     expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
       name: 'color-primary',
       namespace: 'color',
@@ -235,6 +235,10 @@ test('loads package entry preset manifest from CSS imports', async () => {
 
 
         @mixin --card {
+          @media (--sm) {
+            color: red;
+          }
+        } @utility card {
           @media (--sm) {
             color: red;
           }
@@ -519,8 +523,8 @@ test('serializes project manifests through the schema codec', async () => {
     const json = serializeMasterCSSManifest(result.manifest)
     const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
 
-    expect(json).toContain('"version":5')
-    expect(JSON.parse(json).version).toBe(5)
+    expect(json).toContain('"version":6')
+    expect(JSON.parse(json).version).toBe(6)
     expect(syncJSON).toBe(json)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -544,8 +548,8 @@ test('turns CSS manifest results into JSON sources', async () => {
     const json = serializeMasterCSSManifest(result.manifest)
     const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
 
-    expect(json).toContain('"version":5')
-    expect(JSON.parse(json).version).toBe(5)
+    expect(json).toContain('"version":6')
+    expect(JSON.parse(json).version).toBe(6)
     expect(syncJSON).toBe(json)
   } finally {
     rmSync(cwd, { recursive: true, force: true })

@@ -6,7 +6,7 @@ import defaultManifest from '@master/css-preset/default-manifest.json' with { ty
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
-const manifest = compileManifestSync('@mixin --layout { display:flex; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
+const manifest = compileManifestSync('@mixin --layout { display:flex; } @utility layout { display:flex; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
 const cases = [
   { classes: "p-md padding:8px", padding: '8px' },
   { classes: "padding:8px p-md", padding: '8px' },

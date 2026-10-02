@@ -19,7 +19,7 @@ test('BH-0004 native/Wasm discovery retains file boundaries, occurrences and UTF
   try {
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
       const entry = `/*😀*/@import './child.css'${qualifier};@import './child.css'${qualifier};@source './root/*.html';`
-      const child = "@import 'https://invalid.invalid/external.css';@reference './missing.css';@source './child/*.html';@mixin --broken {@compose undefined;}.native{unknown:???}"
+      const child = "@import 'https://invalid.invalid/external.css';@reference './missing.css';@source './child/*.html';@mixin --broken {@compose undefined;} @utility broken {@compose undefined;}.native{unknown:???}"
       const request = { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }
       const a = native.resolveCSSStylesheetGraph(request), b = wasm.resolveCSSStylesheetGraph(request)
       expect(b).toEqual(a)

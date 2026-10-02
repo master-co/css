@@ -11,7 +11,7 @@ fn compile(
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default())?;
     lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
@@ -30,13 +30,21 @@ fn css(source: &str, classes: &[&str]) -> String {
     session.snapshot().unwrap().text
 }
 
-const GRID: &str = "@mixin --grid-cols(--cols <integer>){display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr))}";
+const GRID: &str = "@mixin --grid-cols(--cols <integer>){display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr))} @utility grid-cols(--cols <integer>) {display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr))}";
 const TEXT: &str = r#"
 @theme {--text-sm:.875rem;--text-sm--line-height:1.5;--text-sm--letter-spacing:0;--text-unused:3rem}
 @mixin --text(--step <string>) {
   font-size:var(ident("--text-" var(--step)));
   line-height:var(ident("--text-" var(--step) "--line-height"),normal);
   letter-spacing:var(ident("--text-" var(--step) "--letter-spacing"),normal);
+} @utility text(--step <string>) {
+  font-size:var(ident("--text-" var(--step)));
+  line-height:var(ident("--text-" var(--step) "--line-height"),normal);
+  letter-spacing:var(ident("--text-" var(--step) "--letter-spacing"),normal);
+}@utility text-(--text <string>) {
+  font-size:var(ident("--text-" var(--text)));
+  line-height:var(ident("--text-" var(--text) "--line-height"),normal);
+  letter-spacing:var(ident("--text-" var(--text) "--letter-spacing"),normal);
 }
 "#;
 
@@ -57,7 +65,9 @@ fn unused_definitions_do_not_emit_css() {
     assert_eq!(css(TEXT, &[]), "");
     assert_eq!(
         css(
-            &format!("{TEXT}@mixin --unused{{@apply --text(\"sm\");}}"),
+            &format!(
+                "{TEXT}@mixin --unused{{@apply --text(\"sm\");}} @utility unused {{@apply --text(\"sm\");}}"
+            ),
             &[]
         ),
         ""
@@ -103,7 +113,7 @@ fn apply_expands_in_place_without_generating_a_class() {
 
 #[test]
 fn defaults_nested_calls_and_duplicate_declarations_keep_order() {
-    let source = "@mixin --inner(--n <integer>:2){order:1;order:var(--n)}@mixin --outer(--n <integer>:3){color:red;@apply --inner(var(--n));color:blue}";
+    let source = "@mixin --inner(--n <integer>:2){order:1;order:var(--n)} @utility inner(--n <integer>:2) {order:1;order:var(--n)}@mixin --outer(--n <integer>:3){color:red;@apply --inner(var(--n));color:blue} @utility outer(--n <integer>:3) {color:red;@apply --inner(var(--n));color:blue}";
     let output = css(source, &["outer()"]);
     assert!(
         output.contains("color:red;order:1;order:3;color:blue"),
@@ -146,13 +156,13 @@ fn invalid_and_dynamic_arguments_fail_explicitly() {
 fn supported_subset_rejects_unsupported_authoring() {
     for source in [
         "@utility grid-cols:*{display:grid}",
-        "@mixin --x(--n <length>){width:var(--n)}",
-        "@mixin --x{@private{--n:1}color:red}",
-        "@mixin --x(--n){--n:1}",
-        "@mixin --x(--n,--n){}",
-        "@layer utilities{@mixin --x{color:red}}",
-        "@mixin --x{@apply --x;}",
-        "@mixin --x{@apply --missing;}",
+        "@mixin --x(--n <length>){width:var(--n)} @utility x(--n <length>) {width:var(--n)}",
+        "@mixin --x{@private{--n:1}color:red} @utility x {@private{--n:1}color:red}",
+        "@mixin --x(--n){--n:1} @utility x(--n) {--n:1}",
+        "@mixin --x(--n,--n){} @utility x(--n,--n) {}",
+        "@layer utilities{@mixin --x{color:red} @utility x {color:red}}",
+        "@mixin --x{@apply --x;} @utility x {@apply --x;}",
+        "@mixin --x{@apply --missing;} @utility x {@apply --missing;}",
         "@apply --x;",
         ".x{@apply --x {color:red}}",
     ] {
@@ -163,7 +173,7 @@ fn supported_subset_rejects_unsupported_authoring() {
 #[test]
 fn latest_definition_replaces_complete_body() {
     let output = css(
-        "@mixin --card {color:red;&:hover{color:blue}}@mixin --card {padding:1px}",
+        "@mixin --card {color:red;&:hover{color:blue}} @utility card {color:red;&:hover{color:blue}}@mixin --card {padding:1px} @utility card {padding:1px}",
         &["card"],
     );
     assert!(output.contains("padding:1px"), "{output}");
@@ -172,10 +182,11 @@ fn latest_definition_replaces_complete_body() {
 
 #[test]
 fn parameters_are_private_and_do_not_cross_element_boundaries() {
-    let source = "@mixin --paint(--n){color:var(--n);&:hover{color:var(--n)}}";
+    let source = "@mixin --paint(--n){color:var(--n);&:hover{color:var(--n)}} @utility paint(--n) {color:var(--n);&:hover{color:var(--n)}}";
     let output = css(source, &["paint(red)"]);
     assert!(output.contains(":hover{color:red}"), "{output}");
-    let source = "@mixin --paint(--n){& + * {color:var(--n)}}";
+    let source =
+        "@mixin --paint(--n){& + * {color:var(--n)}} @utility paint(--n) {& + * {color:var(--n)}}";
     assert!(compile(source).is_err());
 }
 
@@ -186,7 +197,7 @@ fn token_maps_require_explicit_mixin_definitions() {
     let output = css(
         &format!(
             "{}{}",
-            include_str!("../../../packages/preset/src/mixins.css"),
+            include_str!("../../../packages/preset/src/utilities.css"),
             source
         ),
         &[
@@ -209,7 +220,7 @@ fn token_maps_require_explicit_mixin_definitions() {
         assert!(output.contains(declaration), "{declaration}: {output}");
     }
     let session = engine(
-        "@theme {--font-size-brand:1rem;--font-family-brand:serif}@mixin --font-size(--font-size){font-size:var(--font-size)}@mixin --font-family(--font-family){font-family:var(--font-family)}",
+        "@theme {--font-size-brand:1rem;--font-family-brand:serif}@mixin --font-size(--font-size){font-size:var(--font-size)} @utility font-size(--font-size) {font-size:var(--font-size)}@utility font-size-(--font-size) {font-size:var(--font-size)}@mixin --font-family(--font-family){font-family:var(--font-family)} @utility font-family(--font-family) {font-family:var(--font-family)}@utility font-family-(--font-family) {font-family:var(--font-family)}",
     );
     assert!(
         session
@@ -276,7 +287,7 @@ fn vendor_pairs_are_native_engine_output_policy() {
 
 #[test]
 fn functional_arguments_preserve_strings_escapes_and_nested_functions() {
-    let source = r#"@mixin --paint(--color,--label <string>,--n <number>:1){color:var(--color);content:var(--label);opacity:var(--n)}"#;
+    let source = r#"@mixin --paint(--color,--label <string>,--n <number>:1){color:var(--color);content:var(--label);opacity:var(--n)} @utility paint(--color,--label <string>,--n <number>:1) {color:var(--color);content:var(--label);opacity:var(--n)}"#;
     let output = css(source, &[r#"paint(rgb(1,2,3),"a,b",.5):hover!"#]);
     assert!(
         output
@@ -305,7 +316,7 @@ fn functional_arguments_preserve_strings_escapes_and_nested_functions() {
 
 #[test]
 fn missing_companions_keep_css_fallbacks_and_do_not_create_named_classes() {
-    let source = r#"@theme {--text-hero:3rem;--text-orphan--line-height:2}@mixin --text(--step <string>){font-size:var(ident("--text-" var(--step)));line-height:var(ident("--text-" var(--step) "--line-height"),normal)}"#;
+    let source = r#"@theme {--text-hero:3rem;--text-orphan--line-height:2}@mixin --text(--step <string>){font-size:var(ident("--text-" var(--step)));line-height:var(ident("--text-" var(--step) "--line-height"),normal)} @utility text(--step <string>) {font-size:var(ident("--text-" var(--step)));line-height:var(ident("--text-" var(--step) "--line-height"),normal)}@utility text-(--text <string>) {font-size:var(ident("--text-" var(--text)));line-height:var(ident("--text-" var(--text) "--line-height"),normal)}"#;
     let output = css(source, &["text-hero"]);
     assert!(
         output.contains("line-height:var(--text-hero--line-height,normal)"),
@@ -334,7 +345,7 @@ fn missing_companions_keep_css_fallbacks_and_do_not_create_named_classes() {
 
 #[test]
 fn explicit_mixin_families_reserve_the_longest_prefix() {
-    let source = r#"@theme {--spacing-md:1rem;--p-brand:2rem;--p-wide-hero:4rem}@mixin --p(--key <string>){margin:var(ident("--p-" var(--key)))}@mixin --p-wide(--key <string>){padding:var(ident("--p-wide-" var(--key)))}@mixin --p-brand{color:red}"#;
+    let source = r#"@theme {--spacing-md:1rem;--p-brand:2rem;--p-wide-hero:4rem}@mixin --p(--key <string>){margin:var(ident("--p-" var(--key)))} @utility p(--key <string>) {margin:var(ident("--p-" var(--key)))}@utility p-(--p <string>) {margin:var(ident("--p-" var(--p)))}@mixin --p-wide(--key <string>){padding:var(ident("--p-wide-" var(--key)))} @utility p-wide(--key <string>) {padding:var(ident("--p-wide-" var(--key)))}@utility p-wide-(--p-wide <string>) {padding:var(ident("--p-wide-" var(--p-wide)))}@mixin --p-brand{color:red} @utility p-brand {color:red}"#;
     assert!(css(source, &["p-brand"]).contains("color:red"));
     assert!(css(source, &["p-wide-hero"]).contains("padding:var(--p-wide-hero)"));
     for class in ["p-md", "p-wide-missing", "p-brand/.5", "-p-brand"] {
@@ -347,7 +358,7 @@ fn explicit_mixin_families_reserve_the_longest_prefix() {
 
 #[test]
 fn custom_media_and_variants_inside_mixins_are_lowered_once() {
-    let source = "@custom-media --sm (width>=40rem);@mixin --active{&:hover{@contents;}}@mixin --card(--n <integer>){@media (--sm){@apply --active{order:var(--n)}}}";
+    let source = "@custom-media --sm (width>=40rem);@mixin --active{&:hover{@contents;}} @utility active {&:hover{@contents;}}@mixin --card(--n <integer>){@media (--sm){@apply --active{order:var(--n)}}} @utility card(--n <integer>) {@media (--sm){@apply --active{order:var(--n)}}}";
     let output = css(source, &["card(3)"]);
     assert!(output.contains("@media (width>=40rem)"), "{output}");
     assert!(output.contains(":hover{order:3}"), "{output}");
@@ -375,11 +386,10 @@ fn mixin_resources_follow_the_last_class_reference() {
 
 #[test]
 fn final_definitions_allow_forward_calls_and_clear_replaced_dependencies() {
-    let source =
-        "@mixin --outer{@apply --inner}@mixin --inner{@apply --missing}@mixin --inner{color:red}";
+    let source = "@mixin --outer{@apply --inner} @utility outer {@apply --inner}@mixin --inner{@apply --missing} @utility inner {@apply --missing}@mixin --inner{color:red} @utility inner {color:red}";
     assert!(css(source, &["outer"]).contains("color:red"));
     assert!(
-        compile("@mixin --outer{@apply --inner}@mixin --inner(--n <integer>){order:var(--n)}")
+        compile("@mixin --outer{@apply --inner} @utility outer {@apply --inner}@mixin --inner(--n <integer>){order:var(--n)} @utility inner(--n <integer>) {order:var(--n)}")
             .is_err()
     );
 }
@@ -388,21 +398,21 @@ fn final_definitions_allow_forward_calls_and_clear_replaced_dependencies() {
 fn unreferenced_cross_element_parameters_are_rejected() {
     for selector in ["& > *", "&::before", "&:before", "& + &"] {
         assert!(
-            compile(&format!("@mixin --x(--n){{{selector}{{width:var(--n)}}}}")).is_err(),
+            compile(&format!("@mixin --x(--n){{{selector}{{width:var(--n)}}}} @utility x(--n) {{{selector}{{width:var(--n)}}}}")).is_err(),
             "{selector}"
         );
     }
     // A nested call may introduce its own parameter on the descendant.
     assert!(
         css(
-            "@mixin --inner(--n){width:var(--n)}@mixin --outer{& > *{@apply --inner(1px)}}",
+            "@mixin --inner(--n){width:var(--n)} @utility inner(--n) {width:var(--n)}@utility inner-(--n) {width:var(--n)}@mixin --outer{& > *{@apply --inner(1px)}} @utility outer {& > *{@apply --inner(1px)}}",
             &["outer"]
         )
         .contains("width:1px")
     );
     // An outer parameter remains inaccessible through an implicit nested call.
     assert!(
-        !engine("@mixin --inner{width:var(--n)}@mixin --outer(--n){& > *{@apply --inner}} ")
+        !engine("@mixin --inner{width:var(--n)} @utility inner {width:var(--n)}@mixin --outer(--n){& > *{@apply --inner}} @utility outer(--n) {& > *{@apply --inner}} ")
             .inspect("outer(1px)")
             .unwrap()
             .diagnostics
@@ -412,11 +422,11 @@ fn unreferenced_cross_element_parameters_are_rejected() {
 
 #[test]
 fn apply_keeps_call_diagnostics_and_definition_source_mappings() {
-    let source = "@mixin --x(--n <integer>){order:var(--n)}.a{@apply --x(nope)}";
+    let source = "@mixin --x(--n <integer>){order:var(--n)} @utility x(--n <integer>) {order:var(--n)}.a{@apply --x(nope)}";
     let error = compile(source).unwrap_err();
     assert!(error.to_string().contains("defined at"), "{error}");
     assert!(error.diagnostic().range.unwrap().start > 30);
-    let result = compile("@mixin --x{color:red}.a{@apply --x}").unwrap();
+    let result = compile("@mixin --x{color:red} @utility x {color:red}.a{@apply --x}").unwrap();
     assert!(
         result
             .output_mappings
@@ -470,7 +480,7 @@ fn native_apply_dependencies_survive_dom_removal_and_hydration() {
 fn refreshing_theme_and_mixins_releases_previous_expanded_resources() {
     let mut session = engine(TEXT);
     session.ensure_class_rules(["text-sm"]).unwrap();
-    let replacement = compile("@theme {--text-sm:2rem;--color-new:red}@mixin --text(--step <string>){color:var(--color-new)}").unwrap();
+    let replacement = compile("@theme {--text-sm:2rem;--color-new:red}@mixin --text(--step <string>){color:var(--color-new)} @utility text(--step <string>) {color:var(--color-new)}@utility text-(--text <string>) {color:var(--color-new)}").unwrap();
     session.refresh(&replacement.manifest.to_string()).unwrap();
     let snapshot = session.snapshot().unwrap();
     assert!(
@@ -496,7 +506,7 @@ fn native_pruning_removes_apply_roots_before_expansion() {
     .unwrap();
     let lowered = lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
@@ -513,7 +523,7 @@ fn apply_uses_definition_and_argument_url_origins() {
     let request = serde_json::from_value::<mastercss_compiler::CompileCssStylesheetGraphRequest>(serde_json::json!({
         "graph": {"entry":"/entry.css", "files": {
             "/entry.css":"@import './recipes.css';.card{@apply --asset(url(./call.png))}",
-            "/recipes.css":"@mixin --asset(--image){background-image:url(./definition.png);border-image-source:var(--image)}"
+            "/recipes.css":"@mixin --asset(--image){background-image:url(./definition.png);border-image-source:var(--image)} @utility asset(--image) {background-image:url(./definition.png);border-image-source:var(--image)}"
         }, "edges":[{"from":"/entry.css","specifier":"./recipes.css","resolved":"/recipes.css"}]},
         "urls":{"/entry.css":"/out/entry.css","/recipes.css":"/out/recipes.css"},
         "resourceURLs":{"/entry.css":{"./call.png":"/assets/call.png"},"/recipes.css":{"./definition.png":"/assets/definition.png"}}
@@ -544,32 +554,35 @@ fn apply_uses_definition_and_argument_url_origins() {
 #[test]
 fn same_element_selector_lists_and_ancestor_variants_keep_parameters() {
     let result = css(
-        "@mixin --dark{.dark &{@contents;}}@mixin --gap(--n){&:hover,&:focus{gap:var(--n)}@apply --dark{gap:var(--n)}}",
+        "@mixin --dark{.dark &{@contents;}} @utility dark {.dark &{@contents;}}@mixin --gap(--n){&:hover,&:focus{gap:var(--n)}@apply --dark{gap:var(--n)}} @utility gap(--n) {&:hover,&:focus{gap:var(--n)}@apply --dark{gap:var(--n)}}",
         &["gap(2rem)"],
     );
     assert!(result.contains("gap:2rem"), "{result}");
     assert!(result.contains(".dark "), "{result}");
-    assert!(compile("@mixin --bad(--n){& + &{gap:var(--n)}}").is_err());
+    assert!(
+        compile("@mixin --bad(--n){& + &{gap:var(--n)}} @utility bad(--n) {& + &{gap:var(--n)}}")
+            .is_err()
+    );
 }
 
 #[test]
 fn builtin_function_names_and_escaped_parameter_identifiers_follow_css_rules() {
-    let source = r#"@theme {--step-hero:2rem}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p))) }@mixin --outer(--step <string>){@apply --label(VAR(--step))}"#;
+    let source = r#"@theme {--step-hero:2rem}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\65 p))) } @utility label(--step <string>) {font-size:VAR(IDENT("--step-" VaR(--st\65 p))) }@utility label-(--label <string>) {font-size:VAR(IDENT("--label-" VaR(--st\65 p))) }@mixin --outer(--step <string>){@apply --label(VAR(--step))} @utility outer(--step <string>) {@apply --label(VAR(--step))}@utility outer-(--outer <string>) {@apply --label(VAR(--outer))}"#;
     let output = css(source, &["outer('hero')"]);
     assert!(output.contains("font-size:VAR(--step-hero)"), "{output}");
     assert!(output.contains("--step-hero:2rem"), "{output}");
     for argument in ["VAR(--external)", "AtTr(data-step)", r"v\61 r(--external)"] {
         let source = format!(
-            "@mixin --x(--n){{width:var(--n);height:var(--n)}}.x{{@apply --x({argument})}}"
+            "@mixin --x(--n){{width:var(--n);height:var(--n)}} @utility x(--n) {{width:var(--n);height:var(--n)}}.x{{@apply --x({argument})}}"
         );
         assert!(compile(&source).is_err(), "{argument}");
     }
     for source in [
-        "@mixin --x(--n){& > *{width:VAR(--n)}}",
-        r"@mixin --x(--name){& > *{width:var(--n\61 me)}}",
-        "@mixin --x(--n){@media (width:VAR(--n)){color:red}}",
-        "@mixin --x(--n){&:nth-child(VAR(--n)){color:red}}",
-        ".x{@apply --grid(0)}@mixin --grid(--n <integer>){GRID-TEMPLATE-COLUMNS:REPEAT(VAR(--n),1fr)}",
+        "@mixin --x(--n){& > *{width:VAR(--n)}} @utility x(--n) {& > *{width:VAR(--n)}}",
+        r"@mixin --x(--name){& > *{width:var(--n\61 me)}} @utility x(--name) {& > *{width:var(--n\61 me)}}",
+        "@mixin --x(--n){@media (width:VAR(--n)){color:red}} @utility x(--n) {@media (width:VAR(--n)){color:red}}",
+        "@mixin --x(--n){&:nth-child(VAR(--n)){color:red}} @utility x(--n) {&:nth-child(VAR(--n)){color:red}}",
+        ".x{@apply --grid(0)}@mixin --grid(--n <integer>){GRID-TEMPLATE-COLUMNS:REPEAT(VAR(--n),1fr)} @utility grid(--n <integer>) {GRID-TEMPLATE-COLUMNS:REPEAT(VAR(--n),1fr)}",
     ] {
         assert!(compile(source).is_err(), "{source}");
     }

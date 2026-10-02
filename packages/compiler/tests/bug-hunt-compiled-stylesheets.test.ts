@@ -31,9 +31,9 @@ for (const item of cases) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     }
     using native = await createCompiler({ binding: 'native' })
     using wasm = await createCompiler({ binding: 'wasm' })
@@ -53,7 +53,7 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
     using compiler = await createCompiler({ binding })
     const result = compiler.compileStylesheets({
       graph: { entry: 'entry', files: {
-        entry: "@import './local.css' layer;@mixin --paint {color:red}@blocklist 'unused*';",
+        entry: "@import './local.css' layer;@utility paint {color:red}@blocklist 'unused*';",
         local: ".example{@apply --all {color:red;}}"
       }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] },
       urls: { entry: '/output/entry.css', local: '/output/local.css' },
@@ -75,9 +75,9 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
     expect(result.stylesheets[1].css).not.toContain('@compose')
@@ -120,12 +120,12 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     }
     expect(() => compiler.compileStylesheets(request)).toThrowError(expect.objectContaining({ code: 'CSS_IMPORT_ERROR' }))
-    const reference = compiler.compileManifest('@mixin --paint {color:red}', { baseManifest: {
+    const reference = compiler.compileManifest('@utility paint {color:red}', { baseManifest: {
   mixins: [
   {
     "name": "--all",
@@ -143,9 +143,9 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     const result = compiler.compileStylesheets({ ...request, resolutionManifest: reference.manifest })
     expect(result.css).toContain('color:red')
     const empty = compiler.compileManifest('', { baseManifest: {
@@ -166,9 +166,9 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     expect(result.manifest).toEqual(empty.manifest)
   }
 })
@@ -202,9 +202,9 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
   }
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })

@@ -17,7 +17,7 @@ fn manifest(cycle: bool) -> String {
         .push(json!("color-c"));
     variables.push(json!({"key":"c","values":[{"path":[root],"value":"blue"}],"dependencies":[]}));
     let theme = variables.iter().flat_map(|variable| variable["values"].as_array().unwrap().iter().map(|value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("color-{}",variable["key"].as_str().unwrap()),"value":value["value"]}]}))).collect::<Vec<_>>();
-    json!({"version":5,"languageVersion":14,"variables":{"color":variables},"theme":theme,"mixins":[{"name":"--bg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"background-color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]}]}).to_string()
+    json!({"version":6,"languageVersion":15,"variables":{"color":variables},"theme":theme,"utilities":[{"kind":"token","name":"bg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"background-color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]}]}).to_string()
 }
 fn counts(engine: &EngineSession) -> Vec<(String, u32)> {
     let mut values = engine

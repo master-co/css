@@ -30,9 +30,7 @@ pub(super) fn delivered_mixins(
     resolution: &Value,
 ) -> Result<Option<Vec<mastercss_schema::MixinDefinition>>, CompilerError> {
     use mastercss_schema::{MixinDefinition, MixinNode};
-    let Some(local) = &input.mixins else {
-        return Ok(None);
-    };
+    let local = input.mixins.as_deref().unwrap_or_default();
     let definitions: Vec<MixinDefinition> = serde_json::from_value(
         resolution
             .get("mixins")
@@ -57,6 +55,12 @@ pub(super) fn delivered_mixins(
                 _ => {}
             }
         }
+    }
+    for utility in input.utilities.iter().flatten() {
+        dependencies(&utility.recipe.body, &mut needed);
+    }
+    if needed.is_empty() {
+        return Ok(None);
     }
     loop {
         let before = needed.len();

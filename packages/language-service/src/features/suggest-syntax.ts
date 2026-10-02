@@ -172,7 +172,7 @@ export default function suggestSyntax(
   const inspection = this.session.inspectClassName(field)
   if (inspection.diagnostics?.some(({ code }) => code === 'CLASS_SYNTAX_ERROR')) return []
   const state = inspection.stateToken ?? ''
-  const atIndex = inspection.kind === 'mixin'
+  const atIndex = inspection.kind === 'utility'
     ? state.includes('@') ? field.length - state.length + state.lastIndexOf('@') : -1
     : field.lastIndexOf('@')
   if (atIndex > 0) {

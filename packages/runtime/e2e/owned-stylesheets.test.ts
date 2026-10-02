@@ -5,7 +5,7 @@ import { getRuntimeLoaderURL } from './init'
 
 test('compiler-owned cross-origin CSS stays writable at its original position with qualified imports and resource URLs', async ({ page }) => {
   const result = await compileRenderedStylesheet('/owned.css', '@prune native;@layer{@keyframes probe{to{opacity:.25;background-image:url("./animated.svg")}}}', {
-    baseManifest: { version: 5, languageVersion: 14 }, classes: []
+    baseManifest: { version: 6, languageVersion: 15 }, classes: []
   })
   const assets = new Map([
     ['/entry.css', '@import "./child.css" layer;#probe{background-image:url("./pixel.svg")}'],
@@ -57,7 +57,7 @@ test('compiler-owned cross-origin CSS stays writable at its original position wi
 test('SSR materializes qualified imports before startup and hydration adopts the same native layer', async ({ page }) => {
   const { renderHTML } = await import('@master/css-server')
   const result = await compileRenderedStylesheet('/ssr-owned.css', '@prune native;@layer{@keyframes probe{to{opacity:.2;background-image:url("./image.svg")}}}', {
-    baseManifest: { version: 5, languageVersion: 14 }, classes: []
+    baseManifest: { version: 6, languageVersion: 15 }, classes: []
   })
   const assets = new Map([
     ['https://owned.example/root.css', '@import "./child.css" layer;'],

@@ -14,7 +14,7 @@ for (const qualifier of ['', 'layer(shared)', 'layer', 'supports(display:grid) s
     try {
       writeFileSync(entry, `@import "./child.css" ${qualifier};@import "@master/css";@reference "./reference.css";.native{color:var(--color-blue-60);}`)
       writeFileSync(child, '@import "https://external.test/style.css";.child{padding-block:var(--spacing-5xl);background:url(host-owned.svg)}')
-      writeFileSync(reference, '@mixin --paint {color:var(--color-blue-60)}.reference-only{padding:var(--spacing-6xl)}')
+      writeFileSync(reference, '@mixin --paint {color:var(--color-blue-60)} @utility paint {color:var(--color-blue-60)}.reference-only{padding:var(--spacing-6xl)}')
       const result = await collectStylesheetEmittedGlobals([entry], { baseManifest, projectDir: root })
       expect(result.emittedGlobals.variables).toHaveProperty('spacing-5xl')
       expect(result.emittedGlobals.variables).toHaveProperty('color-blue-60')

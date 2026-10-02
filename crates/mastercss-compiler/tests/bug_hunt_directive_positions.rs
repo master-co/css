@@ -12,13 +12,14 @@ fn diagnostics_after_removed_directives_retain_original_utf16_offsets() {
             (".example {\n  @compose unknown-utility;\n}", "@compose"),
             ("@utilities invalid {paint{color:red}}", "@utilities"),
             ("@mixin --paint {@compose unknown-utility;}", "@compose"),
+            ("@utility paint {@compose unknown-utility;}", "@compose"),
         ] {
             let source = format!("{prefix}{body}");
             let request = serde_json::from_value(json!({
                 "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
                 "urls":{"entry.css":"/entry.css"},
-                "baseManifest":{"version":5,"languageVersion":14,"mixins":[]},
-                "resolutionManifest":{"version":5,"languageVersion":14,"mixins":[]}
+                "baseManifest":{"version":6,"languageVersion":15,"mixins":[],"utilities":[]},
+                "resolutionManifest":{"version":6,"languageVersion":15,"mixins":[],"utilities":[]}
             }))
             .unwrap();
             let error = compile_css_stylesheet_graph(&request)

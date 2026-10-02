@@ -5,7 +5,7 @@
 ```txt
 class string
   -> Rust EngineSession.ensure_class_rules(batch)
-  -> match native declarations, mixin-derived token families, and Manifest v5 mixins
+  -> match native declarations and explicit Manifest v6 utility registrations; expand native mixins for CSS reuse
   -> parse values, variables, selectors, and conditions
   -> calculate stable priority and layer indexes
   -> insert retained token declarations and transitive dependencies
@@ -31,7 +31,7 @@ Risks:
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
 Manifest envelopes are v4; hydration, transition and engine snapshot envelopes are v3. Executable data must carry
-`languageVersion: 14` (binding ABI 24). Reject missing or unsupported language versions before
+`languageVersion: 15` (binding ABI 25). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
@@ -46,7 +46,7 @@ project CSS containing @import "@master/css"
   -> Rust project policy discovers and merges entries
   -> @master/css-compiler/project supplies filesystem and package resolution
   -> Rust compiler parses directives and native CSS
-  -> Rust compiler lowers Manifest v5 plus native CSS results
+  -> Rust compiler lowers Manifest v6 plus native CSS results
   -> compiler / integrations / ESLint / language-server share that manifest
   -> Rust engine executes the manifest
 ```

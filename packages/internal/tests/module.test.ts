@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":5,"languageVersion":14}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":6,"languageVersion":15}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,12 +42,12 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":5,"languageVersion":14}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":15}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] };')
     expect(toManifestJSON({
-  "version": 5 as const,
-  "languageVersion": 14 as const
-})).toBe('{"version":5,"languageVersion":14}')
+  "version": 6 as const,
+  "languageVersion": 15 as const
+})).toBe('{"version":6,"languageVersion":15}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
   })
@@ -102,8 +102,8 @@ describe('@master/css-internal module helpers', () => {
     )
 
     expect(module.default).toEqual({
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 })
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -114,8 +114,8 @@ describe('@master/css-internal module helpers', () => {
       ok: true,
       status: 200,
       json: async () => ({
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
@@ -129,8 +129,8 @@ describe('@master/css-internal module helpers', () => {
     )
 
     expect(module.default).toEqual({
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)

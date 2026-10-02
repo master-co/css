@@ -11,7 +11,7 @@ fn compile(
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default())?;
     lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":5,"languageVersion":14,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}),
+                serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}),
             ),
             resolution_manifest: None,
         },
@@ -34,7 +34,7 @@ fn css(source: &str, classes: &[&str]) -> String {
 
 #[test]
 fn untyped_static_arguments_do_not_depend_on_property_value_kind() {
-    let source = "@mixin --size(--value){width:var(--value);height:var(--value)}";
+    let source = "@mixin --size(--value){width:var(--value);height:var(--value)} @utility size(--value) {width:var(--value);height:var(--value)}";
     for value in ["red", "-1px", "future(1px)", "1px|2px"] {
         let generated = css(source, &[&format!("size({value})")]);
         assert!(
@@ -56,7 +56,7 @@ fn untyped_static_arguments_do_not_depend_on_property_value_kind() {
 #[test]
 fn removed_authoring_forms_fail_explicitly() {
     for source in [
-        "@utility card{color:red}",
+        "@utility --card{color:red}",
         "@utility font-* from(--font-size-*){font-size:--master-value()}",
         "@utilities{x:<number>{width:--value()}}",
         ".x{width:--master-value()}",
@@ -66,14 +66,13 @@ fn removed_authoring_forms_fail_explicitly() {
 }
 
 #[test]
-fn replacement_removes_nested_rules_and_changes_parameter_signature() {
-    let source =
-        "@mixin --card{color:red;&:hover{color:blue}}@mixin --card(--n <integer>){order:var(--n)}";
+fn registration_forms_have_independent_replacements() {
+    let source = "@mixin --card{color:red;&:hover{color:blue}} @utility card {color:red;&:hover{color:blue}}@mixin --card(--n <integer>){order:var(--n)} @utility card(--n <integer>) {order:var(--n)}";
     let generated = css(source, &["card(2)"]);
     assert!(generated.contains("order:2"));
     assert!(!generated.contains("color:") && !generated.contains(":hover"));
     let result = compile(source).unwrap();
-    assert_ne!(
+    assert_eq!(
         EngineSession::create(&result.manifest.to_string())
             .unwrap()
             .inspect("card")
@@ -84,14 +83,15 @@ fn replacement_removes_nested_rules_and_changes_parameter_signature() {
 }
 
 #[test]
-fn empty_mixin_remains_matched_without_output() {
-    let result = compile("@mixin --card{color:red}@mixin --card{}").unwrap();
+fn empty_utility_remains_matched_without_output() {
+    let result = compile(
+        "@mixin --card{color:red} @utility card {color:red}@mixin --card{} @utility card {}",
+    )
+    .unwrap();
     let engine = EngineSession::create(&result.manifest.to_string()).unwrap();
-    for class in ["card", "card()"] {
-        let inspection = engine.inspect(class).unwrap();
-        assert_eq!(inspection.match_status, MatchStatus::Matched);
-        assert!(inspection.rules.is_empty());
-    }
+    let inspection = engine.inspect("card").unwrap();
+    assert_eq!(inspection.match_status, MatchStatus::Matched);
+    assert!(inspection.rules.is_empty());
     let removed_group = engine.inspect("{card}").unwrap();
     assert_eq!(removed_group.match_status, MatchStatus::SyntaxError);
     assert!(removed_group.rules.is_empty());
@@ -104,7 +104,10 @@ fn empty_mixin_remains_matched_without_output() {
 #[test]
 fn static_names_accept_future_pseudo_classes() {
     for state in [":open", ":state(open)", ":future-pseudo(hello)", "::before"] {
-        let generated = css("@mixin --block{display:block}", &[&format!("block{state}")]);
+        let generated = css(
+            "@mixin --block{display:block} @utility block {display:block}",
+            &[&format!("block{state}")],
+        );
         assert!(
             generated.contains("display:block") && generated.contains(&format!("{state}{{")),
             "{generated}"
@@ -115,7 +118,7 @@ fn static_names_accept_future_pseudo_classes() {
 #[test]
 fn strings_and_urls_are_not_interpolation_surfaces() {
     let generated = css(
-        r#"@mixin --sample(--value){width:var(--value);--quoted:'var(--value)';background:url(var(--value).svg)}"#,
+        r#"@mixin --sample(--value){width:var(--value);--quoted:'var(--value)';background:url(var(--value).svg)} @utility sample(--value) {width:var(--value);--quoted:'var(--value)';background:url(var(--value).svg)}"#,
         &["sample(2px)"],
     );
     assert!(generated.contains("width:2px"), "{generated}");
@@ -129,7 +132,7 @@ fn strings_and_urls_are_not_interpolation_surfaces() {
 #[test]
 fn identifiers_preserve_case_unicode_and_decoded_escapes() {
     let generated = css(
-        r"@mixin --Accent{color:red}@mixin --accent{color:blue}@mixin --\31 st{display:block}@mixin --文字{display:grid}",
+        r"@mixin --Accent{color:red} @utility Accent {color:red}@mixin --accent{color:blue} @utility accent {color:blue}@utility \31 st{display:block}@utility 文字{display:grid}",
         &["Accent", "accent", "1st", "文字"],
     );
     for declaration in ["color:red", "color:blue", "display:block", "display:grid"] {
@@ -142,7 +145,7 @@ fn identifiers_preserve_case_unicode_and_decoded_escapes() {
 
 #[test]
 fn public_manifest_compilation_resolves_mixin_conditions() {
-    let parsed=compile_css_directives("@mixin --always{@contents;}@mixin --pair(--value){@apply --always{display:block}width:var(--value)}",&Default::default()).unwrap();
+    let parsed=compile_css_directives("@mixin --always{@contents;} @utility always {@contents;}@mixin --pair(--value){@apply --always{display:block}width:var(--value)} @utility pair(--value) {@apply --always{display:block}width:var(--value)}",&Default::default()).unwrap();
     let result =
         mastercss_compiler::compile_manifest_input(&parsed.manifest_input, &Default::default())
             .unwrap();
@@ -158,7 +161,7 @@ fn public_manifest_compilation_resolves_mixin_conditions() {
 
 #[test]
 fn clearing_named_and_parameter_mixins_drops_old_resources() {
-    let result=compile(r#"@theme {--paint-brand:var(--color-brand);--color-brand:red}@mixin --paint(--name <string>){color:var(ident("--paint-" var(--name)))}@mixin --paint(--name <string>){}@mixin --size(--n){width:var(--n)}@mixin --size(--n){}"#).unwrap();
+    let result=compile(r#"@theme {--paint-brand:var(--color-brand);--color-brand:red}@mixin --paint(--name <string>){color:var(ident("--paint-" var(--name)))} @utility paint(--name <string>) {color:var(ident("--paint-" var(--name)))}@utility paint-(--paint <string>) {color:var(ident("--paint-" var(--paint)))}@mixin --paint(--name <string>){} @utility paint(--name <string>) {}@utility paint-(--paint <string>) {}@mixin --size(--n){width:var(--n)} @utility size(--n) {width:var(--n)}@utility size-(--n) {width:var(--n)}@mixin --size(--n){} @utility size(--n) {}"#).unwrap();
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     for class in ["size(1px)", "paint-brand"] {
         assert_eq!(
@@ -173,7 +176,7 @@ fn clearing_named_and_parameter_mixins_drops_old_resources() {
 #[test]
 fn replacing_named_recipe_keeps_primary_token_identity() {
     let generated = css(
-        r#"@theme {--spacing-md:1rem;--gutter-md:var(--spacing-md)}@mixin --gutter(--key <string>){margin:var(ident("--gutter-" var(--key)))}@mixin --gutter(--key <string>){padding:var(ident("--gutter-" var(--key)))}"#,
+        r#"@theme {--spacing-md:1rem;--gutter-md:var(--spacing-md)}@mixin --gutter(--key <string>){margin:var(ident("--gutter-" var(--key)))} @utility gutter(--key <string>) {margin:var(ident("--gutter-" var(--key)))}@utility gutter-(--gutter <string>) {margin:var(ident("--gutter-" var(--gutter)))}@mixin --gutter(--key <string>){padding:var(ident("--gutter-" var(--key)))} @utility gutter(--key <string>) {padding:var(ident("--gutter-" var(--key)))}@utility gutter-(--gutter <string>) {padding:var(ident("--gutter-" var(--gutter)))}"#,
         &["gutter-md"],
     );
     assert!(
@@ -184,6 +187,6 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
 
 #[test]
 fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":5,"languageVersion":14,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
+    let old = serde_json::json!({"version":6,"languageVersion":15,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
     assert!(EngineSession::create(&old.to_string()).is_err());
 }

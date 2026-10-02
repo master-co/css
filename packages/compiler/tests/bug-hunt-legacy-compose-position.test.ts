@@ -23,10 +23,10 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
-const definitions = '@mixin --paint {color:red}'
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
+const definitions = '@mixin --paint {color:red} @utility paint {color:red}'
 const cases = [
   { name: 'compose before native', body: ".example{@apply --all {color:red;}}.example{color:blue}", order: ['red', 'blue'] },
   { name: 'compose after native', body: ".example{color:blue}.example{@apply --all {color:red;}}", order: ['blue', 'red'] },

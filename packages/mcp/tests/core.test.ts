@@ -259,7 +259,7 @@ describe('@master/css-mcp', () => {
       }
     })
     writeFileSync(join(root, 'master.css'), `@import "@master/css";
-@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }
+@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } } @utility ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }
 @theme {
   --color-brand: #123456;
  }
@@ -382,7 +382,7 @@ describe('@master/css-mcp', () => {
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(5)
+      expect(manifest.version).toBe(6)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({

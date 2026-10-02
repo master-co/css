@@ -4,11 +4,11 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createEngineBindingSession } from '../src/engine-binding'
 
 test('native and Wasm agree on entry replacement, theme-only isolation and removed sizes', async () => {
-  const manifest: MasterCSSManifest = { version: 5, languageVersion: 14,
+  const manifest: MasterCSSManifest = { version: 6, languageVersion: 15,
     variables: { 'font-size': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }], 'font-family': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }] },
-    mixins: [
-      ...['size', 'box'].map(name => ({ name: `--${name}`, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property: 'width', value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }] })),
-      { name: '--size', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'height', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }
+    utilities: [
+      ...['size', 'box'].map(name => ({ kind: 'function' as const, name, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property: 'width', value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }] })),
+      { kind: 'function', name: 'size', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'height', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }
     ]
   }
   using native = await createEngineBindingSession({ manifest }, { binding: 'native' })
@@ -27,8 +27,8 @@ test('ABI 16 exposes rc-sizing migration with identical native and Wasm decision
   using native = await createCompilerBindingSession({ binding: 'native' })
   using wasm = await createCompilerBindingSession({ binding: 'wasm' })
   const targetManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }
   const request = { from: 'rc-sizing' as const, sourceVersion: '2.0.0-rc.sizing', targetManifest,
     manifest: { ...targetManifest, version: 1 as const, languageVersion: 3 as const, utilities: [{ id: 'size:<*>', type: -1,
@@ -44,7 +44,7 @@ test('migration providers preserve a custom entry that shadows a historical sizi
   using native = await createCompilerBindingSession({ binding: 'native' })
   using wasm = await createCompilerBindingSession({ binding: 'wasm' })
   const custom = { id: 'project-min', type: -1, matchers: [{ type: 'key' as const, keys: ['min'] }], emit: { type: 'property' as const, property: 'inline-size' } }
-  const targetManifest: MasterCSSManifest = { version: 5, languageVersion: 14, mixins: [{ name: '--min', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'inline-size', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }] }
+  const targetManifest: MasterCSSManifest = { version: 6, languageVersion: 15, utilities: [{ kind: 'function', name: 'min', parameters: [{ name: '--value' }], body: [{ type: 'declaration', property: 'inline-size', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--value' }] }] }] }] }
   const request = { from: 'rc-sizing' as const, sourceVersion: '2.0.0-rc.sizing', targetManifest,
     manifest: { ...targetManifest, version: 1 as const, languageVersion: 3 as const, utilities: [custom, { id: 'min-size:<*>', type: -1,
       matchers: [{ type: 'key' as const, keys: ['min-size'] }], emit: { type: 'static' as const, rules: [{ declarations: { 'min-width': null, 'min-height': null } }] } }] },

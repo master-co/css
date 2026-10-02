@@ -6,9 +6,9 @@ fn rejects_removed_compose_in_every_authoring_context() {
     for source in [
         "@compose block;",
         r###".card { @compose block; }"###,
-        r###" @mixin --card { @compose block; } "###,
-        r###" @mixin --box(--value) { @compose block; } "###,
-        r###" @mixin --box-a { @compose block; }@mixin --box-b { @compose block; } "###,
+        r###" @mixin --card { @compose block; } @utility card { @compose block; } "###,
+        r###" @mixin --box(--value) { @compose block; } @utility box(--value) { @compose block; } "###,
+        r###" @mixin --box-a { @compose block; } @utility box-a { @compose block; }@mixin --box-b { @compose block; } @utility box-b { @compose block; } "###,
         r###" @utility box-* from(--spacing-*) { @compose block; } "###,
         r###"@media print { .card { @compose block; } }"###,
         r###".card { @media (--sm) { @compose block; } }"###,

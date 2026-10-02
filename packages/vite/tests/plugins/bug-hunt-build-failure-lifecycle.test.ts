@@ -43,7 +43,7 @@ for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'p
   test(`build recovery replaces failures and forgets successful dependencies in ${mode} (managed=${managed})`, async () => {
     await fixture(mode, async state => {
       expect((await state.next()).code).toBe('ERROR')
-      state.write('@mixin --paint {@compose definitely-missing;}')
+      state.write('@mixin --paint {@compose definitely-missing;} @utility paint {@compose definitely-missing;}')
       const invalid = await state.next();expect(invalid.code).toBe('ERROR');expect(String(invalid.error)).toContain('@compose has been removed')
       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(state.events).toEqual([])
       state.write(`@theme {--paint-padding:3rem}

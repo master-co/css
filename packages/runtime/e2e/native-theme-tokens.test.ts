@@ -5,8 +5,8 @@ import { createServerRenderer } from '@master/css-server'
 import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
-@mixin --bg(--color){background-color:var(--color)}
-@mixin --p(--spacing){padding:var(--spacing)}
+@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}
+@mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}
 @layer theme, base, defaults, components, utilities;
 :root { color-scheme: light dark; }
 [data-theme=light] { color-scheme: light; }
@@ -20,7 +20,7 @@ const compiled = compileManifestSync(`
 
   [data-theme=ocean], :host([data-theme=ocean]) { --color-brand: blue; }
 }
-`, { baseManifest: { version: 5, languageVersion: 14 } })
+`, { baseManifest: { version: 6, languageVersion: 15 } })
 const { manifest } = compiled
 const nativeCSS = compiled.css
 const classes = ['bg-alias', 'bg-brand', 'p-card']
@@ -85,8 +85,8 @@ test('default shorthand and explicit native host overrides work inside shadow ro
 
 for (const hydrate of [false, true]) {
   test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
-    const source = '@mixin --bg(--color){background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
-    const { manifest } = compileManifestSync(source, { baseManifest: { version: 5, languageVersion: 14 } })
+    const source = '@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)} @utility animate(--animate) {animation:var(--animate)}@utility animate-(--animate) {animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
+    const { manifest } = compileManifestSync(source, { baseManifest: { version: 6, languageVersion: 15 } })
     const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
@@ -112,7 +112,7 @@ for (const hydrate of [false, true]) {
     await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(false)
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
-    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 5, languageVersion: 14 } }).manifest
+    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 15 } }).manifest
     await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })

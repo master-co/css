@@ -28,3 +28,7 @@ export interface MasterCSSMixinDefinition {
   body: MasterCSSMixinNode[]
   source?: CSSDirectiveSourceReference
 }
+
+export interface MasterCSSUtilityDefinition extends MasterCSSMixinDefinition {
+  kind: 'static' | 'token' | 'function'
+}

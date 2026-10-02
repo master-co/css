@@ -21,26 +21,26 @@ export const recipes = [
 ]
 const fence = (lang: string, text: string) => `\`\`\`${lang}\n${text}\n\`\`\``
 export async function buildRecipeContracts(siteRoot: string): Promise<ReferenceDocument[]> {
-  const source = await readFile(path.join(siteRoot, '../packages/preset/src/mixins.css'), 'utf8')
+  const source = await readFile(path.join(siteRoot, '../packages/preset/src/utilities.css'), 'utf8')
   return recipes.map(recipe => {
     const definitions = recipe.names.map(name => {
-      const start = source.indexOf(`@mixin --${name} `) >= 0 ? source.indexOf(`@mixin --${name} `) : source.indexOf(`@mixin --${name}(`)
+      const start = [`@utility ${name} `, `@utility ${name}(`, `@utility ${name}-(`].map(header => source.indexOf(header)).find(index => index >= 0) ?? -1
       if (start < 0) throw new Error(`Missing recipe definition: ${name}`)
-      const end = source.indexOf('\n@mixin ', start + 1)
+      const end = source.indexOf('\n@utility ', start + 1)
       return source.slice(start, end < 0 ? undefined : end).trim()
     }).join('\n\n')
-    const mixins = recipe.names.map(name => {
-      const mixin = preset.mixins?.find(mixin => mixin.name === `--${name}`)
-      if (!mixin) throw new Error(`Missing preset mixin: ${name}`)
-      return mixin
+    const utilities = recipe.names.map(name => {
+      const utility = preset.utilities?.find(utility => utility.name === name)
+      if (!utility) throw new Error(`Missing preset utility: ${name}`)
+      return utility
     })
     const scene = recipeScene(recipe.id)
     const classes = configuredMarkupClasses(scene.html)
     const css = generatePresetCSS(classes)
-    const parameters = mixins.map(m => `- \`${m.name}\`: ${m.parameters?.map(p => `\`${p.name}\` accepts \`<${p.syntax}>\``).join(', ') || 'no parameters'}.`).join('\n')
+    const parameters = utilities.map(m => `- \`${m.name}\`: ${m.parameters?.map(p => `\`${p.name}\` accepts \`<${p.syntax}>\``).join(', ') || 'no parameters'}.`).join('\n')
     const oldAnchors = (legacyRecipeAnchors as Record<string, { id: string }[]>)[recipe.id] ?? []
     const legacy = oldAnchors.filter(h => !['overview', 'examples'].includes(h.id)).map(h => `<a id="${h.id}"></a>`).join('\n\n')
-    const markdown = `## Purpose {#overview}\n\n${recipe.purpose}\n\n## Example {#examples}\n\n${legacy}\n\n${scene.caption}\n\n${fence('html', scene.html)}\n\n${fence('css disclosure=generated-css', css)}\n\n## Parameters\n\n${parameters}\n\n${recipe.namespace ? `A primary \`--${recipe.namespace}-<name>\` token creates the named class. Companion tokens alone do not. An explicit call requires a quoted string, such as \`${recipe.namespace}("md")\`; an unquoted identifier fails the string parameter check. See [all values and companions](/reference/tokens/${recipe.namespace}).` : 'These definitions have no optional arguments or parameter defaults. Parameter validation and native CSS validity are separate: an integer argument does not guarantee a useful track count, span or line count.'}\n\n## Preset definition\n\n${fence('css', definitions)}\n\n## Scope and customization\n\nLoad the preset through \`@import '@master/css'\`. These top-level mixins generate utilities on demand. Project definitions with the same name replace the whole definition. Use \`@apply --name(...);\` inside a stylesheet with the same parameters, and ordinary selector/condition suffixes on classes.\n\nSee [mixin contracts](/reference/directives/definitions) for the full definition rules.${recipe.guide ? ` Learn how to choose and combine these styles in [${recipe.guide.split('#')[0]}](/guide/${recipe.guide}).` : ''}`
-    return { id: recipe.id, kind: 'utility', title: recipe.title, description: recipe.purpose, category: 'Preset recipes', url: `/reference/${recipe.id}`, source: 'packages/preset/src/mixins.css', sourceDigest: createHash('sha256').update(definitions).digest('hex'), language: 'en', aliases: recipe.names.flatMap(name => [name, `--${name}`]), terms: [], rows: [], examples: [{ id: 'examples', title: recipe.title, classes, css }], related: ['directives/definitions', ...(recipe.namespace ? [`tokens/${recipe.namespace}`] : [])], guide: recipe.guide ? `/guide/${recipe.guide}` : undefined, markdown, headings: documentHeadings(markdown), extractionNotes: [] }
+    const markdown = `## Purpose {#overview}\n\n${recipe.purpose}\n\n## Example {#examples}\n\n${legacy}\n\n${scene.caption}\n\n${fence('html', scene.html)}\n\n${fence('css disclosure=generated-css', css)}\n\n## Parameters\n\n${parameters}\n\n${recipe.namespace ? `A primary \`--${recipe.namespace}-<name>\` token creates the named class. Companion tokens alone do not. The pattern binds its key as a string for static identifier construction. See [all values and companions](/reference/tokens/${recipe.namespace}).` : 'These definitions have no optional arguments or parameter defaults. Parameter validation and native CSS validity are separate: an integer argument does not guarantee a useful track count, span or line count.'}\n\n## Preset definition\n\n${fence('css', definitions)}\n\n## Scope and customization\n\nLoad the preset through \`@import '@master/css'\`. These top-level utility definitions generate classes on demand. Project definitions with the same form and name replace the whole registration. Use ordinary selector/condition suffixes on classes, and explicit mixins for CSS reuse.\n\nSee [utility contracts](/reference/directives/definitions) for the full definition rules.${recipe.guide ? ` Learn how to choose and combine these styles in [${recipe.guide.split('#')[0]}](/guide/${recipe.guide}).` : ''}`
+    return { id: recipe.id, kind: 'utility', title: recipe.title, description: recipe.purpose, category: 'Preset recipes', url: `/reference/${recipe.id}`, source: 'packages/preset/src/utilities.css', sourceDigest: createHash('sha256').update(definitions).digest('hex'), language: 'en', aliases: recipe.names.flatMap(name => [name, `--${name}`]), terms: [], rows: [], examples: [{ id: 'examples', title: recipe.title, classes, css }], related: ['directives/definitions', ...(recipe.namespace ? [`tokens/${recipe.namespace}`] : [])], guide: recipe.guide ? `/guide/${recipe.guide}` : undefined, markdown, headings: documentHeadings(markdown), extractionNotes: [] }
   })
 }

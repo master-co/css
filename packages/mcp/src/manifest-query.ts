@@ -11,9 +11,9 @@ import {
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 5
+const MANIFEST_QUERY_VERSION = 6
 
-export type ManifestQueryKind = 'all' | 'token' | 'mixin' | 'custom-media' | 'family'
+export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'mixin' | 'custom-media' | 'family'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -64,6 +64,11 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     .filter((mixin) => matchesAny(mixinSearchValues(mixin), query))
     .map(compactMixin)
 
+  const utilities = (activeManifest.utilities || [])
+    .filter(utility => !namespace || utility.parameters?.some(parameter => parameter.name === `--${namespace}`))
+    .filter(utility => matchesAny(mixinSearchValues(utility), query))
+    .map(utility => ({ ...utility, parameters: utility.parameters ?? [] }))
+
   const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
 
   using tooling = createMCPToolingSession(activeManifest)
@@ -74,12 +79,14 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
 
   const allResults = {
     tokens: kind === 'all' || kind === 'token' ? variables : [],
+    utilities: kind === 'all' || kind === 'utility' ? utilities : [],
     mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
     customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
     families: kind === 'all' || kind === 'family' ? families : []
   }
   const limitedResults = {
     tokens: limitResults(allResults.tokens, limit),
+    utilities: limitResults(allResults.utilities, limit),
     mixins: limitResults(allResults.mixins, limit),
     customMedia: limitResults(allResults.customMedia, limit),
     families: limitResults(allResults.families, limit)
@@ -108,6 +115,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       returned,
       tokens: variables.length,
       mixins: mixins.length,
+      utilities: utilities.length,
       customMedia: customMedia.length,
       families: families.length,
       status: 'ok'

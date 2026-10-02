@@ -10,7 +10,7 @@ pub(crate) fn matching_utilities(
     source: &str,
     manifest: &ManifestProjection,
 ) -> Vec<(usize, UtilityMatch)> {
-    if let Some(found) = super::mixin_matching::matching(source, manifest) {
+    if let Some(found) = super::utility_matching::matching(source, manifest) {
         return found;
     }
     let native = is_native_declaration(source, manifest);
@@ -130,7 +130,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             ),
         )];
     }
-    if let Some(message) = super::mixin_matching::diagnostic(source, manifest) {
+    if let Some(message) = super::utility_matching::diagnostic(source, manifest) {
         return vec![error(super::ErrorCode::CssDirectiveError, message)];
     }
     if mastercss_lexer::decode_native_content(source).is_none() {
@@ -438,7 +438,7 @@ pub(crate) fn sort_key(
 
 pub(crate) fn allows_negative_token(utility: &UtilityDefinition) -> bool {
     let properties = match &utility.emit {
-        UtilityEmit::Mixin { .. } => return false,
+        UtilityEmit::Recipe { .. } => return false,
         UtilityEmit::Property { property } => vec![property.as_str()],
     };
     !properties.is_empty()

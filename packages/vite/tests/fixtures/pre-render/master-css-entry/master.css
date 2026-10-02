@@ -11,4 +11,10 @@
       font-size:1.125rem;
     }
     border-color: #456;
+  } @utility card {
+    background-color:var(--color-brand);
+    @media (--md) {
+      font-size:1.125rem;
+    }
+    border-color: #456;
   }

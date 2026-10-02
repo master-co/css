@@ -180,8 +180,8 @@ pub(crate) fn emit_declarations(
     manifest: &super::ManifestProjection,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
     match &utility.emit {
-        UtilityEmit::Mixin { name } => {
-            super::mixin_matching::emit(manifest, name, matched_value, important)
+        UtilityEmit::Recipe { name, .. } => {
+            super::utility_matching::emit(manifest, name, matched_value, important)
         }
         UtilityEmit::Property { property } => matched_value
             .filter(|value| !value.is_empty())

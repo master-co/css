@@ -66,7 +66,7 @@ test('collection emits referenced native resources once without exposing referen
     writeFileSync(join(root, 'tokens.css'), `@theme {--color-accent:#123456; }
 
 @keyframes pop{to{opacity:1}}
-@mixin --reference-only {color:blue}.reference-native{color:red}`)
+@mixin --reference-only {color:blue} @utility reference-only {color:blue}.reference-native{color:red}`)
     const source = "@import \"@master/css\";@reference \"./tokens.css\";@keyframes local{to{opacity:0}}.card{color:var(--color-accent);animation:pop 1s,local 2s}"
     const id = join(root, 'entry.css')
     await collection.register(scanner, id, source, { baseManifest: scanner.css.manifest, projectDir: root })

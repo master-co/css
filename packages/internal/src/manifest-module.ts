@@ -9,7 +9,7 @@ export const RESOLVED_VIRTUAL_MANIFEST_ID = `\0${VIRTUAL_MANIFEST_ID}`
 export const MASTER_CSS_MANIFEST_QUERY = '?master-css-manifest'
 export const VIRTUAL_MANIFEST_FILE = MANIFEST_MODULE_FILE
 export const VIRTUAL_MANIFEST_ASSET_FILE = MANIFEST_ASSET_FILE
-export const EMPTY_MANIFEST_JSON = '{"version":5,"languageVersion":14}'
+export const EMPTY_MANIFEST_JSON = '{"version":6,"languageVersion":15}'
 
 export interface CSSManifestLoadResult {
   manifest: MasterCSSManifest

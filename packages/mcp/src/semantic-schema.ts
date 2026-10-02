@@ -61,8 +61,9 @@ const mediaQuery: z.ZodType = z.lazy(() => z.union([
 ]))
 export const manifestResults = z.object({
   tokens: z.array(variable), mixins: z.array(mixin),
+  utilities: z.array(mixin.extend({ kind: z.enum(['static', 'token', 'function']) })),
   customMedia: z.array(z.object({ name: z.string(), expression: mediaQuery })),
-  families: z.array(z.object({ type: z.literal('token-family'), mixin: z.string(), prefix: z.string(), namespace: z.string(), argument: z.enum(['value', 'key']), properties: strings }))
+  families: z.array(z.object({ type: z.literal('token-family'), utility: z.string(), prefix: z.string(), namespace: z.string(), argument: z.enum(['value', 'key']), properties: strings }))
 })
 export const change = z.object({ filePath: z.string(), beforeHash: z.string().nullable(), afterHash: z.string(), beforeExists: z.boolean(), beforeBytes: z.number(), afterBytes: z.number(), afterText: z.string(), diff: z.string() })
 export const completion = z.object({ label: z.string(), kind: z.number().optional(), detail: z.string().optional(), insertText: z.string().optional(), sortText: z.string().optional(), documentation: z.union([z.string(), z.object({ kind: z.string(), value: z.string() })]).optional() }).passthrough()

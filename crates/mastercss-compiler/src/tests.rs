@@ -51,7 +51,7 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
                 ),
                 (
                     "/utilities.css".into(),
-                    "@mixin --block {display:block}".into(),
+                    "@mixin --block {display:block} @utility block {display:block}".into(),
                 ),
             ]),
             resolutions: HashMap::from([
@@ -78,7 +78,11 @@ fn resolves_import_graphs_through_a_provider_without_filesystem_ownership() {
             .source
             .starts_with("@import \"https://example.com/font.css\";\n")
     );
-    assert!(graph.source.contains("@mixin --block {display:block}"));
+    assert!(
+        graph
+            .source
+            .contains("@mixin --block {display:block} @utility block {display:block}")
+    );
     assert!(graph.source.ends_with(".entry{display:block}"));
 }
 
@@ -259,7 +263,7 @@ fn settings_are_removed_at_the_directive_boundary() {
 
 #[test]
 fn lowers_mixins_with_utf16_source_ranges() {
-    let source = "/* 😀 */\n@mixin --btn { display: inline-flex; color: red; }\n@mixin --content-auto { content-visibility: auto; }";
+    let source = "/* 😀 */\n@mixin --btn { display: inline-flex; color: red; } @utility btn { display: inline-flex; color: red; }\n@mixin --content-auto { content-visibility: auto; } @utility content-auto { content-visibility: auto; }";
     let result = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let definitions = result.manifest_input.mixins.unwrap();
     for (definition, name, property, value) in [

@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe('@master/css-compiler/stylesheet/browser', () => {
   it('renders class names with the compiled manifest', async () => {
-    const result = await compileBrowserStylesheet("\n      @mixin --btn {\n          @apply --all {display:flex;}\n          color: red;\n        }\n    ", {
+    const result = await compileBrowserStylesheet("\n      @mixin --btn {\n          @apply --all {display:flex;}\n          color: red;\n        } @utility btn {\n          @apply --all {display:flex;}\n          color: red;\n        }\n    ", {
       baseManifest: defaultManifest,
       classNames: ['btn']
     })
@@ -25,7 +25,7 @@ describe('@master/css-compiler/stylesheet/browser', () => {
       '../../../binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm',
       import.meta.url
     )))
-    const result = await compileBrowserStylesheet(' @mixin --card { display: block; } ', {
+    const result = await compileBrowserStylesheet(' @mixin --card { display: block; } @utility card { display: block; } ', {
       baseManifest: defaultManifest,
       classNames: ['card'],
       binding: { input }

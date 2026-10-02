@@ -5,8 +5,8 @@ import { RESOLVED_VIRTUAL_MANIFEST_ID } from '../src/manifest-module'
 for (const importedManifest of [false, true]) test(`BH-0004 manifest updates retain existing stylesheet consumers (manifest imported: ${importedManifest})`, async () => {
   const file = '/project/style.css'
   const plugin = createMasterCSSManifestVirtualModulePlugin(async () => ({ manifest: {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }, entries: [file], dependencies: [file], diagnostics: [] }))
   plugin.configResolved({ command: 'serve', root: '/project' })
   await plugin.buildStart.call({})

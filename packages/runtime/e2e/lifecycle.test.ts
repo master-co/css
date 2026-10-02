@@ -84,9 +84,9 @@ test('dispose on progressive', async ({ page }) => {
 
 test('prevent attach layer twice', async ({ page }) => {
   await init(page, '@layer components{}', {
-    mixins: [
+    utilities: [
   {
-    "name": "--app-wrapper",
+    "kind": "static" as const, "name": "app-wrapper",
     "body": [
       {
         "type": "rule" as const,
@@ -176,9 +176,9 @@ test('insert semantic utility with multiple native rules into existing layer', a
     document.body.innerHTML = "<div class=\"display:block multi-rule\"></div>"
   })
   await init(page, '', {
-    mixins: [
+    utilities: [
   {
-    "name": "--multi-rule",
+    "kind": "static" as const, "name": "multi-rule",
     "body": [
       {
         "type": "rule" as const,

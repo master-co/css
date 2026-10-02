@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import { getRuntimeLoaderURL } from './init'
 
-const baseManifest = { version: 5 as const, languageVersion: 14 as const }
+const baseManifest = { version: 6 as const, languageVersion: 15 as const }
 const source = '@prune native;@layer before;@layer{@keyframes probe{to{opacity:.2}}@media(width>600px){@keyframes probe{to{opacity:.4}}}}@supports(display:grid){@keyframes probe{to{opacity:.6}}}@keyframes probe{to{opacity:.8}}'
 
 async function setup(page: Page, css = source) {

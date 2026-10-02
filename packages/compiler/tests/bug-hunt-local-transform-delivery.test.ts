@@ -13,7 +13,7 @@ test.each([false, true])('BH-0004 local transform delivers imported compose with
   try {
     writeFileSync(child, "@import \"https://external.test/style.css\";.child{@apply --all {padding:2rem;}background:url(pixel.svg?q=1#part)}")
     writeFileSync(pixel, '<svg/>')
-    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);@mixin --paint {color:blue}.root{@apply --all{display:block;color:blue;}}`
+    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);@mixin --paint {color:blue} @utility paint {color:blue}.root{@apply --all{display:block;color:blue;}}`
     const result = await transformStylesheet(entry, source, { baseManifest, projectDir: root, delivery: {
       entryURL: '/assets/entry.css', stylesheetURL: file => '/assets/' + basename(file), resourceURL: () => '/assets/pixel.svg',
       ...(custom ? { resolveImport: async (specifier: string) => specifier === 'child-alias' ? child : undefined } : {})
@@ -39,7 +39,7 @@ test.each([false, true])('BH-0004 local graph keeps reference globals and dedupl
   try {
     writeFileSync(reference, `@theme {--spacing-local:3rem}
 
-@mixin --pad {padding:var(--spacing-local)}.never{color:red}`)
+@mixin --pad {padding:var(--spacing-local)} @utility pad {padding:var(--spacing-local)}.never{color:red}`)
     const result = await transformStylesheet(entry, "@reference \"./reference.css\";.root{@apply --all {padding:var(--spacing-local);}}", { baseManifest, projectDir: root,
       emittedGlobals: published ? { variables: { 'spacing-local': 1 } } : undefined,
       delivery: { entryURL: '/entry.css', stylesheetURL: file => '/' + basename(file), resourceURL: file => '/' + basename(file) }

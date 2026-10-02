@@ -522,9 +522,9 @@
         "./client",
         "./index.css",
         "./media.css",
-        "./mixins.css",
         "./node",
-        "./theme.css"
+        "./theme.css",
+        "./utilities.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -755,8 +755,8 @@
         "./default-manifest.json",
         "./index.css",
         "./media.css",
-        "./mixins.css",
-        "./theme.css"
+        "./theme.css",
+        "./utilities.css"
       ],
       "bins": [],
       "entrypoints": {
@@ -849,6 +849,7 @@
           "MasterCSSMixinValue",
           "MasterCSSScopedThemeValue",
           "MasterCSSThemeNode",
+          "MasterCSSUtilityDefinition",
           "flattenMasterCSSManifestVariables",
           "getMasterCSSManifestVariableName",
           "groupMasterCSSManifestVariables",
@@ -870,6 +871,7 @@
         ],
         "./css-directives": [
           "CSSCustomMediaDefinition",
+          "CSSDefinitionSource",
           "CSSDirectiveConditionPathEntry",
           "CSSDirectiveDeclarations",
           "CSSDirectiveError",
@@ -887,7 +889,6 @@
           "CSSDirectiveStyleDefinition",
           "CSSDirectiveStyleNativeDefinition",
           "CSSDirectiveVariableValue",
-          "CSSMixinSource",
           "CSSNativeOutput",
           "CSSOrderedDeclaration",
           "CSSOutputMapping",
@@ -941,7 +942,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "79d1a4e64da99dbc"
+      "surface": "3af4c47ab2fd2aa6"
     },
     "@master/css-server": {
       "directory": "server",

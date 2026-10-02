@@ -53,8 +53,8 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":5')
-    expect(JSON.parse(source).version).toBe(5)
+    expect(source).toContain('"version":6')
+    expect(JSON.parse(source).version).toBe(6)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -71,7 +71,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ module: true })
     })
 
-    expect(source).toMatch(/^export default \{"version":5/)
+    expect(source).toMatch(/^export default \{"version":6/)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -87,7 +87,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ module: true })
     })
     const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
-    expect(manifest.languageVersion).toBe(14)
+    expect(manifest.languageVersion).toBe(15)
     expect(JSON.stringify(manifest)).toContain('#123')
     expect(source).not.toContain('fetch(')
     expect(source).not.toContain('/_next/')
@@ -111,7 +111,7 @@ describe('css manifest loader', () => {
         getOptions: () => ({ module: true })
       })
 
-      expect(source).toMatch(/^export default \{"version":5/)
+      expect(source).toMatch(/^export default \{"version":6/)
       expect(source).toContain('#123')
       expect(source).not.toContain('loadMasterCSSManifestFromImport')
     } finally {
@@ -134,6 +134,8 @@ describe('css manifest loader', () => {
 
 @mixin --btn {
         color: var(--color-primary);
+    } @utility btn {
+        color: var(--color-primary);
     }`)
 
     const source = await runManifestLoader({
@@ -142,7 +144,7 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":5')
+    expect(source).toContain('"version":6')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"--btn"')
@@ -160,7 +162,7 @@ describe('css manifest loader', () => {
     --color-primary: #123;
  }
 
-@mixin --btn { color: var(--color-primary); }`)
+@mixin --btn { color: var(--color-primary); } @utility btn { color: var(--color-primary); }`)
     writeFileSync(preserveOnlyPath, `@preserve native;
 @theme {
     --color-ignored: #456;
@@ -174,7 +176,7 @@ describe('css manifest loader', () => {
       addDependency: (dependency: string) => dependencies.push(dependency)
     })
 
-    expect(source).toContain('"version":5')
+    expect(source).toContain('"version":6')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"--btn"')
@@ -216,7 +218,7 @@ describe('css manifest loader', () => {
     const virtualManifestPath = join(projectDir, 'node_modules/.master-css/master-css-manifest.js')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @compose bg-missing-token;\n    }")
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @compose bg-missing-token;\n    } @utility card {\n        @compose bg-missing-token;\n    }")
 
     await expect(runManifestLoader({
       resourcePath: virtualManifestPath,
@@ -226,7 +228,7 @@ describe('css manifest loader', () => {
     })).rejects.toThrow('@compose has been removed')
     expect(dependencies).toContain(entryPath)
 
-    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @media all{display:block;}\n    }")
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @media all{display:block;}\n    } @utility card {\n        @media all{display:block;}\n    }")
 
     const source = await runManifestLoader({
       resourcePath: virtualManifestPath,
@@ -234,7 +236,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ virtual: true, module: true })
     })
 
-    expect(source).toContain('"version":5')
+    expect(source).toContain('"version":6')
     expect(source).toContain('"--card"')
     expect(source).toContain('display')
   })

@@ -28,7 +28,7 @@ const fields: Record<string, z.ZodRawShape> = {
   mastercss_extract_classes: { manifest: metadata, files: z.array(extractedFile), summary: extractSummary },
   mastercss_scan_project: { manifest: metadata, files: z.array(scannedFile), scanner, stylesheets, css, summary: scanSummary, snapshot: projectSnapshot.optional() },
   mastercss_inspect_directives: { context: metadata, manifest: object, directiveEntries: z.array(z.object({ name: z.string(), range, prelude: z.string(), hasBlock: z.boolean(), quotedStrings: z.number() }).passthrough()), dependencies: strings, css, summary: object },
-  mastercss_manifest_query: { version: z.literal(5), manifest: metadata, results: manifestResults, summary: z.object({ total: z.number(), returned: z.number(), tokens: z.number(), mixins: z.number(), customMedia: z.number(), families: z.number(), status: z.literal('ok') }) },
+  mastercss_manifest_query: { version: z.literal(6), manifest: metadata, results: manifestResults, summary: z.object({ total: z.number(), returned: z.number(), tokens: z.number(), mixins: z.number(), utilities: z.number(), customMedia: z.number(), families: z.number(), status: z.literal('ok') }) },
   mastercss_css_compare: { manifest: metadata, classes: classDiff, css: z.object({ changed: z.boolean(), before: css, after: css, bytesDelta: z.number(), diff: z.string() }), rules: ruleDiff, summary: object },
   mastercss_suggest_syntax: { manifest: metadata, completions: z.array(completion), total: z.number() }
 }

@@ -10,12 +10,21 @@ const compiled = compileManifestSync(`
 @mixin --light {
   @media (prefers-color-scheme: light) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @contents; } }
   &:where([data-theme="light"], [data-theme="light"] *) { @contents; }
+} @utility light {
+  @media (prefers-color-scheme: light) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @contents; } }
+  &:where([data-theme="light"], [data-theme="light"] *) { @contents; }
 }
 @mixin --dark {
   @media (prefers-color-scheme: dark) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @contents; } }
   &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+} @utility dark {
+  @media (prefers-color-scheme: dark) { &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @contents; } }
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
 }
 @mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
+  :host([data-theme="ocean"]) & { @contents; }
+} @utility ocean {
   &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
   :host([data-theme="ocean"]) & { @contents; }
 }

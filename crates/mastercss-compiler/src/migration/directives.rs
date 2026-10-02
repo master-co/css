@@ -40,7 +40,7 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
                 "Utility {name} requires a manual identifier migration"
             ));
         }
-        return Ok(format!("@mixin --{name}{{{body}}}"));
+        return Ok(format!("@utility {name}{{{body}}}"));
     };
     let members = members.split('|').map(str::trim).collect::<Vec<_>>();
     let namespaces = members
@@ -55,7 +55,7 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
         .collect::<Vec<_>>();
     if !namespaces.is_empty() && !raw.is_empty() {
         return Err(format!(
-            "Mixed raw and named family {name} requires manual migration to distinct mixin names"
+            "Mixed raw and named family {name} requires manual migration to distinct utility names"
         ));
     }
     if prefix.ends_with(':') && !raw.is_empty() && !raw.contains(&"*") {
@@ -72,19 +72,19 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
         {
             let namespace = &namespaces[0][1..];
             return Ok(format!(
-                "@mixin --{key}(--{namespace}){{{property}:var(--{namespace})}}"
+                "@utility {key}-(--{namespace}){{{property}:var(--{namespace})}}"
             ));
         }
         if namespaces.len() == 1 && &namespaces[0][1..] == key {
             let body = parameter(
                 body,
                 "--value",
-                &format!("var(ident(\"--{key}-\" var(--key)))"),
+                &format!("var(ident(\"--{key}-\" var(--{key})))"),
             );
-            return Ok(format!("@mixin --{key}(--key <string>){{{body}}}"));
+            return Ok(format!("@utility {key}-(--{key} <string>){{{body}}}"));
         }
         return Err(format!(
-            "Named family {name} needs same-name primary/alias tokens and a <string> mixin; preserve cross-namespace priority explicitly"
+            "Named family {name} needs same-name primary/alias tokens and a <string> token pattern; preserve cross-namespace priority explicitly"
         ));
     }
     if prefix.ends_with(':') {
@@ -107,14 +107,14 @@ fn definition(name: &str, body: &str) -> Result<String, String> {
         } else {
             ""
         };
-        return Ok(format!("@mixin --{key}(--value{syntax}){{{body}}}"));
+        return Ok(format!("@utility {key}(--value{syntax}){{{body}}}"));
     }
     Ok(raw
         .into_iter()
         .map(|member| {
             let (key, value) = member.split_once('=').unwrap_or((member, member));
             format!(
-                "@mixin --{prefix}{key}{{{}}}",
+                "@utility {prefix}{key}{{{}}}",
                 parameter(body, "--value", value)
             )
         })

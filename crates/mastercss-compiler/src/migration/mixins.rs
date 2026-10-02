@@ -104,7 +104,7 @@ pub(super) fn class(source: &str, saved: &Value) -> Result<String, String> {
                         })
             }) {
                 return Err(format!(
-                    "{name} overrides a preset spelling; retain its definition as @mixin --{name} and review its use"
+                    "{name} overrides a preset spelling; retain its definition as @utility {name} and review its use"
                 ));
             }
         }
@@ -174,9 +174,9 @@ fn stylesheet(source: &str) -> RcStylesheetMigration {
             continue;
         }
         if statement.parent.is_some() {
-            result
-                .notes
-                .push("Nested @utility requires manual restructuring into top-level @mixin".into());
+            result.notes.push(
+                "Nested @utility requires manual restructuring into top-level @utility".into(),
+            );
             continue;
         }
         let Some(open) = tokens
@@ -203,11 +203,11 @@ fn stylesheet(source: &str) -> RcStylesheetMigration {
             .strip_suffix(":*")
             .map_or((prelude, false), |name| (name, true));
         if !mastercss_lexer::decode_utility_name(name).is_some() {
-            result.notes.push(format!("Migrate @utility {prelude} manually: create a same-name primary token (or alias token), a single <string> mixin parameter, and var(ident(...)); preserve namespace priority explicitly"));
+            result.notes.push(format!("Migrate @utility {prelude} manually: create a same-name primary token (or alias token), a single <string> token placeholder, and var(ident(...)); preserve namespace priority explicitly"));
             continue;
         }
         if parameterized && mastercss_schema::is_native_css_property(raw_property(name)) {
-            result.notes.push(format!("@utility {prelude} overrides a native property. Use a distinct mixin name and update callers; property:value always keeps its native meaning"));
+            result.notes.push(format!("@utility {prelude} overrides a native property. Use a distinct utility name and update callers; property:value always keeps its native meaning"));
             continue;
         }
         let mut body = source[open.bytes.end..close.bytes.start].to_owned();
@@ -244,9 +244,9 @@ fn stylesheet(source: &str) -> RcStylesheetMigration {
             } else {
                 ""
             };
-            format!("@mixin --{name}(--value{syntax})")
+            format!("@utility {name}(--value{syntax})")
         } else {
-            format!("@mixin --{name}")
+            format!("@utility {name}")
         };
         let after = format!("{header} {{{body}}}");
         if let Err(error) =
@@ -300,7 +300,7 @@ fn value_family(prelude: &str, body: &str) -> Option<String> {
     let definition = crate::mixins::definition("--migration(--value)", &body).ok()?;
     let (_, property) = mastercss_engine::direct_value_mixin(&definition)?;
     Some(format!(
-        "@mixin --{name}(--{namespace}){{{property}:var(--{namespace})}}"
+        "@utility {name}-(--{namespace}){{{property}:var(--{namespace})}}"
     ))
 }
 

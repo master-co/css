@@ -1,5 +1,5 @@
 //! Frozen saved-utility evaluation for explicit migration evidence only. Each
-//! probe is lowered to one zero-parameter v3 mixin before entering the engine.
+//! probe is lowered to one zero-parameter utility before entering the engine.
 use mastercss_engine::{EngineCompositionRuleIr, EngineSession};
 use serde_json::{Value, json};
 
@@ -9,10 +9,27 @@ pub(super) fn freeze(manifest: &mut Value) {
         .as_object_mut()
         .and_then(|object| object.remove("utilities"))
     {
-        if !manifest["debug"].is_object() {
-            manifest["debug"] = json!({});
+        let (current, legacy): (Vec<_>, Vec<_>) = utilities
+            .as_array()
+            .into_iter()
+            .flatten()
+            .cloned()
+            .partition(|definition| {
+                definition.get("body").is_some()
+                    && matches!(
+                        definition["kind"].as_str(),
+                        Some("static" | "token" | "function")
+                    )
+            });
+        if !current.is_empty() {
+            manifest["utilities"] = json!(current);
         }
-        manifest["debug"]["migrationUtilities"] = utilities;
+        if !legacy.is_empty() {
+            if !manifest["debug"].is_object() {
+                manifest["debug"] = json!({});
+            }
+            manifest["debug"]["migrationUtilities"] = json!(legacy);
+        }
     }
 }
 
@@ -203,11 +220,11 @@ pub(super) fn prepare(
                 continue;
             };
             let body = body(utility, value.as_deref())?;
-            let definition = json!({"name":"--migration-result","body":body});
-            if !manifest["mixins"].is_array() {
-                manifest["mixins"] = json!([]);
+            let definition = json!({"kind":"static","name":"migration-result","body":body});
+            if !manifest["utilities"].is_array() {
+                manifest["utilities"] = json!([]);
             }
-            manifest["mixins"]
+            manifest["utilities"]
                 .as_array_mut()
                 .expect("array")
                 .push(definition);
@@ -221,7 +238,7 @@ pub(super) fn prepare(
             break;
         }
         if invocation == class {
-            let migrated_keys = manifest["mixins"]
+            let migrated_keys = manifest["utilities"]
                 .as_array()
                 .into_iter()
                 .flatten()
@@ -230,11 +247,7 @@ pub(super) fn prepare(
                         .as_array()
                         .is_some_and(|parameters| !parameters.is_empty())
                 })
-                .filter_map(|definition| {
-                    definition["name"]
-                        .as_str()
-                        .and_then(|name| name.strip_prefix("--"))
-                })
+                .filter_map(|definition| definition["name"].as_str())
                 .map(|key| json!({"matchers":[{"type":"key","keys":[key]}]}))
                 .collect::<Vec<_>>();
             invocation = super::mixins::class(class, &json!({"utilities":migrated_keys}))

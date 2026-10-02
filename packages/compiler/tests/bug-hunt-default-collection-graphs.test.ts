@@ -22,10 +22,10 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
     using collection = createStylesheetCollection()
     try {
       f.file('node_modules/@master/css/package.json', JSON.stringify({ name: '@master/css', style: './index.css' }))
-      f.file('node_modules/@master/css/index.css', '@import "./base.css" layer(master);.from-master{border-top-width:7px}@mixin --package-custom {color:orange}')
+      f.file('node_modules/@master/css/index.css', '@import "./base.css" layer(master);.from-master{border-top-width:7px}@mixin --package-custom {color:orange} @utility package-custom {color:orange}')
       f.file('node_modules/@master/css/base.css', '.from-master-child{border-bottom-width:8px}')
       f.file('child.css', '@safelist "nested";.nested{background-color:green}.unused{color:yellow}')
-      const entry = f.file('entry.css', "@import \"@master/css\";@import \"./child.css\" supports(display:grid) screen;@import \"@master/css\";@mixin --all{@contents;}@mixin --custom {color:purple}.project{color:red}.composed{@apply --all {display:block;}}")
+      const entry = f.file('entry.css', "@import \"@master/css\";@import \"./child.css\" supports(display:grid) screen;@import \"@master/css\";@mixin --all{@contents;} @utility all {@contents;}@mixin --custom {color:purple} @utility custom {color:purple}.project{color:red}.composed{@apply --all {display:block;}}")
       await scanner.init()
       await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })
       expect(collection.snapshot().sources[0].isMasterCSS).toBe(true)
@@ -53,14 +53,14 @@ test('BH-0004 default graph composes separate entries with child-owned reference
   try {
     f.file('parts/tokens.css', `@theme {--paint-padding:2rem}
 
-@mixin --all{@contents;}.reference-never{color:pink}`)
+@mixin --all{@contents;} @utility all {@contents;}.reference-never{color:pink}`)
     f.file('tokens.css', `@theme {--paint-padding:99rem}
 
 `)
     f.file('parts/child.css', "@reference \"./tokens.css\";@source \"./views/*.html\";.native{@apply --all {padding:var(--paint-padding);}}")
     f.file('parts/views/view.html', '<div class="native custom"></div>')
-    const first = f.file('first.css', "@import \"./parts/child.css\" layer(a) screen;@import \"@master/css\";@mixin --custom {margin:3rem}")
-    const second = f.file('second.css', "@import \"@master/css\";@safelist \"second-custom\";@mixin --second-custom {border-width:4px}")
+    const first = f.file('first.css', "@import \"./parts/child.css\" layer(a) screen;@import \"@master/css\";@mixin --custom {margin:3rem} @utility custom {margin:3rem}")
+    const second = f.file('second.css', "@import \"@master/css\";@safelist \"second-custom\";@mixin --second-custom {border-width:4px} @utility second-custom {border-width:4px}")
     await scanner.init()
     for (const entry of [first, second]) await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })
     const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: f.root })

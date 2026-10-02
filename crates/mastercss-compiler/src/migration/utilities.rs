@@ -37,14 +37,16 @@ pub(super) fn legacy_kind(value: &str, kind: Option<&str>) -> bool {
 }
 
 pub(super) fn current_helper(manifest: &mut Value) {
-    if manifest["version"] == 4
-        && manifest["languageVersion"] == mastercss_schema::LANGUAGE_VERSION
-        && manifest.get("utilities").is_none()
-    {
-        return;
-    }
     super::manifest::upgrade(manifest);
     for utility in manifest["utilities"].as_array_mut().into_iter().flatten() {
+        if utility.get("body").is_some()
+            && matches!(
+                utility["kind"].as_str(),
+                Some("static" | "token" | "function")
+            )
+        {
+            continue;
+        }
         if let Some(object) = utility.as_object_mut() {
             object.remove("kind");
             object.remove("segments");

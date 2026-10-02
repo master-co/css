@@ -7,8 +7,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
 
 const baseManifest: MasterCSSManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }
 const roots: string[] = []
 function fixture() {
@@ -17,7 +17,7 @@ function fixture() {
   mkdirSync(join(root, 'theme'))
   const entry = join(root, 'theme', 'tokens #.css')
   writeFileSync(entry, `
-    @mixin --night { &:where([data-theme="night"], [data-theme="night"] *) { @contents; } }
+    @mixin --night { &:where([data-theme="night"], [data-theme="night"] *) { @contents; } } @utility night { &:where([data-theme="night"], [data-theme="night"] *) { @contents; } }
     @theme {
   --color-brand: red; --color-action: var(--color-brand);
 }
@@ -27,7 +27,7 @@ function fixture() {
 
 [data-theme="night"] { --color-brand: blue; }
 
-     @mixin --action { color: var(--color-action); }
+     @mixin --action { color: var(--color-action); } @utility action { color: var(--color-action); }
     @source "./never.html";
     .never { color: lime; }
   `)

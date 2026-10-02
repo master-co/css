@@ -1,9 +1,9 @@
 import { UtilityType } from '@master/css-schema/utility-type'
 
 export default {
-  mixins: [
+  utilities: [
   {
-    "name": "--btn",
+    "kind": "static" as const, "name": "btn",
     "body": [
       {
         "type": "rule" as const,

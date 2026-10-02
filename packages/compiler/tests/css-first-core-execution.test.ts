@@ -4,8 +4,8 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
 const baseManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
@@ -19,7 +19,7 @@ describe('CSS-first scoped execution', () => {
 .dark { --color-brand: black; }
 
 @media (width >= 40rem) { .preview { --color-brand: green; } }
-      @mixin --card { color: var(--color-brand); }
+      @mixin --card { color: var(--color-brand); } @utility card { color: var(--color-brand); }
     `)
     const variable = flattenMasterCSSManifestVariables(manifest.variables).find(variable => variable.name === 'color-brand')!
     expect(variable.values.map(value => value.path)).toEqual([
@@ -47,7 +47,7 @@ describe('CSS-first scoped execution', () => {
   --color-brand: blue;
 }
 
-.dark { --color-brand: blue; } @mixin --card { color: var(--color-brand); }`, { baseManifest: first.manifest })
+.dark { --color-brand: blue; } @mixin --card { color: var(--color-brand); } @utility card { color: var(--color-brand); }`, { baseManifest: first.manifest })
     const css = createTestCSS(second.manifest).ensureClassRules('card')
     expect(css.themeLayer.text).toContain(':root,:host{--color-brand:red}')
     expect(second.nativeCSS.replace(/\s+/g, '')).toContain('.dark{--color-brand:blue;}')
@@ -60,7 +60,7 @@ describe('CSS-first scoped execution', () => {
   --color-brand: red;
 }
       @keyframes fade { to { background: var(--color-brand); opacity: 1; } }
-      @mixin --card { animation: fade 1s; }
+      @mixin --card { animation: fade 1s; } @utility card { animation: fade 1s; }
     `, { baseManifest })
     expect(result.nativeCSS).toContain('@keyframes fade')
     expect(result.manifest).not.toHaveProperty('animations')
@@ -77,6 +77,11 @@ describe('CSS-first scoped execution', () => {
   test('keeps nested selectors, condition order and declaration fallbacks', () => {
     const { manifest } = compile(`
       @mixin --card {
+        color: red; color: future(red);
+        p { display: block; } &:hover { color: blue; }
+        @media (width >= 40rem) { @supports (display: grid) { display: grid; } }
+        display: flex;
+      } @utility card {
         color: red; color: future(red);
         p { display: block; } &:hover { color: blue; }
         @media (width >= 40rem) { @supports (display: grid) { display: grid; } }
@@ -98,6 +103,9 @@ describe('CSS-first scoped execution', () => {
       @mixin --pair(--value) {
         width: var(--value); height: calc(var(--value) * 2);
         --literal: "var(--value)"; --ordinary: --value(); --fragment: prefixvar(--value);
+      } @utility pair(--value) {
+        width: var(--value); height: calc(var(--value) * 2);
+        --literal: "var(--value)"; --ordinary: --value(); --fragment: prefixvar(--value);
       }
     `)
     const css = createTestCSS(manifest)
@@ -116,7 +124,7 @@ describe('CSS-first scoped execution', () => {
       @theme {
   --a: var(--b); --b: var(--a); --quoted: "var(--missing)";
 }
-      @mixin --card { --value: var(--a); content: var(--quoted); }
+      @mixin --card { --value: var(--a); content: var(--quoted); } @utility card { --value: var(--a); content: var(--quoted); }
     `)
     const variables = flattenMasterCSSManifestVariables(manifest.variables)
     expect(variables.find(variable => variable.name === 'quoted')?.dependencies).toEqual([])
@@ -135,7 +143,7 @@ test('preserves arbitrary native function arguments and custom-property data', (
     '--alpha(var(--color-blue-60) / foo)', '--alpha(var(--color-blue-60) / 50% / 20%)',
     '--alpha(var(--color-blue-60))'
   ]) {
-    const compiled = compile(`@theme { --color-brand: ${value}; } @mixin --paint { color: var(--color-brand); }`)
+    const compiled = compile(`@theme { --color-brand: ${value}; } @mixin --paint { color: var(--color-brand); } @utility paint { color: var(--color-brand); }`)
     const css = createTestCSS(compiled.manifest).ensureClassRules('paint')
     expect(css.themeLayer.text).toContain(`--color-brand:${value}`)
     css.dispose()

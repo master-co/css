@@ -1,7 +1,7 @@
 use mastercss_render::RenderSession;
 
 fn render(css: &str) -> String {
-    let manifest = serde_json::json!({"version":5,"languageVersion":14,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"red"}]}]})
+    let manifest = serde_json::json!({"version":6,"languageVersion":15,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"red"}]}]})
     .to_string();
     let mut session = RenderSession::create(&manifest, None).unwrap();
     session.ensure_stylesheet_resources(css).unwrap();

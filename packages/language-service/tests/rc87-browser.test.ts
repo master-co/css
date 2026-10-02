@@ -32,7 +32,7 @@ const manifest = createPresetManifest({
     ]
   }
 ]
-})
+, utilities: [{"name":"btn","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const}] })
 
 function tokenText(source: string, token: { start: number, end: number }) {
   return source.slice(token.start, token.end)
@@ -109,6 +109,11 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
         &:hover {
           color: var(--brand, red);
         }
+      } @utility btn {
+        @safelist "sr-only fg-brand";
+        &:hover {
+          color: var(--brand, red);
+        }
       }
   `
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
@@ -134,7 +139,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 })
 
 test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
-  const source = "\n    @mixin --motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @contents;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
+  const source = "\n    @mixin --motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @contents;\n      }\n    } @utility motion-safe {\n      @media (prefers-reduced-motion: no-preference) {\n        @contents;\n      }\n    }\n\n    \n      @utility font-* from(--font-size-*) {\n        font-size: var(--value);\n\n        @media (prefers-color-scheme: light) {\n          color: var(--color-brand);\n        }\n      }\n    \n  "
   const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
 
   expect(tokens).toEqual([])

@@ -20,10 +20,12 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
         r#"
         @mixin --dark {
             @media (prefers-color-scheme: dark) { @contents; }
+        } @utility dark {
+            @media (prefers-color-scheme: dark) { @contents; }
         }
-        @mixin --sm { @media (width >= 40rem) { @contents; } }
+        @mixin --sm { @media (width >= 40rem) { @contents; } } @utility sm { @media (width >= 40rem) { @contents; } }
         @theme { --color-brand: red; --paint-brand: var(--color-brand);  }
-        @mixin --paint(--key <string>) { color: var(ident("--paint-" var(--key))); }
+        @mixin --paint(--key <string>) { color: var(ident("--paint-" var(--key))); } @utility paint(--key <string>) { color: var(ident("--paint-" var(--key))); }@utility paint-(--paint <string>) { color: var(ident("--paint-" var(--paint))); }
         "#,
     );
     let encoded = original.to_json().unwrap();
@@ -65,7 +67,7 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
 
 #[test]
 fn execution_rejects_missing_or_unsupported_versions_before_matching() {
-    let original = manifest("@mixin --probe { color:red; }");
+    let original = manifest("@mixin --probe { color:red; } @utility probe { color:red; }");
     for field in ["version", "languageVersion"] {
         for value in [None, Some(serde_json::json!(999))] {
             let mut invalid = original.as_value().clone();

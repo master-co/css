@@ -56,7 +56,8 @@ export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInp
     ...defaultManifest, ...manifest,
     theme: [...(defaultManifest.theme || []), ...(manifest.theme || []), ...nodes],
     variables: groupMasterCSSManifestVariables([...merged.values()]),
-    mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])]
+    mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])],
+    utilities: [...(defaultManifest.utilities || []), ...(manifest.utilities || [])]
   }
 }
 

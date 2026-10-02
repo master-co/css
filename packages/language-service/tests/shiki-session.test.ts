@@ -50,7 +50,7 @@ it('preserves complete HAST across host languages compared with full inspection 
     ]
   }
 ]
-  })
+  , utilities: [{"name":"brand","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] })
   const session = createLanguageSessionSync({ manifest })
   const full = createToolingSessionSync({ manifest })
   const legacy = {

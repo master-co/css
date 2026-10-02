@@ -147,7 +147,7 @@ describe('StyleEntryPlugin', () => {
 
     await expect((plugin as any).transform.call(
       { addWatchFile },
-      "@import url(\"@master/css\");\n@mixin --card { @compose bg-missing-token; }",
+      "@import url(\"@master/css\");\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }",
       '/project/src/style.css'
     )).rejects.toThrow('@compose has been removed')
 

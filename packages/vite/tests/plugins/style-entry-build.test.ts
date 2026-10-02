@@ -181,7 +181,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
     try {
       const entryPath = path.join(root, 'app.css')
-      const source = "\n        @import url(\"@master/css\");\n\n        body {\n          margin: 0;\n        }\n\n        .native-card,\n        .unused-card {\n          color: red;\n        }\n\n        \n          @mixin --btn {\n            display: inline-flex;\n          }\n        \n      "
+      const source = "\n        @import url(\"@master/css\");\n\n        body {\n          margin: 0;\n        }\n\n        .native-card,\n        .unused-card {\n          color: red;\n        }\n\n        \n          @mixin --btn {\n            display: inline-flex;\n          } @utility btn {\n            display: inline-flex;\n          }\n        \n      "
       writeFileSync(entryPath, source)
       const ctx = makeContext(SLOT, '')
       ctx.config = {
@@ -240,6 +240,8 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
 
 
           @mixin --btn {
+            display: grid;
+          } @utility btn {
             display: grid;
           }
 

@@ -221,6 +221,8 @@ pub struct CssDirectiveManifestInput {
     pub keyframe_safelist: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mixins: Option<Vec<MixinDefinition>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub utilities: Option<Vec<UtilityDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<Vec<ThemeNode>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -446,7 +448,8 @@ fn css_blocklist_pattern_matches(source: &str, value: &str) -> bool {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CssMixinSource {
+pub struct CssDefinitionSource {
+    pub kind: String,
     pub name: String,
     #[serde(default)]
     pub identity: String,

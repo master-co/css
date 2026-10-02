@@ -87,7 +87,7 @@ fn suppressed_native_styles_never_add_roots_or_custom_property_overrides() {
 
 #[test]
 fn apply_expansion_is_a_local_root_and_unused_mixins_are_not() {
-    let result = compile_css_stylesheet_graph(&request("@import './child.css';.caption{@apply --motion}", "@prune native;@theme{}@keyframes one{to{opacity:1}}@keyframes two{to{opacity:0}}@mixin --motion{animation:one 1s}@mixin --unused{animation:two 1s}")).unwrap();
+    let result = compile_css_stylesheet_graph(&request("@import './child.css';.caption{@apply --motion}", "@prune native;@theme{}@keyframes one{to{opacity:1}}@keyframes two{to{opacity:0}}@mixin --motion{animation:one 1s} @utility motion {animation:one 1s}@mixin --unused{animation:two 1s} @utility unused {animation:two 1s}")).unwrap();
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     for sheet in &result.stylesheets {
         engine.ensure_stylesheet_resources(&sheet.css).unwrap();

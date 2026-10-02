@@ -29,9 +29,9 @@ test('1,000 single-node insertions avoid repeated key searches and prefix reads'
 
 test('mixed node counts preserve CSSOM order across middle and tail changes, refresh and reset', async ({ page }) => {
   await init(page, undefined, {
-    mixins: ['base', 'defaults', 'components', 'utilities'].flatMap((layer) =>
+    utilities: ['base', 'defaults', 'components', 'utilities'].flatMap((layer) =>
       ['a', 'b', 'c', 'd'].map((suffix, order) => ({
-        name: `--${layer}-${suffix}`,
+        kind: 'static' as const, name: `${layer}-${suffix}`,
         body: order % 2 ? [{ type: 'declaration' as const, property: 'display', value: [{ type: 'text' as const, value: 'block' }] }] :
           ['&', '&:hover', '&:focus'].map((selector, index) => ({ type: 'rule' as const, selector, body: [
             { type: 'declaration' as const, property: 'color', value: [{ type: 'text' as const, value: ['red', 'blue', 'green'][index] }] }

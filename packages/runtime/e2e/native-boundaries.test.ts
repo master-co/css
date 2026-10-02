@@ -7,13 +7,13 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
-@mixin --ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @contents; } }
+@mixin --ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @contents; } } @utility ocean { &:where(.ocean,.ocean *,.blue,.blue *) { @contents; } }
 @theme {
   --color-probe: white;
 }
 
 .ocean, .blue { --color-probe: blue; }
-@mixin --amp { &[data-label="&"] { @contents; } }
+@mixin --amp { &[data-label="&"] { @contents; } } @utility amp { &[data-label="&"] { @contents; } }
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })
 const manifest = compiled.manifest

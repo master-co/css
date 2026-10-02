@@ -3,22 +3,22 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 5 as const, languageVersion: 14 as const, mixins: [] }
+const baseManifest = { version: 6 as const, languageVersion: 15 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('directive language v13 authoring contracts', () => {
   test('lowers fixed, raw and ordered namespace utilities into one executable manifest', () => {
     const { manifest } = compile(`
       @theme { --spacing-card: 1rem; --color-line-brand: red; --color-brand: blue; --color-other: green;  }
-      @mixin --card { color: red; &:hover { color: blue; } }
-      @mixin --outline(--color) {outline-color:var(--color)}
-      @mixin --pair(--value) { width: var(--value); height: var(--value); }
+      @mixin --card { color: red; &:hover { color: blue; } } @utility card { color: red; &:hover { color: blue; } }
+      @mixin --outline(--color) {outline-color:var(--color)} @utility outline(--color) {outline-color:var(--color)}@utility outline-(--color) {outline-color:var(--color)}
+      @mixin --pair(--value) { width: var(--value); height: var(--value); } @utility pair(--value) { width: var(--value); height: var(--value); }
 
-      @mixin --align-left { text-align: left; }
-      @mixin --align-right { text-align: right; }
+      @mixin --align-left { text-align: left; } @utility align-left { text-align: left; }
+      @mixin --align-right { text-align: right; } @utility align-right { text-align: right; }
     `)
-    expect(manifest.version).toBe(5)
-    expect(manifest.languageVersion).toBe(14)
+    expect(manifest.version).toBe(6)
+    expect(manifest.languageVersion).toBe(15)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
@@ -33,7 +33,7 @@ describe('directive language v13 authoring contracts', () => {
   test('keeps native component layers separate from on-demand utility definitions', () => {
     const result = compileCSSManifest(`
       @layer components { .card { padding: 1rem; } }
-      @mixin --badge { display: inline-block; }
+      @mixin --badge { display: inline-block; } @utility badge { display: inline-block; }
     `, { baseManifest })
     expect(result.nativeCSS).toContain('.card')
     const css = createTestCSS(result.manifest)
@@ -43,7 +43,7 @@ describe('directive language v13 authoring contracts', () => {
   })
 
   test('replaces a whole utility definition including nested branches', () => {
-    const { manifest } = compile('@mixin --card { color: red; &:hover { color: blue; } } @mixin --card { padding: 2px; }')
+    const { manifest } = compile('@mixin --card { color: red; &:hover { color: blue; } } @utility card { color: red; &:hover { color: blue; } } @mixin --card { padding: 2px; } @utility card { padding: 2px; }')
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toBe('.card{padding:2px}')
     css.dispose()
@@ -53,8 +53,8 @@ describe('directive language v13 authoring contracts', () => {
     const { manifest } = compile(`
       @custom-media --screen-card screen and (--card);
       @custom-media --card (width >= 40rem), (orientation: landscape);
-      @mixin --focus-ring { &:focus-visible { @contents; } }
-      @mixin --panel { display: block; @media (--screen-card) { display: grid; } @apply --focus-ring { outline: 2px solid; } }
+      @mixin --focus-ring { &:focus-visible { @contents; } } @utility focus-ring { &:focus-visible { @contents; } }
+      @mixin --panel { display: block; @media (--screen-card) { display: grid; } @apply --focus-ring { outline: 2px solid; } } @utility panel { display: block; @media (--screen-card) { display: grid; } @apply --focus-ring { outline: 2px solid; } }
     `)
     const css = createTestCSS(manifest)
     const text = css.createRule('panel')!.text

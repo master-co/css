@@ -19,7 +19,7 @@ external data / shared build support
 
 - Rust crates are the only semantic implementation.
 - `@master/css-schema` owns versioned dependency-light contracts and codecs.
-- `@master/css` owns the public Manifest v5 execution surface and CSS entry proxies.
+- `@master/css` owns the public Manifest v6 execution surface and CSS entry proxies.
 - `@master/css-preset` owns default CSS source and the generated default manifest.
 - `@master/css-compiler` owns compiler, project, stylesheet, and project-diagnostics
   orchestration.

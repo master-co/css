@@ -1,4 +1,6 @@
 
   @mixin --btn {
     font-size: 1rem;
+  } @utility btn {
+    font-size: 1rem;
   }

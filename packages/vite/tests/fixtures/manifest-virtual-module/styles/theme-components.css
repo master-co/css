@@ -1,4 +1,6 @@
 
   @mixin --badge {
     display: inline-flex;
+  } @utility badge {
+    display: inline-flex;
   }

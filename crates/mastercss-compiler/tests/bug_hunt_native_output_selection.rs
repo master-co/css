@@ -5,7 +5,7 @@ use serde_json::json;
 fn selected_native_output_keeps_local_reachability_and_only_selected_external_imports() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":r###"@import './bridge.css' supports(display:grid);@import 'https://external.test/entry.css';@mixin --paint {color:blue}.entry{color:red}.entry-compose{@apply --always{color:#00f;}}"###,
+            "entry":r###"@import './bridge.css' supports(display:grid);@import 'https://external.test/entry.css';@mixin --paint {color:blue} @utility paint {color:blue}.entry{color:red}.entry-compose{@apply --always{color:#00f;}}"###,
             "bridge":"@import './selected.css' layer(base);@import 'https://external.test/bridge.css';.bridge{color:red}",
             "selected":"@import 'https://external.test/selected.css';.selected{color:blue}.selected-compose{@apply --always{color:purple;}}"
         }, "edges":[
@@ -13,7 +13,7 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
             {"from":"bridge","specifier":"./selected.css","resolved":"selected"}
         ]},
         "urls":{"entry":"/output/entry.css","bridge":"/output/bridge.css","selected":"/output/selected.css"},
-        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "baseManifest":{"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]},
         "nativeStylesheets":["selected"]
     });
     let result =
@@ -76,7 +76,7 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
 fn suppressed_native_imports_do_not_declare_unused_layers() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":r###"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@mixin --paint {color:purple}@mixin --unused {color:red}.live{@apply --always{color:purple;}}"###,
+            "entry":r###"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@mixin --paint {color:purple} @utility paint {color:purple}@mixin --unused {color:red} @utility unused {color:red}.live{@apply --always{color:purple;}}"###,
             "dead":".dead{color:red}",
             "bridge":"@import './leaf.css' layer(base);",
             "leaf":".leaf{@apply --always{color:purple;}}"
@@ -86,7 +86,7 @@ fn suppressed_native_imports_do_not_declare_unused_layers() {
             {"from":"bridge","specifier":"./leaf.css","resolved":"leaf"}
         ]},
         "urls":{"entry":"/entry.css","dead":"/dead.css","bridge":"/bridge.css","leaf":"/leaf.css"},
-        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}
     });
     let compile =
         |value| compile_css_stylesheet_graph(&serde_json::from_value(value).unwrap()).unwrap();

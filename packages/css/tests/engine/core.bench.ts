@@ -30,8 +30,8 @@ let sink = 0
 
 function createFixedBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
   return {
-    version: 5,
-    languageVersion: 14,
+    version: 6,
+    languageVersion: 15,
     mixins: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
       name: `--icon-${index}${separator}${value}`,
       body: [{ type: 'declaration' as const, property: 'grid-area', value: [{ type: 'text' as const, value }] }]

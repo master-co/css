@@ -8,7 +8,7 @@ fn request(source: &str) -> Value {
         "graph":{"entry":"entry.css","files":{"entry.css":"@import './child.css';","child.css":source},"edges":[{"from":"entry.css","specifier":"./child.css","resolved":"child.css"}]},
         "urls":{"entry.css":"/out/entry.css","child.css":"/out/child.css"},
         "resourceURLs":{"child.css":{"a.png":"/output/long-name-for-resource.png","b.png":"/b"}},
-        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}
     })
 }
 
@@ -61,7 +61,7 @@ fn source_references(value: &Value, output: &mut Vec<Value>) {
 #[test]
 fn relocated_style_definition_metadata_uses_original_ranges_and_locations() {
     let source = r###"/*😀*/.a{background:image-set("a.png" 1x,url(b.png) 2x)}
-@mixin --paint {background:url(a.png)}
+@mixin --paint {background:url(a.png)} @utility paint {background:url(a.png)}
 .example{@apply --always{background:url("a.png");}}"###;
     let original = compile_css_directives(
         source,

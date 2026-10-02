@@ -6,7 +6,7 @@ import defaultManifest from '@master/css-preset/default-manifest.json' with { ty
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
 
-const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
+const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; } @utility solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
 const classLists = [
   "p-md padding:8px",
   "padding:8px p-md",
@@ -54,7 +54,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       }
     } else {
       await page.setContent(html)
-      await init(page, undefined, { mixins: manifest.mixins })
+      await init(page, undefined, { utilities: manifest.utilities })
     }
     const styles = await computed(page)
     expect(styles[0].padding).toBe('8px')
@@ -82,7 +82,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
 test('native resolution descriptors survive runtime compilation', async ({ page }) => {
   const className = 'background-image:image-set(url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)|1x)'
   await page.setContent(`<div id="image" class="${className}"></div>`)
-  await init(page, undefined, { mixins: manifest.mixins })
+  await init(page, undefined, { utilities: manifest.utilities })
   const css = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(css).toContain(' 1x)')
   expect(css).not.toContain('0.25rem')

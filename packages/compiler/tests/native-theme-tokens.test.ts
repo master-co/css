@@ -7,10 +7,10 @@ import { compileCSSManifest, compileCSSManifestFile } from '../src/node-compiler
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 5 as const, languageVersion: 14 as const }
+const baseManifest = { version: 6 as const, languageVersion: 15 as const }
 const source = `
-@mixin --bg(--color){background-color:var(--color)}
-@mixin --p(--spacing){padding:var(--spacing)}
+@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}
+@mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}
 @theme { --color-base: red; --color-brand: white; }
 @theme inline { --color-alias: var(--color-base); --spacing-card: 2rem; }
 @theme static { --color-integration: green; }
@@ -99,7 +99,7 @@ for (const binding of ['native', 'wasm'] as const) {
 test('imported static resources emit once across native and generated consumers', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-static-import-'))
   try {
-    writeFileSync(join(root, 'tokens.css'), '@mixin --animate(--animate){animation:var(--animate)}@prune native;@theme static inline{--animate-reveal:reveal 1s;}@keyframes reveal{to{opacity:1}}@keyframes unused{to{opacity:0}}')
+    writeFileSync(join(root, 'tokens.css'), '@mixin --animate(--animate){animation:var(--animate)} @utility animate(--animate) {animation:var(--animate)}@utility animate-(--animate) {animation:var(--animate)}@prune native;@theme static inline{--animate-reveal:reveal 1s;}@keyframes reveal{to{opacity:1}}@keyframes unused{to{opacity:0}}')
     const entry = join(root, 'entry.css')
     const css = '@import "./tokens.css";.native{animation:var(--animate-reveal)}'
     writeFileSync(entry, css)

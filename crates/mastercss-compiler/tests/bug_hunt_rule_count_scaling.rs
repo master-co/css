@@ -17,7 +17,7 @@ enum Shape {
     Resources,
     /// `@theme` variables merged into the manifest, with a base manifest holding as many.
     Theme,
-    /// `@utilities` definitions merged into the manifest utilities.
+    /// `@utility` definitions merged into the manifest utilities.
     Components,
 }
 
@@ -50,7 +50,7 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
                 }
                 Shape::Theme => format!("--v{index}:{index}px"),
                 Shape::Components => {
-                    format!("@mixin --c{index}{{padding:{}px;color:red}}", index % 9)
+                    format!("@utility c{index}{{padding:{}px;color:red}}", index % 9)
                 }
             })
             .collect::<Vec<_>>()
@@ -87,7 +87,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                 &result.manifest_input,
                 definitions,
                 &CompileManifestOptions {
-                    base_manifest: Some(serde_json::json!({"version":5,"languageVersion":14,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})),
+                    base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})),
                 },
             )
             .unwrap();
@@ -111,7 +111,7 @@ fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
                             .sum()
                     })
             } else {
-                merged.manifest["mixins"].as_array().map_or(0, Vec::len)
+                merged.manifest["utilities"].as_array().map_or(0, Vec::len)
             };
             // Naming may group definitions under namespaces; every definition
             // must still survive both merges.

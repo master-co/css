@@ -8,9 +8,11 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from './init'
 
 const baseManifest = preset as unknown as MasterCSSManifest
-const source = `@theme { --text-hero: 30px; --text-unused: 100px;  }
-@mixin --nested(--count <integer>) { @apply --grid-cols(var(--count)); }
-@mixin --unused { @apply --text("unused"); }`
+const source = `@theme { --text-hero: 30px; --text-unused: 100px; }
+@mixin --grid(--count <integer>) { display:grid; grid-template-columns:repeat(var(--count),minmax(0,1fr)); }
+@mixin --text(--name <string>) { font-size:var(ident("--text-" var(--name))); }
+@utility nested(--count <integer>) { @apply --grid(var(--count)); }
+@utility unused { @apply --text("unused"); }`
 const manifest = compileManifestSync(source, { baseManifest }).manifest
 const classes = ['nested(3)', 'text-hero', 'font-size:24px']
 
@@ -55,7 +57,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
 }
 
 test('native apply expands in place and keeps its theme dependencies after DOM roots disappear', async ({ page }) => {
-  const compiled = await compileRenderedStylesheet('/project/mixins.css', `${source}\n.caption { @apply --text("hero"); }`, { baseManifest, preserveNativeCSS: true })
+  const compiled = await compileRenderedStylesheet('/project/utilities.css', `${source}\n.caption { @apply --text("hero"); }`, { baseManifest, preserveNativeCSS: true })
   expect(compiled.css).toContain('--text-hero')
   expect(compiled.css).not.toContain('.text-hero')
   expect(compiled.css).not.toContain('--text-unused')

@@ -25,7 +25,7 @@ describe('@master/css-schema manifest helpers', () => {
 
   it('normalizes derived manifest fields in JSON', () => {
     const manifest: MasterCSSManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-brand', value: '#123' }] }],
-      version: 5 as const, languageVersion: 14 as const,
+      version: 6 as const, languageVersion: 15 as const,
       variables: {
         color: [{ name: 'color-brand', key: 'brand', type: 'string' as const, values: [{ path: [':root,:host'], value: '#123' }] }]
       },
@@ -33,7 +33,7 @@ describe('@master/css-schema manifest helpers', () => {
         name: '--card',
         body: [{ type: 'declaration' as const, property: 'display', value: [{ type: 'text' as const, value: 'block' }] }]
       }]
-    }
+    , utilities: [{"name":"card","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
 
     expect(JSON.parse(serializeMasterCSSManifest(manifest))).toEqual({
       ...manifest,

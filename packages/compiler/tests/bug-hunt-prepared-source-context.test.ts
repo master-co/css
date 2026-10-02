@@ -25,9 +25,9 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 
 async function fixture(run: (root: string) => Promise<void>) {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'prepared-source-context-')))

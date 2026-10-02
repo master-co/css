@@ -7,12 +7,12 @@ use serde_json::{Value, json};
 
 fn snapshot(css: &str, classes: &[&str]) -> Value {
     let css = format!(
-        "{css}@mixin --bg(--color){{background-color:var(--color)}}@mixin --fg(--color){{color:var(--color)}}"
+        "{css}@mixin --bg(--color){{background-color:var(--color)}} @utility bg(--color) {{background-color:var(--color)}}@utility bg-(--color) {{background-color:var(--color)}}@mixin --fg(--color){{color:var(--color)}} @utility fg(--color) {{color:var(--color)}}@utility fg-(--color) {{color:var(--color)}}"
     );
     let parsed = compile_css_directives(&css, &CompileNativeCssOptions::default()).unwrap();
     let lowered = lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
@@ -72,7 +72,7 @@ fn native_scopes_and_dependent_stylesheets_are_reported() {
 
 #[test]
 fn mixin_and_condition_changes_preserve_rule_evidence() {
-    let source = "@custom-media --small (width>30rem);@mixin --columns(--n <integer>){display:grid;grid-template-columns:repeat(var(--n),1fr)}";
+    let source = "@custom-media --small (width>30rem);@utility columns(--n <integer>) {display:grid;grid-template-columns:repeat(var(--n),1fr)}";
     let after = source.replace("30rem", "40rem").replace("1fr", "2fr");
     let report = compare(
         snapshot(source, &["columns(2)@small"]),
@@ -89,7 +89,7 @@ fn mixin_and_condition_changes_preserve_rule_evidence() {
     );
     assert_eq!(
         report["classes"][0]["changedDependencies"],
-        json!(["custom-media:--small", "mixin:--columns"])
+        json!(["custom-media:--small", "utility:Function:columns"])
     );
 }
 
@@ -113,9 +113,12 @@ fn identical_snapshots_are_empty_and_invalid_versions_fail() {
 
 #[test]
 fn source_offset_changes_do_not_report_recipe_behavior_changes() {
-    let before = snapshot("@mixin --button{color:red}", &["button"]);
+    let before = snapshot(
+        "@mixin --button{color:red} @utility button {color:red}",
+        &["button"],
+    );
     let after = snapshot(
-        "/* moved definition */ @mixin --button{color:red}",
+        "/* moved definition */ @mixin --button{color:red} @utility button {color:red}",
         &["button"],
     );
     let report = compare(before, after);
@@ -125,7 +128,7 @@ fn source_offset_changes_do_not_report_recipe_behavior_changes() {
 
 #[test]
 fn inline_tokens_remain_authoring_dependencies_after_substitution() {
-    let source = "@theme inline{--color-brand:red}@mixin --button{color:var(--color-brand)}";
+    let source = "@theme inline{--color-brand:red}@mixin --button{color:var(--color-brand)} @utility button {color:var(--color-brand)}";
     let classes = &["fg-brand", "color:var(--color-brand)", "button"];
     let report = compare(
         snapshot(source, classes),
@@ -157,7 +160,7 @@ fn unresolved_directives_and_duplicate_asset_identities_are_rejected() {
 
 #[test]
 fn nested_recipe_dependencies_and_usage_moves_are_visible() {
-    let source = "@mixin --inner{color:red}@mixin --outer{@apply --inner}";
+    let source = "@mixin --inner{color:red} @utility inner {color:red}@mixin --outer{@apply --inner} @utility outer {@apply --inner}";
     let mut after = snapshot(&source.replace("red", "blue"), &["outer"]);
     after["sources"][0]["path"] = json!("moved.html");
     let report = compare(snapshot(source, &["outer"]), after);

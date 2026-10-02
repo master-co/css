@@ -1,4 +1,4 @@
-//! Class-call metadata inferred from ordinary mixin IR, never a preset registry.
+//! Token metadata from explicit utility registration.
 use mastercss_lexer::{CssSyntaxKind, tokenize_css_syntax};
 use mastercss_schema::{MixinDefinition, MixinNode, MixinParameterSyntax, MixinValuePart};
 use serde::Serialize;
@@ -14,7 +14,7 @@ pub enum TokenFamilyArgument {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TokenFamily {
-    pub mixin: String,
+    pub utility: String,
     pub prefix: String,
     pub namespace: String,
     pub argument: TokenFamilyArgument,
@@ -67,40 +67,29 @@ pub fn direct_value_mixin(definition: &MixinDefinition) -> Option<(&str, &str)> 
     Some((&parameter.name, property))
 }
 
-pub(crate) fn infer(definitions: &[MixinDefinition]) -> Vec<TokenFamily> {
+pub(crate) fn infer(
+    definitions: &[mastercss_schema::UtilityDefinition],
+    mixins: &[MixinDefinition],
+) -> Vec<TokenFamily> {
     definitions
         .iter()
-        .filter_map(|definition| {
-            let prefix = definition.name.strip_prefix("--")?;
-            if let Some((parameter, property)) = direct_value_mixin(definition) {
-                return Some(TokenFamily {
-                    mixin: definition.name.clone(),
-                    prefix: prefix.into(),
-                    namespace: parameter.strip_prefix("--")?.into(),
-                    argument: TokenFamilyArgument::Value,
-                    properties: vec![property.into()],
-                });
-            }
-            let [parameter] = definition.parameters.as_slice() else {
-                return None;
-            };
-            if parameter.syntax != Some(MixinParameterSyntax::String) {
-                return None;
-            }
+        .filter(|definition| definition.kind == mastercss_schema::UtilityKind::Token)
+        .map(|definition| {
+            let recipe = &definition.recipe;
+            let parameter = &recipe.parameters[0];
             let mut properties = Vec::new();
-            collect_properties(
-                &definition.body,
-                definitions,
-                &mut HashSet::new(),
-                &mut properties,
-            );
-            Some(TokenFamily {
-                mixin: definition.name.clone(),
-                prefix: prefix.into(),
-                namespace: prefix.into(),
-                argument: TokenFamilyArgument::Key,
+            collect_properties(&recipe.body, mixins, &mut HashSet::new(), &mut properties);
+            TokenFamily {
+                utility: recipe.name.clone(),
+                prefix: recipe.name.clone(),
+                namespace: parameter.name[2..].into(),
+                argument: if parameter.syntax == Some(MixinParameterSyntax::String) {
+                    TokenFamilyArgument::Key
+                } else {
+                    TokenFamilyArgument::Value
+                },
                 properties,
-            })
+            }
         })
         .collect()
 }

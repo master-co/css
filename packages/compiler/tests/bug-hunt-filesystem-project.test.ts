@@ -14,7 +14,7 @@ for (const explicit of [false, true]) {
         const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'tokens.css')
         const view = join(root, 'styles/views/view.html')
         mkdirSync(join(root, 'styles/views'), { recursive: true })
-        writeFileSync(entry, `@import './styles/child.css'${qualifier};@import "@master/css";@reference './tokens.css';@mixin --button {color:var(--color-paint);}`)
+        writeFileSync(entry, `@import './styles/child.css'${qualifier};@import "@master/css";@reference './tokens.css';@mixin --button {color:var(--color-paint);} @utility button {color:var(--color-paint);}`)
         writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@apply --all {color:red;}}.ordinary{color:blue}")
         writeFileSync(tokens, `@theme {--color-paint:red}
 `)
@@ -37,9 +37,9 @@ for (const explicit of [false, true]) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, explicit ? [entry] : undefined)
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, explicit ? [entry] : undefined)
         expect(result.sourcePlan.files.map(file => realpathSync.native(file))).toEqual([view])
         expect(result.dependencies.map(file => realpathSync.native(file)).sort()).toEqual([entry, child, tokens].sort())
         expect(result.css).toContain('.card{color:red}')

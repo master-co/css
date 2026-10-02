@@ -73,7 +73,7 @@ describe('Rust-backed language service', () => {
     ]
   }
 ]
-    }))
+    , utilities: [{"name":"runtime-card","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
     const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="runtime-"></div>')
     const items = service.suggestSyntax(document, document.positionAt('<div class="runtime-'.length), {
       triggerKind: CompletionTriggerKind.Invoked
@@ -101,7 +101,7 @@ describe('Rust-backed language service', () => {
     ]
   }
 ]
-    }))
+    , utilities: [{"name":"runtime-card","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
     const document = TextDocument.create(
       'file:///index.html',
       'html',
@@ -130,7 +130,7 @@ describe('Rust-backed language service', () => {
 })
 
 test('keyframe safelists complete and inspect exact names without class semantics', () => {
-  const service = createService({ version: 5, languageVersion: 14, keyframes: [
+  const service = createService({ version: 6, languageVersion: 15, keyframes: [
     { id: 'light', name: 'with space', text: '@keyframes "with space"{to{opacity:1}}', source: { file: 'light.css', range: { start: 0, end: 40 } } },
     { id: 'dark', name: 'with space', text: '@keyframes "with space"{to{opacity:.5}}', source: { file: 'dark.css', range: { start: 0, end: 41 } } }
   ] })

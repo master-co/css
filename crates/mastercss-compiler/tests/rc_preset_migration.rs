@@ -23,7 +23,7 @@ fn migrate(source: &str, classes: &[&str]) -> mastercss_compiler::RcMigrationRes
 #[test]
 fn removed_recipes_expand_equivalently_with_every_modifier() {
     let result = migrate(
-        "@mixin --fit{width:fit-content;height:fit-content}@mixin --full{width:100%;height:100%}@mixin --center{left:0;right:0;margin-left:auto;margin-right:auto}@mixin --middle{top:0;bottom:0;margin-top:auto;margin-bottom:auto}@mixin --round{border-radius:50%;aspect-ratio:1/1}",
+        "@mixin --fit{width:fit-content;height:fit-content} @utility fit {width:fit-content;height:fit-content}@mixin --full{width:100%;height:100%} @utility full {width:100%;height:100%}@mixin --center{left:0;right:0;margin-left:auto;margin-right:auto} @utility center {left:0;right:0;margin-left:auto;margin-right:auto}@mixin --middle{top:0;bottom:0;margin-top:auto;margin-bottom:auto} @utility middle {top:0;bottom:0;margin-top:auto;margin-bottom:auto}@mixin --round{border-radius:50%;aspect-ratio:1/1} @utility round {border-radius:50%;aspect-ratio:1/1}",
         &[
             "fit:hover!",
             "full",
@@ -90,7 +90,7 @@ fn old_namespace_precedence_is_resolved_before_rewriting() {
 #[test]
 fn custom_mixins_and_family_reservations_are_never_overwritten() {
     let result = migrate(
-        "@mixin --fit{color:red}@mixin --surface(--name <string>){color:red}@mixin --fg-body{color:blue}@theme {--color-surface-base:white;--color-text-body:black}",
+        "@mixin --fit{color:red} @utility fit {color:red}@mixin --surface(--name <string>){color:red} @utility surface(--name <string>) {color:red}@utility surface-(--surface <string>) {color:red}@mixin --fg-body{color:blue} @utility fg-body {color:blue}@theme {--color-surface-base:white;--color-text-body:black}",
         &["fit", "surface-base", "fg-body"],
     );
     assert!(
@@ -103,7 +103,7 @@ fn custom_mixins_and_family_reservations_are_never_overwritten() {
 #[test]
 fn expanding_recipes_with_overlapping_declarations_requires_review() {
     let result = migrate(
-        "@mixin --round{border-radius:50%;aspect-ratio:1/1}",
+        "@mixin --round{border-radius:50%;aspect-ratio:1/1} @utility round {border-radius:50%;aspect-ratio:1/1}",
         &["round", "border-radius:2px"],
     );
     assert_eq!(result.class_lists[0][0].status, "review");
@@ -119,7 +119,7 @@ fn expanding_recipes_with_overlapping_declarations_requires_review() {
 #[test]
 fn removed_class_syntax_requires_manual_migration() {
     let result = migrate(
-        "@mixin --fit{width:fit-content;height:fit-content}",
+        "@mixin --fit{width:fit-content;height:fit-content} @utility fit {width:fit-content;height:fit-content}",
         &[
             "{fit}",
             "{fit;display:block}:hover!",

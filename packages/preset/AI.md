@@ -9,7 +9,7 @@
 - Default token, mixin, native keyframe, custom media, and layer-statement source.
 - `src/default-manifest.json`.
 - `src/default-native.css`.
-- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `media.css`, and `mixins.css`.
+- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `media.css`, and `utilities.css`.
 
 ## Does Not Own
 
@@ -30,7 +30,7 @@
 - `src/theme.css`
 - `src/colors.css` (internal color source imported by `theme.css`)
 - `src/base.css`
-- `src/mixins.css`
+- `src/utilities.css`
 - `src/media.css`
 - `src/index.css`
 - `src/default-manifest.json`
@@ -62,17 +62,17 @@ pnpm --filter @master/css-preset type-check
 pnpm --filter @master/css-preset build
 ```
 
-## Mixin And Token Ownership
+## Utility And Token Ownership
 
-Token values live in `src/theme.css`. All 119 value mappings and 7 recipes live in `src/mixins.css`. Rust infers family capabilities from mixin IR; language/tooling `tokenFamilies()` exposes effective manifest metadata. Theme-only environments must load mixins or author their own. Do not edit generated projections or add registry fields to the preset manifest.
+Token values live in `src/theme.css`. All 119 value mappings and 7 recipes live in `src/utilities.css`. Rust reads explicit utility registrations and infers direct-value capabilities from their bodies; language/tooling `tokenFamilies()` exposes effective manifest metadata. Theme-only environments must load utilities or author their own. Do not edit generated projections.
 
-Author recipes in the stable `src/mixins.css` entrypoint using `@mixin`. Only used classes and delivered native `@apply` roots emit CSS/resources. General parameter recipes require static arguments; exact direct-value mixins also accept symbolic `var()` arguments. Grid counts and spans must be positive integers. Each preset token property has one canonical prefix and namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*`. `text-*` is the generic single-string named-mixin rule with explicit typography companion tokens; it is never a color alias. Direct declarations use full native property names. Vendor declaration pairs belong to Rust output rules.
+Author recipes in the stable `src/utilities.css` entrypoint using `@utility`. Only used classes and delivered native `@apply` roots emit CSS/resources. General parameter recipes require static arguments; token patterns bind symbolic token values. Grid counts and spans must be positive integers. Each preset token property has one canonical prefix and namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*`. `text-*` is the explicit `@utility text-(--text <string>)` key recipe with explicit typography companion tokens; it is never a color alias. Direct declarations use full native property names. Vendor declaration pairs belong to Rust output rules.
 
 The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.
 
 ## Refined preset contract
 
-The preset contains 119 direct-value mixins and seven other recipes. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; the role is part of the token key. Ten native keyframes live in `theme.css` under `@prune native` and are absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
+The preset contains 119 direct-value utilities and seven other recipes. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; the role is part of the token key. Ten native keyframes live in `theme.css` under `@prune native` and are absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
 
 ## Conditions and wrappers
 
@@ -80,7 +80,7 @@ The preset contains 119 direct-value mixins and seven other recipes. `r-pill` us
 
 ## Atomic class authoring
 
-The preset `--animate(--animate)` mixin defines the direct-value family for `animation`, using the `animate` namespace. Each `--animate-name` token contains a complete native shorthand. Preset values include their duration and infinite repetition; custom values use native CSS defaults. The mixin forwards the shorthand unchanged; there is no companion-setting mechanism. Use full-property declarations such as `animation-duration:var(--duration-fast)` for overrides; token longhands follow the general order and may be reset by the shorthand. Engine declarations have no shorthand priority or value inference.
+The preset `@utility animate-(--animate)` pattern defines the direct-value family for `animation`, using the `animate` namespace. Each `--animate-name` token contains a complete native shorthand. Preset values include their duration and infinite repetition; custom values use native CSS defaults. The utility forwards the shorthand unchanged; there is no companion-setting mechanism. Use full-property declarations such as `animation-duration:var(--duration-fast)` for overrides; token longhands follow the general order and may be reset by the shorthand. Engine declarations have no shorthand priority or value inference.
 
 Browser regression for base-style decisions is separate from unit tests:
 `pnpm --filter @master/css-preset exec vitest run --config vitest.e2e.config.ts`.

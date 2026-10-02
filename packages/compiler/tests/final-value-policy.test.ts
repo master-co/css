@@ -3,8 +3,8 @@ import { compileManifestSync, createCompilerSync } from '../src/node'
 import { validateCompiledCSS } from '../src/value-validation'
 
 const baseManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   mixins: [
   {
     "name": "--all",
@@ -22,11 +22,11 @@ const baseManifest = {
     ]
   }
 ]
-}
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 
 describe('preserve and diagnose CSS values', () => {
   it('preserves invalid managed declarations and checks their expanded result', () => {
-    const source = " @mixin --cols(--value) { grid-template-columns:repeat(var(--value),minmax(0,1fr)); } .card{@apply --all{grid-template-columns:repeat(2.5,minmax(0,1fr));}}"
+    const source = " @mixin --cols(--value) { grid-template-columns:repeat(var(--value),minmax(0,1fr)); } @utility cols(--value) { grid-template-columns:repeat(var(--value),minmax(0,1fr)); } .card{@apply --all{grid-template-columns:repeat(2.5,minmax(0,1fr));}}"
     const result = compileManifestSync(source, { baseManifest })
     expect(result.css).toContain('repeat(2.5')
     expect(result.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'CSS_VALUE_INVALID' })]))

@@ -286,7 +286,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
   --color-active: #ff0000;
 }
 
- @mixin --active-card { animation: active-spin 1s infinite; }
+ @mixin --active-card { animation: active-spin 1s infinite; } @utility active-card { animation: active-spin 1s infinite; }
 @keyframes active-spin { to { opacity: .5; } }
 .native-card { color: var(--color-active); }`)
       writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./home.css\";")
@@ -440,6 +440,9 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 @mixin --brand {
     padding: var(--spacing-card);
     animation: pop 1s;
+  } @utility brand {
+    padding: var(--spacing-card);
+    animation: pop 1s;
   }
 .referenced-native { color: red; }`)
 
@@ -551,7 +554,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('font-weight:bold')
     expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
-      .toContain('"version":5')
+      .toContain('"version":6')
   })
 
   test('adds resolve file dependencies to Set and array-like containers', () => {
@@ -586,7 +589,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":5/)
+      .toMatch(/^export default \{"version":6/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .not.toContain('loadMasterCSSManifestModule')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -596,7 +599,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-manifest-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -614,7 +617,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
-      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @media all{display:block;} }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @media all{display:block;} } @utility card { @media all{display:block;} }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
@@ -698,7 +701,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     await resolveBefore(normalModuleFactory, resolveData)
 
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .toMatch(/^export default \{"version":5/)
+      .toMatch(/^export default \{"version":6/)
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .toContain('#456')
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
@@ -708,7 +711,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
     const manifestPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; }")
+      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -726,7 +729,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
-      writeFileSync(manifestPath, "@mixin --card { display:block; }")
+      writeFileSync(manifestPath, "@mixin --card { display:block; } @utility card { display:block; }")
 
       await resolveBefore(normalModuleFactory, resolveData)
       expect(resolveData.request).toContain('.manifest.js')

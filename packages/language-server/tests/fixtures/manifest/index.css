@@ -6,4 +6,8 @@
     display: inline-flex;
     color: oklch(100% 0 none);
     background-color: oklch(63.7% 0.237 25.331);
+  } @utility fixture-button {
+    display: inline-flex;
+    color: oklch(100% 0 none);
+    background-color: oklch(63.7% 0.237 25.331);
   }

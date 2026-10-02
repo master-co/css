@@ -8,7 +8,7 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 
 | Content | Source | Generated facts |
 | --- | --- | --- |
-| Preset recipes | `reference/recipes.ts`, preset `mixins.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
+| Preset recipes | `reference/recipes.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
 | Language rules | `app/[locale]/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `app/[locale]/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes, conditions and consumers |

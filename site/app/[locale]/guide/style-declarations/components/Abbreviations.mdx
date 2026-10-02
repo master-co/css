@@ -1,10 +1,10 @@
-Each preset token family has one canonical prefix, defined by a loaded mixin. Common families use short names; there is no second, full-property token spelling.
+Each preset token family has one canonical prefix, defined by an explicit utility pattern. Common families use short names; there is no second, full-property token spelling.
 
 ```html
 <div class="p-md fg-text-body bg-surface-base b-line-control r-sm"></div>
 ```
 
-Load the full `@master/css` preset, or import `@master/css/mixins.css` alongside your own theme. These classes read named theme tokens. `p-md` sets padding from `--spacing-md`; `fg-text-body` sets color from `--color-text-body`.
+Load the full `@master/css` preset, or import `@master/css/utilities.css` alongside your own theme. These classes read named theme tokens. `p-md` sets padding from `--spacing-md`; `fg-text-body` sets color from `--color-text-body`.
 
 Direct values always use complete native CSS property names:
 

@@ -79,7 +79,7 @@ test('uses explicit Master CSS manifest objects from ESLint settings', async () 
     ]
   }
 ]
-              })
+              , utilities: [{"name":"fixture-card","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const},{"name":"fixture-button","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"inline-flex"}]}]}],"kind":"static" as const}] })
             }
           },
           rules: {
@@ -108,7 +108,7 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
   try {
-    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @mixin --fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
+    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @mixin --fixture-button {\n          display: inline-flex;\n        } @utility fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
     writeFileSync(join(cwd, 'index.jsx'), `<div className="fixture-button zzz"></div>`)
 
     const eslint = new ESLint({
@@ -155,7 +155,7 @@ test('uses the project manifest for files that have not been written yet', async
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
   try {
-    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @mixin --fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
+    writeFileSync(join(cwd, 'index.css'), "\n      @import \"@master/css\";\n\n      \n        @mixin --fixture-button {\n          display: inline-flex;\n        } @utility fixture-button {\n          display: inline-flex;\n        }\n      \n    ")
 
     const eslint = createProjectESLint(cwd)
     const [result] = await eslint.lintText(
@@ -242,5 +242,5 @@ function createProjectESLint(cwd: string) {
 
 function writeProjectUtility(filename: string, utility: string) {
   writeFileSync(filename, `@import "@master/css";
-@mixin --${utility} { display: inline-flex; }`)
+@utility ${utility} { display: inline-flex; }`)
 }

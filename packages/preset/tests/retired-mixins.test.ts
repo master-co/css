@@ -74,11 +74,12 @@ describe('retired preset mixins', () => {
     expect(variables.filter(variable => ['content', 'font-feature'].includes(variable.namespace ?? ''))).toEqual([])
   })
 
-  it('lets projects explicitly restore a removed family with a native mixin', () => {
+  it('lets projects explicitly restore a removed family with an explicit utility', () => {
     using compiler = createCompilerBindingSessionSync()
     const parsed = compiler.compileCSSDirectives(`
       @theme { --content-empty: ''; }
       @mixin --content(--content) { content: var(--content); }
+      @utility content-(--content) { content: var(--content); }
       .example { @apply --content(var(--content-empty)); }
     `)
     const lowered = compiler.lowerCSSDirectives(parsed, { baseManifest: manifest })
@@ -92,17 +93,19 @@ describe('retired preset mixins', () => {
     const parsed = compiler.compileCSSDirectives(`
       @theme { --color-accent: #123456; }
       @mixin --text-decoration(--color) { text-decoration-color: var(--color); }
+      @utility text-decoration-(--color) { text-decoration-color: var(--color); }
       @mixin --text-gradient {
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
+      @utility text-gradient { @apply --text-gradient; }
       .example { @apply --text-decoration(var(--color-accent)); @apply --text-gradient; }
     `)
     const lowered = compiler.lowerCSSDirectives(parsed, { baseManifest: manifest })
     expect(lowered.css).toContain('.example{text-decoration-color:var(--color-accent);-webkit-text-fill-color:transparent;background-clip:text}')
     using language = createLanguageSessionSync({ manifest: lowered.manifest })
     expect(language.tokenFamilies().families).toContainEqual({
-      mixin: '--text-decoration', prefix: 'text-decoration', namespace: 'color', argument: 'value', properties: ['text-decoration-color']
+      utility: 'text-decoration', prefix: 'text-decoration', namespace: 'color', argument: 'value', properties: ['text-decoration-color']
     })
     const css = createTestCSS(lowered.manifest)
     expect(css.createRule('text-decoration-accent')?.text).toContain('{text-decoration-color:var(--color-accent)}')
@@ -111,7 +114,7 @@ describe('retired preset mixins', () => {
 
   it.each(['font-antialiased', 'font-smoothing-auto', 'font-subpixel-antialiased', 'text-gradient'])('%s has no preset definition or call syntax', (name) => {
     const css = createTestCSS(manifest)
-    expect(manifest.mixins?.some(mixin => mixin.name === `--${name}`)).toBe(false)
+    expect(manifest.utilities?.some(utility => utility.name === name)).toBe(false)
     expect(css.createRule(name)).toBeUndefined()
     expect(css.createRule(`${name}()`)).toBeUndefined()
     expect(labels).not.toContain(name)

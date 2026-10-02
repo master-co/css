@@ -8,3 +8,7 @@
 
 
 @media (prefers-color-scheme: dark) { :root, :host { --color-probe: #abcdef; } }
+
+@mixin --text(--name <string>) {
+  font-size: var(ident("--text-" var(--name)));
+}

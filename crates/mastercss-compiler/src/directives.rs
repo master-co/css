@@ -255,21 +255,53 @@ fn compile_css_directives_impl(
                             body,
                         );
                     }
-                    if definition.parameters.is_empty() {
-                        class_names.push(definition.name.trim_start_matches("--").into());
-                    }
                     manifest_input
                         .mixins
                         .get_or_insert_default()
                         .push(definition);
                 }
                 DirectiveName::Utility => {
-                    return Err(directive_error(
-                        source,
-                        &options.from,
-                        directive.start_byte,
-                        "@utility was removed; use native declarations, named tokens or @mixin",
-                    ));
+                    let body = directive.body.as_deref().ok_or_else(|| {
+                        directive_error(
+                            source,
+                            &options.from,
+                            directive.start_byte,
+                            "@utility requires a body",
+                        )
+                    })?;
+                    let body = directive
+                        .body_start_byte
+                        .and_then(|start| source.get(start..start + body.len()))
+                        .unwrap_or(body);
+                    let mut definition = crate::utilities::definition(
+                        directive
+                            .prelude
+                            .parts
+                            .first()
+                            .map(String::as_str)
+                            .unwrap_or_default(),
+                        body,
+                    )
+                    .map_err(|message| {
+                        directive_error(source, &options.from, directive.start_byte, message)
+                    })?;
+                    if let Some(body_start) = directive.body_start_byte {
+                        crate::mixins::attach_sources(
+                            &mut definition.recipe,
+                            &source_index,
+                            &options.from,
+                            directive.start_byte,
+                            body_start,
+                            body,
+                        );
+                    }
+                    if definition.kind == mastercss_schema::UtilityKind::Static {
+                        class_names.push(definition.recipe.name.clone());
+                    }
+                    manifest_input
+                        .utilities
+                        .get_or_insert_default()
+                        .push(definition);
                 }
                 DirectiveName::Apply => {
                     return Err(directive_error(
@@ -433,7 +465,7 @@ fn compile_css_directives_impl(
                 .collect()
         },
         notices: Vec::new(),
-        mixin_sources: crate::mixin_sources::collect(source, &options.from),
+        definition_sources: crate::definition_sources::collect(source, &options.from),
         native_output,
         native_mappings,
         manifest_input,

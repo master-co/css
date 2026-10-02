@@ -60,7 +60,7 @@ describe('ManifestLoaderPlugin', () => {
     expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
     expect(context.config.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'theme.css'))
     expect(context.config.server.fs.allow).toContain(themeComponentsPath)
-    expect(code).toContain('"version":5')
+    expect(code).toContain('"version":6')
     expect(code).toContain('accent')
     expect(code).toContain('#456')
     expect(code).toContain('badge')
@@ -71,7 +71,7 @@ describe('ManifestLoaderPlugin', () => {
     const manifestPath = path.join(root, 'theme.css')
     try {
       mkdirSync(root, { recursive: true })
-      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; }")
+      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
       const context = await createContext(root)
       const plugin = ManifestLoaderPlugin(context)
       const resolvedId = toResolvedMasterCSSManifestId(manifestPath)
@@ -82,7 +82,7 @@ describe('ManifestLoaderPlugin', () => {
       expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
       expect(context.config.server.fs.allow).toContain(manifestPath)
 
-      writeFileSync(manifestPath, "@mixin --card { @media all{display:block;} }")
+      writeFileSync(manifestPath, "@mixin --card { @media all{display:block;} } @utility card { @media all{display:block;} }")
 
       const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
 

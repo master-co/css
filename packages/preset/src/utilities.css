@@ -1,5 +1,5 @@
-/* On-demand mixins. Class token families are inferred from these definitions. */
-@mixin --sr-only {
+/* Explicit on-demand utility classes and token families. */
+@utility sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -11,26 +11,26 @@
   border-width: 0;
 }
 
-@mixin --grid-cols(--n <integer>) {
+@utility grid-cols(--n <integer>) {
   display: grid;
   grid-template-columns: repeat(var(--n), minmax(0, 1fr));
 }
 
-@mixin --grid-rows(--n <integer>) {
+@utility grid-rows(--n <integer>) {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(var(--n), minmax(0, 1fr));
 }
 
-@mixin --grid-col-span(--n <integer>) {
+@utility grid-col-span(--n <integer>) {
   grid-column: span var(--n)/span var(--n);
 }
 
-@mixin --grid-row-span(--n <integer>) {
+@utility grid-row-span(--n <integer>) {
   grid-row: span var(--n)/span var(--n);
 }
 
-@mixin --clamp-lines(--n <integer>) {
+@utility clamp-lines(--n <integer>) {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--n);
@@ -39,485 +39,485 @@
   text-overflow: ellipsis;
 }
 
-@mixin --text(--step <string>) {
-  font-size: var(ident("--text-" var(--step)));
-  line-height: var(ident("--text-" var(--step) "--line-height"), normal);
-  letter-spacing: var(ident("--text-" var(--step) "--letter-spacing"), normal);
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
 }
 
-/* Single-property token families. Parameters accept ordinary CSS values. */
-@mixin --bottom(--spacing) {
+/* Token patterns bind values from the declared namespace. */
+@utility bottom-(--spacing) {
   bottom: var(--spacing);
 }
 
-@mixin --border-spacing(--spacing) {
+@utility border-spacing-(--spacing) {
   border-spacing: var(--spacing);
 }
 
-@mixin --gap-x(--spacing) {
+@utility gap-x-(--spacing) {
   column-gap: var(--spacing);
 }
 
-@mixin --gap(--spacing) {
+@utility gap-(--spacing) {
   gap: var(--spacing);
 }
 
-@mixin --inset(--spacing) {
+@utility inset-(--spacing) {
   inset: var(--spacing);
 }
 
-@mixin --iy(--spacing) {
+@utility iy-(--spacing) {
   inset-block: var(--spacing);
 }
 
-@mixin --iye(--spacing) {
+@utility iye-(--spacing) {
   inset-block-end: var(--spacing);
 }
 
-@mixin --iys(--spacing) {
+@utility iys-(--spacing) {
   inset-block-start: var(--spacing);
 }
 
-@mixin --ix(--spacing) {
+@utility ix-(--spacing) {
   inset-inline: var(--spacing);
 }
 
-@mixin --ixe(--spacing) {
+@utility ixe-(--spacing) {
   inset-inline-end: var(--spacing);
 }
 
-@mixin --ixs(--spacing) {
+@utility ixs-(--spacing) {
   inset-inline-start: var(--spacing);
 }
 
-@mixin --left(--spacing) {
+@utility left-(--spacing) {
   left: var(--spacing);
 }
 
-@mixin --m(--spacing) {
+@utility m-(--spacing) {
   margin: var(--spacing);
 }
 
-@mixin --my(--spacing) {
+@utility my-(--spacing) {
   margin-block: var(--spacing);
 }
 
-@mixin --mye(--spacing) {
+@utility mye-(--spacing) {
   margin-block-end: var(--spacing);
 }
 
-@mixin --mys(--spacing) {
+@utility mys-(--spacing) {
   margin-block-start: var(--spacing);
 }
 
-@mixin --mb(--spacing) {
+@utility mb-(--spacing) {
   margin-bottom: var(--spacing);
 }
 
-@mixin --mx(--spacing) {
+@utility mx-(--spacing) {
   margin-inline: var(--spacing);
 }
 
-@mixin --mxe(--spacing) {
+@utility mxe-(--spacing) {
   margin-inline-end: var(--spacing);
 }
 
-@mixin --mxs(--spacing) {
+@utility mxs-(--spacing) {
   margin-inline-start: var(--spacing);
 }
 
-@mixin --ml(--spacing) {
+@utility ml-(--spacing) {
   margin-left: var(--spacing);
 }
 
-@mixin --mr(--spacing) {
+@utility mr-(--spacing) {
   margin-right: var(--spacing);
 }
 
-@mixin --mt(--spacing) {
+@utility mt-(--spacing) {
   margin-top: var(--spacing);
 }
 
-@mixin --outline-offset(--spacing) {
+@utility outline-offset-(--spacing) {
   outline-offset: var(--spacing);
 }
 
-@mixin --p(--spacing) {
+@utility p-(--spacing) {
   padding: var(--spacing);
 }
 
-@mixin --py(--spacing) {
+@utility py-(--spacing) {
   padding-block: var(--spacing);
 }
 
-@mixin --pye(--spacing) {
+@utility pye-(--spacing) {
   padding-block-end: var(--spacing);
 }
 
-@mixin --pys(--spacing) {
+@utility pys-(--spacing) {
   padding-block-start: var(--spacing);
 }
 
-@mixin --pb(--spacing) {
+@utility pb-(--spacing) {
   padding-bottom: var(--spacing);
 }
 
-@mixin --px(--spacing) {
+@utility px-(--spacing) {
   padding-inline: var(--spacing);
 }
 
-@mixin --pxe(--spacing) {
+@utility pxe-(--spacing) {
   padding-inline-end: var(--spacing);
 }
 
-@mixin --pxs(--spacing) {
+@utility pxs-(--spacing) {
   padding-inline-start: var(--spacing);
 }
 
-@mixin --pl(--spacing) {
+@utility pl-(--spacing) {
   padding-left: var(--spacing);
 }
 
-@mixin --pr(--spacing) {
+@utility pr-(--spacing) {
   padding-right: var(--spacing);
 }
 
-@mixin --pt(--spacing) {
+@utility pt-(--spacing) {
   padding-top: var(--spacing);
 }
 
-@mixin --right(--spacing) {
+@utility right-(--spacing) {
   right: var(--spacing);
 }
 
-@mixin --gap-y(--spacing) {
+@utility gap-y-(--spacing) {
   row-gap: var(--spacing);
 }
 
-@mixin --scroll-m(--spacing) {
+@utility scroll-m-(--spacing) {
   scroll-margin: var(--spacing);
 }
 
-@mixin --scroll-my(--spacing) {
+@utility scroll-my-(--spacing) {
   scroll-margin-block: var(--spacing);
 }
 
-@mixin --scroll-mye(--spacing) {
+@utility scroll-mye-(--spacing) {
   scroll-margin-block-end: var(--spacing);
 }
 
-@mixin --scroll-mys(--spacing) {
+@utility scroll-mys-(--spacing) {
   scroll-margin-block-start: var(--spacing);
 }
 
-@mixin --scroll-mb(--spacing) {
+@utility scroll-mb-(--spacing) {
   scroll-margin-bottom: var(--spacing);
 }
 
-@mixin --scroll-mx(--spacing) {
+@utility scroll-mx-(--spacing) {
   scroll-margin-inline: var(--spacing);
 }
 
-@mixin --scroll-mxe(--spacing) {
+@utility scroll-mxe-(--spacing) {
   scroll-margin-inline-end: var(--spacing);
 }
 
-@mixin --scroll-mxs(--spacing) {
+@utility scroll-mxs-(--spacing) {
   scroll-margin-inline-start: var(--spacing);
 }
 
-@mixin --scroll-ml(--spacing) {
+@utility scroll-ml-(--spacing) {
   scroll-margin-left: var(--spacing);
 }
 
-@mixin --scroll-mr(--spacing) {
+@utility scroll-mr-(--spacing) {
   scroll-margin-right: var(--spacing);
 }
 
-@mixin --scroll-mt(--spacing) {
+@utility scroll-mt-(--spacing) {
   scroll-margin-top: var(--spacing);
 }
 
-@mixin --scroll-p(--spacing) {
+@utility scroll-p-(--spacing) {
   scroll-padding: var(--spacing);
 }
 
-@mixin --scroll-py(--spacing) {
+@utility scroll-py-(--spacing) {
   scroll-padding-block: var(--spacing);
 }
 
-@mixin --scroll-pye(--spacing) {
+@utility scroll-pye-(--spacing) {
   scroll-padding-block-end: var(--spacing);
 }
 
-@mixin --scroll-pys(--spacing) {
+@utility scroll-pys-(--spacing) {
   scroll-padding-block-start: var(--spacing);
 }
 
-@mixin --scroll-pb(--spacing) {
+@utility scroll-pb-(--spacing) {
   scroll-padding-bottom: var(--spacing);
 }
 
-@mixin --scroll-px(--spacing) {
+@utility scroll-px-(--spacing) {
   scroll-padding-inline: var(--spacing);
 }
 
-@mixin --scroll-pxe(--spacing) {
+@utility scroll-pxe-(--spacing) {
   scroll-padding-inline-end: var(--spacing);
 }
 
-@mixin --scroll-pxs(--spacing) {
+@utility scroll-pxs-(--spacing) {
   scroll-padding-inline-start: var(--spacing);
 }
 
-@mixin --scroll-pl(--spacing) {
+@utility scroll-pl-(--spacing) {
   scroll-padding-left: var(--spacing);
 }
 
-@mixin --scroll-pr(--spacing) {
+@utility scroll-pr-(--spacing) {
   scroll-padding-right: var(--spacing);
 }
 
-@mixin --scroll-pt(--spacing) {
+@utility scroll-pt-(--spacing) {
   scroll-padding-top: var(--spacing);
 }
 
-@mixin --shape-margin(--spacing) {
+@utility shape-margin-(--spacing) {
   shape-margin: var(--spacing);
 }
 
-@mixin --text-indent(--spacing) {
+@utility text-indent-(--spacing) {
   text-indent: var(--spacing);
 }
 
-@mixin --top(--spacing) {
+@utility top-(--spacing) {
   top: var(--spacing);
 }
 
-@mixin --translate(--spacing) {
+@utility translate-(--spacing) {
   translate: var(--spacing);
 }
 
-@mixin --word-spacing(--spacing) {
+@utility word-spacing-(--spacing) {
   word-spacing: var(--spacing);
 }
 
-@mixin --size-y(--container) {
+@utility size-y-(--container) {
   block-size: var(--container);
 }
 
-@mixin --flex-basis(--container) {
+@utility flex-basis-(--container) {
   flex-basis: var(--container);
 }
 
-@mixin --h(--container) {
+@utility h-(--container) {
   height: var(--container);
 }
 
-@mixin --size-x(--container) {
+@utility size-x-(--container) {
   inline-size: var(--container);
 }
 
-@mixin --max-size-y(--container) {
+@utility max-size-y-(--container) {
   max-block-size: var(--container);
 }
 
-@mixin --max-h(--container) {
+@utility max-h-(--container) {
   max-height: var(--container);
 }
 
-@mixin --max-size-x(--container) {
+@utility max-size-x-(--container) {
   max-inline-size: var(--container);
 }
 
-@mixin --max-w(--container) {
+@utility max-w-(--container) {
   max-width: var(--container);
 }
 
-@mixin --min-size-y(--container) {
+@utility min-size-y-(--container) {
   min-block-size: var(--container);
 }
 
-@mixin --min-h(--container) {
+@utility min-h-(--container) {
   min-height: var(--container);
 }
 
-@mixin --min-size-x(--container) {
+@utility min-size-x-(--container) {
   min-inline-size: var(--container);
 }
 
-@mixin --min-w(--container) {
+@utility min-w-(--container) {
   min-width: var(--container);
 }
 
-@mixin --w(--container) {
+@utility w-(--container) {
   width: var(--container);
 }
 
-@mixin --rbl(--radius) {
+@utility rbl-(--radius) {
   border-bottom-left-radius: var(--radius);
 }
 
-@mixin --rbr(--radius) {
+@utility rbr-(--radius) {
   border-bottom-right-radius: var(--radius);
 }
 
-@mixin --border-end-end-radius(--radius) {
+@utility border-end-end-radius-(--radius) {
   border-end-end-radius: var(--radius);
 }
 
-@mixin --border-end-start-radius(--radius) {
+@utility border-end-start-radius-(--radius) {
   border-end-start-radius: var(--radius);
 }
 
-@mixin --r(--radius) {
+@utility r-(--radius) {
   border-radius: var(--radius);
 }
 
-@mixin --border-start-end-radius(--radius) {
+@utility border-start-end-radius-(--radius) {
   border-start-end-radius: var(--radius);
 }
 
-@mixin --border-start-start-radius(--radius) {
+@utility border-start-start-radius-(--radius) {
   border-start-start-radius: var(--radius);
 }
 
-@mixin --rtl(--radius) {
+@utility rtl-(--radius) {
   border-top-left-radius: var(--radius);
 }
 
-@mixin --rtr(--radius) {
+@utility rtr-(--radius) {
   border-top-right-radius: var(--radius);
 }
 
-@mixin --by(--color) {
+@utility by-(--color) {
   border-block-color: var(--color);
 }
 
-@mixin --border-block-end-color(--color) {
+@utility border-block-end-color-(--color) {
   border-block-end-color: var(--color);
 }
 
-@mixin --border-block-start-color(--color) {
+@utility border-block-start-color-(--color) {
   border-block-start-color: var(--color);
 }
 
-@mixin --bb(--color) {
+@utility bb-(--color) {
   border-bottom-color: var(--color);
 }
 
-@mixin --b(--color) {
+@utility b-(--color) {
   border-color: var(--color);
 }
 
-@mixin --bx(--color) {
+@utility bx-(--color) {
   border-inline-color: var(--color);
 }
 
-@mixin --border-inline-end-color(--color) {
+@utility border-inline-end-color-(--color) {
   border-inline-end-color: var(--color);
 }
 
-@mixin --border-inline-start-color(--color) {
+@utility border-inline-start-color-(--color) {
   border-inline-start-color: var(--color);
 }
 
-@mixin --bl(--color) {
+@utility bl-(--color) {
   border-left-color: var(--color);
 }
 
-@mixin --br(--color) {
+@utility br-(--color) {
   border-right-color: var(--color);
 }
 
-@mixin --bt(--color) {
+@utility bt-(--color) {
   border-top-color: var(--color);
 }
 
-@mixin --outline(--color) {
+@utility outline-(--color) {
   outline-color: var(--color);
 }
 
-@mixin --accent-color(--color) {
+@utility accent-color-(--color) {
   accent-color: var(--color);
 }
 
-@mixin --bg(--color) {
+@utility bg-(--color) {
   background-color: var(--color);
 }
 
-@mixin --fill(--color) {
+@utility fill-(--color) {
   fill: var(--color);
 }
 
-@mixin --caret-color(--color) {
+@utility caret-color-(--color) {
   caret-color: var(--color);
 }
 
-@mixin --stroke(--color) {
+@utility stroke-(--color) {
   stroke: var(--color);
 }
 
-@mixin --fg(--color) {
+@utility fg-(--color) {
   color: var(--color);
 }
 
-@mixin --text-fill-color(--color) {
+@utility text-fill-color-(--color) {
   -webkit-text-fill-color: var(--color);
 }
 
-@mixin --shadow(--shadow) {
+@utility shadow-(--shadow) {
   box-shadow: var(--shadow);
 }
 
-@mixin --animate(--animate) {
+@utility animate-(--animate) {
   animation: var(--animate);
 }
 
-@mixin --animation-delay(--duration) {
+@utility animation-delay-(--duration) {
   animation-delay: var(--duration);
 }
 
-@mixin --animation-duration(--duration) {
+@utility animation-duration-(--duration) {
   animation-duration: var(--duration);
 }
 
-@mixin --transition-delay(--duration) {
+@utility transition-delay-(--duration) {
   transition-delay: var(--duration);
 }
 
-@mixin --transition-duration(--duration) {
+@utility transition-duration-(--duration) {
   transition-duration: var(--duration);
 }
 
-@mixin --animation-timing-function(--easing) {
+@utility animation-timing-function-(--easing) {
   animation-timing-function: var(--easing);
 }
 
-@mixin --transition-timing-function(--easing) {
+@utility transition-timing-function-(--easing) {
   transition-timing-function: var(--easing);
 }
 
-@mixin --font-family(--font-family) {
+@utility font-family-(--font-family) {
   font-family: var(--font-family);
 }
 
-@mixin --font-size(--font-size) {
+@utility font-size-(--font-size) {
   font-size: var(--font-size);
 }
 
-@mixin --font-weight(--font-weight) {
+@utility font-weight-(--font-weight) {
   font-weight: var(--font-weight);
 }
 
-@mixin --tracking(--tracking) {
+@utility tracking-(--tracking) {
   letter-spacing: var(--tracking);
 }
 
-@mixin --leading(--leading) {
+@utility leading-(--leading) {
   line-height: var(--leading);
 }
 
-@mixin --order(--order) {
+@utility order-(--order) {
   order: var(--order);
 }

@@ -5,8 +5,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
 
 const preset = defaultManifest as unknown as MasterCSSManifest
-const mixin = (name: string, declarations: Record<string, string>) => ({
-  name: `--${name}`,
+const utility = (name: string, declarations: Record<string, string>) => ({
+  kind: 'static' as const, name,
   body: Object.entries(declarations).map(([property, value]) => ({ type: 'declaration' as const, property, value: [{ type: 'text' as const, value }] }))
 })
 
@@ -25,7 +25,7 @@ test('refresh creates rules for previously unknown DOM classes and removes obsol
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.refresh(manifest)
     return { ruleCount: runtime.snapshot().classRules['new-custom'].rules.length, display: getComputedStyle(document.querySelector('#target')!).display }
-  }, { ...preset, mixins: [...(preset.mixins || []), mixin('new-custom', { display: 'none' })] })
+  }, { ...preset, utilities: [...(preset.utilities || []), utility('new-custom', { display: 'none' })] })
   expect(added).toEqual({ ruleCount: 1, display: 'none' })
   const removed = await page.evaluate((manifest) => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
@@ -83,17 +83,17 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'x', value: 'red' }, { type: 'declaration', name: 'y', value: 'blue' }, { type: 'declaration', name: 'a', value: 'linear-gradient(var(--x),var(--y))' }, { type: 'declaration', name: 'z', value: 'green' }] }],
-    version: 5, languageVersion: 14,
+    version: 6, languageVersion: 15,
     variables: { '': [
       { name: 'x', key: 'x', values: [{ path: [':root,:host'], value: 'red' }] },
       { name: 'y', key: 'y', values: [{ path: [':root,:host'], value: 'blue' }] },
       { name: 'a', key: 'a', values: [{ path: [':root,:host'], value: 'linear-gradient(var(--x),var(--y))' }], dependencies: ['x', 'y'] },
       { name: 'z', key: 'z', values: [{ path: [':root,:host'], value: 'green' }] }
     ] },
-    mixins: [
-      mixin('a', { 'background-image': 'var(--a)' }),
-      mixin('b', { color: 'var(--x)', 'border-color': 'var(--z)' }),
-      mixin('c', { color: 'var(--x)' })
+    utilities: [
+      utility('a', { 'background-image': 'var(--a)' }),
+      utility('b', { color: 'var(--x)', 'border-color': 'var(--z)' }),
+      utility('c', { color: 'var(--x)' })
     ]
   }
   using renderer = createServerRenderer({ manifest })
@@ -109,10 +109,10 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 5, languageVersion: 14,
+    version: 6, languageVersion: 15,
     theme: ['light', 'dark'].map((name, index) => ({ type: 'rule', prelude: `.${name}`, children: [{ type: 'declaration', name: 'primary', value: index ? '#ffffff' : '#000000' }] })),
     variables: { '': [{ name: 'primary', key: 'primary', values: [{ path: ['.light'], value: '#000000' }, { path: ['.dark'], value: '#ffffff' }] }] },
-    mixins: [mixin('theme-color', { color: 'var(--primary)' })]
+    utilities: [utility('theme-color', { color: 'var(--primary)' })]
   }
   using renderer = createServerRenderer({ manifest })
   const rendered = renderer.renderHTML('<html class="dark"><head></head><body><div id="target" class="theme-color"></div></body></html>', { hydrationManifest: 'inject' })
@@ -145,11 +145,11 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 5, languageVersion: 14,
-      mixins: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
-        name: `--${layer}`,
-        body: [...mixin(layer, { color: 'red' }).body,
-          { type: 'rule' as const, selector: '&[data-active]', body: mixin(layer, { display: 'none' }).body }]
+      version: 6, languageVersion: 15,
+      utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
+        kind: 'static' as const, name: layer,
+        body: [...utility(layer, { color: 'red' }).body,
+          { type: 'rule' as const, selector: '&[data-active]', body: utility(layer, { display: 'none' }).body }]
       }))
     }
     using renderer = createServerRenderer({ manifest })
@@ -180,9 +180,9 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
 test('hydration rejects CSSOM nodes dropped by the browser', async ({ page }) => {
   const manifest: MasterCSSManifest = {
     ...preset,
-    mixins: [...(preset.mixins || []), {
-      ...mixin('dropped', { display: 'block' }),
-      body: [{ type: 'rule', selector: '&:mastercss-unknown-pseudo', body: mixin('dropped', { display: 'block' }).body }]
+    utilities: [...(preset.utilities || []), {
+      ...utility('dropped', { display: 'block' }),
+      body: [{ type: 'rule', selector: '&:mastercss-unknown-pseudo', body: utility('dropped', { display: 'block' }).body }]
     }]
   }
   using renderer = createServerRenderer({ manifest })

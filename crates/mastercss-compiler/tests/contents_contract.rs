@@ -9,7 +9,7 @@ fn compile(
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default())?;
     lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
@@ -27,7 +27,7 @@ fn css(source: &str) -> String {
 #[test]
 fn contents_distinguish_omitted_empty_and_repeated_blocks() {
     let output = css(
-        "@mixin --wrap { order:1; @contents {order:2} order:3; @contents; } .a{@apply --wrap;} .b{@apply --wrap{}} .c{@apply --wrap{order:4;order:5}} ",
+        "@mixin --wrap { order:1; @contents {order:2} order:3; @contents; } @utility wrap { order:1; @contents {order:2} order:3; @contents; } .a{@apply --wrap;} .b{@apply --wrap{}} .c{@apply --wrap{order:4;order:5}} ",
     );
     assert!(output.contains(".a{order:1;order:2;order:3}"), "{output}");
     assert!(output.contains(".b{order:1;order:3}"), "{output}");
@@ -46,7 +46,7 @@ fn preset_normalization_cannot_upgrade_old_executable_data_silently() {
         "containerConditions",
         "breakpointConditions",
     ] {
-        let mut manifest = serde_json::json!({"version":5,"languageVersion":14});
+        let mut manifest = serde_json::json!({"version":6,"languageVersion":15});
         manifest[field] = serde_json::json!([]);
         assert!(mastercss_compiler::normalize_default_manifest_for_json(&manifest).is_err());
     }
@@ -61,7 +61,7 @@ fn preset_normalization_cannot_upgrade_old_executable_data_silently() {
 #[test]
 fn contents_keep_caller_bindings_and_forward_outer_contents() {
     let output = css(
-        "@mixin --inner(--n:2){order:var(--n);@contents;} @mixin --outer(--n:1){@apply --inner(3){order:var(--n);@contents;}} .a{@apply --outer{order:var(--n)}}",
+        "@mixin --inner(--n:2){order:var(--n);@contents;} @utility inner(--n:2) {order:var(--n);@contents;} @mixin --outer(--n:1){@apply --inner(3){order:var(--n);@contents;}} @utility outer(--n:1) {@apply --inner(3){order:var(--n);@contents;}} .a{@apply --outer{order:var(--n)}}",
     );
     assert!(
         output.contains("order:3;order:1;order:var(--n)"),
@@ -71,15 +71,22 @@ fn contents_keep_caller_bindings_and_forward_outer_contents() {
 
 #[test]
 fn finite_nested_calls_of_the_same_mixin_are_not_recursion() {
-    let output = css("@mixin --wrap{order:1;@contents;} .a{@apply --wrap{@apply --wrap{order:2}}}");
+    let output = css(
+        "@mixin --wrap{order:1;@contents;} @utility wrap {order:1;@contents;} .a{@apply --wrap{@apply --wrap{order:2}}}",
+    );
     assert!(output.contains("order:1;order:1;order:2"), "{output}");
-    assert!(compile("@mixin --a{@apply --a{@contents;}} .a{@apply --a;}").is_err());
+    assert!(
+        compile(
+            "@mixin --a{@apply --a{@contents;}} @utility a {@apply --a{@contents;}} .a{@apply --a;}"
+        )
+        .is_err()
+    );
 }
 
 #[test]
 fn ignored_contents_and_unused_fallback_do_not_retain_resources() {
     let output = css(
-        "@theme {--color-unused:red;--color-fallback:blue} @mixin --ignore{order:1} @mixin --fallback{@contents{color:var(--color-fallback)}} .a{@apply --ignore{color:var(--color-unused)} @apply --fallback{order:2}}",
+        "@theme {--color-unused:red;--color-fallback:blue} @mixin --ignore{order:1} @utility ignore {order:1} @mixin --fallback{@contents{color:var(--color-fallback)}} @utility fallback {@contents{color:var(--color-fallback)}} .a{@apply --ignore{color:var(--color-unused)} @apply --fallback{order:2}}",
     );
     assert!(!output.contains("--color-unused"), "{output}");
     assert!(!output.contains("--color-fallback"), "{output}");
@@ -87,7 +94,9 @@ fn ignored_contents_and_unused_fallback_do_not_retain_resources() {
 
 #[test]
 fn wrapper_ordering_uses_emitted_declarations_when_contents_are_discarded() {
-    let mut e = engine("@mixin --blue{color:blue}@mixin --red{color:red}");
+    let mut e = engine(
+        "@mixin --blue{color:blue} @utility blue {color:blue}@mixin --red{color:red} @utility red {color:red}",
+    );
     let red = "color:blue@apply(--red)";
     let blue = "color:red@apply(--blue)";
     e.ensure_class_rules([red, blue]).unwrap();
@@ -112,12 +121,12 @@ fn native_query_dependencies_and_unsubstituted_contents_remain_css() {
         None
     );
     let output = css(
-        "@mixin --identity{@contents;} .a{@apply --identity{grid-template-columns:repeat(2.5,1fr)}}",
+        "@mixin --identity{@contents;} @utility identity {@contents;} .a{@apply --identity{grid-template-columns:repeat(2.5,1fr)}}",
     );
     assert!(output.contains("repeat(2.5,1fr)"), "{output}");
     assert!(
         compile(
-            "@mixin --cols(--n){grid-template-columns:repeat(var(--n),1fr)} .a{@apply --cols(2.5)}"
+            "@mixin --cols(--n){grid-template-columns:repeat(var(--n),1fr)} @utility cols(--n) {grid-template-columns:repeat(var(--n),1fr)} .a{@apply --cols(2.5)}"
         )
         .is_err()
     );
@@ -134,7 +143,7 @@ fn engine(source: &str) -> mastercss_engine::EngineSession {
 
 #[test]
 fn class_contents_wrap_mixins_once_and_preserve_wrapper_order() {
-    let source = "@mixin --pair {color:red;display:block} @mixin --a{order:1;@supports (display:grid){@contents;}order:2;} @mixin --b{order:3;&:hover{@contents;}order:4;}";
+    let source = "@mixin --pair {color:red;display:block} @utility pair {color:red;display:block} @mixin --a{order:1;@supports (display:grid){@contents;}order:2;} @utility a {order:1;@supports (display:grid){@contents;}order:2;} @mixin --b{order:3;&:hover{@contents;}order:4;} @utility b {order:3;&:hover{@contents;}order:4;}";
     let mut e = engine(source);
     let class = "pair@apply(--a)@apply(--b)!";
     let inspection = e.inspect(class).unwrap();
@@ -201,14 +210,14 @@ fn builtin_layers_and_starting_style_work_without_a_preset() {
     }
     assert!(compile("@custom-media --starting-style (width>1px);").is_err());
     assert!(mastercss_engine::EngineSession::create(
-        r#"{"version":5,"languageVersion":14,"customMedia":{"--starting-style":{"type":"true"}}}"#
+        r#"{"version":6,"languageVersion":15,"customMedia":{"--starting-style":{"type":"true"}}}"#
     ).is_err());
 }
 
 #[test]
 fn named_media_and_mixin_names_are_independent_and_false_discards_contents() {
     let mut e = engine(
-        "@custom-media --x (width>1px); @custom-media --never false; @mixin --x{&:hover{@contents;}} @mixin --drop{@contents;}",
+        "@custom-media --x (width>1px); @custom-media --never false; @mixin --x{&:hover{@contents;}} @utility x {&:hover{@contents;}} @mixin --drop{@contents;} @utility drop {@contents;}",
     );
     e.ensure_class_rules([
         "color:red@x",
@@ -228,7 +237,7 @@ fn removed_variants_and_layer_wrapping_are_rejected() {
         "@custom-variant hocus{&:hover{@slot;}}",
         ".x{@variant hocus{color:red}}",
         ".x{@slot;}",
-        "@mixin --x{@layer components{@contents;}}",
+        "@mixin --x{@layer components{@contents;}} @utility x {@layer components{@contents;}}",
         ".x{@apply --x{@layer components{color:red}}}",
     ] {
         assert!(compile(source).is_err(), "{source}");
@@ -237,7 +246,7 @@ fn removed_variants_and_layer_wrapping_are_rejected() {
 
 #[test]
 fn contents_preserve_selector_lists_pseudo_elements_and_declaration_sources() {
-    let source = "@mixin --wrap{&:hover,&:focus{&::before{@contents;}}} .a,#b{@apply --wrap{content:'x';color:red;color:blue}}";
+    let source = "@mixin --wrap{&:hover,&:focus{&::before{@contents;}}} @utility wrap {&:hover,&:focus{&::before{@contents;}}} .a,#b{@apply --wrap{content:'x';color:red;color:blue}}";
     let result = compile(source).unwrap();
     let output = result.css.as_deref().unwrap_or(&result.generated_css);
     assert!(output.contains(":is(.a,#b)"), "{output}");
@@ -250,12 +259,12 @@ fn contents_preserve_selector_lists_pseudo_elements_and_declaration_sources() {
 #[test]
 fn contents_urls_and_spans_retain_the_calling_file_across_imports() {
     let caller = "@import './defs.css';.card{@apply --wrap{background:url(card.png)}}";
-    let definitions = "@mixin --wrap{mask:url(mask.svg);&:hover{@contents;}@contents{background:url(unused.png)}}";
+    let definitions = "@mixin --wrap{mask:url(mask.svg);&:hover{@contents;}@contents{background:url(unused.png)}} @utility wrap {mask:url(mask.svg);&:hover{@contents;}@contents{background:url(unused.png)}}";
     let request = serde_json::from_value(serde_json::json!({
         "graph":{"entry":"entry","files":{"entry":caller,"defs":definitions},"edges":[{"from":"entry","specifier":"./defs.css","resolved":"defs"}]},
         "urls":{"entry":"/output/entry.css","defs":"/output/defs.css"},
         "resourceURLs":{"entry":{"card.png":"/caller/card.png"},"defs":{"mask.svg":"/definition/mask.svg","unused.png":"/definition/unused.png"}},
-        "baseManifest":{"version":5,"languageVersion":14}
+        "baseManifest":{"version":6,"languageVersion":15}
     })).unwrap();
     let result = mastercss_compiler::compile_css_stylesheet_graph(&request).unwrap();
     let output = result
@@ -283,12 +292,12 @@ fn contents_urls_and_spans_retain_the_calling_file_across_imports() {
 #[test]
 fn supplied_content_suppresses_invalid_fallback_execution_and_keeps_parameters_static() {
     let mut e = engine(
-        "@mixin --needs(--x <integer>){order:var(--x)} @mixin --wrap{@contents{@apply --needs(nope);}} @mixin --parameter(--x:1){@apply --wrap{order:var(--x)}}",
+        "@mixin --needs(--x <integer>){order:var(--x)} @utility needs(--x <integer>) {order:var(--x)} @mixin --wrap{@contents{@apply --needs(nope);}} @utility wrap {@contents{@apply --needs(nope);}} @mixin --parameter(--x:1){@apply --wrap{order:var(--x)}} @utility parameter(--x:1) {@apply --wrap{order:var(--x)}}",
     );
     let result = e.inspect("color:red@apply(--wrap)").unwrap();
     assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
     e.ensure_class_rules(["color:red@apply(--wrap)"]).unwrap();
     assert!(e.css_text().contains("color:red"));
-    assert!(compile("@mixin --child{& .child{@contents;}} @mixin --wrap(--x:1){@apply --child{order:var(--x)}} .a{@apply --wrap;}").is_err());
+    assert!(compile("@mixin --child{& .child{@contents;}} @utility child {& .child{@contents;}} @mixin --wrap(--x:1){@apply --child{order:var(--x)}} @utility wrap(--x:1) {@apply --child{order:var(--x)}} .a{@apply --wrap;}").is_err());
     assert!(compile(".a{@contents;}").is_err());
 }

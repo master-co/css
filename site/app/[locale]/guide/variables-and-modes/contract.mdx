@@ -67,7 +67,7 @@ Use the [complete family index](/reference/tokens/families) to look up every pre
 | `fg-text-action` | `--color-text-action` |
 | `bg-brand` | `--color-brand` |
 
-Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare same-name primary alias tokens and a single-string mixin. Use direct native values such as `padding:1rem` for values without a project token.
+Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare primary tokens in a parameter namespace and register an explicit token pattern with a `<string>` parameter. Use direct native values such as `padding:1rem` for values without a project token.
 
 ## Inline and static tokens \{#inline-and-static-variables\}
 Use `inline` to substitute a token's value in generated declarations and `static` to keep its custom property even without references:

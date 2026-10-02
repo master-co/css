@@ -47,7 +47,7 @@
     "./base.css": "./src/base.css",
     "./theme.css": "./src/theme.css",
     "./media.css": "./src/media.css",
-    "./mixins.css": "./src/mixins.css"
+    "./utilities.css": "./src/utilities.css"
   },
   "files": [
     "src/*.css",

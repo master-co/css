@@ -25,9 +25,9 @@ for (const entry of cases) {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     const snapshots = []
     for (const binding of ['native', 'wasm'] as const) {
       const engine = await createEngine({ manifest: compiled.manifest, binding })

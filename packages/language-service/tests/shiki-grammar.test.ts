@@ -45,11 +45,11 @@ test.concurrent('defines deterministic directive scopes with native blocks', () 
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
   const directive = grammarEntry('master-directive')
-  for (const name of ['theme', 'mixin|apply', 'safelist', 'contents']) {
+  for (const name of ['theme', 'utility|mixin|apply', 'safelist', 'contents']) {
     const pattern = findGrammarPattern(directive, pattern => pattern.begin === `(?i)(@)(${name})\\b`)
     expect(pattern.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   }
-  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(mixin|apply)') === true)
+  const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(utility|mixin|apply)') === true)
   expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-mixin-prelude'])
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
   expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-theme-prelude')
@@ -98,6 +98,8 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
 }
 
 @mixin --btn {
+        @safelist "display:inline-flex fg-primary:hover@md";
+    } @utility btn {
         @safelist "display:inline-flex fg-primary:hover@md";
     }
 @keyframes fade {

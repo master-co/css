@@ -249,10 +249,10 @@ fn custom_static_definitions_require_a_proven_target() {
         migrate_rc(&input).unwrap().class_lists[0][0].status,
         "review"
     );
-    input.target_manifest["mixins"]
+    input.target_manifest["utilities"]
         .as_array_mut()
         .unwrap()
-        .push(json!({"name":"--card","body":[{"type":"declaration","property":"padding","value":[{"type":"text","value":"4px"}]}]}));
+        .push(json!({"kind":"static","name":"card","body":[{"type":"declaration","property":"padding","value":[{"type":"text","value":"4px"}]}]}));
     assert_eq!(
         migrate_rc(&input).unwrap().class_lists[0][0].status,
         "replace"

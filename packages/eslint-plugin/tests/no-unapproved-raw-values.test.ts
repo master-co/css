@@ -114,7 +114,7 @@ createTester({
     ]
   }
 ]
-      })
+      , utilities: [{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] })
     }
   }
 }).run('no unapproved raw values custom components', rule, {

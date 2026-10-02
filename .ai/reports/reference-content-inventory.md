@@ -9,7 +9,7 @@ Guide teaches design and implementation tasks. Reference owns complete token cat
 | Facts | Source |
 | --- | --- |
 | Catalog and public routes | [reference/build.ts](../../site/reference/build.ts) and generated `site/.generated/reference.json` |
-| 119 direct-value families and 7 recipes | [mixins.css](../../packages/preset/src/mixins.css) |
+| 119 direct-value families and 7 recipes | [utilities.css](../../packages/preset/src/utilities.css) |
 | Family capabilities, prefixes and namespaces | Rust analysis exposed through language/tooling `tokenFamilies()` at site preparation time |
 | Token values, scopes and dependencies | [theme.css](../../packages/preset/src/theme.css) and the compiled preset manifest |
 | Shared Guide and Reference facts | [foundation data](../../site/common/foundation-data/tokens.ts) |

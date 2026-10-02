@@ -290,9 +290,10 @@ pub(crate) fn resolve_definitions(
     manifest: &mut serde_json::Value,
     registry: &crate::custom_media::Registry,
 ) -> Result<(), crate::CompilerError> {
-    let Some(raw) = manifest.get("mixins") else {
-        return Ok(());
-    };
+    let raw = manifest
+        .get("mixins")
+        .cloned()
+        .unwrap_or_else(|| serde_json::json!([]));
     let fail = crate::manifest::definition_error;
     let mut definitions: Vec<MixinDefinition> =
         serde_json::from_value(raw.clone()).map_err(|error| fail(error.to_string()))?;
@@ -301,7 +302,6 @@ pub(crate) fn resolve_definitions(
     definitions.retain(|definition| seen.insert(definition.name.clone()));
     definitions.reverse();
     mastercss_engine::validate_mixins(&definitions).map_err(fail)?;
-    manifest["mixins"] = serde_json::to_value(&definitions).expect("mixins");
     fn resolve(
         nodes: &[MixinNode],
         registry: &crate::custom_media::Registry,
@@ -354,7 +354,29 @@ pub(crate) fn resolve_definitions(
     for definition in &mut definitions {
         definition.body = resolve(&definition.body, registry)?;
     }
-    manifest["mixins"] = serde_json::to_value(definitions).expect("mixins");
+    if !definitions.is_empty() {
+        manifest["mixins"] = serde_json::to_value(&definitions).expect("mixins");
+    }
+    let mut utilities: Vec<mastercss_schema::UtilityDefinition> = serde_json::from_value(
+        manifest
+            .get("utilities")
+            .cloned()
+            .unwrap_or_else(|| serde_json::json!([])),
+    )
+    .map_err(|error| fail(error.to_string()))?;
+    seen.clear();
+    utilities.reverse();
+    utilities.retain(|definition| {
+        seen.insert(format!("{:?}:{}", definition.kind, definition.recipe.name))
+    });
+    utilities.reverse();
+    mastercss_engine::validate_utilities(&definitions, &utilities).map_err(fail)?;
+    for definition in &mut utilities {
+        definition.recipe.body = resolve(&definition.recipe.body, registry)?;
+    }
+    if !utilities.is_empty() {
+        manifest["utilities"] = serde_json::to_value(utilities).expect("utilities");
+    }
     Ok(())
 }
 

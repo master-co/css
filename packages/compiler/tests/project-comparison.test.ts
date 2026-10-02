@@ -5,14 +5,14 @@ import { expect, test } from 'vitest'
 import { captureMasterCSSProject, compareProjectSnapshots } from '../src/diagnostics'
 import { compileManifest, createCompiler } from '../src'
 
-const manifest = { version: 5, languageVersion: 14 } as const
+const manifest = { version: 6, languageVersion: 15 } as const
 
 test('captures resolved files and compares token edits without changing markup', async () => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-impact-')))
   try {
     mkdirSync(join(root, 'node_modules/@master/css'), { recursive: true })
     writeFileSync(join(root, 'node_modules/@master/css/package.json'), '{"name":"@master/css","style":"./index.css"}')
-    writeFileSync(join(root, 'node_modules/@master/css/index.css'), '@layer theme,base,defaults,components,utilities;@mixin --bg(--color){background-color:var(--color)}@mixin --fg(--color){color:var(--color)}')
+    writeFileSync(join(root, 'node_modules/@master/css/index.css'), '@layer theme,base,defaults,components,utilities;@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --fg(--color){color:var(--color)} @utility fg(--color) {color:var(--color)}@utility fg-(--color) {color:var(--color)}')
     const source = '@import "@master/css";@import "./native.css";@source "./extra/*.html";@theme{--color-brand:red;--color-information:red}'
     writeFileSync(join(root, 'app.css'), source)
     writeFileSync(join(root, 'native.css'), '@import "https://example.com/vendor.css";@layer components{.card{color:var(--color-brand);color:var(--color-brand,red)}}')
@@ -47,7 +47,7 @@ test('captures resolved files and compares token edits without changing markup',
 })
 
 test('native and Wasm compiler sessions agree on prepared project comparison', async () => {
-  const source = '@theme{--color-brand:red}@mixin --button{color:var(--color-brand)}'
+  const source = '@theme{--color-brand:red}@mixin --button{color:var(--color-brand)} @utility button {color:var(--color-brand)}'
   const beforeManifest = (await compileManifest(source, { baseManifest: manifest })).manifest
   const afterManifest = (await compileManifest(source.replace('--color-brand:red', '--color-brand:blue'), { baseManifest: manifest })).manifest
   const common = { version: 1 as const, sources: [{ path: 'index.html', classes: ['button'] }], stylesheets: [], outputs: [], excluded: ['vendor/**'], unresolved: ['cms'] }

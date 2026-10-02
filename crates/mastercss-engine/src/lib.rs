@@ -68,6 +68,8 @@ struct ManifestProjection {
     utilities: Vec<UtilityDefinition>,
     #[serde(default)]
     mixins: Vec<mastercss_schema::MixinDefinition>,
+    #[serde(default, rename = "utilities")]
+    utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
     #[serde(skip)]
     token_families: Vec<TokenFamily>,
     #[serde(skip)]
@@ -133,7 +135,7 @@ enum UtilityMatcher {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 enum UtilityEmit {
-    Mixin { name: String },
+    Recipe { name: String, key: bool },
     Property { property: String },
 }
 
@@ -150,7 +152,7 @@ struct UtilityMatch {
 #[serde(rename_all = "lowercase")]
 pub enum ClassSemanticKind {
     Unknown,
-    Mixin,
+    Utility,
     Component,
     Semantic,
     Token,
@@ -341,10 +343,10 @@ mod manifest;
 mod mixin;
 pub use mixin::{
     ExpandedMixinRule, evaluate_mixin_value, expand_mixin, expand_mixin_with_contents,
-    validate_mixin_argument, validate_mixins,
+    expand_utility, validate_mixin_argument, validate_mixins, validate_utilities,
 };
-mod mixin_matching;
 mod token_family;
+mod utility_matching;
 pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
 mod removed_syntax;

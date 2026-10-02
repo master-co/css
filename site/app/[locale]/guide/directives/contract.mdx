@@ -9,10 +9,10 @@ Master CSS directives describe token definitions, reusable utility names, named 
 @theme {
   --color-brand: #4f46e5;
 }
-  [data-theme="ocean"] { --color-brand: #0369a1; }
+[data-theme="ocean"] { --color-brand: #0369a1; }
 
 @custom-media --wide (width >= 60rem);
-@mixin --card-layout { display: grid; gap: var(--spacing-md); }
+@utility card-layout { display: grid; gap: var(--spacing-md); }
 
 .card {
   color: var(--color-brand);
@@ -117,7 +117,7 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies tokens, mixins, custom media and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
+A reference supplies tokens, utilities, mixins, custom media and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
@@ -147,7 +147,7 @@ Unknown or repeated modifiers are errors. The `static` and `inline` modifiers ca
 
 Tokens emit in `@layer theme` under `:root, :host`. The compiler preserves declaration order and repeated values. Used tokens retain their transitive variable dependencies. Selectors and conditional rules belong in native CSS outside the block.
 
-Only `@theme` registers named tokens for utility families and named mixins. A native declaration such as `:root { --app-brand: red; }` remains ordinary CSS; use it directly with `color:var(--app-brand)` or bridge it through an inline theme token.
+Only `@theme` registers named tokens for utility patterns. A native declaration such as `:root { --app-brand: red; }` remains ordinary CSS; use it directly with `color:var(--app-brand)` or bridge it through an inline theme token.
 
 ### Native theme overrides \{#theme-mode\}
 Register the default value in `@theme`, then override the variable using native selectors or queries:
@@ -184,7 +184,7 @@ Use `inline` to substitute a token's declared value into Master-generated declar
 [data-theme="ocean"] { --app-brand: #0369a1; }
 ```
 
-`bg-brand` emits `background-color:var(--app-brand)`, resolving the native variable on the element using the class. The same substitution applies to direct declaration classes, mixin classes, and native `@apply` expansion. Handwritten native declarations retain their authored `var()` references.
+`bg-brand` emits `background-color:var(--app-brand)`, resolving the native variable on the element using the class. The same substitution applies to direct declaration classes, utility classes, and native `@apply` expansion. Handwritten native declarations retain their authored `var()` references.
 
 Substitution runs once. Variables, functions, and fallbacks inside the replacement value keep native CSS semantics. Dependencies are collected from the resulting declarations; using an inline utility alone does not force its replaced token to emit. A direct native reference to the token can still retain its declaration.
 
@@ -221,7 +221,7 @@ Under pruning, animation utilities, retained native animation declarations, stat
 
 Definitions keep their native position, conditions, layer and import occurrence. Same-name definitions remain separate; the browser determines which definition wins. Names are decoded and case-sensitive. A keyframe inside an anonymous layer stays in that same layer as resources are added or released. Output may contain empty compiler-owned media slots so runtime can populate the original position without recreating its containers.
 
-Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Unused mixins, pruned native rules and undelivered reference styles do not create usage roots. `@reference` makes definitions available without importing their preservation policy or safelists. For animation names introduced only by JavaScript, use `@safelist keyframes "reveal";`.
+Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Unused utilities and mixins, pruned native rules and undelivered reference styles do not create usage roots. `@reference` makes definitions available without importing their preservation policy or safelists. For animation names introduced only by JavaScript, use `@safelist keyframes "reveal";`.
 
 The runtime tracks definition IDs separately from names. DOM removal releases a definition only when no native usage, static token, preservation policy or safelist still retains it. HMR replaces definitions and delivery ownership together; SSR hydration uses the same IDs and resource order.
 
@@ -240,7 +240,7 @@ Define named media queries using the [CSS Media Queries specification](https://d
 @media (--reading) { .article { max-width: 70ch; } }
 ```
 
-Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, mixin definitions, and markup queries.
+Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, utility and mixin definitions, and markup queries.
 
 Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
 
@@ -276,97 +276,107 @@ Write native component selectors in `@layer components`.
 }
 ```
 
-Native rules are delivered according to the stylesheet import graph. A mixin definition is available to markup and native `@apply`; it emits nothing until used.
+Native rules are delivered according to the stylesheet import graph. Utility definitions register class names; mixin definitions provide CSS reuse through `@apply`. Both are consumed during compilation and emit CSS only when used.
 
-### `@mixin` \{#utilities\}
-Master implements a static compilation subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule), not a complete browser polyfill. Definitions have dashed names and must be unconditional stylesheet-level rules. This is the Master static recipe subset; code is not guaranteed to run unchanged in a future browser implementation. Dynamic parameter evaluation, private-property emulation and general-purpose functions are outside this contract.
+### `@utility` \{#utilities\}
+Declare the class form explicitly at the top level:
 
 ```css
-@mixin --card-layout {
+@utility card-layout {
   display: grid;
   gap: var(--spacing-md);
   &:hover { outline: 1px solid currentColor; }
 }
 
-@mixin --grid-cols(--cols <integer>) {
+@utility gap-x-(--spacing) {
+  column-gap: var(--spacing);
+}
+
+@utility grid-cols(--cols <integer>) {
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
 }
 ```
 
-Use `card-layout` and `grid-cols(3)@sm` in markup. A no-parameter mixin may also be called with empty parentheses. Positional parameters may be untyped or use `<integer>`, `<number>`, `<string>`, or `<custom-ident>`. Static defaults use a colon, for example `--cols <integer>: 2`. Numbers must be numeric literals; grid counts and spans must also be positive integers. Strings require quotes: `text("sm")` is valid, `text(sm)` is not.
+Use `card-layout`, `gap-x-sm`, and `grid-cols(3)@sm` in markup. The header determines whether a definition registers a fixed class, a token pattern, or a function. Each form registers only that form. A token pattern does not also create a function call. Adding declarations or supported nested rules does not change the registration.
 
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
 Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Genuine native names such as SVG `r` retain their native meaning.
 
-Named tokens keep familiar spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. The loaded preset defines these families as ordinary `@mixin` definitions and their values in `@theme`. Rust derives class adapters from the parsed definitions. Each value family has one canonical prefix and reads one namespace. A stylesheet containing only `@theme` does not register any families; import `"@master/css/mixins.css"` or define your own mixins. The full `"@master/css"` import includes both tokens and mixins. The preset contains 119 direct-value families and 7 recipes; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces. Use `font-size-*`, `font-family-*`, and `font-weight-*` for typography tokens.
+Named tokens use spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 119 direct-value families and 7 recipes; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces.
 
-### Named mixin families \{#named-token-patterns\}
-Two native mixin shapes support named Master classes. These conventions affect class calls only; native `@apply` always receives the authored CSS arguments.
-
-A direct-value family has exactly one untyped parameter without a default and one native property declaration whose complete value is `var(--parameter)`. The mixin name supplies the class prefix and the parameter supplies the token namespace:
+### Token patterns \{#named-token-patterns\}
+A pattern has one trailing placeholder. Its parameter names the token namespace; the fixed part names the class prefix. An untyped placeholder binds the token value:
 
 ```css
-@mixin --p(--spacing) { padding: var(--spacing); }
-@mixin --m(--spacing) { margin: var(--spacing); }
-@mixin --fg(--color) { color: var(--color); }
+@utility p-(--spacing) { padding: var(--spacing); }
+@utility m-(--spacing) { margin: var(--spacing); }
+@utility fg-(--color) { color: var(--color); }
+@utility size-(--spacing) {
+  width: var(--spacing);
+  height: var(--spacing);
+}
 ```
 
-`p-md` calls `--p(var(--spacing-md))`; `-m-md` calls `--m(calc(var(--spacing-md) * -1))`; `fg-red/.5` calls `--fg(color-mix(in oklab,var(--color-red) 50%,transparent))`. Negative calls require a supported property and numeric token; `-p-md` is invalid. Opacity requires the `color` namespace and a value from zero through one. Value families accept numeric and Unicode token keys and do not exclude keys containing `--`.
+`p-md` binds `var(--spacing-md)`; `size-md` uses that reference in both declarations. Ordinary tokens retain browser-evaluated references, while inline tokens substitute their declared value once. Unknown tokens do not create classes. Value patterns accept numeric and Unicode keys, including keys containing `--`.
 
-Fallbacks, types, defaults, additional declarations, nested rules, conditions and `@apply` prevent this direct-value classification. Other parameter types retain function calls: `grid-row-span(3)` does not create `grid-row-span-3`.
-
-A mixin with exactly one `<string>` parameter gains a string-key family when a matching primary theme token exists:
+A `<string>` placeholder binds the token key, allowing explicit companion references:
 
 ```css
 @theme {
-    --text-hero: var(--font-size-5xl);
-    --text-hero--line-height: 1.15;
-    --text-hero--letter-spacing: -.03em;
-
+  --text-hero: var(--font-size-5xl);
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -.03em;
 }
-@mixin --text(--step <string>) {
-  font-size: var(ident("--text-" var(--step)));
-  line-height: var(ident("--text-" var(--step) "--line-height"), normal);
-  letter-spacing: var(ident("--text-" var(--step) "--letter-spacing"), normal);
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
 }
 ```
 
-`text-hero` calls `--text("hero")`. `ident()` folds only when all its inputs are known and produces ordinary CSS custom-property references. Companion tokens containing `--` after the primary name do not create classes. Companions without a primary token create no class; missing companions use the authored fallback.
+`text-hero` binds the string `"hero"`. A matching primary token is required. Companion keys containing `--` do not create classes, and missing companions use the authored fallback. `ident()` folds statically into an ordinary CSS identifier. The namespace comes from the parameter, so `@utility type-(--text <string>)` uses the same tokens with a different class prefix. Token placeholders accept no defaults or other types.
 
-The rule is generic, with no engine-specific typography recipe. `font-size-sm` sets only font size; `text-sm` also sets line height and letter spacing. Typography recipes do not set family, weight, or color. The preset's explicit typography scale is an intentional visual change; check headings, paragraphs and wrapping at desktop and mobile widths.
+Fixed classes take priority over patterns. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Later definitions replace the entire registration with the same form and name.
 
-Exact no-parameter mixins take priority. Families use the longest prefix. A selected family with an unknown token reports an error and does not retry another interpretation. Negative values and color opacity are capabilities of direct-value families; string-key recipes do not inherit them. `p-4` means the token named `4`; `grid-cols-3` does not imply a numeric argument.
+Negative values and opacity apply to the direct-value subset: one untyped placeholder and one native declaration whose entire value is `var(--parameter)`. `-m-md` negates a numeric spacing token; `-p-md` is invalid because padding does not support negative values. `fg-red/.5` applies opacity to a color token, with opacity between zero and one. These capabilities do not extend to general multi-declaration or string-key recipes.
 
 ### Static arguments \{#dynamic-values\}
-Arguments must be statically known, except for the exact direct-value shape above. That shape also accepts external `var()` references, fallbacks inside the argument, and CSS expressions wrapping them. Both `@apply --p(var(--space, 2rem))` and `p(var(--space,2rem))` preserve the caller’s variable reference for browser evaluation; they never capture the callee parameter or read the current theme value during argument binding. Other mixins still reject external `var()`, `attr()`, and browser-dependent arguments. A known outer mixin parameter may be forwarded using `var(--parameter)`. Theme references in the mixin body use the token mode: ordinary tokens retain `var()` references; inline tokens substitute their declared value once.
+Function utilities and mixins accept positional parameters: untyped, `<integer>`, `<number>`, `<string>`, or `<custom-ident>`. Static defaults use a colon, such as `--cols <integer>: 2`. Numbers must be numeric literals; grid counts and spans must be positive integers. String arguments require quotes.
 
 ```css
-@mixin --pair(--size) {
+@utility pair(--size) {
   width: var(--size);
   height: var(--size);
 }
 ```
 
-Use `pair(2rem)`. Dynamic dimensions belong in native CSS, for example `.pair { width: var(--size); height: var(--size); }`.
+Use `pair(2rem)`. General function arguments must be statically known. A function or mixin with exactly one untyped, default-free parameter and one native declaration whose complete value is `var(--parameter)` also accepts symbolic `var()` expressions. Its caller's reference remains intact for browser evaluation. Other functions reject external `var()`, `attr()`, and browser-dependent arguments. A known outer parameter may be forwarded through `var(--parameter)`.
 
 ### Native property precedence \{#literal-and-raw-values\}
-`property:value` always keeps its native meaning and cannot be overridden by a mixin. Within the same layer and conditions, direct property classes sort after recipes, so a direct declaration can override one property of a recipe independently of markup order. Existing selectors, conditions and `!` modifiers apply to both forms.
+`property:value` always retains its native meaning. Within the same layer and conditions, direct property classes sort after recipes so one declaration can override part of a recipe independently of markup order. Selectors, conditions and `!` modifiers apply to utilities and direct declarations.
 
-### `@apply` \{#reusing-a-matched-value\}
-Apply a mixin inside a native style rule or another mixin:
+### `@mixin` and `@apply` \{#reusing-a-matched-value\}
+Master compiles a static subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule). Definitions have dashed names and must be unconditional stylesheet-level rules. A mixin supplies CSS reuse; it does not register a Master class.
 
 ```css
+@mixin --caption {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
 .caption {
   color: currentColor;
-  @apply --text("sm");
+  @apply --caption;
   font-weight: 600;
+}
+@utility caption {
+  @apply --caption;
 }
 ```
 
-Expansion occurs at the original declaration position, preserving duplicates, importance, nested selectors and conditions. It does not generate a separate `.text-sm` rule. `@apply` accepts one mixin call, not a utility class list.
+`@apply` accepts one mixin call inside a native rule, utility, or another mixin. It does not accept utility names or class lists. Expansion occurs at the authored declaration position, preserving duplicates, importance, selectors, conditions and URL ownership.
 
-Parameters may be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported parameter types report compilation errors. Unknown mixins and invalid arity or types include source diagnostics. Relative URLs preserve the defining or calling file's ownership.
+Parameters can be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported types report compilation errors. The static subset does not implement browser-dependent parameter evaluation, private properties or general-purpose functions.
 
 ### Contents and class wrappers \{#contents\}
 Master compiles a static subset of the [CSS mixin draft](https://drafts.csswg.org/css-mixins-1/); it does not implement the complete browser proposal.
@@ -383,7 +393,7 @@ Master compiles a static subset of the [CSS mixin draft](https://drafts.csswg.or
 Supplied content retains the caller's parameter bindings, including when forwarded through nested applications. Fallback uses the defining mixin's bindings. Ordinary custom properties retain native CSS cascade behavior. Finite nested calls are allowed; recursive definitions and expansion depth/node limit violations are errors.
 
 ```css
-@mixin --emphasis { color: red; display: block; }
+@utility emphasis { color: red; display: block; }
 ```
 
 ```html
@@ -392,7 +402,7 @@ Supplied content retains the caller's parameter bindings, including when forward
 <div class="emphasis@apply(--hocus)!"></div>
 ```
 
-`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A named mixin supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
+`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A utility supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
 
 Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
 
@@ -400,19 +410,19 @@ Unused definitions, discarded contents and unused fallback blocks do not retain 
 The last definition with the same decoded name replaces the entire previous mixin, including parameters, body, dependencies and cached expansion. An empty definition remains registered. Forward nested calls resolve against the final registry. There is no parameter overloading.
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
-`@theme`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
+`@theme`, `@utility`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
 
-Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
+Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused utility or mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v5 with languageVersion 14 and binding ABI 24. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v6 with languageVersion 15 and binding ABI 25. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
 <StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />
 
-<StylesheetExample title="A parameter mixin" source={"@mixin --pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+<StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
 
 <StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
 
@@ -854,11 +864,11 @@ Automatic discovery respects project/workspace `.gitignore` files and excludes g
 
 A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
 
-An exact zero-parameter mixin wins over named token families. Otherwise the longest family prefix wins. Replacing a mixin also replaces its inferred family; there is no hidden built-in definition to fall back to. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
+An exact static utility wins over token patterns. Otherwise the longest family prefix wins. A later definition replaces the same utility form and name; static, token and function registrations remain independent. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
 
 Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
 
-Use explicit width and height declarations for paired dimensions, or author a parameter mixin such as `--box`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning.
+Use explicit width and height declarations for paired dimensions, or author a function utility such as `box(--size)`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning.
 
 ### Animation recipes
 
@@ -866,4 +876,4 @@ The preset’s direct-value `animate-*` family maps `--animate-*` values to the 
 
 ## Token family names
 
-Preset named-token families are defined in `mixins.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `mixin`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Manifest v5 uses language version 14 and binding ABI 24.
+Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Manifest v6 uses language version 15 and binding ABI 25.

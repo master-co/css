@@ -6,6 +6,7 @@ mod manifest;
 mod migration;
 mod mixins;
 mod project_comparison;
+mod utilities;
 pub use migration::{
     RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
 };
@@ -122,7 +123,7 @@ pub struct CompileCssDirectivesResult {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
+    pub definition_sources: Vec<mastercss_schema::CssDefinitionSource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub native_output: Option<NativeCssOutput>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -736,5 +737,5 @@ mod tests;
 mod theme_tests;
 
 mod declarations;
-mod mixin_sources;
+mod definition_sources;
 use declarations::{collect_ordered_declarations, preserve_ordered_literal_spelling};

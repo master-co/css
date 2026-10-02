@@ -583,30 +583,32 @@ impl EngineSession {
         })
     }
 
-    /// Tooling metadata for the selected explicit mixin. Native declarations and
-    /// built-in tokens have no mixin source; no semantic matching is duplicated by hosts.
-    pub fn class_mixin_definition(
+    /// Definition metadata follows explicit utility registration.
+    pub fn class_utility_definition(
         &self,
         class_name: &str,
-    ) -> Result<Option<mastercss_schema::MixinDefinition>, EngineError> {
+    ) -> Result<Option<mastercss_schema::UtilityDefinition>, EngineError> {
         self.ensure_active()?;
         let source = class_name.strip_suffix('!').unwrap_or(class_name);
         if let Some(Ok(head)) = mastercss_lexer::parse_functional_class(source) {
             return Ok(self
                 .compiled
-                .mixins
+                .utility_definitions
                 .iter()
-                .find(|definition| definition.name == format!("--{}", head.name))
+                .find(|definition| {
+                    definition.kind == mastercss_schema::UtilityKind::Function
+                        && definition.recipe.name == head.name
+                })
                 .cloned());
         }
         Ok(super::named::matching_utilities(source, &self.compiled)
             .iter()
             .find_map(|(index, _)| {
-                let name = &self.compiled.utilities[*index].id;
+                let id = &self.compiled.utilities[*index].id;
                 self.compiled
-                    .mixins
+                    .utility_definitions
                     .iter()
-                    .find(|definition| &definition.name == name)
+                    .find(|definition| &super::utility_matching::identity(definition) == id)
                     .cloned()
             }))
     }
@@ -668,7 +670,7 @@ impl EngineSession {
         let kind = if component {
             ClassSemanticKind::Component
         } else if matcher_types.contains(&UtilityMatcherType::Function) {
-            ClassSemanticKind::Mixin
+            ClassSemanticKind::Utility
         } else if matcher_types.contains(&UtilityMatcherType::Token) {
             ClassSemanticKind::Token
         } else if first_type == Some(-2) {
@@ -695,7 +697,7 @@ impl EngineSession {
                 Some(semantic_class_name[..prefix_length].to_owned()),
                 Some(semantic_class_name[prefix_length..value_end].to_owned()),
             )
-        } else if kind == ClassSemanticKind::Mixin {
+        } else if kind == ClassSemanticKind::Utility {
             let end = semantic_class_name
                 .len()
                 .saturating_sub(raw_state_token.len());

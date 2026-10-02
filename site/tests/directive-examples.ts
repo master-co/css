@@ -33,7 +33,7 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('Scoped tokens in native CSS')!, /color:var\(--color-brand\)/)
   assert.match(output.get('Scoped tokens in native CSS')!, /\.dark\{--color-brand:#111827/)
   assert.match(output.get('Native keyframes')!, /@keyframesfade-in/)
-  assert.match(output.get('A parameter mixin')!, /width:2rem;height:2rem/)
+  assert.match(output.get('A parameter utility')!, /width:2rem;height:2rem/)
   assert.match(output.get('A named media condition')!, /@media\(width>=40rem\)/)
   await assert.rejects(stylesheetExampleCSS('@theme unknown { --color-brand: red; }'), /accepts only static and inline modifiers/)
   assert.throws(() => configuredExampleCSS('@settings { important: true; }', ['padding:1rem']), /removed/)

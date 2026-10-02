@@ -11,8 +11,8 @@ beforeAll(() => {
 })
 
 const manifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -45,7 +45,7 @@ const manifest = {
       ]
     }
   ]
-} as unknown as MasterCSSManifest
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const},{"name":"fg-red","body":[{"type":"declaration" as const,"property":"color","value":[{"type":"text" as const,"value":"red"}]}],"kind":"static" as const}] } as unknown as MasterCSSManifest
 
 test('Rust scanner cache/state matches the TypeScript scanner oracle slice', async () => {
   const source = 'export const App = () => <div className="block unknown fg-red" />'

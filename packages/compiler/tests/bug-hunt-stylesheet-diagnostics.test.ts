@@ -25,9 +25,9 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 const inputs = [
   { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },
   { source: "/*😀*/.image{background:url(a.png)} @utilities {paint {color:red}}", token: '@utilities' as const, code: 'CSS_DIRECTIVE_ERROR' },

@@ -52,8 +52,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
   )).toEqual(["display:grid", 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -71,7 +71,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
       ]
     }
   ]
-}))
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
   expect(scanner.scan('component.tsx', 'const classes = "block unknown"')).toMatchObject({
     changed: true,
     validClasses: ['block'],
@@ -85,8 +85,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
   scanner.free()
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -104,7 +104,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
       ]
     }
   ]
-}))
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
   expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
     version: 4 as const,
     classes: [
@@ -129,8 +129,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "variables": {
     "spacing": [
       {
@@ -191,7 +191,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
       ]
     }
   ]
-}))
+, utilities: [{"name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration" as const,"property":"margin","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--spacing"}]}]}],"kind":"function" as const},{"name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration" as const,"property":"margin","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--spacing"}]}]}],"kind":"token" as const},{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const},{"name":"mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration" as const,"property":"margin-inline","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--value"}]}]}],"kind":"function" as const},{"name":"mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration" as const,"property":"margin-inline","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--value"}]}]}],"kind":"token" as const}] }))
   expect(lint.analyze(['block', "margin:2px", "margin:3px", 'unknown'], undefined, [])).toEqual({
     version: 4 as const,
     sortedClassNames: ['block', "margin:2px", "margin:3px", 'unknown'],
@@ -267,15 +267,15 @@ test('loads the isolated source tooling Wasm surface', async () => {
       key: 'margin',
       properties: ['margin'],
       policy: { rule: 'no-unapproved-raw-values', requireProperties: [] },
-      tokenFamilies: [{ mixin: '--m', prefix: 'm', namespace: 'spacing', argument: 'value', properties: ['margin'] }]
+      tokenFamilies: [{ utility: 'm', prefix: 'm', namespace: 'spacing', argument: 'value', properties: ['margin'] }]
     }
   })
   lint.dispose()
   lint.free()
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -293,35 +293,35 @@ test('loads the isolated source tooling Wasm surface', async () => {
       ]
     }
   ]
-}))
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 5 as const,
+    version: 7 as const,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 5 as const,
+    version: 7 as const,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 5 as const,
+    version: 7 as const,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: "color:", kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 5 as const,
+    version: 7 as const,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
     sourceFormat: { syntax: 'rgb' as const }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 5 as const,
+    version: 7 as const,
     tokens: [{
       range: { start: 8, end: 12 },
       expression: { kind: 'literal', value: '#123' }

@@ -6,8 +6,8 @@ import { compileCSSManifestFile, compileProjectManifest } from '../src/node-comp
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   mixins: [
   {
     "name": "--all",
@@ -25,7 +25,7 @@ const baseManifest = {
     ]
   }
 ]
-}
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-reference-'))
@@ -38,7 +38,7 @@ describe('CSS @reference', () => {
     const root = createFixture()
     try {
       const entry = join(root, 'src/component.css')
-      writeFileSync(join(root, 'tokens.css'), '@theme {--spacing-md:1rem}@mixin --p(--spacing){padding:var(--spacing)}')
+      writeFileSync(join(root, 'tokens.css'), '@theme {--spacing-md:1rem}@mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}')
       writeFileSync(entry, '@reference "../tokens.css";.button{@apply --p(var(--spacing-md,2rem))}')
       const result = compileCSSManifestFile(entry, { baseManifest })
       expect(result.css).toContain('.button{padding:var(--spacing-md,2rem)}')
@@ -63,10 +63,16 @@ describe('CSS @reference', () => {
           @media (width >= 640px) {
             @contents;
           }
+        } @utility wide {
+          @media (width >= 640px) {
+            @contents;
+          }
         }
 
 
           @mixin --brand {
+            color: var(--color-brand);
+          } @utility brand {
             color: var(--color-brand);
           }
 
@@ -96,8 +102,8 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, ' @mixin --brand { color: red; } ')
-      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @mixin --brand {\n            color: blue;\n          }\n\n        .button {\n          @apply --all {color:#00f;}\n        }\n      ")
+      writeFileSync(tokensPath, ' @mixin --brand { color: red; } @utility brand { color: red; } ')
+      writeFileSync(entryPath, "\n        @reference \"../tokens.css\";\n\n        @mixin --brand {\n            color: blue;\n          } @utility brand {\n            color: blue;\n          }\n\n        .button {\n          @apply --all {color:#00f;}\n        }\n      ")
 
       const result = compileCSSManifestFile(entryPath, { baseManifest })
 
@@ -116,9 +122,9 @@ describe('CSS @reference', () => {
       writeFileSync(aPath, [
         '@import "@master/css";',
         '@reference "./b.css";',
-        "@mixin --all{@contents;} .a { @apply --all{display:block;} }"
+        "@mixin --all{@contents;} @utility all {@contents;} .a { @apply --all{display:block;} }"
       ].join('\n'))
-      writeFileSync(bPath, ' @mixin --b { display: block; } ')
+      writeFileSync(bPath, ' @mixin --b { display: block; } @utility b { display: block; } ')
 
       const result = compileProjectManifest([aPath])
       expect(result.css).toContain('.a{display:block}')
@@ -168,7 +174,7 @@ test('references exported CSS authoring packages with compiler-only definition l
     const packageDir = join(root, 'node_modules', '@acme', 'theme')
     mkdirSync(packageDir, { recursive: true })
     writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/theme', exports: { '.': './master.css' } }))
-    writeFileSync(join(packageDir, 'master.css'), '@mixin --paint {color:red}@layer components{.button{display:flex}}')
+    writeFileSync(join(packageDir, 'master.css'), '@mixin --paint {color:red} @utility paint {color:red}@layer components{.button{display:flex}}')
     const file = join(root, 'src', 'local.css')
     writeFileSync(file, "@reference \"@acme/theme\";.local{@apply --all {color:red;}}")
     const result = compileCSSManifestFile(file, { baseManifest })

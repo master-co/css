@@ -23,7 +23,7 @@ pub struct LowerCssDirectivesOptions {
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesRequest {
     #[serde(default)]
-    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
+    pub definition_sources: Vec<mastercss_schema::CssDefinitionSource>,
     #[serde(default)]
     pub native_output: Option<crate::NativeCssOutput>,
     #[serde(default)]
@@ -38,7 +38,7 @@ pub struct LowerCssDirectivesRequest {
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesResult {
     pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
-    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
+    pub definition_sources: Vec<mastercss_schema::CssDefinitionSource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]

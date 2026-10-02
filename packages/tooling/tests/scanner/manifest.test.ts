@@ -8,7 +8,7 @@ import { createPresetManifest } from '../language/helpers/create-preset-manifest
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
   const scanner = await new MasterCSSScanner({}, __dirname).init()
-  expect(scanner.manifest.version).toBe(5)
+  expect(scanner.manifest.version).toBe(6)
 })
 
 test('reject string scanner options', async () => {
@@ -51,7 +51,7 @@ test('uses explicit compiled manifests', async () => {
     ]
   }
 ]
-  })
+  , utilities: [{"name":"blue-btn","body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"text" as const,"value":"oklch(63.7% 0.237 25.331)"}]}],"kind":"static" as const},{"name":"btn","body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"text" as const,"value":"oklch(55.1% 0.027 264.364)"}]}],"kind":"static" as const}] })
   const scanner = await new MasterCSSScanner({
     manifest
   }, __dirname).init()

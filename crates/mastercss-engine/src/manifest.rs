@@ -31,6 +31,14 @@ pub(crate) fn compile_manifest(
         .retain(|definition| seen.insert(definition.name.clone()));
     projection.mixins.reverse();
     super::validate_mixins(&projection.mixins).map_err(EngineError::InvalidManifest)?;
+    seen.clear();
+    projection.utility_definitions.reverse();
+    projection
+        .utility_definitions
+        .retain(|definition| seen.insert(super::utility_matching::identity(definition)));
+    projection.utility_definitions.reverse();
+    super::validate_utilities(&projection.mixins, &projection.utility_definitions)
+        .map_err(EngineError::InvalidManifest)?;
     if projection.version != mastercss_schema::MANIFEST_VERSION {
         return Err(EngineError::InvalidManifest(
             "unsupported projection version".into(),
@@ -50,7 +58,7 @@ pub(crate) fn compile_manifest(
         }
         crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
     }
-    super::mixin_matching::register(&mut projection);
+    super::utility_matching::register(&mut projection);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
     projection.utilities = projection

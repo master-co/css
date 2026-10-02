@@ -94,7 +94,7 @@ fn reviews_dimension_competition_and_retains_explicit_custom_sizing() {
         .as_array_mut()
         .unwrap()
         .push(custom.clone());
-    input.target_manifest["mixins"].as_array_mut().unwrap().push(json!({"name":"--size","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
+    input.target_manifest["utilities"].as_array_mut().unwrap().push(json!({"kind":"function","name":"size","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
     input.class_lists = vec![vec!["size:20px".into()]];
     assert_eq!(
         migrate_rc(&input).unwrap().class_lists[0][0]
@@ -161,7 +161,7 @@ fn sizing_helpers_do_not_replace_explicit_short_alias_definitions() {
         .as_array_mut()
         .unwrap()
         .push(custom);
-    input.target_manifest["mixins"].as_array_mut().unwrap().push(json!({"name":"--min","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
+    input.target_manifest["utilities"].as_array_mut().unwrap().push(json!({"kind":"function","name":"min","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"inline-size","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}));
     let result = migrate_rc(&input).unwrap();
     assert_eq!(result.class_lists[0][0].after.as_deref(), Some("min(20px)"));
     assert_eq!(

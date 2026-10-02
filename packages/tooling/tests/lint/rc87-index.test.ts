@@ -68,7 +68,7 @@ const customManifest = createPresetManifest({
     ]
   }
 ]
-})
+, utilities: [{"name":"midnight","body":[{"type":"rule" as const,"selector":"&:where(.midnight,.midnight *)","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const},{"name":"wide","body":[{"type":"condition" as const,"condition":"@media (min-width: 80rem)","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const},{"name":"content-auto","body":[{"type":"declaration" as const,"property":"content-visibility","value":[{"type":"text" as const,"value":"auto"}]}],"kind":"static" as const},{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] })
 const customCSS = createCSSWithNativeDeclarations(customManifest)
 
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
@@ -652,7 +652,7 @@ describe('canonical class suggestions', () => {
     ]
   }
 ]
-    }))
+    , utilities: [{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
     expect(suggestCanonicalClassName('btn', componentCSS)).toBeUndefined()
     expect(suggestCanonicalClassName('btn@dark@sm', componentCSS)).toBeUndefined()
   })

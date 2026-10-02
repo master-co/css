@@ -19,9 +19,9 @@ fn error_for(source: &str) -> String {
 #[test]
 fn rejects_directives_inside_container_at_rules() {
     for container in [
-        "@layer cards{@mixin --paint {padding:2rem}.card{padding:2rem}}",
-        "@media screen{@mixin --paint {padding:2rem}.card{padding:2rem}}",
-        "@supports (display: grid){@mixin --paint {padding:2rem}.card{padding:2rem}}",
+        "@layer cards{@mixin --paint {padding:2rem} @utility paint {padding:2rem}.card{padding:2rem}}",
+        "@media screen{@mixin --paint {padding:2rem} @utility paint {padding:2rem}.card{padding:2rem}}",
+        "@supports (display: grid){@mixin --paint {padding:2rem} @utility paint {padding:2rem}.card{padding:2rem}}",
     ] {
         assert_eq!(error_for(container), "@mixin must be top-level");
     }
@@ -29,7 +29,7 @@ fn rejects_directives_inside_container_at_rules() {
 
 #[test]
 fn rejects_directives_in_a_flattened_qualified_import() {
-    let flattened = "@supports (display: grid){@media screen{@layer cards{@mixin --paint {padding:2rem}\n.card{padding:2rem}}}}\n.after{margin:1px}";
+    let flattened = "@supports (display: grid){@media screen{@layer cards{@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n.card{padding:2rem}}}}\n.after{margin:1px}";
     assert_eq!(error_for(flattened), "@mixin must be top-level");
 }
 
@@ -44,7 +44,7 @@ fn reports_the_contained_directive_name() {
 #[test]
 fn top_level_directives_beside_container_at_rules_still_compile() {
     let result = compile_css_directives(
-        "@mixin --paint {padding:2rem}\n@layer cards{.card{padding:2rem}}",
+        "@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n@layer cards{.card{padding:2rem}}",
         &CompileNativeCssOptions {
             preserve_native_css: true,
             ..Default::default()

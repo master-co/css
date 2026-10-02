@@ -6,8 +6,8 @@ import { createToolingSessionSync } from '../../src/node'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -25,7 +25,7 @@ const manifest: MasterCSSManifest = {
       ]
     }
   ]
-}
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
 
 const factories = {
   'native sync': () => createLanguageSessionSync({ manifest }),
@@ -36,13 +36,13 @@ const factories = {
 it('derives readonly family metadata from the effective manifest in both bindings', async () => {
   const preset = createPresetManifest()
   const manifest: MasterCSSManifest = {
-    version: 5, languageVersion: 14,
-    mixins: [
-      ...(preset.mixins ?? []),
-      { name: '--space', parameters: [{ name: '--custom-space' }], body: [
+    version: 6, languageVersion: 15,
+    utilities: [
+      ...(preset.utilities ?? []),
+      { kind: 'token', name: 'space', parameters: [{ name: '--custom-space' }], body: [
         { type: 'declaration', property: 'margin', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--custom-space' }] }] }
       ] },
-      { name: '--p', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }
+      { kind: 'static', name: 'p', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }
     ]
   }
   using native = createLanguageSessionSync({ manifest })
@@ -51,22 +51,22 @@ it('derives readonly family metadata from the effective manifest in both binding
   const result = native.tokenFamilies()
   expect(wasm.tokenFamilies()).toEqual(result)
   expect(full.tokenFamilies()).toEqual(result)
-  expect(result.families).toContainEqual({ mixin: '--space', prefix: 'space', namespace: 'custom-space', argument: 'value', properties: ['margin'] })
-  expect(result.families).toContainEqual({ mixin: '--text', prefix: 'text', namespace: 'text', argument: 'key', properties: ['font-size', 'line-height', 'letter-spacing'] })
-  expect(result.families.some(family => family.prefix === 'p')).toBe(false)
+  expect(result.families).toContainEqual({ utility: 'space', prefix: 'space', namespace: 'custom-space', argument: 'value', properties: ['margin'] })
+  expect(result.families).toContainEqual({ utility: 'text', prefix: 'text', namespace: 'text', argument: 'key', properties: ['font-size', 'line-height', 'letter-spacing'] })
+  expect(result.families.some(family => family.prefix === 'p')).toBe(true)
   expect(result.families.some(family => family.prefix === 'grid-row-span')).toBe(false)
   expect(Object.isFrozen(result)).toBe(true)
   expect(Object.isFrozen(result.families)).toBe(true)
   expect(result.families.every(family => Object.isFrozen(family) && Object.isFrozen(family.properties))).toBe(true)
   expect(native.inspectClassName('p-md').rules).toEqual([])
-  using empty = createLanguageSessionSync({ manifest: { version: 5, languageVersion: 14 } })
+  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 15 } })
   expect(empty.tokenFamilies().families).toEqual([])
 })
 
 it('inline tokens have identical native and Wasm language behavior', async () => {
   const manifest: MasterCSSManifest = {
-    version: 5, languageVersion: 14,
-    mixins: createPresetManifest().mixins,
+    version: 6, languageVersion: 15,
+    utilities: createPresetManifest().utilities,
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }
   using native = createLanguageSessionSync({ manifest })
@@ -95,8 +95,8 @@ for (const [name, create] of Object.entries(factories)) {
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
         expect(session.tokenFamilies()).toEqual(full.tokenFamilies())
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
-        expect(session.formatDirectives({ source: " @mixin --box { display:block; } " })).toEqual(
-          full.formatDirectives({ source: " @mixin --box { display:block; } " })
+        expect(session.formatDirectives({ source: " @mixin --box { display:block; } @utility box { display:block; } " })).toEqual(
+          full.formatDirectives({ source: " @mixin --box { display:block; } @utility box { display:block; } " })
         )
       } finally {
         session.dispose()

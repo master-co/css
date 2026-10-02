@@ -13,11 +13,13 @@ const source = `
  }
 @mixin --audit-dark {
   @media (prefers-color-scheme: dark) { @contents; }
+} @utility audit-dark {
+  @media (prefers-color-scheme: dark) { @contents; }
 }
-@mixin --audit-wide { @media (width >= 40rem) { @contents; } }
-@mixin --audit-card { @container card (width >= 30rem) { @contents; } }
-@mixin --audit-align-start { text-align: start; }
-@mixin --audit-align-end { text-align: end; }
+@mixin --audit-wide { @media (width >= 40rem) { @contents; } } @utility audit-wide { @media (width >= 40rem) { @contents; } }
+@mixin --audit-card { @container card (width >= 30rem) { @contents; } } @utility audit-card { @container card (width >= 30rem) { @contents; } }
+@mixin --audit-align-start { text-align: start; } @utility audit-align-start { text-align: start; }
+@mixin --audit-align-end { text-align: end; } @utility audit-align-end { text-align: end; }
 `
 
 const valid = [
@@ -88,8 +90,8 @@ test('447: compiler and engine binding combinations agree on the language contra
         if (className.includes('@')) {
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')

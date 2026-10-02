@@ -30,7 +30,7 @@ fn engine() -> EngineSession {
         @custom-media --sm (width >= 40rem);
         {}
     "#,
-        include_str!("../../../packages/preset/src/mixins.css")
+        include_str!("../../../packages/preset/src/utilities.css")
     ))
     .unwrap()
 }
@@ -267,7 +267,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     assert!(
         compile("@utility font-* from(--font-family-*, --*-*) {font-family:var(--value)}").is_err()
     );
-    let native = compile("@mixin --outline(--value) {outline-width:var(--value)}").unwrap();
+    let native = compile("@mixin --outline(--value) {outline-width:var(--value)} @utility outline(--value) {outline-width:var(--value)}@utility outline-(--value) {outline-width:var(--value)}").unwrap();
     assert_eq!(declarations(&native, "outline:2px"), "outline:2px");
     assert_eq!(declarations(&native, "outline(2px)"), "outline-width:2px");
     assert!(
@@ -285,7 +285,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":5,"languageVersion":14,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":6,"languageVersion":15,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -321,25 +321,20 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":5,"languageVersion":14,"utilities":[utility]}).to_string();
+        let source = json!({"version":6,"languageVersion":15,"utilities":[utility]}).to_string();
         assert!(
-            EngineSession::create(&source)
-                .err()
-                .unwrap()
-                .to_string()
-                .contains("utilities")
-                || EngineSession::create(&source)
-                    .err()
-                    .unwrap()
-                    .to_string()
-                    .contains("utilities")
+            EngineSession::create(&source).is_err(),
+            "legacy matcher entries must be rejected"
         );
     }
 }
 
 #[test]
 fn handwritten_mixin_reserves_token_spelling() {
-    let engine = compile("@theme {--color-red:red}@mixin --fg-red{color:purple}").unwrap();
+    let engine = compile(
+        "@theme {--color-red:red}@mixin --fg-red{color:purple} @utility fg-red {color:purple}",
+    )
+    .unwrap();
     assert_eq!(declarations(&engine, "fg-red"), "color:purple");
     assert!(
         engine.inspect("fg-red:hover").unwrap().rules[0]

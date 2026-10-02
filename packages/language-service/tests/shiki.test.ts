@@ -37,7 +37,7 @@ const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
     ]
   }
 ]
-})
+, utilities: [{"name":"btn","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const}] })
 
 function scopeToken(scopeName: string, color: string) {
   return [
@@ -294,7 +294,7 @@ test.concurrent('separates named opacity and native values without coloring unre
   const samples = [
     { lang: 'html', code: "<!-- fg-red -->\n<div class=\"fg-red/0.5! sr-only:hover@sm unknown-widget\"></div>" },
     { lang: 'tsx', code: 'const label = "fg-blue";\n<div className="-m-sm fg-red/0.5" />' },
-    { lang: 'css', code: "@mixin --card { @safelist \"fg-red/0.5 border:1px|solid|var(--color-line-divider) unknown-widget\"; }" },
+    { lang: 'css', code: "@mixin --card { @safelist \"fg-red/0.5 border:1px|solid|var(--color-line-divider) unknown-widget\"; } @utility card { @safelist \"fg-red/0.5 border:1px|solid|var(--color-line-divider) unknown-widget\"; }" },
     { lang: 'mcss', code: "fg-red/0.5 sr-only:hover@sm color:red unknown-widget" }
   ]
   for (const { lang, code } of samples) {
@@ -355,7 +355,7 @@ test.concurrent('assigns distinct highlight roles to native declaration value pa
 })
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
-  const code = "@safelist \"sr-only fg-red\";\n@mixin --text-left {\n        text-align: left;\n    }\n@mixin --text-center {\n        text-align: center;\n    }\n@mixin --text-right {\n        text-align: right;\n    }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n    }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    }\n@mixin --btn {\n        @safelist \"fg-blue fg-brand:hover@sm\";\n    }"
+  const code = "@safelist \"sr-only fg-red\";\n@mixin --text-left {\n        text-align: left;\n    } @utility text-left {\n        text-align: left;\n    }\n@mixin --text-center {\n        text-align: center;\n    } @utility text-center {\n        text-align: center;\n    }\n@mixin --text-right {\n        text-align: right;\n    } @utility text-right {\n        text-align: right;\n    }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n    }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    } @utility grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    }\n@mixin --btn {\n        @safelist \"fg-blue fg-brand:hover@sm\";\n    } @utility btn {\n        @safelist \"fg-blue fg-brand:hover@sm\";\n    }"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'css',
     manifest
@@ -850,7 +850,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     --spacing-card: 24;
 }
 
-@mixin --card { @safelist "bg-blue fg-brand:hover"; }`
+@mixin --card { @safelist "bg-blue fg-brand:hover"; } @utility card { @safelist "bg-blue fg-brand:hover"; }`
   const cssOptions = {
     lang: 'css'
   }
@@ -930,7 +930,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 })
 
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
-  const code = "@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }\n@mixin --card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"sr-only\";\n        }\n    }"
+  const code = "@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } } @utility motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }\n@mixin --card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"sr-only\";\n        }\n    } @utility card {\n        @safelist \"p-md r-xl\";\n        @variant <sm {\n            @safelist \"sr-only\";\n        }\n    }"
   const transformer = transformerMasterCSS()
   const transformedTokens = transformer.tokens.call({
     source: code,

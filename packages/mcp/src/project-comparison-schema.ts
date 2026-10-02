@@ -5,7 +5,7 @@ const asset = z.object({ path: z.string().min(1), css: z.string() }).strict()
 export const projectSnapshot = z.object({
   version: z.literal(1),
   // The compiler validates the versioned execution manifest, including unknown fields.
-  manifest: z.object({ version: z.literal(5), languageVersion: z.literal(14) }).catchall(z.json()),
+  manifest: z.object({ version: z.literal(6), languageVersion: z.literal(15) }).catchall(z.json()),
   sources: z.array(z.object({ path: z.string().min(1), classes: strings }).strict()),
   stylesheets: z.array(asset), outputs: z.array(asset), excluded: strings, unresolved: strings
 }).strict()

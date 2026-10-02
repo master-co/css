@@ -119,7 +119,7 @@ pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<
             let mut in_mixin = false;
             while let Some(index) = ancestor {
                 let parent = &statements[index];
-                in_mixin |= matches!(&tokens[parent.tokens.start].kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("mixin"));
+                in_mixin |= matches!(&tokens[parent.tokens.start].kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("mixin") || name.eq_ignore_ascii_case("utility"));
                 ancestor = parent.parent;
             }
             let message = match name.to_ascii_lowercase().as_str() {

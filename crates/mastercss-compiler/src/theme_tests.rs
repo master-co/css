@@ -3,7 +3,7 @@ use mastercss_engine::EngineSession;
 
 fn compile(source: &str) -> (CompileCssDirectivesResult, Value) {
     let source = format!(
-        "{source}@mixin --bg(--color){{background-color:var(--color)}}@mixin --animate(--animate){{animation:var(--animate)}}"
+        "{source}@mixin --bg(--color){{background-color:var(--color)}} @utility bg(--color) {{background-color:var(--color)}}@utility bg-(--color) {{background-color:var(--color)}}@mixin --animate(--animate){{animation:var(--animate)}} @utility animate(--animate) {{animation:var(--animate)}}@utility animate-(--animate) {{animation:var(--animate)}}"
     );
     let result = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
     let manifest =
@@ -20,7 +20,7 @@ fn engine(source: &str) -> EngineSession {
 fn theme_modes_and_ordered_defaults() {
     let (_, manifest) =
         compile("@theme static inline{--color-brand:red;--color-brand:blue;--spacing-card:2rem}");
-    assert_eq!(manifest["languageVersion"], 14);
+    assert_eq!(manifest["languageVersion"], 15);
     assert_eq!(manifest["theme"][0]["prelude"], ":root,:host");
     assert_eq!(manifest["theme"][0]["children"][0]["inline"], true);
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
@@ -90,7 +90,7 @@ fn inline_is_one_pass_and_recomputes_dependencies() {
 #[test]
 fn inline_preserves_external_variables_fallbacks_and_opaque_strings() {
     let mut e = engine(
-        "@theme inline{--color-brand:var(--app-brand,red)}@mixin --card{color:var(--color-brand,blue);content:\"var(--color-brand)\"}",
+        "@theme inline{--color-brand:var(--app-brand,red)}@mixin --card{color:var(--color-brand,blue);content:\"var(--color-brand)\"} @utility card {color:var(--color-brand,blue);content:\"var(--color-brand)\"}",
     );
     e.ensure_class_rules(["bg-brand", "card"]).unwrap();
     let css = e.css_text().replace(' ', "");
@@ -114,7 +114,7 @@ fn inline_importance_selects_value_and_mode_without_important_leaking() {
 
 #[test]
 fn inline_applies_to_native_apply_but_not_authored_declarations() {
-    let input = compile_css_directives("@theme inline{--color-brand:var(--app-brand)}@mixin --paint{color:var(--color-brand)}.card{border-color:var(--color-brand);@apply --paint}", &CompileNativeCssOptions::default()).unwrap();
+    let input = compile_css_directives("@theme inline{--color-brand:var(--app-brand)}@mixin --paint{color:var(--color-brand)} @utility paint {color:var(--color-brand)}.card{border-color:var(--color-brand);@apply --paint}", &CompileNativeCssOptions::default()).unwrap();
     let lowered = lower_css_directives_request(
         &LowerCssDirectivesRequest {
             native_output: input.native_output,
@@ -234,7 +234,7 @@ fn invalid_theme_declarations_point_to_the_offending_unicode_position() {
 #[test]
 fn inline_wrapper_applications_substitute_each_authored_reference_once() {
     let mut e = engine(
-        "@theme inline{--color-base:red;--color-alias:var(--color-base)}@mixin --hover{&:hover{@contents}}@mixin --paint{color:var(--color-alias)}",
+        "@theme inline{--color-base:red;--color-alias:var(--color-base)}@mixin --hover{&:hover{@contents}} @utility hover {&:hover{@contents}}@mixin --paint{color:var(--color-alias)} @utility paint {color:var(--color-alias)}",
     );
     e.ensure_class_rules([
         "bg-alias@apply(--hover)",
@@ -251,7 +251,7 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
 #[test]
 fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
     let base = serde_json::json!({
-        "version":5,"languageVersion":14,
+        "version":6,"languageVersion":15,
         "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
         "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
     });

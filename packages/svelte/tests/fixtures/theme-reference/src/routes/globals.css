@@ -11,5 +11,5 @@
 @media (prefers-color-scheme: dark) { :root, :host { --color-probe: #abcdef; } }
 
 
- @mixin --probe-tone { color: var(--color-probe); }
+ @mixin --probe-tone { color: var(--color-probe); } @utility probe-tone { color: var(--color-probe); }
 .never-loaded { color: lime; }

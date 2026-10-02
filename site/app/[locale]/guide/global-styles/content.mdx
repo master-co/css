@@ -247,15 +247,15 @@ Use markup utilities for one-off variations at a specific call site.
 Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
 
 ```css name=app.css
-@mixin --flow {
+@utility flow {
     display: grid;
     gap: var(--spacing-md);
   }
-@mixin --content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
-@mixin --print-hidden {
+@utility print-hidden {
     @media (--print) {
       display: none;
     }
@@ -323,7 +323,7 @@ In this panel, local adjustments stay in markup, colors carry product roles, the
   --color-information: #4f46e5;
 }
 
-@mixin --panel-stack(--gap <number>: 1) {
+@utility panel-stack(--gap <number>: 1) {
   display: flex;
   flex-direction: column;
   gap: calc(var(--gap) * 1rem);

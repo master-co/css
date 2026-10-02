@@ -20,17 +20,17 @@ function project(source?: string) {
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { force: true, recursive: true }) })
 
 it('queries only the families loaded by the workspace, including empty namespaces', async () => {
-  const context = project('@import "@master/css";@theme {--space-md:1rem}@mixin --pad(--space){padding:var(--space)}@mixin --ink(--color){color:var(--color)}')
+  const context = project('@import "@master/css";@theme {--space-md:1rem}@mixin --pad(--space){padding:var(--space)} @utility pad(--space) {padding:var(--space)}@utility pad-(--space) {padding:var(--space)}@mixin --ink(--color){color:var(--color)} @utility ink(--color) {color:var(--color)}@utility ink-(--color) {color:var(--color)}')
   const entry = join(context.root, 'node_modules/@master/css')
   mkdirSync(entry, { recursive: true })
   writeFileSync(join(entry, 'package.json'), '{"name":"@master/css","style":"./index.css"}')
   writeFileSync(join(entry, 'index.css'), '@layer theme,base,defaults,components,utilities;')
   try {
     const result = await queryManifest(context, { kind: 'family' })
-    expect(result.version).toBe(5)
+    expect(result.version).toBe(6)
     expect(result.results.families).toEqual([
-      { type: 'token-family', mixin: '--pad', prefix: 'pad', namespace: 'space', argument: 'value', properties: ['padding'] },
-      { type: 'token-family', mixin: '--ink', prefix: 'ink', namespace: 'color', argument: 'value', properties: ['color'] }
+      { type: 'token-family', utility: 'pad', prefix: 'pad', namespace: 'space', argument: 'value', properties: ['padding'] },
+      { type: 'token-family', utility: 'ink', prefix: 'ink', namespace: 'color', argument: 'value', properties: ['color'] }
     ])
     expect((await queryManifest(context, { kind: 'family', namespace: 'color' })).results.families).toHaveLength(1)
   } finally { context.dispose() }
@@ -54,7 +54,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 14, bindingAbiVersion: 23 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 15, bindingAbiVersion: 25 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })

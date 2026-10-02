@@ -1,5 +1,5 @@
 //! Tooling-facing definition references reuse the engine matcher and suffix parser.
-use crate::{EngineError, EngineSession, UtilityEmit};
+use crate::{EngineError, EngineSession};
 use std::collections::BTreeSet;
 
 impl EngineSession {
@@ -17,8 +17,14 @@ impl EngineSession {
                     .iter()
                     .map(|name| format!("variable:--{name}")),
             );
-            if let UtilityEmit::Mixin { name } = &self.compiled.utilities[index].emit {
-                references.insert(format!("mixin:{name}"));
+            let id = &self.compiled.utilities[index].id;
+            if self
+                .compiled
+                .utility_definitions
+                .iter()
+                .any(|definition| super::utility_matching::identity(definition) == *id)
+            {
+                references.insert(format!("utility:{id}"));
             }
         }
         for rule in self.generate_composition_rules_raw(source) {

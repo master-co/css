@@ -38,9 +38,9 @@ for (const [name, statement, filename] of [
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, preserveNativeCSS: true })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, preserveNativeCSS: true })
       expect(result.dependencies).toEqual([entry, child])
       expect(result.css).toMatch(/color:\s*red/)
       expect(result.css).not.toMatch(/@import/i)
@@ -71,7 +71,7 @@ test('BH-0004 actual referenced CSS with encoded filename and query keeps contex
     const entry = join(root, 'entry #.css')
     const reference = join(root, 'tokens #.css')
     writeFileSync(entry, "@reference \"./tokens%20%23.css?version=1#context\";.example{@apply --all {color:red;}}")
-    writeFileSync(reference, '@mixin --paint {color:red}.reference-only{color:blue}')
+    writeFileSync(reference, '@mixin --paint {color:red} @utility paint {color:red}.reference-only{color:blue}')
     const result = compileManifestFileSync(entry, { baseManifest: {
   mixins: [
   {
@@ -90,9 +90,9 @@ test('BH-0004 actual referenced CSS with encoded filename and query keeps contex
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, preserveNativeCSS: true })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, preserveNativeCSS: true })
     expect(result.dependencies).toContain(reference)
     expect(result.css).toContain('color:red')
     expect(result.css).not.toContain('reference-only')
@@ -124,9 +124,9 @@ test('BH-0004 unresolved bare package CSS remains available to the host resolver
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, preserveNativeCSS: true })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, preserveNativeCSS: true })
     expect(result.dependencies).toEqual([entry])
     expect(result.css).toContain('another-package/theme.css')
   } finally { rmSync(root, { recursive: true, force: true }) }

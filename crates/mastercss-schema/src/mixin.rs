@@ -72,3 +72,20 @@ pub enum MixinValuePart {
     Text { value: String },
     Function { name: String, value: MixinValue },
 }
+
+/// Explicit class registration, independent of native mixin names.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UtilityDefinition {
+    pub kind: UtilityKind,
+    #[serde(flatten)]
+    pub recipe: MixinDefinition,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum UtilityKind {
+    Static,
+    Token,
+    Function,
+}

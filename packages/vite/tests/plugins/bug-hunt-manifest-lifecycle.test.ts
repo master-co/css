@@ -25,10 +25,10 @@ const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
 function fixture(initiallyMissing = false) {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
   mkdirSync(root);mkdirSync(join(parent, 'external'))
-  writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/deep/tokens.css\";@mixin --card {@apply --paint{padding:1rem;}}")
+  writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/deep/tokens.css\";@mixin --card {@apply --paint{padding:1rem;}} @utility card {@apply --paint{padding:1rem;}}")
   writeFileSync(join(root, 'entry.js'), 'export const ready=true;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div></body></html>')
-  const write = (padding = '7rem') => { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, `@mixin --paint{@media (width>=${padding}){@contents;}}`) }
+  const write = (padding = '7rem') => { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, `@mixin --paint{@media (width>=${padding}){@contents;}} @utility paint {@media (width>=${padding}){@contents;}}`) }
   if (!initiallyMissing) write()
   return { parent, root, dependency, write }
 }
@@ -107,7 +107,7 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
     await environment.transformRequest('/entry.js');await environment.waitForRequestsIdle()
     const module = environment.moduleGraph.getModuleById('\0virtual:master-css-manifest')!
     expect(module.isSelfAccepting).toBe(false)
-    writeFileSync(f.dependency, '@mixin --paint {@compose lifecycle-invalid-class;}')
+    writeFileSync(f.dependency, '@mixin --paint {@compose lifecycle-invalid-class;} @utility paint {@compose lifecycle-invalid-class;}')
     environment.moduleGraph.invalidateModule(module)
     await expect(environment.transformRequest(module.url)).rejects.toThrow('@compose has been removed')
     const send = vi.spyOn(server.ws, 'send');f.write('9rem')

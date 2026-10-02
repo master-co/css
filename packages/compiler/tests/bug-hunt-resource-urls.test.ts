@@ -29,16 +29,16 @@ const request: MasterCSSCompileStylesheetsRequest = {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 }
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`BH-0004 ${binding}: original-source resource discovery includes authoring and image-set`, async () => {
     const session = await createCompilerBindingSession({ binding })
     try {
-      const source = '/*😀*/@reference "ref.css";@namespace x url(uri);@mixin --paint {background:u\\72l("a.png")}.x{background:image-set("b.png" 1x,url(c.png) 2x);filter:url(#local)}'
+      const source = '/*😀*/@reference "ref.css";@namespace x url(uri);@utility paint {background:u\\72l("a.png")}.x{background:image-set("b.png" 1x,url(c.png) 2x);filter:url(#local)}'
       const analysis = session.analyzeCSSDependencies(source)
       expect(analysis.resources.map(item => item.url)).toEqual(['a.png', 'b.png', 'c.png'])
       expect(analysis.resources.map(item => source.slice(item.start, item.end))).toEqual(['u\\72l("a.png")', 'image-set("b.png" 1x,url(c.png) 2x)', 'image-set("b.png" 1x,url(c.png) 2x)'])

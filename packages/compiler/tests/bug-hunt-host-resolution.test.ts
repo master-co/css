@@ -29,9 +29,9 @@ function fixture() {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } }, latentClasses: new Set(), validClasses: new Set(), nativeClassNames: new Set(), usedNativeClasses: new Set(), registerNativeClasses: vi.fn() } as any
   const delivery = { entryURL: './entry.css', stylesheetURL: (file: string, variant?: string) => `./${Buffer.from(variant ?? file).toString('hex')}.css`, resourceURL: () => './resource.svg', relativeResourceURLs: true }
   return { root, entry, child, scanner, delivery, remove: () => rmSync(root, { recursive: true, force: true }) }
 }
@@ -41,7 +41,7 @@ test('BH-0004 async host classification and registration preserve transitive def
   try {
     const calls: string[] = []
     const resolveImport = async (specifier: string, importer: string) => { calls.push(importer); return specifier === '@theme' ? f.child : undefined }
-    const source = '@import "@theme" layer(shared) print;@mixin --paint {color:blue}'
+    const source = '@import "@theme" layer(shared) print;@mixin --paint {color:blue} @utility paint {color:blue}'
     const resolution = await resolveStylesheet(f.entry, source, { preserveImports: true, resolveImport })
     expect(resolution).toMatchObject({ kind: 'local', source, compilationSource: source, dependencies: [f.entry, f.child] })
     using collection = createStylesheetCollection()

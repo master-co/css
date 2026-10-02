@@ -13,10 +13,10 @@ function fixture() {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, 'nested/tokens.css')
-  writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/nested/tokens.css\";@mixin --card {@apply --paint{padding:1rem;}}")
+  writeFileSync(join(root, 'style.css'), "@import url(\"@master/css\");@reference \"../external/nested/tokens.css\";@mixin --card {@apply --paint{padding:1rem;}} @utility card {@apply --paint{padding:1rem;}}")
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";import manifest from "virtual:master-css-manifest";window.manifest=manifest;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div><script type="module" src="./entry.js"></script></body></html>')
-  return { parent, root, dependency, write(value = '@mixin --paint{@media (width>=7rem){@contents;}}') { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, value) } }
+  return { parent, root, dependency, write(value = '@mixin --paint{@media (width>=7rem){@contents;}} @utility paint {@media (width>=7rem){@contents;}}') { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, value) } }
 }
 function noExternalEvents(): Plugin {
   return { name: 'test:miss-bootstrap-watcher-registration', configureServer(server) {
@@ -40,7 +40,7 @@ test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers wi
     const initial = await response(server)
     expect(initial.status).toBe(500);expect(initial.text).toContain('tokens.css');expect(initial.text).not.toContain('<style id="master-css"')
     const send = vi.spyOn(server.ws, 'send')
-    f.write('@mixin --paint {@compose definitely-missing-class;}')
+    f.write('@mixin --paint {@compose definitely-missing-class;} @utility paint {@compose definitely-missing-class;}')
     await vi.waitFor(() => expect(JSON.stringify(send.mock.calls)).toContain('@compose has been removed'), { timeout: watchDeadline })
     expect(hasReload(send.mock.calls)).toBe(false)
     const invalid = await response(server)
@@ -90,11 +90,11 @@ test.each(['pre-render', 'progressive'] as const)('BH-0004 invalid manifest afte
     const plugin = server.config.plugins.find(p => p.name === 'master-css:pre-render')!
     const hook = plugin.handleHotUpdate
     if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
-    f.write('@mixin --paint {@compose definitely-missing-class;}')
+    f.write('@mixin --paint {@compose definitely-missing-class;} @utility paint {@compose definitely-missing-class;}')
     await expect(hook.call({} as never, { file: f.dependency, server } as never)).rejects.toThrow('@compose has been removed')
     const failed = await response(server)
     expect(failed.status).toBe(500);expect(failed.text).not.toContain('@media (width>=7rem){.card{padding:1rem}}')
-    const send = vi.spyOn(server.ws, 'send');f.write('@mixin --paint{@media (width>=9rem){@contents;}}')
+    const send = vi.spyOn(server.ws, 'send');f.write('@mixin --paint{@media (width>=9rem){@contents;}} @utility paint {@media (width>=9rem){@contents;}}')
     await hook.call({} as never, { file: f.dependency, server } as never)
     expect(hasReload(send.mock.calls)).toBe(true);expect((await response(server)).text).toContain('@media (width>=9rem){.card{padding:1rem}}')
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }

@@ -94,7 +94,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
     ]
   }
 ]
-      })
+      , utilities: [{"name":"btn","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"color","value":[{"type":"text" as const,"value":"var(--color-brand)"}]}]},{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const}] })
     }
   )
 
@@ -218,7 +218,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 })
 
 test.concurrent('renders semantic tokens for internal styles dogfood directives', () => {
-  const { tokens } = renderTokens("@mixin --monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    }", 'css')
+  const { tokens } = renderTokens("@mixin --monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    } @utility monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    }", 'css')
 
   expectToken(tokens, '--vscode-editor-background', 'property')
   expectToken(tokens, 'transparent', 'enumMember')
@@ -300,9 +300,11 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         }
       }
 
-    @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }
+    @mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } } @utility motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }
 
     @mixin --reset {
+        @safelist "sr-only";
+      } @utility reset {
         @safelist "sr-only";
       }
 
@@ -319,18 +321,39 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
             @safelist "fg-primary";
           }
         }
+      } @utility btn {
+        @safelist "fg-blue fg-primary:hover@md";
+        @media (prefers-color-scheme: dark) {
+          @safelist "bg-blue";
+        }
+        @variant <sm {
+          @safelist "sr-only";
+        }
+        ::scrollbar-thumb:hover {
+          @media (prefers-color-scheme: dark) {
+            @safelist "fg-primary";
+          }
+        }
       }
 
     @mixin --content-auto {
         @safelist "sr-only";
+      } @utility content-auto {
+        @safelist "sr-only";
       }
 @mixin --text-left {
+        text-align: left;
+      } @utility text-left {
         text-align: left;
       }
 @mixin --text-center {
         text-align: center;
+      } @utility text-center {
+        text-align: center;
       }
 @mixin --text-right {
+        text-align: right;
+      } @utility text-right {
         text-align: right;
       }
 @layer(utilities) font-* from(--font-size-*) {
@@ -344,8 +367,22 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
       }
 @mixin --user-select(--value) {
         user-select: var(--value);
+      } @utility user-select(--value) {
+        user-select: var(--value);
+      }@utility user-select-(--value) {
+        user-select: var(--value);
       }
 @mixin --grid-cols(--value) {
+        grid-template-columns: repeat(var(--value), minmax(0, 1fr));
+
+        @variant <sm {
+          font-size: var(--value);
+        }
+
+        &:hover {
+          text-align: var(--value);
+        }
+      } @utility grid-cols(--value) {
         grid-template-columns: repeat(var(--value), minmax(0, 1fr));
 
         @variant <sm {
@@ -430,7 +467,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"fg-blue\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@layer(utilities) btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      } @utility reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"fg-blue\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      } @utility btn {\n        @safelist \"fg-blue\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@layer(utilities) btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      } @utility font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      } @utility text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      } @utility text-right {\n        text-align: right;\n      }\n  ", 'css')
 
   expectToken(tokens, "fg-blue", 'enumMember')
   expectToken(tokens, "sr-only", 'enumMember')
@@ -454,7 +491,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
-  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"sr-only fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @mixin --quoted { @media (x: \"a;b\") { @contents; } }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @source not \"a;b.css\";\n    @source \"critical.tsx\";\n    @reference \"./a;b.css\";\n    @safelist \"sr-only fg-red\";\n    @blocklist \"debug-*\";\n    @preserve native;\n\n    .btn {\n      @safelist \"fg-red\";\n    }\n\n    @mixin --quoted { @media (x: \"a;b\") { @contents; } } @utility quoted { @media (x: \"a;b\") { @contents; } }\n  ", 'css')
 
   expectToken(tokens, "sr-only", 'enumMember')
   expectToken(tokens, 'fg-red', 'enumMember')
@@ -484,8 +521,16 @@ test.concurrent('does not render semantic tokens for custom variant directive sy
       @supports (backdrop-filter: blur(0)) {
         @contents;
       }
+    } @utility supports-backdrop {
+      @supports (backdrop-filter: blur(0)) {
+        @contents;
+      }
     }
     @mixin --card-wide {
+      @container card (width >= 42rem) {
+        @contents;
+      }
+    } @utility card-wide {
       @container card (width >= 42rem) {
         @contents;
       }
@@ -494,13 +539,25 @@ test.concurrent('does not render semantic tokens for custom variant directive sy
       @layer utilities {
         @contents;
       }
+    } @utility component {
+      @layer utilities {
+        @contents;
+      }
     }
     @mixin --starting-style {
       @starting-style {
         @contents;
       }
+    } @utility starting-style {
+      @starting-style {
+        @contents;
+      }
     }
     @mixin --scrollbars {
+      @media all {
+        @contents;
+      }
+    } @utility scrollbars {
       @media all {
         @contents;
       }

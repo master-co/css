@@ -141,6 +141,9 @@ describe('LocalStylesPlugin', () => {
 @mixin --brand {
     padding: var(--spacing-card);
     animation: pop 1s;
+  } @utility brand {
+    padding: var(--spacing-card);
+    animation: pop 1s;
   }
 .referenced-native { color: red; }`)
       const context = createContext(root)

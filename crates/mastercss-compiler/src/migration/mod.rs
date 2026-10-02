@@ -421,11 +421,18 @@ impl Migration {
         let mut target_manifest = request.target_manifest.clone();
         // Saved project resources retain their identities. Managed definitions
         // must be present in the migrated target manifest to prove equivalence.
-        for key in ["variables", "mixins", "debug", "theme", "customMedia"] {
+        for key in [
+            "variables",
+            "mixins",
+            "utilities",
+            "debug",
+            "theme",
+            "customMedia",
+        ] {
             if request.target_is_preset
                 && let Some(value) = helper_manifest.get(key)
             {
-                if key == "mixins" {
+                if key == "mixins" || key == "utilities" {
                     let mut definitions =
                         target_manifest[key].as_array().cloned().unwrap_or_default();
                     definitions.extend(value.as_array().into_iter().flatten().cloned());

@@ -30,7 +30,7 @@ test('parameter mixin completion inserts a snippet and describes its parameter',
 
 test('zero-argument mixin completion documents its generated CSS', () => {
   expect(hint('sr-on')?.find(({ label }) => label === 'sr-only')).toMatchObject({
-    detail: 'mixin',
+    detail: 'utility',
     documentation: { kind: 'markdown', value: expect.stringContaining('position: absolute') }
   })
 })

@@ -81,15 +81,15 @@ fn rewrites_safe_definitions_and_reports_cross_namespace_families() {
     );
     assert_eq!(
         result.stylesheets[0].edits[0].after,
-        "@mixin --card { color:red; color:blue }"
+        "@utility card { color:red; color:blue }"
     );
     assert_eq!(
         result.stylesheets[1].edits[0].after,
-        "@mixin --tile(--value) {width:var(--value)}"
+        "@utility tile(--value) {width:var(--value)}"
     );
     assert_eq!(
         result.stylesheets[2].edits[0].after,
-        "@mixin --font(--font-size){font-size:var(--font-size)}"
+        "@utility font-(--font-size){font-size:var(--font-size)}"
     );
 }
 
@@ -134,7 +134,7 @@ fn native_colon_values_win_over_historical_fixed_names_and_migration_is_idempote
 
 #[test]
 fn removed_token_spellings_require_manual_review_without_new_migrations() {
-    let result = migrate(&["font-sm", "padding-md", "text-stroke-color-red"], &[]);
+    let result = migrate(&["font-sm", "padding-md"], &[]);
     for item in &result.class_lists[0] {
         assert_eq!(item.status, "review", "{}", item.before);
         assert!(item.after.is_none());

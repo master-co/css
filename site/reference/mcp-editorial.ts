@@ -90,10 +90,10 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     lifecycle: readOnly
   },
   mastercss_manifest_query: {
-    purpose: 'Look up tokens, static mixins, custom media and canonical token families in the active manifest.',
+    purpose: 'Look up tokens, utilities, native mixins, custom media and canonical token families in the active manifest.',
     fields: { context, query: 'Case-insensitive substring query. Omit for all entries in the selected kinds.', kind: 'Category to return. Defaults to `all`.', namespace: 'Exact namespace filter for tokens. Other categories are not filtered by namespace.', limit: 'Maximum entries returned per category, not across the whole response. Defaults to 50.' },
     example: { kind: 'token', namespace: 'color', query: 'brand', limit: 10 }, exampleNote: 'This query returns a brand color only if the loaded manifest defines one.',
-    output: '`results` groups tokens, mixins, customMedia and families. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
+    output: '`results` groups tokens, utilities, mixins, customMedia and families. `summary.total` counts matches before per-category limits, while `summary.returned` counts returned items. Check manifest errors before interpreting an empty result.',
     lifecycle: readOnly
   },
   mastercss_css_compare: {

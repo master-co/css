@@ -95,7 +95,7 @@ test('loads the isolated compiler Wasm surface', async () => {
 ]
   }))).toMatchObject({
     manifest: {
-      version: 5 as const, languageVersion: 14 as const, theme,
+      version: 6 as const, languageVersion: 15 as const, theme,
       variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: '#fff' }] }] },
       mixins: [
   {
@@ -137,20 +137,22 @@ test('loads the isolated compiler Wasm surface', async () => {
   )).toEqual(['fg-red'])
 
   const files = Object.fromEntries(await Promise.all(
-    ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'mixins.css']
+    ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'utilities.css']
       .map(async file => [`/${file}`, await readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')])
   ))
-  const graph = compiler.resolveCSSImportGraph({
-    entry: '/index.css', files,
-    edges: [
-      ...['base.css', 'theme.css', 'media.css', 'mixins.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
-      { from: '/theme.css', specifier: './colors.css', resolved: '/colors.css' }
-    ]
-  }) as { source: string }
-  const presetDirectives = compiler.compileCSSDirectives(graph.source) as {
-    manifestInput: unknown
-    styleDefinitions?: unknown[]
-  }
+  const result = compiler.compileCSSStylesheetGraph({
+    graph: {
+      entry: '/index.css', files,
+      resourceOwners: Object.fromEntries(Object.keys(files).map(id => [id, `@master/css-preset/src${id}`])),
+      edges: [
+        ...['base.css', 'theme.css', 'media.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
+        { from: '/theme.css', specifier: './colors.css', resolved: '/colors.css' }
+      ]
+    },
+    urls: Object.fromEntries(Object.keys(files).map(id => [id, id])),
+    options: { classes: [] }, inlineImports: true
+  }) as { directives: { manifestInput: unknown, styleDefinitions?: unknown[] } }
+  const presetDirectives = result.directives
   const preset = compiler.compileDefaultPresetManifest({
     manifestInput: presetDirectives.manifestInput,
     styleDefinitions: presetDirectives.styleDefinitions || []
@@ -166,7 +168,7 @@ test('static mixins decode parameter identifiers and CSS function names in Wasm'
   const compiler = await initCompilerWasm({ input })
   const source = `@theme {
   --step-hero:2rem;
-}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))}.caption{@apply --label("hero")}`
+}@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))} @utility label(--step <string>) {font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))}@utility label-(--label <string>) {font-size:VAR(IDENT("--label-" VaR(--st\\65 p)))}.caption{@apply --label("hero")}`
   const result = toPlainValue(compiler.compileCSSStylesheetGraph({
     graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] },
     urls: { '/entry.css': '/out/entry.css' }
@@ -185,7 +187,7 @@ test('static mixins decode parameter identifiers and CSS function names in Wasm'
   }
   expect(css).not.toContain('@apply')
   expect(() => compiler.compileCSSStylesheetGraph({
-    graph: { entry: '/entry.css', files: { '/entry.css': '@mixin --x(--n){width:var(--n);height:var(--n)}.x{@apply --x(VAR(--external))}' }, edges: [] },
+    graph: { entry: '/entry.css', files: { '/entry.css': '@mixin --x(--n){width:var(--n);height:var(--n)} @utility x(--n) {width:var(--n);height:var(--n)}.x{@apply --x(VAR(--external))}' }, edges: [] },
     urls: { '/entry.css': '/out/entry.css' }
   })).toThrow('must be static')
 })

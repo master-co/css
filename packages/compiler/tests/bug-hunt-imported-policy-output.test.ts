@@ -48,9 +48,9 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}, projectDir: root
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)
       expect(result.css).toContain('.sentinel')

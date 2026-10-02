@@ -125,7 +125,7 @@ describe('Next style CSS loader', () => {
   --color-active: #ff0000;
 }
 
- @mixin --active-card { animation: active-spin 1s infinite; }
+ @mixin --active-card { animation: active-spin 1s infinite; } @utility active-card { animation: active-spin 1s infinite; }
 @keyframes active-spin { to { opacity: .5; } }
 .native-card { color: var(--color-active); }`)
 
@@ -154,7 +154,7 @@ describe('Next style CSS loader', () => {
 
   it('locally preserves native declarations in CSS Modules without importing package CSS', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      \n        @mixin --brand {\n          background-color: #123456;\n        }\n      \n    ")
+    writeFileSync(join(root, 'app/globals.css'), "\n      @import url(\"@master/css\");\n\n      \n        @mixin --brand {\n          background-color: #123456;\n        } @utility brand {\n          background-color: #123456;\n        }\n      \n    ")
     const result = await runStylesheetLoader(
       root,
       join(root, 'app/Button.module.css'),
@@ -175,7 +175,7 @@ describe('Next style CSS loader', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, ' @mixin --brand { color: #123456; } ')
+    writeFileSync(tokenPath, ' @mixin --brand { color: #123456; } @utility brand { color: #123456; } ')
     const result = await runStylesheetLoader(
       root,
       modulePath,

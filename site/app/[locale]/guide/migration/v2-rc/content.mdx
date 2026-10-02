@@ -2,7 +2,7 @@
 
 ## Canonical token families
 
-Direct values use full native properties, while loaded mixins define named-token families. Generate manifests and hydration data with matching packages. Manifest v5 uses language version 14 and binding ABI 24.
+Direct values use full native properties, while explicit utilities define named-token families. Generate manifests and hydration data with matching packages. Manifest v6 uses language version 15 and binding ABI 25.
 
 Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
 
@@ -108,7 +108,7 @@ Pseudo-elements are no longer translated into vendor names. To preserve the form
 
 Math spacing is consistent across `calc`, `min`, `max`, and `clamp`; `clamp` no longer gains an extra `calc` wrapper. Quoted math text, URLs, attribute underscores and escaped identifiers retain their literal meaning. These are intentional CSS output corrections.
 
-Read token-family metadata with `tokenFamilies()` on the active language or tooling session. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 5. Families come from loaded mixins, so theme-only stylesheets must load `@master/css/mixins.css` or define their own families.
+Read token-family metadata with `tokenFamilies()` on the active language or tooling session. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 6. Families come from loaded utilities, so theme-only stylesheets must load `@master/css/utilities.css` or define their own families.
 
 Validate project definitions against the active manifest and rebuild generated CSS.
 
@@ -117,7 +117,7 @@ Validate project definitions against the active manifest and rebuild generated C
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 14 and ABI 24. Manifest v5, hydration v4 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 14 and ABI 24. Manifest v6, hydration v4 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 
@@ -162,7 +162,7 @@ Keep the original baseline available throughout migration. Rebuilding an RC mani
 
 ## 2. Separate names from direct values
 
-**A hyphen selects a named token or recipe. A colon follows a full native property. Parentheses call a mixin with static arguments.** Token abbreviations remain; raw property abbreviations are removed.
+**A hyphen selects a named token or recipe. A colon follows a full native property. Parentheses call a function utility with static arguments.** Token abbreviations remain; raw property abbreviations are removed.
 
 The RC column below is historical reference text, not executable new syntax. `brand`, `md`, and similar names refer to tokens from the original project; retain their identities rather than substituting whichever token happens to have the same current value.
 
@@ -186,7 +186,7 @@ The RC column below is historical reference text, not executable new syntax. `br
 | `p:4x` with RC defaults | `padding:1rem` | Converts the old length multiplier; verify the original settings first. |
 | `fg:$color-brand` | `color:var(--color-brand)` | Explicit native custom-property reference. |
 | `m:sm\|md` | `margin:var(--spacing-sm)\|var(--spacing-md)` | Explicit references in a multi-value declaration. |
-| `grid-cols:3` | `grid-cols(3)` | Static integer mixin argument; the count must be positive. |
+| `grid-cols:3` | `grid-cols(3)` | Static integer utility argument; the count must be positive. |
 | RC `size:20px` | `width:20px height:20px` | The paired sizing family is removed; review cascade order. |
 
 Token classes reference `var()` by default. `@theme inline` substitutes the winning declared value once; `@theme static` retains tokens without a consumer. Native selectors and queries control scoped overrides.
@@ -229,7 +229,7 @@ Validate the resulting CSS in a browser. A syntax match is distinct from CSS val
 
 ### Reserved names and ambiguity
 
-Single-declaration fixed aliases are removed: use `background-size:cover` instead of `bg-cover`, and `display:block` instead of `block`. A defined `--color-cover` now makes `bg-cover` a color token. Exact zero-parameter mixins still take precedence; explicit named mixins win over a built-in family at the same prefix.
+Single-declaration fixed aliases are removed: use `background-size:cover` instead of `bg-cover`, and `display:block` instead of `block`. A defined `--color-cover` now makes `bg-cover` a color token. Exact static utilities take precedence; explicit token patterns replace the same form and prefix.
 
 Use `font-family-brand` or `font-size-brand` for their respective namespaces. The overloaded `font-brand` entry is removed regardless of which tokens exist.
 
@@ -272,7 +272,7 @@ background-image: image-set(url(a.png) 1x, url(b.png) 2x);
 
 Do not globally replace every numeric `x`: URLs, strings, resolution descriptors, and custom-property token streams need contextual handling. Inspect arithmetic and nested function values. If the migration tool cannot establish whether a dimension represents a length or resolution, review it manually.
 
-Replace a registered `$name` reference with `var(--name)`. Preserve any original alpha modifier with an explicit color expression or a named color token. Quoted text containing a dollar sign remains text.
+Replace a registered `$name` reference with `var(--pair)`. Preserve any original alpha modifier with an explicit color expression or a named color token. Quoted text containing a dollar sign remains text.
 
 These changes reduce special language rules. They are not a claim that AI generation accuracy has improved; that requires separate model evaluation.
 
@@ -288,31 +288,31 @@ Replace `@master entry;` with `@import "@master/css";`, which loads the preset's
 
 Replace `@custom-variant`, `@variant` and `@slot` with `@custom-media` for named media queries or a mixin with `@contents` for selector, supports, container and combined wrappers. Replace the old media names `@all`, `@speech`, `@print`, `@screen`, `@motion` and `@reduce-motion` with native query suffixes or explicitly defined custom media.
 
-Define reusable combinations with root-level mixins. Built-in token families such as `font-family-sans` need no preset mapping directive.
+Define class recipes with root-level utilities. Built-in token families such as `font-family-sans` need no preset mapping directive.
 
-```css name="Current mixins"
-@mixin --pair(--size) {
+```css name="Utility definitions"
+@utility pair(--size) {
   width: var(--size);
   height: var(--size);
 }
 
 @theme { --pair-card: var(--container-md);  }
-@mixin --pair-token(--name <string>) {
-  width: var(ident("--pair-" var(--name)));
-  height: var(ident("--pair-" var(--name)));
+@utility pair-token-(--pair <string>) {
+  width: var(ident("--pair-" var(--pair)));
+  height: var(ident("--pair-" var(--pair)));
 }
 ```
 
-Use `pair(2rem)` or `pair-token("card")`. To expose a named `pair-card` family instead, give the single-string mixin the name `--pair` and move the explicit size recipe to a distinct name; one name has one signature.
+Use `pair(2rem)` or `pair-token-card`. The token pattern reads the `pair` namespace; its primary token is required.
 
-`@utility`, `from()`, `--master-value()`, the older `@utilities` container and enum/valueMap definitions are removed. `@apply --pair(2rem);` expands only mixins in native CSS. It does not accept utility lists. Native `--value()` calls retain their CSS meaning. Full `property:value` syntax cannot be overridden by a mixin.
+`from()`, `--master-value()`, the older `@utilities` container and enum/valueMap definitions are removed. `@apply` expands only explicitly declared native mixins. It does not accept utility lists. Native `--value()` calls retain their CSS meaning. Full `property:value` syntax cannot be overridden by a mixin.
 
 Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
 - Manifest **v4**, language **v12**, binding ABI **22**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use default theme tokens, native overrides, `customMedia` and mixins.
-- Recompile into Manifest v5 / language 14 / ABI 24. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
+- Recompile into Manifest v6 / language 15 / ABI 25. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
@@ -333,7 +333,7 @@ Run `master-css migrate [options] [paths...]` from the project root. Paths selec
 | `--from <profile>` | Saved starting contract: `rc-legacy`, `rc-named`, `rc-native`, `rc-managed`, `rc-utilities`, `rc-sizing`, `rc-mixins` or `rc-preset`. |
 | `--source-version <version>` | Actual saved RC package version; optional only when manifest metadata provides it. |
 | `--manifest <path>` | Original resolved manifest. Defaults to `master.rc.manifest.json`. |
-| `--entry <path>` | CSS entry for generated mixins; required when more than one entry exists. |
+| `--entry <path>` | CSS entry for generated utility definitions; required when more than one entry exists. |
 | `--target-manifest <path>` | Compiled target project manifest used to verify custom definitions. |
 | `--write` | Apply safe edits only when the entire selected batch has no review diagnostics. |
 | `-h`, `--help` | Display command help. |
@@ -600,11 +600,11 @@ The following is **historical RC syntax, for comparison only**:
 }
 ```
 
-```css name="Current mixin definition"
-@mixin --size(--value) { width: var(--value); height: var(--value); }
+```css name="Function utility"
+@utility size(--value) { width: var(--value); height: var(--value); }
 ```
 
-Call `size(20px)`. Use built-in `font-family-sans` for a family token. A custom cross-namespace recipe needs same-name primary theme tokens and a single-string mixin; there is no replacement mapping directive.
+Call `size(20px)`. Use built-in `font-family-sans` for a family token. A custom cross-namespace recipe needs primary theme tokens and an explicit token pattern; there is no replacement mapping directive.
 
 A unique raw-any pattern can be simplified safely. Typed-only patterns, colon enums and overloads require review because `:<*>` accepts more values. Previously unmatched or ineffective input can start generating effective CSS. Do not silently turn `x:<number>` into `x:<*>` without auditing its uses.
 
@@ -660,7 +660,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 24), preset manifests and hydration alongside sources. Manifest envelopes are v5, hydration envelopes are v4, and executable manifests require language version 14; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 25), preset manifests and hydration alongside sources. Manifest envelopes are v6, hydration envelopes are v4, and executable manifests require language version 15; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors
@@ -682,7 +682,7 @@ Choose replacements by their UI role. See [Colors](/guide/colors#contrast) for c
 
 The preset no longer publishes `--breakpoint-*` custom properties. Replace layout references with native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role. Named viewport queries remain explicit `@custom-media` declarations.
 
-## Migrate the final utility contract to mixins
+## Migrate saved utility contracts
 
 ```sh
 master-css migrate src master.css --from rc-mixins --source-version YOUR_SAVED_RC_VERSION --manifest master.rc.manifest.json
@@ -703,7 +703,7 @@ overlapping edge settings with explicit edges instead of depending on the old
 property-category priority. Partial-conflict diagnostics no longer rewrite classes.
 
 The ten `animate-*` classes consume complete `animation` shorthand tokens through
-the preset direct-value `--animate(--animate)` mixin. Combine any animation companion settings into the primary
+the preset `@utility animate-(--animate)` pattern. Combine any animation companion settings into the primary
 token. For example, replace `--animate-reveal: reveal`,
 `--animate-reveal--duration: 200ms`, `--animate-reveal--timing-function: ease-out`
 and `--animate-reveal--iteration-count: 1` with:

@@ -15,7 +15,7 @@ fn native_cli_keeps_native_variants_in_one_anonymous_layer() {
             .as_nanos()
     ));
     fs::create_dir_all(&root).unwrap();
-    fs::write(root.join("entry.css"), r###"@import '@master/css';@mixin --always{@contents;}@preserve native;@layer{.a{@apply --always{padding:2rem!important}}.b{@apply --always{padding:1rem!important}}}"###).unwrap();
+    fs::write(root.join("entry.css"), r###"@import '@master/css';@mixin --always{@contents;} @utility always {@contents;}@preserve native;@layer{.a{@apply --always{padding:2rem!important}}.b{@apply --always{padding:1rem!important}}}"###).unwrap();
     let output = Command::new(env!("CARGO_BIN_EXE_mcss"))
         .current_dir(&root)
         .args(["--no-export", "-v", "0"])

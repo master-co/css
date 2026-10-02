@@ -31,7 +31,7 @@ test('tools/list schemas validate success and errors without hidden refinements'
     const familiesResponse = await client.callTool({ name: 'mastercss_manifest_query', arguments: { kind: 'family', context: 'preset', limit: 200 } })
     expect(familiesResponse.isError).not.toBe(true)
     const familyData = (familiesResponse.structuredContent as any).result.data
-    expect(familyData.version).toBe(5)
+    expect(familyData.version).toBe(6)
     using tooling = createLanguageSessionSync({ manifest: preset as MasterCSSManifest })
     const families = tooling.tokenFamilies().families
     expect(familyData.results.families).toEqual(families.map(family => ({ type: 'token-family', ...family })))

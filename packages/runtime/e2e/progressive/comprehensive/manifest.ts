@@ -5,9 +5,9 @@ export default {
     { key: 'primary', values: [{ path: ['@media (prefers-color-scheme:light)', ':root,:host'], value: '#000000' }] },
     { key: 'primary', values: [{ path: ['@media (prefers-color-scheme:dark)', ':root,:host'], value: '#ffffff' }] }
   ],
-  mixins: [
+  utilities: [
   {
-    "name": "--btn",
+    "kind": "static" as const, "name": "btn",
     "body": [
       {
         "type": "rule" as const,

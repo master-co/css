@@ -14,6 +14,7 @@ export function summarizeManifest(manifest: MasterCSSManifest) {
       variables: variables.length,
       variableNamespaces: Object.keys(manifest.variables || {}).length,
       mixins: manifest.mixins?.length ?? 0,
+      utilities: manifest.utilities?.length ?? 0,
       customMedia: Object.keys(manifest.customMedia || {}).length,
     }
   }

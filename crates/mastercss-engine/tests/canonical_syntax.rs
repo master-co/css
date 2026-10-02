@@ -40,7 +40,7 @@ fn engine() -> EngineSession {
         "../../../packages/preset/src/default-manifest.json"
     ))
     .unwrap();
-    EngineSession::create(&json!({"version":5,"languageVersion":LANGUAGE_VERSION,"variables":variables,"mixins":preset["mixins"]}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":6,"languageVersion":LANGUAGE_VERSION,"variables":variables,"utilities":preset["utilities"]}).to_string()).unwrap()
 }
 
 #[test]
@@ -105,12 +105,12 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
             family["namespace"].as_str().unwrap()
         );
         let expanded = engine.inspect(&call).unwrap();
-        assert_eq!(expanded.match_status, MatchStatus::Matched, "{call}");
-        assert_eq!(
-            expanded.rules[0].text.split_once('{').unwrap().1,
-            result.rules[0].text.split_once('{').unwrap().1,
-            "{call}"
+        assert_ne!(
+            expanded.match_status,
+            MatchStatus::Matched,
+            "token patterns do not register function calls: {call}"
         );
+        assert!(expanded.rules.is_empty(), "{call}");
         assert!(labels.contains(&canonical), "{canonical}");
         if prefix != property {
             for suffix in ["", ":hover", ":hover@layer(utilities)!"] {

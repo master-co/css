@@ -35,10 +35,10 @@ pub enum DiagnosticSeverity {
 
 #[derive(Debug, Error)]
 pub enum SchemaError {
-    #[error("Unsupported MasterCSSManifest version. Expected version 5.")]
+    #[error("Unsupported MasterCSSManifest version. Expected version 6.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 14; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 15; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
@@ -75,7 +75,7 @@ impl SchemaError {
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v5 wire format.
+/// Validated, order-preserving representation of the public Manifest v6 wire format.
 ///
 /// The domain crates deliberately keep the original JSON object intact while individual
 /// subsystems progressively replace `Value` access with strongly typed projections. This
@@ -98,7 +98,6 @@ impl MasterCssManifest {
             return Err(SchemaError::UnsupportedLanguageVersion);
         }
         for field in [
-            "utilities",
             "variants",
             "conditions",
             "selectors",
@@ -115,6 +114,9 @@ impl MasterCssManifest {
         }
         if let Some(keyframes) = object.get("keyframes") {
             serde_json::from_value::<Vec<KeyframeDefinition>>(keyframes.clone())?;
+        }
+        if let Some(utilities) = object.get("utilities") {
+            serde_json::from_value::<Vec<UtilityDefinition>>(utilities.clone())?;
         }
         if let Some(mixins) = object.get("mixins") {
             serde_json::from_value::<Vec<MixinDefinition>>(mixins.clone())?;

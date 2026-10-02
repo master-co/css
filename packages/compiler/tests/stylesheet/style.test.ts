@@ -118,7 +118,7 @@ describe('style CSS extraction helpers', () => {
     writeFileSync(homePath, [
       `@theme { --color-active: #ff0000; }
 `,
-      ' @mixin --active-card { animation: active-spin 1s infinite; } ',
+      ' @mixin --active-card { animation: active-spin 1s infinite; } @utility active-card { animation: active-spin 1s infinite; } ',
       '@keyframes active-spin { to { opacity: .5; } }',
       '.native-card { color: var(--color-active); }'
     ].join('\n'))
@@ -208,7 +208,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const tokenPath = join(root, 'app/tokens.css')
-    writeFileSync(tokenPath, ' @mixin --card { display: block; } ')
+    writeFileSync(tokenPath, ' @mixin --card { display: block; } @utility card { display: block; } ')
     writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./tokens.css\";")
 
     expect(collectStylesheetDependencies(entryPath, undefined, root)).toEqual([
@@ -230,7 +230,7 @@ describe('style CSS extraction helpers', () => {
   })
 
   it('locally lowers @compose using the provided project context', async () => {
-    const { manifest } = compileCSSManifest(' @mixin --brand { color: #fff; } ', {
+    const { manifest } = compileCSSManifest(' @mixin --brand { color: #fff; } @utility brand { color: #fff; } ', {
       baseManifest: defaultManifest
     })
     const result = await transformLocalStylesheet('/project/src/Button.module.css', "\n      .button {\n        @apply --all {color:#fff;display:inline-flex;}\n        color: white;\n      }\n    ", {
@@ -248,7 +248,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
-    writeFileSync(tokenPath, "@mixin --brand { background-color: #123456; }\n.referenced-native { color: red; }")
+    writeFileSync(tokenPath, "@mixin --brand { background-color: #123456; } @utility brand { background-color: #123456; }\n.referenced-native { color: red; }")
 
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .button {\n        @apply --all {background-color:#123456;}\n      }\n    ", {
       baseManifest: defaultManifest,
@@ -277,6 +277,9 @@ describe('style CSS extraction helpers', () => {
   }
 
 @mixin --panel {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  } @utility panel {
     padding: var(--spacing-card);
     animation: pop 1s;
   }
@@ -311,6 +314,9 @@ describe('style CSS extraction helpers', () => {
   }
 
 @mixin --panel {
+    padding: var(--spacing-card);
+    animation: pop 1s;
+  } @utility panel {
     padding: var(--spacing-card);
     animation: pop 1s;
   }`)
@@ -384,7 +390,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Empty.module.css')
-    writeFileSync(tokenPath, ' @mixin --brand { display: block; } ')
+    writeFileSync(tokenPath, ' @mixin --brand { display: block; } @utility brand { display: block; } ')
 
     const result = await transformLocalStylesheet(modulePath, '@reference "./tokens.css";', {
       baseManifest: defaultManifest,

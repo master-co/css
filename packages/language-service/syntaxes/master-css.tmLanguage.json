@@ -123,7 +123,7 @@
           ]
         },
         {
-          "begin": "(?i)(@)(mixin|apply)\\b",
+          "begin": "(?i)(@)(utility|mixin|apply)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"

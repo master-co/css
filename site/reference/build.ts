@@ -60,7 +60,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   const descriptions: Record<string, string> = {
     'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
     'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
-    'theme': 'Declare utility tokens, static and inline behavior, custom media and reusable mixins.',
+    'theme': 'Declare utility tokens, static and inline behavior, custom media, utility classes and reusable mixins.',
     'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
     'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
     'candidates': 'Include known class names or reject unwanted scanning candidates.',

@@ -8,13 +8,13 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     lower_css_directives_request(
         &LowerCssDirectivesRequest {
-            mixin_sources: parsed.mixin_sources,
+            definition_sources: parsed.definition_sources,
             native_output: parsed.native_output,
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":5,"languageVersion":14,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap()
 }
@@ -35,7 +35,7 @@ fn variant_preserves_fallbacks_and_repeated_shorthand_order() {
 #[test]
 fn utility_rules_preserve_fallbacks_through_manifest_and_variant() {
     let result = compile(
-        r###"@mixin --fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}.a{@apply --always{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
+        r###"@mixin --fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px} @utility fallback {display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px}.a{@apply --always{display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;}}"###,
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     engine.ensure_class_rules(["fallback"]).unwrap();
@@ -89,7 +89,7 @@ fn nested_rules_are_not_moved_across_source_boundaries() {
 
 #[test]
 fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
-    let source = r###"@mixin --fallback {display:-webkit-box;display:flex!important;display:grid}.a{@apply --always{display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
+    let source = r###"@mixin --fallback {display:-webkit-box;display:flex!important;display:grid} @utility fallback {display:-webkit-box;display:flex!important;display:grid}.a{@apply --always{display:-webkit-box;display:flex !important;display:grid;}display:block}"###;
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let body = &parsed.manifest_input.mixins.as_ref().unwrap()[0].body;
     let mut values = Vec::new();
@@ -117,7 +117,7 @@ fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
 #[test]
 fn segmented_rules_keep_sort_classification_and_resource_lifetimes() {
     let result = compile(
-        "@prune native;@theme {--color-accent:red;}@keyframes spin{to{opacity:1}}@mixin --one {display:block}@mixin --fallback {display:block;display:made-up-value}@mixin --resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}",
+        "@prune native;@theme {--color-accent:red;}@keyframes spin{to{opacity:1}}@mixin --one {display:block} @utility one {display:block}@mixin --fallback {display:block;display:made-up-value} @utility fallback {display:block;display:made-up-value}@mixin --resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s} @utility resources {color:var(--color-accent);animation:spin 1s;color:var(--color-accent);animation:spin 2s}",
     );
     let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     let one = engine.inspect("one").unwrap();
@@ -150,7 +150,7 @@ fn pattern_importance_spelling_and_comments_do_not_reorder_declarations() {
         "&:hover{display:block} DISPLAY:flex !/**/IMPORTANT; /* fallback */ display:made-up-value; display:grid!important",
     ] {
         let result = compile(&format!(
-            "@mixin --paint-a{{{declarations}}}@mixin --paint-b{{{declarations}}}.a{{@apply --always{{{declarations}}}}}"
+            "@mixin --paint-a{{{declarations}}} @utility paint-a {{{declarations}}}@mixin --paint-b{{{declarations}}} @utility paint-b {{{declarations}}}.a{{@apply --always{{{declarations}}}}}"
         ));
         let css = result.css.unwrap();
         assert!(

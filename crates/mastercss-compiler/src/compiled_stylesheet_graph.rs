@@ -16,7 +16,7 @@ use crate::{
 pub struct CompileCssStylesheetGraphRequest {
     pub graph: CssImportGraphRequest,
     #[serde(default)]
-    pub mixin_sources: Vec<mastercss_schema::CssMixinSource>,
+    pub definition_sources: Vec<mastercss_schema::CssDefinitionSource>,
     /// Final URLs chosen by the host, keyed by source file ID.
     pub urls: HashMap<String, String>,
     /// Supplying this enables strict relocation of every relative resource URL.
@@ -285,14 +285,21 @@ pub fn compile_css_stylesheet_graph(
                     }
                 }
             }
-            for definition in result.manifest_input.mixins.iter_mut().flatten() {
+            for definition in result.manifest_input.mixins.iter_mut().flatten().chain(
+                result
+                    .manifest_input
+                    .utilities
+                    .iter_mut()
+                    .flatten()
+                    .map(|definition| &mut definition.recipe),
+            ) {
                 crate::mixins::visit_sources(definition, &mut |source| {
                     if let Some(reference) = source {
                         css.restore_reference(original_source, reference);
                     }
                 });
             }
-            for definition in &mut result.mixin_sources {
+            for definition in &mut result.definition_sources {
                 css.restore_reference(original_source, &mut definition.source);
             }
             for mapping in &mut result.native_mappings {
@@ -346,7 +353,9 @@ pub fn compile_css_stylesheet_graph(
             continue;
         }
         let result = &parsed[index];
-        combined.mixin_sources.extend(result.mixin_sources.clone());
+        combined
+            .definition_sources
+            .extend(result.definition_sources.clone());
         let mut delivered_input = result.manifest_input.clone();
         delivered_input.animation_variables = None;
         let emit_native = request.options.preserve_native_css
@@ -706,9 +715,9 @@ pub fn compile_css_stylesheet_graph(
     }
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
     combined
-        .mixin_sources
-        .splice(0..0, request.mixin_sources.clone());
-    crate::mixin_sources::resolve(&mut combined.mixin_sources);
+        .definition_sources
+        .splice(0..0, request.definition_sources.clone());
+    crate::definition_sources::resolve(&mut combined.definition_sources);
     combined.css = entry.css.clone();
     combined.native_css = entry.native_css.clone();
     combined.generated_css = entry.generated_css.clone();

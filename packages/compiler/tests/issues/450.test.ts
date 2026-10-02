@@ -4,8 +4,8 @@ import { createEngine } from '@master/css'
 import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 
 const minimal: MasterCSSManifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--audit-block",
@@ -23,7 +23,7 @@ const minimal: MasterCSSManifest = {
       ]
     }
   ]
-}
+, utilities: [{"name":"audit-block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
 
 test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered declarations and resource lifetimes', async (binding) => {
   using compiler = await createCompiler({ binding })
@@ -33,8 +33,8 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
       --color-brand: var(--color-root);
      }
     @keyframes audit-fade { from { color: var(--color-brand); } to { opacity: 1; } }
-    @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; }
-    @mixin --audit-motion { animation: audit-fade 1s; }
+    @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; } @utility audit-paint { color: var(--color-brand); display: block; display: flex; }
+    @mixin --audit-motion { animation: audit-fade 1s; } @utility audit-motion { animation: audit-fade 1s; }
   `, { baseManifest: minimal, preserveNativeCSS: true })
   const wire = serializeMasterCSSManifest(manifest)
   const reloaded: MasterCSSManifest = JSON.parse(wire)

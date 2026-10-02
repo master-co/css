@@ -33,4 +33,11 @@
     &:focus {
     outline-offset: 0.125rem;
     }
+  } @utility btn {
+    &:focus {
+    outline: 0.125rem var(--color-focus) solid;
+    }
+    &:focus {
+    outline-offset: 0.125rem;
+    }
   }

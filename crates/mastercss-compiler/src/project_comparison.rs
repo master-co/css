@@ -325,17 +325,31 @@ fn analyze(snapshot: &ProjectSnapshot) -> Result<Analyzed, CompilerError> {
             }
         }
     }
-    for (field, kind) in [("mixins", "mixin"), ("keyframes", "keyframes")] {
+    for (field, kind) in [
+        ("mixins", "mixin"),
+        ("utilities", "utility"),
+        ("keyframes", "keyframes"),
+    ] {
         for definition in snapshot.manifest[field].as_array().into_iter().flatten() {
             if let Some(name) = definition["name"].as_str() {
-                let id = format!("{kind}:{name}");
+                let id = if kind == "utility" {
+                    let form = match definition["kind"].as_str() {
+                        Some("static") => "Static",
+                        Some("token") => "Token",
+                        Some("function") => "Function",
+                        _ => continue,
+                    };
+                    format!("utility:{form}:{name}")
+                } else {
+                    format!("{kind}:{name}")
+                };
                 if let Some(text) = definition["text"].as_str() {
                     dependencies
                         .entry(id.clone())
                         .or_default()
                         .extend(refs(text));
                 }
-                if kind == "mixin" {
+                if kind == "mixin" || kind == "utility" {
                     mixin_references(definition, dependencies.entry(id.clone()).or_default());
                 }
                 definitions.insert(id, definition.clone());
@@ -350,7 +364,7 @@ fn analyze(snapshot: &ProjectSnapshot) -> Result<Analyzed, CompilerError> {
     let mut native_classes = BTreeMap::new();
     let mut stylesheet_dependencies = Dependencies::new();
     for asset in &snapshot.stylesheets {
-        if tokenize_css_syntax(&asset.css).iter().any(|token| matches!(&token.kind, CssSyntaxKind::AtKeyword(name) if matches!(name.as_ref(), "theme" | "mixin" | "apply" | "contents" | "reference" | "source" | "safelist" | "blocklist" | "prune" | "preserve"))) {
+        if tokenize_css_syntax(&asset.css).iter().any(|token| matches!(&token.kind, CssSyntaxKind::AtKeyword(name) if matches!(name.as_ref(), "theme" | "mixin" | "utility" | "apply" | "contents" | "reference" | "source" | "safelist" | "blocklist" | "prune" | "preserve"))) {
             return Err(error(format!("Snapshot stylesheet {} must contain resolved native CSS, not Master directives", asset.path)));
         }
         native_variables(asset, &mut definitions, &mut dependencies);

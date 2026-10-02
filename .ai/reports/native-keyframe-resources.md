@@ -12,7 +12,7 @@ Baseline: `4a9fb185dcf1e417fe38e43202135b889b9f49a3`.
 - Native CSS keeps definition positions, conditions and anonymous layer identity. Empty addressable slots retain their surrounding containers. URL-only reference metadata introduces no animation or layer root.
 - Runtime adapters publish compiler-owned stylesheet descriptors. The runtime manages those delivered sheets, including imported sheets and resource URLs. Custom/Shadow DOM hosts can explicitly bind writable sheets and owner IDs.
 - SSR materializes the same slots, publishes imported CSS at same-origin URLs and lets hydration adopt the existing containers. HMR replaces manifest and external ownership atomically. Resource-bearing classes bypass the warm utility cache so the last DOM consumer releases their resources.
-- Manifest 5, language 14, binding ABI 24, hydration 4 and snapshot/transition 4 require rebuilding consumers. The language batch contract is 6. There is no TypeScript semantic compatibility layer.
+- Manifest 5, language 14, binding ABI 25, hydration 4 and snapshot/transition 4 require rebuilding consumers. The language batch contract is 6. There is no TypeScript semantic compatibility layer.
 - Animation token/class names, shorthand defaults and general class ordering are unchanged.
 
 Native order follows the [cascade layer contract](https://drafts.csswg.org/css-cascade-5/#layering) and [keyframe definition contract](https://drafts.csswg.org/css-animations-1/#keyframes). Browsers resolve competing definitions; the compiler retains their order and conditions.

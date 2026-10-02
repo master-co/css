@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Canonical Manifest v5 execution: class matching, values, selectors, conditions,
+Canonical Manifest v6 execution: class matching, values, selectors, conditions,
 priority, resources, rule generation, snapshots, and transitions.
 
 ## Module Routing

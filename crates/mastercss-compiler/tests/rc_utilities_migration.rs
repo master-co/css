@@ -60,12 +60,12 @@ fn converts_only_safe_patterns_and_retains_native_values() {
             &edit.after,
         );
     }
-    assert!(output.contains("@mixin --size(--value)"), "{output}");
+    assert!(output.contains("@utility size(--value)"), "{output}");
     assert!(
-        output.contains("@mixin --gap(--spacing){gap:var(--spacing)}"),
+        output.contains("@utility gap-(--spacing){gap:var(--spacing)}"),
         "{output}"
     );
-    assert!(!output.contains("@utility"), "{output}");
+    assert!(!output.contains("@mixin"), "{output}");
     assert!(output.contains("--alpha(red,.5)"));
     let rerun = migrate_rc(&request(vec![], vec![&output])).unwrap();
     assert!(rerun.stylesheets[0].edits.is_empty());
@@ -96,7 +96,7 @@ fn combines_adjacent_static_definitions_in_original_order() {
     assert_eq!(result.stylesheets[0].edits.len(), 1);
     assert_eq!(
         result.stylesheets[0].edits[0].after,
-        "@mixin --card{color:red;&:hover{display:block}\ncolor:blue}"
+        "@utility card{color:red;&:hover{display:block}\ncolor:blue}"
     );
 }
 
@@ -155,7 +155,7 @@ fn unchanged_declarations_do_not_hide_changed_resource_values() {
     let mut request = request(vec![vec!["card"]], vec![]);
     let definition = json!({"id":"card","type":-2,"emit":{"type":"declarations","declarations":["color:var(--color-brand)"]},"matchers":[{"type":"static","name":"card"}]});
     request.manifest = json!({"version":1,"languageVersion":2,"variables":{"color":[{"key":"brand","value":"red"}]},"utilities":[definition.clone()]});
-    request.target_manifest = json!({"version":5,"languageVersion":14,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
+    request.target_manifest = json!({"version":6,"languageVersion":15,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"blue"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}],"mixins":[{"name":"--card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}],"utilities":[{"kind":"static","name":"card","body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color-brand"}]}]}]}]});
     let result = migrate_rc(&request).unwrap();
     assert_eq!(result.class_lists[0][0].status, "review");
     assert!(

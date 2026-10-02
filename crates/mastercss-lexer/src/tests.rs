@@ -353,8 +353,10 @@ fn executes_rc87_lexer_parity_corpus() {
                 assert!(find_css_directive_ranges(&case.input).is_empty());
             }
             "rc87-2f3cc1f8149e5aac" => {
-                // Removed authoring directives are no longer highlighted as active syntax.
-                assert!(find_css_directive_ranges(&case.input).is_empty());
+                // The lexer recognizes @utility; the compiler validates its header.
+                let ranges = find_css_directive_ranges(&case.input);
+                assert_eq!(ranges.len(), 1);
+                assert_eq!(ranges[0].name, "utility");
             }
             "rc87-0200c9f8cb24fb9e" => {
                 let start = utf16_len(&case.input[..case.input.find('{').unwrap() + 1]);

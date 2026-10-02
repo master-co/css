@@ -34,7 +34,7 @@ Read the class from left to right:
 
 The output contains a variable definition and a rule inside a media query. The class is escaped in the CSS selector so the browser matches the literal HTML class name. You write the readable form in HTML; you do not copy that escaped selector back into the class attribute.
 
-There are three ways to supply the style part. A **direct declaration**, such as `color:rebeccapurple`, uses a complete CSS property name and value. A **token class**, such as `fg-blue-60`, selects a registered named value. A **mixin call**, such as `text-sm` or `grid-cols(3)`, expands a recipe that can set several declarations. Each can carry selectors and conditions.
+There are three ways to supply the style part. A **direct declaration**, such as `color:rebeccapurple`, uses a complete CSS property name and value. A **token class**, such as `fg-blue-60`, selects a registered named value. A **utility recipe**, such as `text-sm` or `grid-cols(3)`, expands a recipe that can set several declarations. Each can carry selectors and conditions.
 
 ## Write independent declarations \{#composition\}
 
@@ -60,7 +60,7 @@ Direct declarations use full property names. Write `padding:12px`, `display:grid
 
 <Class2CSS>{['display:grid', 'gap-md', 'max-width:32rem', 'opacity:0.9', '--progress:65%', 'width:var(--progress)']}</Class2CSS>
 
-The custom property is an ordinary declaration on that element and can inherit to descendants. A value used once can stay literal. A shared design decision belongs in a token; a reusable set of decisions belongs in a mixin. The [declaration contract](/reference/rules/declarations) covers the exact grammar.
+The custom property is an ordinary declaration on that element and can inherit to descendants. A value used once can stay literal. A shared design decision belongs in a token; a reusable set of decisions belongs in a utility recipe. The [declaration contract](/reference/rules/declarations) covers the exact grammar.
 
 ## Encode CSS values \{#values\}
 
@@ -115,9 +115,9 @@ For families that support negative values, a leading minus negates the selected 
 
 <Class2CSS>{['-mt-sm', 'bg-blue-60/0.2']}</Class2CSS>
 
-`-mt-sm` uses a negative top margin. `bg-blue-60/0.2` uses an alpha number from 0 to 1, here 20% opacity, while retaining its variable dependency. These modifiers are capabilities of the relevant token families; they do not automatically apply to named mixins.
+`-mt-sm` uses a negative top margin. `bg-blue-60/0.2` uses an alpha number from 0 to 1, here 20% opacity, while retaining its variable dependency. These modifiers are capabilities of the relevant token families; they do not automatically apply to general utility recipes.
 
-Project mixins participate in name resolution too. An exact no-parameter mixin can claim its name, and a same-prefix named mixin takes precedence over the built-in family. Once that recipe is selected, a missing primary token does not fall back to another family. Choose project names deliberately. Native colon declarations remain a direct route to the property.
+Project utilities participate in name resolution too. An exact static utility can claim its name, and an explicit token pattern with the same prefix replaces that family. Once that recipe is selected, a missing primary token does not fall back to another family. Choose project names deliberately. Native colon declarations remain a direct route to the property.
 
 ## Select elements and states \{#states\}
 
@@ -231,17 +231,17 @@ A nested brand scope inherits into its children. A nested light scope can change
 
 Shadow DOM adds a delivery boundary. Document selectors do not enter a shadow tree. Deliver the stylesheet and generated utilities into that tree, then choose the host and internal scopes intentionally. A generated `:host` default can supply its own value instead of inheriting an outer brand. The presence of `:host` in the default theme selector does not itself install a stylesheet into a shadow root.
 
-## Reuse styles with mixins \{#mixins\}
+## Define utilities and reuse CSS \{#mixins\}
 
-When the same set of declarations travels together, define a recipe. A no-parameter mixin becomes an on-demand class:
+When the same set of declarations travels together, define a recipe. A static utility registers an on-demand class and can reuse a native mixin:
 
-<ConfiguredExample source={'@mixin --stack {\n  display: grid;\n  gap: var(--spacing-md);\n}\n@mixin --reading-stack {\n  @apply --stack;\n  max-width: 60ch;\n}'} html={'<article class="reading-stack"><h2>Field notes</h2><p>Space for the details.</p></article>'} />
+<ConfiguredExample source={'@mixin --stack {\n  display: grid;\n  gap: var(--spacing-md);\n}\n@utility reading-stack {\n  @apply --stack;\n  max-width: 60ch;\n}'} html={'<article class="reading-stack"><h2>Field notes</h2><p>Space for the details.</p></article>'} />
 
 `reading-stack` expands the nested `@apply`, keeps both declarations from `--stack`, and adds a width cap. Definitions alone do not emit class rules. Native stylesheet `@apply` expands in place, keeping the caller's layer and surrounding selector.
 
 Static parameters let a recipe express a small variation:
 
-<ConfiguredExample source={'@mixin --columns(--count <integer>: 2) {\n  display: grid;\n  grid-template-columns: repeat(var(--count), minmax(0, 1fr));\n}'} html={'<div class="columns(3) gap-md"><p>Plan</p><p>Make</p><p>Refine</p></div>'} />
+<ConfiguredExample source={'@utility columns(--count <integer>: 2) {\n  display: grid;\n  grid-template-columns: repeat(var(--count), minmax(0, 1fr));\n}'} html={'<div class="columns(3) gap-md"><p>Plan</p><p>Make</p><p>Refine</p></div>'} />
 
 Here `columns()` uses the default `2`, while `columns(3)` supplies `3`. Parameters are positional and can be untyped or use `<integer>`, `<number>`, `<string>` or `<custom-ident>`. String arguments require quotes. A type check does not guarantee that a value makes sense for every native property: a useful grid track count must be positive.
 
@@ -249,23 +249,23 @@ Arguments must be known during compilation. Pass literal arguments or forward a 
 
 ### Build a named recipe from tokens
 
-The preset's `text-sm` is a recipe, whereas `font-size-sm` changes one property. A single `<string>` parameter plus a matching primary token creates a named recipe. A project can add a new text treatment without replacing the recipe:
+The preset's `text-sm` is a recipe, whereas `font-size-sm` changes one property. An explicit token pattern with a `<string>` parameter binds a key from its parameter namespace. A matching primary token creates the named class. A project can add a new text treatment without replacing the recipe:
 
 <DemoConfiguredExample name="syntax-type" title="A small editorial hierarchy" source={'@theme {\n  --text-note: 0.9375rem;\n  --text-note--line-height: 1.65;\n  --text-note--letter-spacing: 0.01em;\n}'} html={'<article class="max-width:34rem p-lg r-lg bg-surface-raised"><p class="margin:0 text-sm fg-text-muted">FIELD NOTES / 024</p><h3 class="mt-sm mb-md text-2xl font-weight-semibold fg-text-strong">Make space for the details.</h3><p class="margin:0 text-note fg-text-body">A text treatment keeps size, line height and letter spacing together. Weight, family and color remain independent decisions.</p></article>'} caption="Compare the compact label, larger heading and relaxed paragraph. text-note reads one primary token and two companions; its color is selected separately." />
 
-`text-note` calls `--text("note")`. The primary `--text-note` supplies font size. Its companions supply line height and letter spacing; companions alone do not create classes. The recipe uses `ident()` to build variable names from the static string argument:
+`text-note` binds the key `"note"` to `--text` in the preset utility. The primary `--text-note` supplies font size. Its companions supply line height and letter spacing; companions alone do not create classes. The recipe uses `ident()` to build variable names from the static string argument:
 
 ```css
-@mixin --caption(--step <string>) {
-  font-size: var(ident("--caption-" var(--step)));
-  line-height: var(ident("--caption-" var(--step) "--line-height"), normal);
+@utility caption-(--caption <string>) {
+  font-size: var(ident("--caption-" var(--caption)));
+  line-height: var(ident("--caption-" var(--caption) "--line-height"), normal);
 }
 @theme {
   --caption-small: 0.875rem;
 }
 ```
 
-With those definitions, `caption-small` expands both declarations and uses `normal` for the missing companion. `ident()` folds known inputs into an identifier; it does not construct names from browser-time values. Refer to [text treatments](/reference/text-size) and [mixin definitions](/reference/directives/definitions) for their complete parameters and fallback rules.
+With those definitions, `caption-small` expands both declarations and uses `normal` for the missing companion. `ident()` folds known inputs into an identifier; it does not construct names from browser-time values. Refer to [text treatments](/reference/text-size) and [utility definitions](/reference/directives/definitions) for their complete parameters and fallback rules.
 
 ### Describe animation with one shorthand token
 
@@ -281,7 +281,7 @@ Sometimes the reusable part is the selector around a declaration. Define `--hocu
 
 <ConfiguredExample source={'@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@layer components {\n  .save {\n    @apply --hocus { text-decoration-line: underline; }\n  }\n}'} html={'<button type="button" class="save fg-blue-60@apply(--hocus)">Save</button>'} />
 
-In CSS, the block after `@apply --hocus` supplies the content. In a class, `@apply(--hocus)` wraps the class's generated declarations. A recipe that emits several declarations supplies them as one block. Use a mixin for that shared declaration set; a contents wrapper does not combine several unrelated HTML classes into one call.
+In CSS, the block after `@apply --hocus` supplies the content. In a class, `@apply(--hocus)` wraps the class's generated declarations. A recipe that emits several declarations supplies them as one block. Use a utility recipe for that shared declaration set; a contents wrapper does not combine several unrelated HTML classes into one call.
 
 A wrapper can offer fallback content:
 
@@ -309,7 +309,7 @@ For normal declarations, later layers win over earlier layers before selector sp
 
 A class may choose `@layer(base)`, `@layer(defaults)`, `@layer(components)` or `@layer(utilities)`. The selection applies to the whole class. `theme` is for managed variables, not one of those four style-layer choices. The suffix does not create sublayers; conflicting layer choices on a class are errors.
 
-<ConfiguredExample source={'@mixin --inset { padding: 2rem; }'} html={'<div class="inset p-md padding:12px">A local spacing decision</div>'} />
+<ConfiguredExample source={'@utility inset { padding: 2rem; }'} html={'<div class="inset p-md padding:12px">A local spacing decision</div>'} />
 
 Under the same selector, conditions, layer and importance, the generated order places a recipe before a token and a token before a direct declaration for the competing property. Open the output: the final direct padding is `12px`. Reordering these words in HTML does not change that result. Differences in native specificity, layers or matching conditions can change which declaration wins.
 
@@ -322,7 +322,7 @@ A final `!` marks the expanded declarations important:
 
 <Class2CSS>{['p-md!', 'padding:12px', 'padding:8px@layer(base)!', 'padding:12px!']}</Class2CSS>
 
-In the first pair, important token padding wins over normal direct padding. In the second pair, important base-layer padding wins over important utilities-layer padding because importance reverses layer precedence. A mixin's final `!` marks every declaration it expands.
+In the first pair, important token padding wins over normal direct padding. In the second pair, important base-layer padding wins over important utilities-layer padding because importance reverses layer precedence. A utility recipe's final `!` marks every declaration it expands.
 
 Normal native CSS outside any layer outranks normal layered CSS. Native `@apply` stays in the stylesheet's authored layer, or remains unlayered when no layer surrounds it. Properties that overlap still follow the browser's cascade; inspect the generated order instead of assuming that a longer property name or later HTML class wins. The [layer contract](/reference/rules/layers) explains the complete comparison.
 
@@ -378,7 +378,7 @@ Native rules ship by default. Source-based native pruning is an explicit option 
 
 The final card uses a local project token, an on-demand button recipe, an interaction wrapper and a container query. Native component CSS owns the card surface; utilities own the decisions visible at each element.
 
-<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@mixin --save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="container-name:collection container-type:inline-size"><article class="collection display:grid gap-lg p-lg grid-template-columns:1fr|auto@container(collection|(width>=28rem))"><div><p class="margin:0 text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-weight-semibold fg-text-strong">A place for good ideas.</h3><p class="margin:0 text-sm fg-text-body max-width:38ch">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action align-self:center justify-content:center fg-action bg-surface-inset@apply(--hocus) outline-offset:3px"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
+<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="container-name:collection container-type:inline-size"><article class="collection display:grid gap-lg p-lg grid-template-columns:1fr|auto@container(collection|(width>=28rem))"><div><p class="margin:0 text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-weight-semibold fg-text-strong">A place for good ideas.</h3><p class="margin:0 text-sm fg-text-body max-width:38ch">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action align-self:center justify-content:center fg-action bg-surface-inset@apply(--hocus) outline-offset:3px"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
 
 Add these definitions after the preset import in your own app stylesheet. The demonstration's appearance switch changes the native color scheme; `light-dark()` selects the corresponding action color. Both states use the same complete classes.
 
@@ -390,4 +390,4 @@ When a style behaves unexpectedly, work through the evidence in this order:
 4. **Resolve the value.** Inspect custom properties on the receiving element and their declaration scopes. Registration alone does not deliver a native value.
 5. **Read the cascade.** Compare importance, layer, specificity and generated rule order, including native unlayered styles. Moving classes around in HTML is not a priority control.
 
-Use the [family mapping](/reference/tokens/families), [selector contract](/reference/rules/selectors), [condition contract](/reference/rules/conditions) and [mixin contract](/reference/directives/definitions) as lookups while building. Keep each class tied to a clear styling decision, and keep its generated CSS close enough to inspect.
+Use the [family mapping](/reference/tokens/families), [selector contract](/reference/rules/selectors), [condition contract](/reference/rules/conditions) and [utility contract](/reference/directives/definitions) as lookups while building. Keep each class tied to a clear styling decision, and keep its generated CSS close enough to inspect.

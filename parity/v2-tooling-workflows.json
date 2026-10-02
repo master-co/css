@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "languageVersion": 12,
-  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@mixin --erased { color:red; }\n@mixin --erased {}\n@mixin --pair(--value) { width:var(--value); height:var(--value); }\n",
+  "languageVersion": 15,
+  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@utility erased { color:red; }\n@utility erased {}\n@utility pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {
       "className": "font-brand",

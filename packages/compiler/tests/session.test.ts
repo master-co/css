@@ -29,7 +29,7 @@ const semanticParityCorpus = JSON.parse(readFileSync(
 test('native compiler sessions batch semantic operations and reject use after disposal', () => {
   const compiler = createCompilerSync()
   const inspected = compiler.inspectCSS('@import "@master/css";')
-  const compiled = compiler.compileCSS('@import "@master/css";\n @mixin --btn { display: block; } ')
+  const compiled = compiler.compileCSS('@import "@master/css";\n @mixin --btn { display: block; } @utility btn { display: block; } ')
 
   expect(compiler.binding).toBe('native')
   expect(inspected.hasMasterEntry).toBe(true)

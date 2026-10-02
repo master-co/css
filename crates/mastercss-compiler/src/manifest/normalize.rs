@@ -235,6 +235,20 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
         ),
         ("mixins", mixins),
         (
+            "utilities",
+            merge_array_by(
+                base.get("utilities"),
+                fragment.get("utilities"),
+                |definition| {
+                    Some(format!(
+                        "{}:{}",
+                        definition.get("kind")?.as_str()?,
+                        definition.get("name")?.as_str()?
+                    ))
+                },
+            ),
+        ),
+        (
             "debug",
             merge_records(base.get("debug"), fragment.get("debug")),
         ),
@@ -297,6 +311,12 @@ pub(crate) fn compile_manifest_fragment(
     }
     if let Some(variables) = grouped_variables {
         fragment.insert("variables".into(), variables);
+    }
+    if let Some(utilities) = &input.utilities {
+        fragment.insert(
+            "utilities".into(),
+            serde_json::to_value(utilities).expect("utility definitions"),
+        );
     }
     if let Some(mixins) = &input.mixins {
         fragment.insert(
@@ -380,6 +400,7 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         "customMedia",
         "variables",
         "mixins",
+        "utilities",
     ] {
         if let Some(value) = manifest.get(key) {
             preset.insert(key.into(), value.clone());
@@ -407,6 +428,18 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
                 .map_err(|error| manifest_error(error.to_string()))?;
         crate::mixins::visit_sources(&mut parsed, &mut |source| *source = None);
         *definition = serde_json::to_value(parsed).expect("mixin");
+    }
+    for definition in preset
+        .get_mut("utilities")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        let mut parsed: mastercss_schema::UtilityDefinition =
+            serde_json::from_value(definition.clone())
+                .map_err(|error| manifest_error(error.to_string()))?;
+        crate::mixins::visit_sources(&mut parsed.recipe, &mut |source| *source = None);
+        *definition = serde_json::to_value(parsed).expect("utility");
     }
     normalize_manifest_for_json(&Value::Object(preset))
 }

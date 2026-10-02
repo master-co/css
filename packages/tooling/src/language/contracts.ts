@@ -7,7 +7,7 @@ export type MasterCSSLanguageClassKind =
   | 'unknown'
   | 'component'
   | 'semantic'
-  | 'mixin'
+  | 'utility'
   | 'declaration'
   | 'token'
 

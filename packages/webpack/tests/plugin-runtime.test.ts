@@ -271,7 +271,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, ' @mixin --card { color: #123456; } ')
+      writeFileSync(themePath, ' @mixin --card { color: #123456; } @utility card { color: #123456; } ')
       writeFileSync(entryPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)
@@ -325,6 +325,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
  }
 
 @mixin --btn {
+        display: grid;
+    } @utility btn {
         display: grid;
     }`
       writeFileSync(entryPath, source)
@@ -380,7 +382,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      const source = "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; }"
+      const source = "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }"
       writeFileSync(entryPath, source)
       const plugin = await new MasterCSSWebpackPlugin({
         scanner: { verbose: 0 }
@@ -391,7 +393,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 
-      const validSource = "@import \"@master/css\";\n@mixin --card { display: block; }"
+      const validSource = "@import \"@master/css\";\n@mixin --card { display: block; } @utility card { display: block; }"
       writeFileSync(entryPath, validSource)
       await (plugin as any).processModuleContents([[entryPath, validSource]], () => false)
       expect((plugin as any).stylesheets.snapshot().dependencies).toContain(entryPath)
@@ -429,7 +431,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const configPath = path.join(root, 'app.css')
     const tokenPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(tokenPath, ' @mixin --card { color: #123456; } ')
+      writeFileSync(tokenPath, ' @mixin --card { color: #123456; } @utility card { color: #123456; } ')
       writeFileSync(configPath, "@import \"@master/css\";\n@import \"./theme.css\";")
 
       const plugin = makePlugin({}, root)

@@ -41,8 +41,8 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -60,7 +60,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
       ]
     }
   ]
-}))
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
 
   expect(session.inspect('block')).toMatchObject({ matchStatus: 'matched', className: 'block' })
   expect(session.snapshot().text).toBe('')
@@ -83,8 +83,8 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "variables": {
     "": [
       {
@@ -131,8 +131,8 @@ it('passes emitted globals to the Wasm-owned session', async () => {
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [{ name: "--fg", parameters: [{ name: "--color" }], body: [{ type: "declaration", property: "color", value: [{ type: "function", name: "var", value: [{ type: "text", value: "--color" }] }] }] }],
   "variables": {
     "color": [
@@ -149,7 +149,7 @@ it('passes emitted globals to the Wasm-owned session', async () => {
       }
     ]
   }
-}), {
+, utilities: [{"name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"function" as const},{"name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"token" as const}] }), {
     emittedGlobals: { variables: { 'color-red-60': 1 } }
   }, { input })
 
@@ -180,8 +180,8 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [{ name: "--fg", parameters: [{ name: "--color" }], body: [{ type: "declaration", property: "color", value: [{ type: "function", name: "var", value: [{ type: "text", value: "--color" }] }] }] }],
   "variables": {
     "color": [
@@ -198,7 +198,7 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
       }
     ]
   }
-}), {}, { input })
+, utilities: [{"name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"function" as const},{"name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"token" as const}] }), {}, { input })
 
   session.ensureClassRules(['fg-red-60'])
   expect(session.snapshot().text).toContain('--color-red-60:#d00')
@@ -221,8 +221,8 @@ it('preserves native declarations independently of browser CSS.supports', async 
   )))
   const session = await createWasmEngineSession(
     JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }),
     {},
     { input }
@@ -237,8 +237,8 @@ it('preserves native declarations independently of browser CSS.supports', async 
 
   const renderSession = await createWasmRenderSession(
     JSON.stringify({
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }),
     {},
     { input }

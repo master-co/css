@@ -1,6 +1,6 @@
 # Canonical token families
 
-The current preset defines 119 direct-value families and 7 recipes in `packages/preset/src/mixins.css`. Rust infers family metadata from loaded definitions. Language and tooling sessions expose it through `tokenFamilies()`; the site generates its catalog from the active preset manifest. See `site/app/[locale]/guide/directives/contract.mdx` for the current contract.
+The current preset defines 119 direct-value families and 7 recipes in `packages/preset/src/utilities.css`. Rust infers family metadata from loaded definitions. Language and tooling sessions expose it through `tokenFamilies()`; the site generates its catalog from the active preset manifest. See `site/app/[locale]/guide/directives/contract.mdx` for the current contract.
 
 ## Validation recorded on 2026-09-29
 

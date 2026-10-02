@@ -107,7 +107,7 @@ createTester({
     ]
   }
 ]
-      })
+      , utilities: [{"name":"btn","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const}] })
     }
   }
 }).run('invalid', rule, {

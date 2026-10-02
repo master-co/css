@@ -37,6 +37,8 @@ const originConfigText = `@import "@master/css";
 
   @mixin --btn {
     background-color: oklch(63.7% 0.237 25.331);
+  } @utility btn {
+    background-color: oklch(63.7% 0.237 25.331);
   }
 
 `

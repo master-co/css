@@ -22,7 +22,7 @@ fn css(engine: &mut EngineSession, classes: &[&str]) -> String {
 
 #[test]
 fn native_queries_preserve_dimensions_and_wrapper_nesting() {
-    let mut e = engine("@custom-media --sm (width>=800px); @mixin --has-selector { @supports selector(:has(*)) { @contents; } }").unwrap();
+    let mut e = engine("@custom-media --sm (width>=800px); @mixin --has-selector { @supports selector(:has(*)) { @contents; } } @utility has-selector { @supports selector(:has(*)) { @contents; } }").unwrap();
     let output = css(
         &mut e,
         &[
@@ -74,8 +74,8 @@ fn legacy_conditions_and_unknown_names_do_not_generate() {
 #[test]
 fn scoped_theme_and_variant_activation_are_independent() {
     let source = r#"
-        @mixin --fg(--color) {color:var(--color)}
-        @mixin --ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } }
+        @mixin --fg(--color) {color:var(--color)} @utility fg(--color) {color:var(--color)}@utility fg-(--color) {color:var(--color)}
+        @mixin --ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } } @utility ocean { &:where([data-theme="ocean"],[data-theme="ocean"] *) { @contents; } }
         @theme { --color-surface: white;
         }
             @supports (display: grid) { [data-theme="ocean"] { --color-surface: #082f49; } }
@@ -109,7 +109,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
 
 #[test]
 fn variant_redefinition_preserves_authored_theme_order() {
-    let source = "@mixin --a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @theme {--color-x:blue; } .b { --color-x: blue; } .a { --color-x: red; }";
+    let source = "@mixin --a { &.old { @contents; } } @utility a { &.old { @contents; } } @mixin --a { &.new { @contents; } } @utility a { &.new { @contents; } } @theme {--color-x:blue; } .b { --color-x: blue; } .a { --color-x: red; }";
     let native = compile_css_directives(source, &Default::default())
         .unwrap()
         .native_css
@@ -225,7 +225,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":5,"languageVersion":14,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":6,"languageVersion":15,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"

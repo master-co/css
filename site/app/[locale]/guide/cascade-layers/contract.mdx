@@ -46,14 +46,14 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@mixin`. Custom utilities can use native declarations, nested selectors, and `@apply` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@utility`. Custom utilities can use native declarations, nested selectors, and `@apply` blocks.
 
 ```css name=index.css
-@mixin --flow {
+@utility flow {
     display: grid;
     gap: var(--spacing-md);
   }
-@mixin --content-auto {
+@utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 32rem;
   }
@@ -145,7 +145,7 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 Native `@layer` blocks remain ordinary stylesheet output; they do not define on-demand classes. For on-demand managed definitions, use the explicit directive forms:
 
 ```css name=index.css
-@mixin --content-auto {
+@utility content-auto {
     content-visibility: auto;
   }
 

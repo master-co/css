@@ -8,13 +8,13 @@ fn direct(source: &str) -> String {
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives_request(
         &mastercss_compiler::LowerCssDirectivesRequest {
-            mixin_sources: Vec::new(),
+            definition_sources: Vec::new(),
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
             native_output: parsed.native_output,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":5,"languageVersion":14,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap();
     lowered
@@ -26,7 +26,7 @@ fn graph(source: &str) -> String {
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
         "urls":{"entry.css":"/entry.css"},
-        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}
     }))
     .unwrap();
     compile_css_stylesheet_graph(&request).unwrap().stylesheets[0]
@@ -47,7 +47,7 @@ const WRAPPERS: [&str; 6] = [
 fn direct_native_conditionals_expand_compose() {
     for wrapper in WRAPPERS {
         let source = format!(
-            "@mixin --paint{{padding:2rem}}{wrapper}{{.card{{@apply --always{{padding:2rem;}}}}}}"
+            "@mixin --paint{{padding:2rem}} @utility paint {{padding:2rem}}{wrapper}{{.card{{@apply --always{{padding:2rem;}}}}}}"
         );
         let css = direct(&source);
         assert!(!css.contains("@compose"), "{wrapper}: {css}");
@@ -59,7 +59,7 @@ fn direct_native_conditionals_expand_compose() {
 fn graph_native_conditionals_expand_compose() {
     for wrapper in WRAPPERS {
         let source = format!(
-            "@mixin --paint{{padding:2rem}}{wrapper}{{.card{{@apply --always{{padding:2rem;}}}}}}"
+            "@mixin --paint{{padding:2rem}} @utility paint {{padding:2rem}}{wrapper}{{.card{{@apply --always{{padding:2rem;}}}}}}"
         );
         let css = graph(&source);
         assert!(!css.contains("@compose"), "{wrapper}: {css}");
@@ -69,7 +69,7 @@ fn graph_native_conditionals_expand_compose() {
 
 #[test]
 fn graph_preserves_unrelated_native_children_and_composed_style_order() {
-    let source = r###"@mixin --paint {padding:2rem}@media(min-width:1px){@font-face{font-family:probe;src:url(probe.woff2)}.before{color:red}.card{@apply --always{padding:2rem;}}.after{color:blue}@keyframes spin{to{opacity:0}}}"###;
+    let source = r###"@mixin --paint {padding:2rem} @utility paint {padding:2rem}@media(min-width:1px){@font-face{font-family:probe;src:url(probe.woff2)}.before{color:red}.card{@apply --always{padding:2rem;}}.after{color:blue}@keyframes spin{to{opacity:0}}}"###;
     let css = graph(source);
     let tokens = [
         "@font-face",
@@ -85,7 +85,7 @@ fn graph_preserves_unrelated_native_children_and_composed_style_order() {
 
 #[test]
 fn graph_preserves_one_anonymous_layer_and_nested_wrapper_structure() {
-    let source = r###"@mixin --paint {padding:2rem}@layer{.before{color:red}@supports(display:grid){.card{@apply --always{padding:2rem;}}.after{padding:3rem}}}"###;
+    let source = r###"@mixin --paint {padding:2rem} @utility paint {padding:2rem}@layer{.before{color:red}@supports(display:grid){.card{@apply --always{padding:2rem;}}.after{padding:3rem}}}"###;
     let css = graph(source);
     assert!(css.contains("padding:2rem"), "{css}");
     assert_eq!(css.matches("@layer").count(), 1, "{css}");
@@ -105,7 +105,7 @@ fn native_wrappers_without_directives_are_unchanged() {
 
 #[test]
 fn direct_native_conditional_order_is_preserved() {
-    let source = r###"@mixin --paint {padding:2rem}@media(min-width:1px){.card{@apply --always{padding:2rem;}}.card{padding:3rem}}"###;
+    let source = r###"@mixin --paint {padding:2rem} @utility paint {padding:2rem}@media(min-width:1px){.card{@apply --always{padding:2rem;}}.card{padding:3rem}}"###;
     let css = direct(source);
     let normalized = css.replace([' ', '\n'], "");
     assert!(
@@ -116,7 +116,7 @@ fn direct_native_conditional_order_is_preserved() {
 
 #[test]
 fn direct_anonymous_layer_remains_one_layer() {
-    let source = r###"@mixin --paint {padding:2rem}@layer{.card{@apply --always{padding:2rem;}}.after{padding:3rem}}"###;
+    let source = r###"@mixin --paint {padding:2rem} @utility paint {padding:2rem}@layer{.card{@apply --always{padding:2rem;}}.after{padding:3rem}}"###;
     let css = direct(source);
     assert_eq!(css.matches("@layer").count(), 1, "{css}");
 }
@@ -125,14 +125,14 @@ fn direct_anonymous_layer_remains_one_layer() {
 fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
     for wrapper in WRAPPERS {
         let source = format!(
-            "/* 😀 */\n@mixin --paint{{padding:2rem}}\n{wrapper}{{\n.card{{@apply --always{{padding:2rem;}}}}\n}}"
+            "/* 😀 */\n@mixin --paint{{padding:2rem}} @utility paint {{padding:2rem}}\n{wrapper}{{\n.card{{@apply --always{{padding:2rem;}}}}\n}}"
         );
         let parsed = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
         let lowered = lower_css_directives(
             &parsed.manifest_input,
             parsed.style_definitions.as_deref().unwrap_or_default(),
             &[],
-            &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":5,"languageVersion":14,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+            &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
         )
         .unwrap();
         for (generated, original) in [(".card", ".card"), ("padding", "padding:2rem;")] {
@@ -159,7 +159,7 @@ fn conditional_selector_and_compose_origins_stay_at_authored_positions() {
 fn native_conditions_nested_inside_styles_expand_compose() {
     for wrapper in WRAPPERS {
         let source = format!(
-            "@mixin --paint{{padding:2rem}}.card{{{wrapper}{{@apply --always{{padding:2rem;}}}}}}"
+            "@mixin --paint{{padding:2rem}} @utility paint {{padding:2rem}}.card{{{wrapper}{{@apply --always{{padding:2rem;}}}}}}"
         );
         for css in [direct(&source), graph(&source)] {
             assert!(!css.contains("@compose"), "{wrapper}: {css}");

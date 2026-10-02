@@ -8,9 +8,9 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest: MasterCSSManifest = {
-  version: 5, languageVersion: 14,
+  version: 6, languageVersion: 15,
   mixins: [{ name: '--block', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
-}
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
 
 describe('binding loader', () => {
   it('normalizes operation failures and disposes engine sessions idempotently', async () => {
@@ -45,8 +45,8 @@ describe('binding loader', () => {
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "variables": {
     "": [
       {

@@ -11,7 +11,7 @@ test('property-scoped policy and explainable token families agree across native 
     const result = tooling.analyzeLintClassList(names.join(' '), names, { rawValuePolicy: { requireProperties: ['color'] } })
     const diagnostics = result.diagnostics.filter(item => item.ruleId === 'no-unapproved-raw-values')
     expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0]).toMatchObject({ data: { policy: { rule: 'no-unapproved-raw-values', requireProperties: ['color'] }, tokenFamilies: [{ mixin: '--fg', prefix: 'fg', properties: ['color'], namespace: 'color', argument: 'value' }] } })
+    expect(diagnostics[0]).toMatchObject({ data: { policy: { rule: 'no-unapproved-raw-values', requireProperties: ['color'] }, tokenFamilies: [{ utility: 'fg', prefix: 'fg', properties: ['color'], namespace: 'color', argument: 'value' }] } })
     expect(diagnostics[0].fix).toBeUndefined()
     const allowed = tooling.analyzeLintClassList(names.join(' '), names, { rawValuePolicy: { requireProperties: ['color'], allowedPatterns: ['^#123456$'] } })
     expect(allowed.diagnostics.some(item => item.ruleId === 'no-unapproved-raw-values')).toBe(false)

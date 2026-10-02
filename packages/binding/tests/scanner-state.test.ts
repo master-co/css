@@ -9,8 +9,8 @@ beforeAll(() => {
 })
 
 const manifest = {
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "mixins": [
     {
       "name": "--block",
@@ -43,7 +43,7 @@ const manifest = {
       ]
     }
   ]
-}
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const},{"name":"fg-red","body":[{"type":"declaration" as const,"property":"color","value":[{"type":"text" as const,"value":"red"}]}],"kind":"static" as const}] }
 
 describe('Rust scanner state session', () => {
   test('keeps source cache and valid/invalid class state behind an opaque handle', () => {
@@ -57,7 +57,7 @@ describe('Rust scanner state session', () => {
       candidates: ['block', 'unknown', 'fg-red'],
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
-      transition: { version: 3 as const }
+      transition: { version: 4 as const }
     })
     expect(scanner.scan('App.tsx', source)).toEqual({
       changed: false,
@@ -67,7 +67,7 @@ describe('Rust scanner state session', () => {
       usedNativeClasses: [],
       validClasses: [],
       invalidClasses: [],
-      transition: { version: 3 as const, mutations: [] }
+      transition: { version: 4 as const, mutations: [] }
     })
 
     expect(scanner.snapshot()).toMatchObject({
@@ -75,7 +75,7 @@ describe('Rust scanner state session', () => {
       validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       cachedSources: 1,
-      engine: { version: 3 as const }
+      engine: { version: 4 as const }
     })
 
     scanner.reset()

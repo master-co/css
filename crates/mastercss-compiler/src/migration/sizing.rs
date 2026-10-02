@@ -15,13 +15,14 @@ fn has_entry(manifest: &Value, key: &str) -> bool {
             .into_iter()
             .flatten()
             .any(|u| {
-                u["matchers"].as_array().into_iter().flatten().any(|m| {
-                    (m["type"] == "static" && m["name"] == key)
-                        || (matches!(m["type"].as_str(), Some("key" | "value" | "variable"))
-                            && m["keys"]
-                                .as_array()
-                                .is_some_and(|keys| keys.iter().any(|k| k == key)))
-                })
+                u["name"] == key
+                    || u["matchers"].as_array().into_iter().flatten().any(|m| {
+                        (m["type"] == "static" && m["name"] == key)
+                            || (matches!(m["type"].as_str(), Some("key" | "value" | "variable"))
+                                && m["keys"]
+                                    .as_array()
+                                    .is_some_and(|keys| keys.iter().any(|k| k == key)))
+                    })
             })
 }
 
@@ -80,7 +81,7 @@ pub(super) fn add_helpers(original: &Value, target: &mut Value) -> Vec<String> {
                     .as_array()
                     .into_iter()
                     .flatten()
-                    .any(owns)
+                    .any(|utility| utility["name"] == key || owns(utility))
             {
                 continue;
             }

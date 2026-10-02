@@ -16,14 +16,14 @@ test('public project, codec, query and validation APIs preserve execution contex
     writeFileSync(join(root, 'app.css'), `@import "@master/css";
 @theme { --color-brand: red;  }
 @theme { --paint-brand: var(--color-brand);  }
-@mixin --paint(--name <string>) { color: var(ident("--paint-" var(--name))); }
+@mixin --paint(--name <string>) { color: var(ident("--paint-" var(--name))); } @utility paint(--name <string>) { color: var(ident("--paint-" var(--name))); }@utility paint-(--paint <string>) { color: var(ident("--paint-" var(--paint))); }
 `)
     const project = await loadProjectManifest({
       root,
       entries: [join(root, 'app.css')],
       baseManifest: {
-  "version": 5 as const,
-  "languageVersion": 14 as const
+  "version": 6 as const,
+  "languageVersion": 15 as const
 }
     })
     const manifest: MasterCSSManifest = JSON.parse(serializeMasterCSSManifest(project.manifest))

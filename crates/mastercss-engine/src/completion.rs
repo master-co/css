@@ -215,9 +215,9 @@ pub(crate) fn collect_class_completion_candidates(
     }
 
     for utility in &manifest.utilities {
-        if matches!(utility.emit, super::UtilityEmit::Mixin { .. }) {
+        if matches!(utility.emit, super::UtilityEmit::Recipe { .. }) {
             let is_component = utility.layer == UtilityLayerName::Components;
-            let static_detail = Some("mixin".into());
+            let static_detail = Some("utility".into());
             for matcher in &utility.matchers {
                 match matcher {
                     UtilityMatcher::Static { name } => {
@@ -246,7 +246,7 @@ pub(crate) fn collect_class_completion_candidates(
                             .iter()
                             .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))
                         {
-                            let detail = manifest.mixins.iter().find(|definition| definition.name == format!("--{name}")).map(|definition| definition.parameters.iter().map(|parameter| {
+                            let detail = manifest.utility_definitions.iter().filter(|definition| definition.kind == mastercss_schema::UtilityKind::Function).map(|definition| &definition.recipe).find(|definition| &definition.name == name).map(|definition| definition.parameters.iter().map(|parameter| {
                                 let syntax = parameter.syntax.map(|syntax| match syntax {
                                     mastercss_schema::MixinParameterSyntax::Integer => " <integer>",
                                     mastercss_schema::MixinParameterSyntax::Number => " <number>",
@@ -263,7 +263,7 @@ pub(crate) fn collect_class_completion_candidates(
                                     kind: EngineClassCompletionKind::Function,
                                     detail,
                                     documentation_class_name: None,
-                                    sort_text: Some(format!("zzzzz-mixin-{name}")),
+                                    sort_text: Some(format!("zzzzz-utility-{name}")),
                                     trigger_suggest: true,
                                 },
                             );

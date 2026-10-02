@@ -37,7 +37,7 @@ Compared with Tailwind:
 - Direct declarations use native property names, such as `font-size:1.5rem`, `color:red`, and `background:blue:hover@sm`.
 - Selectors and conditions are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
-- CSS entries define theme tokens, native scoped overrides, custom media, mixins and managed keyframes. Native component rules use `@layer components`. Mixin contents provide reusable wrappers without a variant registry.
+- CSS entries define theme tokens, native scoped overrides, custom media, utilities, native mixins and managed keyframes. Native component rules use `@layer components`. Mixin contents provide reusable wrappers without a variant registry.
 
 Compared with CSS-in-JS:
 
@@ -49,7 +49,8 @@ Compared with CSS-in-JS:
 
 - Rule: An emitted CSS rule-like object with text and a key.
 - Utility: A parsed markup class with declarations, selectors, conditions, priority and layer.
-- Mixin: An ordered static recipe defined with `@mixin`, invoked by a recipe class or `@apply`. Optional `@contents` expands the caller's block or a definition fallback.
+- Utility: An on-demand class registered explicitly with `@utility`; static, token and functional forms are independent.
+- Mixin: An ordered reusable CSS body defined with `@mixin`, invoked by `@apply`. Optional `@contents` expands the caller's block or a definition fallback.
 - Variable: A theme token emitted on demand, or unconditionally with `static`; `inline` substitutes its value in generated declarations.
 - Theme: Native selectors and conditions determining custom-property values through the CSS cascade. Preset `@dark` and `@light` use system preferences.
 - Component: A native class rule authored in `@layer components`.

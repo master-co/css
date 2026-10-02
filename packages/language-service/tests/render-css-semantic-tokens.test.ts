@@ -91,7 +91,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
     '    }',
     '}'
   ].join('\n')
-  const utilitiesDirective = "@mixin --text-left {\n        @safelist \"sr-only fg-red\";\n        text-align: left;\n    }\n@mixin --text-right {\n        @safelist \"sr-only fg-red\";\n        text-align: right;\n    }"
+  const utilitiesDirective = "@mixin --text-left {\n        @safelist \"sr-only fg-red\";\n        text-align: left;\n    } @utility text-left {\n        @safelist \"sr-only fg-red\";\n        text-align: left;\n    }\n@mixin --text-right {\n        @safelist \"sr-only fg-red\";\n        text-align: right;\n    } @utility text-right {\n        @safelist \"sr-only fg-red\";\n        text-align: right;\n    }"
   const safelistDirective = "@safelist \"sr-only fg-blue\";"
   const content = [
     nativeBefore,
@@ -184,9 +184,21 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
       --radius-card: 1rem;
     }
 
-    @mixin --headings { @media (--all) { @contents; } }
+    @mixin --headings { @media (--all) { @contents; } } @utility headings { @media (--all) { @contents; } }
 
     @mixin --btn {
+        @safelist "fg-blue align-items:center fg-primary:hover@md";
+
+        @media (--h)>=sm&h<lg {
+          @safelist "sr-only";
+        }
+
+        ::scrollbar-thumb:hover {
+          @media (prefers-color-scheme: dark) {
+            @safelist "fg-primary";
+          }
+        }
+      } @utility btn {
         @safelist "fg-blue align-items:center fg-primary:hover@md";
 
         @media (--h)>=sm&h<lg {
@@ -344,7 +356,7 @@ test.concurrent('does not render active semantic tokens for CSS directive syntax
 })
 
 test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
-  const content = "@mixin --btn { @safelist \"fg-red sr-only:hover\"; }"
+  const content = "@mixin --btn { @safelist \"fg-red sr-only:hover\"; } @utility btn { @safelist \"fg-red sr-only:hover\"; }"
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf("sr-only") + 1))
@@ -395,7 +407,7 @@ test.concurrent('renders CSS directive class-list semantic tokens when embedded 
 
 .dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }
 
-@mixin --btn { @safelist "sr-only"; }`
+@mixin --btn { @safelist "sr-only"; } @utility btn { @safelist "sr-only"; }`
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)

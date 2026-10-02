@@ -54,14 +54,26 @@ pub(super) fn collect_namespaces(
             }
         }
     }
-    for mixin in input.mixins.iter().flatten() {
-        if mixin.parameters.len() == 1
-            && mixin.parameters[0].syntax == Some(mastercss_schema::MixinParameterSyntax::String)
+    for utility in input.utilities.iter().flatten() {
+        if utility.kind == mastercss_schema::UtilityKind::Token
+            && let Some(parameter) = utility.recipe.parameters.first()
         {
             push_unique(
                 &mut namespaces,
-                mixin.name.trim_start_matches("--").to_owned(),
+                parameter.name.trim_start_matches("--").to_owned(),
             );
+        }
+    }
+    for utility in base
+        .and_then(|base| base.get("utilities"))
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+    {
+        if utility["kind"] == "token"
+            && let Some(name) = utility["parameters"][0]["name"].as_str()
+        {
+            push_unique(&mut namespaces, name.trim_start_matches("--").to_owned());
         }
     }
     namespaces.sort_by(|left, right| right.len().cmp(&left.len()).then_with(|| left.cmp(right)));

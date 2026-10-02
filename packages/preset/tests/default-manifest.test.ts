@@ -191,13 +191,13 @@ describe('@master/css-preset defaultManifest', () => {
   it('matches the readable preset sources and publishes only executable recipes', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
- expect(manifest.version).toBe(5)
- expect(manifest.languageVersion).toBe(14)
- expect(manifest.mixins).toHaveLength(126)
- expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(126)
- for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
+ expect(manifest.version).toBe(6)
+ expect(manifest.languageVersion).toBe(15)
+ expect(manifest.utilities).toHaveLength(126)
+ expect(new Set(manifest.utilities?.map(mixin => mixin.name)).size).toBe(126)
+ for (const field of ['mixins', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
- expect(manifest.mixins?.find(mixin => mixin.name === '--text')?.parameters).toEqual([{ name: '--step', syntax: 'string' }])
+ expect(manifest.utilities?.find(mixin => mixin.name === 'text')?.parameters).toEqual([{ name: '--text', syntax: 'string' }])
 })
 
   it('matches the readable preset native CSS', () => {
@@ -245,7 +245,7 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
 
     for (const name of removedStaticUtilityNames) {
-      expect(defaultManifest.mixins?.some(mixin => mixin.name === `--${name}`), name).toBe(false)
+      expect(defaultManifest.utilities?.some(mixin => mixin.name === name), name).toBe(false)
       expect(css.createRule(name), name).toBeUndefined()
     }
   })
@@ -260,14 +260,14 @@ describe('@master/css-preset defaultManifest', () => {
     )
   })
 
-  it('derives token families from preset mixins, including empty namespaces', () => {
+  it('reads explicit preset token families, including empty namespaces', () => {
     using tooling = createLanguageSessionSync({ manifest: defaultManifest })
     const families = tooling.tokenFamilies().families
     expect(families.filter(family => family.argument === 'value')).toHaveLength(119)
     expect(families).toEqual(expect.arrayContaining([
-      { mixin: '--p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
-      { mixin: '--bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
-      { mixin: '--order', prefix: 'order', properties: ['order'], namespace: 'order', argument: 'value' }
+      { utility: 'p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
+      { utility: 'bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
+      { utility: 'order', prefix: 'order', properties: ['order'], namespace: 'order', argument: 'value' }
     ]))
   })
 
@@ -527,8 +527,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(nativeCSS.createRule('list-style-image:url(/marker.svg)')?.text).toBe('.list-style-image\\:url\\(\\/marker\\.svg\\){list-style-image:url(/marker.svg)}')
   })
 
-  it('keeps token registration out of the preset manifest', () => {
- expect(defaultManifest).not.toHaveProperty('utilities')
+  it('keeps derived token indexes out of the preset manifest', () => {
+ expect(defaultManifest).not.toHaveProperty('utilityBuckets')
  const css = createTestCSS(defaultManifest)
  expect(css.createRule('display:block')?.text).toContain('display:block')
  expect(css.createRule('outline-thin')).toBeUndefined()
@@ -544,8 +544,8 @@ describe('@master/css-preset defaultManifest', () => {
  expect(css.createRule('r:1rem')?.text).toContain('r:1rem')
 })
 
-  it('publishes unique mixin names with no source-local metadata', () => {
- const mixins = defaultManifest.mixins || []
+  it('publishes unique utility registrations with no source-local metadata', () => {
+ const mixins = defaultManifest.utilities || []
  expect(new Set(mixins.map(mixin => mixin.name)).size).toBe(mixins.length)
  expect(JSON.stringify(mixins)).not.toContain('"source":')
  expect(defaultManifest).not.toHaveProperty('utilityBuckets')

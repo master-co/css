@@ -12,7 +12,7 @@ test('separates generated globals at the compiler boundary while referenced nati
   const root = mkdtempSync(join(tmpdir(), 'master-global-css-'))
   const tokens = join(root, 'tokens.css')
   writeFileSync(tokens, `
-    @mixin --ocean { &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; } }
+    @mixin --ocean { &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; } } @utility ocean { &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; } }
     @theme {
   --color-probe: red;
 }

@@ -54,7 +54,7 @@ test('catalog covers every public family and preset recipe without indexing reti
   const { recipes } = await import('./recipes')
   assert.equal(catalog.documents.length, 84)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
-  assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.mixin === mixin.name)).map(mixin => mixin.name).sort())
+  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   for (const family of foundationFamilies) {
     assert.ok(families.markdown.includes(`Property: \`${family.property}\``), family.prefix)
@@ -106,7 +106,7 @@ test('current Reference excludes upgrade workflows and obsolete syntax identifie
   assert.ok(!pages.some(page => page.pathname === '/reference/tools/cli/migrate'))
   for (const doc of catalog.documents) {
     assert.deepEqual(documentationHygieneIssues(doc.markdown), [], doc.id)
-    for (const name of ['@utility', '@compose', '@settings', '@mode', '@custom-variant']) assert.ok(!doc.aliases.includes(name), `${doc.id}: ${name}`)
+    for (const name of ['@compose', '@settings', '@mode', '@custom-variant']) assert.ok(!doc.aliases.includes(name), `${doc.id}: ${name}`)
   }
   const guide = await readFile(path.join(root, 'app/[locale]/guide/migration/v2-rc/content.mdx'), 'utf8')
   const { execFileSync } = await import('node:child_process')

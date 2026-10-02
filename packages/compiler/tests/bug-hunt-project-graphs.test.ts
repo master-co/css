@@ -17,9 +17,9 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
       const child = join(cwd, 'styles/child.css')
       const tokens = join(cwd, 'tokens.css')
       const template = join(cwd, 'styles/templates/view.html')
-      writeFileSync(entry, `@import './styles/child.css' ${condition};@import "@master/css";@reference './tokens.css';@mixin --widget {@apply --all{color:red;}}@mixin --button {color:red;}`)
+      writeFileSync(entry, `@import './styles/child.css' ${condition};@import "@master/css";@reference './tokens.css';@mixin --widget {@apply --all{color:red;}} @utility widget {@apply --all{color:red;}}@mixin --button {color:red;} @utility button {color:red;}`)
       writeFileSync(child, `@import 'https://remote.test/external.css';@reference '../tokens.css';@source './templates/*.html';.native{color:blue}`)
-      writeFileSync(tokens, '@mixin --paint {color:red}.reference-native{color:green}')
+      writeFileSync(tokens, '@mixin --paint {color:red} @utility paint {color:red}.reference-native{color:green}')
       writeFileSync(template, '<div class="widget button"></div>')
       const baseManifest = {
   mixins: [
@@ -39,9 +39,9 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-}
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
       const options = { root: cwd, entries: [entry], baseManifest }
       const results = [await compileProjectManifest(options), await loadProjectManifest(options), compileProjectManifestSync(options)]
       for (const result of results) {
@@ -72,8 +72,8 @@ test('BH-0004 project graph preserves explicit entry order', async () => {
   try {
     const a = join(root, 'a.css')
     const b = join(root, 'b.css')
-    writeFileSync(a, "@import \"@master/css\";@mixin --choice {color:red}")
-    writeFileSync(b, "@import \"@master/css\";@mixin --choice {color:blue}")
+    writeFileSync(a, "@import \"@master/css\";@mixin --choice {color:red} @utility choice {color:red}")
+    writeFileSync(b, "@import \"@master/css\";@mixin --choice {color:blue} @utility choice {color:blue}")
     for (const [entries, expected] of [[[a, b], 'blue'], [[b, a], 'red']] as const) {
       const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: {
   mixins: [
@@ -93,9 +93,9 @@ test('BH-0004 project graph preserves explicit entry order', async () => {
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} })
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
       const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
       try {
         engine.ensureClassRules(['choice'])
@@ -130,9 +130,9 @@ test('BH-0004 project graph rejects missing and circular references', async () =
     ]
   }
 ],
-  "version": 5 as const,
-  "languageVersion": 14 as const
-} }
+  "version": 6 as const,
+  "languageVersion": 15 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } }
     await expect(compileProjectManifest(options)).rejects.toThrow(/tokens\.css/)
     writeFileSync(reference, "@reference './entry.css';")
     await expect(compileProjectManifest(options)).rejects.toThrow(/Circular CSS reference/)

@@ -43,8 +43,8 @@ test('preserves native aliases that share a declaration across cached pages', ()
       ]
     }
   ],
-  "version": 5 as const,
-  "languageVersion": 14 as const,
+  "version": 6 as const,
+  "languageVersion": 15 as const,
   "variables": {
     "": [
       {
@@ -183,7 +183,7 @@ test('returns a complete final chunk when no prefix can be emitted safely', () =
 test('materializes compiled native slots in their original inline styles without leaking page roots', async () => {
   const { compileRenderedStylesheet } = await import('@master/css-compiler/stylesheet')
   const compiled = await compileRenderedStylesheet('/ssr.css', '@prune native;@layer{@keyframes probe{to{opacity:.25;background:url("./source.svg")}}}', {
-    baseManifest: { version: 5, languageVersion: 14 }, classes: []
+    baseManifest: { version: 6, languageVersion: 15 }, classes: []
   })
   using renderer = createServerRenderer({ manifest: compiled.manifest, emittedGlobals: compiled.emittedGlobals })
   const input = `<html><head><style id="native">${compiled.nativeCSS.replaceAll('./source.svg', '/assets/final.svg')}</style><style id="after">@layer after;</style></head><body><div class="animation:probe|1ms|both"></div></body></html>`
