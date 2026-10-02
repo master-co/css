@@ -30,6 +30,6 @@ export function configuredExampleCSS(source: string, classes: string[]) {
         throw new Error(`Invalid configured documentation class: ${className}`)
       }
     }
-    return result.css + snapshot.cssText
+    return (snapshot.engine.stylesheets ?? []).join('\n\n') + snapshot.cssText
   } finally { engine.dispose() }
 }

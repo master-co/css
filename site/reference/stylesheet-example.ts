@@ -15,7 +15,8 @@ export async function stylesheetExampleCSS(source: string) {
   try {
     renderer.ensureClassRules([...result.directiveSummary.extractionPolicy.safelist])
     renderer.ensureStylesheetResources(result.css)
-    return beautifyCSS([result.css, renderer.snapshot().cssText].filter(Boolean).join('\n\n')).trim()
+    const snapshot = renderer.snapshot()
+    return beautifyCSS([...(snapshot.engine.stylesheets ?? []), snapshot.cssText].filter(Boolean).join('\n\n')).trim()
   } finally { renderer.dispose() }
 }
 

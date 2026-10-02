@@ -34,7 +34,7 @@ interface MasterCSSWasmEngineProviderSession {
     readonly version: number
     readonly mutations: readonly unknown[]
   }
-  refresh(manifestJSON: string): {
+  refresh(manifestJSON: string, emittedGlobalsJSON?: string): {
     readonly version: number
     readonly mutations: readonly unknown[]
   }

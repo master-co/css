@@ -2,8 +2,8 @@ import { withMasterCSSRuntime, type MasterCSSRuntime } from '../src'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const manifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } satisfies MasterCSSManifest
 
 class RuntimeElement extends HTMLElement {

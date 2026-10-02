@@ -5,7 +5,7 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version":4,"languageVersion":13,
+        "version":5,"languageVersion":14,
         "variables": { "": [
             { "name": "x", "key": "x", "values":[{"path":[":root,:host"],"value":"red"}] },
             { "name": "y", "key": "y", "values":[{"path":[":root,:host"],"value":"blue"}] },
@@ -84,4 +84,30 @@ fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
         assert!(!rendered.snapshot.text.contains("color-green-60"));
         assert!(!rendered.snapshot.text.contains(".hidden"));
     }
+}
+
+#[test]
+fn document_native_stylesheets_keep_hydration_resource_discovery_canonical() {
+    let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
+    let classes = ["p-md", "font-family-mono", "fg-red", "bg-red"];
+    let mut renderer = RenderSession::create(manifest, None).unwrap();
+    renderer
+        .ensure_stylesheet_resources("html{font-size:16px}")
+        .unwrap();
+    renderer.ensure_classes(classes).unwrap();
+    let rendered = renderer.snapshot().unwrap();
+    let mut browser = EngineSession::create(manifest).unwrap();
+    browser
+        .ensure_class_rules(
+            rendered
+                .hydration_manifest
+                .rules
+                .iter()
+                .map(|rule| &rule.class_name),
+        )
+        .unwrap();
+    let snapshot = browser.snapshot().unwrap();
+    assert_eq!(snapshot.resources, rendered.snapshot.resources);
+    assert_eq!(snapshot.text, rendered.snapshot.text);
+    assert_eq!(rendered.snapshot.stylesheets, ["html{font-size:16px}"]);
 }

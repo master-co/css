@@ -17,7 +17,7 @@ test('local graph names depend on CSS order and content, not asynchronous regist
     code: '@import "./child-b.css" layer(b);.target{color:blue}', transformed: true, diagnostics: [], dependencies: [],
     stylesheets: [{ id: 'b', href: './child-b.css', css: '@import "https://external.test/b.css";.b{padding:2rem}' }]
   } }
-  const extracted = { css: '', stylesheets: [], diagnostics: [], emittedGlobals: { variables: {}, keyframes: {} } }
+  const extracted = { css: '', stylesheets: [], diagnostics: [], emittedGlobals: { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] } }
   const source = a.slot + '.between{display:block}' + b.slot
   const prepare = (source: string, locals: LocalStylesheet[]) => prepareBuildStylesheet(compiler, source, '#managed{--slot:0}', extracted, locals)
   const first = prepare(source, [a, b])

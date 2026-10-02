@@ -20,7 +20,7 @@ fn engine(source: &str) -> EngineSession {
 fn theme_modes_and_ordered_defaults() {
     let (_, manifest) =
         compile("@theme static inline{--color-brand:red;--color-brand:blue;--spacing-card:2rem}");
-    assert_eq!(manifest["languageVersion"], 13);
+    assert_eq!(manifest["languageVersion"], 14);
     assert_eq!(manifest["theme"][0]["prelude"], ":root,:host");
     assert_eq!(manifest["theme"][0]["children"][0]["inline"], true);
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
@@ -133,7 +133,7 @@ fn inline_applies_to_native_apply_but_not_authored_declarations() {
 #[test]
 fn static_animation_retains_only_referenced_keyframes_and_dependencies() {
     let mut e = engine(
-        "@theme static{--animate-reveal:reveal 1s}@theme{--color-brand:red;@keyframes reveal{to{color:var(--color-brand)}}@keyframes unused{to{opacity:0}}}",
+        "@theme static{--animate-reveal:reveal 1s}@prune native;@theme{--color-brand:red;}@keyframes reveal{to{color:var(--color-brand)}}@keyframes unused{to{opacity:0}}",
     );
     let initial = e.css_text();
     assert!(initial.contains("@keyframes reveal"));
@@ -144,8 +144,10 @@ fn static_animation_retains_only_referenced_keyframes_and_dependencies() {
     e.delete_class_rules(["animate-reveal", "bg-brand"])
         .unwrap();
     assert_eq!(e.css_text(), initial);
+    let id = e.snapshot().unwrap().resources.keyframes[0].id.clone();
     e.replace_emitted_globals(
-        r#"{"variables":{"animate-reveal":1,"color-brand":1},"keyframes":{"reveal":1}}"#,
+        &serde_json::json!({"variables":{"animate-reveal":1,"color-brand":1},"keyframes":{id:1}})
+            .to_string(),
     )
     .unwrap();
     assert!(e.css_text().is_empty());
@@ -167,7 +169,7 @@ fn static_hmr_replaces_roots_without_leaking_counts() {
 }
 
 #[test]
-fn only_tokens_and_direct_keyframes_are_accepted() {
+fn theme_accepts_only_tokens_and_native_keyframes_are_registered() {
     for source in [
         "@theme{color:red}",
         "@theme{:root{--x:red}}",
@@ -188,9 +190,9 @@ fn only_tokens_and_direct_keyframes_are_accepted() {
         );
     }
     let (result, _) = compile(
-        "/*😀*/@theme{--label:\"夜\";@keyframes turn{to{opacity:1}}--animate-turn:turn 1s}",
+        "/*😀*/@prune native;@theme{--label:\"夜\";--animate-turn:turn 1s}@keyframes turn{to{opacity:1}}",
     );
-    assert!(result.native_css.is_empty());
+    assert!(!result.native_css.contains("@keyframes"));
     assert_eq!(result.manifest_input.keyframes.unwrap()[0].name, "turn");
 }
 
@@ -249,7 +251,7 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
 #[test]
 fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
     let base = serde_json::json!({
-        "version":4,"languageVersion":13,
+        "version":5,"languageVersion":14,
         "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
         "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
     });

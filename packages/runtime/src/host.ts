@@ -11,10 +11,12 @@ import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@mast
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import HydratedGeneratedRule from './generated-rule'
+import KeyframeHost from './keyframe-host'
 import RuntimeLayer, { getRuleNodeCount, type RuntimeLayerRule, type RuntimeResourceRule } from './layer'
 import RuntimeThemeLayer from './theme-layer'
 import RuntimeUtilityLayer from './utility-layer'
 import { isDocumentRoot } from './hydration'
+import type { MasterCSSRuntimeOptions } from './types'
 
 export const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 
@@ -30,7 +32,9 @@ export function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
 function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
   return {
     variables: { ...(emittedGlobals?.variables || {}) },
-    keyframes: { ...(emittedGlobals?.keyframes || {}) }
+    keyframes: { ...(emittedGlobals?.keyframes || {}) },
+    keyframeSlots: [...(emittedGlobals?.keyframeSlots || [])],
+    suppressedKeyframes: [...(emittedGlobals?.suppressedKeyframes || [])]
   }
 }
 
@@ -38,6 +42,8 @@ function addEmittedGlobals(
   target: Required<MasterCSSEmittedGlobals>,
   source: MasterCSSEmittedGlobals
 ) {
+  target.suppressedKeyframes = [...new Set([...target.suppressedKeyframes, ...(source.suppressedKeyframes || [])])]
+  target.keyframeSlots = [...new Set([...target.keyframeSlots, ...(source.keyframeSlots || [])])]
   for (const kind of ['variables', 'keyframes'] as const) {
     for (const [name, count] of Object.entries(source[kind] || {})) {
       if (count) {
@@ -68,25 +74,16 @@ export default class RuntimeHost {
   protected readonly defaultsLayer = new RuntimeUtilityLayer('defaults', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
   protected readonly componentsLayer = new RuntimeUtilityLayer('components', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
   protected readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this.insertRuntimeLayerRule, this.deleteRuntimeLayerRule)
+  private readonly keyframeHost: KeyframeHost
   protected readonly keyframes = new RuntimeLayer('keyframes',
-    (layer, rule, index) => {
-      rule.nativeNodeCount = 0
-      const sheet = this.getStyleSheet()
-      if (!sheet) return
-      const next = layer.rules.filter(rule => rule.native)[index]?.native
-      const nativeIndex = next ? this.findTopLevelRuleIndex(next) : sheet.cssRules.length
-      try {
-        const inserted = sheet.insertRule(rule.text, nativeIndex)
-        rule.native = sheet.cssRules.item(inserted) || undefined
-        rule.nativeNodeCount = 1
-      } catch (error) {
-        console.error(error, rule)
-      }
-    },
     (_layer, rule) => {
-      const index = rule.native ? this.findTopLevelRuleIndex(rule.native) : -1
-      if (index !== -1) this.getStyleSheet()?.deleteRule(index)
-    })
+      rule.nativeNodeCount = 0
+      try {
+        rule.native = this.keyframeHost.insert(rule.key, rule.text)
+        rule.nativeNodeCount = rule.native ? 1 : 0
+      } catch (error) { console.error(error, rule) }
+    },
+    (_layer, rule) => this.keyframeHost.remove(rule.native))
   protected readonly classUtilities = new Map<string, HydratedGeneratedRule[]>()
   private readonly ruleClasses = new Map<HydratedGeneratedRule, string | Set<string>>()
   protected readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
@@ -108,8 +105,13 @@ export default class RuntimeHost {
     manifest: MasterCSSManifest,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
     protected hydrationManifest: MasterCSSHydrationManifest | undefined,
-    protected readonly bindingEngine: MasterCSSEngine
+    protected readonly bindingEngine: MasterCSSEngine,
+    stylesheets?: MasterCSSRuntimeOptions['stylesheets'],
+    stylesheetDelivery?: MasterCSSRuntimeOptions['stylesheetDelivery']
   ) {
+    this.keyframeHost = new KeyframeHost(root,
+      () => this.getStyleSheet(), () => this.manifest, () => this.emittedGlobals.keyframeSlots, stylesheets,
+      stylesheetDelivery, () => this.reconcileKeyframeRules())
     this.manifest = manifest
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
     this.host = isDocumentRoot(root) ? root.documentElement : root.host
@@ -122,6 +124,10 @@ export default class RuntimeHost {
     const transition = this.bindingEngine.registerEmittedGlobals(emittedGlobals)
     addEmittedGlobals(this.emittedGlobals, emittedGlobals)
     this.applyTransition(transition)
+  }
+
+  protected adoptEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
+    Object.assign(this.emittedGlobals, cloneEmittedGlobals(emittedGlobals))
   }
 
   protected replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
@@ -250,6 +256,28 @@ export default class RuntimeHost {
     }
   }
 
+  protected clearKeyframeRules() {
+    for (const rule of this.keyframes.rules) this.keyframeHost.remove(rule.native)
+  }
+
+  protected disposeNativeStylesheets() { this.keyframeHost.dispose() }
+
+  protected reconcileKeyframeRules() {
+    this.keyframeHost.reconcileOwners()
+    const claimed = new Set<CSSRule>()
+    for (const rule of this.keyframes.rules) {
+      if (this.keyframeHost.contains(rule.key, rule.native)) claimed.add(rule.native!)
+    }
+    for (const rule of this.keyframes.rules) {
+      if (rule.native && claimed.has(rule.native)) continue
+      this.keyframeHost.remove(rule.native)
+      rule.native = this.keyframeHost.adopt(rule.key, claimed)
+        || this.keyframeHost.insert(rule.key, rule.text)
+      if (rule.native) claimed.add(rule.native)
+      rule.nativeNodeCount = rule.native ? 1 : 0
+    }
+  }
+
   protected resetHostRuleState() {
     this.clearClassReferences()
     this.baseLayer.reset()
@@ -258,6 +286,7 @@ export default class RuntimeHost {
     this.componentsLayer.reset()
     this.utilitiesLayer.reset()
     this.keyframes.reset()
+    this.keyframeHost.reset()
     this.resetResourceCounts()
   }
 
@@ -373,7 +402,12 @@ export default class RuntimeHost {
     this.syncClassReferences(state.classes)
   }
 
+  protected rebaseSnapshotResources(sheet: CSSStyleSheet, snapshot: MasterCSSEngineSnapshot) {
+    return this.keyframeHost.rebaseSnapshot(sheet, snapshot.resources.keyframes)
+  }
+
   protected adoptSnapshot(snapshot: MasterCSSEngineSnapshot, preserveStyle = false) {
+    if (!preserveStyle) this.clearKeyframeRules()
     this.resetHostRuleState()
     if (!this.style) return
     if (!preserveStyle) this.style.textContent = snapshot.text
@@ -406,13 +440,15 @@ export default class RuntimeHost {
       this.registerClassRule(rule)
     }
 
-    const nativeKeyframes = new Map([...sheet.cssRules]
-      .filter((rule): rule is CSSKeyframesRule => rule.constructor.name === 'CSSKeyframesRule')
-      .map(rule => [rule.name, rule]))
+    const claimed = new Set<CSSRule>()
     for (const resource of snapshot.resources.keyframes) {
-      const native = nativeKeyframes.get(resource.name)
-      this.keyframes.adopt({ key: resource.name, name: resource.name, text: resource.text,
-        native, nativeNodeCount: native ? 1 : 0 })
+      const native = this.keyframeHost.adopt(resource.id, claimed)
+      if (native) {
+        this.keyframes.adopt({ key: resource.id, name: resource.name, text: resource.text,
+          native, nativeNodeCount: 1 })
+      } else {
+        this.keyframes.insert({ key: resource.id, name: resource.name, text: resource.text })
+      }
     }
     this.syncResourceSnapshot(snapshot.resources)
   }

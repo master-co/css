@@ -36,8 +36,8 @@ for (const binding of ['native', 'wasm'] as const) {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, resolutionManifest: {
   mixins: [
   {
@@ -56,8 +56,8 @@ for (const binding of ['native', 'wasm'] as const) {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
           })
         } catch (error) { caught = error }
@@ -88,8 +88,8 @@ test('BH-0004 local stylesheet lowering retains source text for diagnostics', as
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })).rejects.toMatchObject({
     diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })

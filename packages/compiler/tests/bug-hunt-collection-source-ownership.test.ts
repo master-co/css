@@ -73,7 +73,7 @@ test('collection emits referenced native resources once without exposing referen
     const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: root, classes: ['reference-only', "display:block"] })
     const css = [result.css, ...(result.stylesheets ?? []).map(asset => asset.css)].join('\n')
     expect(css).toContain('--color-accent:#123456')
-    expect(css).not.toContain("@keyframes pop")
+    expect(css).toContain("@keyframes pop")
     expect(css.match(/@keyframes local/g)).toHaveLength(1)
     expect(result.emittedGlobals.variables).toMatchObject({ 'color-accent': 1 })
     expect(css).toContain(".display\\:block{display:block}")

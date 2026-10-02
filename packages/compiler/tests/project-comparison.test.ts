@@ -5,7 +5,7 @@ import { expect, test } from 'vitest'
 import { captureMasterCSSProject, compareProjectSnapshots } from '../src/diagnostics'
 import { compileManifest, createCompiler } from '../src'
 
-const manifest = { version: 4, languageVersion: 13 } as const
+const manifest = { version: 5, languageVersion: 14 } as const
 
 test('captures resolved files and compares token edits without changing markup', async () => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-impact-')))

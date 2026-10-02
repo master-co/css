@@ -26,7 +26,7 @@ export interface MasterCSSEngineWasmProviderContract {
     deleteClassRules(classNames: string[]): MasterCSSEngineTransition
     registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSEngineTransition
     replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSEngineTransition
-    refresh(manifestJSON: string): MasterCSSEngineTransition
+    refresh(manifestJSON: string, emittedGlobalsJSON?: string): MasterCSSEngineTransition
     executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
     inspect(className: string): MasterCSSEngineInspection
     snapshot(): MasterCSSEngineSnapshot
@@ -96,7 +96,7 @@ export async function createWasmEngineBindingSession(
       session.registerEmittedGlobals(JSON.stringify(emittedGlobals)) as MasterCSSEngineTransition,
     replaceEmittedGlobals: (emittedGlobals) =>
       session.replaceEmittedGlobals(JSON.stringify(emittedGlobals)) as MasterCSSEngineTransition,
-    refresh: (manifest) => session.refresh(serializeMasterCSSManifest(manifest)) as MasterCSSEngineTransition,
+    refresh: (manifest, emittedGlobals) => session.refresh(serializeMasterCSSManifest(manifest), emittedGlobals ? JSON.stringify(emittedGlobals) : undefined) as MasterCSSEngineTransition,
     executionState: (classNames) => session.executionState([...classNames]) as MasterCSSEngineExecutionState,
     inspect: (className) => session.inspect(className) as MasterCSSEngineInspection,
     snapshot: () => session.snapshot() as MasterCSSEngineSnapshot

@@ -534,7 +534,16 @@ pub(crate) fn collect_css_directive_contexts(
 ) {
     let offset = positions.byte_to_utf16(region.start).unwrap();
     for directive in find_css_directive_ranges(&source[region]) {
-        if directive.name == "safelist" {
+        if directive.name == "safelist"
+            && !mastercss_lexer::is_keyframe_safelist(
+                &source[positions
+                    .utf16_to_byte(offset + directive.range.start)
+                    .unwrap_or_default()
+                    ..positions
+                        .utf16_to_byte(offset + directive.range.end)
+                        .unwrap_or(source.len())],
+            )
+        {
             for quoted in directive.quoted_string_ranges {
                 contexts.push(ClassListContextIr {
                     start: offset + quoted.content_range.start,

@@ -158,3 +158,26 @@ export function stylesheetValidationSource(css: string, source?: string, sourceM
     } }
   } }
 }
+
+/** Apply Rust resource edits to native anchors; only output offsets change here. */
+export function resourceOutputMappings(mappings: readonly CSSOutputMapping[], edits: readonly import('./render-core').StylesheetResourceEdit[] = []) {
+  const output: CSSOutputMapping[] = []
+  let previous = 0, shift = 0
+  const copy = (end: number) => {
+    for (const mapping of mappings) {
+      if (mapping.generatedStart < previous || mapping.generatedStart >= end) continue
+      output.push({ ...mapping, generatedStart: mapping.generatedStart + shift,
+        generatedEnd: mapping.generatedEnd === undefined ? undefined : Math.min(mapping.generatedEnd, end) + shift })
+    }
+  }
+  for (const edit of edits) {
+    copy(edit.start)
+    for (const mapping of edit.mappings) output.push({ ...mapping,
+      generatedStart: edit.start + shift + mapping.generatedStart,
+      generatedEnd: mapping.generatedEnd === undefined ? undefined : edit.start + shift + mapping.generatedEnd })
+    shift += edit.text.length - (edit.end - edit.start)
+    previous = edit.end
+  }
+  copy(Infinity)
+  return output
+}

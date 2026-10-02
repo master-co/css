@@ -24,8 +24,8 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = `@theme {--color-unused:red}

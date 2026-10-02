@@ -300,9 +300,15 @@ pub struct EngineSession {
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
     keyframe_counts: HashMap<String, u32>,
+    stylesheet_keyframe_slots: HashSet<String>,
     variable_floors: HashMap<String, u32>,
     keyframe_floors: HashMap<String, u32>,
-    keyframe_texts: Vec<(String, String)>,
+    keyframe_texts: Vec<(
+        String,
+        String,
+        bool,
+        Vec<mastercss_schema::KeyframeContainer>,
+    )>,
     stylesheet_sources: Vec<String>,
     theme_variable_names: Vec<String>,
     theme_text: Option<String>,
@@ -324,6 +330,8 @@ pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;
 mod condition;
 mod custom_media;
+mod keyframe_slots;
+pub use keyframe_slots::KeyframeOutputEdit;
 mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;

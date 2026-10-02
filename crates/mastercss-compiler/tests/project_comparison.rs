@@ -181,7 +181,8 @@ fn nested_recipe_dependencies_and_usage_moves_are_visible() {
 
 #[test]
 fn keyframes_follow_transitive_values_and_dynamic_names() {
-    let source = "@theme{--color-brand:red;@keyframes pulse{to{color:var(--color-brand)}}}";
+    let source =
+        "@prune native;@theme{--color-brand:red;}@keyframes pulse{to{color:var(--color-brand)}}";
     let classes = &["animation:pulse|1s", "animation-name:var(--motion)"];
     let report = compare(
         snapshot(source, classes),

@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn managed_names_complete_with_css_hover_and_definition_origin() {
-    let manifest = json!({"version":4,"languageVersion":13,"keyframes":[{"name":"reveal","text":"@keyframes reveal{to{opacity:1}}","source":{"file":"theme.css","range":{"start":10,"end":40}}}]});
+    let manifest = json!({"version":5,"languageVersion":14,"keyframes":[{"id":"reveal","name":"reveal","text":"@keyframes reveal{to{opacity:1}}","source":{"file":"theme.css","range":{"start":10,"end":40}}}]});
     let session = LanguageSession::create(&manifest.to_string()).unwrap();
     let completion = session
         .completion_index()

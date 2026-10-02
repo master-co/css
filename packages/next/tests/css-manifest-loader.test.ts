@@ -53,8 +53,8 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":4')
-    expect(JSON.parse(source).version).toBe(4)
+    expect(source).toContain('"version":5')
+    expect(JSON.parse(source).version).toBe(5)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -71,7 +71,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ module: true })
     })
 
-    expect(source).toMatch(/^export default \{"version":4/)
+    expect(source).toMatch(/^export default \{"version":5/)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -87,7 +87,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ module: true })
     })
     const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
-    expect(manifest.languageVersion).toBe(13)
+    expect(manifest.languageVersion).toBe(14)
     expect(JSON.stringify(manifest)).toContain('#123')
     expect(source).not.toContain('fetch(')
     expect(source).not.toContain('/_next/')
@@ -111,7 +111,7 @@ describe('css manifest loader', () => {
         getOptions: () => ({ module: true })
       })
 
-      expect(source).toMatch(/^export default \{"version":4/)
+      expect(source).toMatch(/^export default \{"version":5/)
       expect(source).toContain('#123')
       expect(source).not.toContain('loadMasterCSSManifestFromImport')
     } finally {
@@ -142,7 +142,7 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":4')
+    expect(source).toContain('"version":5')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"--btn"')
@@ -174,7 +174,7 @@ describe('css manifest loader', () => {
       addDependency: (dependency: string) => dependencies.push(dependency)
     })
 
-    expect(source).toContain('"version":4')
+    expect(source).toContain('"version":5')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
     expect(source).toContain('"--btn"')
@@ -191,7 +191,7 @@ describe('css manifest loader', () => {
     writeFileSync(entryPath, `@import url("@master/css");
 @theme { --color-primary: #123; }
 
-@theme { @keyframes fade { to { opacity: 0; } } }
+@prune native;@theme {  }@keyframes fade { to { opacity: 0; } }
 .host { color: var(--color-primary); animation: fade 1s; }`)
 
     const source = await runManifestLoader({
@@ -204,7 +204,9 @@ describe('css manifest loader', () => {
 
     expect(emittedGlobals.variables['color-primary']).toBe(1)
     expect(emittedGlobals).not.toHaveProperty('animations')
-    expect(emittedGlobals.keyframes).toEqual({ fade: 1 })
+    expect(Object.values(emittedGlobals.keyframes)).toEqual([1, 1])
+    expect(Object.keys(emittedGlobals.keyframes)).toEqual(expect.arrayContaining([expect.stringMatching(/^k.*-o\d+$/)]))
+    expect(emittedGlobals.keyframeSlots).toEqual(expect.arrayContaining(Object.keys(emittedGlobals.keyframes)))
     expect(dependencies).toContain(entryPath)
   })
 
@@ -232,7 +234,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ virtual: true, module: true })
     })
 
-    expect(source).toContain('"version":4')
+    expect(source).toContain('"version":5')
     expect(source).toContain('"--card"')
     expect(source).toContain('display')
   })

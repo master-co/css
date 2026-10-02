@@ -22,7 +22,7 @@ pub(crate) fn compile_manifest(
     projection.keyframes.reverse();
     projection
         .keyframes
-        .retain(|definition| seen.insert(definition.name.clone()));
+        .retain(|definition| seen.insert(definition.id.clone()));
     projection.keyframes.reverse();
     seen.clear();
     projection.mixins.reverse();

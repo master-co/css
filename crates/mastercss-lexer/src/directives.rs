@@ -1,5 +1,11 @@
 use super::{CssDirectiveRange, CssQuotedStringRange, SourceRange, byte_to_utf16_offset};
 
+pub fn is_keyframe_safelist(source: &str) -> bool {
+    let tokens = super::tokenize_css_syntax(source);
+    matches!(tokens.first().map(|token| &token.kind), Some(super::CssSyntaxKind::AtKeyword(name)) if name == "safelist")
+        && matches!(tokens.get(1).map(|token| &token.kind), Some(super::CssSyntaxKind::Ident(name)) if name == "keyframes")
+}
+
 pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
     use super::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
     const NAMES: &[&str] = &[
@@ -126,4 +132,41 @@ pub(crate) fn find_css_quoted_string_ranges(
         index = range_end;
     }
     ranges
+}
+
+/// The typed safelist has name semantics and must never enter a class parser.
+pub fn keyframe_safelist_diagnostics(source: &str) -> Vec<mastercss_schema::Diagnostic> {
+    use crate::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
+    let tokens = tokenize_css_syntax(source);
+    let mut diagnostics = Vec::new();
+    for statement in collect_css_syntax_statements(&tokens) {
+        let slice = &tokens[statement.tokens.clone()];
+        if !matches!(slice.first().map(|token| &token.kind), Some(Kind::AtKeyword(name)) if name == "safelist")
+            || !matches!(slice.get(1).map(|token| &token.kind), Some(Kind::Ident(_)))
+        {
+            continue;
+        }
+        let valid = statement.parent.is_none()
+            && !statement.has_block
+            && matches!(&slice[1].kind, Kind::Ident(name) if name == "keyframes")
+            && slice.len() > 2
+            && slice[2..]
+                .iter()
+                .all(|token| matches!(&token.kind, Kind::String(value) if !value.is_empty()))
+            && tokens
+                .get(statement.tokens.end)
+                .is_some_and(|token| token.kind == Kind::Delim(';'));
+        if !valid {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::CssDirectiveError,
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
+                message: "Use a top-level @safelist keyframes followed by one or more quoted complete names and a semicolon".into(),
+                source: None,
+                range: Some(SourceRange { start: byte_to_utf16_offset(source, slice[0].bytes.start).unwrap(), end: byte_to_utf16_offset(source, slice.last().unwrap().bytes.end).unwrap() }),
+                notes: Vec::new(),
+            });
+        }
+    }
+    diagnostics
 }

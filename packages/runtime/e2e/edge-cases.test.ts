@@ -189,8 +189,8 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
       sheetText
     }
   })
-  expect(afterBatchFlush.classUtilities).toEqual(['fg-blue-60', 'fg-red-60', 'bg-green-60', 'animation:fade|1s'])
-  expect(afterBatchFlush.retainedClassNames).toEqual(['fg-red-60', 'bg-green-60', 'animation:fade|1s'])
+  expect(afterBatchFlush.classUtilities).toEqual(['fg-blue-60', 'fg-red-60', 'bg-green-60'])
+  expect(afterBatchFlush.retainedClassNames).toEqual(['fg-red-60', 'bg-green-60'])
   expect(afterBatchFlush.themeCounts).toEqual({
     'color-blue-60': 1,
     'color-red-60': 1,
@@ -199,11 +199,11 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   expect(afterBatchFlush.text).toContain('.fg-blue-60')
   expect(afterBatchFlush.text).toContain('.fg-red-60')
   expect(afterBatchFlush.text).toContain('.bg-green-60')
-  expect(afterBatchFlush.text).toContain('@keyframes fade')
+  expect(afterBatchFlush.text).not.toContain('@keyframes fade')
   expect(afterBatchFlush.sheetText).toContain('.fg-blue-60')
   expect(afterBatchFlush.sheetText).toContain('.fg-red-60')
   expect(afterBatchFlush.sheetText).toContain('.bg-green-60')
-  expect(afterBatchFlush.sheetText).toContain('@keyframes fade')
+  expect(afterBatchFlush.sheetText).not.toContain('@keyframes fade')
 
   const afterForcedCleanup = await page.evaluate(() => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
@@ -220,7 +220,7 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
       sheetText
     }
   })
-  expect(afterForcedCleanup.removedCount).toBe(3)
+  expect(afterForcedCleanup.removedCount).toBe(2)
   expect(afterForcedCleanup.classUtilities).toEqual(['fg-blue-60'])
   expect(afterForcedCleanup.retainedClassNames).toEqual([])
   expect(afterForcedCleanup.themeCounts).toEqual({

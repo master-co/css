@@ -91,7 +91,7 @@ references introduced by a later transform.
 
 `compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional
 `emittedGlobals` resource-count snapshot when another output already supplies
-generated theme variables or managed keyframes. Positive counts suppress duplicate emission;
+generated theme variables or keyframe definitions. Positive counts suppress duplicate emission;
 zero counts do not. New references still emit their transitive resource closure.
 The returned snapshot includes the external context and resources required by this
 render, without changing the input snapshot. Omitting the option preserves normal
@@ -117,17 +117,17 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies `@theme`, `@mixin`, and `@custom-media` definitions, for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides and native keyframes need an actual `@import` or another delivered stylesheet.
+A reference supplies tokens, mixins, custom media and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
 Vite, Next.js, and Webpack supply project definition context to local stylesheets, CSS Modules, and SFC styles. An explicit reference is useful for dependencies outside that context or standalone compilation. Local stylesheets do not become scanning or pruning roots. CSS Modules and scoped hosts must deliver generated theme selectors globally.
 
-The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains separate `variables` and `keyframes` counts.
+The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains separate `variables` and definition-ID-keyed `keyframes` counts, plus native resource slot and output-suppression metadata.
 
 ## Theme and conditions \{#theme-and-variants\}
 ### `@theme` \{#theme\}
-Declare utility tokens as custom properties. A theme block must be top-level and accepts only token declarations and direct `@keyframes` definitions.
+Declare utility tokens as custom properties. A theme block must be top-level and accepts only custom-property token declarations. Declare keyframes in native CSS outside the block.
 
 ```css
 @theme {
@@ -200,26 +200,32 @@ Use `static` when tokens must be emitted even without a class or native referenc
 
 `static` controls token delivery; `inline` controls generated values. They can be combined in either order. A token with any static declaration stays retained, together with its dependencies, until its definition is removed. Referenced stylesheets do not become output roots merely because their tokens are static.
 
-### Managed keyframes \{#theme-keyframes\}
-Define on-demand keyframes directly inside `@theme`:
+### Native keyframes \{#native-keyframes\}
+Declare keyframes in native CSS, and opt into usage-based output in their owning file:
 
 ```css
-@theme {
-  --animate-reveal: reveal .2s ease-out;
-  @keyframes reveal {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
+@safelist keyframes "external-enter" "external-exit";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes external-exit { from { opacity: 1; } to { opacity: 0; } }
 ```
 
-Animation utilities, direct animation declarations, and retained native animation declarations keep their referenced keyframes and transitive token dependencies. Static animation tokens also retain their referenced definitions; static does not force every keyframe in the block to emit. Unresolved dynamic animation names conservatively retain all managed keyframes and produce an information diagnostic.
+Keyframes follow the same file policy as native class rules. By default they remain in the output. `@prune native;` removes unused definitions; `@preserve native;` wins when both appear. The policy applies only to the declaring file and does not propagate through imports. The `pruneNativeCSS` option retains its project-owned file scope. Package CSS stays preserved unless it explicitly opts into pruning. `preserveNativeCSS: false` suppresses that native delivery even for safelisted names; the compiler still collects definitions as metadata.
 
-Managed keyframes emit outside generated layers, in final definition order. A later same-name definition replaces the complete earlier definition; decoded names are case-sensitive. Delivered native and managed definitions with the same name are an error. Keyframes outside `@theme` retain native stylesheet delivery.
+Under pruning, animation utilities, retained native animation declarations, static animation tokens and keyframe safelists retain their matching definitions. Analysis follows shorthand values, animation-name lists, nested variables, fallbacks, scoped overrides and transitive token dependencies. Retained keyframes also retain tokens referenced in their bodies. Unresolved dynamic names conservatively retain all candidate definitions in the compilation graph and produce an information diagnostic.
 
-Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Undelivered reference styles and unused mixins are not usage roots. For names introduced only by JavaScript, use a native definition or `@safelist "animation-name:reveal";`.
+Definitions keep their native position, conditions, layer and import occurrence. Same-name definitions remain separate; the browser determines which definition wins. Names are decoded and case-sensitive. A keyframe inside an anonymous layer stays in that same layer as resources are added or released. Output may contain empty compiler-owned media slots so runtime can populate the original position without recreating its containers.
 
-Runtime HMR replaces the complete emitted-globals snapshot. Hydration records separate token and keyframe ownership so resources already delivered by a stylesheet are not emitted twice.
+Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Unused mixins, pruned native rules and undelivered reference styles do not create usage roots. `@reference` makes definitions available without importing their preservation policy or safelists. For animation names introduced only by JavaScript, use `@safelist keyframes "reveal";`.
+
+The runtime tracks definition IDs separately from names. DOM removal releases a definition only when no native usage, static token, preservation policy or safelist still retains it. HMR replaces definitions and delivery ownership together; SSR hydration uses the same IDs and resource order.
+
+Official runtime adapters deliver compiler-owned writable stylesheets and preserve their original positions. Runtime and progressive CSS assets have `.master-css.json` companions that must be deployed with them. Resource slot metadata keeps animation URLs available to the host's asset pipeline before an animation is activated. The runtime does not need access to arbitrary external stylesheet CSSOM. Pre-render and progressive adapters materialize native slots at the original link positions and publish retained child imports at same-origin URLs. Hydration adopts those existing positions and containers. Custom server hosts publishing imported assets provide `stylesheetImportSource(css, source)` and return the delivered same-origin URL.
 
 ### `@custom-media` \{#custom-media\}
 Define named media queries using the [CSS Media Queries specification](https://drafts.csswg.org/mediaqueries-5/#custom-mq):
@@ -398,9 +404,9 @@ The last definition with the same decoded name replaces the entire previous mixi
 
 Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
-Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; managed keyframes follow animation usage while external native keyframes retain native delivery. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
+Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v4 with languageVersion 13 and binding ABI 23. Hydration, engine snapshots and transitions use v3; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v5 with languageVersion 14 and binding ABI 24. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
@@ -455,6 +461,14 @@ Add complete class candidates that cannot appear literally in scanned source:
 ```
 
 Candidates use the same matching and diagnostic policy as discovered classes. Keep dynamic alternatives bounded and explicit.
+
+To retain named animation definitions without generating a class or animation declaration, use the explicit keyframe target:
+
+```css
+@safelist keyframes "fade" "pop";
+```
+
+Each quoted string is one complete CSS animation name. Names are case-sensitive and support CSS escapes; a space inside a string is part of its name. There is no wildcard expansion or class splitting. Missing names, unquoted names, commas and nested safelist directives are errors. A name absent from the complete import/reference graph produces a warning. Safelists merge within each entry's graph and are withdrawn when their source or directive is removed. `@reference` does not import safelist roots. There is no keyframe blocklist or separate keyframe prune/preserve target.
 
 ### `@blocklist` \{#blocklist\}
 Remove unwanted complete candidates with exact strings or `*` and `?` wildcard patterns:
@@ -852,4 +866,4 @@ The preset’s direct-value `animate-*` family maps `--animate-*` values to the 
 
 ## Token family names
 
-Preset named-token families are defined in `mixins.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `mixin`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Manifest v4 uses language version 13 and binding ABI 23.
+Preset named-token families are defined in `mixins.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. A single `<string>` mixin parameter and same-name primary token define a named recipe; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `mixin`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Manifest v5 uses language version 14 and binding ABI 24.

@@ -69,7 +69,7 @@ export function createNativeEngineSession(
         parse(session.registerEmittedGlobals(JSON.stringify(emittedGlobals))),
       replaceEmittedGlobals: (emittedGlobals) =>
         parse(session.replaceEmittedGlobals(JSON.stringify(emittedGlobals))),
-      refresh: (manifest) => parse(session.refresh(serializeMasterCSSManifest(manifest))),
+      refresh: (manifest, emittedGlobals) => parse(session.refresh(serializeMasterCSSManifest(manifest), emittedGlobals ? JSON.stringify(emittedGlobals) : undefined)),
       executionState: (classNames) => parse(session.executionState([...classNames])),
       inspect: (className) => parse(session.inspect(className)),
       snapshot: () => parse(session.snapshot()),

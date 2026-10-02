@@ -12,7 +12,20 @@ fn engine(source: &str) -> EngineSession {
             .manifest;
     EngineSession::create(&manifest.to_string()).unwrap()
 }
-const SOURCE: &str = "@theme {--animate-fade:fade 1s;--color-brand:red;@keyframes fade{from{opacity:0}to{opacity:1;color:var(--color-brand)}}@keyframes pop{to{transform:scale(2)}}}";
+fn frame_id(engine: &EngineSession, name: &str) -> String {
+    let manifest: serde_json::Value =
+        serde_json::from_str(&engine.manifest_json().unwrap()).unwrap();
+    manifest["keyframes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|frame| frame["name"] == name)
+        .unwrap()["id"]
+        .as_str()
+        .unwrap()
+        .into()
+}
+const SOURCE: &str = "@prune native;@theme {--animate-fade:fade 1s;--color-brand:red;}@keyframes fade{from{opacity:0}to{opacity:1;color:var(--color-brand)}}@keyframes pop{to{transform:scale(2)}}";
 
 #[test]
 fn animation_family_tracks_lists_scopes_nested_variables_and_dynamic_names() {
@@ -93,7 +106,10 @@ fn stylesheet_roots_and_emitted_globals_pin_without_duplicates() {
         .ensure_stylesheet_resources(".caption{animation:fade 1s}")
         .unwrap();
     let globals = compiler.emitted_globals_snapshot().unwrap();
-    assert_eq!(globals.keyframes.get("fade"), Some(&1));
+    assert_eq!(
+        globals.keyframes.get(&frame_id(&compiler, "fade")),
+        Some(&1)
+    );
     let mut runtime = EngineSession::create_with_emitted_globals(
         &compiler.manifest_json().unwrap(),
         Some(&serde_json::to_string(&globals).unwrap()),
@@ -113,16 +129,17 @@ fn stylesheet_roots_and_emitted_globals_pin_without_duplicates() {
 }
 
 #[test]
-fn definition_replacement_uses_final_order_and_clears_old_dependencies() {
+fn repeated_definitions_keep_native_order_and_all_dependencies() {
     let mut engine = engine(&format!(
-        "{SOURCE}@theme{{@keyframes fade{{to{{opacity:.5}}}}}}"
+        "{SOURCE}@prune native;@theme{{}}@keyframes fade{{to{{opacity:.5}}}}"
     ));
     engine
         .ensure_class_rules(["animation:var(--external)"])
         .unwrap();
     let text = engine.css_text();
-    assert!(text.find("@keyframes pop").unwrap() < text.find("@keyframes fade").unwrap());
-    assert!(!text.contains("--color-brand"));
+    assert!(text.find("@keyframes fade").unwrap() < text.find("@keyframes pop").unwrap());
+    assert!(text.find("@keyframes pop").unwrap() < text.rfind("@keyframes fade").unwrap());
+    assert!(text.contains("--color-brand"));
 }
 
 #[test]
@@ -143,9 +160,9 @@ fn only_animation_declarations_create_roots() {
 #[test]
 fn rejects_nested_registration_and_contents_directives() {
     for source in [
-        "@theme {:root{@keyframes x{to{opacity:1}}}}",
-        "@theme{@media all{@keyframes x{to{opacity:1}}}}",
-        "@theme{@keyframes x{to{@apply --x;}}}",
+        "@prune native;@theme {:root{}}@keyframes x{to{opacity:1}}",
+        "@prune native;@theme{@media all{}}@keyframes x{to{opacity:1}}",
+        "@prune native;@theme{}@keyframes x{to{@apply --x;}}",
     ] {
         assert!(
             compile_css_directives(source, &CompileNativeCssOptions::default()).is_err(),
@@ -164,23 +181,19 @@ fn native_overrides_are_included_in_class_analysis() {
 }
 
 #[test]
-fn native_managed_name_collisions_report_both_definitions() {
-    let error = compile_css_directives(
-        &format!("{SOURCE}@keyframes fade{{to{{opacity:.3}}}}"),
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err();
-    assert!(
-        error
-            .to_string()
-            .contains("conflicts with managed keyframes defined at")
-    );
+fn native_same_name_definitions_are_kept_as_distinct_resources() {
+    let mut engine = engine(&format!("{SOURCE}@keyframes fade{{to{{opacity:.3}}}}"));
+    engine.ensure_class_rules(["animation-name:fade"]).unwrap();
+    let frames = engine.snapshot().unwrap().resources.keyframes;
+    assert_eq!(frames.len(), 2);
+    assert_ne!(frames[0].id, frames[1].id);
+    assert_eq!(frames[0].name, frames[1].name);
 }
 
 #[test]
 fn escaped_names_strings_keywords_and_case_follow_css_identity() {
     let mut engine = engine(
-        r#"@theme{@keyframes \66 ade{to{opacity:1}}@keyframes Fade{to{opacity:.5}}@keyframes linear{to{opacity:.2}}}"#,
+        r#"@prune native;@theme{}@keyframes \66 ade{to{opacity:1}}@keyframes Fade{to{opacity:.5}}@keyframes linear{to{opacity:.2}}"#,
     );
     engine
         .ensure_class_rules([r#"animation-name:"fade""#, "animation:linear|1s|linear"])
@@ -237,8 +250,9 @@ fn dynamic_diagnostic_does_not_turn_a_valid_class_into_an_error() {
 #[test]
 fn externally_delivered_keyframes_still_own_unprovided_body_tokens() {
     let mut engine = engine(SOURCE);
+    let id = frame_id(&engine, "fade");
     engine
-        .replace_emitted_globals(r#"{"keyframes":{"fade":1}}"#)
+        .replace_emitted_globals(&serde_json::json!({"keyframes":{id:1}}).to_string())
         .unwrap();
     assert!(engine.css_text().contains("--color-brand:red"));
     assert!(!engine.css_text().contains("@keyframes"));
@@ -252,7 +266,7 @@ fn externally_delivered_keyframes_still_own_unprovided_body_tokens() {
 #[test]
 fn cyclic_animation_and_body_tokens_release_with_the_last_root() {
     let mut engine = engine(
-        "@theme {--motion:var(--cycle);--cycle:var(--motion);--a:var(--b);--b:var(--a);@keyframes one{to{opacity:var(--a,1)}}@keyframes two{to{opacity:0}}}",
+        "@prune native;@theme {--motion:var(--cycle);--cycle:var(--motion);--a:var(--b);--b:var(--a);}@keyframes one{to{opacity:var(--a,1)}}@keyframes two{to{opacity:0}}",
     );
     engine
         .ensure_class_rules(["animation:var(--motion)"])

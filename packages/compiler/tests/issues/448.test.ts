@@ -4,8 +4,8 @@ import { createEngine } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const baseManifest: MasterCSSManifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const declarations = (css: string) => [...css.matchAll(/(?:display|width|text-align):[^;}]+/g)].map(match => match[0])
 

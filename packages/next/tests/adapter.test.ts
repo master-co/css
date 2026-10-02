@@ -4,6 +4,7 @@ import { basename, dirname, join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import { MasterCSSServerRenderer } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -424,4 +425,29 @@ describe('createComposedAdapter', () => {
 
     expect(calls).toEqual(['external', 'master'])
   })
+})
+
+it('pre-renders final native assets at their original link positions and publishes runtime ownership', async () => {
+  const { compileRenderedStylesheet } = await import('@master/css-compiler/stylesheet')
+  const projectDir = createFixtureDir()
+  const entry = join(projectDir, 'app.css')
+  const source = '@import "@master/css";@prune native;@theme{--animate-probe:probe 1ms both}@layer{@keyframes probe{to{opacity:.3}}}'
+  writeFileSync(entry, source)
+  const compiled = await compileRenderedStylesheet(entry, source, { classes: [], projectDir, baseManifest: defaultBuildManifest })
+  const htmlFile = join(projectDir, '.next/server/app/index.html')
+  mkdirSync(dirname(htmlFile), { recursive: true })
+  const cssFile = join(projectDir, '.next/static/app.css')
+  mkdirSync(dirname(cssFile), { recursive: true })
+  writeFileSync(cssFile, compiled.nativeCSS)
+  writeFileSync(htmlFile, '<html><head><link rel="stylesheet" href="/_next/static/app.css"><style id="after">@layer after;</style></head><body class="animate-probe"></body></html>')
+  const context = createBuildContext(projectDir, htmlFile)
+  context.outputs.staticFiles.push({ id: 'css', type: 'STATIC_FILE' as BuildCompleteContext['outputs']['staticFiles'][number]['type'], pathname: '/_next/static/app.css', filePath: cssFile, immutableHash: undefined })
+  await renderNextBuildOutputs(context, { mode: 'progressive' })
+  const html = readFileSync(htmlFile, 'utf8')
+  expect(html).toContain('@keyframes probe')
+  expect(html.indexOf('@keyframes probe')).toBeLessThan(html.indexOf('<link'))
+  expect(html).toContain('data-master-css-stylesheet="/_next/static/app.css"')
+  expect(readMasterStyle(html)).not.toContain('@keyframes')
+  expect(existsSync(cssFile + '.master-css.json')).toBe(true)
+  expect(context.outputs.staticFiles.some(asset => asset.pathname.endsWith('.master-css.json'))).toBe(true)
 })

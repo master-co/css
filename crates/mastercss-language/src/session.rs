@@ -456,6 +456,7 @@ impl LanguageSession {
         Ok(LanguageCompletionIndexIr {
             version: LANGUAGE_BATCH_VERSION,
             class_entries,
+            keyframes: keyframes::completions(self.engine.keyframe_definitions()?),
         })
     }
 

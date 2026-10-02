@@ -35,8 +35,8 @@ it('previews by default, writes safe files, and is idempotent', async () => {
   expect(migrate(['index.html'], { cwd }).files.find(file => file.path === 'index.html')!.edits).toEqual([])
   const entry = path.join(cwd, 'app.css')
   const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })

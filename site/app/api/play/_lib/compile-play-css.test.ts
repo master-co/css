@@ -71,10 +71,11 @@ test('delivers authored keyframes referenced by native CSS', async () => {
   assert.match(result.css, /@keyframes play-fade/)
 })
 
-test('rejects native keyframes that collide with a managed preset definition', async () => {
+test('retains same-name native and preset definitions in source order', async () => {
   const sourceCSS = [
     '@keyframes fade { to { opacity: .5; } }',
     '.native { animation-name: fade; animation-duration: 1s; }'
   ].join('\n')
-  await assert.rejects(compileFixture(sourceCSS, []), /conflicts with managed keyframes/)
+  const result = await compileFixture(sourceCSS, [])
+  assert.equal(result.css.match(/@keyframes fade\b/g)?.length, 2)
 })

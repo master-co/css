@@ -285,7 +285,7 @@ fn rejects_rc_contracts_in_formal_compilation() {
     );
     assert!(
         MasterCssManifest::new(
-            json!({"version":4,"languageVersion":13,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":5,"languageVersion":14,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -321,7 +321,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":4,"languageVersion":13,"utilities":[utility]}).to_string();
+        let source = json!({"version":5,"languageVersion":14,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()

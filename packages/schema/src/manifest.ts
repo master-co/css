@@ -63,8 +63,8 @@ export interface MasterCSSManifest {
    * This is not a legacy Config compatibility marker; engines must reject
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
-  version: 4
-  languageVersion: 13
+  version: 5
+  languageVersion: 14
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]

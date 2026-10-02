@@ -31,6 +31,7 @@ export interface MasterCSSCompileOptions {
 }
 
 export interface MasterCSSCompileResult {
+  readonly suppressedKeyframes: readonly string[]
   /** Serialized map v3 for css when produced by a stylesheet host. */
   readonly sourceMap?: string
   readonly css: string
@@ -50,6 +51,7 @@ export interface MasterCSSCompileResult {
       readonly include: readonly string[]
       readonly exclude: readonly string[]
       readonly safelist: readonly string[]
+      readonly safelistKeyframes: readonly string[]
       readonly blocklist: readonly (string | RegExp)[]
       readonly preserveNative: boolean
       readonly pruneNative: boolean

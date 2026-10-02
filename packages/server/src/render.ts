@@ -10,6 +10,7 @@ import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { Element, Text, type ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
 import type parseHTML from './parse-html'
+import type { MasterCSSServerStylesheet, prepareNativeStylesheets } from './native-stylesheets'
 
 export type MasterCSSExternalHydrationManifestSource =
   | string
@@ -28,6 +29,9 @@ export type MasterCSSHydrationManifestRenderMode =
 
 export interface MasterCSSHTMLDocumentOptions {
   readonly hydrationManifest?: MasterCSSHydrationManifestRenderMode
+  readonly stylesheets?: readonly MasterCSSServerStylesheet[]
+  readonly documentURL?: string
+  readonly stylesheetImportSource?: (css: string, source: string) => string
 }
 
 export interface MasterCSSHTMLRenderResult {
@@ -148,7 +152,8 @@ export function renderHTMLWithSnapshot(
   html: string,
   context: ReturnType<typeof parseHTML>,
   snapshot: MasterCSSRenderSnapshot | undefined,
-  options: MasterCSSHTMLDocumentOptions
+  options: MasterCSSHTMLDocumentOptions,
+  native?: ReturnType<typeof prepareNativeStylesheets>
 ) {
   const { nodes, htmlElement, classes: classNames } = context
   let { headElement, styleElement } = context
@@ -157,6 +162,7 @@ export function renderHTMLWithSnapshot(
     ? undefined
     : snapshot?.hydrationManifest as MasterCSSHydrationManifest | undefined
   const external = typeof hydrationOption === 'object' ? hydrationOption : undefined
+  const nativeChanged = native?.apply(snapshot?.engine.stylesheets ?? [], styleText) ?? false
 
   if (!snapshot?.cssText) {
     if ((hydrationOption === 'inject' || external) && styleElement) {
@@ -164,7 +170,7 @@ export function renderHTMLWithSnapshot(
       styleElement = null
     }
     if (external) removeHydrationScripts(nodes)
-    const nextHTML = external || styleElement !== context.styleElement
+    const nextHTML = external || nativeChanged || styleElement !== context.styleElement
       ? serialize(nodes, { decodeEntities: false, encodeEntities: false })
       : html
     return result(nextHTML, classNames, snapshot, hydrationManifest)

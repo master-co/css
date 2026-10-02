@@ -8,6 +8,7 @@ const SLOT: &str = "#master-css-slot{--slot:0}";
 
 fn managed() -> mastercss_compiler::CssStylesheetGraph {
     resolve_prepared_css_stylesheet_graph(&CssImportGraphRequest {
+        resource_owners: Default::default(),
         entry: "managed".into(),
         files: HashMap::from([("managed".into(), ".example{background:yellow}".into())]),
         edges: vec![],

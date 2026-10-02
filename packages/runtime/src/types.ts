@@ -5,11 +5,21 @@ import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@mast
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { LAYER_ORDER } from './host'
 
+/** A writable stylesheet supplied by its delivery adapter, in document order. */
+export interface MasterCSSRuntimeStylesheet {
+  readonly sheet: CSSStyleSheet
+  readonly ownerIds: readonly string[]
+}
+
 export interface MasterCSSRuntimeOptions {
   readonly manifest: MasterCSSManifest
   readonly root?: Document | ShadowRoot
   readonly emittedGlobals?: MasterCSSEmittedGlobals
   readonly hydrationManifest?: MasterCSSHydrationManifest
+  /** Resolve current compiler-owned sheets after attachment or HMR. */
+  readonly stylesheets?: () => readonly MasterCSSRuntimeStylesheet[]
+  /** Official adapter asset root; linked assets include a compiler-issued sidecar. */
+  readonly stylesheetDelivery?: { readonly base: string, readonly development?: boolean }
 }
 
 export type MasterCSSRuntimeBinding = 'auto' | 'native' | 'wasm'

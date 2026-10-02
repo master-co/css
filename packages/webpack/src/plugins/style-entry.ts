@@ -21,7 +21,7 @@ export default function StyleEntryPlugin(context: MasterCSSWebpackContext): Webp
             options: {
               virtualCSSImportModuleId: context.virtualCSSImportModuleId,
               nativeCSS: Boolean(compiler.options.experiments?.css),
-              preserveImports: context.mode === 'static' && compiler.options.mode !== 'development'
+              preserveImports: compiler.options.mode !== 'development'
             }
           }
         ]

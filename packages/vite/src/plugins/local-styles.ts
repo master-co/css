@@ -152,7 +152,7 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           } else output = registerLocalStylesheet(context, id, result)
         }
         else if (context.config?.command === 'serve') {
-          output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: { variables: {}, keyframes: {} } }, '#master-css-local-slot{--slot:0}')
+          output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] } }, '#master-css-local-slot{--slot:0}')
           if (result.globalStylesheet) output = publishDevGlobalStylesheet(context, result.globalStylesheet.css) + '\n' + output
         }
         return {

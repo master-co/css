@@ -239,6 +239,13 @@ pub(crate) fn extraction_policy_from_statements(
                     add_unique_string(target, value);
                 }
             }
+            "safelist" if statement.modifiers == ["keyframes"] => {
+                for token in mastercss_lexer::tokenize_css_syntax(&statement.statement) {
+                    if let mastercss_lexer::CssSyntaxKind::String(value) = token.kind {
+                        add_unique_string(&mut policy.safelist_keyframes, &value);
+                    }
+                }
+            }
             "safelist" => {
                 for value in statement
                     .args
@@ -484,6 +491,12 @@ pub fn compile_native_css(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileNativeCssResult, CompilerError> {
+    crate::native_keyframes::validate_safelists(source, &options.from)?;
+    if mastercss_lexer::tokenize_css_syntax(source).iter().any(|token| matches!(&token.kind,
+        mastercss_lexer::CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("keyframes") || name.eq_ignore_ascii_case("-webkit-keyframes"))) {
+        let result = crate::compile_css_directives(source, options)?;
+        return Ok(CompileNativeCssResult { css: result.native_css.clone(), native_css: result.native_css });
+    }
     crate::reject_removed_directives(source, &options.from)?;
     let policy = crate::analyze_standalone_directives(source);
     let prune = !policy.extraction_policy.preserve_native

@@ -42,7 +42,7 @@ export interface NativeEngineSession {
   registerEmittedGlobals(emittedGlobalsJSON: string): string
   replaceEmittedGlobals(emittedGlobalsJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
-  refresh(manifestJSON: string): string
+  refresh(manifestJSON: string, emittedGlobalsJSON?: string): string
   snapshot(): string
   executionState(classNames: string[]): string
   inspect(className: string): string

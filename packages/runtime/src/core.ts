@@ -79,6 +79,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private readonly retainedClassNames = new Set<string>()
   private observer?: MutationObserver
   private observing = false
+  private readonly handleStylesheetLoad = () => this.reconcileKeyframeRules()
   private disposed = false
   private globalFacade?: MasterCSSRuntimeFacade
 
@@ -97,9 +98,11 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     manifest: MasterCSSManifest,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
     hydrationManifest: MasterCSSHydrationManifest | undefined,
-    bindingEngine: MasterCSSEngine
+    bindingEngine: MasterCSSEngine,
+    stylesheets?: MasterCSSRuntimeStartOptions['stylesheets'],
+    stylesheetDelivery?: MasterCSSRuntimeStartOptions['stylesheetDelivery']
   ) {
-    super(root, manifest, emittedGlobals, hydrationManifest, bindingEngine)
+    super(root, manifest, emittedGlobals, hydrationManifest, bindingEngine, stylesheets, stylesheetDelivery)
   }
 
   get binding(): MasterCSSEngine['binding'] {
@@ -191,7 +194,9 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         options.manifest,
         options.emittedGlobals,
         hydrationManifest,
-        engine
+        engine,
+        options.stylesheets,
+        options.stylesheetDelivery
       )
       return startupRuntime.register()
     } catch (error) {
@@ -301,9 +306,12 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.container.append(expectedStyle)
     try {
       const expectedRules = expectedStyle.sheet?.cssRules
-      if (!expectedRules) return false
+      if (!expectedRules || !this.rebaseSnapshotResources(expectedStyle.sheet!, snapshot)) return false
+      const checkedLayers = new Set<string>()
       for (const layer of expectedRules) {
-        if (!isLayerBlockRule(layer) || layer.name === 'theme') continue
+        if (!isLayerBlockRule(layer) || layer.name === 'theme' || checkedLayers.has(layer.name)
+          || !snapshot.rules.some(rule => rule.layer === layer.name)) continue
+        checkedLayers.add(layer.name)
         const nodeCount = snapshot.rules
           .filter(rule => rule.layer === layer.name)
           .reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
@@ -320,7 +328,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
     this.hydrationFailureReason = undefined
     const manifest = this.hydrationManifest
-    if (manifest?.version !== 3 || !Array.isArray(manifest.rules)) {
+    if (manifest?.version !== 4 || !Array.isArray(manifest.rules)) {
       return this.failHydration('Missing or invalid hydration manifest.')
     }
     if (!manifest.rules.length) {
@@ -334,7 +342,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     }
     const resourceOrder = {
       variables: snapshot.resources.variables.map(resource => resource.name),
-      keyframes: snapshot.resources.keyframes.map(resource => resource.name)
+      keyframes: snapshot.resources.keyframes.map(resource => resource.id)
     }
     if (JSON.stringify(resourceOrder) !== JSON.stringify(manifest.resourceOrder)) {
       return this.failHydration('Generated resources do not match the hydration manifest.', classNames)
@@ -522,13 +530,21 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   private retainRemovedClassRules(classNames: string[]) {
+    const release: string[] = []
     for (const className of classNames) {
       if (this.classCounts.has(className)) continue
+      // Rust's rule IR identifies animation roots. A warm utility cache must
+      // not extend the lifetime of its keyframes or their token dependencies.
+      if (this.classUtilities.get(className)?.some(({ ir }) => ir.retainAllKeyframes || ir.keyframeNames?.length)) {
+        release.push(className)
+        continue
+      }
       const retainedRule = this.retainedClassRules.get(className) || this.estimateRetainedClassRule(className)
       if (!retainedRule) continue
       this.retainedClassNames.add(className)
       this.retainedClassRules.set(className, retainedRule)
     }
+    if (release.length) this.deleteClassRules(release)
     this.scheduleRetainedClassRuleCleanup()
   }
 
@@ -592,6 +608,13 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   private handleMutationRecords(records: MutationRecord[]) {
+    if (records.some(record => {
+      const target = record.target.nodeType === 3 ? record.target.parentElement : record.target
+      if (target?.nodeType === 1 && (target as Element).matches('style') && target !== this.style) return true
+      return [...record.addedNodes, ...record.removedNodes].some(node =>
+        node.nodeType === 1 && node !== this.style
+        && ((node as Element).matches('style,link[rel="stylesheet"]') || (node as Element).querySelector('style,link[rel="stylesheet"]')))
+    })) this.reconcileKeyframeRules()
     const deltaCounts = this.classTracker.collectMutations(records, this.root)
     applyRuntimeMutationDelta(records, deltaCounts, {
       classCounts: this.classCounts,
@@ -626,6 +649,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.observer = new MutationObserver((records) => this.handleMutationRecords(records))
     this.observer.observe(this.root, {
       childList: true,
+      characterData: true,
       attributes: true,
       attributeFilter: ['class'],
       subtree: true
@@ -639,6 +663,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (this.progressive) this.hydrateRuntimeStyle(connectedNames)
     else this.renderRuntimeStyle(connectedNames)
     this.startMutationObserver()
+    this.root.addEventListener('load', this.handleStylesheetLoad, true)
     if (!this.progressive) this.host.removeAttribute('hidden')
     this.observing = true
     if (process.env.NODE_ENV === 'development') debugRuntimeObserved(this)
@@ -652,11 +677,13 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (!this.observing) return this
     this.observer?.disconnect()
     this.observer = undefined
+    this.root.removeEventListener('load', this.handleStylesheetLoad, true)
     this.observing = false
     const activeClassNames = [...this.classUtilities.keys()]
     if (activeClassNames.length) this.bindingEngine.deleteClassRules(activeClassNames)
     this.classCounts.clear()
     this.classTracker.reset()
+    this.clearKeyframeRules()
     this.resetHostRuleState()
     if (!this.progressive) {
       this.style?.remove()
@@ -667,14 +694,15 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   refresh(manifest: MasterCSSManifest = this.manifest, emittedGlobals?: MasterCSSEmittedGlobals) {
-    if (emittedGlobals) this.replaceEmittedGlobals(emittedGlobals)
-    const transition = this.bindingEngine.refresh(manifest)
+    const transition = this.bindingEngine.refresh(manifest, emittedGlobals)
+    if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
     this.manifest = manifest
     this.clearClassReferences()
     this.applyTransition(transition)
+    this.reconcileKeyframeRules()
     this.ensureClassRules([...this.classCounts.keys()])
     if (process.env.NODE_ENV === 'development') debugRuntimeRefreshed(this, manifest)
     return this
@@ -736,6 +764,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.disconnect()
     this.bindingEngine.dispose()
     this.unregister()
+    this.disposeNativeStylesheets()
     this.disposed = true
     if (process.env.NODE_ENV === 'development') debugRuntimeDestroyed(this)
   }

@@ -267,13 +267,9 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('.main')
     expect(result.css).toContain('--color-primary:red')
     expect(result.css).toContain('@keyframes native-fade')
-    expect(result.emittedGlobals).toEqual({
-      keyframes: {},
-      variables: {
-        'animation-main': 1,
-        'color-primary': 1
-      }
-    })
+    expect(result.emittedGlobals.variables).toEqual({ 'animation-main': 1, 'color-primary': 1 })
+    expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1, 1, 1])
+    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
   })
 
   it('emits referenced theme tokens without substituting their values', async () => {
@@ -321,10 +317,9 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('@layer theme')
     expect(result.css).toContain('--color-primary: red')
     expect(result.css).toContain('@keyframes static-fade')
-    expect(result.emittedGlobals).toEqual({
-      keyframes: {},
-      variables: {}
-    })
+    expect(result.emittedGlobals.variables).toEqual({})
+    expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1])
+    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
   })
 
   it('prunes local CSS imports from Master CSS import roots when explicitly enabled', async () => {

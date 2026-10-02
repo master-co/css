@@ -13,7 +13,7 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
             {"from":"bridge","specifier":"./selected.css","resolved":"selected"}
         ]},
         "urls":{"entry":"/output/entry.css","bridge":"/output/bridge.css","selected":"/output/selected.css"},
-        "baseManifest":{"version":4,"languageVersion":13, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
+        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]},
         "nativeStylesheets":["selected"]
     });
     let result =
@@ -86,7 +86,7 @@ fn suppressed_native_imports_do_not_declare_unused_layers() {
             {"from":"bridge","specifier":"./leaf.css","resolved":"leaf"}
         ]},
         "urls":{"entry":"/entry.css","dead":"/dead.css","bridge":"/bridge.css","leaf":"/leaf.css"},
-        "baseManifest":{"version":4,"languageVersion":13, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":5,"languageVersion":14, "mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]}
     });
     let compile =
         |value| compile_css_stylesheet_graph(&serde_json::from_value(value).unwrap()).unwrap();

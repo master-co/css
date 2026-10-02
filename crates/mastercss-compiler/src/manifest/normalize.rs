@@ -215,7 +215,7 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     let mut seen_keyframes = std::collections::HashSet::new();
     keyframes.reverse();
     keyframes.retain(|definition| {
-        seen_keyframes.insert(definition["name"].as_str().unwrap_or_default().to_owned())
+        seen_keyframes.insert(definition["id"].as_str().unwrap_or_default().to_owned())
     });
     keyframes.reverse();
     if !keyframes.is_empty() {
@@ -305,6 +305,22 @@ pub(crate) fn compile_manifest_fragment(
         );
     }
     let mut manifest = merge_manifest(options.base_manifest.as_ref(), &Value::Object(fragment));
+    if let Some(names) = &input.keyframe_safelist {
+        for definition in manifest
+            .get_mut("keyframes")
+            .and_then(Value::as_array_mut)
+            .into_iter()
+            .flatten()
+        {
+            if definition
+                .get("name")
+                .and_then(Value::as_str)
+                .is_some_and(|name| names.iter().any(|value| value == name))
+            {
+                definition["retained"] = Value::Bool(true);
+            }
+        }
+    }
     crate::mixins::resolve_definitions(&mut manifest, &registry)?;
     MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))?;
     Ok(CompileManifestResult { manifest })
@@ -398,6 +414,30 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
 /// Reference context supplies definitions, never additional unconditional roots.
 /// Local definitions are merged after this view; delivered base roots remain live.
 pub(crate) fn reference_context(mut resolution: Value, base: Option<&Value>) -> Value {
+    let retained_ids = base
+        .and_then(|base| base.get("keyframes"))
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter(|definition| definition["retained"] == true)
+        .filter_map(|definition| definition["id"].as_str())
+        .collect::<std::collections::HashSet<_>>();
+    for definition in resolution
+        .get_mut("keyframes")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        if !definition["id"]
+            .as_str()
+            .is_some_and(|id| retained_ids.contains(id))
+        {
+            definition
+                .as_object_mut()
+                .expect("keyframe definition")
+                .shift_remove("retained");
+        }
+    }
     let mut roots = std::collections::HashSet::new();
     for variable in flatten_variables(base.and_then(|base| base.get("variables"))) {
         if variable["values"]

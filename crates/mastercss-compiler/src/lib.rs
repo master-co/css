@@ -79,6 +79,9 @@ pub struct InspectCssDirective {
 pub struct CompileNativeCssOptions {
     #[serde(default = "default_filename")]
     pub from: String,
+    /// Stable host-provided source identity, independent of publication URLs.
+    #[serde(default)]
+    pub resource_owner: Option<String>,
     #[serde(default = "default_true", rename = "preserveNativeCSS")]
     pub preserve_native_css: bool,
     #[serde(default, rename = "pruneNativeCSS")]
@@ -94,6 +97,7 @@ impl Default for CompileNativeCssOptions {
     fn default() -> Self {
         Self {
             from: default_filename(),
+            resource_owner: None,
             preserve_native_css: true,
             prune_native_css: false,
             preserve_native_source: false,
@@ -113,6 +117,8 @@ pub struct CompileNativeCssResult {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub suppressed_keyframes: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -253,6 +259,11 @@ pub fn merge_extraction_policies(
                 merged.blocklist.push(value.clone());
             }
         }
+        for value in &policy.safelist_keyframes {
+            if !merged.safelist_keyframes.contains(value) {
+                merged.safelist_keyframes.push(value.clone());
+            }
+        }
         merged.preserve_native |= policy.preserve_native;
     }
     merged
@@ -278,6 +289,8 @@ pub struct CssImportGraphEdge {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CssImportGraphRequest {
+    #[serde(default)]
+    pub resource_owners: HashMap<String, String>,
     pub entry: String,
     pub files: HashMap<String, String>,
     #[serde(default)]
@@ -656,6 +669,7 @@ mod custom_media;
 mod directives;
 mod imports;
 mod native_conditionals;
+mod native_keyframes;
 mod native_output;
 mod native_source;
 pub use native_output::{NativeCssOutput, NativeCssOutputSlot};

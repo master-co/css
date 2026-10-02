@@ -34,7 +34,7 @@ test.each(['serve', 'build'])('scoped Vue styles keep project globals outside sc
     ? [...devStylesheetState(context).stylesheets.values()].join('\n')
     : [...localStylesheets(context).values()].map(sheet => sheet.result.code).join('\n')
   expect(globals).toContain(':root,:host{--color-brand:red}')
-  expect(globals).not.toContain('@keyframes pop')
+  expect(globals).toContain('@keyframes pop')
   expect(result.code).toContain(command === 'serve' ? '@import ' : ':global(#master-css-local-')
 })
 

@@ -284,12 +284,12 @@ describe('withMasterCSS', () => {
     expect((nextConfig as any).transpilePackages || []).not.toContain(removedReactPackageName)
   })
 
-  it('adds CSS manifest loaders and runtime aliases without the adapter when mode is runtime', () => {
+  it('adds CSS manifest loaders, runtime aliases and stylesheet delivery adapter in runtime mode', () => {
     const nextConfig = { reactStrictMode: true }
     const resolvedConfig = withMasterCSS(nextConfig, { mode: 'runtime' }) as any
 
     expect(resolvedConfig.reactStrictMode).toBe(true)
-    expect(resolvedConfig.adapterPath).toBeUndefined()
+    expect(resolvedConfig.adapterPath).toContain('adapter.js')
     expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toContain(instrumentationClientProjectPath)
     expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toContain('empty.js')
     const turbopackConfig = withMasterCSS({
@@ -380,7 +380,8 @@ describe('withMasterCSS', () => {
       expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         manifest,
         emittedGlobals,
-        onDiagnostic: expect.any(Function)
+        onDiagnostic: expect.any(Function),
+        stylesheetDelivery: { base: '/_next/', development: false }
       })
       expect(runtime.observe).toHaveBeenCalled()
     } finally {
@@ -407,7 +408,8 @@ describe('withMasterCSS', () => {
       expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         manifest,
         emittedGlobals,
-        onDiagnostic: expect.any(Function)
+        onDiagnostic: expect.any(Function),
+        stylesheetDelivery: { base: '/_next/', development: false }
       })
     } finally {
       rmSync(root, { recursive: true, force: true })

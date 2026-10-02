@@ -19,8 +19,8 @@ interface Declaration { prop: string; value: string; remove(): void }
 interface Root { append(node: unknown): void; walkDecls(callback: (declaration: Declaration) => void): void; walkRules(selector: string, callback: (rule: Root) => void): void }
 interface Output { source: string; sourceMap: string; globalAnimations: string[]; processedGlobals?: Required<MasterCSSEmittedGlobals> }
 const baseManifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const source = `@theme {--color-old:#111111;--color-late:#abcdef;--color-child:#010203;--shape-late:url("../late.svg?rev=1#shape")}
 .card{color:var(--color-old)}`

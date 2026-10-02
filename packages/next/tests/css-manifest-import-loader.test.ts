@@ -73,7 +73,7 @@ describe('css manifest import loader', () => {
     expect(dependencies.some(path => path.endsWith('.manifest.js'))).toBe(true)
     expect(readVirtualManifestModule(projectDir)).toContain('export default')
     expect(readVirtualManifestModule(projectDir)).toContain('#123')
-    expect(readVirtualManifestModule(projectDir)).toContain('"version":4')
+    expect(readVirtualManifestModule(projectDir)).toContain('"version":5')
     expect(readVirtualManifestModule(projectDir)).toContain('primary')
     expect(readVirtualManifestModule(projectDir)).toContain('#123')
   })

@@ -2,7 +2,7 @@
 
 ## Canonical token families
 
-Direct values use full native properties, while loaded mixins define named-token families. Generate manifests and hydration data with matching packages. Manifest v4 uses language version 13 and binding ABI 23.
+Direct values use full native properties, while loaded mixins define named-token families. Generate manifests and hydration data with matching packages. Manifest v5 uses language version 14 and binding ABI 24.
 
 Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
 
@@ -121,7 +121,7 @@ Validate project definitions against the active manifest and rebuild generated C
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 13 and ABI 23. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 14 and ABI 24. Manifest v5, hydration v4 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 
@@ -141,7 +141,7 @@ Each replacement receives the original conditions and `!`. `r-pill` uses `calc(i
 
 Use `bg-surface-base`, `fg-text-muted`, `b-line-divider`, `outline-line-divider` and `stroke-line-divider`. Implicit text/line role lookup is removed for every color property. A real `--color-muted` still supports `fg-muted`; the migrator checks the saved resolver instead of replacing by spelling. `text-*` remains typography only, and non-color token families keep their existing lookup.
 
-Move preset-style keyframes directly inside `@theme` for usage-based output. Native keyframes outside it are always delivered. Unresolved dynamic animation names retain all managed definitions. See the [managed keyframe contract](/reference/directives/theme#theme-keyframes) for references, JavaScript, source ownership and HMR.
+Move keyframes out of `@theme` into native CSS. Add `@prune native;` in their owning file for usage-based output, or retain the default preservation policy. Unresolved dynamic animation names retain all candidate definitions. See the [managed keyframe contract](/reference/directives/theme#native-keyframes) for references, JavaScript, source ownership and HMR.
 
 This guide upgrades saved RC contracts to language **v12** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
 
@@ -316,7 +316,7 @@ Regenerate artifacts from their source definitions and deploy a coordinated pack
 - Manifest **v4**, language **v12**, binding ABI **22**, hydration **v3** and engine transition **v3** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use default theme tokens, native overrides, `customMedia` and mixins.
-- Recompile into Manifest v4 / language 11 / ABI 21. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
+- Recompile into Manifest v5 / language 14 / ABI 24. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
@@ -435,7 +435,7 @@ Remove `@settings`, `@mode` and named theme preludes. Put token declarations in 
 [data-theme="dark"] { color-scheme: dark; }
 ```
 
-Define token defaults directly in `@theme`. Review overlapping themes, inheritance and specificity against saved browser output. Token defaults use `:root,:host`; native selectors and `color-scheme` control theme activation. Move unconditional properties to native CSS. Register on-demand keyframes directly inside top-level `@theme`; leave always-delivered keyframes outside it. Use per-class `!` instead of global importance, and native selectors instead of global scope.
+Define token defaults directly in `@theme`. Review overlapping themes, inheritance and specificity against saved browser output. Token defaults use `:root,:host`; native selectors and `color-scheme` control theme activation. Move unconditional properties to native CSS. Declare keyframes in native CSS and choose their file policy with `@prune native` or `@preserve native`. Use per-class `!` instead of global importance, and native selectors instead of global scope.
 
 Define viewport aliases with `@custom-media --sm (width >= 52.125rem);`; `--breakpoint-sm` no longer registers `@sm`. Replace the removed `@master entry;` marker with `@import "@master/css";`, which loads the full preset. Every relative `@source` pattern is relative to its declaring stylesheet, including bare patterns.
 
@@ -664,7 +664,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 22), preset manifests and hydration alongside sources. Manifest envelopes are v4, hydration envelopes are v3, and executable manifests require language version 12; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 24), preset manifests and hydration alongside sources. Manifest envelopes are v5, hydration envelopes are v4, and executable manifests require language version 14; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors
@@ -769,3 +769,32 @@ The compiler no longer exposes compose IR or composition traces. Tooling removes
 The RC migration command reports an occurrence for manual migration and leaves the statement unchanged. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) for the remaining migration steps.
 
 ---
+
+
+## Native keyframe resource lifecycle
+
+Move keyframes from theme blocks into native CSS. Keep `--animate-*` tokens as complete shorthands and continue using `animate-*` classes:
+
+```css
+/* Previous authoring */
+@theme {
+  --animate-reveal: reveal .2s ease-out both;
+  @keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
+}
+```
+
+```css
+/* Current authoring */
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
+@safelist keyframes "reveal";
+```
+
+The safelist is optional: add it only for names introduced outside analyzable declarations or scanned classes. Each string is one exact, case-sensitive name and supports CSS escapes. It does not generate an animation declaration. Existing class safelists continue to work.
+
+Previously, keyframes outside theme blocks had separate native delivery, and native/managed name collisions were errors. All native keyframes now share their file's preserve/prune policy. Preserve is the default; `@preserve native` wins over prune. Policies do not propagate to imports, and reference-only files do not contribute preservation or safelist roots. `preserveNativeCSS: false` suppresses native output while keeping definition metadata available.
+
+Same-name definitions now coexist in source order with their native conditions, layers and import occurrences. Do not rely on a later compiler definition deleting an earlier one. The browser resolves their competition. Resources, transitions and hydration order are keyed by definition ID, while names remain available for inspection.
+
+Regenerate all saved artifacts using matching packages: Manifest **5**, language **14**, binding ABI **24**, language batch **6**, engine snapshot/transition **4**, and hydration **4**. Older formats are rejected. Refreshing an engine or runtime may supply the full emitted-global snapshot alongside the manifest to replace ownership atomically.

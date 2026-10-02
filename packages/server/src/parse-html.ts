@@ -12,12 +12,14 @@ export default function parseHTML(html: string): {
   nodes: ChildNode[],
   htmlElement: Element | null,
   headElement: Element | null,
-  styleElement: Element | null
+  styleElement: Element | null,
+  nativeStyleElements: Element[]
 } {
   const classes = new Set<string>()
   let htmlElement: Element | null = null
   let headElement: Element | null = null
   let styleElement: Element | null = null
+  const nativeStyleElements: Element[] = []
 
   const handler = new DomHandler(undefined, {}, (element) => {
     if (element.type === 'tag') {
@@ -34,6 +36,7 @@ export default function parseHTML(html: string): {
     } else if (element.type === 'style') {
       if (element.attribs.id === MASTER_CSS_RUNTIME_STYLE_ID)
         styleElement = element
+      else if (!element.attribs.type || element.attribs.type === 'text/css') nativeStyleElements.push(element)
     }
 
     if (element.attribs.class) {
@@ -55,6 +58,7 @@ export default function parseHTML(html: string): {
     nodes: handler.root.childNodes,
     htmlElement,
     headElement,
-    styleElement
+    styleElement,
+    nativeStyleElements
   }
 }

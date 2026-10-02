@@ -56,6 +56,7 @@ fn compile_css_directives_impl(
         None => &mut local_slots,
     });
     reject_removed_directives(source, &options.from)?;
+    crate::native_keyframes::validate_safelists(source, &options.from)?;
     crate::mixins::reject_placeholder(source, &options.from)?;
     let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
@@ -149,6 +150,28 @@ fn compile_css_directives_impl(
         custom_media: (!custom_media.is_empty()).then_some(custom_media),
         ..CssDirectiveManifestInput::default()
     };
+    let mut keyframes = crate::native_keyframes::KeyframeCollector {
+        source_index: crate::source_index::SourceIndex::new(source),
+        source_identity: crate::native_keyframes::source_identity(
+            options.resource_owner.as_deref().unwrap_or(&options.from),
+            source,
+        ),
+        owner_identity: crate::native_keyframes::identity(
+            options.resource_owner.as_deref().unwrap_or(&options.from),
+        ),
+        source,
+        filename: &options.from,
+        retained: extraction_policy.preserve_native
+            || !(options.prune_native_css || extraction_policy.prune_native),
+        definitions: Vec::new(),
+    };
+    keyframes.collect(&mut stylesheet.rules.0, &[])?;
+    if !keyframes.definitions.is_empty() {
+        manifest_input.keyframes = Some(keyframes.definitions);
+    }
+    if !extraction_policy.safelist_keyframes.is_empty() {
+        manifest_input.keyframe_safelist = Some(extraction_policy.safelist_keyframes.clone());
+    }
     let mut class_names = Vec::new();
     let mut style_definitions = Vec::new();
     let mut style_order = 0;
@@ -292,6 +315,7 @@ fn compile_css_directives_impl(
             &options.from,
             &consumed,
             slots.as_deref().map(Vec::as_slice).unwrap_or_default(),
+            manifest_input.keyframes.as_deref().unwrap_or_default(),
         )?)
     } else {
         None
@@ -381,15 +405,33 @@ fn compile_css_directives_impl(
     if !variables.is_empty() {
         manifest_input.animation_variables = Some(variables);
     }
-    if !external_slots {
-        crate::keyframes::validate_native_names(
-            &native_css,
-            &options.from,
-            manifest_input.keyframes.as_deref().unwrap_or_default(),
-            &native_mappings,
-        )?;
-    }
+    let (native_css, native_mappings) =
+        if !external_slots && !native_css.is_empty() && manifest_input.keyframes.is_some() {
+            let manifest = crate::compile_manifest_input(
+                &manifest_input,
+                &crate::CompileManifestOptions::default(),
+            )?
+            .manifest;
+            crate::native_keyframes::render(
+                &native_css,
+                &manifest,
+                options.classes.as_deref(),
+                &native_mappings,
+            )?
+        } else {
+            (native_css, native_mappings)
+        };
     Ok(CompileCssDirectivesResult {
+        suppressed_keyframes: if options.preserve_native_css {
+            Vec::new()
+        } else {
+            manifest_input
+                .keyframes
+                .iter()
+                .flatten()
+                .map(|frame| frame.id.clone())
+                .collect()
+        },
         notices: Vec::new(),
         mixin_sources: crate::mixin_sources::collect(source, &options.from),
         native_output,

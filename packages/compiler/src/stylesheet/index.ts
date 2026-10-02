@@ -389,7 +389,7 @@ export async function compileRenderedStylesheet(
     // Include expanded native mixin applications as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
-    emittedGlobals: options.emittedGlobals
+    emittedGlobals: { ...options.emittedGlobals, suppressedKeyframes: finalizedResult.suppressedKeyframes }
   })
   return {
     ...result,
@@ -397,7 +397,7 @@ export async function compileRenderedStylesheet(
     warnings: finalizedResult.warnings,
     notices: finalizedResult.notices,
     css: renderedCSS.css,
-    sourceMap: outputMap(renderedCSS.css, renderedCSS.outputMappings),
+    sourceMap: outputMap(renderedCSS.css, renderedCSS.outputMappings, renderedCSS.stylesheetEdits[0]),
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     emittedGlobals: renderedCSS.emittedGlobals,
@@ -409,13 +409,15 @@ export async function compileRenderedStylesheet(
 function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
   return {
     variables: {},
-    keyframes: {}
+    keyframes: {},
+    keyframeSlots: [],
+    suppressedKeyframes: []
   }
 }
 
 function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
   return Boolean(
-    Object.keys(emittedGlobals?.variables || {}).length || Object.keys(emittedGlobals?.keyframes || {}).length
+    Object.keys(emittedGlobals?.variables || {}).length || Object.keys(emittedGlobals?.keyframes || {}).length || emittedGlobals?.keyframeSlots?.length
   )
 }
 
@@ -518,7 +520,7 @@ export async function transformLocalStylesheet(
     warnings: finalizedResult.warnings,
     notices: finalizedResult.notices,
     css: generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css,
-    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css, generatedGlobals === 'separate' ? [] : renderedCSS.outputMappings),
+    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css, generatedGlobals === 'separate' ? [] : renderedCSS.outputMappings, renderedCSS.stylesheetEdits[0]),
     generatedCSS: renderedCSS.generatedCSS
   }
   return {
@@ -641,7 +643,9 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
     css,
     emittedGlobals: {
       variables: {},
-    keyframes: {}
+    keyframes: {},
+    keyframeSlots: [],
+    suppressedKeyframes: []
     }
   }
 }

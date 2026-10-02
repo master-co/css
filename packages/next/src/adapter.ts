@@ -1,4 +1,5 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import { createServerRenderer } from '@master/css-server'
 import type { NextAdapter } from 'next'
@@ -12,6 +13,7 @@ import {
 import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import { getRegisteredOptions, resolveOptions, type MasterCSSNextAdapterOrder, type MasterCSSNextOptions } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
+import { publishRuntimeStylesheets } from './runtime-stylesheets'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
@@ -199,6 +201,8 @@ function upsertMasterStyleText(html: string, cssText: string) {
 export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: MasterCSSNextOptions = getRegisteredOptions() ?? {}) {
   const options = resolveOptions(rawOptions)
   if (!options.enabled) return []
+  const stylesheets = await publishRuntimeStylesheets(ctx, options.runtime.enabled)
+  if (options.mode === 'runtime') return []
 
   const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir, { pruneNativeCSS: options.pruneNativeCSS })
   let renderer: ReturnType<typeof createServerRenderer> | undefined
@@ -212,12 +216,25 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedOutputs: RenderedOutput[] = []
     const hydrationManifestAssets = new Set<string>()
+    const nativeStylesheetAssets = new Map<string, { css: string, pathname: string, hash: string }>()
 
     for (const output of htmlOutputs) {
       const sourceHTML = await readFile(output.filePath, 'utf-8')
       let hydrationManifestFile: string | undefined
       let hydrationManifestBytes = 0
-      const rendered = renderer.renderHTML(sourceHTML)
+      const rendered = renderer.renderHTML(sourceHTML, {
+        stylesheets,
+        stylesheetImportSource(css) {
+          const hash = createHash('sha256').update(css).digest('hex')
+          const fileName = `${hash.slice(0, 16)}.css`
+          const filePath = ctx.config.output === 'export'
+            ? join(resolveStaticExportRoot(output), '_next/static/master-css/native', fileName)
+            : join(ctx.distDir, 'static/master-css/native', fileName)
+          const pathname = `${(ctx.config as { basePath?: string }).basePath || ''}/_next/static/master-css/native/${fileName}`
+          nativeStylesheetAssets.set(filePath, { css, pathname, hash })
+          return pathname
+        }
+      })
       if (options.mode === 'progressive' && rendered.hydrationManifest?.rules.length) {
         const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
         const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
@@ -232,7 +249,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
       const generatedCSS = rendered.cssText
       let renderedHTML = generatedCSS
         ? upsertMasterStyleText(rendered.html, generatedCSS)
-        : sourceHTML
+        : rendered.html
       if (generatedCSS && hydrationManifestFile) {
         renderedHTML = attachHydrationManifestSource(
           renderedHTML,
@@ -257,6 +274,11 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
       })
     }
 
+    for (const [filePath, asset] of nativeStylesheetAssets) {
+      await mkdir(dirname(filePath), { recursive: true })
+      await writeFile(filePath, asset.css)
+      ctx.outputs.staticFiles.push({ type: 'STATIC_FILE' as BuildOutputs['staticFiles'][number]['type'], id: asset.pathname, filePath, pathname: asset.pathname, immutableHash: asset.hash })
+    }
     await writeBuildReport(ctx, renderedOutputs, options.buildReport)
 
     if (options.debug) {

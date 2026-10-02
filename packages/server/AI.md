@@ -10,6 +10,8 @@
 - HTML class collection inputs for Rust render sessions.
 - Rust render-session orchestration and hydration/resource IR mapping.
 - Injection or update of `<style id="master-css">`.
+- Materialization of compiled native slots in inline styles and adapter-supplied stylesheet assets.
+- Original link positions and same-origin child import publication through the host callback; Rust still owns resource selection.
 
 ## Does Not Own
 

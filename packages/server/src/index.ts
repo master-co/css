@@ -19,3 +19,4 @@ export {
   renderHTML,
   type MasterCSSHTMLRenderOptions
 } from './render-html'
+export type { MasterCSSServerStylesheet } from './native-stylesheets'

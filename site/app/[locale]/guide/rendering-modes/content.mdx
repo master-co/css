@@ -242,7 +242,7 @@ For highly interactive UI such as editors, builders, data grids, virtualized lis
 This does not change class syntax or cascade semantics. It is a delivery choice: avoid making the browser generate a large number of new utility rules during the same user interaction that mutates a large DOM subtree.
 
 ### Project manifest delivery
-`virtual:master-css-manifest` is the project-level runtime input. It represents the compiled CSS entry graph, so it can include project tokens, mixins, custom media, and managed keyframes.
+`virtual:master-css-manifest` is the project-level runtime input. It represents the compiled CSS entry graph, so it can include project tokens, mixins, custom media, and keyframe definitions.
 
 Next.js delivers this manifest as a standard ESM data module; its bundler manages chunks, caching and URLs. Other integrations can serve the manifest as an inline virtual module during development. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module import that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
 
@@ -427,7 +427,7 @@ Use one `@import '@master/css'` entry for each generated stylesheet root. That i
 ### Native CSS entries
 Regular CSS outside Master CSS directives remains native CSS. Integrations preserve it by default, including selectors whose classes do not appear in scanned source. Enable `pruneNativeCSS: true` for project-owned sources when pruning is intentional, or use `@prune native;` for one source file.
 
-Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@theme` keyframes referenced by animation declarations. When integration-level pruning is enabled, `@preserve native;` excludes one source file.
+Those native rules can also pull matching theme variables referenced by `var(--*)` and native keyframes referenced by animation declarations. When integration-level pruning is enabled, `@preserve native;` excludes one source file.
 
 ```css name=src/style.css
 @import '@master/css';
@@ -499,7 +499,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 @custom-media --md (width >= 48rem);
 ```
 
-These CSS-first directives are manifest inputs. The compiler lowers theme tokens, managed keyframes, custom media, mixins and native CSS into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are manifest inputs. The compiler lowers theme tokens, keyframe definitions, custom media, mixins and native CSS into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
@@ -558,6 +558,21 @@ CSS value and browser support `not-checked`. Use the validator from
 `@master/css-tooling` for value validation; a matched rule alone is not a validation
 result. Inspection results are immutable and do not register classes with the engine.
 
-A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v4, hydration v3 and transition v3 define the data consumed by the engine.
+A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v5, hydration v4 and transition v4 define the data consumed by the engine.
 
-Custom engine or binding implementations must provide this query under binding ABI 21.
+Custom engine or binding implementations must provide this query under binding ABI 24.
+
+
+### Animation resource placement
+
+Keyframe definitions retain their original stylesheet position and native containers. With `@prune native`, the compiler keeps only definitions required by retained declarations, generated utilities, static animation tokens or `@safelist keyframes`. Default preservation and `@preserve native` keep the file's definitions. Policy does not propagate through imports.
+
+Runtime and SSR identify each definition independently, including same-name definitions in different conditions or layers. Compiler-owned resource slots preserve the insertion position and anonymous-layer identity while DOM usage changes. HMR replaces the owner's definitions and resource counts together. Removing the final DOM consumer releases only definitions without another retention root; native class pruning remains a compile-time operation.
+
+Runtime and progressive builds publish a `.master-css.json` companion beside each CSS asset. Deploy these files with the build output. Official adapters supply their asset location automatically. Runtime uses these compiled assets to install writable stylesheets at the original link positions, including when the original stylesheet is served by a CDN. Cross-origin delivery requires the same CORS access as other runtime JSON assets. Qualified imports keep their native boundaries through owned blob URLs; a restrictive Content Security Policy must allow those stylesheet URLs.
+
+Resource URLs inside animation frames pass through the host's CSS asset processing even when the animation starts later. The original linked stylesheet is restored when runtime ownership is disposed. Custom stylesheet hosts can pass `stylesheets: () => [{ sheet, ownerIds }]` to `MasterCSSRuntime.start()` to bind already-writable sheets to the compiler's owner IDs, including adopted stylesheets in a ShadowRoot.
+
+Pre-render and progressive adapters materialize required native keyframes before JavaScript runs. They insert the owned CSS at its original link position and publish any rendered child imports at same-origin URLs, so hydration can adopt the existing CSSOM and anonymous layers. Deploy these generated CSS files with the other build output.
+
+Custom server hosts can pass compiler-prepared `stylesheets` and `documentURL` to `renderHTML()` or a server renderer. Supply `stylesheetImportSource(css, source)` when those assets import other owned stylesheets; publish the supplied CSS and return its same-origin URL. The compiler prepares the URL references and Rust selects resources. Inline native styles are updated in place automatically.

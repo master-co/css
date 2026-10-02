@@ -3,14 +3,18 @@ import { MasterCSSRuntime } from '../src'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSRuntimeStartOptions } from '../src/types'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 interface RuntimeLoaderOptions {
+  root?: Document | ShadowRoot
   manifest?: MasterCSSManifest
   emittedGlobals?: MasterCSSEmittedGlobals
   hydrationManifest?: MasterCSSHydrationManifest
   startupTimeoutMs?: number
+  stylesheetDelivery?: MasterCSSRuntimeStartOptions['stylesheetDelivery']
+  stylesheets?: MasterCSSRuntimeStartOptions['stylesheets']
 }
 
 declare global {
@@ -37,10 +41,13 @@ function exposeRuntimeTestInternals(runtime: MasterCSSRuntime) {
 
 export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
   const runtime = await MasterCSSRuntime.start({
+    root: options.root,
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest,
     emittedGlobals: options.emittedGlobals,
-    startupTimeoutMs: options.startupTimeoutMs
+    startupTimeoutMs: options.startupTimeoutMs,
+    stylesheetDelivery: options.stylesheetDelivery,
+    stylesheets: options.stylesheets
   })
   globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(runtime)
   return runtime.observe()
@@ -48,10 +55,13 @@ export async function startCSSRuntime(options: RuntimeLoaderOptions = {}) {
 
 export async function startCSSRuntimeAsync(options: RuntimeLoaderOptions = {}) {
   const cssRuntime = await MasterCSSRuntime.start({
+    root: options.root,
     manifest: options.manifest || defaultManifest,
     hydrationManifest: options.hydrationManifest,
     emittedGlobals: options.emittedGlobals,
-    startupTimeoutMs: options.startupTimeoutMs
+    startupTimeoutMs: options.startupTimeoutMs,
+    stylesheetDelivery: options.stylesheetDelivery,
+    stylesheets: options.stylesheets
   })
   globalThis.__MASTER_CSS_RUNTIME_TEST__ = exposeRuntimeTestInternals(cssRuntime)
   return cssRuntime.observe()

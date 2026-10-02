@@ -2,8 +2,20 @@
 import type { CSSDirectiveSourceReference } from './css-directives.js'
 
 export interface MasterCSSKeyframeDefinition {
+  id: string
+  ownerId?: string
+  slotId?: string
+  occurrence?: number
   name: string
   text: string
+  resources?: { start: number, end: number, value: string }[]
+  retained?: boolean
+  containers?: MasterCSSKeyframeContainer[]
   dependencies?: string[]
   source?: CSSDirectiveSourceReference
+}
+
+export interface MasterCSSKeyframeContainer {
+  id: string
+  prelude: string
 }

@@ -43,8 +43,8 @@ test('preserves native aliases that share a declaration across cached pages', ()
       ]
     }
   ],
-  "version": 4 as const,
-  "languageVersion": 13 as const,
+  "version": 5 as const,
+  "languageVersion": 14 as const,
   "variables": {
     "": [
       {
@@ -178,4 +178,21 @@ test('returns a complete final chunk when no prefix can be emitted safely', () =
 
   expect(ended.chunk).toBe(ended.result.html)
   expect(ended.result.cssText).toBe("@layer utilities{.display\\:block{display:block}}")
+})
+
+test('materializes compiled native slots in their original inline styles without leaking page roots', async () => {
+  const { compileRenderedStylesheet } = await import('@master/css-compiler/stylesheet')
+  const compiled = await compileRenderedStylesheet('/ssr.css', '@prune native;@layer{@keyframes probe{to{opacity:.25;background:url("./source.svg")}}}', {
+    baseManifest: { version: 5, languageVersion: 14 }, classes: []
+  })
+  using renderer = createServerRenderer({ manifest: compiled.manifest, emittedGlobals: compiled.emittedGlobals })
+  const input = `<html><head><style id="native">${compiled.nativeCSS.replaceAll('./source.svg', '/assets/final.svg')}</style><style id="after">@layer after;</style></head><body><div class="animation:probe|1ms|both"></div></body></html>`
+  const first = renderer.renderHTML(input, { hydrationManifest: 'inject' })
+  expect(first.html).toContain('@keyframes probe')
+  expect(first.html).toContain('background:url("/assets/final.svg")')
+  expect(first.html.indexOf('@keyframes probe')).toBeLessThan(first.html.indexOf('id="after"'))
+  expect(first.cssText).not.toContain('@keyframes')
+  expect(first.hydrationManifest?.resourceOrder.keyframes).toHaveLength(1)
+  expect(renderer.renderHTML(input.replace('animation:probe|1ms|both', '')).html).not.toContain('@keyframes')
+  expect(renderer.renderHTML(first.html).html.match(/@keyframes probe/g)).toHaveLength(1)
 })

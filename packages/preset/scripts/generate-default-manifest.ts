@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   createCompilerBindingSessionSync,
@@ -50,7 +50,7 @@ function resolvePresetStylesheet(
   }
 
   visit(entry)
-  return compiler.resolveCSSImportGraph({
+  return ({
     entry,
     files,
     edges
@@ -59,18 +59,21 @@ function resolvePresetStylesheet(
 
 function compileDefaultPresetManifest(file: string): CompiledDefaultPresetManifest {
   using compiler = createCompilerBindingSessionSync()
-  const source = resolvePresetStylesheet(file, compiler).source
-  const directives = compiler.compileCSSDirectives(source, {
-    from: file,
-    preserveNativeCSS: true
+  const graph = resolvePresetStylesheet(file, compiler)
+  const result = compiler.compileCSSStylesheetGraph({
+    graph: { ...graph, resourceOwners: Object.fromEntries(Object.keys(graph.files).map(id => [id, `@master/css-preset/${relative(packageRoot, id).replace(/\\/g, '/')}`])) },
+    urls: Object.fromEntries(Object.keys(graph.files).map((id, index) => [id, `./preset-${index}.css`])),
+    options: { classes: [] },
+    inlineImports: true
   })
+  const directives = result.directives
   const compiled = compiler.compileDefaultPresetManifest({
     manifestInput: directives.manifestInput,
     styleDefinitions: directives.styleDefinitions || []
   })
   return {
     ...compiled,
-    nativeCSS: directives.nativeCSS
+    nativeCSS: (result.stylesheets.find(sheet => sheet.id === result.entry)?.css || '').trimEnd() + '\n'
   }
 }
 

@@ -31,7 +31,7 @@ The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer t
 
 Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports token declarations and modes, not a computed result.
 
-Native keyframes outside `@theme` are delivered with their stylesheet. For on-demand keyframes, define them directly inside `@theme`; used animation names and declarations retain their dependencies through compilation, SSR and runtime.
+Declare keyframes in native CSS. Their file preserves them by default; `@prune native;` opts into usage-based delivery. Used animation names and declarations retain their dependencies through compilation, SSR and runtime. `@safelist keyframes "name";` retains names used outside scanned classes.
 
 ## Namespace resolution \{#namespace-resolution\}
 Write custom properties as `--<namespace>-<key>`. Reference groups role values such as `--color-line-divider` into focused lookup collections. The canonical color families still resolve through the `color` namespace: `b-line-divider` selects that variable with the key `line-divider`.

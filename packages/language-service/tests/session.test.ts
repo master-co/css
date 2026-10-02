@@ -128,3 +128,20 @@ describe('Rust-backed language service', () => {
     expect(await service.renderSyntaxColors(document)).toHaveLength(1)
   })
 })
+
+test('keyframe safelists complete and inspect exact names without class semantics', () => {
+  const service = createService({ version: 5, languageVersion: 14, keyframes: [
+    { id: 'light', name: 'with space', text: '@keyframes "with space"{to{opacity:1}}', source: { file: 'light.css', range: { start: 0, end: 40 } } },
+    { id: 'dark', name: 'with space', text: '@keyframes "with space"{to{opacity:.5}}', source: { file: 'dark.css', range: { start: 0, end: 41 } } }
+  ] })
+  const source = '@safelist keyframes "with space";'
+  const document = TextDocument.create('file:///index.css', 'css', 1, source)
+  const position = document.positionAt(source.indexOf('space'))
+  expect(service.getClassPosition(document, position)).toBeUndefined()
+  const items = service.suggestSyntax(document, position, { triggerKind: CompletionTriggerKind.Invoked })
+  expect(items).toHaveLength(1)
+  expect(items![0]).toMatchObject({ label: 'with space', textEdit: { newText: '"with space"' } })
+  const hover = service.inspectSyntax(document, position)
+  expect(hover?.contents).toMatchObject({ value: expect.stringContaining('light.css') })
+  expect(hover?.contents).toMatchObject({ value: expect.stringContaining('dark.css') })
+})

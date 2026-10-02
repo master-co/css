@@ -14,13 +14,16 @@ export function renderHTML(
 ): MasterCSSHTMLRenderResult {
   const {
     hydrationManifest,
+    stylesheets,
+    documentURL,
+    stylesheetImportSource,
     manifest,
     emittedGlobals,
     maxCachedClasses
   } = options
   const renderer = createServerRenderer({ manifest, emittedGlobals, maxCachedClasses })
   try {
-    return renderer.renderHTML(html, { hydrationManifest })
+    return renderer.renderHTML(html, { hydrationManifest, stylesheets, documentURL, stylesheetImportSource })
   } finally {
     renderer.dispose()
   }
@@ -31,10 +34,13 @@ export function createHTMLRenderSession(
 ): MasterCSSHTMLRenderSession {
   const {
     hydrationManifest,
+    stylesheets,
+    documentURL,
+    stylesheetImportSource,
     manifest,
     emittedGlobals,
     maxCachedClasses
   } = options
   const renderer = createServerRenderer({ manifest, emittedGlobals, maxCachedClasses })
-  return bindHTMLRenderSessionInternal(renderer, { hydrationManifest }, true)
+  return bindHTMLRenderSessionInternal(renderer, { hydrationManifest, stylesheets, documentURL, stylesheetImportSource }, true)
 }

@@ -33,8 +33,8 @@ for (const qualifier of ['', ' layer(cards)', ' layer supports(display:grid) scr
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, delivery: { entryURL: '/built/main.css', stylesheetURL: file => `/built/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` } })
       expect(result.css.indexOf('/built/child.css')).toBeLessThan(result.css.indexOf('https://remote.test/last.css'))
       const asset = result.stylesheets!.find(asset => asset.id === child)!
@@ -77,8 +77,8 @@ test('rendered delivery preserves host maps, supplied references, native pruning
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, classes: ['used', 'card'], pruneNativeCSS: true,
       references: [{ source: './tokens.css', file: entry }],
       sourceMap: JSON.stringify({ version: 3 as const, sources: [pathToFileURL(original).href], sourcesContent: [source], names: [], mappings: 'AAAA;AACA' }),
@@ -123,8 +123,8 @@ test('rendered delivery retains real Sass dependencies and original output maps'
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })
@@ -160,8 +160,8 @@ test('rendered delivery maps invalid composed tokens back to their Sass partial'
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 },
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })] })
@@ -192,8 +192,8 @@ test('rendered delivery emits generated classes once in the entry and leaves the
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, classes: ['paint'],
       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${basename(file)}`, resourceURL: file => `/media/${basename(file)}` }
     })

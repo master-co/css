@@ -10,7 +10,7 @@ const mixins: NonNullable<MasterCSSManifest['mixins']> = [
   ] },
   { name: '--discard', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }
 ]
-const keyframes = [{ name: 'contents-fade', text: '@keyframes contents-fade{to{opacity:0}}' }]
+const keyframes = [{ id: 'contents-fade', name: 'contents-fade', text: '@keyframes contents-fade{to{opacity:0}}' }]
 const className = 'animation-name:contents-fade@apply(--repeat)@layer(components)'
 
 test('wrapper nodes hydrate, survive refresh, and release resources on DOM removal', async ({ page }) => {

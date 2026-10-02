@@ -56,7 +56,9 @@ pub(crate) fn formatted_directive_prelude(
     directive: &CssDirectiveRange,
 ) -> Option<String> {
     let prelude = source_slice(source, &directive.prelude_range)?;
-    if directive.name == "safelist" {
+    if directive.name == "safelist"
+        && !mastercss_lexer::is_keyframe_safelist(source_slice(source, &directive.range)?)
+    {
         let mut edits = Vec::new();
         for quoted in &directive.quoted_string_ranges {
             let content = source_slice(source, &quoted.content_range)?;

@@ -132,10 +132,11 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  version: 3
+  version: {{MASTER_CSS_ENGINE_TRANSITION_VERSION}}
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   resources: MasterCSSEngineResources
   text: string
+  stylesheets?: string[]
 }
 
 export interface MasterCSSEngineVariableResource {
@@ -147,7 +148,7 @@ export interface MasterCSSEngineVariableResource {
 export interface MasterCSSEngineResources {
   themeText?: string
   variables: MasterCSSEngineVariableResource[]
-  keyframes: (MasterCSSEngineVariableResource & { text: string })[]
+  keyframes: (MasterCSSEngineVariableResource & { id: string, text: string, anchored: boolean, containers?: { id: string, prelude: string }[] })[]
 }
 
 export type MasterCSSMatchStatus = 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
@@ -632,6 +633,7 @@ export interface MasterCSSLanguageSemanticToken {
 export interface MasterCSSLanguageDocument {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   classPositions: MasterCSSLanguageClassPosition[]
+  keyframePositions: MasterCSSLanguageClassPosition[]
   diagnostics: MasterCSSDiagnostic[]
   semanticTokens: MasterCSSLanguageSemanticToken[]
   semanticTokenData: number[]
@@ -743,6 +745,7 @@ export interface MasterCSSLanguageTokenFamilies {
 export interface MasterCSSLanguageCompletionIndex {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   classEntries: MasterCSSLanguageCompletionEntry[]
+  keyframes: { name: string; insertText: string; text: string; sources: import('@master/css-schema/css-directives').CSSDirectiveSourceReference[] }[]
 }
 
 export interface MasterCSSLanguageColorPresentation {
@@ -830,6 +833,7 @@ export interface MasterCSSCompilerInspection {
 }
 
 export interface MasterCSSDirectiveCompileOptions {
+  resourceOwner?: string
   from?: string
   preserveNativeCSS?: boolean
   pruneNativeCSS?: boolean
@@ -914,7 +918,15 @@ export interface MasterCSSLowerDirectivesResult {
   diagnosticCounts: Record<string, number>
 }
 
+export interface MasterCSSStylesheetResourceEdit {
+  start: number
+  end: number
+  text: string
+  mappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
+}
+
 export interface MasterCSSServerRender {
+  stylesheetEdits: MasterCSSStylesheetResourceEdit[][]
   outputMappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
   classes: string[]
   snapshot: MasterCSSEngineSnapshot
@@ -928,6 +940,7 @@ export interface MasterCSSImportGraphEdge {
 }
 
 export interface MasterCSSImportGraphRequest {
+  resourceOwners?: Record<string, string>
   entry: string
   files: Record<string, string>
   edges: MasterCSSImportGraphEdge[]

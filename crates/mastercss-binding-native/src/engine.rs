@@ -74,8 +74,17 @@ impl NodeEngineSession {
     }
 
     #[napi]
-    pub fn refresh(&mut self, manifest_json: String) -> Result<String> {
-        to_json(&self.inner.refresh(&manifest_json).map_err(to_napi_error)?)
+    pub fn refresh(
+        &mut self,
+        manifest_json: String,
+        emitted_globals_json: Option<String>,
+    ) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .refresh_with_emitted_globals(&manifest_json, emitted_globals_json.as_deref())
+                .map_err(to_napi_error)?,
+        )
     }
 
     #[napi]

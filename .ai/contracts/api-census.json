@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 893,
+    "records": 897,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 710,
+      "export": 714,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -5854,6 +5854,33 @@
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
       "name": "composeStylesheetHost"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#createRuntimeStylesheetAsset",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "createRuntimeStylesheetAsset"
     },
     {
       "kind": "export",
@@ -12118,6 +12145,86 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-schema:./runtime-style#MASTER_CSS_STYLESHEET_ASSET_SUFFIX",
+      "package": "@master/css-schema",
+      "subpath": "./runtime-style",
+      "name": "MASTER_CSS_STYLESHEET_ASSET_SUFFIX"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-schema",
+      "responsibility": "serializable contracts and codecs",
+      "consumers": [
+        "@master/create-css",
+        "@master/css",
+        "@master/css-astro",
+        "@master/css-binding",
+        "@master/css-binding-wasm-compiler",
+        "@master/css-binding-wasm-engine",
+        "@master/css-binding-wasm-tooling",
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-internal",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-svelte",
+        "@master/css-tooling",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/eslint-plugin-css",
+        "master-css-angular-example",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "value",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-schema:./runtime-style#MasterCSSRuntimeStylesheetAsset",
+      "package": "@master/css-schema",
+      "subpath": "./runtime-style",
+      "name": "MasterCSSRuntimeStylesheetAsset"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-schema",
+      "responsibility": "serializable contracts and codecs",
+      "consumers": [
+        "@master/create-css",
+        "@master/css",
+        "@master/css-astro",
+        "@master/css-binding",
+        "@master/css-binding-wasm-compiler",
+        "@master/css-binding-wasm-engine",
+        "@master/css-binding-wasm-tooling",
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-internal",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-svelte",
+        "@master/css-tooling",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/eslint-plugin-css",
+        "master-css-angular-example",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "value",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-schema:./utility-type#UtilityType",
       "package": "@master/css-schema",
       "subpath": "./utility-type",
@@ -13174,6 +13281,27 @@
       "package": "@master/css-server",
       "subpath": ".",
       "name": "MasterCSSServerRendererOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-server",
+      "responsibility": "HTML rendering and hydration injection",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-svelte",
+        "@master/css-vite",
+        "master-css-angular-example"
+      ],
+      "platform": "node",
+      "lifecycle": "renderer-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-server:.#MasterCSSServerStylesheet",
+      "package": "@master/css-server",
+      "subpath": ".",
+      "name": "MasterCSSServerStylesheet"
     },
     {
       "kind": "export",
@@ -23171,7 +23299,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 23
+      "value": 24
     },
     {
       "kind": "wire-contract",
@@ -23215,7 +23343,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_ENGINE_TRANSITION_VERSION",
       "name": "MASTER_CSS_ENGINE_TRANSITION_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -23237,7 +23365,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_HYDRATION_MANIFEST_VERSION",
       "name": "MASTER_CSS_HYDRATION_MANIFEST_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 3
+      "value": 4
     },
     {
       "kind": "wire-contract",
@@ -23259,7 +23387,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_BATCH_VERSION",
       "name": "MASTER_CSS_LANGUAGE_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 5
+      "value": 6
     },
     {
       "kind": "wire-contract",
@@ -23281,7 +23409,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_VERSION",
       "name": "MASTER_CSS_LANGUAGE_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 13
+      "value": 14
     },
     {
       "kind": "wire-contract",
@@ -23347,7 +23475,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_MANIFEST_VERSION",
       "name": "MASTER_CSS_MANIFEST_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 4
+      "value": 5
     },
     {
       "kind": "wire-contract",

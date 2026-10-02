@@ -3,8 +3,8 @@ import { createEngine } from '../src'
 
 it('@master/css exposes only the Rust-backed async engine facade', async () => {
   const engine = await createEngine({ manifest: {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })
   expect(engine.binding).toBe('native')
   expect(engine.snapshot().text).toBe('')
@@ -13,8 +13,8 @@ it('@master/css exposes only the Rust-backed async engine facade', async () => {
 
 it('@master/css re-exports the manifest-driven engine facade', async () => {
   const engine = await createEngine({ manifest: {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })
   expect(engine.binding).toBe('native')
   expect(engine.snapshot().text).toBe('')

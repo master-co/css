@@ -49,6 +49,7 @@
 - Regenerate `src/default-manifest.json` only for an intentional source change.
 - Generate `src/default-native.css` from preset source; do not edit it by hand.
 - Keep engine execution and build integration behavior at their owners.
+- Keep all ten keyframes in native CSS outside `@theme`; their owning `theme.css` explicitly opts into `@prune native`. Generate the preset through the import graph so file policy and definition identities match project compilation.
 
 ## Validation
 

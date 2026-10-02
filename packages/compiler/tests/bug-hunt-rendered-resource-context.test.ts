@@ -20,8 +20,8 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const definitions = `@theme {--color-old:#111111;--color-late:var(--color-dependency);--color-dependency:#abcdef;}
 
@@ -35,6 +35,7 @@ for (const mode of ['node', 'wasm'] as const) {
     const first = await compileRenderedStylesheet('/audit/entry.css', initialSource, { baseManifest })
     const emittedGlobals = Object.freeze({
       variables: Object.freeze({ ...first.emittedGlobals.variables }),
+      keyframes: Object.freeze({ ...first.emittedGlobals.keyframes }),
 
     })
     const before = JSON.stringify(emittedGlobals)

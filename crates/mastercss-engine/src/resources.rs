@@ -77,17 +77,30 @@ impl EngineSession {
             }
         }
         for (name, count) in self.emitted_globals.keyframes.clone() {
-            if count > 0 {
+            if count > 0 && !self.emitted_globals.suppressed_keyframes.contains(&name) {
                 self.keyframe_counts.insert(name.clone(), count);
                 if let Some(definition) = self
                     .compiled
                     .keyframes
                     .iter()
-                    .find(|definition| definition.name == name)
+                    .find(|definition| definition.id == name)
                 {
                     let dependencies = definition.dependencies.clone();
                     self.register_rule_variables(&dependencies);
                 }
+            }
+        }
+        for definition in self.compiled.keyframes.clone() {
+            if self
+                .emitted_globals
+                .suppressed_keyframes
+                .contains(&definition.id)
+            {
+                continue;
+            }
+            if definition.retained && !self.keyframe_counts.contains_key(&definition.id) {
+                self.keyframe_counts.insert(definition.id, 1);
+                self.register_rule_variables(&definition.dependencies);
             }
         }
         let roots = self

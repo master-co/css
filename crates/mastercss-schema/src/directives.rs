@@ -218,6 +218,8 @@ pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub keyframes: Option<Vec<KeyframeDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub keyframe_safelist: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub mixins: Option<Vec<MixinDefinition>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub theme: Option<Vec<ThemeNode>>,
@@ -270,6 +272,8 @@ pub struct CssDirectiveExtractionPolicy {
     pub include: Vec<String>,
     pub exclude: Vec<String>,
     pub safelist: Vec<String>,
+    #[serde(default)]
+    pub safelist_keyframes: Vec<String>,
     pub blocklist: Vec<CssDirectiveBlocklistEntry>,
     pub preserve_native: bool,
     #[serde(default)]

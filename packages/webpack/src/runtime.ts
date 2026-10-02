@@ -35,6 +35,7 @@ async function startRuntime(
     const nextRuntime = await MasterCSSRuntime.start({
       manifest,
       emittedGlobals,
+      stylesheetDelivery: { base: __webpack_public_path__ || '/', development: process.env.NODE_ENV === 'development' },
       onDiagnostic: diagnostic => console.error(diagnostic)
     })
     if (generation !== state.generation) {

@@ -178,3 +178,43 @@ describe('Webpack runtime mode', () => {
     }
   }, 180000)
 })
+
+it('delivers dynamic keyframes through writable final CSS assets', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-webpack-owned-'))
+  const dist = join(root, 'dist')
+  let browser: Browser | undefined
+  let server: Server | undefined
+  try {
+    writeFileSync(join(root, 'entry.js'), 'import "./app.css"')
+    writeFileSync(join(root, 'app.css'), '@import "@master/css";@prune native;@theme{--animate-probe:probe 1ms both}@layer{@keyframes probe{to{opacity:.3;background-image:url("./pixel.svg")}}}')
+    writeFileSync(join(root, 'pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    const plugin = new MasterCSSWebpackPlugin({ mode: 'runtime' }, root)
+    await runWebpack({
+      mode: 'production', context: root, entry: './entry.js', experiments: { css: true },
+      output: { path: dist, filename: 'main.js', cssFilename: 'main.css', publicPath: '/' },
+      plugins: [plugin, new EmitFixtureAssetsPlugin('<html><head><link rel="stylesheet" href="/main.css"></head><body><div id="probe"></div></body></html>', '')]
+    })
+    expect(JSON.parse(readFileSync(join(dist, 'main.css.master-css.json'), 'utf8')).version).toBe(1)
+    const served = await serveDirectory(dist)
+    server = served.server
+    browser = await chromium.launch()
+    const page = await browser.newPage()
+    const errors: string[] = []
+    page.on('pageerror', error => errors.push(error.message))
+    await page.goto(served.url)
+    await page.waitForFunction(() => Boolean((globalThis as any).masterCSSRuntime))
+    await page.locator('#probe').evaluate(element => element.setAttribute('class', 'animate-probe'))
+    await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity), { timeout: 10000 }).toBe('0.3')
+    expect(await page.locator('#master-css').evaluate(element => [...(element as HTMLStyleElement).sheet!.cssRules].map(rule => rule.cssText).join(''))).not.toContain('@keyframes')
+    const image = await page.locator('#probe').evaluate(element => getComputedStyle(element).backgroundImage)
+    expect(image).toContain('.svg')
+    expect(image).not.toContain('/pixel.svg')
+    await page.locator('#probe').evaluate(element => element.removeAttribute('class'))
+    await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
+    expect(errors).toEqual([])
+  } finally {
+    await browser?.close()
+    await new Promise<void>(resolve => server?.close(() => resolve()) ?? resolve())
+    rmSync(root, { recursive: true, force: true })
+  }
+}, 180000)

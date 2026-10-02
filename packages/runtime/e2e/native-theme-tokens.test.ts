@@ -20,7 +20,7 @@ const compiled = compileManifestSync(`
 
   [data-theme=ocean], :host([data-theme=ocean]) { --color-brand: blue; }
 }
-`, { baseManifest: { version: 4, languageVersion: 13 } })
+`, { baseManifest: { version: 5, languageVersion: 14 } })
 const { manifest } = compiled
 const nativeCSS = compiled.css
 const classes = ['bg-alias', 'bg-brand', 'p-card']
@@ -85,8 +85,8 @@ test('default shorthand and explicit native host overrides work inside shadow ro
 
 for (const hydrate of [false, true]) {
   test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
-    const source = '@mixin --bg(--color){background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@theme{--color-frame:blue;@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}}'
-    const { manifest } = compileManifestSync(source, { baseManifest: { version: 4, languageVersion: 13 } })
+    const source = '@mixin --bg(--color){background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
+    const { manifest } = compileManifestSync(source, { baseManifest: { version: 5, languageVersion: 14 } })
     const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
@@ -109,10 +109,10 @@ for (const hydrate of [false, true]) {
     await page.locator('#target').evaluate(element => { element.className = '' })
     await expect(page.locator('#target')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.usageCount ?? 0)).toBe(0)
-    await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(true)
+    await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(false)
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
-    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 4, languageVersion: 13 } }).manifest
+    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 5, languageVersion: 14 } }).manifest
     await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })

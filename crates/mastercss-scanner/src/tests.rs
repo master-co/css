@@ -1,7 +1,7 @@
 use super::*;
 use mastercss_schema::is_css_class_blocklisted;
 fn manifest() -> &'static str {
-    r#"{"version":4,"languageVersion":13,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#
+    r#"{"version":5,"languageVersion":14,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}]}"#
 }
 fn options(owner: &str) -> ScannerSourceOptions {
     ScannerSourceOptions {

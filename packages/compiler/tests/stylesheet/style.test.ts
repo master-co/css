@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -94,7 +94,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.emittedGlobals.variables['color-green-60']).toBe(2)
 
     expect(result.nativeCSS).toContain('@keyframes fade')
-    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 }, keyframes: {} })
+    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
   })
 
   it('replaces @master/css imports with CSS import modifiers', () => {
@@ -129,7 +129,7 @@ describe('style CSS extraction helpers', () => {
     const resolvedSource = resolveMasterStyleSource(entryPath, source, root)
     expect(resolvedSource?.source).toContain('@keyframes active-spin')
 
-    const result = await compileRenderedStylesheet(entryPath, resolvedSource?.source || source, {
+    const result = await compileRenderedStylesheet(entryPath, source, {
       baseManifest: defaultManifest,
       projectDir: root
     })
@@ -263,7 +263,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.dependencies).toContain(tokenPath)
   })
 
-  it('emits referenced theme variables without importing native keyframes', async () => {
+  it('emits referenced theme variables and keyframes used by retained declarations', async () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
@@ -290,7 +290,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.transformed).toBe(true)
     expect(result.code).toContain('.page-panel{padding:var(--spacing-card);animation:pop 1s}')
     expect(result.code).toContain('--spacing-card:2rem')
-    expect(result.code).not.toContain('@keyframes pop')
+    expect(result.code).toContain('@keyframes pop')
     expect(result.code).not.toContain('@reference')
     expect(result.code).not.toContain('referenced-native')
     expect(result.dependencies).toContain(modulePath)
@@ -315,11 +315,13 @@ describe('style CSS extraction helpers', () => {
     animation: pop 1s;
   }`)
 
+    const globals = await compileRenderedStylesheet(tokenPath, readFileSync(tokenPath, 'utf8'), { baseManifest: defaultManifest })
     const result = await transformLocalStylesheet(modulePath, "\n      @reference \"./tokens.css\";\n\n      .page-panel {\n        @apply --all {padding:var(--spacing-card);animation:pop 1s;}\n      }\n    ", {
       baseManifest: defaultManifest,
       projectDir: root,
       emittedGlobals: {
         variables: { 'spacing-card': 1 },
+        keyframes: globals.emittedGlobals.keyframes,
 
       }
     })

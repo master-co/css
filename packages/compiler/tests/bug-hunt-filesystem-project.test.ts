@@ -37,8 +37,8 @@ for (const explicit of [false, true]) {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, explicit ? [entry] : undefined)
         expect(result.sourcePlan.files.map(file => realpathSync.native(file))).toEqual([view])
         expect(result.dependencies.map(file => realpathSync.native(file)).sort()).toEqual([entry, child, tokens].sort())

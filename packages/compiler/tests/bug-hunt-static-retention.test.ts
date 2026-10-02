@@ -25,8 +25,8 @@ for (const entry of cases) {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })
     const snapshots = []
     for (const binding of ['native', 'wasm'] as const) {

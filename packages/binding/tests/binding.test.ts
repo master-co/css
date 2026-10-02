@@ -8,7 +8,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest: MasterCSSManifest = {
-  version: 4, languageVersion: 13,
+  version: 5, languageVersion: 14,
   mixins: [{ name: '--block', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
 }
 
@@ -45,8 +45,8 @@ describe('binding loader', () => {
       ]
     }
   ],
-  "version": 4 as const,
-  "languageVersion": 13 as const,
+  "version": 5 as const,
+  "languageVersion": 14 as const,
   "variables": {
     "": [
       {

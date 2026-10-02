@@ -4,8 +4,8 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
 const baseManifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
@@ -66,9 +66,10 @@ describe('CSS-first scoped execution', () => {
     expect(result.manifest).not.toHaveProperty('animations')
     const css = createTestCSS(result.manifest).ensureClassRules('card')
     expect(css.text).toContain('animation:fade 1s')
-    expect(css.text).not.toContain('@keyframes')
+    expect(css.text).toContain('@keyframes fade')
     css.deleteClassRules('card')
-    expect(css.text).toBe('')
+    expect(css.text).toContain('@keyframes fade')
+    expect(css.text).toContain('--color-brand:red')
     expect(result.nativeCSS).toContain('@keyframes fade')
     css.dispose()
   })

@@ -17,6 +17,7 @@ import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
 import RuntimeBootstrapPlugin from './plugins/runtime-bootstrap'
+import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
 import DevStylesheetPlugin from './plugins/dev-stylesheet'
 import { scopePlugins } from './utils/scoped-plugins'
 import {
@@ -34,6 +35,7 @@ export interface MasterCSSVitePluginContext {
   pruneNativeCSS?: boolean
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
+  onEmittedGlobalsChange?: () => void
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
 }
@@ -68,7 +70,8 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
     StyleEntryHMRPlugin(options, context),
     InlineStylesheetPlugin(context),
     DevStylesheetPlugin(context),
-    StyleEntryBuildPlugin(options, context)
+    StyleEntryBuildPlugin(options, context),
+    RuntimeStylesheetsPlugin(options)
   ]
   switch (options.mode) {
     case 'runtime':
@@ -111,7 +114,7 @@ type LazyPluginHook =
   | 'generateBundle'
   | 'transformIndexHtml'
   | {
-    name: 'transformIndexHtml'
+    name: 'transformIndexHtml' | 'generateBundle'
     order: 'pre' | 'post'
   }
 
@@ -190,7 +193,7 @@ function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: M
       'configureServer',
       'transformIndexHtml',
       'transform',
-      'generateBundle'
+      { name: 'generateBundle', order: 'post' }
     ]
   )
 }

@@ -18,6 +18,7 @@ pub(crate) fn preserve_native_source(
     filename: &str,
     consumed: &[usize],
     slots: &[NativeStyleSlot],
+    keyframes: &[mastercss_schema::KeyframeDefinition],
 ) -> Result<(PreservedSource, PreservedSource), CompilerError> {
     let error = |message: &str| CompilerError::Print {
         message: message.into(),
@@ -56,7 +57,7 @@ pub(crate) fn preserve_native_source(
         let end = *ends
             .get(start)
             .ok_or_else(|| error("Consumed directive has no source statement"))?;
-        edits.push((*start, end, String::new()));
+        edits.push((*start, end, String::new(), false));
     }
     for slot in slots {
         let start = rewritten_index
@@ -65,7 +66,21 @@ pub(crate) fn preserve_native_source(
         let end = *ends
             .get(&start)
             .ok_or_else(|| error("Lowered slot has no source statement"))?;
-        edits.push((start, end, format!("@{};", slot.name)));
+        edits.push((start, end, format!("@{};", slot.name), false));
+    }
+    for definition in keyframes {
+        if let Some(reference) = &definition.source {
+            let start = mastercss_lexer::utf16_to_byte_offset(original, reference.range.start)
+                .ok_or_else(|| error("Invalid keyframe range"))?;
+            let end = mastercss_lexer::utf16_to_byte_offset(original, reference.range.end)
+                .ok_or_else(|| error("Invalid keyframe range"))?;
+            edits.push((
+                start,
+                end,
+                format!("@--master-css-keyframe-{};", definition.id),
+                true,
+            ));
+        }
     }
     edits.sort_by_key(|edit| edit.0);
     let mut cursor = 0;
@@ -115,13 +130,16 @@ pub(crate) fn preserve_native_source(
             output.css.push_str(unchanged);
             Ok(())
         };
-    for (start, end, replacement) in edits {
+    for (start, end, replacement, native) in edits {
         if start < cursor || end < start {
             return Err(error("Overlapping native source edits"));
         }
         append(&mut ordered, cursor, start)?;
         append(&mut plain, cursor, start)?;
         ordered.css.push_str(&replacement);
+        if native {
+            plain.css.push_str(&replacement);
+        }
         cursor = end;
     }
     append(&mut ordered, cursor, source.len())?;

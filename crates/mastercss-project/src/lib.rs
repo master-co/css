@@ -138,6 +138,7 @@ fn merge_extraction_policy(
     push_unique(&mut target.include, source.include);
     push_unique(&mut target.exclude, source.exclude);
     push_unique(&mut target.safelist, source.safelist);
+    push_unique(&mut target.safelist_keyframes, source.safelist_keyframes);
     for value in source.blocklist {
         if !target.blocklist.contains(&value) {
             target.blocklist.push(value);
@@ -580,6 +581,7 @@ fn load_project_manifest_graphs(
             &CompileNativeCssOptions {
                 prune_native_css: false,
                 from: entry_text.clone(),
+                resource_owner: None,
                 preserve_native_css: false,
                 preserve_native_source: false,
                 classes: None,

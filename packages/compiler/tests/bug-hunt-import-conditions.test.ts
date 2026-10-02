@@ -43,8 +43,8 @@ test('BH-0004 public file compiler preserves a conditional imported native rule'
     writeFileSync(entry, "@import './child.css' layer(theme) supports(display:grid) print;")
     writeFileSync(join(root, 'child.css'), '.example{color:red}')
     const result = compileManifestFileSync(entry, { baseManifest: {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, preserveNativeCSS: true, classes: ['example'] })
     expect(result.css).toContain('@supports')
     expect(result.css).toContain('@media print')

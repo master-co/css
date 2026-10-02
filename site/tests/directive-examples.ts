@@ -25,7 +25,9 @@ export async function verifyDirectiveExamples() {
   for (const example of directiveExamples) {
     const actual = (await stylesheetExampleCSS(example.source)).replace(/\s+/g, '')
     const rendered = await compileRenderedStylesheet('/tmp/master-directive-example.css', example.source, { baseManifest: preset, preserveNativeCSS: true, classes: [...compileManifestSync(example.source, { baseManifest: preset }).directiveSummary.extractionPolicy.safelist] })
-    assert.equal(actual, rendered.css.replace(/\s+/g, ''), example.title)
+    // The two entry points intentionally have different source identities.
+    const comparable = (css: string) => css.replace(/\s+/g, '').replace(/master-css-keyframe-[\w-]+/g, 'master-css-keyframe-source')
+    assert.equal(comparable(actual), comparable(rendered.css), example.title)
     output.set(example.title, actual)
   }
   assert.match(output.get('Scoped tokens in native CSS')!, /color:var\(--color-brand\)/)

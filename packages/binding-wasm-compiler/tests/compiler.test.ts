@@ -95,7 +95,7 @@ test('loads the isolated compiler Wasm surface', async () => {
 ]
   }))).toMatchObject({
     manifest: {
-      version: 4 as const, languageVersion: 13 as const, theme,
+      version: 5 as const, languageVersion: 14 as const, theme,
       variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: '#fff' }] }] },
       mixins: [
   {

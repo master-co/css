@@ -32,7 +32,7 @@ test('BH-0004 metadata skips unmanaged inputs and reports missing managed depend
   const entry = join(root, 'entry.css'), child = join(root, 'child.css')
   try {
     writeFileSync(entry, '.plain{padding:var(--spacing-5xl)}')
-    expect(await collectStylesheetEmittedGlobals([entry], { baseManifest, projectDir: root })).toEqual({ emittedGlobals: { variables: {}, keyframes: {} }, dependencies: [] })
+    expect(await collectStylesheetEmittedGlobals([entry], { baseManifest, projectDir: root })).toEqual({ emittedGlobals: { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] }, dependencies: [] })
     writeFileSync(entry, "@import \"@master/css\";@import \"./child.css\" layer;")
     await expect(collectStylesheetEmittedGlobals([entry], { baseManifest, projectDir: root })).rejects.toThrow(/child\.css/)
     writeFileSync(child, '@reference "./entry.css";.child{padding:var(--spacing-5xl)}')

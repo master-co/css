@@ -155,7 +155,7 @@ describe('LocalStylesPlugin', () => {
 
       expect(result.code).toMatch(/padding:\s*var\(--spacing-card\)/)
       expect(result.code).toContain('--spacing-card:2rem')
-      expect(result.code).not.toContain('@keyframes pop')
+      expect(result.code).toContain('@keyframes pop')
       expect(result.code).not.toContain('@reference')
       expect(result.code).not.toContain('referenced-native')
       expect(result.code).not.toContain('master-css-slot')

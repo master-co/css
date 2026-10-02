@@ -8,7 +8,7 @@ import { createPresetManifest } from '../language/helpers/create-preset-manifest
 
 test('uses default manifest settings without implicit manifest entry discovery', async () => {
   const scanner = await new MasterCSSScanner({}, __dirname).init()
-  expect(scanner.manifest.version).toBe(4)
+  expect(scanner.manifest.version).toBe(5)
 })
 
 test('reject string scanner options', async () => {

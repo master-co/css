@@ -30,8 +30,8 @@ test('BH-0004 native/Wasm bundle transport reconnects compiled imports and reloc
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
   })
   const request = { source, from: 'bundle.css', slotCSSRule, managed }

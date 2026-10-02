@@ -83,6 +83,28 @@ function findPackageRoot(entryFile: string, packageName: string) {
   }
 }
 
+/** Canonical package file identity survives installation paths and publication URLs. */
+export function stylesheetResourceOwner(file: string): string {
+  if (!isAbsolute(file)) return file
+  try { file = realpathSync(file) } catch { /* Virtual and preprocessed sources retain their supplied identity. */ }
+  let directory = dirname(file)
+  while (true) {
+    const manifest = resolve(directory, 'package.json')
+    if (existsSync(manifest)) {
+      try {
+        const pkg = readJSONFile<CSSPackageJSON>(manifest)
+        if (typeof pkg.name === 'string' && MASTER_CSS_PACKAGE_IDS.has(pkg.name)) {
+          return `${pkg.name}/${relative(directory, file).replace(/\\/g, '/')}`
+        }
+      } catch { /* A missing or malformed package identity leaves the file owner intact. */ }
+      return file
+    }
+    const parent = dirname(directory)
+    if (parent === directory) return file
+    directory = parent
+  }
+}
+
 function resolvePackageDirectory(directory: string) {
   try {
     return realpathSync(directory)
@@ -168,6 +190,7 @@ export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile 
 }
 
 export interface PreparedCSSImportGraph {
+  resourceOwners?: Record<string, string>
   entry: string
   files: Record<string, string>
   edges: { from: string, specifier: string, resolved: string }[]
@@ -230,6 +253,7 @@ function prepareCSSImportGraphFile(
 
   const source = sourceOverride ?? readFileSync(absoluteFile, 'utf-8')
   graph.files[absoluteFile] = source
+  ;(graph.resourceOwners ??= {})[absoluteFile] = stylesheetResourceOwner(absoluteFile)
   const analysis = analyzeDependencies(source)
   for (const importStatement of analysis.imports) {
     const importSource = importStatement.source
@@ -279,6 +303,7 @@ export async function prepareCSSImportGraphWithResolver(
     visited.add(item.file)
     const text = item.source ?? readFileSync(item.file, 'utf8')
     graph.files[item.file] = text
+    ;(graph.resourceOwners ??= {})[item.file] = stylesheetResourceOwner(graph.baseFiles?.[item.file] ?? item.file)
     const children: typeof pending = []
     for (const { source: specifier } of analyzeDependencies(text).imports) {
       const resolved = await resolveImport(specifier, item.file)

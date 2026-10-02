@@ -52,6 +52,8 @@ import StyleEntryPlugin from './plugins/style-entry'
 import RuntimeEntryPlugin from './plugins/runtime-entry'
 import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
 import GeneratedCSSAssetsPlugin from './plugins/generated-css-assets'
+import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
+import RuntimeMetadataPlugin, { finalEmittedGlobalsModule } from './plugins/runtime-metadata'
 import { getBuildStylesheetDelivery } from './utils/build-stylesheet-delivery'
 import { stylesheetSlot } from './utils/stylesheet-slot'
 import {
@@ -142,7 +144,7 @@ export class MasterCSSWebpackPlugin {
   private processingModuleContents = 0
 
   private get usesStylesheetDelivery() {
-    return this.pluginOptions.mode === 'static' && !this.development
+    return !this.development
   }
 
   constructor(
@@ -288,6 +290,7 @@ export class MasterCSSWebpackPlugin {
       pruneNativeCSS: this.pluginOptions.pruneNativeCSS,
       includeNativeCSS: options.includeNativeCSS,
       includeMasterBaseCSS: options.includeMasterBaseCSS,
+      includeGeneratedCSS: this.pluginOptions.mode !== 'runtime' && this.pluginOptions.mode !== 'progressive',
       sourceIds: options.sourceIds,
       delivery: this.usesStylesheetDelivery ? options.delivery ?? getBuildStylesheetDelivery() : undefined
     })
@@ -300,7 +303,7 @@ export class MasterCSSWebpackPlugin {
       await this.init()
     }
     await this.createExtractedCSSResult()
-    return toEmittedGlobalsModule(this.emittedGlobals)
+    return this.development ? toEmittedGlobalsModule(this.emittedGlobals) : finalEmittedGlobalsModule
   }
 
   private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
@@ -484,7 +487,7 @@ export class MasterCSSWebpackPlugin {
         const css = await context.createGeneratedCSSModule()
         context.writeVirtualModule(
           context.virtualCSSImportModuleId,
-          context.mode === 'static' && !this.development ? context.slotCSSRule : css
+          !this.development ? context.slotCSSRule : css
         )
         await context.writeEmittedGlobalsModule()
       },
@@ -494,7 +497,7 @@ export class MasterCSSWebpackPlugin {
       },
       writeEmittedGlobalsModule: async () => {
         if (!context.virtualModule || !context.virtualEmittedGlobalsModuleId) return
-        context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, toEmittedGlobalsModule(this.emittedGlobals))
+        context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, this.development ? toEmittedGlobalsModule(this.emittedGlobals) : finalEmittedGlobalsModule)
       },
       replayModuleContents: async () => {
         const entries = Object.entries(this.moduleContentByPath)
@@ -539,6 +542,8 @@ export class MasterCSSWebpackPlugin {
       StyleEntryPlugin(context),
       UsageGraphPlugin(context),
       GeneratedCSSAssetsPlugin(context),
+      RuntimeStylesheetsPlugin(context),
+      RuntimeMetadataPlugin(context),
       ...context.shouldInjectRuntime()
         ? [
           RuntimeEntryPlugin(context),

@@ -44,6 +44,7 @@ fn graph(entry: &str, files: &[(&str, &str)], edges: &[(&str, &str, &str)]) -> P
         source: String::new(),
         dependencies: Vec::new(),
         manifest_graph: Some(CssImportGraphRequest {
+            resource_owners: Default::default(),
             entry: entry.into(),
             files: files
                 .iter()
@@ -84,7 +85,7 @@ fn qualified_external_imports_do_not_block_manifest_or_source_plan_compilation()
             &[(&entry, entry_source), (&child, child_source)],
             &[(&entry, "./styles/child.css", &child)],
         )],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap();
     assert!(css(&result.manifest, "button paint").contains(".button{color:red}"));
@@ -111,7 +112,7 @@ fn references_resolve_managed_definitions_without_importing_their_sources_or_cla
             &[(&entry, entry_source), (&reference, reference_source)],
             &[(&entry, "./tokens.css", &reference)],
         )],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap();
     let generated = css(&result.manifest, "button paint");
@@ -144,7 +145,7 @@ fn prepared_reference_cycles_and_missing_edges_remain_errors() {
     let error = load_project_manifest_graphs_with_root(
         &project.0,
         vec![input],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap_err();
     assert!(
@@ -154,7 +155,7 @@ fn prepared_reference_cycles_and_missing_edges_remain_errors() {
     let error = load_project_manifest_graphs_with_root(
         &project.0,
         vec![graph(&entry, &[(&entry, source)], &[])],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap_err();
     assert!(
@@ -176,7 +177,7 @@ fn structured_project_entries_merge_in_order() {
             graph(&a, &[(&a, first)], &[]),
             graph(&b, &[(&b, second)], &[]),
         ],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap();
     let actual = css(&result.manifest, "choice");
@@ -192,7 +193,7 @@ fn structured_project_entries_merge_in_order() {
             graph(&b, &[(&b, second)], &[]),
             graph(&a, &[(&a, first)], &[]),
         ],
-        json!({"version":4,"languageVersion":13}),
+        json!({"version":5,"languageVersion":14}),
     )
     .unwrap();
     assert!(css(&reversed.manifest, "choice").contains(".choice{color:red}"));

@@ -72,7 +72,7 @@ function resolveStylesheetLoaderPath() {
   return fileURLToPath(new URL('./stylesheet-loader.js', import.meta.url))
 }
 
-function createInstrumentationClientSource() {
+function createInstrumentationClientSource(stylesheetBase: string) {
   return [
     `import 'private-next-master-css-user-instrumentation-client'`,
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
@@ -110,6 +110,7 @@ function createInstrumentationClientSource() {
     `        const nextRuntime = await MasterCSSRuntime.start({`,
     `            manifest,`,
     `            emittedGlobals,`,
+    `            stylesheetDelivery: { base: ${JSON.stringify(stylesheetBase)}, development: process.env.NODE_ENV === 'development' },`,
     `            onDiagnostic: diagnostic => console.error(diagnostic)`,
     `        })`,
     `        if (state.startToken !== startToken) {`,
@@ -150,10 +151,10 @@ function createInstrumentationClientSource() {
   ].join('\n')
 }
 
-function ensureInstrumentationClientPath(projectDir = process.cwd()) {
+function ensureInstrumentationClientPath(projectDir = process.cwd(), stylesheetBase = '/_next/') {
   return ensureVirtualModuleFile(
     join(projectDir, 'node_modules', '.master-css', INSTRUMENTATION_CLIENT_FILE),
-    createInstrumentationClientSource()
+    createInstrumentationClientSource(stylesheetBase)
   )
 }
 
@@ -614,7 +615,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
   const turbopackVirtualManifestPath = toTurbopackProjectPath(virtualManifestPath, projectDir)
   const turbopackVirtualEmittedGlobalsPath = toTurbopackProjectPath(virtualEmittedGlobalsPath, projectDir)
   const runtimeInstrumentationPath = resolvedOptions.injectRuntime && (resolvedOptions.mode === 'runtime' || resolvedOptions.mode === 'progressive')
-    ? ensureInstrumentationClientPath(projectDir)
+    ? ensureInstrumentationClientPath(projectDir, `${(nextConfig.assetPrefix || nextConfig.basePath || '').replace(/\/$/, '')}/_next/`)
     : undefined
   registerOptions(options)
 
@@ -665,10 +666,6 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     projectDir,
     runtimeInstrumentationPath
   )
-
-  if (resolvedOptions.mode === 'runtime') {
-    return nextConfigWithCSSManifestLoader
-  }
 
   const adapterPath = resolveAdapterPath()
   const composedAdapterPath = resolveComposedAdapterPath(projectDir)

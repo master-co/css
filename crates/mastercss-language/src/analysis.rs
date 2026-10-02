@@ -13,6 +13,7 @@ pub(crate) struct PreparedDocument {
     index: DocumentIndex,
     contexts: Vec<ClassListContextIr>,
     positions: Vec<ClassPositionIr>,
+    keyframe_positions: Vec<ClassPositionIr>,
     class_names: Vec<String>,
     native_candidates: Vec<NativeDeclarationCandidateIr>,
     diagnostics: Vec<mastercss_schema::Diagnostic>,
@@ -104,23 +105,30 @@ impl LanguageSession {
             .filter(|position| seen.insert(position.token.as_str()))
             .map(|position| position.token.clone())
             .collect::<Vec<_>>();
+        let keyframe_diagnostics =
+            keyframes::diagnostics(&request.source, &request.language_id, &index);
         Ok(PreparedDocument {
             id,
-            index,
             contexts,
             positions,
+            keyframe_positions: keyframes::positions(&request.source, &request.language_id, &index),
+            index,
             class_names,
             native_candidates: Vec::new(),
-            diagnostics: markdown.map_or_else(Vec::new, |extracted| {
-                extracted
-                    .diagnostics
-                    .into_iter()
-                    .map(|mut diagnostic| {
-                        diagnostic.source = None;
-                        diagnostic
-                    })
-                    .collect()
-            }),
+            diagnostics: markdown
+                .map_or_else(Vec::new, |extracted| {
+                    extracted
+                        .diagnostics
+                        .into_iter()
+                        .map(|mut diagnostic| {
+                            diagnostic.source = None;
+                            diagnostic
+                        })
+                        .collect()
+                })
+                .into_iter()
+                .chain(keyframe_diagnostics)
+                .collect(),
         })
     }
 
@@ -133,6 +141,7 @@ impl LanguageSession {
         Ok(LanguageDocumentIr {
             version: LANGUAGE_BATCH_VERSION,
             class_positions: prepared.positions,
+            keyframe_positions: prepared.keyframe_positions,
             diagnostics: prepared.diagnostics,
             semantic_token_data: positions::encode_semantic_tokens_indexed(
                 &prepared.index,

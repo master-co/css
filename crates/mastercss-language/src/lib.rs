@@ -71,6 +71,7 @@ pub struct LanguageDocumentSettingsIr {
 pub struct LanguageDocumentIr {
     pub version: u32,
     pub class_positions: Vec<ClassPositionIr>,
+    pub keyframe_positions: Vec<ClassPositionIr>,
     pub diagnostics: Vec<mastercss_schema::Diagnostic>,
     pub semantic_tokens: Vec<SemanticTokenInputIr>,
     pub semantic_token_data: Vec<u32>,
@@ -170,6 +171,7 @@ pub struct LanguageCompletionEntryIr {
 pub struct LanguageCompletionIndexIr {
     pub version: u32,
     pub class_entries: Vec<LanguageCompletionEntryIr>,
+    pub keyframes: Vec<KeyframeCompletionIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -428,3 +430,14 @@ pub(crate) use semantic_tokens::*;
 #[cfg(test)]
 #[path = "tests.rs"]
 mod tests;
+
+mod keyframes;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct KeyframeCompletionIr {
+    pub name: String,
+    pub insert_text: String,
+    pub text: String,
+    pub sources: Vec<mastercss_schema::CssDirectiveSourceReference>,
+}

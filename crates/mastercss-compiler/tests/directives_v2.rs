@@ -246,8 +246,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
     for manifest in [
-        r#"{"version":4,"languageVersion":13,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":4,"languageVersion":13,"customMedia":{"wide":{"type":"true"}}}"#,
+        r#"{"version":5,"languageVersion":14,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
+        r#"{"version":5,"languageVersion":14,"customMedia":{"wide":{"type":"true"}}}"#,
     ] {
         assert!(EngineSession::create(manifest).is_err(), "{manifest}");
     }

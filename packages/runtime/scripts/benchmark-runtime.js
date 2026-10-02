@@ -40,7 +40,7 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !exists
   process.exit(1)
 }
 
-const { createEngineSync } = await import('@master/css/node')
+const { renderClassNamesSync } = await import('@master/css/node')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 const browserTypes = {
   chromium,
@@ -108,24 +108,11 @@ async function waitForRuntimeRemovalFlush(page) {
 }
 
 function createHydrationFixture(classNames) {
-  const engine = createEngineSync({ manifest: defaultManifest })
-  try {
-    engine.ensureClassRules(classNames)
-    const snapshot = engine.snapshot()
-    return {
-      bodyMarkup: createClassMarkup(classNames),
-      hydrationManifest: {
-        version: 2,
-        languageVersion: defaultManifest.languageVersion,
-        rules: snapshot.rules,
-        resourceOrder: [
-          ...snapshot.resources.variables.map(({ name }) => name)
-        ]
-      },
-      styleText: snapshot.text
-    }
-  } finally {
-    engine.dispose()
+  const snapshot = renderClassNamesSync(classNames, { manifest: defaultManifest })
+  return {
+    bodyMarkup: createClassMarkup(classNames),
+    hydrationManifest: snapshot.hydrationManifest,
+    styleText: snapshot.cssText
   }
 }
 

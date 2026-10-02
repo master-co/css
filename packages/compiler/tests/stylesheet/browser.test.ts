@@ -81,13 +81,13 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     expect(result.css).toMatch(/\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)
     expect(result.css).toContain('@keyframes fade')
     expect(result.css).not.toContain('@keyframes rotate')
-    expect(result.emittedGlobals.keyframes).toEqual({ fade: 1 })
+    expect(result.emittedGlobals.keyframes).toEqual({ [result.manifest.keyframes!.find(frame => frame.name === 'fade')!.id]: 1 })
   })
 
-  it('rejects collisions between delivered native and managed keyframes', async () => {
-    await expect(compileBrowserStylesheet('@keyframes fade { to { opacity: .5; } }', {
-      baseManifest: defaultManifest
-    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ message: expect.stringContaining('conflicts with managed keyframes') })]) })
+  it('preserves same-name native definitions alongside preset definitions', async () => {
+    const result = await compileBrowserStylesheet('@keyframes fade { to { opacity: .5; } }', { baseManifest: defaultManifest })
+    expect(result.manifest.keyframes!.filter(frame => frame.name === 'fade')).toHaveLength(2)
+    expect(result.nativeCSS).toContain('@keyframes fade')
   })
 
   it('reports dynamic native animation roots as information while retaining all managed definitions', async () => {

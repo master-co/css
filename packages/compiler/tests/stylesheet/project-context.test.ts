@@ -7,8 +7,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileRenderedStylesheet, compileStylesheet, transformStylesheet } from '../../src/stylesheet/public'
 
 const baseManifest: MasterCSSManifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 const roots: string[] = []
 function fixture() {
@@ -57,7 +57,7 @@ test('native styles receive project tokens and fallbacks with native resources d
   expect(result.code).toContain('--color-brand:red')
   expect(result.code).toContain('--color-action:var(--color-brand)')
   expect(result.code).not.toContain('[data-theme=night]')
-  expect(result.code).not.toContain('@keyframes pop')
+  expect(result.code).toContain('@keyframes pop')
   expect(result.code).not.toMatch(/\.never|@source|@master|\.action\{/)
   expect(result.dependencies).toContain(f.entry)
   expect(result.dependencies).not.toContain(join(f.root, 'theme', 'never.html'))
@@ -177,7 +177,7 @@ test.each([false, true])('rendered outputs include explicitly referenced resourc
     ...(delivery ? { delivery: { entryURL: '/css/card.css', stylesheetURL: file => '/css/' + basename(file), resourceURL: file => '/assets/' + basename(file) } } : {})
   })
   expect(result.generatedCSS).toContain('--color-action:var(--color-brand)')
-  expect(result.generatedCSS).not.toContain('@keyframes pop')
+  expect(result.generatedCSS).toContain('@keyframes pop')
   expect(result.css).not.toContain('.never')
   expect(JSON.stringify(result.manifest)).not.toContain('color-brand')
 })

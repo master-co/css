@@ -24,8 +24,8 @@ const baseManifest = {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
 function origin(result: { css: string, sourceMap?: string }, text: string) {
   expect(result.sourceMap).toBeTypeOf('string')
@@ -111,31 +111,31 @@ test('invalid host maps keep successful output tied to explicit preprocessed con
   expect(result.css).toContain('.card')
 })
 
-test('managed keyframes map to the authored definition after generated layers', async () => {
+test('native keyframes map to their authored definition in place', async () => {
   const file = '/project/entry.css'
   const source = `/* definition */
-@theme {
- @keyframes reveal { to { opacity:1 } }
-}
+@prune native;@theme {
+
+}@keyframes reveal { to { opacity:1 } }
 .run{animation:reveal 1s}`
   const result = await compileRenderedStylesheet(file, source, { baseManifest, preserveNativeCSS: true })
-  expect(origin(result, '@keyframes reveal').entry).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 2, originalColumn: 1 })
-  expect(result.emittedGlobals.keyframes).toEqual({ reveal: 1 })
+  expect(origin(result, '@keyframes reveal').entry).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: 3, originalColumn: 1 })
+  expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1])
 })
 
 test.each([false, true])('reference styles never create animation roots or native collisions, delivery=%s', async (delivery) => {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-keyframes-reference-')))
   try {
     const file = join(root, 'entry.css'), child = join(root, 'tokens.css')
-    writeFileSync(child, `@theme{@keyframes reveal{to{opacity:1}}@keyframes unused{to{opacity:0}}}
+    writeFileSync(child, `@prune native;@theme{}@keyframes reveal{to{opacity:1}}@keyframes unused{to{opacity:0}}
 @keyframes reveal{to{opacity:.5}}.unused{animation:var(--unknown)}`)
     const result = await compileRenderedStylesheet(file, '@reference "./tokens.css";.run{animation:reveal 1s}', {
       baseManifest, projectDir: root, preserveNativeCSS: true,
       ...(delivery ? { delivery: { entryURL: '/entry.css', stylesheetURL: (id: string) => pathToFileURL(id).href, resourceURL: (id: string) => pathToFileURL(id).href } } : {})
     })
     expect(result.css).not.toContain('@keyframes unused')
-    expect(result.css.match(/@keyframes reveal/g)).toHaveLength(1)
-    expect(result.emittedGlobals.keyframes).toEqual({ reveal: 1 })
+    expect(result.css.match(/@keyframes reveal/g)).toHaveLength(2)
+    expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1, 1])
     expect(origin(result, '@keyframes reveal').entry).toMatchObject({ originalSource: pathToFileURL(child).href })
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

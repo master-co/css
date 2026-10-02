@@ -4,8 +4,8 @@ import { createEngine } from '@master/css'
 import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 
 const minimal: MasterCSSManifest = {
-  "version": 4 as const,
-  "languageVersion": 13 as const,
+  "version": 5 as const,
+  "languageVersion": 14 as const,
   "mixins": [
     {
       "name": "--audit-block",
@@ -51,12 +51,12 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
   expect(restored.snapshot().resources.variables.map(item => item.name)).toEqual(expect.arrayContaining(['color-root', 'color-brand']))
   expect(restored.snapshot().resources).not.toHaveProperty('animations')
   expect(nativeCSS).toContain('@keyframes audit-fade')
-  expect(restored.snapshot().text).not.toContain('@keyframes')
+  expect(restored.snapshot().text).toContain('@keyframes audit-fade')
   for (const className of classes) {
     expect(restored.deleteClassRules([className])).toEqual(original.deleteClassRules([className]))
     expect(restored.snapshot()).toEqual(original.snapshot())
   }
-  expect(restored.snapshot().resources.variables).toEqual([])
+  expect(restored.snapshot().resources.variables.map(value => value.name)).toEqual(['color-brand', 'color-root'])
   expect(nativeCSS).toContain('@keyframes audit-fade')
 })
 

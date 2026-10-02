@@ -104,6 +104,7 @@ export type CSSDirectiveConditionPathEntry =
 
 export interface CSSDirectiveManifestInput {
   keyframes?: MasterCSSKeyframeDefinition[]
+  keyframeSafelist?: string[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
@@ -114,6 +115,7 @@ export interface CSSDirectiveExtractionPolicy {
   include: string[]
   exclude: string[]
   safelist: string[]
+  safelistKeyframes: string[]
   blocklist: (string | RegExp)[]
   preserveNative: boolean
   pruneNative: boolean
@@ -187,6 +189,7 @@ export interface CSSDirectiveNotice {
 }
 
 export interface CSSDirectiveResult {
+  suppressedKeyframes?: string[]
   notices?: CSSDirectiveNotice[]
   mixinSources?: CSSMixinSource[]
   nativeOutput?: CSSNativeOutput

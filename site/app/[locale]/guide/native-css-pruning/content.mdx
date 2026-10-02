@@ -405,3 +405,22 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 - Check every source boundary: `@prune native;` does not propagate to imports.
 - Use `@safelist` for native classes used by bounded external systems.
 - Use `@preserve native;` for files with external class vocabularies when project-wide pruning is enabled.
+
+
+## Prune animation definitions
+
+Keyframes use the same file policy as native classes:
+
+```css
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
+@safelist keyframes "external-enter";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+```
+
+Using `animate-reveal` retains the `reveal` definition. The safelist retains `external-enter` for a JavaScript consumer without generating an animation declaration. Definitions used only by a pruned class or unused mixin are removed. Retained definitions keep tokens referenced in their frame bodies.
+
+Without a pruning policy, native classes and keyframes remain in the output. `@preserve native;` takes precedence within its file. Neither directive changes imported files' policies; package styles preserve their existing default unless they opt in. `preserveNativeCSS: false` suppresses native delivery even when a name is safelisted. Definition metadata remains available for compilation and inspection.
+
+Same-name definitions keep their conditions, layers and document order. Runtime resource slots can be empty while preserving the containing layer's identity and order. See the [keyframe contract](/reference/directives/theme#native-keyframes).

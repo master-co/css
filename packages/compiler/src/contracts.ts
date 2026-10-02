@@ -42,6 +42,7 @@ export function emptyExtractionPolicy(): CSSDirectiveExtractionPolicy {
     include: [],
     exclude: [],
     safelist: [],
+    safelistKeyframes: [],
     blocklist: [],
     preserveNative: false,
     pruneNative: false

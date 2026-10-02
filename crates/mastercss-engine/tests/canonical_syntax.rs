@@ -35,7 +35,7 @@ fn engine() -> EngineSession {
         "../../../packages/preset/src/default-manifest.json"
     ))
     .unwrap();
-    EngineSession::create(&json!({"version":4,"languageVersion":LANGUAGE_VERSION,"variables":variables,"mixins":preset["mixins"]}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":5,"languageVersion":LANGUAGE_VERSION,"variables":variables,"mixins":preset["mixins"]}).to_string()).unwrap()
 }
 
 #[test]

@@ -31,6 +31,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 - `MasterCSSRuntime.start({ manifest, root, emittedGlobals, hydrationManifest })`
 - `observe()`, `disconnect()`, `refresh()`, immutable `snapshot()`
 - readonly-array rule ensure/delete methods
+- Optional compiler-owned stylesheet bindings and official adapter asset delivery.
 - `dispose()` / `Symbol.dispose`
 - `withMasterCSSRuntime`
 - readonly global `MasterCSSRuntime` and `masterCSSRuntime` facades
@@ -58,7 +59,7 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 - `MutationObserver` diff logic.
 - `classCounts` increment/decrement behavior.
 - emittedGlobals variable counts preventing duplicate global insertion without suppressing utility insertion.
-- Hydrating generated `CSSLayerBlockRule` rules and top-level managed `CSSKeyframesRule` resources; retain actual inserted node counts for deletion. Native keyframes stay in their owning stylesheets.
+- Hydrating generated `CSSLayerBlockRule` rules and keyframe resources by definition ID. Retain actual CSSOM parents and nodes for deletion. Native keyframes use compiler-owned slots at their original location; preserve anonymous-layer identity and conditional containers. HMR refreshes manifest and emitted-global ownership atomically.
 - Matching generated rule text to native `CSSRule` text.
 - ShadowRoot versus Document behavior.
 - Native `CSSStyleSheet` insertion indexes.
@@ -69,6 +70,7 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 ## Constraints
 
 - Derive CSSOM deletion indexes from tracked state.
+- NativeStylesheets only owns declared adapter asset URLs or explicit sheet/owner bindings. Companion JSON contains Rust-serialized CSS URL placeholders; browser code only resolves URLs and installs CSS. Preserve complete imported sheets and anonymous layers. Never parse animation semantics in TypeScript.
 - Compare generated CSS text when rehydrating.
 - Preserve class count tracking and hydration error checks.
 - Validate integration behavior when changing FOUC handling.

@@ -79,6 +79,7 @@ pub(super) fn prepare(entry: &str) -> Result<CssImportGraphRequest, CompilerErro
         }
     }
     Ok(CssImportGraphRequest {
+        resource_owners: Default::default(),
         entry: entry.into(),
         files: provider.0.into_inner(),
         edges,

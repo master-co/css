@@ -451,6 +451,7 @@
           "compileRenderedStylesheet",
           "compileStylesheet",
           "composeStylesheetHost",
+          "createRuntimeStylesheetAsset",
           "createStylesheetCollection",
           "prepareStylesheet",
           "resolveStylesheet",
@@ -485,7 +486,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "3cd86d20fdf9380e"
+      "surface": "0abe175b8e7afddb"
     },
     "@master/create-css": {
       "directory": "create",
@@ -911,7 +912,9 @@
           "UtilityType"
         ],
         "./runtime-style": [
-          "MASTER_CSS_RUNTIME_STYLE_ID"
+          "MASTER_CSS_RUNTIME_STYLE_ID",
+          "MASTER_CSS_STYLESHEET_ASSET_SUFFIX",
+          "MasterCSSRuntimeStylesheetAsset"
         ],
         "./emitted-globals": [
           "MasterCSSEmittedGlobals"
@@ -938,7 +941,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "352c7b35430601fd"
+      "surface": "79d1a4e64da99dbc"
     },
     "@master/css-server": {
       "directory": "server",
@@ -958,12 +961,13 @@
           "MasterCSSHydrationManifestRenderMode",
           "MasterCSSServerRenderer",
           "MasterCSSServerRendererOptions",
+          "MasterCSSServerStylesheet",
           "createHTMLRenderSession",
           "createServerRenderer",
           "renderHTML"
         ]
       },
-      "surface": "c2f7f61e6352aed8"
+      "surface": "8693c3f027338346"
     },
     "@master/css-svelte": {
       "directory": "svelte",

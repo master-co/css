@@ -275,3 +275,8 @@ Use this page when you need to define or override project tokens. Continue into 
 * [Containers](/guide/containers)
 
 Use native lengths such as `max-width: 64rem`, an appropriate container token, or a project token named for its layout role for layout width caps. Named viewport queries remain explicit `@custom-media` declarations.
+
+
+## Animation tokens and definitions
+
+Keep the complete animation shorthand in an `--animate-*` token. Define the matching keyframes in native CSS outside `@theme`; the theme block accepts custom-property declarations only. Add `@prune native;` to the keyframes' owning file for usage-based delivery, or retain the default preservation policy. `@theme static` also retains the animation definitions referenced by its tokens. See [animation tokens](/reference/tokens/animate) for values and overrides.

@@ -7,6 +7,7 @@ import {
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { MasterCSSLanguageCompletionEntry } from '@master/css-tooling/language'
 import type { MasterCSSLanguageService } from '../core'
+import { analyzeDocument } from '../document-analysis'
 import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
 
 function sortCompletionItems(items: CompletionItem[]) {
@@ -139,6 +140,19 @@ export default function suggestSyntax(
   position: CompletionParams['position'],
   context: CompletionParams['context']
 ): CompletionItem[] | undefined {
+  const offset = document.offsetAt(position)
+  const keyframe = analyzeDocument(this, document).keyframePositions.find(({ range }) => offset >= range.start && offset <= range.end)
+  if (keyframe) {
+    return this.session.completionIndex().keyframes.map(entry => ({
+      label: entry.name,
+      kind: CompletionItemKind.Value,
+      documentation: createCSSMarkdownDocumentation(entry.text),
+      textEdit: {
+        range: { start: document.positionAt(keyframe.range.start), end: document.positionAt(keyframe.range.end) },
+        newText: keyframe.raw ? entry.insertText : ` ${entry.insertText} `
+      }
+    }))
+  }
   const classPosition = this.getClassPosition(document, position)
   if (!classPosition) return
   const query = context?.triggerCharacter === ' '

@@ -17,7 +17,9 @@ export async function getExtractedCSSResult(context: MasterCSSVitePluginContext)
     includeGeneratedCSS: context.includeGeneratedCSS,
     delivery: getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
   }))
+  const changed = JSON.stringify(context.emittedGlobals) !== JSON.stringify(result.emittedGlobals)
   context.emittedGlobals = result.emittedGlobals
+  if (changed) context.onEmittedGlobalsChange?.()
   return context.config?.command === 'serve'
     ? { ...result, css: publishDevStylesheets(context, result, scanner.slotCSSRule) }
     : result

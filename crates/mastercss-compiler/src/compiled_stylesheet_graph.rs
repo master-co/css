@@ -224,6 +224,7 @@ pub fn compile_css_stylesheet_graph(
                 .map_or(original_source.as_str(), |css| css.source.as_str()),
             &CompileNativeCssOptions {
                 from: node.id.clone(),
+                resource_owner: request.graph.resource_owners.get(&node.id).cloned(),
                 preserve_native_css: request.options.preserve_native_css,
                 prune_native_css: request
                     .prune_native_stylesheets
@@ -258,9 +259,30 @@ pub fn compile_css_stylesheet_graph(
             *definition = refined.next().expect("one refined slot definition");
         }
         if let Some(css) = &relocated {
+            let identity = crate::native_keyframes::source_identity(
+                request
+                    .graph
+                    .resource_owners
+                    .get(&node.id)
+                    .unwrap_or(&node.id),
+                original_source,
+            );
             for definition in result.manifest_input.keyframes.iter_mut().flatten() {
                 if let Some(reference) = &mut definition.source {
                     css.restore_reference(original_source, reference);
+                    let start = mastercss_lexer::utf16_to_byte_offset(
+                        original_source,
+                        reference.range.start,
+                    )
+                    .unwrap_or_default();
+                    let old = definition.id.clone();
+                    definition.id = format!("{identity}-{start:08x}");
+                    for text in [&mut result.css, &mut result.native_css] {
+                        *text = text.replace(&old, &definition.id);
+                    }
+                    if let Some(output) = &mut result.native_output {
+                        output.css = output.css.replace(&old, &definition.id);
+                    }
                 }
             }
             for definition in result.manifest_input.mixins.iter_mut().flatten() {
@@ -293,9 +315,16 @@ pub fn compile_css_stylesheet_graph(
     let mut definitions = Vec::new();
     let mut all_definitions = Vec::new();
     let mut policies = Vec::new();
+    let mut occurrences = HashMap::<String, u32>::new();
+    let mut occurrence_order = 0;
+    let mut next_import_id = 0;
     // CSS imports precede file declarations. Visit each occurrence in postorder,
     // including repeated imports, rather than using unique-file discovery order.
-    let mut work = vec![(indexes[graph.entry.as_str()], false, Vec::<String>::new())];
+    let mut work = vec![(
+        indexes[graph.entry.as_str()],
+        false,
+        Vec::<mastercss_schema::KeyframeContainer>::new(),
+    )];
     while let Some((index, exit, path)) = work.pop() {
         if !exit {
             work.push((index, true, path.clone()));
@@ -304,7 +333,13 @@ pub fn compile_css_stylesheet_graph(
                     let (_, _, wrappers) =
                         crate::imports::imported_css_wrappers(&edge.statement, "", id)?;
                     let mut child_path = path.clone();
-                    child_path.extend(wrappers);
+                    for prelude in wrappers {
+                        child_path.push(mastercss_schema::KeyframeContainer {
+                            id: format!("import-{next_import_id}"),
+                            prelude,
+                        });
+                        next_import_id += 1;
+                    }
                     work.push((indexes[id], false, child_path));
                 }
             }
@@ -314,6 +349,27 @@ pub fn compile_css_stylesheet_graph(
         combined.mixin_sources.extend(result.mixin_sources.clone());
         let mut delivered_input = result.manifest_input.clone();
         delivered_input.animation_variables = None;
+        let emit_native = request.options.preserve_native_css
+            && native_stylesheets
+                .as_ref()
+                .is_none_or(|selected| selected.contains(graph.stylesheets[index].id.as_str()));
+        for definition in delivered_input.keyframes.iter_mut().flatten() {
+            let slot = definition.id.clone();
+            let occurrence = occurrences.entry(slot.clone()).or_default();
+            definition.id = format!("{slot}-o{occurrence}");
+            if !emit_native {
+                combined.suppressed_keyframes.push(definition.id.clone());
+            }
+            definition.slot_id = Some(slot);
+            definition.occurrence = Some(*occurrence);
+            *occurrence += 1;
+            for container in &mut definition.containers {
+                container.id = format!("{}-g{occurrence_order}", container.id);
+            }
+            definition.containers.splice(0..0, path.clone());
+        }
+        occurrence_order += 1;
+
         merge_input(&mut input, &delivered_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
@@ -590,12 +646,6 @@ pub fn compile_css_stylesheet_graph(
         .iter()
         .filter(|sheet| reachable.contains(sheet.id.as_str()))
     {
-        crate::keyframes::validate_manifest_native_names(
-            &sheet.css,
-            &sheet.id,
-            &resolution_manifest,
-            &sheet.output_mappings,
-        )?;
         crate::keyframes::include_native_variables(&mut lowered.manifest, &sheet.css);
         crate::keyframes::include_native_variables(&mut resolution_manifest, &sheet.css);
     }
@@ -609,6 +659,50 @@ pub fn compile_css_stylesheet_graph(
             &resolution_manifest,
             &sheet.output_mappings,
         )?);
+    }
+    if request.options.preserve_native_css
+        && native_stylesheets
+            .as_ref()
+            .is_none_or(|selected| !selected.is_empty())
+    {
+        let metadata = crate::native_keyframes::reference_resources(
+            &lowered.manifest,
+            combined.manifest_input.keyframes.as_deref(),
+        );
+        let entry = &mut stylesheets[indexes[graph.entry.as_str()]];
+        entry.css.push_str(&metadata);
+        entry.native_css.push_str(&metadata);
+    }
+    let mut resource_engine = mastercss_engine::EngineSession::create_with_emitted_globals(
+        &lowered.manifest.to_string(),
+        Some(&serde_json::json!({"suppressedKeyframes":combined.suppressed_keyframes}).to_string()),
+    )
+    .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
+    if let Some(classes) = &request.options.classes {
+        resource_engine
+            .ensure_class_rules(classes)
+            .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
+    }
+    for classes in request.classes_by_stylesheet.values().flatten() {
+        resource_engine
+            .ensure_class_rules(classes)
+            .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
+    }
+    for sheet in stylesheets
+        .iter()
+        .filter(|sheet| reachable.contains(sheet.id.as_str()))
+    {
+        resource_engine
+            .ensure_stylesheet_resources(&sheet.css)
+            .map_err(|cause| graph_error(&sheet.id, cause.to_string()))?;
+    }
+    for sheet in &mut stylesheets {
+        (sheet.css, sheet.output_mappings) = crate::native_keyframes::render_with_engine(
+            &sheet.css,
+            &sheet.output_mappings,
+            &resource_engine,
+        )?;
+        sheet.native_css = resource_engine.render_stylesheet_resources(&sheet.native_css);
     }
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
     combined

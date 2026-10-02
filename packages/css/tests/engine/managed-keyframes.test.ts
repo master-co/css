@@ -19,11 +19,11 @@ test('native and Wasm retain identical managed resources through usage and HMR',
       engine.ensureClassRules(['animation-name:var(--external)'])
       expect(engine.snapshot().resources.keyframes).toHaveLength(10)
       expect(engine.inspect('animation-name:var(--external)').diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'DYNAMIC_ANIMATION_NAMES', severity: 'info' })]))
-      engine.replaceEmittedGlobals({ keyframes: { fade: 1 } })
+      engine.replaceEmittedGlobals({ keyframes: { [manifest.keyframes!.find(frame => frame.name === 'fade')!.id]: 1 } })
       expect(engine.snapshot().resources.keyframes).toHaveLength(9)
       engine.deleteClassRules(['animation-name:var(--external)', 'animate-fade'])
       expect(engine.snapshot().resources.keyframes.map(frame => frame.name)).toEqual(['rotate'])
-      engine.refresh({ ...manifest, keyframes: [{ name: 'rotate', text: '@keyframes rotate{to{opacity:.5}}' }] })
+      engine.refresh({ ...manifest, keyframes: [{ id: 'rotate', name: 'rotate', text: '@keyframes rotate{to{opacity:.5}}' }] })
       engine.replaceEmittedGlobals({})
     }
     equal()

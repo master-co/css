@@ -8,8 +8,8 @@ test('BH-0008: external hydration works with modules and Wasm allowed but unsafe
     contentType: 'application/json',
     headers: { 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify({
-  "version": 3 as const,
-  "languageVersion": 13 as const,
+  "version": 4 as const,
+  "languageVersion": 14 as const,
   "rules": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
@@ -31,5 +31,5 @@ test('BH-0008: external hydration works with modules and Wasm allowed but unsafe
       return { fetchOK: response.ok, importVersion: directImport.default.version, error: error.message, cause: error.cause?.message }
     }
   }, { loaderURL, manifestURL })
-  expect(result).toEqual({ fetchOK: true, importVersion: 3, error: null })
+  expect(result).toEqual({ fetchOK: true, importVersion: 4, error: null })
 })

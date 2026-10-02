@@ -24,6 +24,7 @@ function prepareManifestGraph(entry: string, projectDir: string, onDependency?: 
       const referenced = prepareCSSImportGraph(target, undefined, { projectDir, onDependency }, analyzeCSSDependencies)
       graph.edges.push({ from: file, specifier: reference.source, resolved: referenced.entry }, ...referenced.edges)
       Object.assign(graph.files, referenced.files)
+      Object.assign(graph.resourceOwners ??= {}, referenced.resourceOwners)
       pending.push(...Object.keys(referenced.files).filter(id => !visited.has(id)))
     }
   }

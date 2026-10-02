@@ -39,8 +39,8 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }
       const options = { root: cwd, entries: [entry], baseManifest }
       const results = [await compileProjectManifest(options), await loadProjectManifest(options), compileProjectManifestSync(options)]
@@ -93,8 +93,8 @@ test('BH-0004 project graph preserves explicit entry order', async () => {
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } })
       const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
       try {
@@ -130,8 +130,8 @@ test('BH-0004 project graph rejects missing and circular references', async () =
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 } }
     await expect(compileProjectManifest(options)).rejects.toThrow(/tokens\.css/)
     writeFileSync(reference, "@reference './entry.css';")

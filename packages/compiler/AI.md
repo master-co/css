@@ -50,11 +50,11 @@
 ## Risk Areas
 
 - `@import "@master/css"` is the only project entry form and loads the full native preset; `@master entry` is rejected.
-- Native defaults/components use CSS layers and ship by default. Utilities require use or extraction; theme tokens retain ordered defaults and transitive references; static tokens are unconditional roots. Native keyframes ship with their imported stylesheet.
+- Native defaults/components use CSS layers and ship by default. Utilities require use or extraction; theme tokens retain ordered defaults and transitive references; static tokens are unconditional roots. Keyframes follow the declaring file’s native preservation/pruning policy.
 - Directive syntax changes may require language token updates and docs updates.
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.
-- `@theme` accepts direct tokens and managed keyframes, with optional static/inline modifiers. Tokens use `:root,:host`; native selectors and conditions stay outside the block and do not register utility tokens. Preserve repeated declarations and track dependencies after one-pass inline substitution. Static roots survive class removal; reference-only static definitions are not output roots.
-- Managed `@keyframes` must be direct children of top-level `@theme`; emit after generated layers only when referenced. External native keyframes ship unchanged. Reject delivered native/managed name collisions with both sources. Dynamic animation names retain all managed keyframes and produce an information diagnostic.
+- `@theme` accepts only direct tokens, with optional static/inline modifiers. Tokens use `:root,:host`; native selectors and conditions stay outside the block and do not register utility tokens. Preserve repeated declarations and track dependencies after one-pass inline substitution. Static roots survive class removal; reference-only static definitions are not output roots.
+- Native keyframes retain containers, layers, order and each import occurrence. Preserve every same-name definition by ID. `@safelist keyframes` retains exact decoded names. Dynamic names retain all candidate definitions. Metadata-only compilation must keep definitions; delivery suppression is separate. Pruned rules, reference-only styles and unused mixins are not roots.
 
 ## Safe Changes
 

@@ -17,15 +17,16 @@ Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at
 
 ## New Configuration API
 
-### Managed keyframes
-Store complete [animation tokens](/reference/tokens/animate) and their managed keyframes in the project CSS entry:
+### Native keyframes
+Store complete [animation tokens](/reference/tokens/animate) and their native keyframes in the project CSS entry:
 ```css name=index.css
+@prune native;
 @theme {
   --animate-reveal: reveal .5s ease;
-  @keyframes reveal {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+}
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 ```
 Apply the token with its matching class:
@@ -33,7 +34,7 @@ Apply the token with its matching class:
 <!-- @MARK animate-reveal -->
 <div class="animate-reveal"></div>
 ```
-The class emits `animation: var(--animate-reveal)`. The token and managed keyframes
+The class emits `animation: var(--animate-reveal)`. With pruning enabled, the token and keyframes
 are generated when used. This shorthand runs once because it omits a repetition
 count; preset animation tokens include `infinite` explicitly.
 

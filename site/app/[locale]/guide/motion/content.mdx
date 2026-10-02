@@ -68,15 +68,15 @@ Use `@motion-safe` so nonessential motion only runs when the user has not reques
 Store the keyframe name and playback settings together in one shorthand token. Duration and easing tokens can be referenced with `var()`. Omitted fields use native CSS defaults; this entrance runs once and keeps both fill states.
 
 ```css name=index.css
+@prune native;
 @theme {
-    --duration-enter: 180ms;
-    --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
-    --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
-
-  @keyframes dialog-in {
-    from { translate: 0 0.5rem; opacity: 0; }
-    to { translate: 0; opacity: 1; }
-  }
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+}
+@keyframes dialog-in {
+  from { translate: 0 0.5rem; opacity: 0; }
+  to { translate: 0; opacity: 1; }
 }
 ```
 
@@ -84,7 +84,7 @@ Store the keyframe name and playback settings together in one shorthand token. D
 <dialog class="animate-dialog-in@motion-safe">...</dialog>
 ```
 
-Managed keyframes are generated when an animation declaration references them. Static names, token references, native overrides and fallbacks are tracked. Unresolved dynamic names retain all managed keyframes. Put always-delivered keyframes outside `@theme`; JavaScript-only names need native keyframes or `@safelist "animation-name:dialog-in";`. See the [keyframe contract](/reference/directives/theme#theme-keyframes).
+With `@prune native`, animation declarations retain their referenced keyframes. Static names, token references, native overrides and fallbacks are tracked; unresolved dynamic names retain all candidates. Without pruning, keyframes stay in their stylesheet. Use `@safelist keyframes "dialog-in";` for names introduced only by JavaScript. See the [keyframe contract](/reference/directives/theme#native-keyframes).
 
 ## Avoid motion noise
 Keep persistent controls still until feedback is needed. Reuse duration and easing tokens so related interactions share a rhythm.

@@ -75,4 +75,4 @@ The layer statement is declared by `packages/preset/src/base.css` and exposed th
 @layer theme, base, defaults, components, utilities;
 ```
 
-Engine-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities override ordinary component declarations, theme tokens use `:root,:host` with native overrides outside `@theme`, defaults sit above base, and keyframes remain outside layers.
+Engine-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities override ordinary component declarations, theme tokens use `:root,:host` with native overrides outside `@theme`, defaults sit above base, and keyframes keep their authored native positions and containers.

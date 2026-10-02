@@ -109,7 +109,7 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 | `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
 | `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | Defines viewport suffixes such as `@md`; custom properties do not register conditions. |
 
-`@theme inline` substitutes token values once in generated declarations; `@theme static` retains tokens and their dependencies without a consumer. Both modifiers can be combined. Only custom-property declarations and direct managed keyframes belong inside a theme block.
+`@theme inline` substitutes token values once in generated declarations; `@theme static` retains tokens and their dependencies without a consumer. Both modifiers can be combined. Only custom-property declarations belong inside a theme block. Put keyframes in native CSS and use `@prune native;` in their owning file for usage-based output.
 
 Put explicit `.light` and `.dark` selectors outside `@theme` for a manual theme switch. Define selector mixins separately when markup uses `@apply(--manual-light)` or `@apply(--manual-dark)` suffixes.
 

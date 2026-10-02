@@ -79,7 +79,7 @@ export async function compileBrowserStylesheet(
   }
   signal?.throwIfAborted()
   const bindingSession = await createCompilerRenderBindingSession(
-    { manifest: result.manifest, emittedGlobals },
+    { manifest: result.manifest, emittedGlobals: { ...emittedGlobals, suppressedKeyframes: [...result.suppressedKeyframes] } },
     { binding: 'wasm', wasm: binding }
   )
   const renderSession: StylesheetRenderSession = {
@@ -112,7 +112,9 @@ export async function compileBrowserStylesheet(
     diagnostics: Object.freeze([...result.diagnostics, ...validateCompiledCSS([{ css: renderedCSS.generatedCSS, source: from }], options)]),
     emittedGlobals: Object.freeze({
       variables: Object.freeze({ ...renderedCSS.emittedGlobals.variables }),
-    keyframes: Object.freeze({ ...renderedCSS.emittedGlobals.keyframes })
+    keyframes: Object.freeze({ ...renderedCSS.emittedGlobals.keyframes }),
+    keyframeSlots: [...(renderedCSS.emittedGlobals.keyframeSlots || [])],
+    suppressedKeyframes: [...(renderedCSS.emittedGlobals.suppressedKeyframes || [])]
     }),
     result
   })

@@ -29,8 +29,8 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     engine.deleteClassRules(["display:block"])
     expect(engine.executionState(["display:block"]).classes[0].references).toEqual([])
     engine.refresh({
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 })
     expect(engine.executionState(["display:block@layer(base)"]).classes[0].references).toEqual([{ layer: 'base', key: 'display:block@layer(base)\0@layer(base)' }])
   } finally {

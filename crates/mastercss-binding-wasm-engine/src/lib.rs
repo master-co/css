@@ -104,8 +104,15 @@ impl WasmEngineSession {
         render_value(&candidates)
     }
 
-    pub fn refresh(&mut self, manifest_json: &str) -> Result<JsValue, JsValue> {
-        let transition = self.inner.refresh(manifest_json).map_err(js_error)?;
+    pub fn refresh(
+        &mut self,
+        manifest_json: &str,
+        emitted_globals_json: Option<String>,
+    ) -> Result<JsValue, JsValue> {
+        let transition = self
+            .inner
+            .refresh_with_emitted_globals(manifest_json, emitted_globals_json.as_deref())
+            .map_err(js_error)?;
         render_value(&transition)
     }
 

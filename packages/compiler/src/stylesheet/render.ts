@@ -19,7 +19,7 @@ export function hasStylesheetResourceReferences(manifest: RenderCompiledManifest
     session.ensureStylesheetResources(source)
     const after = session.snapshot().snapshot.resources
     return after.variables.some(value => value.refCount > (before.variables.find(item => item.name === value.name)?.refCount ?? 0))
-      || after.keyframes.some(value => value.refCount > (before.keyframes.find(item => item.name === value.name)?.refCount ?? 0))
+      || after.keyframes.some(value => value.refCount > (before.keyframes.find(item => item.id === value.id)?.refCount ?? 0))
   } finally { session.dispose() }
 }
 

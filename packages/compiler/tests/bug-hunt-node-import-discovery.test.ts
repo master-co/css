@@ -38,8 +38,8 @@ for (const [name, statement, filename] of [
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, preserveNativeCSS: true })
       expect(result.dependencies).toEqual([entry, child])
       expect(result.css).toMatch(/color:\s*red/)
@@ -90,8 +90,8 @@ test('BH-0004 actual referenced CSS with encoded filename and query keeps contex
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, preserveNativeCSS: true })
     expect(result.dependencies).toContain(reference)
     expect(result.css).toContain('color:red')
@@ -124,8 +124,8 @@ test('BH-0004 unresolved bare package CSS remains available to the host resolver
     ]
   }
 ],
-  "version": 4 as const,
-  "languageVersion": 13 as const
+  "version": 5 as const,
+  "languageVersion": 14 as const
 }, preserveNativeCSS: true })
     expect(result.dependencies).toEqual([entry])
     expect(result.css).toContain('another-package/theme.css')

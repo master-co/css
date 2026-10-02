@@ -174,7 +174,9 @@ function freezeEmittedGlobals(
 ): Required<MasterCSSEmittedGlobals> {
   return Object.freeze({
     variables: Object.freeze({ ...emittedGlobals.variables }),
-    keyframes: Object.freeze({ ...emittedGlobals.keyframes })
+    keyframes: Object.freeze({ ...emittedGlobals.keyframes }),
+    keyframeSlots: [...(emittedGlobals.keyframeSlots || [])],
+    suppressedKeyframes: [...(emittedGlobals.suppressedKeyframes || [])]
   })
 }
 

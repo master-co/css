@@ -8,7 +8,7 @@ import webpack from 'webpack'
 import { expect, test } from 'vitest'
 import Plugin from '../dist/index.js'
 
-test('css-loader Modules reference theme tokens while native keyframes require an import', async () => {
+test('css-loader Modules reference theme tokens and retain referenced keyframes', async () => {
   const root = mkdtempSync(join(tmpdir(), 'webpack-project-context-'))
   const require = createRequire(new URL('../../../examples/webpack/package.json', import.meta.url))
   const compiler = webpack({
@@ -45,7 +45,7 @@ test('css-loader Modules reference theme tokens while native keyframes require a
       const style = getComputedStyle(element)
       return { color: style.color, opacity: style.opacity, padding: style.padding }
     })
-    await expect.poll(styles).toEqual({ color: 'rgb(18, 52, 86)', opacity: '1', padding: '3px' })
+    await expect.poll(styles).toEqual({ color: 'rgb(18, 52, 86)', opacity: '0.5', padding: '3px' })
     await expect.poll(() => page.locator('#other').evaluate(element => getComputedStyle(element).opacity)).toBe('0.75')
     await page.evaluate(() => document.documentElement.style.setProperty('--color-brand', 'white'))
     expect((await styles()).color).toBe('rgb(255, 255, 255)')

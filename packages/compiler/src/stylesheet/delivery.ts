@@ -185,7 +185,7 @@ export async function compileDeliveredSource(id: string, source: string, options
     file: asset.id, compilationFile: asset.id, source: graph.files[asset.id],
     sourceMap: graph.sourceMaps?.[asset.id], graph: { sources: graph.files }
   }) }))
-  return { ...result, stylesheets, entry: graph.entry, outputMap: (css: string, mappings: CSSOutputMapping[]) => stylesheetOutputMap(css, mappings, { file: graph.entry, compilationFile: graph.entry, source: graph.files[graph.entry], sourceMap: graph.sourceMaps?.[graph.entry], graph: { sources: graph.files } }) }
+  return { ...result, stylesheets, entry: graph.entry, outputMap: (css: string, mappings: CSSOutputMapping[], file = graph.entry) => stylesheetOutputMap(css, mappings, { file, compilationFile: file, source: graph.files[file], sourceMap: graph.sourceMaps?.[file], graph: { sources: graph.files } }) }
 }
 
 export async function registerDeliveredStylesheet(
@@ -202,8 +202,13 @@ export async function registerDeliveredStylesheet(
   const sourceDependencies = hasStylesheetSourceDirectives(directives)
     ? resolveStylesheetSourcePaths(scoped, scanner.cwd).map(file => resolve(scanner.cwd, file)) : []
   const dependencies = [...new Set([...result.directives.dependencies, ...sourceDependencies])]
-  const pruneNativeCSS = options.pruneNativeCSS === true || Object.values(graph.files).some(text => collectStylesheetDirectives(text).pruneNative)
-  if (inlineImports && pruneNativeCSS && !scanner.registerNativeClasses) {
+  const rootPolicy = collectStylesheetDirectives(graph.files[graph.entry])
+  const pruneNativeCSS = !rootPolicy.preserveNative && (options.pruneNativeCSS === true || rootPolicy.pruneNative)
+  const hasPruning = pruneNativeCSS || Object.values(graph.files).some(text => {
+    const policy = collectStylesheetDirectives(text)
+    return !policy.preserveNative && policy.pruneNative
+  })
+  if (inlineImports && hasPruning && result.directives.nativeClassNames.length && !scanner.registerNativeClasses) {
     throw new TypeError('Stylesheet scanner integrations require registerNativeClasses().')
   }
   const masterCSS = inlineImports && Object.values(graph.files).some(text => inspectCSS(text).hasMasterCSSImport)
@@ -244,6 +249,7 @@ export function composeDeliveredStylesheets(
     for (const [file, text] of Object.entries(source.graph.files)) {
       const key = variant(file)
       graph.files[key] = text
+      ;(graph.resourceOwners ??= {})[key] = source.graph.resourceOwners?.[file] ?? file
       if (source.graph.baseFiles?.[file]) (graph.baseFiles ??= {})[key] = source.graph.baseFiles[file]
       if (source.graph.sourceMaps?.[file]) (graph.sourceMaps ??= {})[key] = source.graph.sourceMaps[file]
       owners[key] = file
@@ -271,6 +277,8 @@ export function composeDeliveredStylesheets(
   }
   const rendered = renderCompiledManifestCSS({
     manifest: result.manifest as MasterCSSManifest,
+    nativeCSS: result.stylesheets.map(asset => asset.css),
+    emittedGlobals: { suppressedKeyframes: result.directives.suppressedKeyframes },
     classNames: generatedClasses,
     includeGeneratedCSS: options.includeGeneratedCSS
   })
@@ -278,15 +286,15 @@ export function composeDeliveredStylesheets(
   // public manifest can generate markup utilities for this collection.
   const referenced = renderCompiledManifestCSS({
     manifest: result.resolutionManifest,
-    nativeCSS: result.stylesheets.map(asset => asset.css),
+    nativeCSS: [...rendered.stylesheets],
     includeGeneratedCSS: false,
     emittedGlobals: rendered.emittedGlobals
   })
-  const css = [result.directives.css, rendered.generatedCSS, referenced.generatedCSS].filter(Boolean).join('\n')
+  const css = [referenced.stylesheets[result.stylesheets.findIndex(asset => asset.id === entry)], rendered.generatedCSS, referenced.generatedCSS].filter(Boolean).join('\n')
   return {
     css,
     emittedGlobals: referenced.emittedGlobals,
-    stylesheets: result.stylesheets.filter(asset => asset.id !== entry),
+    stylesheets: result.stylesheets.map((asset, index) => ({ ...asset, css: referenced.stylesheets[index] ?? asset.css })).filter(asset => asset.id !== entry),
     resources: result.resources,
     dependencies: result.directives.dependencies.filter(file => file !== entry)
   }

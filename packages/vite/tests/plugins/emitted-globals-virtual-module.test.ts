@@ -25,10 +25,10 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
           --color-primary: #ff0000;
         }
 
-        @theme { @keyframes fade {
+        @prune native;@theme {  }@keyframes fade {
           from { opacity: 0; }
           to { opacity: 1; }
-        } }
+        }
 
         .main {
           color: var(--color-primary);
@@ -51,12 +51,12 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       await expect((plugin.resolveId as any)(VIRTUAL_EMITTED_GLOBALS_ID)).resolves.toBe(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
       const code = await (plugin.load as any)(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
 
-      expect(parseDefaultExport(code)).toEqual({
-        keyframes: { fade: 1 },
-        variables: {
-          'color-primary': 1
-        }
-      })
+      const globals = parseDefaultExport(code)
+      expect(globals.variables).toEqual({ 'color-primary': 1 })
+      expect(Object.values(globals.keyframes)).toEqual([1, 1])
+      expect(globals.keyframeSlots).toHaveLength(1)
+      expect(globals.keyframes[globals.keyframeSlots[0]]).toBe(1)
+      expect(globals.suppressedKeyframes).toEqual([])
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

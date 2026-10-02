@@ -271,9 +271,9 @@ With those definitions, `caption-small` expands both declarations and uses `norm
 
 The `animate` token family maps a complete animation shorthand to the `animation` property:
 
-<DemoConfiguredExample name="syntax-motion" title="A finite reveal" source={'@theme {\n  --animate-reveal: note-reveal 700ms ease-out;\n  @keyframes note-reveal {\n    from { opacity: 0; translate: 0 0.75rem; }\n    to { opacity: 1; translate: 0 0; }\n  }\n}'} html={'<article id="reveal" class="p-lg r-lg bg-surface-raised animate-reveal@motion-safe"><h3 class="margin:0 text-lg fg-text-strong">Collection saved</h3><p class="mt-sm margin-bottom:0 text-sm fg-text-muted">Ready for the next idea.</p></article><output data-animation-readout="reveal" class="display:block mt-md text-sm fg-text-muted">Paused</output>'} motion caption="Use Play, Pause and Replay to inspect the actual animation. The reveal runs once. With reduced motion enabled, the card is visible immediately without the entrance animation." />
+<DemoConfiguredExample name="syntax-motion" title="A finite reveal" source={'@prune native;\n@theme {\n  --animate-reveal: note-reveal 700ms ease-out;\n}\n@keyframes note-reveal {\n  from { opacity: 0; translate: 0 0.75rem; }\n  to { opacity: 1; translate: 0 0; }\n}'} html={'<article id="reveal" class="p-lg r-lg bg-surface-raised animate-reveal@motion-safe"><h3 class="margin:0 text-lg fg-text-strong">Collection saved</h3><p class="mt-sm margin-bottom:0 text-sm fg-text-muted">Ready for the next idea.</p></article><output data-animation-readout="reveal" class="display:block mt-md text-sm fg-text-muted">Paused</output>'} motion caption="Use Play, Pause and Replay to inspect the actual animation. The reveal runs once. With reduced motion enabled, the card is visible immediately without the entrance animation." />
 
-The output contains `animation: var(--animate-reveal)`. The token supplies the complete shorthand; omitted fields use native CSS defaults, so this reveal runs once. Managed keyframes are emitted outside cascade layers when required. See [animation tokens](/reference/tokens/animate) for values, overrides and resource ownership.
+The output contains `animation: var(--animate-reveal)`. The token supplies the complete shorthand; omitted fields use native CSS defaults, so this reveal runs once. Keyframes retain their native conditions, layers and source order; this file opts into usage-based pruning. See [animation tokens](/reference/tokens/animate) for values, overrides and resource ownership.
 
 ## Wrap styles with contents \{#contents\}
 
@@ -368,7 +368,7 @@ Paths are resolved from the stylesheet declaring them. Source directives select 
 
 ### Know which resources are managed
 
-A used managed token retains its ordered declarations and transitive token dependencies. Animation declarations retain referenced managed keyframes and their dependencies. Unresolved dynamic animation names conservatively retain all managed keyframes. Keep keyframes as direct children of top-level `@theme` when they should be managed; native keyframes outside it travel with their stylesheet.
+A used managed token retains its ordered declarations and transitive token dependencies. Animation declarations retain referenced managed keyframes and their dependencies. Unresolved dynamic animation names conservatively retain all managed keyframes. Declare keyframes in native CSS. Their owning file decides preservation or pruning with `@preserve native` and `@prune native`; `@safelist keyframes "name";` retains a name used outside scanned classes.
 
 Delivered native declarations can also keep managed resources alive, even without a utility class. By contrast, a definition-only reference does not deliver native rules or turn them into usage roots. `@import` supplies stylesheet delivery; `@reference` supplies compilation context. A runtime class or token still needs the appropriate manifest and CSS in its document or shadow root.
 

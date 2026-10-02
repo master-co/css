@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn native_animation_values_never_register_or_synthesize_keyframes() {
-    let manifest = json!({"version":4,"languageVersion":13}).to_string();
+    let manifest = json!({"version":5,"languageVersion":14}).to_string();
     for css in [
         ".x{animation:fade 1s}",
         ".x{animation-name:\"fade\"}",
@@ -39,7 +39,7 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     assert!(rendered.snapshot.text.contains("@keyframes fade"));
     assert!(rendered.snapshot.text.contains("@keyframes rotate"));
     let hydration = serde_json::to_value(rendered.hydration_manifest).unwrap();
-    assert_eq!(hydration["version"], 3);
+    assert_eq!(hydration["version"], 4);
     assert!(
         hydration["rules"]
             .as_array()
@@ -49,7 +49,45 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     );
     assert_eq!(
         hydration["resourceOrder"]["keyframes"],
-        json!(["fade", "rotate"])
+        json!(
+            serde_json::from_str::<serde_json::Value>(manifest).unwrap()["keyframes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(
+                    |definition| ["fade", "rotate"].contains(&definition["name"].as_str().unwrap())
+                )
+                .map(|definition| definition["id"].clone())
+                .collect::<Vec<_>>()
+        )
     );
     assert!(RenderSession::create(manifest, Some(r#"{"animations":{"fade":1}}"#)).is_err());
+}
+
+#[test]
+fn materialized_stylesheet_slots_preserve_empty_and_duplicate_asset_positions() {
+    let mut session =
+        RenderSession::create(&json!({"version":5,"languageVersion":14}).to_string(), None)
+            .unwrap();
+    for css in [
+        "",
+        ".same{color:red}",
+        "",
+        ".same{color:red}",
+        ".last{color:blue}",
+    ] {
+        session.ensure_stylesheet_resources(css).unwrap();
+    }
+    let result = session.snapshot().unwrap();
+    assert_eq!(
+        result.snapshot.stylesheets,
+        [
+            "",
+            ".same{color:red}",
+            "",
+            ".same{color:red}",
+            ".last{color:blue}"
+        ]
+    );
+    assert_eq!(result.stylesheet_edits.len(), 5);
 }

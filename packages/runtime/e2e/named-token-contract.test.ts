@@ -49,7 +49,8 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
           await startCSSRuntime({ manifest })
         }, { loader: await getRuntimeLoaderURL(), manifest })
         expect(await computed(page)).toEqual(before)
-        expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
+        const hydration = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration)
+        expect(hydration.state, JSON.stringify(hydration)).toBe('progressive')
       }
     } else {
       await page.setContent(html)

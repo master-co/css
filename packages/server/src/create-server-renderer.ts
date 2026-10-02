@@ -10,6 +10,7 @@ import {
   bindHTMLRenderSessionInternal
 } from './html-render-session'
 import parseHTML from './parse-html'
+import { prepareNativeStylesheets } from './native-stylesheets'
 import {
   renderHTMLWithSnapshot,
   type MasterCSSHTMLDocumentOptions,
@@ -49,6 +50,13 @@ export class MasterCSSServerRenderer implements Disposable {
   ): MasterCSSHTMLRenderResult {
     this.assertActive()
     const document = parseHTML(html)
+    const native = prepareNativeStylesheets(document, options.stylesheets, options.documentURL, options.stylesheetImportSource)
+    if (native.sources.length) {
+      using session = this.createRenderSession()
+      for (const css of native.sources) session.ensureStylesheetResources(css)
+      session.ensureClassRules(document.classes)
+      return renderHTMLWithSnapshot(html, document, session.snapshot(), options, native)
+    }
     const snapshot = this.renderClassNames(document.classes)
     return renderHTMLWithSnapshot(html, document, snapshot, options)
   }

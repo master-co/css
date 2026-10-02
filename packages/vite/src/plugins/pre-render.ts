@@ -1,7 +1,8 @@
 import type { Plugin, ViteDevServer } from 'vite'
 import { relative } from 'node:path'
+import { createHash } from 'node:crypto'
 import { MasterCSSVitePluginContext } from '../core'
-import { createServerRenderer } from '@master/css-server'
+import { createServerRenderer, type MasterCSSServerStylesheet } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   discoverManifestEntries,
@@ -14,7 +15,8 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
-import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
+import { collectStylesheetEmittedGlobals, createRuntimeStylesheetAsset } from '@master/css-compiler/stylesheet'
+import { createCompilerSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 import { toAssetHref } from '../utils/html'
 import { createManifestRecovery } from '../utils/manifest-recovery'
@@ -30,6 +32,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
   let renderer: ReturnType<typeof createServerRenderer> | undefined
   let devServer: ViteDevServer | undefined
   const hydrationManifestAssets = new Map<string, string>()
+  const nativeStylesheetAssets = new Map<string, string>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
     if (!allow) return
@@ -110,7 +113,17 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       ? toAssetHref(toBuildHydrationManifestAssetFileName(fileName), context.config?.base, htmlPath)
       : `${MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE}${fileName}`
   }
-  const renderHTML = (html: string, htmlPath?: string) => renderer?.renderHTML(html, {
+  const renderHTML = (html: string, htmlPath?: string, stylesheets?: readonly MasterCSSServerStylesheet[]) => renderer?.renderHTML(html, {
+    stylesheets,
+    documentURL: new URL(htmlPath || '/', 'https://master-css-render.invalid/').href,
+    stylesheetImportSource(css) {
+      const fileName = `${context.config?.build.assetsDir ?? 'assets'}/_master-css/native/${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`
+      nativeStylesheetAssets.set(fileName, css)
+      // SSR imports must remain same-origin and writable, even when other assets use a CDN.
+      const base = context.config?.base || '/'
+      const pathBase = /^https?:/.test(base) ? new URL(base).pathname : base
+      return toAssetHref(fileName, pathBase, htmlPath)
+    },
     hydrationManifest: options.mode === 'progressive' ? {
       type: 'external',
       source: json => addHydrationManifestAsset(json, htmlPath)
@@ -198,8 +211,22 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       }
       return null
     },
-    generateBundle() {
+    generateBundle(_options, bundle) {
       if (!enabled) return
+      using compiler = createCompilerSync()
+      const cssAssets = Object.values(bundle).filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css'))
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'asset' || !output.fileName.endsWith('.html')) continue
+        const urls = cssAssets.map(asset => toAssetHref(asset.fileName, context.config?.base, output.fileName))
+        const stylesheets = cssAssets.flatMap((asset, index) => {
+          if (asset.type !== 'asset') return []
+          const source = typeof asset.source === 'string' ? asset.source : new TextDecoder().decode(asset.source)
+          return [{ href: urls[index], asset: createRuntimeStylesheetAsset(compiler, source, urls[index], urls) }]
+        })
+        const source = typeof output.source === 'string' ? output.source : new TextDecoder().decode(output.source)
+        const rendered = renderHTML(source, output.fileName, stylesheets)
+        if (rendered) output.source = rendered.html
+      }
       for (const [fileName, source] of hydrationManifestAssets) {
         this.emitFile({
           type: 'asset',
@@ -207,6 +234,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
           source
         })
       }
+      for (const [fileName, source] of nativeStylesheetAssets) this.emitFile({ type: 'asset', fileName, source })
     },
     buildEnd(error) {
       if (error && context.config?.command === 'build') renderer?.dispose()

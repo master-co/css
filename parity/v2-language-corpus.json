@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-13-mixin-token-families",
+  "semanticBaseline": "language-14-native-keyframe-resources",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -863,7 +863,7 @@
     {
       "id": "engine-inline-theme-variable-dependencies",
       "manifest": {
-        "version": 4,
+        "version": 5,
         "variables": {
           "color": [
             {
@@ -931,7 +931,7 @@
             }
           ]
         },
-        "languageVersion": 13,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -1173,8 +1173,8 @@
     {
       "id": "engine-animation-resource-metadata",
       "manifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--float-left",
@@ -1345,8 +1345,8 @@
     {
       "id": "engine-semantic-manifest-layer",
       "manifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--card",
@@ -1409,8 +1409,8 @@
     {
       "id": "engine-same-class-across-layers",
       "manifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1459,7 +1459,7 @@
     {
       "id": "engine-native-alias-global-variable",
       "manifest": {
-        "version": 4,
+        "version": 5,
         "variables": {
           "": [
             {
@@ -1477,7 +1477,7 @@
             }
           ]
         },
-        "languageVersion": 13,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -1506,7 +1506,7 @@
     {
       "id": "engine-native-alias-warm-session",
       "manifest": {
-        "version": 4,
+        "version": 5,
         "variables": {
           "": [
             {
@@ -1524,7 +1524,7 @@
             }
           ]
         },
-        "languageVersion": 13,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3017,13 +3017,13 @@
       "sourceId": "rc87-5ae87bddfc5f375d",
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3179,13 +3179,13 @@
       "sourceId": "rc87-1ef0184cc6a4bd8e",
       "source": "@theme { --color-brand: $color-blue-50;  }\n",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3224,13 +3224,13 @@
       "sourceId": "rc87-58a8b9e387f59ddb",
       "source": "@theme { --spacing--card: -12;  }\n",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3273,13 +3273,39 @@
       "sourceId": "rc87-7d6ba9d28d83415c",
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13
+        "version": 5,
+        "languageVersion": 14,
+        "keyframes": [
+          {
+            "id": "k829dcf0e51e283f1-00000000",
+            "ownerId": "kd2eccba66899eb5a",
+            "name": "fade",
+            "text": "@keyframes fade { to { opacity: 1; } }",
+            "retained": true,
+            "source": {
+              "file": "parity/rc87-compiler-static-animation.css",
+              "range": {
+                "start": 0,
+                "end": 38
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 39
+                }
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -3287,7 +3313,7 @@
       "sourceId": "rc87-da6ec108d6e14a3a",
       "source": "",
       "baseManifest": {
-        "version": 4,
+        "version": 5,
         "keyAliases": {
           "w": "inline-size"
         },
@@ -3301,12 +3327,12 @@
             ]
           }
         ],
-        "languageVersion": 13,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13
+        "version": 5,
+        "languageVersion": 14
       }
     },
     {
@@ -3314,13 +3340,13 @@
       "sourceId": "rc87-e793d99a43aa91ea",
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3388,13 +3414,13 @@
       "sourceId": "rc87-bce3dcbace35c62f",
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "theme": [
           {
             "type": "rule",
@@ -3533,13 +3559,13 @@
       "sourceId": "rc87-2763794c2aab6ae8",
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3687,13 +3713,13 @@
       "sourceId": "rc87-e9991ac8889c54d6",
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--card",
@@ -3785,13 +3811,13 @@
       "sourceId": "rc87-229f90c18e0fc001",
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "customMedia": {}
       },
       "expectedManifest": {
-        "version": 4,
-        "languageVersion": 13,
+        "version": 5,
+        "languageVersion": 14,
         "mixins": [
           {
             "name": "--btn",

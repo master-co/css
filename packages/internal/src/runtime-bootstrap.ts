@@ -1,7 +1,7 @@
 export const MASTER_CSS_RUNTIME_BOOTSTRAP_ID = 'virtual:master-css-runtime'
 export const RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID = `\0${MASTER_CSS_RUNTIME_BOOTSTRAP_ID}`
 
-export function createMasterCSSRuntimeBootstrapSource() {
+export function createMasterCSSRuntimeBootstrapSource(stylesheetDelivery?: string) {
   return [
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
     `import masterCSSManifest from 'virtual:master-css-manifest'`,
@@ -32,6 +32,7 @@ export function createMasterCSSRuntimeBootstrapSource() {
     `    const nextRuntime = await MasterCSSRuntime.start({`,
     `      manifest,`,
     `      emittedGlobals,`,
+    ...(stylesheetDelivery ? [`      stylesheetDelivery: ${stylesheetDelivery},`] : []),
     `      onDiagnostic: diagnostic => console.error(diagnostic)`,
     `    })`,
     `    if (generation !== startGeneration) {`,

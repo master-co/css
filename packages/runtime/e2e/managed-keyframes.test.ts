@@ -4,8 +4,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { createRuntimeProjectManifest, getRuntimeLoaderURL } from './init'
 
 const keyframes = [
-  { name: 'first', text: '@keyframes first{to{opacity:.5}}' },
-  { name: 'second', text: '@keyframes second{to{opacity:1}}' }
+  { id: 'first', name: 'first', text: '@keyframes first{to{opacity:.5}}' },
+  { id: 'second', name: 'second', text: '@keyframes second{to{opacity:1}}' }
 ]
 const manifest = createRuntimeProjectManifest({ keyframes })
 
@@ -44,13 +44,13 @@ test('hydrates top-level keyframes and updates their body', async ({ page }) => 
   expect(await names(page)).toEqual(['first'])
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().hydration.failureReason)).toBeUndefined()
   await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), {
-    ...manifest, keyframes: [{ name: 'first', text: '@keyframes first{to{opacity:.25}}' }]
+    ...manifest, keyframes: [{ id: 'first', name: 'first', text: '@keyframes first{to{opacity:.25}}' }]
   })
   expect(await page.evaluate(() => document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules.item(1)!.cssText)).toContain('0.25')
 })
 
 test('rejected keyframe insertions never delete neighboring rules', async ({ page }) => {
-  const invalid = { name: 'invalid', text: '@keyframes invalid{' }
+  const invalid = { id: 'invalid', name: 'invalid', text: '@keyframes invalid{' }
   await init(page, undefined, { keyframes: [invalid, ...keyframes] })
   await page.evaluate(() => {
     const original = CSSStyleSheet.prototype.insertRule

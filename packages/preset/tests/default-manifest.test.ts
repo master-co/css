@@ -191,8 +191,8 @@ describe('@master/css-preset defaultManifest', () => {
   it('matches the readable preset sources and publishes only executable recipes', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
- expect(manifest.version).toBe(4)
- expect(manifest.languageVersion).toBe(13)
+ expect(manifest.version).toBe(5)
+ expect(manifest.languageVersion).toBe(14)
  expect(manifest.mixins).toHaveLength(132)
  expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(132)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)

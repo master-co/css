@@ -27,7 +27,7 @@ export default function GeneratedCSSAssetsPlugin(context: MasterCSSWebpackContex
           stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
         }
         const replaceGeneratedCSS = async (assets: Parameters<typeof compilation.hooks.processAssets.tap>[1] extends (...args: infer Args) => unknown ? Args[0] : Record<string, { source: () => unknown }>) => {
-          if (context.mode !== 'static' || compilation.errors.length) return
+          if (compilation.errors.length) return
           let extracted: Awaited<ReturnType<typeof context.createGeneratedCSSResult>> | undefined
           let replacements: Awaited<ReturnType<typeof context.createStylesheetCSSResults>> = []
           const resourceContents = new Map<string, Buffer>()

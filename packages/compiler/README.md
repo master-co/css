@@ -32,7 +32,7 @@ Session methods are synchronous after asynchronous initialization.
 ## Compare project changes
 
 `compiler.compareProjectSnapshots({ before, after })` compares two resolved
-version 1 snapshots with independent Manifest v4 definitions. Each snapshot has
+version 1 snapshots with independent Manifest v5 definitions. Each snapshot has
 `manifest`, `sources: [{ path, classes }]`, `stylesheets: [{ path, css }]`,
 `outputs: [{ path, css }]`, `excluded` and `unresolved`. Stylesheets contain
 delivered native CSS after directive lowering. Asset arrays preserve delivery
@@ -84,7 +84,7 @@ const result = compiler.compileStylesheets({
     edges: [{ from: 'app', specifier: './theme.css', resolved: 'theme' }]
   },
   urls: { app: '/styles/app.css', theme: '/styles/theme.css' },
-  baseManifest: { version: 4, languageVersion: 13, mixins: [] }
+  baseManifest: { version: 5, languageVersion: 14, mixins: [] }
 })
 ```
 

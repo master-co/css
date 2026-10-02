@@ -8,6 +8,7 @@
 
 - `pre-render` mode through the Next.js Adapter API.
 - `runtime` mode through the Next client instrumentation hook.
+- Runtime and progressive Adapter API output also publishes final CSS ownership sidecars.
 - `progressive` mode as runtime plus pre-render behavior.
 - Default `static` mode through generated CSS; Turbopack CSS loaders own source watches, while Webpack keeps an early source loader.
 - Next-specific manifest import/loaders and static CSS loaders.

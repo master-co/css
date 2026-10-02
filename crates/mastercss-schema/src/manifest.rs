@@ -35,10 +35,10 @@ pub enum DiagnosticSeverity {
 
 #[derive(Debug, Error)]
 pub enum SchemaError {
-    #[error("Unsupported MasterCSSManifest version. Expected version 4.")]
+    #[error("Unsupported MasterCSSManifest version. Expected version 5.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 13; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 14; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
@@ -75,7 +75,7 @@ impl SchemaError {
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v4 wire format.
+/// Validated, order-preserving representation of the public Manifest v5 wire format.
 ///
 /// The domain crates deliberately keep the original JSON object intact while individual
 /// subsystems progressively replace `Value` access with strongly typed projections. This
@@ -179,10 +179,40 @@ impl MasterCssManifest {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KeyframeDefinition {
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub owner_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub slot_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub occurrence: Option<u32>,
     pub name: String,
     pub text: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub resources: Vec<KeyframeResource>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub containers: Vec<KeyframeContainer>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub retained: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dependencies: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source: Option<CssDirectiveSourceReference>,
+}
+
+/// Identity, rather than the prelude, distinguishes anonymous native containers.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct KeyframeContainer {
+    pub id: String,
+    pub prelude: String,
+}
+
+/// UTF-16 edits into the definition text, transported through native URL tooling.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct KeyframeResource {
+    pub start: u32,
+    pub end: u32,
+    pub value: String,
 }

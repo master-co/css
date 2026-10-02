@@ -408,7 +408,7 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     'fg-red-60': 1
   })
   expect(result.emittedGlobals).toEqual({
-    variables: { 'color-red-60': 3 }, keyframes: {}
+    variables: { 'color-red-60': 3 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: []
   })
   expect(result.text).toContain('.fg-red-60')
   expect(result.text).toContain('.animation\\:fade\\|1s')
