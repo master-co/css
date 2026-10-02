@@ -20,14 +20,14 @@ test('variable namespace public keys follow the active manifest family catalog',
   assertIncludes(getVariableNamespacePublicKeys('color'), ['bg', 'fg', 'caret-color', 'b', 'bt', 'outline', 'stroke'])
   assert.deepEqual(getVariableNamespacePublicKeys('text'), ['text'])
   assert.deepEqual(getTokenNamespacePublicKeys('text'), [])
-  assert.deepEqual(getVariableNamespacePublicKeys('font-size'), ['font-size'])
-  assert.deepEqual(getVariableNamespacePublicKeys('font-family'), ['font-family'])
-  assert.deepEqual(getVariableNamespacePublicKeys('font-weight'), ['font-weight'])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-size'), ['font'])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-family'), ['font'])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-weight'), ['font'])
   assert.deepEqual(getVariableNamespacePublicKeys('leading'), ['leading'])
   assert.deepEqual(getVariableNamespacePublicKeys('tracking'), ['tracking'])
   assert.deepEqual(getVariableNamespacePublicKeys('shadow'), ['shadow'])
-  assert.deepEqual(getVariableNamespacePublicKeys('duration'), ['animation-delay', 'animation-duration', 'transition-delay', 'transition-duration'])
-  assert.deepEqual(getVariableNamespacePublicKeys('easing'), ['animation-timing-function', 'transition-timing-function'])
+  assert.deepEqual(getVariableNamespacePublicKeys('duration'), ['animation', 'animation-delay', 'transition', 'transition-delay'])
+  assert.deepEqual(getVariableNamespacePublicKeys('easing'), ['animation', 'transition'])
   assertIncludes(getVariableNamespacePublicKeys('animate'), ['animate'])
 
   for (const namespace of ['color-surface', 'color-text', 'color-line', 'content', 'font-feature']) {
@@ -44,6 +44,8 @@ test('variable namespace public keys follow the active manifest family catalog',
 test('family tables omit removed preset definitions and native property aliases', () => {
   assert.equal(tokenFamilies.filter(family => family.argument === 'value').length, 119)
   assert.equal(tokenFamilies.filter(family => family.argument === 'key').length, 1)
+  assert.equal(new Set(tokenFamilies.map(family => `${family.prefix}:${family.namespace}`)).size, tokenFamilies.length)
+  assert.equal(tokenFamilies.filter(family => family.prefix === 'font').length, 3)
   const prefixes = tokenFamilies.map(family => family.prefix)
   for (const name of ['text-gradient', 'text-underline', 'text-decoration', 'text-stroke', 'contain-intrinsic-block-size', 'contain-intrinsic-inline-size', 'content', 'font-feature-settings', 'font-antialiased', 'font-smoothing-auto', 'padding', 'color', 'width']) {
     assert.ok(!prefixes.includes(name), name)

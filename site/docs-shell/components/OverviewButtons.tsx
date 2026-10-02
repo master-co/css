@@ -22,11 +22,11 @@ export default ({ children, className }: any) => {
           href={definedMetadata.pathname}
           disabled={definedMetadata.disabled}
           rel="noreferrer noopener">
-          <div className={clsx('font-size-md leading-md word-break:break-all')}>
+          <div className={clsx('font-md leading-md word-break:break-all')}>
             {$(((definedMetadata.title as any)?.absolute || definedMetadata.title) as string)}
             {definedMetadata.type === 'entity' && locale !== 'en' && typeof definedMetadata.title === 'string' && <span className='margin-left:.25em' translate="no">{definedMetadata.title}</span>}
           </div>
-          {definedMetadata.description && <div className='clamp-lines(2) mt-3xs text-xs font-weight-regular fg-text-muted'>{definedMetadata.description as string}</div>}
+          {definedMetadata.description && <div className='clamp-lines(2) mt-3xs text-xs font-regular fg-text-muted'>{definedMetadata.description as string}</div>}
         </Link>
       )
     }</section >

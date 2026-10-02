@@ -478,7 +478,7 @@
   animation-delay: var(--duration);
 }
 
-@utility animation-duration-(--duration) {
+@utility animation-(--duration) {
   animation-duration: var(--duration);
 }
 
@@ -486,27 +486,27 @@
   transition-delay: var(--duration);
 }
 
-@utility transition-duration-(--duration) {
+@utility transition-(--duration) {
   transition-duration: var(--duration);
 }
 
-@utility animation-timing-function-(--easing) {
+@utility animation-(--easing) {
   animation-timing-function: var(--easing);
 }
 
-@utility transition-timing-function-(--easing) {
+@utility transition-(--easing) {
   transition-timing-function: var(--easing);
 }
 
-@utility font-family-(--font-family) {
+@utility font-(--font-family) {
   font-family: var(--font-family);
 }
 
-@utility font-size-(--font-size) {
+@utility font-(--font-size) {
   font-size: var(--font-size);
 }
 
-@utility font-weight-(--font-weight) {
+@utility font-(--font-weight) {
   font-weight: var(--font-weight);
 }
 

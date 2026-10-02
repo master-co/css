@@ -133,7 +133,10 @@ pub(crate) fn push_utility_value_completion_candidates(
                 named_labels.push(format!("-{positive}"));
             }
             for label in named_labels {
-                if super::named::matching_utilities(&label, manifest).is_empty() {
+                if !super::named::matching_utilities(&label, manifest)
+                    .iter()
+                    .any(|(index, _)| manifest.utilities[*index].id == utility.id)
+                {
                     continue;
                 }
                 push_class_completion_candidate(

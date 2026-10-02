@@ -462,7 +462,7 @@ export default function Play({ shareId }: PlayProps = {}) {
           <Link href={'/'}>
             {<app.Logotype width={168} height={20} />}
           </Link>
-          <div className='position:relative gap:0.313rem margin-left:auto font-weight-medium margin-left:1.875rem@md app-header-nav'>
+          <div className='position:relative gap:0.313rem margin-left:auto font-medium margin-left:1.875rem@md app-header-nav'>
             v{template.version}
           </div>
           {app.navs?.map(({ fullName, Icon, ...eachLink }: any, index) =>
@@ -646,7 +646,7 @@ export default function Play({ shareId }: PlayProps = {}) {
               onLoad={postReadyPreviewUpdate}
             />
             <div className={clsx('display:flex flex-direction:column height:100%', { 'display:none!': preview !== 'css' })}>
-              <div className='display:flex flex-grow:0 flex-shrink:0 flex-basis:auto align-items:center justify-content:space-between height:48px padding-inline:1.25rem border-bottom-width:1px border-bottom-style:solid bb-line-subtle font-size-xs padding-inline:2.5rem@sm'>
+              <div className='display:flex flex-grow:0 flex-shrink:0 flex-basis:auto align-items:center justify-content:space-between height:48px padding-inline:1.25rem border-bottom-width:1px border-bottom-style:solid bb-line-subtle font-xs padding-inline:2.5rem@sm'>
                 <div>{compiling ? $('Compiling CSS') : $('Generated CSS')}</div>
                 <div className="fg-text-muted">{compileWarnings.length ? `${compileWarnings.length} ${$('warnings')}` : generatedCSSSize}</div>
               </div>
@@ -666,11 +666,11 @@ export default function Play({ shareId }: PlayProps = {}) {
             </div>
             {previewErrorEvent &&
               <div className="position:absolute inset:0 height:100% width:100% p-2xl bg-red-5@apply(--site-light) bg-red-95@apply(--site-dark) text-danger">
-                <h2 className="font-size-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                <div className="margin-block:1.25rem padding-top:0.938rem padding-right:1.25rem padding-bottom:0.938rem padding-left:1.25rem border-radius:5px font-size-sm font-weight-medium white-space:pre-wrap bg-black/.2@apply(--site-dark) bg-red-90@apply(--site-light)">
+                <h2 className="font-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
+                <div className="margin-block:1.25rem padding-top:0.938rem padding-right:1.25rem padding-bottom:0.938rem padding-left:1.25rem border-radius:5px font-sm font-medium white-space:pre-wrap bg-black/.2@apply(--site-dark) bg-red-90@apply(--site-light)">
                   {previewErrorEvent.message}
                 </div>
-                <div className="font-size-xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
+                <div className="font-xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
               </div>
             }
           </Resizable>

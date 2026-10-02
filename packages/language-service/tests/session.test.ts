@@ -130,7 +130,7 @@ describe('Rust-backed language service', () => {
 })
 
 test('keyframe safelists complete and inspect exact names without class semantics', () => {
-  const service = createService({ version: 6, languageVersion: 15, keyframes: [
+  const service = createService({ version: 6, languageVersion: 16, keyframes: [
     { id: 'light', name: 'with space', text: '@keyframes "with space"{to{opacity:1}}', source: { file: 'light.css', range: { start: 0, end: 40 } } },
     { id: 'dark', name: 'with space', text: '@keyframes "with space"{to{opacity:.5}}', source: { file: 'dark.css', range: { start: 0, end: 41 } } }
   ] })

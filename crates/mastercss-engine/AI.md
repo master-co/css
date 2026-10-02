@@ -21,6 +21,8 @@ priority, resources, rule generation, snapshots, and transitions.
 Exact CSS bytes, layer placement, priority, selectors, resources, and native/Wasm
 parity are behavioral contracts. Do not add host filesystem, DOM, or editor policy.
 
+Token utility identity is (form, decoded prefix, namespace); same-branch replacement is complete. Select the longest prefix, then a unique namespace by key before checking sign or opacity. Ambiguous keys emit no CSS. Retain requested classes without rules so refresh can restore them after ambiguity or missing-token changes. Metadata consumers use the resolved branch, never prefix alone.
+
 ## Validation
 
 ```sh

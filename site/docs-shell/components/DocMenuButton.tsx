@@ -43,7 +43,7 @@ export default function DocMenuButton(props: any) {
             )}
             {app.communityNavs?.length
               ? <>
-                <div className='margin-top:2.5rem margin-right:1.25rem margin-bottom:0.625rem margin-left:1.25rem font-size-sm'>{$('Community')}</div>
+                <div className='margin-top:2.5rem margin-right:1.25rem margin-bottom:0.625rem margin-left:1.25rem font-sm'>{$('Community')}</div>
                 {app.communityNavs.map(({ Icon, disabled, fullName, ...eachLink }: any) =>
                   <Link className={clsx('display:flex align-items:center width:100%', { 'fg-text-disabled': disabled })} {...eachLink} disabled={disabled} key={eachLink.name} onClick={!disabled && (() => setOpened(false))}>
                     <>
@@ -57,7 +57,7 @@ export default function DocMenuButton(props: any) {
                 )}
               </>
               : null}
-            <div className='margin-top:2.5rem margin-right:1.25rem margin-bottom:0.625rem margin-left:1.25rem font-size-sm'>{$('System')}</div>
+            <div className='margin-top:2.5rem margin-right:1.25rem margin-bottom:0.625rem margin-left:1.25rem font-sm'>{$('System')}</div>
             <label className="display:flex align-items:center width:100%">
               <IconVersions className="mr-sm margin-left:1.25rem fg-text-muted fill-text-muted/.2" stroke="1" width="26" height="26" />
               <div className="display:flex flex:1 align-items:center height:48px border-bottom-width:1px border-bottom-style:solid bb-line-subtle fg-text-strong">

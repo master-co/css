@@ -18,8 +18,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration-slower::view-transition-group(.article)',
-  'animation-timing-function-smooth::view-transition-group(.article)',
+  'animation-slower::view-transition-group(.article)',
+  'animation-smooth::view-transition-group(.article)',
 ].join(' ')
 
 const sharedTransitionClassName = 'view-transition-class:article'
@@ -112,7 +112,7 @@ export default function ArticleTransitionDemo() {
                 <time className={clsx(article.dateTransition, sharedTransitionClassName, 'display:block mb-xs text-xs fg-text-body')}>
                   {article.date}
                 </time>
-                <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'margin:0 text-lg font-weight-semibold leading-sm')}>
+                <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'margin:0 text-lg font-semibold leading-sm')}>
                   {article.title}
                 </h3>
                 <p className="margin-inline:0 mt-sm margin-bottom:0 text-sm fg-text-body">
@@ -143,7 +143,7 @@ export default function ArticleTransitionDemo() {
             <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'display:block mb-sm text-sm fg-text-body')}>
               {selectedArticle.date}
             </time>
-            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'margin:0 text-2xl font-weight-semibold text-3xl@container((width>=16rem))')}>
+            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'margin:0 text-2xl font-semibold text-3xl@container((width>=16rem))')}>
               {selectedArticle.title}
             </h3>
             <p className="margin-inline:0 mt-md margin-bottom:0 text-md fg-text-body">

@@ -20,7 +20,7 @@ fn engine(source: &str) -> EngineSession {
 fn theme_modes_and_ordered_defaults() {
     let (_, manifest) =
         compile("@theme static inline{--color-brand:red;--color-brand:blue;--spacing-card:2rem}");
-    assert_eq!(manifest["languageVersion"], 15);
+    assert_eq!(manifest["languageVersion"], 16);
     assert_eq!(manifest["theme"][0]["prelude"], ":root,:host");
     assert_eq!(manifest["theme"][0]["children"][0]["inline"], true);
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
@@ -251,7 +251,7 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
 #[test]
 fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
     let base = serde_json::json!({
-        "version":6,"languageVersion":15,
+        "version":6,"languageVersion":16,
         "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
         "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
     });

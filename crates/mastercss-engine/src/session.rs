@@ -108,9 +108,6 @@ impl EngineSession {
         generated: Vec<StoredRule>,
         mutations: &mut Vec<RuleMutationIr>,
     ) {
-        if generated.is_empty() {
-            return;
-        }
         let mut class_rule_keys = Vec::with_capacity(generated.len());
         for rule in generated {
             let layer = rule.ir.layer;
@@ -137,11 +134,13 @@ impl EngineSession {
                 rule: Some(Box::new(rule.ir)),
             });
         }
-        if !class_rule_keys.is_empty() {
+        // Keep requested classes even while their token is missing or ambiguous.
+        // A later manifest refresh can make them valid without another DOM edit.
+        if !self.class_rules.contains_key(class_name) {
             self.class_order.push(class_name.to_owned());
-            self.class_rules
-                .insert(class_name.to_owned(), class_rule_keys);
         }
+        self.class_rules
+            .insert(class_name.to_owned(), class_rule_keys);
     }
 
     pub fn delete_class_rules<I, S>(
@@ -752,7 +751,16 @@ impl EngineSession {
                     .get(&format!("{}-", family.prefix))
                     .is_some_and(|indexes| {
                         indexes.iter().any(|index| {
-                            !self.compiled.utilities[*index].variable_entries.is_empty()
+                            let utility = &self.compiled.utilities[*index];
+                            utility.variable_alias_refs == [format!("~{}", family.namespace)]
+                                && utility.variable_entries.iter().any(|(key, _)| {
+                                    super::named::matching_utilities(
+                                        &format!("{}-{key}", family.prefix),
+                                        &self.compiled,
+                                    )
+                                    .iter()
+                                    .any(|(matched, _)| matched == index)
+                                })
                         })
                     })
             })
@@ -904,13 +912,18 @@ impl EngineSession {
     pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {
         self.ensure_active()?;
         let generated = self.generate_class_rules(class_name);
-        let value_family =
-            super::named::token_prefix(class_name, &self.compiled).is_some_and(|prefix| {
-                self.compiled.token_families.iter().any(|family| {
-                    family.argument == super::TokenFamilyArgument::Value
-                        && prefix.strip_suffix('-') == Some(family.prefix.as_str())
-                })
-            });
+        let value_family = super::named::matching_utilities(
+            class_name.strip_suffix('!').unwrap_or(class_name),
+            &self.compiled,
+        )
+        .iter()
+        .any(|(index, matched)| {
+            matched.matcher_type == UtilityMatcherType::Token
+                && !matches!(
+                    self.compiled.utilities[*index].emit,
+                    super::UtilityEmit::Recipe { key: true, .. }
+                )
+        });
         if !generated.iter().any(|rule| {
             rule.matcher_type == Some(UtilityMatcherType::Key)
                 || (value_family && rule.matcher_type == Some(UtilityMatcherType::Token))

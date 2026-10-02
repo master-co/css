@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "semanticBaseline": "language-15-explicit-utilities",
+  "semanticBaseline": "language-16-shared-prefixes",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -931,7 +931,7 @@
             }
           ]
         },
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -1230,7 +1230,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--float-left",
@@ -1452,7 +1452,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--card",
@@ -1550,7 +1550,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1651,7 +1651,7 @@
             }
           ]
         },
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -1698,7 +1698,7 @@
             }
           ]
         },
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -2856,7 +2856,7 @@
           "op": "ensure",
           "classes": [
             "padding-md",
-            "font-sm",
+            "font-size-sm",
             "display:block:first",
             "p:1rem"
           ],
@@ -3192,12 +3192,12 @@
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -3354,12 +3354,12 @@
       "source": "@theme { --color-brand: $color-blue-50;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -3399,12 +3399,12 @@
       "source": "@theme { --spacing--card: -12;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -3448,12 +3448,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "keyframes": [
           {
             "id": "k829dcf0e51e283f1-00000000",
@@ -3501,12 +3501,12 @@
             ]
           }
         ],
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15
+        "languageVersion": 16
       }
     },
     {
@@ -3515,12 +3515,12 @@
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -3589,12 +3589,12 @@
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "theme": [
           {
             "type": "rule",
@@ -3734,12 +3734,12 @@
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3888,12 +3888,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--card",
@@ -3986,12 +3986,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 15,
+        "languageVersion": 16,
         "mixins": [
           {
             "name": "--btn",

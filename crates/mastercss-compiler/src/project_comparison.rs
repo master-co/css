@@ -333,13 +333,15 @@ fn analyze(snapshot: &ProjectSnapshot) -> Result<Analyzed, CompilerError> {
         for definition in snapshot.manifest[field].as_array().into_iter().flatten() {
             if let Some(name) = definition["name"].as_str() {
                 let id = if kind == "utility" {
-                    let form = match definition["kind"].as_str() {
-                        Some("static") => "Static",
-                        Some("token") => "Token",
-                        Some("function") => "Function",
-                        _ => continue,
+                    let Ok(kind) = serde_json::from_value::<mastercss_schema::UtilityKind>(
+                        definition["kind"].clone(),
+                    ) else {
+                        continue;
                     };
-                    format!("utility:{form}:{name}")
+                    format!(
+                        "utility:{}",
+                        kind.identity(name, definition["parameters"][0]["name"].as_str())
+                    )
                 } else {
                     format!("{kind}:{name}")
                 };

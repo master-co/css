@@ -33,7 +33,7 @@ test.concurrent('does not leak selector insertText mutations between requests', 
 
 function snapshotLanguageCSS(languageService: CSSLanguageService) {
   return {
-    font: languageService.session.inspectClassName('font-weight-bold'),
+    font: languageService.session.inspectClassName('font-bold'),
     animation: languageService.session.inspectClassName('animate-fade'),
     completionIndex: languageService.session.completionIndex()
   }
@@ -43,7 +43,7 @@ test.concurrent('documentation CSS generation does not mutate language service s
   const languageService = new CSSLanguageService()
   const before = snapshotLanguageCSS(languageService)
 
-  expect(before.font.text).toContain('.font-weight-bold')
+  expect(before.font.text).toContain('.font-bold')
   expect(before.animation.text).toContain('@keyframes fade')
   expect(suggest(languageService, '')?.find(({ label }) => label === 'sr-only')?.documentation).toBeTruthy()
   expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()

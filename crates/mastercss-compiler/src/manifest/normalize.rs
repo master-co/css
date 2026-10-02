@@ -12,12 +12,12 @@ pub(super) fn merge_array_by(
     key: impl Fn(&Value) -> Option<String>,
 ) -> Option<Value> {
     let mut merged = base.and_then(Value::as_array).cloned().unwrap_or_default();
-    // Index keys once: the first entry with a key owns its slot, as the linear
-    // search did, and later definitions replace it in place.
+    // Replace the last effective base definition, including manifests containing
+    // repeated registrations. Final normalization removes shadowed entries.
     let mut slots = HashMap::new();
     for (index, existing) in merged.iter().enumerate() {
         if let Some(existing_key) = key(existing) {
-            slots.entry(existing_key).or_insert(index);
+            slots.insert(existing_key, index);
         }
     }
     for value in next.and_then(Value::as_array).into_iter().flatten() {
@@ -240,10 +240,11 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
                 base.get("utilities"),
                 fragment.get("utilities"),
                 |definition| {
-                    Some(format!(
-                        "{}:{}",
-                        definition.get("kind")?.as_str()?,
-                        definition.get("name")?.as_str()?
+                    let kind: mastercss_schema::UtilityKind =
+                        serde_json::from_value(definition.get("kind")?.clone()).ok()?;
+                    Some(kind.identity(
+                        definition.get("name")?.as_str()?,
+                        definition["parameters"][0]["name"].as_str(),
                     ))
                 },
             ),

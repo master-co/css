@@ -20,7 +20,7 @@ const compiled = compileManifestSync(`
 
   [data-theme=ocean], :host([data-theme=ocean]) { --color-brand: blue; }
 }
-`, { baseManifest: { version: 6, languageVersion: 15 } })
+`, { baseManifest: { version: 6, languageVersion: 16 } })
 const { manifest } = compiled
 const nativeCSS = compiled.css
 const classes = ['bg-alias', 'bg-brand', 'p-card']
@@ -86,7 +86,7 @@ test('default shorthand and explicit native host overrides work inside shadow ro
 for (const hydrate of [false, true]) {
   test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
     const source = '@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)} @utility animate(--animate) {animation:var(--animate)}@utility animate-(--animate) {animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
-    const { manifest } = compileManifestSync(source, { baseManifest: { version: 6, languageVersion: 15 } })
+    const { manifest } = compileManifestSync(source, { baseManifest: { version: 6, languageVersion: 16 } })
     const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
@@ -112,7 +112,7 @@ for (const hydrate of [false, true]) {
     await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(false)
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
-    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 15 } }).manifest
+    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 16 } }).manifest
     await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })

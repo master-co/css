@@ -69,7 +69,7 @@ test('dispose on progressive', async ({ page }) => {
     const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
     nextRuntime.observe()
     document.body.classList.add("display:block")
-    document.body.classList.add('font-weight-bold')
+    document.body.classList.add('font-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => {
@@ -78,7 +78,7 @@ test('dispose on progressive', async ({ page }) => {
       .map(([className, snapshot]) => [className, snapshot.rules.length]))
   })).toMatchObject({
     'display:block': 1,
-    'font-weight-bold': 1
+    'font-bold': 1
   })
 })
 

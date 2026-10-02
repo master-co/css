@@ -46,7 +46,7 @@ fn preset_normalization_cannot_upgrade_old_executable_data_silently() {
         "containerConditions",
         "breakpointConditions",
     ] {
-        let mut manifest = serde_json::json!({"version":6,"languageVersion":15});
+        let mut manifest = serde_json::json!({"version":6,"languageVersion":16});
         manifest[field] = serde_json::json!([]);
         assert!(mastercss_compiler::normalize_default_manifest_for_json(&manifest).is_err());
     }
@@ -210,7 +210,7 @@ fn builtin_layers_and_starting_style_work_without_a_preset() {
     }
     assert!(compile("@custom-media --starting-style (width>1px);").is_err());
     assert!(mastercss_engine::EngineSession::create(
-        r#"{"version":6,"languageVersion":15,"customMedia":{"--starting-style":{"type":"true"}}}"#
+        r#"{"version":6,"languageVersion":16,"customMedia":{"--starting-style":{"type":"true"}}}"#
     ).is_err());
 }
 
@@ -264,7 +264,7 @@ fn contents_urls_and_spans_retain_the_calling_file_across_imports() {
         "graph":{"entry":"entry","files":{"entry":caller,"defs":definitions},"edges":[{"from":"entry","specifier":"./defs.css","resolved":"defs"}]},
         "urls":{"entry":"/output/entry.css","defs":"/output/defs.css"},
         "resourceURLs":{"entry":{"card.png":"/caller/card.png"},"defs":{"mask.svg":"/definition/mask.svg","unused.png":"/definition/unused.png"}},
-        "baseManifest":{"version":6,"languageVersion":15}
+        "baseManifest":{"version":6,"languageVersion":16}
     })).unwrap();
     let result = mastercss_compiler::compile_css_stylesheet_graph(&request).unwrap();
     let output = result

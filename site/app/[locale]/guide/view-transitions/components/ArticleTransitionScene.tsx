@@ -9,7 +9,7 @@ import { useDemoViewTransition } from '~/site/components/demo/useDemoViewTransit
 import articleAuroraImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
 import articleStudioImage from '~/site/assets/images/view-transitions/article-studio.jpg'
 
-const rootClasses = 'animation-duration-slower::view-transition-group(.demo-article) animation-timing-function-smooth::view-transition-group(.demo-article)'
+const rootClasses = 'animation-slower::view-transition-group(.demo-article) animation-smooth::view-transition-group(.demo-article)'
 const shared = 'view-transition-class:demo-article'
 
 const articles = [
@@ -53,7 +53,7 @@ export default function ArticleTransitionScene() {
         className={clsx(selected.imageTransition, shared, 'display:block height:auto width:100% aspect-ratio:16/9 object-fit:cover')} />
       <div className="p-lg">
         <time dateTime={selected.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(selected.dateTransition, shared, 'text-xs fg-text-muted')}>{selected.date}</time>
-        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-weight-semibold outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
+        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-semibold outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
         <p className="mt-md margin-bottom:0 text-sm fg-text-muted">{selected.description} The image, title and date keep their names in both views. Each snapshot can move to its new bounds while surrounding content fades.</p>
         <button type="button" className="mt-lg demo-button" onClick={() => run(() => setSelectedId(undefined), () => buttons.current.get(selected.id) ?? null)}>
           <IconArrowLeft size={14} aria-hidden="true" />Back to collection
@@ -65,7 +65,7 @@ export default function ArticleTransitionScene() {
           className={clsx(article.imageTransition, shared, 'display:block height:auto width:100% aspect-ratio:16/10 object-fit:cover')} />
         <article className="display:flex flex:1 flex-direction:column p-md">
           <time dateTime={article.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(article.dateTransition, shared, 'text-xs fg-text-muted')}>{article.date}</time>
-          <h2 className={clsx(article.titleTransition, shared, 'mt-xs margin-bottom:0 text-lg font-weight-semibold')}>{article.title}</h2>
+          <h2 className={clsx(article.titleTransition, shared, 'mt-xs margin-bottom:0 text-lg font-semibold')}>{article.title}</h2>
           <p className="mb-md mt-sm text-sm fg-text-muted">{article.description}</p>
           <button ref={element => { if (element) buttons.current.set(article.id, element); else buttons.current.delete(article.id) }}
             type="button" className="align-self:start margin-top:auto demo-button" aria-label={`Read ${article.title}`}

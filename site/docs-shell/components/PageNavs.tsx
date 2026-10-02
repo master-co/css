@@ -15,9 +15,9 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
     <Link href={definedMetadata.pathname} passHref className="flex-grow:1 flex-shrink:1 flex-basis:100% flex-direction:column justify-content:start! r-sm flex-grow:1@sm flex-shrink:1@sm flex-basis:50%@sm">
       <div className='display:flex align-items:center'>
         <IconChevronLeft className={clsx('height:14px width:14px stroke-text-muted vertical-align:middle', navigatorIconClass)} />
-        <span className="font-size-xs fg-text-muted">{$(definedMetadata.category)}</span>
+        <span className="font-xs fg-text-muted">{$(definedMetadata.category)}</span>
       </div>
-      <div className="clamp-lines(1) width:100% mt-sm font-size-md fg-text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
+      <div className="clamp-lines(1) width:100% mt-sm font-md fg-text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
       {definedMetadata.description && (
         <p className="clamp-lines(2) width:100% margin-bottom:0 margin-top:0.625rem text-xs text-wrap:pretty fg-text-body font-weight:460_b">
           {$(definedMetadata.description)}

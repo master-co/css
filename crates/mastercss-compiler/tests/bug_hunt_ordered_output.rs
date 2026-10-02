@@ -25,7 +25,7 @@ fn request(source: &str, preserve: bool) -> LowerCssDirectivesRequest {
     }
 }
 fn render(source: &str, preserve: bool) -> LowerCssDirectivesResult {
-    lower_css_directives_request(&request(source, preserve), &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).unwrap()
+    lower_css_directives_request(&request(source, preserve), &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).unwrap()
 }
 
 #[test]
@@ -105,5 +105,5 @@ fn stale_or_overlapping_serialized_slots_report_errors() {
     );
     let output = request.native_output.as_mut().unwrap();
     output.slots[0].end = u32::MAX;
-    assert!(lower_css_directives_request(&request, &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).is_err());
+    assert!(lower_css_directives_request(&request, &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None }).is_err());
 }

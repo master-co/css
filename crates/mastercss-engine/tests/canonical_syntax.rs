@@ -32,7 +32,11 @@ const RETIRED_PRESET_FAMILIES: [&str; 20] = [
 ];
 
 fn engine() -> EngineSession {
-    let variables = baseline().into_iter().map(|family| (
+    engine_namespace(None)
+}
+
+fn engine_namespace(namespace: Option<&str>) -> EngineSession {
+    let variables = baseline().into_iter().filter(|family| namespace.is_none_or(|namespace| family["namespace"] == namespace)).map(|family| (
         family["namespace"].as_str().unwrap().to_owned(),
         json!([{ "key":"proof", "type":"string", "values":[{"path":[":root"],"value":"1rem"}] }]),
     )).collect::<serde_json::Map<_, _>>();
@@ -89,7 +93,27 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
             );
             continue;
         }
-        assert!(prefixes.insert(prefix.to_owned()), "{prefix}");
+        let original_prefix = prefix;
+        let prefix = match prefix {
+            "font-family" | "font-size" | "font-weight" => "font",
+            "animation-duration" | "animation-timing-function" => "animation",
+            "transition-duration" | "transition-timing-function" => "transition",
+            prefix => prefix,
+        };
+        let engine = engine_namespace(family["namespace"].as_str());
+        let labels = engine
+            .class_completion_candidates()
+            .unwrap()
+            .into_iter()
+            .map(|entry| entry.label)
+            .collect::<HashSet<_>>();
+        assert!(
+            prefixes.insert((
+                prefix.to_owned(),
+                family["namespace"].as_str().unwrap().to_owned()
+            )),
+            "{prefix}"
+        );
         assert!(properties.insert(property.to_owned()), "{property}");
         let canonical = format!("{prefix}-proof");
         let result = engine.inspect(&canonical).unwrap();
@@ -99,7 +123,14 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
             "{canonical}: {:?}",
             result.diagnostics
         );
-        assert_eq!(result.rules[0].text, family["css"].as_str().unwrap());
+        assert_eq!(
+            result.rules[0].text,
+            family["css"].as_str().unwrap().replacen(
+                &format!(".{original_prefix}-proof"),
+                &format!(".{prefix}-proof"),
+                1
+            )
+        );
         let call = format!(
             "{prefix}(var(--{}-proof))",
             family["namespace"].as_str().unwrap()

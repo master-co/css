@@ -72,10 +72,10 @@
           "code": "AMBIGUOUS_TOKEN",
           "phase": "match",
           "severity": "error",
-          "message": "Ambiguous named token font-brand; use an explicit utility name: font-size-brand, font-family-brand",
+          "message": "Ambiguous named token font-brand; use an explicit utility name: font-brand, font-brand",
           "notes": [
-            "font-size-brand",
-            "font-family-brand"
+            "font-brand",
+            "font-brand"
           ]
         }
       ],

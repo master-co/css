@@ -4,8 +4,8 @@
     "id": "flatten-nested-transforms",
     "title": "Flatten nested transforms",
     "html": [
-      "<!-- Explicit flat · default flattening -->\n<div class=\"display:grid place-items:center height:200px width:240px\n         max-width:100% perspective:400px\">\n  <div id=\"target\"\n    class=\"position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60\n           font-size-sm bg-violet-10 fg-violet-80\n           transform:rotateY(32deg)\n           transform-style:flat\">\n    <span class=\"display:block p-xs\">Parent · 0</span>\n    <div id=\"front\"\n      class=\"position:absolute left-md top-xl display:grid place-items:center\n             height:80px width:120px border-width:2px border-style:solid b-blue-60\n             bg-blue-20 fg-blue-80\n             transform:translateZ(48px)\">\n      Front · +48px\n    </div>\n  </div>\n</div>",
-      "<!-- Opacity .8 · preserve-3d is flattened -->\n<div class=\"display:grid place-items:center height:200px width:240px\n         max-width:100% perspective:400px\">\n  <div id=\"target\"\n    class=\"position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60\n           font-size-sm bg-violet-10 fg-violet-80 opacity:.8\n           transform:rotateY(32deg)\n           transform-style:preserve-3d\">\n    <span class=\"display:block p-xs\">Parent · 0</span>\n    <div id=\"front\"\n      class=\"position:absolute left-md top-xl display:grid place-items:center\n             height:80px width:120px border-width:2px border-style:solid b-blue-60\n             bg-blue-20 fg-blue-80\n             transform:translateZ(48px)\">\n      Front · +48px\n    </div>\n  </div>\n</div>"
+      "<!-- Explicit flat · default flattening -->\n<div class=\"display:grid place-items:center height:200px width:240px\n         max-width:100% perspective:400px\">\n  <div id=\"target\"\n    class=\"position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60\n           font-sm bg-violet-10 fg-violet-80\n           transform:rotateY(32deg)\n           transform-style:flat\">\n    <span class=\"display:block p-xs\">Parent · 0</span>\n    <div id=\"front\"\n      class=\"position:absolute left-md top-xl display:grid place-items:center\n             height:80px width:120px border-width:2px border-style:solid b-blue-60\n             bg-blue-20 fg-blue-80\n             transform:translateZ(48px)\">\n      Front · +48px\n    </div>\n  </div>\n</div>",
+      "<!-- Opacity .8 · preserve-3d is flattened -->\n<div class=\"display:grid place-items:center height:200px width:240px\n         max-width:100% perspective:400px\">\n  <div id=\"target\"\n    class=\"position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60\n           font-sm bg-violet-10 fg-violet-80 opacity:.8\n           transform:rotateY(32deg)\n           transform-style:preserve-3d\">\n    <span class=\"display:block p-xs\">Parent · 0</span>\n    <div id=\"front\"\n      class=\"position:absolute left-md top-xl display:grid place-items:center\n             height:80px width:120px border-width:2px border-style:solid b-blue-60\n             bg-blue-20 fg-blue-80\n             transform:translateZ(48px)\">\n      Front · +48px\n    </div>\n  </div>\n</div>"
     ],
     "css": "",
     "classes": [
@@ -21,7 +21,7 @@
       "border-width:2px",
       "border-style:solid",
       "b-violet-60",
-      "font-size-sm",
+      "font-sm",
       "bg-violet-10",
       "fg-violet-80",
       "transform:rotateY(32deg)",
@@ -42,11 +42,11 @@
     ],
     "classLists": [
       "display:grid place-items:center height:200px width:240px max-width:100% perspective:400px",
-      "position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60 font-size-sm bg-violet-10 fg-violet-80 transform:rotateY(32deg) transform-style:flat",
+      "position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60 font-sm bg-violet-10 fg-violet-80 transform:rotateY(32deg) transform-style:flat",
       "display:block p-xs",
       "position:absolute left-md top-xl display:grid place-items:center height:80px width:120px border-width:2px border-style:solid b-blue-60 bg-blue-20 fg-blue-80 transform:translateZ(48px)",
       "display:grid place-items:center height:200px width:240px max-width:100% perspective:400px",
-      "position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60 font-size-sm bg-violet-10 fg-violet-80 opacity:.8 transform:rotateY(32deg) transform-style:preserve-3d",
+      "position:relative height:104px width:144px border-width:2px border-style:solid b-violet-60 font-sm bg-violet-10 fg-violet-80 opacity:.8 transform:rotateY(32deg) transform-style:preserve-3d",
       "display:block p-xs",
       "position:absolute left-md top-xl display:grid place-items:center height:80px width:120px border-width:2px border-style:solid b-blue-60 bg-blue-20 fg-blue-80 transform:translateZ(48px)"
     ],

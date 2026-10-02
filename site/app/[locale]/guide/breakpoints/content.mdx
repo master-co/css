@@ -31,12 +31,12 @@ Use native media query syntax and explicit units. Generated queries preserve the
 Append `@<breakpoint>` to a utility when that declaration should start at a viewport threshold.
 
 ```html
-<!-- @MARK font-size-2xl --><!-- @MARK font-size-3xl@md -->
-<h1 class="font-size-2xl font-size-3xl@md">Build for the current viewport</h1>
+<!-- @MARK font-2xl --><!-- @MARK font-3xl@md -->
+<h1 class="font-2xl font-3xl@md">Build for the current viewport</h1>
 ```
 
 <Class2CSS>
-  {['font-size-2xl', 'font-size-3xl@md']}
+  {['font-2xl', 'font-3xl@md']}
 </Class2CSS>
 
 Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.

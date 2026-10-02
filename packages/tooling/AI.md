@@ -31,7 +31,7 @@ analysis, and the dependency-light diagnostics bridge.
 - `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
   `./node` entries for native sync execution.
 - Node filesystem scanner under `./scanner/node`.
-- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from loaded mixins, including namespaces without tokens.
+- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from effective utility patterns, including namespaces without tokens and multiple namespace branches per prefix.
 
 Subpaths are responsibility boundaries inside one package, not independent packages.
 Avoid adding convenience re-export files unless they define a deliberate documented

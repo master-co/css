@@ -62,7 +62,7 @@ const selectorVariantRuleTexts = [
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
-  version: 6 as const, languageVersion: 15 as const,
+  version: 6 as const, languageVersion: 16 as const,
   utilities: typedDefaultManifest.utilities,
   variables: {
     color: [
@@ -99,7 +99,7 @@ const scopedThemeCSS = [
 
 const manifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const,
+  "languageVersion": 16 as const,
   customMedia: { "--sm": { type: "feature", value: "(width>=52.125rem)" } },
   "mixins": [
   {

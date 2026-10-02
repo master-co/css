@@ -36,21 +36,21 @@ it('previews by default, writes safe files, and is idempotent', async () => {
   const entry = path.join(cwd, 'app.css')
   const compiled = await compileStylesheet(entry, fs.readFileSync(entry, 'utf8'), { projectDir: cwd, baseManifest: {
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 } })
   expect(compiled.diagnostics.filter(diagnostic => diagnostic.severity === 'error')).toEqual([])
 })
 
-it('requires manual review when historical migration would emit a removed token prefix', () => {
+it('migrates a historical font token into the shared font prefix', () => {
   const cwd = project()
   const source = '<div class="font:mono"></div>'
   fs.writeFileSync(path.join(cwd, 'index.html'), source)
   const result = migrate(['index.html'], { cwd, write: true })
   const file = result.files.find(file => file.path === 'index.html')!
-  expect(file.review.length).toBeGreaterThan(0)
-  expect(file.edits).toEqual([])
-  expect(result.files.every(file => !file.written)).toBe(true)
-  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe(source)
+  expect(file.review).toEqual([])
+  expect(file.edits).toHaveLength(1)
+  expect(file.written).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'index.html'), 'utf8')).toBe('<div class="font-mono"></div>')
 })
 
 it('does not write dynamic classes, cascade risks, or selector references', () => {
@@ -206,7 +206,7 @@ it('previews rc-utilities and blocks every write when one typed definition needs
   fs.writeFileSync(path.join(cwd, 'app.css'), safe)
   const options = { cwd, from: 'rc-utilities' as const }
   const preview = runMigrate(['app.css'], options)
-  expect(preview.files[0].edits.find(edit => edit.before.includes('@utilities'))!.after).toContain('@mixin --pair(--value)')
+  expect(preview.files[0].edits.find(edit => edit.before.includes('@utilities'))!.after).toContain('@utility pair(--value)')
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(safe)
   fs.writeFileSync(path.join(cwd, 'unsafe.css'), '@utilities { limited:<number> { width:--value(); } }')
   const blocked = runMigrate(['*.css'], { ...options, write: true })

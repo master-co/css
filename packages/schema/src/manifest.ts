@@ -65,7 +65,7 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 6
-  languageVersion: 15
+  languageVersion: 16
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]

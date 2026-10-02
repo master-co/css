@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const,
+  "languageVersion": 16 as const,
   "mixins": [
     {
       "name": "--block",
@@ -36,7 +36,7 @@ const factories = {
 it('derives readonly family metadata from the effective manifest in both bindings', async () => {
   const preset = createPresetManifest()
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 15,
+    version: 6, languageVersion: 16,
     utilities: [
       ...(preset.utilities ?? []),
       { kind: 'token', name: 'space', parameters: [{ name: '--custom-space' }], body: [
@@ -59,13 +59,13 @@ it('derives readonly family metadata from the effective manifest in both binding
   expect(Object.isFrozen(result.families)).toBe(true)
   expect(result.families.every(family => Object.isFrozen(family) && Object.isFrozen(family.properties))).toBe(true)
   expect(native.inspectClassName('p-md').rules).toEqual([])
-  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 15 } })
+  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 16 } })
   expect(empty.tokenFamilies().families).toEqual([])
 })
 
 it('inline tokens have identical native and Wasm language behavior', async () => {
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 15,
+    version: 6, languageVersion: 16,
     utilities: createPresetManifest().utilities,
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }
@@ -143,4 +143,25 @@ it('keeps native and Wasm v2 semantic token ranges identical', async () => {
     native.dispose()
     wasm.dispose()
   }
+})
+
+it('shared prefixes expose every namespace and omit ambiguous completion in both bindings', async () => {
+  const manifest = createPresetManifest({ variables: [
+    { namespace: 'font-family', key: 'brand', values: [{ path: [':root,:host'], value: 'monospace' }] },
+    { namespace: 'font-size', key: 'brand', values: [{ path: [':root,:host'], value: '2rem' }] }
+  ] })
+  using native = createLanguageSessionSync({ manifest })
+  using wasm = await createLanguageSession({ manifest, binding: 'wasm' })
+  expect(native.tokenFamilies().families.filter(family => family.prefix === 'font').map(family => family.namespace)).toEqual(['font-family', 'font-size', 'font-weight'])
+  expect([...wasm.completionIndex().classEntries].sort((a, b) => a.label.localeCompare(b.label))).toEqual([...native.completionIndex().classEntries].sort((a, b) => a.label.localeCompare(b.label)))
+  expect(wasm.tokenFamilies()).toEqual(native.tokenFamilies())
+  const entries = native.completionIndex().classEntries
+  expect(entries.find(entry => entry.label === 'font-sans')?.detail).toContain('--font-family-sans')
+  expect(entries.find(entry => entry.label === 'font-sm')?.detail).toContain('--font-size-sm')
+  expect(entries.find(entry => entry.label === 'font-bold')?.detail).toContain('--font-weight-bold')
+  expect(entries.some(entry => entry.label === 'font-brand')).toBe(false)
+  for (const className of ['font-sans', 'font-sm', 'font-bold', 'font-brand', 'font-brand/.5']) {
+    expect(wasm.inspectClassName(className)).toEqual(native.inspectClassName(className))
+  }
+  expect(native.inspectClassName('font-brand')).toMatchObject({ matchStatus: 'ambiguous', rules: [], diagnostics: [expect.objectContaining({ code: 'AMBIGUOUS_TOKEN' })] })
 })

@@ -64,7 +64,7 @@ export default async function Page(props: any) {
                       <div className='text-xs fg-accent'>{formattedDate}</div>
                       <div className='text-xs fg-text-muted'> <TimeAgo timestamp={page.date} /></div>
                     </div>
-                    <div className='margin-block:-0.25rem font-size-xl leading-sm text-wrap:pretty'>{$(page.title)}</div>
+                    <div className='margin-block:-0.25rem font-xl leading-sm text-wrap:pretty'>{$(page.title)}</div>
                     {/* <Image src="/images/gold-pattern.jpg"  className="border-radius:5px aspect-ratio:16/9 height:auto" width={480} height={270} alt={page.title} /> */}
                     <div className='margin-top:auto text-xs text-wrap:pretty fg-text-body'>{$(page.description)}</div>
                     <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>

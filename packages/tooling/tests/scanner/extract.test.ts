@@ -42,7 +42,7 @@ test('basic html', () => {
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {
-    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration-fast transition-duration:var(--duration-fast)')).toEqual(['animation-duration-fast', 'transition-duration:var(--duration-fast)'])
+    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-fast transition-duration:var(--duration-fast)')).toEqual(['animation-fast', 'transition-duration:var(--duration-fast)'])
 })
 
 test('content', () => {

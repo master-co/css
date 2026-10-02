@@ -24,8 +24,8 @@ export function Tab(props: any) {
       className={clsx(
         'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-width:2px border-block-style:solid border-block-color:transparent font-weight:460 white-space:nowrap app-nav',
         {
-          'font-size-xs!': size === 'sm',
-          'font-size-sm!': !size
+          'font-xs!': size === 'sm',
+          'font-sm!': !size
         },
         props.className
       )}

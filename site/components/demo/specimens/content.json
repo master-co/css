@@ -4,11 +4,11 @@
     "id": "add-indicators-for-external-links",
     "title": "Add indicators for external links",
     "html": [
-      "<!-- Descendant selector · external link -->\n<article class=\"font-size-md leading-lg\n    content:'\\00a0↗'_:where(a[href^='http'])::after\">\n  <p class=\"margin:0\">Read the <a id=\"target\" class=\"text-decoration:underline fg-text-blue\" href=\"https://www.example.com\">project website</a>.</p>\n  <p class=\"margin:0\">Return to <a class=\"text-decoration:underline\" href=\"/en/reference/content\">this reference</a>.</p>\n</article>"
+      "<!-- Descendant selector · external link -->\n<article class=\"font-md leading-lg\n    content:'\\00a0↗'_:where(a[href^='http'])::after\">\n  <p class=\"margin:0\">Read the <a id=\"target\" class=\"text-decoration:underline fg-text-blue\" href=\"https://www.example.com\">project website</a>.</p>\n  <p class=\"margin:0\">Return to <a class=\"text-decoration:underline\" href=\"/en/reference/content\">this reference</a>.</p>\n</article>"
     ],
     "css": "",
     "classes": [
-      "font-size-md",
+      "font-md",
       "leading-lg",
       "content:'\\00a0↗'_:where(a[href^='http'])::after",
       "margin:0",
@@ -16,7 +16,7 @@
       "fg-text-blue"
     ],
     "classLists": [
-      "font-size-md leading-lg content:'\\00a0↗'_:where(a[href^='http'])::after",
+      "font-md leading-lg content:'\\00a0↗'_:where(a[href^='http'])::after",
       "margin:0",
       "text-decoration:underline fg-text-blue",
       "margin:0",

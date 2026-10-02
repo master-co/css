@@ -13,7 +13,7 @@ export function FoundationMedia() {
           <DemoMedia className="width:100% aspect-ratio:4/3 r-sm fg-demo-blue flex-shrink:0@container((width>=28rem)) width:9rem@container((width>=28rem))" aria-label="Blue mountain illustration" />
           <div className="flex:1 min-width:0">
             <DemoLabel>Collection / 024</DemoLabel>
-            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-weight-semibold">Field notes</h3>
+            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-semibold">Field notes</h3>
             <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">A small archive of places, textures and quiet details from the trail.</p>
             <div className="display:flex flex-wrap:wrap gap-sm mt-md"><DemoLabel>12 images</DemoLabel><DemoLabel>Updated today</DemoLabel></div>
           </div>
@@ -31,7 +31,7 @@ export function FoundationContainerGrid() {
           <DemoMedia className="width:100% aspect-ratio:3/2 r-sm fg-demo-blue" aria-label="Blue mountain illustration" />
           <div className="min-width:0">
             <DemoLabel>Asset library</DemoLabel>
-            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-weight-semibold">Space to compose</h3>
+            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-semibold">Space to compose</h3>
             <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">A single column stays readable in a sidebar. A wider container gives the image its own track.</p>
           </div>
         </article>
@@ -45,9 +45,9 @@ export function FoundationSizing() {
     <DemoSurface className="width:100% max-w-sm margin-inline:auto p-md">
       <DemoLabel>width:100% · max-w-sm</DemoLabel>
       <div className="display:flex align-items:center gap-md mt-md">
-        <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-family-mono">FN</DemoItem>
+        <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">
-          <div className="text-sm font-weight-semibold">Field notes</div>
+          <div className="text-sm font-semibold">Field notes</div>
           <p className="margin-inline:0 mt-2xs margin-bottom:0 text-sm fg-text-muted">Measured avatar. Flexible content.</p>
         </div>
       </div>
@@ -58,7 +58,7 @@ export function FoundationSizing() {
 export function FoundationAxes() {
   return <Demo title="Choose one axis or both" data-foundation="axes">
     <div className="display:flex align-items:end gap-md">
-      <div className="flex-shrink:0"><DemoLabel>width:3.5rem height:3.5rem</DemoLabel><DemoItem className="display:grid place-content:center height:3.5rem width:3.5rem mt-sm font-family-mono">FN</DemoItem></div>
+      <div className="flex-shrink:0"><DemoLabel>width:3.5rem height:3.5rem</DemoLabel><DemoItem className="display:grid place-content:center height:3.5rem width:3.5rem mt-sm font-mono">FN</DemoItem></div>
       <div className="flex:1 min-width:0"><DemoLabel>width:100% height:3.5rem</DemoLabel><DemoItem tone="violet" className="display:grid place-content:center height:3.5rem width:100% mt-sm text-sm">Collection</DemoItem></div>
     </div>
   </Demo>
@@ -68,9 +68,9 @@ export function FoundationShrink() {
   return <Demo title="Keep long content within its cap" padding="none" data-foundation="shrink" caption="The row stops at sm. The flexible text region can shrink below its content width.">
     <DemoContainer title="Shrinkable row">
       <article className="display:flex gap-md width:100% max-w-sm margin-inline:auto p-md demo-surface">
-        <DemoItem className="display:grid flex-shrink:0 place-content:center height:2.5rem width:2.5rem text-sm font-family-mono">FN</DemoItem>
+        <DemoItem className="display:grid flex-shrink:0 place-content:center height:2.5rem width:2.5rem text-sm font-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">
-          <div className="text-sm font-weight-semibold">Project archive</div>
+          <div className="text-sm font-semibold">Project archive</div>
           <p className="overflow:hidden margin-inline:0 mt-2xs margin-bottom:0 text-sm text-overflow:ellipsis white-space:nowrap fg-text-muted">field-notes-autumn-collection-final-v03.fig</p>
         </div>
       </article>

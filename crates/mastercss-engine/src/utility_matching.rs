@@ -6,7 +6,7 @@ use super::{
 use mastercss_schema::{MixinParameterSyntax, UtilityKind};
 
 pub(crate) fn identity(definition: &mastercss_schema::UtilityDefinition) -> String {
-    format!("{:?}:{}", definition.kind, definition.recipe.name)
+    definition.identity()
 }
 
 pub(crate) fn register(manifest: &mut ManifestProjection) {

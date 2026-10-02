@@ -4,14 +4,14 @@
     "id": "clone",
     "title": "Clone",
     "html": [
-      "<!-- Slice · shared decoration -->\n<div class=\"width:220px max-width:100% font-size-lg line-height:2.2\">\n  <span id=\"target\"\n    class=\"px-xs py-3xs border-width:1px border-style:solid b-blue r-sm\n         bg-blue-10 fg-blue-80\n         box-decoration-break:slice\">\n    Clear thinking needs room to take shape.\n  </span>\n</div>",
-      "<!-- Clone · each fragment decorated -->\n<div class=\"width:220px max-width:100% font-size-lg line-height:2.2\">\n  <span id=\"target\"\n    class=\"px-xs py-3xs border-width:1px border-style:solid b-blue r-sm\n         bg-blue-10 fg-blue-80\n         box-decoration-break:clone\">\n    Clear thinking needs room to take shape.\n  </span>\n</div>"
+      "<!-- Slice · shared decoration -->\n<div class=\"width:220px max-width:100% font-lg line-height:2.2\">\n  <span id=\"target\"\n    class=\"px-xs py-3xs border-width:1px border-style:solid b-blue r-sm\n         bg-blue-10 fg-blue-80\n         box-decoration-break:slice\">\n    Clear thinking needs room to take shape.\n  </span>\n</div>",
+      "<!-- Clone · each fragment decorated -->\n<div class=\"width:220px max-width:100% font-lg line-height:2.2\">\n  <span id=\"target\"\n    class=\"px-xs py-3xs border-width:1px border-style:solid b-blue r-sm\n         bg-blue-10 fg-blue-80\n         box-decoration-break:clone\">\n    Clear thinking needs room to take shape.\n  </span>\n</div>"
     ],
     "css": "",
     "classes": [
       "width:220px",
       "max-width:100%",
-      "font-size-lg",
+      "font-lg",
       "line-height:2.2",
       "px-xs",
       "py-3xs",
@@ -25,9 +25,9 @@
       "box-decoration-break:clone"
     ],
     "classLists": [
-      "width:220px max-width:100% font-size-lg line-height:2.2",
+      "width:220px max-width:100% font-lg line-height:2.2",
       "px-xs py-3xs border-width:1px border-style:solid b-blue r-sm bg-blue-10 fg-blue-80 box-decoration-break:slice",
-      "width:220px max-width:100% font-size-lg line-height:2.2",
+      "width:220px max-width:100% font-lg line-height:2.2",
       "px-xs py-3xs border-width:1px border-style:solid b-blue r-sm bg-blue-10 fg-blue-80 box-decoration-break:clone"
     ],
     "highlighted": []

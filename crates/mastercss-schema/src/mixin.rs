@@ -82,6 +82,33 @@ pub struct UtilityDefinition {
     pub recipe: MixinDefinition,
 }
 
+impl UtilityDefinition {
+    /// Registration identity shared by execution, lowering and source tracking.
+    /// Parameter mode and body are deliberately excluded: a later definition
+    /// replaces the entire registration within the same token namespace.
+    pub fn identity(&self) -> String {
+        self.kind.identity(
+            &self.recipe.name,
+            self.recipe
+                .parameters
+                .first()
+                .map(|parameter| parameter.name.as_str()),
+        )
+    }
+}
+
+impl UtilityKind {
+    pub fn identity(self, name: &str, namespace: Option<&str>) -> String {
+        match self {
+            UtilityKind::Token => format!(
+                "Token:{}",
+                serde_json::to_string(&(name, namespace)).expect("utility identity")
+            ),
+            kind => format!("{kind:?}:{name}"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UtilityKind {

@@ -54,7 +54,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 15, bindingAbiVersion: 25 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: 26 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -68,15 +68,15 @@ it('explicit preset context reports matching separately from validity and browse
   } finally { context.dispose() }
 })
 
-it('keeps complete retired-token alternatives in both structured and JSON output', async () => {
+it('keeps complete ambiguous-token alternatives in both structured and JSON output', async () => {
   const context = project("@import \"@master/css\"; @theme { --font-family-brand: Brand; --font-size-brand: 1rem; }")
   try {
     const result = await inspectClass(context, { className: 'font-brand' })
-    expect(result.matchStatus).toBe('syntax-error')
+    expect(result.matchStatus).toBe('ambiguous')
     const response = jsonToolResult(result)
     expect(response.structuredContent).toEqual(JSON.parse((response.content[0] as { text: string }).text))
-    expect(JSON.stringify(response.structuredContent)).toContain('font-family-brand')
-    expect(JSON.stringify(response.structuredContent)).toContain('font-size-brand')
+    expect(JSON.stringify(response.structuredContent)).toContain('font-family:var(--font-family-brand)')
+    expect(JSON.stringify(response.structuredContent)).toContain('font-size:var(--font-size-brand)')
   } finally { context.dispose() }
 })
 
@@ -95,5 +95,15 @@ it('does not warn about retired builtins for registered project CSS classes', as
     expect(inspected.manifest).not.toHaveProperty('nativeClassNames')
     const other = await inspectClass(context, { className: 'size:30px' })
     expect(other.diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
+  } finally { context.dispose() }
+})
+
+it('queries every shared-prefix branch without merging namespace metadata', async () => {
+  const context = project()
+  try {
+    const result = await queryManifest(context, { context: 'preset', kind: 'family', query: 'font' })
+    expect(result.results.families.filter(family => family.prefix === 'font').map(family => family.namespace)).toEqual(['font-family', 'font-size', 'font-weight'])
+    const branch = await queryManifest(context, { context: 'preset', kind: 'family', namespace: 'font-size' })
+    expect(branch.results.families).toEqual([{ type: 'token-family', utility: 'font', prefix: 'font', namespace: 'font-size', argument: 'value', properties: ['font-size'] }])
   } finally { context.dispose() }
 })

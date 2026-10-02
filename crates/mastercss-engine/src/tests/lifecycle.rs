@@ -164,7 +164,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
-    let manifest = r#"{"version":6,"languageVersion":15,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
+    let manifest = r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     let inspection = engine.inspect("multi").unwrap();
     assert_eq!(inspection.rules.len(), 1);
@@ -341,16 +341,16 @@ fn removed_static_variable_and_managed_animation_fields_are_rejected() {
         r#""modes":[]"#,
     ] {
         assert!(
-            EngineSession::create(&format!(r#"{{"version":6,"languageVersion":15,{field}}}"#))
+            EngineSession::create(&format!(r#"{{"version":6,"languageVersion":16,{field}}}"#))
                 .is_err()
         );
     }
-    assert!(EngineSession::create(r#"{"version":6,"languageVersion":15,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
+    assert!(EngineSession::create(r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
 }
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":15}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["display:block", "made-up:nope"])
         .unwrap();
@@ -370,7 +370,7 @@ fn commits_native_declarations_without_host_support_filtering() {
 // Also replaces commits_only_host_supported_native_declarations with preservation assertions.
 // The final v2 contract preserves declarations; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":15}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["width:error", "width:10px"])
         .unwrap();
@@ -408,7 +408,7 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":6,"languageVersion":15}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["padding-left:calc(5x-2px)"])
         .unwrap();

@@ -13,7 +13,7 @@
 
 ## Does Not Own
 
-- Rust inference of token-family capabilities from mixin definitions.
+- Rust inference of token-family capabilities from utility definitions.
 - Engine execution behavior.
 - Project manifest discovery.
 - Build integration behavior.
@@ -40,8 +40,8 @@
 
 - Default manifest or native CSS artifact output changes.
 - Layer statement must stay `@layer theme, base, defaults, components, utilities;`.
-- Token namespace changes must align with the parameter namespaces of loaded value mixins.
-- Additional recipes must justify multiple declarations or parameters; single-property token mappings use the exact direct-value mixin shape.
+- Token namespace changes must align with the parameter namespaces of loaded utility patterns.
+- Additional recipes must justify multiple declarations or parameters; single-property token mappings use the exact direct-value body shape.
 
 ## Constraints
 
@@ -66,7 +66,7 @@ pnpm --filter @master/css-preset build
 
 Token values live in `src/theme.css`. All 119 value mappings and 7 recipes live in `src/utilities.css`. Rust reads explicit utility registrations and infers direct-value capabilities from their bodies; language/tooling `tokenFamilies()` exposes effective manifest metadata. Theme-only environments must load utilities or author their own. Do not edit generated projections.
 
-Author recipes in the stable `src/utilities.css` entrypoint using `@utility`. Only used classes and delivered native `@apply` roots emit CSS/resources. General parameter recipes require static arguments; token patterns bind symbolic token values. Grid counts and spans must be positive integers. Each preset token property has one canonical prefix and namespace. Use `font-size-*`, `font-family-*`, and `font-weight-*`. `text-*` is the explicit `@utility text-(--text <string>)` key recipe with explicit typography companion tokens; it is never a color alias. Direct declarations use full native property names. Vendor declaration pairs belong to Rust output rules.
+Author recipes in the stable `src/utilities.css` entrypoint using `@utility`. Only used classes and delivered native `@apply` roots emit CSS/resources. General parameter recipes require static arguments; token patterns bind symbolic token values. Grid counts and spans must be positive integers. Each token mapping has one canonical prefix. The font-family, font-size and font-weight namespaces share `font-*`; duration and easing share `transition-*` and `animation-*`. Delays retain distinct prefixes. A key must identify one namespace; ambiguity emits no CSS and requires a native declaration or distinct key. Metadata entries use prefix plus namespace. `text-*` is the explicit `@utility text-(--text <string>)` key recipe with explicit typography companion tokens; it is never a color alias. Direct declarations use full native property names. Vendor declaration pairs belong to Rust output rules.
 
 The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.
 

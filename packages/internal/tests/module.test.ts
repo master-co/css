@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":6,"languageVersion":15}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":6,"languageVersion":16}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,12 +42,12 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":15}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":16}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] };')
     expect(toManifestJSON({
   "version": 6 as const,
-  "languageVersion": 15 as const
-})).toBe('{"version":6,"languageVersion":15}')
+  "languageVersion": 16 as const
+})).toBe('{"version":6,"languageVersion":16}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
   })
@@ -103,7 +103,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 })
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -115,7 +115,7 @@ describe('@master/css-internal module helpers', () => {
       status: 200,
       json: async () => ({
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
@@ -130,7 +130,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)

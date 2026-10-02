@@ -2,7 +2,7 @@
 
 ## Canonical token families
 
-Direct values use full native properties, while explicit utilities define named-token families. Generate manifests and hydration data with matching packages. Manifest v6 uses language version 15 and binding ABI 25.
+Direct values use full native properties, while explicit utilities define named-token families. Generate manifests and hydration data with matching packages. Manifest v6 uses language version 16 and binding ABI 26.
 
 Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
 
@@ -91,7 +91,6 @@ Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their form
 | `box-shadow-*` | `shadow-*` |
 | `letter-spacing-*` | `tracking-*` |
 | `line-height-*` | `leading-*` |
-| `font-*` | Choose `font-size-*`, `font-family-*`, or `font-weight-*` from the original token definition |
 
 Use the [family catalog](/reference/tokens/families) to check the active preset prefixes. Project-defined mixins follow their authored definitions.
 
@@ -168,16 +167,16 @@ The RC column below is historical reference text, not executable new syntax. `br
 
 | RC reference | New syntax | Generated declaration or semantic change |
 | --- | --- | --- |
-| `font:mono` | `font-family-mono` | `font-family:var(--font-family-mono)` |
-| `font:bold` | `font-weight-bold` | `font-weight:var(--font-weight-bold)` |
-| `font:sm` | `font-size-sm` | `font-size:var(--font-size-sm)` |
+| `font:mono` | `font-mono` | `font-family:var(--font-family-mono)` |
+| `font:bold` | `font-bold` | `font-weight:var(--font-weight-bold)` |
+| `font:sm` | `font-sm` | `font-size:var(--font-size-sm)` |
 | `text:sm` | `text-sm` | Uses explicit typography tokens; review the intentional line-height and letter-spacing change. |
 | `fg:brand` | `fg-brand` | `color:var(--color-brand)` |
 | `bg:brand` | `bg-brand` | `background-color:var(--color-brand)` |
 | `p:md` | `p-md` | `padding:var(--spacing-md)` |
 | `m:-sm` | `-m-sm` | `margin:calc(var(--spacing-sm) * -1)` |
 | `fg:red/0.5` | `fg-red/0.5` | `color:color-mix(in oklab,var(--color-red) 50%,transparent)` |
-| `font:16px` | `font-size:16px` | Keeps the old font-size-only intent. |
+| `font:16px` | `font-size:16px` | Keeps the old font-only intent. |
 | `bg:#fff` with color-only intent | `background-color:#fff` | Keeps other background property. Use `background:#fff` only when resetting all background property is intended. |
 | `b:2px` with width-only intent | `border-width:2px` | Keeps border style and color. Use `border:2px` only when resetting the full border is intended. |
 | `outline:2px` with width-only intent | `outline-width:2px` | Native `outline:2px` resets the other outline property. |
@@ -211,7 +210,7 @@ For this new example, define the project color token explicitly:
 ```
 
 ```text name="New v2 syntax"
-font-family-mono:hover@sm!
+font-mono:hover@sm!
 p-md:hover fg-brand:hover
 ```
 
@@ -231,11 +230,11 @@ Validate the resulting CSS in a browser. A syntax match is distinct from CSS val
 
 Single-declaration fixed aliases are removed: use `background-size:cover` instead of `bg-cover`, and `display:block` instead of `block`. A defined `--color-cover` now makes `bg-cover` a color token. Exact static utilities take precedence; explicit token patterns replace the same form and prefix.
 
-Use `font-family-brand` or `font-size-brand` for their respective namespaces. The overloaded `font-brand` entry is removed regardless of which tokens exist.
+Use `font-brand` or `font-brand` for their respective namespaces. The overloaded `font-brand` entry is removed regardless of which tokens exist.
 
-Resolution uses the longest registered prefix. A missing `font-family-sm` does not fall back to `font-sm`. Hyphens inside token names remain part of the token: `p-card-body` selects `--spacing-card-body`.
+Resolution uses the longest registered prefix. A missing `font-sm` does not fall back to `font-sm`. Hyphens inside token names remain part of the token: `p-card-body` selects `--spacing-card-body`.
 
-Each built-in family reads exactly one namespace; there is no built-in namespace fallback. Negative names apply only to numeric tokens on properties that accept negative values; opacity suffixes apply only to color tokens and use the range `0..1`.
+Each registered pattern reads one namespace. Shared prefixes select a unique namespace by key; conflicting keys report ambiguity. Negative names apply only to numeric tokens on properties that accept negative values; opacity suffixes apply only to color tokens and use the range `0..1`.
 
 ### Direct values override tokens within the same scope
 
@@ -288,7 +287,7 @@ Replace `@master entry;` with `@import "@master/css";`, which loads the preset's
 
 Replace `@custom-variant`, `@variant` and `@slot` with `@custom-media` for named media queries or a mixin with `@contents` for selector, supports, container and combined wrappers. Replace the old media names `@all`, `@speech`, `@print`, `@screen`, `@motion` and `@reduce-motion` with native query suffixes or explicitly defined custom media.
 
-Define class recipes with root-level utilities. Built-in token families such as `font-family-sans` need no preset mapping directive.
+Define class recipes with root-level utilities. Built-in token families such as `font-sans` need no preset mapping directive.
 
 ```css name="Utility definitions"
 @utility pair(--size) {
@@ -309,10 +308,10 @@ Use `pair(2rem)` or `pair-token-card`. The token pattern reads the `pair` namesp
 
 Regenerate artifacts from their source definitions and deploy a coordinated package set:
 
-- Manifest **v4**, language **v12**, binding ABI **22**, hydration **v3** and engine transition **v3** reject incompatible data.
+- Manifest **v6**, language **v16**, binding ABI **26**, hydration **v4** and engine transition **v4** reject incompatible data.
 - Scoped variables contain ordered `values` with authored `path` and `value`; `theme` preserves the native selector/condition tree. Remove scalar `value`, `modes`, `inline` and `static` variable fields.
 - Remove manifest `settings`, `modes`, `animations`, `animationOptions` and `breakpointConditions`. Use default theme tokens, native overrides, `customMedia` and mixins.
-- Recompile into Manifest v6 / language 15 / ABI 25. Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
+- Managed keyframes use the `keyframes` field, separate resource order and `emittedGlobals.keyframes`; the removed `animations` fields are not restored.
 - Regenerate validator, diagnostics, lint and language reports with their updated protocol versions.
 - Rebuild native and Wasm artifacts, generated CSS, server output and progressive payloads together.
 
@@ -604,7 +603,7 @@ The following is **historical RC syntax, for comparison only**:
 @utility size(--value) { width: var(--value); height: var(--value); }
 ```
 
-Call `size(20px)`. Use built-in `font-family-sans` for a family token. A custom cross-namespace recipe needs primary theme tokens and an explicit token pattern; there is no replacement mapping directive.
+Call `size(20px)`. Use built-in `font-sans` for a family token. A custom cross-namespace recipe needs primary theme tokens and an explicit token pattern; there is no replacement mapping directive.
 
 A unique raw-any pattern can be simplified safely. Typed-only patterns, colon enums and overloads require review because `:<*>` accepts more values. Previously unmatched or ineffective input can start generating effective CSS. Do not silently turn `x:<number>` into `x:<*>` without auditing its uses.
 
@@ -660,7 +659,7 @@ Tooling checks static numeric types as well as math grammar. `width:calc(1px + 1
 
 Next Webpack CSS Modules keep generated theme variables on the compiler's root/mode selectors, delivered through global CSS assets. Remove workarounds that relied on variables copied onto every component: ancestor overrides and nested themes now inherit normally. Turbopack's existing CSS Module directive limitations remain; use native variables from global CSS within Modules.
 
-Rebuild native/Wasm bindings (ABI 25), preset manifests and hydration alongside sources. Manifest envelopes are v6, hydration envelopes are v4, and executable manifests require language version 15; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
+Rebuild native/Wasm bindings (ABI 26), preset manifests and hydration alongside sources. Manifest envelopes are v6, hydration envelopes are v4, and executable manifests require language version 16; preserve actual rule/resource/CSSOM verification. Validate light/dark and manual modes, ancestor overrides, route order, HMR and all affected dimensions in browsers before release.
 
 
 ## Native adaptive colors
@@ -690,7 +689,7 @@ master-css migrate src master.css --from rc-mixins --source-version YOUR_SAVED_R
 
 Review the proposal, then add `--write` to apply safe edits. The profile rewrites `p:1rem` to `padding:1rem`, `block` to `display:block`, and `grid-cols:3@sm` to `grid-cols(3)@sm`. Native `r:2px` remains the SVG radius in the new language; old border-radius intent must migrate to `border-radius:2px`.
 
-Named tokens use canonical prefixes such as `p-md`, `font-size-sm`, `font-family-sans`, and `bg-red-60`. Replace every `font-*` token with its explicit font family. `text-sm` sets font size, line height and letter spacing using primary and companion tokens; old `text-red` color usage becomes `fg-text-red`. Review typography on desktop and mobile because the old formulas are removed.
+Named tokens use canonical prefixes such as `p-md`, `font-sm`, `font-sans`, and `bg-red-60`. `text-sm` sets font size, line height and letter spacing using primary and companion tokens; old `text-red` color usage becomes `fg-text-red`. Review typography on desktop and mobile because the old formulas are removed.
 
 General static recipes cannot receive external `var()` or `attr()` values. Exact direct-value mixins may forward external `var()` expressions unchanged; move other dynamic recipes to ordinary CSS declarations. Only used classes and delivered native `@apply` roots emit CSS and retain tokens. Unused definitions and undelivered `@reference` styles do not retain resources.
 
@@ -724,7 +723,7 @@ include `infinite` explicitly. Companion tokens no longer configure animation
 fields. Replace preset `animate("reveal")` calls with `animate-reveal`, and
 `@apply --animate("reveal");` with `animation: var(--animate-reveal);`.
 
-At the same layer and conditions, a token longhand such as `animation-duration-fast`
+At the same layer and conditions, a token longhand such as `animation-fast`
 sorts before the animation shorthand. For an override, use
 `animation-duration:var(--duration-fast)` or change the complete animation token.
 Class attribute order does not change the cascade. See [animation tokens](/reference/tokens/animate)

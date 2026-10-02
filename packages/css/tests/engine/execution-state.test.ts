@@ -30,7 +30,7 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     expect(engine.executionState(["display:block"]).classes[0].references).toEqual([])
     engine.refresh({
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 })
     expect(engine.executionState(["display:block@layer(base)"]).classes[0].references).toEqual([{ layer: 'base', key: 'display:block@layer(base)\0@layer(base)' }])
   } finally {

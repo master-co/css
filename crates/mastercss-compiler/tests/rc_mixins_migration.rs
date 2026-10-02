@@ -134,7 +134,7 @@ fn native_colon_values_win_over_historical_fixed_names_and_migration_is_idempote
 
 #[test]
 fn removed_token_spellings_require_manual_review_without_new_migrations() {
-    let result = migrate(&["font-sm", "padding-md"], &[]);
+    let result = migrate(&["font-size-sm", "padding-md"], &[]);
     for item in &result.class_lists[0] {
         assert_eq!(item.status, "review", "{}", item.before);
         assert!(item.after.is_none());
@@ -143,5 +143,9 @@ fn removed_token_spellings_require_manual_review_without_new_migrations() {
                 .iter()
                 .any(|note| note.contains("canonical family"))
         );
+    }
+    for item in &migrate(&["font-sm", "font-sans", "font-bold"], &[]).class_lists[0] {
+        assert_eq!(item.status, "unchanged");
+        assert_eq!(item.after.as_deref(), Some(item.before.as_str()));
     }
 }

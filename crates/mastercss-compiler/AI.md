@@ -17,7 +17,7 @@ and compiler report IR.
 
 TypeScript supplies files and package resolution; Rust remains the semantic source.
 Directive behavior changes require compiler tests and the public directive guide.
-`@theme` accepts only ordered custom properties and direct managed keyframes.
+`@theme` accepts only ordered custom properties. Keyframes remain native CSS with per-file preserve/prune policy.
 Tokens use `:root,:host`; static retains them and inline substitutes values once in
 Master-generated declarations. Native custom properties do not register tokens.
 

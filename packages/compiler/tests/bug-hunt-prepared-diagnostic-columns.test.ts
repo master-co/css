@@ -33,7 +33,7 @@ for (const source of [
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, sourceMap: prepared.sourceMap, loadSass: identity })
     throw new Error('Expected invalid compose')
   } catch (error: any) {
@@ -71,6 +71,6 @@ test('rendered root diagnostics are mapped once through the Sass source map', as
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, sourceMap: prepared.sourceMap, loadSass: identity })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: file, range: { start: expect.objectContaining({ line: 3 }), end: expect.objectContaining({ line: 3 }) } })] })
 })

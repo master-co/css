@@ -87,7 +87,7 @@ describe('css manifest loader', () => {
       getOptions: () => ({ module: true })
     })
     const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
-    expect(manifest.languageVersion).toBe(15)
+    expect(manifest.languageVersion).toBe(16)
     expect(JSON.stringify(manifest)).toContain('#123')
     expect(source).not.toContain('fetch(')
     expect(source).not.toContain('/_next/')

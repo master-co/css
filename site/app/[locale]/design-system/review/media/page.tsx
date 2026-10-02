@@ -11,7 +11,7 @@ export const metadata = {
 function FloatExample() {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
-      <DemoSurface className="display:flow-root p-md font-size-sm">
+      <DemoSurface className="display:flow-root p-md font-sm">
         <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
         <DemoText className="margin:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
       </DemoSurface>

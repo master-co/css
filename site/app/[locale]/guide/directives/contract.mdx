@@ -303,7 +303,7 @@ Use `card-layout`, `gap-x-sm`, and `grid-cols(3)@sm` in markup. The header deter
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
 Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Genuine native names such as SVG `r` retain their native meaning.
 
-Named tokens use spellings such as `p-md`, `fg-red-60`, `font-size-sm`, `font-family-sans`, and `font-weight-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 119 direct-value families and 7 recipes; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces.
+Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 119 direct-value families and 7 recipes; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces.
 
 ### Token patterns \{#named-token-patterns\}
 A pattern has one trailing placeholder. Its parameter names the token namespace; the fixed part names the class prefix. An untyped placeholder binds the token value:
@@ -337,7 +337,17 @@ A `<string>` placeholder binds the token key, allowing explicit companion refere
 
 `text-hero` binds the string `"hero"`. A matching primary token is required. Companion keys containing `--` do not create classes, and missing companions use the authored fallback. `ident()` folds statically into an ordinary CSS identifier. The namespace comes from the parameter, so `@utility type-(--text <string>)` uses the same tokens with a different class prefix. Token placeholders accept no defaults or other types.
 
-Fixed classes take priority over patterns. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Later definitions replace the entire registration with the same form and name.
+A shared prefix can expose several namespaces explicitly:
+
+```css
+@utility font-(--font-family) { font-family: var(--font-family); }
+@utility font-(--font-size) { font-size: var(--font-size); }
+@utility font-(--font-weight) { font-weight: var(--font-weight); }
+```
+
+`font-sans`, `font-sm` and `font-bold` each select the one namespace containing that key. A key present in multiple branches reports `AMBIGUOUS_TOKEN` when used and produces no CSS. Use distinct keys or a native declaration such as `font-size:var(--font-size-brand)`. This rule also applies to string-key recipes and bodies with multiple declarations. Negation and opacity are checked only after a unique branch is selected.
+
+Fixed classes take priority over patterns. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Token patterns sharing a prefix coexist when their parameter namespaces differ. A later pattern replaces the entire definition with the same decoded prefix and namespace, including its parameter mode, body, source and dependencies. Static and function registrations replace the same form and name independently.
 
 Negative values and opacity apply to the direct-value subset: one untyped placeholder and one native declaration whose entire value is `var(--parameter)`. `-m-md` negates a numeric spacing token; `-p-md` is invalid because padding does not support negative values. `fg-red/.5` applies opacity to a color token, with opacity between zero and one. These capabilities do not extend to general multi-declaration or string-key recipes.
 
@@ -416,7 +426,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v6 with languageVersion 15 and binding ABI 25. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 26. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
@@ -864,9 +874,9 @@ Automatic discovery respects project/workspace `.gitignore` files and excludes g
 
 A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
 
-An exact static utility wins over token patterns. Otherwise the longest family prefix wins. A later definition replaces the same utility form and name; static, token and function registrations remain independent. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
+An exact static utility wins over token patterns. Otherwise the longest family prefix wins. Token patterns are identified by their decoded prefix and namespace; a later definition replaces only that branch. Static and function registrations use their form and name independently. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
 
-Use `font-size-brand`, `font-family-brand`, or `font-weight-brand`. Each family reads exactly one namespace, so adding a token never changes another family’s interpretation.
+The preset registers `font-(--font-family)`, `font-(--font-size)` and `font-(--font-weight)`. Use `font-sans`, `font-sm` and `font-bold` to set the respective native properties. If both `--font-family-brand` and `--font-size-brand` exist, `font-brand` reports `AMBIGUOUS_TOKEN` and emits no CSS. Diagnostics identify the conflicting tokens and effective definition sources. Write `font-size:var(--font-size-brand)` to select a property explicitly. Sign, opacity, token value and definition order do not resolve ambiguity; static exact matches still take priority.
 
 Use explicit width and height declarations for paired dimensions, or author a function utility such as `box(--size)`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning.
 
@@ -876,4 +886,4 @@ The preset’s direct-value `animate-*` family maps `--animate-*` values to the 
 
 ## Token family names
 
-Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Manifest v6 uses language version 15 and binding ABI 25.
+Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 16 and binding ABI 26.

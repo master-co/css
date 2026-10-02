@@ -7,7 +7,7 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 const baseManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const,
+  "languageVersion": 16 as const,
   mixins: [
   {
     "name": "--all",

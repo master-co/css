@@ -97,7 +97,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                 </p>
 
                 {status === 'verification-link-sent' && (
-                  <div className="font-weight-medium mt-2 text-green-600 text-sm">
+                  <div className="font-medium mt-2 text-green-600 text-sm">
                     A new verification link has been sent to your email address.
                   </div>
                 )}

@@ -191,9 +191,9 @@ fn parameters_are_private_and_do_not_cross_element_boundaries() {
 }
 
 #[test]
-fn token_maps_require_explicit_mixin_definitions() {
+fn token_maps_require_explicit_utility_definitions() {
     let source = "@theme {--font-size-sm:.875rem;--font-family-sans:system-ui;--font-weight-bold:700;--spacing-md:1rem;--color-red-60:red;--color-surface-base:white}";
-    assert!(css(source, &["p-md", "bg-red-60", "font-size-sm"]).is_empty());
+    assert!(css(source, &["p-md", "bg-red-60", "font-sm"]).is_empty());
     let output = css(
         &format!(
             "{}{}",
@@ -201,9 +201,9 @@ fn token_maps_require_explicit_mixin_definitions() {
             source
         ),
         &[
-            "font-size-sm",
-            "font-family-sans",
-            "font-weight-bold",
+            "font-sm",
+            "font-sans",
+            "font-bold",
             "p-md",
             "bg-red-60",
             "bg-surface-base",
@@ -220,7 +220,7 @@ fn token_maps_require_explicit_mixin_definitions() {
         assert!(output.contains(declaration), "{declaration}: {output}");
     }
     let session = engine(
-        "@theme {--font-size-brand:1rem;--font-family-brand:serif}@mixin --font-size(--font-size){font-size:var(--font-size)} @utility font-size(--font-size) {font-size:var(--font-size)}@utility font-size-(--font-size) {font-size:var(--font-size)}@mixin --font-family(--font-family){font-family:var(--font-family)} @utility font-family(--font-family) {font-family:var(--font-family)}@utility font-family-(--font-family) {font-family:var(--font-family)}",
+        "@theme {--font-size-brand:1rem;--font-family-brand:serif}@mixin --font-size(--font-size){font-size:var(--font-size)} @utility font-size(--font-size) {font-size:var(--font-size)}@utility font-(--font-size) {font-size:var(--font-size)}@mixin --font-family(--font-family){font-family:var(--font-family)} @utility font-family(--font-family) {font-family:var(--font-family)}@utility font-(--font-family) {font-family:var(--font-family)}",
     );
     assert!(
         session
@@ -228,7 +228,7 @@ fn token_maps_require_explicit_mixin_definitions() {
             .unwrap()
             .diagnostics
             .iter()
-            .any(|diagnostic| diagnostic.code == ErrorCode::ClassSyntaxError)
+            .any(|diagnostic| diagnostic.code == ErrorCode::AmbiguousToken)
     );
 }
 

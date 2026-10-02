@@ -122,7 +122,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
   const { tokens } = renderTokens(
-    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-family-mono_:is(code,pre)@layer(base) font-weight-semibold_:headings font-weight-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
+    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@layer(base) font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({

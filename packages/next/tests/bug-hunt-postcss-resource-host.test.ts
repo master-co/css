@@ -20,7 +20,7 @@ interface Root { append(node: unknown): void; walkDecls(callback: (declaration: 
 interface Output { source: string; sourceMap: string; globalAnimations: string[]; processedGlobals?: Required<MasterCSSEmittedGlobals> }
 const baseManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 }
 const source = `@theme {--color-old:#111111;--color-late:#abcdef;--color-child:#010203;--shape-late:url("../late.svg?rev=1#shape")}
 .card{color:var(--color-old)}`

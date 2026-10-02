@@ -71,7 +71,7 @@ fn discovers_entries_and_compiles_local_imports() {
     assert_eq!(entries.len(), 1);
     let result = load_project_manifest_entries(
         &entries,
-        serde_json::json!({"version":6,"languageVersion":15}),
+        serde_json::json!({"version":6,"languageVersion":16}),
     )
     .unwrap();
     let mut scanner = ScannerSession::create(&result.manifest.to_string()).unwrap();
@@ -113,7 +113,7 @@ fn excludes_generated_stylesheets_from_implicit_entries_only() {
 
     let explicit = load_project_manifest_entries(
         std::slice::from_ref(&generated),
-        serde_json::json!({"version":6,"languageVersion":15}),
+        serde_json::json!({"version":6,"languageVersion":16}),
     )
     .unwrap();
     assert_eq!(
@@ -193,7 +193,7 @@ fn resolves_entry_owned_source_plans_and_arbitrary_extensions() {
 
     let result = load_project_manifest(
         &project,
-        serde_json::json!({"version":6,"languageVersion":15}),
+        serde_json::json!({"version":6,"languageVersion":16}),
     )
     .unwrap();
     let entry_plan = &result.source_plan.entries[0];
@@ -234,7 +234,7 @@ fn resolves_bare_source_patterns_from_the_declaring_stylesheet() {
 
     let result = load_project_manifest(
         &project,
-        serde_json::json!({"version":6,"languageVersion":15}),
+        serde_json::json!({"version":6,"languageVersion":16}),
     )
     .unwrap();
     assert_eq!(

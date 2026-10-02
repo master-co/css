@@ -13,7 +13,7 @@ const bodyCopy = 'Text wraps around the floated image and continues in the remai
 function FloatExample() {
   return (
     <Demo title="Text flow" caption="The width and float belong to the lesson; text stays in normal flow.">
-      <DemoSurface className="display:flow-root p-md font-size-sm">
+      <DemoSurface className="display:flow-root p-md font-sm">
         <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
         <DemoText className="margin:0">{bodyCopy}</DemoText>
       </DemoSurface>
@@ -59,7 +59,7 @@ export default function Page() {
         <div className="review-text-actualUse">
           <div><span className="review-text-useLabel">Body text</span><FloatExample /></div>
         </div>
-        <p className="review-text-optionNote">The paragraph inherits <code>font-size-sm</code>; lead and caption styles do not enter the float lesson.</p>
+        <p className="review-text-optionNote">The paragraph inherits <code>font-sm</code>; lead and caption styles do not enter the float lesson.</p>
       </section>
     </main>
   )

@@ -120,7 +120,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   })
   await init(page, "@layer utilities{.display\\:block{display:block}}", undefined, {
   "version": 4 as const,
-  "languageVersion": 15 as const,
+  "languageVersion": 16 as const,
   "rules": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })

@@ -38,7 +38,7 @@ export const authoringSource = `@theme {
   }
 }`
 
-export const authoringHTML = "<article class=\"p-lg border-width:1px border-style:solid b-line-divider r-lg content-auto\">\n  <h2 class=\"margin:0 font-size-lg font-weight-semibold\">Project settings</h2>\n  <p class=\"my-md fg-text-muted\">Shared tokens keep actions consistent across apps.</p>\n  <button type=\"button\" class=\"btn transition-property:background-color@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:var(--easing-smooth)@motion-safe\">Save changes</button>\n</article>"
+export const authoringHTML = "<article class=\"p-lg border-width:1px border-style:solid b-line-divider r-lg content-auto\">\n  <h2 class=\"margin:0 font-lg font-semibold\">Project settings</h2>\n  <p class=\"my-md fg-text-muted\">Shared tokens keep actions consistent across apps.</p>\n  <button type=\"button\" class=\"btn transition-property:background-color@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:var(--easing-smooth)@motion-safe\">Save changes</button>\n</article>"
 
 export function authoringCSS() {
   return configuredExampleCSS(authoringSource, configuredMarkupClasses(authoringHTML))

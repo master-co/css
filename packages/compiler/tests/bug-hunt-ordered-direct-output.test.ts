@@ -27,7 +27,7 @@ const baseManifest = {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 const source = "@mixin --paint {padding:2rem} @utility paint {padding:2rem}@layer{.card{@apply --all {padding:2rem;}}.card{padding:3rem!important}}"
 

@@ -1,14 +1,14 @@
 {
   "version": 3,
-  "languageVersion": 15,
+  "languageVersion": 16,
   "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@utility erased { color:red; }\n@utility erased {}\n@utility pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {
       "className": "font-brand",
-      "matchStatus": "syntax-error",
+      "matchStatus": "ambiguous",
       "cssValueStatus": "not-checked",
-      "code": "CLASS_SYNTAX_ERROR",
-      "cssSyntaxStatus": "invalid"
+      "code": "AMBIGUOUS_TOKEN",
+      "cssSyntaxStatus": "not-checked"
     },
     {
       "className": "padding:red",

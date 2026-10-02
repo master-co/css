@@ -366,9 +366,7 @@ pub(crate) fn resolve_definitions(
     .map_err(|error| fail(error.to_string()))?;
     seen.clear();
     utilities.reverse();
-    utilities.retain(|definition| {
-        seen.insert(format!("{:?}:{}", definition.kind, definition.recipe.name))
-    });
+    utilities.retain(|definition| seen.insert(definition.identity()));
     utilities.reverse();
     mastercss_engine::validate_utilities(&definitions, &utilities).map_err(fail)?;
     for definition in &mut utilities {

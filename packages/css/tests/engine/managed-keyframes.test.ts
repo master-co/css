@@ -57,7 +57,7 @@ test.each(['fade', 'flash', 'float', 'heart', 'jump', 'ping', 'pulse', 'rotate',
 test('animation tokens use general ordering and direct longhands override the shorthand', async () => {
   const native = await createEngine({ manifest, binding: 'native' })
   const wasm = await createEngine({ manifest, binding: 'wasm' })
-  const classes = ['animate-fade', 'animation-duration-fast', 'animation-duration:var(--duration-slow)', 'animation-iteration-count:1']
+  const classes = ['animate-fade', 'animation-fast', 'animation-duration:var(--duration-slow)', 'animation-iteration-count:1']
   try {
     native.ensureClassRules(classes)
     wasm.ensureClassRules(classes)

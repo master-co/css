@@ -10,8 +10,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration-slow::view-transition-group(panel)',
-  'animation-duration-slow::view-transition-group(title)',
+  'animation-slow::view-transition-group(panel)',
+  'animation-slow::view-transition-group(title)',
 ].join(' ')
 
 const views = [
@@ -87,7 +87,7 @@ export default function ViewTransitionDemo() {
                 type="button"
               >
                 <span className={clsx('display:inline-block height:0.5rem width:0.5rem mr-xs border-radius:100%', view.accent)} />
-                <span className="text-sm font-weight-medium">{view.title}</span>
+                <span className="text-sm font-medium">{view.title}</span>
                 <span className="display:block mt-2xs text-xs fg-text-body">{view.eyebrow}</span>
               </button>
             )
@@ -98,8 +98,8 @@ export default function ViewTransitionDemo() {
           'display:flex flex-direction:column view-transition-name:panel',
           active.tint
         )}>
-          <p className="margin:0 text-xs font-weight-medium fg-text-body">{active.eyebrow}</p>
-          <h3 className="margin-inline:0 mt-sm margin-bottom:0 text-2xl font-weight-semibold view-transition-name:title text-3xl@container((width>=16rem))">
+          <p className="margin:0 text-xs font-medium fg-text-body">{active.eyebrow}</p>
+          <h3 className="margin-inline:0 mt-sm margin-bottom:0 text-2xl font-semibold view-transition-name:title text-3xl@container((width>=16rem))">
             {active.title}
           </h3>
           <div className={clsx('height:0.25rem width:2em mt-md border-radius:1e9em opacity:.8', active.accent)} />

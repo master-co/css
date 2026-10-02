@@ -7,27 +7,24 @@
       "v2": "font-mono",
       "rcDeclarations": "font-family:var(--font-family-mono)",
       "v2Declarations": "font-family:var(--font-family-mono)",
-      "current": "font-family-mono",
-      "currentDeclarations": "font-family:var(--font-family-mono)",
-      "canonicalFamilyReview": true
+      "current": "font-mono",
+      "currentDeclarations": "font-family:var(--font-family-mono)"
     },
     {
       "rc": "font:bold",
       "v2": "font-bold",
       "rcDeclarations": "font-weight:var(--font-weight-bold)",
       "v2Declarations": "font-weight:var(--font-weight-bold)",
-      "current": "font-weight-bold",
-      "currentDeclarations": "font-weight:var(--font-weight-bold)",
-      "canonicalFamilyReview": true
+      "current": "font-bold",
+      "currentDeclarations": "font-weight:var(--font-weight-bold)"
     },
     {
       "rc": "font:sm",
       "v2": "font-sm",
       "rcDeclarations": "font-size:var(--font-size-sm)",
       "v2Declarations": "font-size:var(--font-size-sm)",
-      "current": "font-size-sm",
-      "currentDeclarations": "font-size:var(--font-size-sm)",
-      "canonicalFamilyReview": true
+      "current": "font-sm",
+      "currentDeclarations": "font-size:var(--font-size-sm)"
     },
     {
       "rc": "font:16px",

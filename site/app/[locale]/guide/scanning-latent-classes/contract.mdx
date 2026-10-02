@@ -15,11 +15,11 @@ The scanner does not run your app. Source extractors collect complete static str
 ```html name=src/index.html
 <!-- @MARK card p-md bg-white shadow-md -->
 <article class="p-md bg-white shadow-md card">
-  <h2 class="font-size-lg font-weight-semibold">Release notes</h2>
+  <h2 class="font-lg font-semibold">Release notes</h2>
 </article>
 ```
 
-The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-size-lg`, and `font-weight-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
+The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
 
 The generated result for `p-md` and `shadow-md` includes their theme dependencies:
 

@@ -76,7 +76,7 @@ describe('static export e2e', () => {
       expect(existsSync(manifestFile), `${source} should exist in the static export`).toBe(true)
       const manifest = JSON.parse(readFileSync(manifestFile, 'utf-8'))
       expect(manifest.version).toBe(4)
-      expect(manifest.languageVersion).toBe(15)
+      expect(manifest.languageVersion).toBe(16)
       expect(manifest.rules.length).toBeGreaterThan(0)
     }
     const requests: { path: string; raw: number; gzip: number; brotli: number }[] = []
@@ -106,7 +106,7 @@ describe('static export e2e', () => {
       expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(true)
       expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
       if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({
-        languageVersion: 15, delivery: 'bundler-esm', requests,
+        languageVersion: 16, delivery: 'bundler-esm', requests,
         compression: 'Measured from fetched response bodies; local test server sends uncompressed responses.',
         timing: await page.evaluate(() => performance.getEntriesByType('resource').map(entry => {
           const resource = entry as PerformanceResourceTiming

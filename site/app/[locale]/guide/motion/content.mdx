@@ -28,7 +28,15 @@ Choose easing tokens for repeated motion decisions, or use explicit CSS curves s
 See the complete [values and consumers](/reference/tokens/easing) in Reference.
 
 ## Namespaces for motion
-`animation-duration-` and `transition-duration-` share duration tokens; `transition-timing-function-` reads easing tokens. See [all consumers](/reference/tokens/families).
+Both `animation-` and `transition-` register the `duration` and `easing` namespaces. `animation-fast` sets `animation-duration`; `animation-smooth` sets `animation-timing-function`. `transition-fast` and `transition-smooth` set the corresponding transition properties. Keys must be unique across the two namespaces. Delays use `animation-delay-fast` or `transition-delay-fast` because they read the same duration tokens. See [all consumers](/reference/tokens/families).
+
+Set an animation name and its timing independently:
+
+```html
+<div class="animation-name:fade animation-fast animation-smooth animation-fill-mode:both">Ready</div>
+```
+
+<Class2CSS>{['animation-name:fade', 'animation-fast', 'animation-smooth', 'animation-fill-mode:both']}</Class2CSS>
 
 ## Use motion tokens
 Use a named animation token and override individual settings with full-property declarations when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.
@@ -40,7 +48,7 @@ Use a named animation token and override individual settings with full-property 
 
 <Class2CSS>{['animate-fade', 'animation-duration:var(--duration-fast)', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration:var(--duration-slowest)@motion-safe']}</Class2CSS>
 
-Token classes follow the general declaration order. At the same layer and conditions, `animation-duration-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `animation-duration:var(--duration-fast)` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
+Token classes follow the general declaration order. At the same layer and conditions, `animation-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `animation-duration:var(--duration-fast)` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
 
 ## Transition properties
 
@@ -48,10 +56,10 @@ Token classes follow the general declaration order. At the same layer and condit
 Select the property, duration and timing function independently. A transition runs when the selected property's value changes.
 
 ```html
-<button class="opacity:.7 opacity:1:hover transition-property:opacity transition-duration-fast transition-timing-function-smooth">Save</button>
+<button class="opacity:.7 opacity:1:hover transition-property:opacity transition-fast transition-smooth">Save</button>
 ```
 
-<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'transition-property:opacity', 'transition-duration-fast', 'transition-timing-function-smooth']}</Class2CSS>
+<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'transition-property:opacity', 'transition-fast', 'transition-smooth']}</Class2CSS>
 
 ## Respect motion preference
 Use `@motion-safe` so nonessential motion only runs when the user has not requested reduced motion. Keep status text visible in either state.

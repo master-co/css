@@ -34,7 +34,7 @@ Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and 
 The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them.
 
 ```html
-<h2 class="font-size-lg font-size-2xl@sm font-size-3xl@md">Responsive heading</h2>
+<h2 class="font-lg font-2xl@sm font-3xl@md">Responsive heading</h2>
 ```
 
 Selectors work with every condition:

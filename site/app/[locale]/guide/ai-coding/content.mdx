@@ -268,7 +268,7 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 
 Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Use native CSS units for lengths and resolution descriptors in `image-set()`. Do not invent numeric names such as `p-4` unless the project defines that token.
 
-Resolve ambiguous short names with an explicit prefix, for example `font-family-brand` or `font-size-brand`. Check compiler diagnostics and generated declarations; the revised spelling alone does not establish CSS validity or improved AI accuracy.
+For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `font-family:var(--font-family-brand)` or `font-size:var(--font-size-brand)`. Check compiler diagnostics and generated declarations.
 
 Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
 

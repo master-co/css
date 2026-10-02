@@ -12,6 +12,15 @@ const customManifest = createPresetManifest({
   ]
 })
 
+createTester({ settings: { '@master/css': { manifest: {
+  version: 6, languageVersion: 16,
+  utilities: createPresetManifest().utilities,
+  variables: { 'font-family': [{ key: 'sans', values: [{ path: [':root,:host'], value: 'sans-serif' }] }] }
+} } } }).run('shared prefix raw value policy follows the property namespace', rule, {
+  valid: [{ code: '<div class="font-size:15px font-weight:700 font-sans" />' }],
+  invalid: [{ code: '<div class="font-family:serif" />', errors: [{ messageId: 'unapprovedRawValue' }] }]
+})
+
 type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
 const registryFieldManifest = createPresetManifest({
   variables: [
@@ -30,7 +39,7 @@ jsxTester.run('no unapproved raw values', rule, {
     { code: '<div class="font-size:15px">Unregulated property</div>', options: [{ requireProperties: ['color'] }] },
     { code: '<div class="color:red">Explicit exception wins</div>', options: [{ requireProperties: ['color'], allowProperties: ['color'] }] },
     { code: '<div class="color:var(--color-brand)">Native variable</div>', options: [{ requireProperties: ['color'] }] },
-    { code: "<div class=\"font-size-md m-md margin:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-align:center\">Tokens and static utilities</div>" },
+    { code: "<div class=\"font-md m-md margin:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-align:center\">Tokens and static utilities</div>" },
     { code: `<div class="font: unknown-class">Invalid and unknown classes are ignored</div>` },
     {
       code: `<div class="font-size:15px">Raw values disabled</div>`,

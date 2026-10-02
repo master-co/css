@@ -96,7 +96,7 @@ describe('class sorting', () => {
 
   test('sorts generated classes into readable property groups', () => {
     const classNames = [
-      'font-weight-heavy',
+      'font-heavy',
       'bg-black:hover',
       "padding-inline:0.75rem@sm",
       "position:relative",
@@ -139,7 +139,7 @@ describe('class sorting', () => {
       "padding:1rem",
       'r-lg',
       "border:1px|solid|var(--color-gray-30)",
-      'font-weight-heavy',
+      'font-heavy',
       "text-align:center",
       'bg-blue-60',
       'fg-white',

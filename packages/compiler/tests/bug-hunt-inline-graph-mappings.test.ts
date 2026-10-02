@@ -31,7 +31,7 @@ for (const binding of ['native', 'wasm'] as const) {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
@@ -70,7 +70,7 @@ test('Node manifest files and references reject qualified global definitions', a
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).toThrow(/Qualified import.*global @mixin/)
       await expect(compileRenderedStylesheet(join(root, 'card.css'), "@reference \"./entry.css\";.card{@apply --all{padding:2rem;}}", { projectDir: root, baseManifest: {
   mixins: [
@@ -91,7 +91,7 @@ test('Node manifest files and references reject qualified global definitions', a
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).rejects.toThrow(/Qualified import.*global @mixin/)
 
     }

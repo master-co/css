@@ -34,11 +34,11 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
             <div className="display:flex align-items:baseline justify-content:space-between gap-sm">
               <div className="display:flex align-items:center gap-xs min-width:0">
                 {item.icon}
-                <span id={labelId} className="min-width:0 font-size-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-width:0 font-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
               <div className="display:flex align-items:baseline gap-xs white-space:nowrap">
-                <strong id={valueId} className="font-size-sm font-weight:460 fg-text-strong">{valueLabel}</strong>
-                {item.detail && <span className="font-size-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
+                <strong id={valueId} className="font-sm font-weight:460 fg-text-strong">{valueLabel}</strong>
+                {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
             <div

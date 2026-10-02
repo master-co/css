@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn native_animation_values_never_register_or_synthesize_keyframes() {
-    let manifest = json!({"version":6,"languageVersion":15}).to_string();
+    let manifest = json!({"version":6,"languageVersion":16}).to_string();
     for css in [
         ".x{animation:fade 1s}",
         ".x{animation-name:\"fade\"}",
@@ -67,7 +67,7 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
 #[test]
 fn materialized_stylesheet_slots_preserve_empty_and_duplicate_asset_positions() {
     let mut session =
-        RenderSession::create(&json!({"version":6,"languageVersion":15}).to_string(), None)
+        RenderSession::create(&json!({"version":6,"languageVersion":16}).to_string(), None)
             .unwrap();
     for css in [
         "",

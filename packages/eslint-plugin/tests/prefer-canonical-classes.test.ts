@@ -74,7 +74,7 @@ const customManifest = createPresetManifest({
 
 jsxTester.run('prefer canonical classes', rule, {
     valid: [
-{ code: `<div class="text-align:center font-size-md m-md r-md fg-red-60">Recommended classes</div>` },
+{ code: `<div class="text-align:center font-md m-md r-md fg-red-60">Recommended classes</div>` },
 { code: "<div class=\"btn width:futurekeyword unknown-class\">Unknown classes are ignored</div>" },
 { code: `<div class="text-muted grid-col-span:4">Custom classes are left to validation</div>` },
 {
@@ -144,7 +144,7 @@ code: 'ctl(`font-size:1rem r:.375rem`)'
 code: "ctl(`width:1rem height:1rem`)"
 },
 {
-code: `<div class="font-size-md bg-red-60">Named token keys</div>`
+code: `<div class="font-md bg-red-60">Named token keys</div>`
 },
 {
 code: `<div class="display:block@dark@sm display:block:hover@dark@sm block!@dark@sm">Condition order</div>`

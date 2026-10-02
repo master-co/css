@@ -18,7 +18,7 @@ pub(crate) fn collect(source: &str, filename: &str) -> Vec<CssDefinitionSource> 
         };
         let (kind, identity, name) = if matches!(&first.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("utility")) {
             let definition = crate::utilities::definition(&source[start..end], "").ok()?;
-            ("utility", format!("utility:{:?}:{}", definition.kind, definition.recipe.name), definition.recipe.name)
+            ("utility", format!("utility:{}", definition.identity()), definition.recipe.name)
         } else { ("mixin", format!("mixin:{name}"), name) };
         Some(CssDefinitionSource {
             kind: kind.into(), identity, name,

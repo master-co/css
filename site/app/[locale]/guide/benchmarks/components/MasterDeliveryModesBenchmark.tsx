@@ -264,8 +264,8 @@ function TimingMetricGroup(props: {
   return (
     <div className="display:grid gap-sm">
       <div className="display:flex align-items:baseline justify-content:space-between gap-md">
-        <h4 className="margin:0 font-size-sm font-weight:460 fg-text-strong">{props.title}</h4>
-        <span className="font-size-xs fg-text-muted">Median</span>
+        <h4 className="margin:0 font-sm font-weight:460 fg-text-strong">{props.title}</h4>
+        <span className="font-xs fg-text-muted">Median</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />
     </div>

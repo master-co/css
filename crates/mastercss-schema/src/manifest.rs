@@ -38,7 +38,7 @@ pub enum SchemaError {
     #[error("Unsupported MasterCSSManifest version. Expected version 6.")]
     UnsupportedManifestVersion,
     #[error(
-        "Unsupported Master CSS languageVersion. Expected 15; recompile the manifest and hydration data with matching packages."
+        "Unsupported Master CSS languageVersion. Expected 16; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
     #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]

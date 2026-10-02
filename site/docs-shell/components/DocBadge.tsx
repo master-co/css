@@ -11,9 +11,9 @@ const DocBadge = styled.div<{
       fade: 'bg-surface-base'
     },
     size: {
-      xs: 'height:1rem px-3xs font-size-2xs',
-      sm: 'height:1.25rem px-2xs font-size-xs',
-      md: 'height:1.75rem px-xs font-size-xs'
+      xs: 'height:1rem px-3xs font-2xs',
+      sm: 'height:1.25rem px-2xs font-xs',
+      md: 'height:1.75rem px-xs font-xs'
     },
   },
   ({ outlined }) => outlined && 'border-width:1px border-style:solid b-line-subtle fg-text-strong'

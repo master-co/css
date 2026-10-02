@@ -43,19 +43,7 @@ pub(crate) fn matching_utilities(
     }
 
     if let Some(prefix) = token_prefix(source, manifest) {
-        let matches = token_candidates(source, prefix, manifest);
-        if let Some((first, _)) = matches.first() {
-            // The selected prefix is shared by all candidates. Namespace order
-            // completes its identity; current values and layers do not. The
-            // same family can intentionally emit in several cascade layers.
-            if matches.iter().skip(1).any(|(index, _)| {
-                manifest.utilities[*index].variable_alias_refs
-                    != manifest.utilities[*first].variable_alias_refs
-            }) {
-                return Vec::new();
-            }
-        }
-        return matches;
+        return token_candidates(source, prefix, manifest);
     }
     let Some((key, _)) = source.split_once(':') else {
         return Vec::new();
@@ -85,18 +73,42 @@ pub(crate) fn token_candidates(
     prefix: &str,
     manifest: &ManifestProjection,
 ) -> Vec<(usize, UtilityMatch)> {
+    let candidates = token_owners(source, prefix, manifest);
+    let [index] = candidates.as_slice() else {
+        return Vec::new();
+    };
+    match_utility_filtered(source, &manifest.utilities[*index], manifest, |matcher| {
+        matches!(matcher, UtilityMatcher::Token { .. })
+    })
+    .map(|matched| vec![(*index, matched)])
+    .unwrap_or_default()
+}
+
+/// Select namespace ownership before applying any sign or opacity capability.
+/// Values, body shape and registration order cannot disambiguate a token key.
+fn token_owners(source: &str, prefix: &str, manifest: &ManifestProjection) -> Vec<usize> {
     let Some(indexes) = manifest.token_utilities.get(prefix) else {
         return Vec::new();
     };
+    let Some(raw) = source.strip_prefix(prefix).or_else(|| {
+        source
+            .strip_prefix('-')
+            .and_then(|source| source.strip_prefix(prefix))
+    }) else {
+        return Vec::new();
+    };
+    let (value, _) = super::split_dynamic_value_state(raw);
+    if value.is_empty()
+        || value.starts_with('-')
+        || super::utility::has_top_level_value_separator(&value)
+    {
+        return Vec::new();
+    }
+    let key = value.split_once('/').map_or(value.as_str(), |(key, _)| key);
     indexes
         .iter()
         .copied()
-        .filter_map(|index| {
-            match_utility_filtered(source, &manifest.utilities[index], manifest, |matcher| {
-                matches!(matcher, UtilityMatcher::Token { .. })
-            })
-            .map(|matched| (index, matched))
-        })
+        .filter(|index| manifest.utilities[*index].variables.contains_key(key))
         .collect()
 }
 
@@ -258,81 +270,91 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     if !matching_utilities(source, manifest).is_empty() {
         return Vec::new();
     }
+    let prefix = token_prefix(source, manifest);
+    if let Some(prefix) = prefix {
+        let candidates = token_owners(source, prefix, manifest);
+        if candidates.len() > 1 {
+            let raw = source
+                .strip_prefix(prefix)
+                .or_else(|| {
+                    source
+                        .strip_prefix('-')
+                        .and_then(|source| source.strip_prefix(prefix))
+                })
+                .unwrap_or_default();
+            let (value, _) = super::split_dynamic_value_state(raw);
+            let key = value.split_once('/').map_or(value.as_str(), |(key, _)| key);
+            let mut definitions = Vec::new();
+            let mut alternatives = Vec::new();
+            for index in candidates {
+                let utility = &manifest.utilities[index];
+                let token = &utility.variables[key];
+                let definition = manifest
+                    .utility_definitions
+                    .iter()
+                    .find(|definition| definition.identity() == utility.id);
+                let location = definition
+                    .and_then(|definition| definition.recipe.source.as_ref())
+                    .map(|source| {
+                        let file = source.file.as_deref().unwrap_or("stylesheet");
+                        if let Some(loc) = &source.loc {
+                            format!(" at {file}:{}:{}", loc.start.line, loc.start.column)
+                        } else {
+                            format!(" at {file}:{}..{}", source.range.start, source.range.end)
+                        }
+                    })
+                    .unwrap_or_default();
+                definitions.push(format!(
+                    "--{token} ({prefix}(--{}){location})",
+                    &utility.variable_alias_refs[0][1..]
+                ));
+                // Suggest the branch's actual declarations, including recipes,
+                // without inventing a second class prefix or choosing a branch.
+                if let Some(matched) = match_utility_filtered(
+                    &format!("{prefix}{key}"),
+                    utility,
+                    manifest,
+                    |matcher| matches!(matcher, UtilityMatcher::Token { .. }),
+                ) {
+                    for (_, declarations, _, _) in
+                        emit_declarations(utility, matched.value.as_deref(), false, manifest)
+                    {
+                        for declaration in super::split_top_level(&declarations, ';') {
+                            if !declaration.is_empty() && !alternatives.contains(&declaration) {
+                                alternatives.push(declaration);
+                            }
+                        }
+                    }
+                }
+            }
+            let mut diagnostic = error(
+                super::ErrorCode::AmbiguousToken,
+                format!(
+                    "Ambiguous named token {source}; conflicting definitions: {}. Use explicit native declarations or distinct token keys",
+                    definitions.join(", ")
+                ),
+            );
+            diagnostic.notes = alternatives;
+            return vec![diagnostic];
+        }
+    }
     if let Some(message) = retired_token_message(source, manifest) {
         return vec![error(super::ErrorCode::ClassSyntaxError, message)];
     }
-    let Some(prefix) = token_prefix(source, manifest) else {
+    let Some(prefix) = prefix else {
         return Vec::new();
     };
-    let candidates = token_candidates(source, prefix, manifest);
-    let mut alternatives = Vec::new();
     let raw = source
         .strip_prefix('-')
         .unwrap_or(source)
         .strip_prefix(prefix)
         .unwrap_or_default();
-    for (index, matched) in &candidates {
-        for (_, declarations, _, _) in emit_declarations(
-            &manifest.utilities[*index],
-            matched.value.as_deref(),
-            false,
-            manifest,
-        ) {
-            for declaration in declarations.split(';') {
-                if let Some((property, _)) = declaration.split_once(':') {
-                    let alternative = format!(
-                        "{}{property}-{raw}",
-                        if source.starts_with('-') { "-" } else { "" }
-                    );
-                    if alternative != source
-                        && !matching_utilities(&alternative, manifest).is_empty()
-                        && !alternatives.contains(&alternative)
-                    {
-                        alternatives.push(alternative);
-                    }
-                }
-            }
-        }
-    }
-    vec![super::Diagnostic {
-        phase: mastercss_schema::DiagnosticPhase::Match,
-        severity: mastercss_schema::DiagnosticSeverity::Error,
-        code: if candidates.len() > 1 {
-            super::ErrorCode::AmbiguousToken
-        } else {
-            super::ErrorCode::UnknownToken
-        },
-        message: if candidates.len() > 1 {
-            format!(
-                "Ambiguous named token {source}; conflicting definitions: {}. {}{}",
-                candidates
-                    .iter()
-                    .map(|(index, _)| {
-                        let utility = &manifest.utilities[*index];
-                        format!("{} [{}]", utility.id, utility.variable_alias_refs.join("|"))
-                    })
-                    .collect::<Vec<_>>()
-                    .join(", "),
-                if alternatives.is_empty() {
-                    "Define distinct utility prefixes"
-                } else {
-                    "Use an explicit utility name"
-                },
-                if alternatives.is_empty() {
-                    String::new()
-                } else {
-                    format!(": {}", alternatives.join(", "))
-                }
-            )
-        } else {
-            format!(
-                "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
-            )
-        },
-        source: None,
-        range: None,
-        notes: alternatives,
-    }]
+    vec![error(
+        super::ErrorCode::UnknownToken,
+        format!(
+            "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
+        ),
+    )]
 }
 
 /// Retirement metadata never participates in matching. A valid canonical class
@@ -353,12 +375,7 @@ pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection)
                 .map(|property| (property.as_str(), family.prefix.as_str()))
         })
         .filter(|(property, prefix)| property != prefix)
-        .chain([
-            ("font", "font-size"),
-            ("font", "font-family"),
-            ("font", "font-weight"),
-            ("text-stroke-color", "text-stroke"),
-        ]);
+        .chain([("text-stroke-color", "text-stroke")]);
     for (old, current) in families {
         for (positive, sign) in [
             (source, ""),

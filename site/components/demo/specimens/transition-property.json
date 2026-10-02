@@ -4,15 +4,15 @@
     "id": "limit-what-can-animate",
     "title": "Limit what can animate",
     "html": [
-      "<!-- Opacity only · position changes immediately -->\n<label class=\"display:block width:280px max-width:100% font-size-sm\n         opacity:.72:has(input:checked)>span>span@media(screen)\n         transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move and fade\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move and fade\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:opacity\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-duration-slowest@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>",
-      "<!-- Opacity + transform · both interpolate -->\n<label class=\"display:block width:280px max-width:100% font-size-sm\n         opacity:.72:has(input:checked)>span>span@media(screen)\n         transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move and fade\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move and fade\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:opacity,transform\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-duration-slowest@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>"
+      "<!-- Opacity only · position changes immediately -->\n<label class=\"display:block width:280px max-width:100% font-sm\n         opacity:.72:has(input:checked)>span>span@media(screen)\n         transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move and fade\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move and fade\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:opacity\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-slowest@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>",
+      "<!-- Opacity + transform · both interpolate -->\n<label class=\"display:block width:280px max-width:100% font-sm\n         opacity:.72:has(input:checked)>span>span@media(screen)\n         transform:translateX(96px):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move and fade\"\n    class=\"mr-xs accent-color-blue\n           outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible\n           outline-offset:3px:focus-visible\">\n  Move and fade\n  <span aria-hidden=\"true\"\n    class=\"display:block height:64px mt-md p-xs\n           outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:48px width:128px\n             border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10\n             fg-blue-80 opacity:1 transform:none\n             transition-property:opacity,transform\n             transition-timing-function:linear\n             transition-duration:0ms@media(print)\n             transition-slowest@media(screen)@motion-safe\">\n      Layer 01\n    </span>\n  </span>\n</label>"
     ],
     "css": "",
     "classes": [
       "display:block",
       "width:280px",
       "max-width:100%",
-      "font-size-sm",
+      "font-sm",
       "opacity:.72:has(input:checked)>span>span@media(screen)",
       "transform:translateX(96px):has(input:checked)>span>span@media(screen)",
       "mr-xs",
@@ -42,18 +42,18 @@
       "transition-property:opacity",
       "transition-timing-function:linear",
       "transition-duration:0ms@media(print)",
-      "transition-duration-slowest@media(screen)@motion-safe",
+      "transition-slowest@media(screen)@motion-safe",
       "transition-property:opacity,transform"
     ],
     "classLists": [
-      "display:block width:280px max-width:100% font-size-sm opacity:.72:has(input:checked)>span>span@media(screen) transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "display:block width:280px max-width:100% font-sm opacity:.72:has(input:checked)>span>span@media(screen) transform:translateX(96px):has(input:checked)>span>span@media(screen)",
       "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
       "display:block height:64px mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle",
-      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:opacity transition-timing-function:linear transition-duration:0ms@media(print) transition-duration-slowest@media(screen)@motion-safe",
-      "display:block width:280px max-width:100% font-size-sm opacity:.72:has(input:checked)>span>span@media(screen) transform:translateX(96px):has(input:checked)>span>span@media(screen)",
+      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:opacity transition-timing-function:linear transition-duration:0ms@media(print) transition-slowest@media(screen)@motion-safe",
+      "display:block width:280px max-width:100% font-sm opacity:.72:has(input:checked)>span>span@media(screen) transform:translateX(96px):has(input:checked)>span>span@media(screen)",
       "mr-xs accent-color-blue outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset:3px:focus-visible",
       "display:block height:64px mt-md p-xs outline-width:1px outline-style:dashed outline-line-subtle",
-      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-size-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:opacity,transform transition-timing-function:linear transition-duration:0ms@media(print) transition-duration-slowest@media(screen)@motion-safe"
+      "display:grid place-items:center height:48px width:128px border-width:1px border-style:solid b-blue-60 r-sm font-sm bg-blue-10 fg-blue-80 opacity:1 transform:none transition-property:opacity,transform transition-timing-function:linear transition-duration:0ms@media(print) transition-slowest@media(screen)@motion-safe"
     ],
     "highlighted": []
   }

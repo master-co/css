@@ -192,12 +192,12 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(6)
- expect(manifest.languageVersion).toBe(15)
+ expect(manifest.languageVersion).toBe(16)
  expect(manifest.utilities).toHaveLength(126)
- expect(new Set(manifest.utilities?.map(mixin => mixin.name)).size).toBe(126)
+ expect(new Set(manifest.utilities?.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(126)
  for (const field of ['mixins', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
- expect(manifest.utilities?.find(mixin => mixin.name === 'text')?.parameters).toEqual([{ name: '--text', syntax: 'string' }])
+ expect(manifest.utilities?.find(utility => utility.name === 'text')?.parameters).toEqual([{ name: '--text', syntax: 'string' }])
 })
 
   it('matches the readable preset native CSS', () => {
@@ -245,7 +245,7 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
 
     for (const name of removedStaticUtilityNames) {
-      expect(defaultManifest.utilities?.some(mixin => mixin.name === name), name).toBe(false)
+      expect(defaultManifest.utilities?.some(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]) === name), name).toBe(false)
       expect(css.createRule(name), name).toBeUndefined()
     }
   })
@@ -341,7 +341,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('box-decoration-break:clone')?.text).toBe('.box-decoration-break\\:clone{-webkit-box-decoration-break:clone;box-decoration-break:clone}')
     expect(css.createRule('font-feature-settings-tabular')).toBeUndefined()
     expect(css.createRule('content-empty')).toBeUndefined()
-    expect(css.createRule('font-size-sm')?.text).toContain('font-size:var(--font-size-sm)')
+    expect(css.createRule('font-sm')?.text).toContain('font-size:var(--font-size-sm)')
     expect(css.createRule('m-md')?.text).toContain('margin:var(--spacing-md)')
     expect(css.createRule('sr-only')?.text).toContain('position:absolute')
     expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
@@ -388,7 +388,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule("border:1px|solid")?.text).toBe(".border\\:1px\\|solid{border:1px solid}")
     expect(css.createRule('border:transparent')?.text).toBe('.border\\:transparent{border:transparent}')
     expect(css.createRule('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
-    expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
+    expect(css.createRule('font-sm')?.text).toBe('.font-sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
     expect(css.createRule("margin-inline-start:1rem")?.text).toBe(".margin-inline-start\\:1rem{margin-inline-start:1rem}")
     expect(css.createRule("padding-block-end:1rem")?.text).toBe(".padding-block-end\\:1rem{padding-block-end:1rem}")
@@ -423,10 +423,10 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('bg-surface-floating/.9')?.text).toBe('.bg-surface-floating\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-floating) 90%,transparent)}')
     expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
     expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
-    expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
+    expect(css.createRule('font-sm')?.text).toBe('.font-sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
-    expect(css.createRule('font-family-sans')?.text).toBe('.font-family-sans{font-family:var(--font-family-sans)}')
-    expect(css.createRule('font-weight-bold')?.text).toBe('.font-weight-bold{font-weight:var(--font-weight-bold)}')
+    expect(css.createRule('font-sans')?.text).toBe('.font-sans{font-family:var(--font-family-sans)}')
+    expect(css.createRule('font-bold')?.text).toBe('.font-bold{font-weight:var(--font-weight-bold)}')
     expect(declarationsCSS.createRule('font:var(--font-size-x)')?.text).toContain('font:var(--font-size-x)')
     // Removed preset sizes use only the generic native fallback, never paired dimensions.
     for (const key of ['size', 'min-size', 'max-size', 'min', 'max']) {
@@ -546,7 +546,7 @@ describe('@master/css-preset defaultManifest', () => {
 
   it('publishes unique utility registrations with no source-local metadata', () => {
  const mixins = defaultManifest.utilities || []
- expect(new Set(mixins.map(mixin => mixin.name)).size).toBe(mixins.length)
+ expect(new Set(mixins.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(mixins.length)
  expect(JSON.stringify(mixins)).not.toContain('"source":')
  expect(defaultManifest).not.toHaveProperty('utilityBuckets')
 })

@@ -25,7 +25,7 @@ describe('@master/css-schema manifest helpers', () => {
 
   it('normalizes derived manifest fields in JSON', () => {
     const manifest: MasterCSSManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-brand', value: '#123' }] }],
-      version: 6 as const, languageVersion: 15 as const,
+      version: 6 as const, languageVersion: 16 as const,
       variables: {
         color: [{ name: 'color-brand', key: 'brand', type: 'string' as const, values: [{ path: [':root,:host'], value: '#123' }] }]
       },

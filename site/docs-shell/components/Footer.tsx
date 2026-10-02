@@ -38,7 +38,7 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   return (
     <div {...props} className={clsx('py-2xl border-top-width:1px border-top-style:solid bt-line-subtle', className)}>
       <div className='container-type:inline-size max-width:100rem margin-inline:auto'>
-        <div className="grid-cols(2) flex:1 justify-content:space-between gap:2.5rem font-size-sm fg-text-muted grid-cols(4)@container((width>=18rem)) grid-cols(5)@container((width>=28rem))">
+        <div className="grid-cols(2) flex:1 justify-content:space-between gap:2.5rem font-sm fg-text-muted grid-cols(4)@container((width>=18rem)) grid-cols(5)@container((width>=28rem))">
           {navGroups.map((group) => (
             <ul className='display:flex flex-direction:column gap-lg' key={group.name}>
               <li><h4 className='fg-text-strong'>{$(group.name)}</h4></li>
@@ -50,12 +50,12 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
             </ul>
           ))}
           <div className='display:none@container((width<28rem))'>
-            <SearchButton className="display:flex align-items:center height:36px width:100% px-md r-lg font-size-sm bg-surface-base fg-text-muted" />
+            <SearchButton className="display:flex align-items:center height:36px width:100% px-md r-lg font-sm bg-surface-base fg-text-muted" />
           </div>
         </div>
       </div>
       <hr className='hr' />
-      <div className="display:flex gap-md max-width:100rem margin-inline:auto font-size-xs fg-text-muted">
+      <div className="display:flex gap-md max-width:100rem margin-inline:auto font-xs fg-text-muted">
         {copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}
         {legalLinks.map((link, index) => (
           <Fragment key={link.href || link.name}>

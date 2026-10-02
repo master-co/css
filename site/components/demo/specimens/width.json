@@ -28,28 +28,28 @@
     "id": "use-intrinsic-width-keywords",
     "title": "Use intrinsic width keywords",
     "html": [
-      "<!-- Minimum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:min-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>",
-      "<!-- Fit content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>",
-      "<!-- Maximum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:max-content p-sm font-size-md font-family-mono line-height:24px\">Design systems</div>\n</div>"
+      "<!-- Minimum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:min-content p-sm font-md font-mono line-height:24px\">Design systems</div>\n</div>",
+      "<!-- Fit content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:fit-content p-sm font-md font-mono line-height:24px\">Design systems</div>\n</div>",
+      "<!-- Maximum content -->\n<div id=\"layout\" class=\"width:7rem\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"width:max-content p-sm font-md font-mono line-height:24px\">Design systems</div>\n</div>"
     ],
     "css": "",
     "classes": [
       "width:7rem",
       "width:min-content",
       "p-sm",
-      "font-size-md",
-      "font-family-mono",
+      "font-md",
+      "font-mono",
       "line-height:24px",
       "width:fit-content",
       "width:max-content"
     ],
     "classLists": [
       "width:7rem",
-      "width:min-content p-sm font-size-md font-family-mono line-height:24px",
+      "width:min-content p-sm font-md font-mono line-height:24px",
       "width:7rem",
-      "width:fit-content p-sm font-size-md font-family-mono line-height:24px",
+      "width:fit-content p-sm font-md font-mono line-height:24px",
       "width:7rem",
-      "width:max-content p-sm font-size-md font-family-mono line-height:24px"
+      "width:max-content p-sm font-md font-mono line-height:24px"
     ],
     "highlighted": []
   }

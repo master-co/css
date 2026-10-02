@@ -4,8 +4,8 @@
     "id": "set-border-color",
     "title": "Set border color",
     "html": [
-      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-blue font-size-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>",
-      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-violet font-size-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>"
+      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-blue font-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>",
+      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-violet font-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>"
     ],
     "css": "",
     "classes": [
@@ -20,15 +20,15 @@
       "border-style:solid",
       "border-color:currentcolor",
       "b-blue",
-      "font-size-md",
+      "font-md",
       "bg-surface-inset",
       "fg-text-body",
       "box-sizing:border-box",
       "b-violet"
     ],
     "classLists": [
-      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-blue font-size-md bg-surface-inset fg-text-body box-sizing:border-box",
-      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-violet font-size-md bg-surface-inset fg-text-body box-sizing:border-box"
+      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-blue font-md bg-surface-inset fg-text-body box-sizing:border-box",
+      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-violet font-md bg-surface-inset fg-text-body box-sizing:border-box"
     ],
     "highlighted": []
   }

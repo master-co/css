@@ -15,12 +15,12 @@ import { DemoLabel, DemoP, DemoPanel } from '~/site/components/demo/primitives'
 Typography tokens define readable type scale, line height, letter spacing, font families, and font weights. Use `text-<token>` when you want a complete type treatment, and use lower-level typography utilities when you need to tune one property.
 
 ```html
-<!-- @MARK text-lg --><!-- @MARK font-weight-medium -->
-<p class="text-lg font-weight-medium">Readable product copy</p>
+<!-- @MARK text-lg --><!-- @MARK font-medium -->
+<p class="text-lg font-medium">Readable product copy</p>
 ```
 
 <Class2CSS>
-  {['text-lg', 'font-weight-medium']}
+  {['text-lg', 'font-medium']}
 </Class2CSS>
 
 ---
@@ -28,9 +28,17 @@ Typography tokens define readable type scale, line height, letter spacing, font 
 ## Namespaces for typography
 Typography is built from [theme tokens](/guide/theme) organized into focused namespaces.
 
-`text-` applies a size, line height and tracking treatment. `font-size-`, `leading-` and `tracking-` change one property. See the [complete family index](/reference/tokens/families).
+`text-` applies a size, line height and tracking treatment. `font-`, `leading-` and `tracking-` change one property. See the [complete family index](/reference/tokens/families).
 
-Utilities search the relevant namespace, so `font-size-lg`, `leading-md`, and `tracking-tight` can use short token names without the full custom property prefix.
+The shared `font-` prefix registers three explicit namespaces:
+
+| Class | Token | Property |
+| --- | --- | --- |
+| `font-sans` | `--font-family-sans` | `font-family` |
+| `font-sm` | `--font-size-sm` | `font-size` |
+| `font-bold` | `--font-weight-bold` | `font-weight` |
+
+Each key must identify one namespace. If a custom key such as `brand` occurs in both family and size tokens, `font-brand` reports an ambiguity and emits no CSS. Select the property explicitly with `font-size:var(--font-size-brand)`. Line height and letter spacing remain independent through `leading-` and `tracking-`.
 
 ---
 
@@ -44,7 +52,7 @@ Use `text-<token>` to apply the tuned font size, line height, and letter spacing
 * `text-xl ~ text-3xl` — Ideal for subheadings, lead paragraphs, or callouts
 * `text-4xl ~ text-10xl` — Reserved for large headings, page titles, and hero sections
 
-Use `font-size-<token>` when you only want the font-size token. Use `line-height:*` and `letter-spacing:*` when the design intentionally adjusts line height or letter spacing separately.
+Use a size token such as `font-sm` when you only want to set `font-size`. Use `line-height:*` and `letter-spacing:*` when the design intentionally adjusts line height or letter spacing separately.
 
 ### Body text
 <BodyText />
@@ -61,12 +69,12 @@ Manually configuring typography often requires juggling `font-size`, `line-heigh
 <Demo padding="none" className="padding-inline:2rem padding-inline:3rem@sm">
   <DemoPanel className="display:flex flex-direction:column gap-xl width:100%">
     <div className="width:100%">
-      <DemoLabel className="fg-text-red">font-size-5xl</DemoLabel>
-      <DemoP className="font-size-5xl font-weight-regular line-height:1 text-wrap:pretty">Designing for consistency across every platform.</DemoP>
+      <DemoLabel className="fg-text-red">font-5xl</DemoLabel>
+      <DemoP className="font-5xl font-regular line-height:1 text-wrap:pretty">Designing for consistency across every platform.</DemoP>
     </div>
     <div className="width:100%">
       <DemoLabel className="fg-text-green">text-5xl</DemoLabel>
-      <DemoP className="text-5xl font-weight-regular text-wrap:pretty">Designing for consistency across every platform.</DemoP>
+      <DemoP className="text-5xl font-regular text-wrap:pretty">Designing for consistency across every platform.</DemoP>
     </div>
   </DemoPanel>
 </Demo>
@@ -74,7 +82,7 @@ Manually configuring typography often requires juggling `font-size`, `line-heigh
 (x) The type treatment is assembled manually.
 
 ```html
-<h1 class="font-size-3xl line-height:2.4rem letter-spacing:-0.048em">...</h1>
+<h1 class="font-3xl line-height:2.4rem letter-spacing:-0.048em">...</h1>
 ```
 
 (o) The type treatment uses the shared text scale.
@@ -92,7 +100,7 @@ Prefer `text-<token>` for repeated body, heading, and display styles. Reach for 
 ---
 
 ## Type scale
-The font scale ranges from `font-size-3xs` to `font-size-10xl`, with each size intentionally designed to deliver visual harmony and clear hierarchy across a variety of use cases.
+The font scale ranges from `font-3xs` to `font-10xl`, with each size intentionally designed to deliver visual harmony and clear hierarchy across a variety of use cases.
 <FoundationTokens namespace="font-size" keys={["sm", "md", "3xl"]} />
 
 See the complete [values and consumers](/reference/tokens/font-size) in Reference.
@@ -100,7 +108,7 @@ See the complete [values and consumers](/reference/tokens/font-size) in Referenc
 ---
 
 ## Font families
-Choose `font-family-sans` for interface text and `font-family-mono` for code or aligned numeric specimens. Load the chosen font files separately; the token only declares a fallback stack.
+Choose `font-sans` for interface text and `font-mono` for code or aligned numeric specimens. Load the chosen font files separately; the token only declares a fallback stack.
 
 <FoundationTokens namespace="font-family" keys={["sans", "mono"]} />
 See the [font family](/reference/tokens/font-family) reference for more details on how to add custom fonts.
@@ -108,7 +116,7 @@ See the [font family](/reference/tokens/font-family) reference for more details 
 ---
 
 ## Font weights
-Use `font-weight-regular` for body copy and `font-weight-semibold` for headings or labels that need emphasis. Check that the loaded face supports the requested weight.
+Use `font-regular` for body copy and `font-semibold` for headings or labels that need emphasis. Check that the loaded face supports the requested weight.
 
 <FoundationTokens namespace="font-weight" keys={["regular", "semibold"]} />
 

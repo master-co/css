@@ -8,7 +8,7 @@ fn request(source: &str) -> Value {
         "graph":{"entry":"entry.css","files":{"entry.css":"@import './child.css';","child.css":source},"edges":[{"from":"entry.css","specifier":"./child.css","resolved":"child.css"}]},
         "urls":{"entry.css":"/out/entry.css","child.css":"/out/child.css"},
         "resourceURLs":{"child.css":{"a.png":"/output/long-name-for-resource.png","b.png":"/b"}},
-        "baseManifest":{"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}
+        "baseManifest":{"version":6,"languageVersion":16,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}
     })
 }
 

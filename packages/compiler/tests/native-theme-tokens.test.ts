@@ -7,7 +7,7 @@ import { compileCSSManifest, compileCSSManifestFile } from '../src/node-compiler
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 6 as const, languageVersion: 15 as const }
+const baseManifest = { version: 6 as const, languageVersion: 16 as const }
 const source = `
 @mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}
 @mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}

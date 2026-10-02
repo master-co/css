@@ -4,18 +4,18 @@
     "id": "use-the-current-color",
     "title": "Use the current color",
     "html": [
-      "<!-- Inherited blue fill · local foreground reset -->\n<div class=\"font-size-2xl leading-xl fg-violet-50 text-fill-color-blue-50\">\n  Parent <span id=\"target\" class=\"text-fill-color-current\">and child</span>\n</div>"
+      "<!-- Inherited blue fill · local foreground reset -->\n<div class=\"font-2xl leading-xl fg-violet-50 text-fill-color-blue-50\">\n  Parent <span id=\"target\" class=\"text-fill-color-current\">and child</span>\n</div>"
     ],
     "css": "",
     "classes": [
-      "font-size-2xl",
+      "font-2xl",
       "leading-xl",
       "fg-violet-50",
       "text-fill-color-blue-50",
       "text-fill-color-current"
     ],
     "classLists": [
-      "font-size-2xl leading-xl fg-violet-50 text-fill-color-blue-50",
+      "font-2xl leading-xl fg-violet-50 text-fill-color-blue-50",
       "text-fill-color-current"
     ],
     "highlighted": []

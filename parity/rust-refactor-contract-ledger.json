@@ -14239,14 +14239,14 @@
         "package": "eslint-plugin",
         "file": "packages/eslint-plugin/tests/prefer-canonical-classes.test.ts",
         "line": 43,
-        "title": "prefer canonical classes / valid[25] / <div class=\"font-size-md background-color-red-60\">Named token keys</div>",
+        "title": "prefer canonical classes / valid[25] / <div class=\"font-md background-color-red-60\">Named token keys</div>",
         "runner": "eslint-rule-tester",
         "kind": "test",
         "sourceDigest": "d0e20ffb0020d9b36b45358387783f55c898bc3dfb72197740fe6cce24fec71e",
         "matrix": {
           "index": 24,
           "resolved": true,
-          "value": "<div class=\"font-size-md background-color-red-60\">Named token keys</div>"
+          "value": "<div class=\"font-md background-color-red-60\">Named token keys</div>"
         }
       },
       "proof": "approved-contract-change",

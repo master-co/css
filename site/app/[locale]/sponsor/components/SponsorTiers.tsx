@@ -13,13 +13,13 @@ export default function SponsorTiers() {
   return <div className="grid-cols(2) gap:0.938rem grid-cols(3)@sm">
     {sponsorTiers.map((eachSponsorTier) => (
       <button key={eachSponsorTier.name} className="gap:1.25rem padding-top:1.563rem padding-right:1.875rem padding-bottom:1.563rem padding-left:1.875rem border-radius:5px flex-direction:column@media((width<80rem)) app-object app-object-interactive" onClick={() => setSelectedTier(eachSponsorTier)}>
-        <div className="font-size-6xl">{eachSponsorTier.icon}</div>
+        <div className="font-6xl">{eachSponsorTier.icon}</div>
         <div className='flex:1 text-align:left'>
-          <div className="text-md font-weight-medium fg-text-strong text-transform:uppercase::first-letter">{eachSponsorTier.name}</div>
+          <div className="text-md font-medium fg-text-strong text-transform:uppercase::first-letter">{eachSponsorTier.name}</div>
           {eachSponsorTier.amount && (
-            <div className="text-sm font-weight-bold">
+            <div className="text-sm font-bold">
               {eachSponsorTier.amount}
-              <span className="margin-left:0.313rem text-xs font-weight-regular fg-text-body">
+              <span className="margin-left:0.313rem text-xs font-regular fg-text-body">
                 / {eachSponsorTier.one ? 'one-time' : 'month'}
               </span>
             </div>

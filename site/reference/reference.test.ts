@@ -56,6 +56,8 @@ test('catalog covers every public family and preset recipe without indexing reti
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
   assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
+  assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
+  for (const namespace of ['font-family', 'font-size', 'font-weight']) assert.ok(families.markdown.includes(`[${namespace}](/reference/tokens/${namespace})`))
   for (const family of foundationFamilies) {
     assert.ok(families.markdown.includes(`Property: \`${family.property}\``), family.prefix)
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
@@ -177,7 +179,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.match(layers.markdown, /!important` reverses the order between layers/)
   const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@layer(base)'))!
   assert.match(base.css, /@layer base\{.*list-style:none/)
-  const fonts = layers.examples.find(example => example.classes.includes('font-family-mono_:is(code,pre)@layer(defaults)'))!
+  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@layer(defaults)'))!
   assert.match(fonts.css, /--font-family-mono:/)
   assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
   assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])
@@ -312,7 +314,7 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
     assert.ok(tutorial.markdown.includes(example.css), example.title)
   }
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
-  for (const prefix of ['p', 'gap', 'fg', 'font-size']) {
+  for (const prefix of ['p', 'gap', 'fg', 'font']) {
     const family = foundationFamilies.find(family => family.prefix === prefix)!
     assert.ok(tutorial.markdown.includes(`| \`${family.property}\` | \`${family.namespaces[0]}\` |`), prefix)
   }

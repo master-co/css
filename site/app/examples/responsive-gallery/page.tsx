@@ -32,7 +32,7 @@ export const revalidate = false
 export default function Page() {
   return <main className="min-height:100dvh p-md bg-demo-canvas fg-text-body">
     <header className="display:flex align-items:baseline justify-content:space-between gap-md mb-md">
-      <h1 className="margin:0 text-sm font-weight-semibold">Field notes</h1>
+      <h1 className="margin:0 text-sm font-semibold">Field notes</h1>
       <span className="demo-label">12 images / landscape</span>
     </header>
     <div data-gallery className="grid-cols(2) gap-md grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md">

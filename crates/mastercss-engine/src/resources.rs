@@ -209,7 +209,10 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Vec<NativeDeclarationCandidate> {
-        if self.class_rules.contains_key(class_name)
+        if self
+            .class_rules
+            .get(class_name)
+            .is_some_and(|rules| !rules.is_empty())
             || !super::named::diagnostics(class_name, &self.compiled).is_empty()
         {
             return Vec::new();

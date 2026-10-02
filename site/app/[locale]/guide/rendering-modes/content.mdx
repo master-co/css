@@ -113,17 +113,17 @@ The following continuous DOM manipulation takes you to understand the behavior o
   <Step>
     #### <StepNum />Added Master CSS class names to elements in links
     ```js
-    // @MARK font-size-6xl
-    h1.classList.add('font-size-6xl')
+    // @MARK font-6xl
+    h1.classList.add('font-6xl')
     ```
-    Add class name `font-size-6xl` to `html <h1>`
+    Add class name `font-6xl` to `html <h1>`
     ```html
-    <!-- @MARK font-size-6xl -->
-    <h1 class="font-size-6xl text-align:center">Hello World</h1>
+    <!-- @MARK font-6xl -->
+    <h1 class="font-6xl text-align:center">Hello World</h1>
     ```
-    The runtime engine observes that `html <h1>` adds the new class name `font-size-6xl` and ensures the corresponding CSS rule:
+    The runtime engine observes that `html <h1>` adds the new class name `font-6xl` and ensures the corresponding CSS rule:
     ```css
-    .font-size-6xl { /* [!code ++] */
+    .font-6xl { /* [!code ++] */
       font-size: 3rem /* [!code ++] */
     } /* [!code ++] */
 
@@ -140,11 +140,11 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```
     Remove class name `text-align:center` from `html <h1>`
     ```html
-    <h1 class="font-size-6xl text-align:center">Hello World</h1>
+    <h1 class="font-6xl text-align:center">Hello World</h1>
     ```
     The runtime engine observes that the class name `text-align:center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
     ```css
-    .font-size-6xl {
+    .font-6xl {
       font-size: 3rem
     }
 
@@ -158,20 +158,20 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```js
     h1.remove()
     ```
-    Remove the `html <h1>` with class `font-size-6xl`
+    Remove the `html <h1>` with class `font-6xl`
     ```html
-    <h1 class="font-size-6xl">Hello World</h1> <!-- [!code ++] -->
+    <h1 class="font-6xl">Hello World</h1> <!-- [!code ++] -->
     ```
-    The runtime engine observes that the `html <h1>` element with the class name `font-size-6xl` is removed and updates active usage immediately. If no connected element still uses `font-size-6xl`, the generated rule can be retained until idle cleanup removes it:
+    The runtime engine observes that the `html <h1>` element with the class name `font-6xl` is removed and updates active usage immediately. If no connected element still uses `font-6xl`, the generated rule can be retained until idle cleanup removes it:
     ```css
-    .font-size-6xl { /* [!code --] */
+    .font-6xl { /* [!code --] */
       font-size: 3rem /* [!code --] */
     } /* [!code --] */
     ```
   </Step>
   <Step>
     #### <StepNum />All active DOM class counts have been removed
-    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font-size-6xl'])` still remove rules synchronously.
+    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font-6xl'])` still remove rules synchronously.
   </Step>
 </StepSection>
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
@@ -293,7 +293,7 @@ For example, the following HTML:
   <script type="module" src="/main.js"></script>
 </head>
 <body>
-  <h1 class="font-size-5xl font-weight-heavy">Hello World</h1>
+  <h1 class="font-5xl font-heavy">Hello World</h1>
 </body>
 ```
 Render the HTML:
@@ -318,12 +318,12 @@ The manifest-scoped server renderer reuses generated class rules across pages wh
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style id="master-css"> /* [!code ++] */
     @layer theme { :root, :host { --font-size-5xl: 2.5rem } } /* [!code ++] */
-    @layer utilities { .font-size-5xl { font-size: var(--font-size-5xl) } } /* [!code ++] */
+    @layer utilities { .font-5xl { font-size: var(--font-size-5xl) } } /* [!code ++] */
   </style> <!-- [!code ++] -->
 </head>
 <body>
-  <!-- @MARK font-size-5xl -->
-  <h1 class="font-size-5xl">Hello World</h1>
+  <!-- @MARK font-5xl -->
+  <h1 class="font-5xl">Hello World</h1>
 </body>
 ```
 The server renderer generates page CSS from the class names present in rendered HTML. The amount of CSS depends on the page and project manifest.
@@ -560,7 +560,7 @@ result. Inspection results are immutable and do not register classes with the en
 
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v6, hydration v4 and transition v4 define the data consumed by the engine.
 
-Custom engine or binding implementations must provide this query under binding ABI 25.
+Custom engine or binding implementations must provide this query under binding ABI 26.
 
 
 ### Animation resource placement

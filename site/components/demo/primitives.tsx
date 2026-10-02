@@ -117,5 +117,5 @@ export function DemoPanel({ className, ...props }: DivProps) {
 }
 
 export function DemoP({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <DemoText {...props} className={clsx('font-size-xl fg-text-strong', className)} />
+  return <DemoText {...props} className={clsx('font-xl fg-text-strong', className)} />
 }

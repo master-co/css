@@ -5,7 +5,7 @@ import createDoc from '../src/utils/create-doc'
 
 test('inline tokens provide completion and substituted hover without token output', () => {
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 15,
+    version: 6, languageVersion: 16,
     mixins: [{ name: '--bg', parameters: [{ name: '--color' }], body: [{ type: 'declaration', property: 'background-color', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--color' }] }] }] }],
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   , utilities: [{"name":"bg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"function" as const},{"name":"bg","parameters":[{"name":"--color"}],"body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--color"}]}]}],"kind":"token" as const}] }

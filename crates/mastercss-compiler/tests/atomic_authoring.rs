@@ -55,8 +55,8 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
         "b-1",
         "b-solid",
         "border-red",
-        "animation-fast",
-        "transition-smooth",
+        "animation-duration-fast",
+        "transition-timing-function-smooth",
     ] {
         assert_ne!(
             engine.inspect(class).unwrap().match_status,
@@ -134,7 +134,7 @@ fn atomic_overrides_follow_general_value_source_order() {
 fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
     let classes = [
         "animate-fade",
-        "animation-duration-fast",
+        "animation-fast",
         "animation-duration:var(--duration-slow)",
         "animation-iteration-count:1",
     ];

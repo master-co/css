@@ -5,7 +5,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const baseManifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 }
 const declarations = (css: string) => [...css.matchAll(/(?:display|width|text-align):[^;}]+/g)].map(match => match[0])
 

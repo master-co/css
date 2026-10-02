@@ -10,7 +10,7 @@ export function specimenTokens(namespace: string, keys?: string[]) {
 export const defaultValue = (token: FoundationToken) => token.values.find(value => value.path.length === 1 && value.path[0] === ':root,:host')?.value ?? token.values[0]?.value ?? ''
 export const primaryTokens = (tokens: FoundationToken[]) => tokens.filter(token => !token.key.includes('--'))
 export function tokenClass(namespace: string, key: string) {
-  const prefixes: Record<string, string> = { color: 'bg', 'color-surface': 'bg-surface', 'color-line': 'b-line', 'color-text': 'fg-text', radius: 'r', spacing: 'gap', container: 'max-w', duration: 'animation-duration', easing: 'animation-timing-function' }
+  const prefixes: Record<string, string> = { color: 'bg', 'color-surface': 'bg-surface', 'color-line': 'b-line', 'color-text': 'fg-text', radius: 'r', spacing: 'gap', container: 'max-w', 'font-family': 'font', 'font-size': 'font', 'font-weight': 'font', duration: 'animation', easing: 'animation' }
   return `${prefixes[namespace] ?? namespace}-${key}`
 }
 const descriptions: Record<string, Record<string, string>> = {
@@ -59,7 +59,7 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
       const utility = tokenClass(namespace, token.key)
       const inverse = token.key === 'inverse'
       const preview = namespace === 'color-text'
-        ? `<div class="p-lg r-sm ${inverse ? 'bg-surface-inverse' : 'bg-surface-raised'}"><p data-role-preview="text" class="margin:0 text-xl font-weight-medium ${utility}">The details make the difference.</p><p class="margin:0 text-sm ${utility}">0123456789 · ${escape(token.key)}</p></div>`
+        ? `<div class="p-lg r-sm ${inverse ? 'bg-surface-inverse' : 'bg-surface-raised'}"><p data-role-preview="text" class="margin:0 text-xl font-medium ${utility}">The details make the difference.</p><p class="margin:0 text-sm ${utility}">0123456789 · ${escape(token.key)}</p></div>`
         : namespace === 'color-line'
           ? `<div data-role-preview="line" class="p-lg r-sm border-width:1px border-style:solid bg-surface-raised ${utility}"><span class="text-sm">${escape(token.key === 'control' ? 'Email address' : 'Collection details')}</span><div class="mt-md border-top-width:1px border-top-style:solid ${utility}"></div></div>`
           : `<div data-role-preview="surface" class="p-lg r-sm ${utility} ${inverse ? 'fg-text-inverse' : 'fg-text-body'}"><strong class="text-md">${escape(token.key)}</strong><p class="margin:0 text-sm">A surface for your content.</p></div>`
@@ -70,13 +70,13 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
     scene.html = `<div data-foundation="radius">${tokens.map(token => `<section>${label(namespace, token)}<div data-radius-shape class="r-${token.key} bg-surface-raised shadow-sm"><span class="fg-text-muted text-sm">${token.key}</span></div>${token.key === 'pill' ? '<div data-radius-circle class="r-pill bg-surface-raised shadow-sm" aria-label="Equal width and height form a circle">+</div>' : ''}</section>`).join('')}</div>`
     scene.css = '[data-foundation="radius"] { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); gap:32px; } [data-radius-shape] { display:grid; place-items:center; height:96px; width:128px; max-width:100%; } [data-radius-circle] { display:grid; place-items:center; width:48px; height:48px; margin-top:16px; font-size:24px; }'
   } else if (namespace === 'shadow') {
-    scene.html = `<div data-foundation="shadow">${tokens.map(token => `<section>${label(namespace, token)}<article data-shadow-card class="p-lg r-lg bg-surface-raised shadow-${token.key}"><div class="text-md font-weight-medium fg-text-strong">${escape(getShadowRows().find(row => row.key === token.key)?.role ?? token.key)}</div><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">${escape(getShadowRows().find(row => row.key === token.key)?.description ?? '')}</p></article></section>`).join('')}</div>`
+    scene.html = `<div data-foundation="shadow">${tokens.map(token => `<section>${label(namespace, token)}<article data-shadow-card class="p-lg r-lg bg-surface-raised shadow-${token.key}"><div class="text-md font-medium fg-text-strong">${escape(getShadowRows().find(row => row.key === token.key)?.role ?? token.key)}</div><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">${escape(getShadowRows().find(row => row.key === token.key)?.description ?? '')}</p></article></section>`).join('')}</div>`
     scene.css = 'body { padding:32px 24px 64px; } [data-foundation="shadow"] { display:grid; gap:48px; } [data-shadow-card] { min-height:128px; }'
   } else if (['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking'].includes(namespace)) {
     scene.html = `<div data-foundation="typography">${tokens.map(token => {
       const utility = tokenClass(namespace, token.key)
       const text = namespace === 'leading' ? paragraph : namespace === 'font-family' ? 'The quick brown fox jumps over the lazy dog. 0123456789' : ['font-size', 'text'].includes(namespace) ? 'Design for people.' : namespace === 'tracking' ? 'Make space for extraordinary ideas.' : 'A thoughtful balance. Aa 0123456789'
-      return `<section>${label(namespace, token)}<p data-type-target class="margin:0 ${['font-size', 'text', 'leading'].includes(namespace) ? '' : 'font-size-xl'} ${utility}">${text}</p></section>`
+      return `<section>${label(namespace, token)}<p data-type-target class="margin:0 ${['font-size', 'text', 'leading'].includes(namespace) ? '' : 'font-xl'} ${utility}">${text}</p></section>`
     }).join('')}</div>`
     scene.css = '[data-foundation="typography"] { display:grid; gap:32px; } [data-foundation="typography"] > section + section { border-top:1px solid var(--color-line-divider); padding-top:24px; } [data-type-target] { overflow-wrap:anywhere; }'
     if (namespace === 'leading') scene.css += ' [data-type-target] { max-width:38ch; font-size:16px; }'

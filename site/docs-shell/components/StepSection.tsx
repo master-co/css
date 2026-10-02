@@ -18,7 +18,7 @@ const StepSection = styled.div`
 export const StepNum = styled.div`
   display:inline-flex align-items:center
   justify-content:center
-  height:24px width:24px margin-right:1.281rem r-sm border-width:1px border-style:solid b-line-subtle font-size-xs font-weight:460 tracking-normal bg-surface-raised counter-increment:step vertical-align:middle
+  height:24px width:24px margin-right:1.281rem r-sm border-width:1px border-style:solid b-line-subtle font-xs font-weight:460 tracking-normal bg-surface-raised counter-increment:step vertical-align:middle
   content:counter(step):before
 `
 

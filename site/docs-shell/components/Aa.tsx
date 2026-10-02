@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 export default function Aa(props: any) {
   return <span {...props} className={clsx(
-    'mr-sm font-size-md font-weight:460 user-select:none vertical-align:top',
+    'mr-sm font-md font-weight:460 user-select:none vertical-align:top',
     props.className,
     {
       'background-image:var(--tiny-image) background-position:center': props.className.includes('-webkit-text-fill-color:transparent'),

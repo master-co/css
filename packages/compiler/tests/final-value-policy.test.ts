@@ -4,7 +4,7 @@ import { validateCompiledCSS } from '../src/value-validation'
 
 const baseManifest = {
   "version": 6 as const,
-  "languageVersion": 15 as const,
+  "languageVersion": 16 as const,
   mixins: [
   {
     "name": "--all",

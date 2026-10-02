@@ -14,7 +14,7 @@ fn compile(source: &str) -> mastercss_compiler::LowerCssDirectivesResult {
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,
         },
-        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":15,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
+        &mastercss_compiler::LowerCssDirectivesOptions { base_manifest: Some(serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}]})), resolution_manifest: None },
     )
     .unwrap()
 }

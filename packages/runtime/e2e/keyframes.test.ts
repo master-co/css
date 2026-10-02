@@ -16,8 +16,8 @@ test('animation shorthand tokens preserve preset timing and support direct overr
     await expect(target).toHaveCSS('animation-iteration-count', 'infinite')
   }
   const target = page.locator('#fade')
-  await target.evaluate(element => { element.className = 'animate-fade animation-duration-fast' })
-  await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('animation-duration-fast'))).toBe(true)
+  await target.evaluate(element => { element.className = 'animate-fade animation-fast' })
+  await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('animation-fast'))).toBe(true)
   await expect(target).toHaveCSS('animation-duration', '1s')
   await target.evaluate(element => { element.className = 'animate-fade animation-duration:var(--duration-fast) animation-iteration-count:1' })
   await expect(target).toHaveCSS('animation-duration', '0.15s')

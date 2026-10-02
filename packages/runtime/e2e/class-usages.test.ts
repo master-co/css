@@ -143,7 +143,7 @@ test('moves class subtrees across document and shadow roots without stale counts
     const afterSameRootMove = runtimeB.snapshot().usageCounts
 
     const documentNode = document.createElement('div')
-    documentNode.className = 'font-weight-bold'
+    documentNode.className = 'font-bold'
     document.body.append(documentNode)
     await new Promise(resolve => setTimeout(resolve, 0))
     rootB.append(documentNode)
@@ -169,11 +169,11 @@ test('moves class subtrees across document and shadow roots without stale counts
     b: { 'display:block': 1, 'fg-red-60': 1 }
   })
   expect(result.afterSameRootMove).toEqual({ 'display:block': 1, 'fg-red-60': 1 })
-  expect(result.afterDocumentMove.document).not.toHaveProperty('font-weight-bold')
+  expect(result.afterDocumentMove.document).not.toHaveProperty('font-bold')
   expect(result.afterDocumentMove.b).toEqual({
     'display:block': 1,
     'fg-red-60': 1,
-    'font-weight-bold': 1
+    'font-bold': 1
   })
   expect(result.sourceTextAfterCleanup).toBe('')
 })

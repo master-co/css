@@ -141,7 +141,7 @@ test('prepared Sass maps resolve relative references from an imported partial', 
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, projectDir: root,
       delivery: { baseFile: prepared.baseFile, sourceMap: prepared.sourceMap,
         entryURL: '/entry.css', stylesheetURL: id => '/' + Buffer.from(id).toString('hex') + '.css', resourceURL: id => id }

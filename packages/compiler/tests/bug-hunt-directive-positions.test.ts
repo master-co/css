@@ -37,7 +37,7 @@ for (const binding of ['native', 'wasm'] as const) {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, resolutionManifest: {
   mixins: [
   {
@@ -57,7 +57,7 @@ for (const binding of ['native', 'wasm'] as const) {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
           })
         } catch (error) { caught = error }
@@ -89,7 +89,7 @@ test('BH-0004 local stylesheet lowering retains source text for diagnostics', as
   }
 ],
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })).rejects.toMatchObject({
     diagnostics: [{ code: 'removed-compose-directive', source: 'local.css', range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }]
   })

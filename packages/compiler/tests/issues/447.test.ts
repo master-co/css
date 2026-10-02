@@ -34,7 +34,7 @@ const valid = [
   ['-m-probe', ['margin:calc(var(--spacing-probe) * -1)']],
   ['audit-align-start', ['text-align:start']],
   ['audit-align-end:hover', [':hover{text-align:end}']],
-  ['font-family-probe', ['font-family:var(--font-family-probe)']],
+  ['font-family:var(--font-family-probe)', ['font-family:var(--font-family-probe)']],
   ['font:16px', ['{font:16px}']],
   ["p-probe:hover", [':hover{', 'padding:var(--spacing-probe)']],
   ["padding-top:12px:hover", [':hover{', 'padding-top:12px']],
@@ -57,8 +57,8 @@ const invalid = [
   ["{p-probe;padding-top:12px}:hover", "syntax-error", "CLASS_SYNTAX_ERROR"],
   ["p-probe:of(.active)", "syntax-error", "CLASS_SYNTAX_ERROR"],
   ['ordinary-audit-class', 'unmatched', undefined],
-  ['font-probe', 'syntax-error', 'CLASS_SYNTAX_ERROR'],
-  ['font-family-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
+  ['font-probe', 'ambiguous', 'AMBIGUOUS_TOKEN'],
+  ['font-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
   ["display:block@audit-undefined", 'syntax-error', 'UNKNOWN_CONDITION'],
   ['display:block@media(width>=800px)', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
   ['display:block@supports(selector([lang|=en]))', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
@@ -91,7 +91,7 @@ test('447: compiler and engine binding combinations agree on the language contra
           const parsed = compiler.compileManifest(css, {
             baseManifest: {
   "version": 6 as const,
-  "languageVersion": 15 as const
+  "languageVersion": 16 as const
 }, preserveNativeCSS: true
           })
           expect(parsed.css, className).not.toBe('')
@@ -104,10 +104,10 @@ test('447: compiler and engine binding combinations agree on the language contra
         expect(inspection.rules, className).toEqual([])
         if (code) expect(inspection.diagnostics?.map(item => item.code), className).toContain(code)
       }
-      const removedFontFamily = engine.inspect('font-probe')
-      const removedMessage = removedFontFamily.diagnostics?.map(item => item.message).join('\n')
-      expect(removedMessage).toContain('font-family-probe')
-      expect(removedMessage).toContain('font-size-probe')
+      const ambiguousFont = engine.inspect('font-probe')
+      const ambiguityMessage = ambiguousFont.diagnostics?.map(item => item.message).join('\n')
+      expect(ambiguityMessage).toContain('--font-family-probe')
+      expect(ambiguityMessage).toContain('--font-size-probe')
       using incremental = await createEngine({ manifest, binding })
       engine.ensureClassRules(classNames)
       expect(engine.snapshot()).toEqual(reference.snapshot())

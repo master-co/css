@@ -4,15 +4,15 @@
     "id": "set-the-alpha-threshold",
     "title": "Set the alpha threshold",
     "html": [
-      "<!-- Threshold .2 · includes the outer ring -->\n<article class=\"display:flow-root width:280px max-width:100% font-size-sm\n         line-height:24px fg-text-body\">\n  <img id=\"target\" src=\"/demo/mask.svg\"\n    width=\"120\" height=\"120\"\n    alt=\"Opaque blue center with a translucent outer ring\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           shape-image-threshold:.2\n           shape-outside:url(/demo/mask.svg)\" />\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>",
-      "<!-- Threshold .5 · follows the opaque center -->\n<article class=\"display:flow-root width:280px max-width:100% font-size-sm\n         line-height:24px fg-text-body\">\n  <img id=\"target\" src=\"/demo/mask.svg\"\n    width=\"120\" height=\"120\"\n    alt=\"Opaque blue center with a translucent outer ring\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           shape-image-threshold:.5\n           shape-outside:url(/demo/mask.svg)\" />\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>"
+      "<!-- Threshold .2 · includes the outer ring -->\n<article class=\"display:flow-root width:280px max-width:100% font-sm\n         line-height:24px fg-text-body\">\n  <img id=\"target\" src=\"/demo/mask.svg\"\n    width=\"120\" height=\"120\"\n    alt=\"Opaque blue center with a translucent outer ring\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           shape-image-threshold:.2\n           shape-outside:url(/demo/mask.svg)\" />\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>",
+      "<!-- Threshold .5 · follows the opaque center -->\n<article class=\"display:flow-root width:280px max-width:100% font-sm\n         line-height:24px fg-text-body\">\n  <img id=\"target\" src=\"/demo/mask.svg\"\n    width=\"120\" height=\"120\"\n    alt=\"Opaque blue center with a translucent outer ring\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           shape-image-threshold:.5\n           shape-outside:url(/demo/mask.svg)\" />\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>"
     ],
     "css": "",
     "classes": [
       "display:flow-root",
       "width:280px",
       "max-width:100%",
-      "font-size-sm",
+      "font-sm",
       "line-height:24px",
       "fg-text-body",
       "float:left",
@@ -25,10 +25,10 @@
       "shape-image-threshold:.5"
     ],
     "classLists": [
-      "display:flow-root width:280px max-width:100% font-size-sm line-height:24px fg-text-body",
+      "display:flow-root width:280px max-width:100% font-sm line-height:24px fg-text-body",
       "float:left outline-width:1px outline-style:solid outline-line-subtle shape-image-threshold:.2 shape-outside:url(/demo/mask.svg)",
       "margin:0",
-      "display:flow-root width:280px max-width:100% font-size-sm line-height:24px fg-text-body",
+      "display:flow-root width:280px max-width:100% font-sm line-height:24px fg-text-body",
       "float:left outline-width:1px outline-style:solid outline-line-subtle shape-image-threshold:.5 shape-outside:url(/demo/mask.svg)",
       "margin:0"
     ],

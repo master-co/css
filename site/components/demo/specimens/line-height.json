@@ -4,24 +4,24 @@
     "id": "use-explicit-values",
     "title": "Use explicit values",
     "html": [
-      "<!-- Unitless · 1.5 -->\n<div id=\"context\" class=\"font-size-md line-height:1.5\">\n  <p class=\"margin:0\">Parent at 16px</p>\n  <p id=\"target\" class=\"margin:0 font-size-2xl\">Child at 24px<br>Second line</p>\n</div>",
-      "<!-- Fixed length · 24px -->\n<div id=\"context\" class=\"font-size-md line-height:24px\">\n  <p class=\"margin:0\">Parent at 16px</p>\n  <p id=\"target\" class=\"margin:0 font-size-2xl\">Child at 24px<br>Second line</p>\n</div>"
+      "<!-- Unitless · 1.5 -->\n<div id=\"context\" class=\"font-md line-height:1.5\">\n  <p class=\"margin:0\">Parent at 16px</p>\n  <p id=\"target\" class=\"margin:0 font-2xl\">Child at 24px<br>Second line</p>\n</div>",
+      "<!-- Fixed length · 24px -->\n<div id=\"context\" class=\"font-md line-height:24px\">\n  <p class=\"margin:0\">Parent at 16px</p>\n  <p id=\"target\" class=\"margin:0 font-2xl\">Child at 24px<br>Second line</p>\n</div>"
     ],
     "css": "",
     "classes": [
-      "font-size-md",
+      "font-md",
       "line-height:1.5",
       "margin:0",
-      "font-size-2xl",
+      "font-2xl",
       "line-height:24px"
     ],
     "classLists": [
-      "font-size-md line-height:1.5",
+      "font-md line-height:1.5",
       "margin:0",
-      "margin:0 font-size-2xl",
-      "font-size-md line-height:24px",
+      "margin:0 font-2xl",
+      "font-md line-height:24px",
       "margin:0",
-      "margin:0 font-size-2xl"
+      "margin:0 font-2xl"
     ],
     "highlighted": []
   }

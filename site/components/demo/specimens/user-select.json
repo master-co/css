@@ -4,7 +4,7 @@
     "id": "select-all-text-in-one-click",
     "title": "Select a whole value",
     "html": [
-      "<code id=\"target\"\n  class=\"display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-family-mono\n         user-select:all\">pnpm install @master/css</code>"
+      "<code id=\"target\"\n  class=\"display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-mono\n         user-select:all\">pnpm install @master/css</code>"
     ],
     "css": "",
     "classes": [
@@ -14,11 +14,11 @@
       "border-style:solid",
       "b-line-divider",
       "r-sm",
-      "font-family-mono",
+      "font-mono",
       "user-select:all"
     ],
     "classLists": [
-      "display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-family-mono user-select:all"
+      "display:block p-sm border-width:1px border-style:solid b-line-divider r-sm font-mono user-select:all"
     ],
     "highlighted": []
   }

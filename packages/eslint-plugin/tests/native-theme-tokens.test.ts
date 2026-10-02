@@ -3,7 +3,7 @@ import { compileManifestSync } from '@master/css-compiler/node'
 import rule from '../src/rules/no-invalid-classes'
 
 const { manifest } = compileManifestSync('@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --p(--spacing){padding:var(--spacing)} @utility p(--spacing) {padding:var(--spacing)}@utility p-(--spacing) {padding:var(--spacing)}@theme{--color-brand:red;--spacing-card:1rem}:root{--color-native:red}', {
-  baseManifest: { version: 6, languageVersion: 15 }
+  baseManifest: { version: 6, languageVersion: 16 }
 })
 const tester = new RuleTester({
   languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },

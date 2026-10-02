@@ -92,16 +92,18 @@ A literal space still needs encoding even inside a quoted class value. For unusu
 
 ## Use canonical token families \{#token-families\}
 
-A token family connects one class prefix to one property and one namespace. The namespace supplies values; several families can consume that same namespace.
+Each utility pattern connects a class prefix to one token namespace and an authored declaration body. Several patterns can share a prefix when their keys identify a unique namespace. Several prefixes can also consume the same namespace.
 
 | Class | CSS property | Namespace | Variable |
 | --- | --- | --- | --- |
 | `p-md` | `padding` | `spacing` | `--spacing-md` |
 | `gap-md` | `gap` | `spacing` | `--spacing-md` |
 | `fg-text-muted` | `color` | `color` | `--color-text-muted` |
-| `font-size-sm` | `font-size` | `font-size` | `--font-size-sm` |
+| `font-sans` | `font-family` | `font-family` | `--font-family-sans` |
+| `font-sm` | `font-size` | `font-size` | `--font-size-sm` |
+| `font-bold` | `font-weight` | `font-weight` | `--font-weight-bold` |
 
-<Class2CSS>{['p-md', 'gap-md', 'fg-text-muted', 'font-size-sm']}</Class2CSS>
+<Class2CSS>{['p-md', 'gap-md', 'fg-text-muted', 'font-sans', 'font-sm', 'font-bold']}</Class2CSS>
 
 The following selected spacing values come from the same preset data used by Reference:
 
@@ -205,7 +207,7 @@ Direct declarations in `@theme` use `:root, :host`. Used managed tokens are emit
 
 A local brand can change a token without changing any consuming class. This example also separates brand from light and dark appearance:
 
-<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: oklch(55% 0.18 255);\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: oklch(58% 0.2 315); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="margin:0 text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-weight-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="margin:0 text-sm">Nested light surface</p><p class="mt-sm margin-bottom:0 font-weight-semibold fg-brand">The same inherited plum accent</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand. Its fg-brand class is unchanged. The outer section keeps its dark surface." />
+<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: oklch(55% 0.18 255);\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: oklch(58% 0.2 315); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="margin:0 text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="margin:0 text-sm">Nested light surface</p><p class="mt-sm margin-bottom:0 font-semibold fg-brand">The same inherited plum accent</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand. Its fg-brand class is unchanged. The outer section keeps its dark surface." />
 
 Keep selectors and conditions outside `@theme`. A native media query can override a registered token:
 
@@ -249,9 +251,9 @@ Arguments must be known during compilation. Pass literal arguments or forward a 
 
 ### Build a named recipe from tokens
 
-The preset's `text-sm` is a recipe, whereas `font-size-sm` changes one property. An explicit token pattern with a `<string>` parameter binds a key from its parameter namespace. A matching primary token creates the named class. A project can add a new text treatment without replacing the recipe:
+The preset's `text-sm` is a recipe, whereas `font-sm` changes one property. An explicit token pattern with a `<string>` parameter binds a key from its parameter namespace. A matching primary token creates the named class. A project can add a new text treatment without replacing the recipe:
 
-<DemoConfiguredExample name="syntax-type" title="A small editorial hierarchy" source={'@theme {\n  --text-note: 0.9375rem;\n  --text-note--line-height: 1.65;\n  --text-note--letter-spacing: 0.01em;\n}'} html={'<article class="max-width:34rem p-lg r-lg bg-surface-raised"><p class="margin:0 text-sm fg-text-muted">FIELD NOTES / 024</p><h3 class="mt-sm mb-md text-2xl font-weight-semibold fg-text-strong">Make space for the details.</h3><p class="margin:0 text-note fg-text-body">A text treatment keeps size, line height and letter spacing together. Weight, family and color remain independent decisions.</p></article>'} caption="Compare the compact label, larger heading and relaxed paragraph. text-note reads one primary token and two companions; its color is selected separately." />
+<DemoConfiguredExample name="syntax-type" title="A small editorial hierarchy" source={'@theme {\n  --text-note: 0.9375rem;\n  --text-note--line-height: 1.65;\n  --text-note--letter-spacing: 0.01em;\n}'} html={'<article class="max-width:34rem p-lg r-lg bg-surface-raised"><p class="margin:0 text-sm fg-text-muted">FIELD NOTES / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">Make space for the details.</h3><p class="margin:0 text-note fg-text-body">A text treatment keeps size, line height and letter spacing together. Weight, family and color remain independent decisions.</p></article>'} caption="Compare the compact label, larger heading and relaxed paragraph. text-note reads one primary token and two companions; its color is selected separately." />
 
 `text-note` binds the key `"note"` to `--text` in the preset utility. The primary `--text-note` supplies font size. Its companions supply line height and letter spacing; companions alone do not create classes. The recipe uses `ident()` to build variable names from the static string argument:
 
@@ -378,7 +380,7 @@ Native rules ship by default. Source-based native pruning is an explicit option 
 
 The final card uses a local project token, an on-demand button recipe, an interaction wrapper and a container query. Native component CSS owns the card surface; utilities own the decisions visible at each element.
 
-<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="container-name:collection container-type:inline-size"><article class="collection display:grid gap-lg p-lg grid-template-columns:1fr|auto@container(collection|(width>=28rem))"><div><p class="margin:0 text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-weight-semibold fg-text-strong">A place for good ideas.</h3><p class="margin:0 text-sm fg-text-body max-width:38ch">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action align-self:center justify-content:center fg-action bg-surface-inset@apply(--hocus) outline-offset:3px"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
+<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="container-name:collection container-type:inline-size"><article class="collection display:grid gap-lg p-lg grid-template-columns:1fr|auto@container(collection|(width>=28rem))"><div><p class="margin:0 text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">A place for good ideas.</h3><p class="margin:0 text-sm fg-text-body max-width:38ch">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action align-self:center justify-content:center fg-action bg-surface-inset@apply(--hocus) outline-offset:3px"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
 
 Add these definitions after the preset import in your own app stylesheet. The demonstration's appearance switch changes the native color scheme; `light-dark()` selects the corresponding action color. Both states use the same complete classes.
 

@@ -71,7 +71,7 @@ describe('stylesheet CSS directives', () => {
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
     const stylesheetSources = new Map()
-    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), "\n      @import \"@master/css\";\n      @source './**/*.tsx';\n      @source not './**/*.test.tsx';\n      @safelist 'font-weight-semibold legacy-token';\n      @blocklist 'legacy-*';\n    ", { baseManifest: scanner.css.manifest })
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), "\n      @import \"@master/css\";\n      @source './**/*.tsx';\n      @source not './**/*.test.tsx';\n      @safelist 'font-semibold legacy-token';\n      @blocklist 'legacy-*';\n    ", { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
       scanner,
       stylesheetSources,
@@ -80,7 +80,7 @@ describe('stylesheet CSS directives', () => {
     })
 
     expect(css).toContain(".display\\:block{display:block}")
-    expect(css).toContain('.font-weight-semibold{font-weight:var(--font-weight-semibold)}')
+    expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
     expect(css).not.toContain('.fg-red')
     expect(css).not.toContain('.text\\:center')
     expect(css).not.toContain('legacy-token')
@@ -91,7 +91,7 @@ describe('stylesheet CSS directives', () => {
     mkdirSync(join(root, 'app/templates'), { recursive: true })
     writeFileSync(join(root, 'app/templates/product.liquid'), "<h1 class=\"display:block\"></h1>")
     writeFileSync(join(root, 'app/templates/index.cshtml'), "<h1 class=\"margin:0\"></h1>")
-    writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font-weight-semibold"></h1>')
+    writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font-semibold"></h1>')
 
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
@@ -106,7 +106,7 @@ describe('stylesheet CSS directives', () => {
 
     expect(css).toContain(".display\\:block{display:block}")
     expect(css).toContain(".margin\\:0{margin:0}")
-    expect(css).toContain('.font-weight-semibold{font-weight:var(--font-weight-semibold)}')
+    expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
   })
 
   it('unions source directives and subtracts source not directives', async () => {

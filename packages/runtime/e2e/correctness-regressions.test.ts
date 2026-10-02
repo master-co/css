@@ -83,7 +83,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = { theme: [{ type: 'rule', prelude: ':root,:host', children: [{ type: 'declaration', name: 'x', value: 'red' }, { type: 'declaration', name: 'y', value: 'blue' }, { type: 'declaration', name: 'a', value: 'linear-gradient(var(--x),var(--y))' }, { type: 'declaration', name: 'z', value: 'green' }] }],
-    version: 6, languageVersion: 15,
+    version: 6, languageVersion: 16,
     variables: { '': [
       { name: 'x', key: 'x', values: [{ path: [':root,:host'], value: 'red' }] },
       { name: 'y', key: 'y', values: [{ path: [':root,:host'], value: 'blue' }] },
@@ -109,7 +109,7 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 15,
+    version: 6, languageVersion: 16,
     theme: ['light', 'dark'].map((name, index) => ({ type: 'rule', prelude: `.${name}`, children: [{ type: 'declaration', name: 'primary', value: index ? '#ffffff' : '#000000' }] })),
     variables: { '': [{ name: 'primary', key: 'primary', values: [{ path: ['.light'], value: '#000000' }, { path: ['.dark'], value: '#ffffff' }] }] },
     utilities: [utility('theme-color', { color: 'var(--primary)' })]
@@ -145,7 +145,7 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 6, languageVersion: 15,
+      version: 6, languageVersion: 16,
       utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
         kind: 'static' as const, name: layer,
         body: [...utility(layer, { color: 'red' }).body,

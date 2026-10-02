@@ -81,7 +81,7 @@ describe('Rust lint session', () => {
     , utilities: [{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
     try {
       expect(lint.rawValueCandidates([
-        'font-size-md',
+        'font-md',
         'm-md',
         "margin:var(--spacing-md)|var(--spacing-lg)",
         'fg-red-60',

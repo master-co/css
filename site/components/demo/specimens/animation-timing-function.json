@@ -4,15 +4,15 @@
     "id": "match-easing-to-intent",
     "title": "Match easing to intent",
     "html": [
-      "<!-- Keyframe easing · four 18px steps -->\n<div class=\"width:240px max-width:100%\">\n  <p class=\"mb-sm font-family-mono font-size-xs fg-text-muted\">Base 0 · start 24 · end 96px</p>\n  <div aria-hidden=\"true\"\n    class=\"height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:40px width:48px\n             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10\n             fg-blue-80 transform:none\n             animation-duration:1s\n             animation-fill-mode:forwards\n             animation-name:layer-slide\n             animation-timing-function:linear\n             animation:none@media(print)\n             animation-play-state:paused@motion-reduce\">→</span>\n  </div>\n</div>"
+      "<!-- Keyframe easing · four 18px steps -->\n<div class=\"width:240px max-width:100%\">\n  <p class=\"mb-sm font-mono font-xs fg-text-muted\">Base 0 · start 24 · end 96px</p>\n  <div aria-hidden=\"true\"\n    class=\"height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle\">\n    <span id=\"target\"\n      class=\"display:grid place-items:center height:40px width:48px\n             border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10\n             fg-blue-80 transform:none\n             animation-duration:1s\n             animation-fill-mode:forwards\n             animation-name:layer-slide\n             animation-timing-function:linear\n             animation:none@media(print)\n             animation-play-state:paused@motion-reduce\">→</span>\n  </div>\n</div>"
     ],
     "css": "@theme {\n\n}\n@keyframes layer-slide {\n    from { transform: translateX(24px); animation-timing-function:steps(4,end); }\n    to { transform: translateX(96px); }\n  }\n\n",
     "classes": [
       "width:240px",
       "max-width:100%",
       "mb-sm",
-      "font-family-mono",
-      "font-size-xs",
+      "font-mono",
+      "font-xs",
       "fg-text-muted",
       "height:56px",
       "p-xs",
@@ -39,7 +39,7 @@
     ],
     "classLists": [
       "width:240px max-width:100%",
-      "mb-sm font-family-mono font-size-xs fg-text-muted",
+      "mb-sm font-mono font-xs fg-text-muted",
       "height:56px p-xs outline-width:1px outline-style:dashed outline-line-subtle",
       "display:grid place-items:center height:40px width:48px border-width:1px border-style:solid b-blue-60 r-sm bg-blue-10 fg-blue-80 transform:none animation-duration:1s animation-fill-mode:forwards animation-name:layer-slide animation-timing-function:linear animation:none@media(print) animation-play-state:paused@motion-reduce"
     ],

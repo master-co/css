@@ -4,7 +4,7 @@
     "id": "fade-overflowing-media",
     "title": "Fade overflowing media",
     "html": [
-      "<!-- Scrollable list · fixed lower fade -->\n<div class=\"width:240px max-width:100%\">\n  <div class=\"outline-width:2px:focus-within outline-style:solid:focus-within outline-blue:focus-within\n              outline-offset:3px:focus-within\">\n    <div id=\"target\" role=\"region\" tabindex=\"0\"\n      aria-label=\"Layer list\"\n      aria-describedby=\"scroll-help\"\n      class=\"overflow:auto height:160px bg-surface-base\n             mask-image:linear-gradient(to|bottom,black|60%,transparent)\n             mask-mode:alpha outline:none:focus-visible\">\n      <ol class=\"margin:0 pb-3xl pl-lg pr-sm font-size-sm fg-text-body\">\n        <li id=\"first-layer\" class=\"py-xs\">Outline</li>\n        <li class=\"py-xs\">Surface</li>\n        <li class=\"py-xs\">Foreground</li>\n        <li class=\"py-xs\">Accent</li>\n        <li class=\"py-xs\">Annotation</li>\n        <li class=\"py-xs\">Selection</li>\n        <li class=\"py-xs\">Focus</li>\n        <li id=\"last-layer\" class=\"py-xs\">Export</li>\n      </ol>\n    </div>\n  </div>\n  <p id=\"scroll-help\" class=\"margin-bottom:0 mt-sm font-size-sm fg-text-body\">\n    Eight layers. Scroll or follow the links below.\n  </p>\n  <nav aria-label=\"Layer navigation\"\n    class=\"display:flex flex-wrap:wrap gap-md mt-sm font-size-sm\">\n    <a href=\"#first-layer\">First layer</a>\n    <a href=\"#last-layer\">Last layer</a>\n  </nav>\n</div>"
+      "<!-- Scrollable list · fixed lower fade -->\n<div class=\"width:240px max-width:100%\">\n  <div class=\"outline-width:2px:focus-within outline-style:solid:focus-within outline-blue:focus-within\n              outline-offset:3px:focus-within\">\n    <div id=\"target\" role=\"region\" tabindex=\"0\"\n      aria-label=\"Layer list\"\n      aria-describedby=\"scroll-help\"\n      class=\"overflow:auto height:160px bg-surface-base\n             mask-image:linear-gradient(to|bottom,black|60%,transparent)\n             mask-mode:alpha outline:none:focus-visible\">\n      <ol class=\"margin:0 pb-3xl pl-lg pr-sm font-sm fg-text-body\">\n        <li id=\"first-layer\" class=\"py-xs\">Outline</li>\n        <li class=\"py-xs\">Surface</li>\n        <li class=\"py-xs\">Foreground</li>\n        <li class=\"py-xs\">Accent</li>\n        <li class=\"py-xs\">Annotation</li>\n        <li class=\"py-xs\">Selection</li>\n        <li class=\"py-xs\">Focus</li>\n        <li id=\"last-layer\" class=\"py-xs\">Export</li>\n      </ol>\n    </div>\n  </div>\n  <p id=\"scroll-help\" class=\"margin-bottom:0 mt-sm font-sm fg-text-body\">\n    Eight layers. Scroll or follow the links below.\n  </p>\n  <nav aria-label=\"Layer navigation\"\n    class=\"display:flex flex-wrap:wrap gap-md mt-sm font-sm\">\n    <a href=\"#first-layer\">First layer</a>\n    <a href=\"#last-layer\">Last layer</a>\n  </nav>\n</div>"
     ],
     "css": "",
     "classes": [
@@ -24,7 +24,7 @@
       "pb-3xl",
       "pl-lg",
       "pr-sm",
-      "font-size-sm",
+      "font-sm",
       "fg-text-body",
       "py-xs",
       "margin-bottom:0",
@@ -37,7 +37,7 @@
       "width:240px max-width:100%",
       "outline-width:2px:focus-within outline-style:solid:focus-within outline-blue:focus-within outline-offset:3px:focus-within",
       "overflow:auto height:160px bg-surface-base mask-image:linear-gradient(to|bottom,black|60%,transparent) mask-mode:alpha outline:none:focus-visible",
-      "margin:0 pb-3xl pl-lg pr-sm font-size-sm fg-text-body",
+      "margin:0 pb-3xl pl-lg pr-sm font-sm fg-text-body",
       "py-xs",
       "py-xs",
       "py-xs",
@@ -46,8 +46,8 @@
       "py-xs",
       "py-xs",
       "py-xs",
-      "margin-bottom:0 mt-sm font-size-sm fg-text-body",
-      "display:flex flex-wrap:wrap gap-md mt-sm font-size-sm"
+      "margin-bottom:0 mt-sm font-sm fg-text-body",
+      "display:flex flex-wrap:wrap gap-md mt-sm font-sm"
     ],
     "highlighted": []
   }

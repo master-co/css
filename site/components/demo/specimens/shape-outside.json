@@ -4,15 +4,15 @@
     "id": "wrap-text-around-a-circle",
     "title": "Wrap text around a circle",
     "html": [
-      "<!-- Normal float · rectangular wrap -->\n<article class=\"display:flow-root width:280px max-width:100% font-size-sm\n         line-height:24px fg-text-body\">\n  <svg id=\"target\" role=\"img\" aria-label=\"Blue circle\"\n    width=\"120\" height=\"120\" viewBox=\"0 0 120 120\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           fill-blue-60 shape-outside:none\">\n    <circle cx=\"60\" cy=\"60\" r=\"48\" />\n  </svg>\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>",
-      "<!-- Circle · text follows the curved boundary -->\n<article class=\"display:flow-root width:280px max-width:100% font-size-sm\n         line-height:24px fg-text-body\">\n  <svg id=\"target\" role=\"img\" aria-label=\"Blue circle\"\n    width=\"120\" height=\"120\" viewBox=\"0 0 120 120\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           fill-blue-60\n           shape-outside:circle(48px)|border-box\">\n    <circle cx=\"60\" cy=\"60\" r=\"48\" />\n  </svg>\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>"
+      "<!-- Normal float · rectangular wrap -->\n<article class=\"display:flow-root width:280px max-width:100% font-sm\n         line-height:24px fg-text-body\">\n  <svg id=\"target\" role=\"img\" aria-label=\"Blue circle\"\n    width=\"120\" height=\"120\" viewBox=\"0 0 120 120\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           fill-blue-60 shape-outside:none\">\n    <circle cx=\"60\" cy=\"60\" r=\"48\" />\n  </svg>\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>",
+      "<!-- Circle · text follows the curved boundary -->\n<article class=\"display:flow-root width:280px max-width:100% font-sm\n         line-height:24px fg-text-body\">\n  <svg id=\"target\" role=\"img\" aria-label=\"Blue circle\"\n    width=\"120\" height=\"120\" viewBox=\"0 0 120 120\"\n    class=\"float:left outline-width:1px outline-style:solid outline-line-subtle\n           fill-blue-60\n           shape-outside:circle(48px)|border-box\">\n    <circle cx=\"60\" cy=\"60\" r=\"48\" />\n  </svg>\n  <p class=\"margin:0\">\n    A clear layout leaves room for both artwork and words.\n    Follow the first lines as they pass the blue shape.\n    Their starting positions change with the available space.\n    Below the float, the paragraph returns to its full width.\n    The artwork keeps the same size throughout the comparison.\n  </p>\n</article>"
     ],
     "css": "",
     "classes": [
       "display:flow-root",
       "width:280px",
       "max-width:100%",
-      "font-size-sm",
+      "font-sm",
       "line-height:24px",
       "fg-text-body",
       "float:left",
@@ -25,10 +25,10 @@
       "shape-outside:circle(48px)|border-box"
     ],
     "classLists": [
-      "display:flow-root width:280px max-width:100% font-size-sm line-height:24px fg-text-body",
+      "display:flow-root width:280px max-width:100% font-sm line-height:24px fg-text-body",
       "float:left outline-width:1px outline-style:solid outline-line-subtle fill-blue-60 shape-outside:none",
       "margin:0",
-      "display:flow-root width:280px max-width:100% font-size-sm line-height:24px fg-text-body",
+      "display:flow-root width:280px max-width:100% font-sm line-height:24px fg-text-body",
       "float:left outline-width:1px outline-style:solid outline-line-subtle fill-blue-60 shape-outside:circle(48px)|border-box",
       "margin:0"
     ],

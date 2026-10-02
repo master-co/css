@@ -4,8 +4,8 @@
     "id": "let-clicks-pass-through-an-overlay",
     "title": "Let clicks pass through an overlay",
     "html": [
-      "<!-- None · reaches the checkbox -->\n<div class=\"position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm\">\n  <label class=\"display:flex align-items:center gap-sm\">\n    <input type=\"checkbox\"> Snap to grid\n  </label>\n  <div id=\"target\" aria-hidden=\"true\"\n    class=\"position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm\n           pointer-events:none\">\n    <span class=\"position:absolute right-xs top-xs font-size-xs fg-text-violet\">Overlay</span>\n  </div>\n</div>",
-      "<!-- Auto · overlay intercepts the pointer -->\n<div class=\"position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm\">\n  <label class=\"display:flex align-items:center gap-sm\">\n    <input type=\"checkbox\"> Snap to grid\n  </label>\n  <div id=\"target\" aria-hidden=\"true\"\n    class=\"position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm\n           pointer-events:auto\">\n    <span class=\"position:absolute right-xs top-xs font-size-xs fg-text-violet\">Overlay</span>\n  </div>\n</div>"
+      "<!-- None · reaches the checkbox -->\n<div class=\"position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm\">\n  <label class=\"display:flex align-items:center gap-sm\">\n    <input type=\"checkbox\"> Snap to grid\n  </label>\n  <div id=\"target\" aria-hidden=\"true\"\n    class=\"position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm\n           pointer-events:none\">\n    <span class=\"position:absolute right-xs top-xs font-xs fg-text-violet\">Overlay</span>\n  </div>\n</div>",
+      "<!-- Auto · overlay intercepts the pointer -->\n<div class=\"position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm\">\n  <label class=\"display:flex align-items:center gap-sm\">\n    <input type=\"checkbox\"> Snap to grid\n  </label>\n  <div id=\"target\" aria-hidden=\"true\"\n    class=\"position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm\n           pointer-events:auto\">\n    <span class=\"position:absolute right-xs top-xs font-xs fg-text-violet\">Overlay</span>\n  </div>\n</div>"
     ],
     "css": "",
     "classes": [
@@ -27,7 +27,7 @@
       "pointer-events:none",
       "right-xs",
       "top-xs",
-      "font-size-xs",
+      "font-xs",
       "fg-text-violet",
       "pointer-events:auto"
     ],
@@ -35,11 +35,11 @@
       "position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm",
       "display:flex align-items:center gap-sm",
       "position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm pointer-events:none",
-      "position:absolute right-xs top-xs font-size-xs fg-text-violet",
+      "position:absolute right-xs top-xs font-xs fg-text-violet",
       "position:relative px-lg pb-lg pt-xl border-width:1px border-style:solid b-line-divider r-sm",
       "display:flex align-items:center gap-sm",
       "position:absolute inset:0 border-width:1px border-style:dashed b-violet r-sm pointer-events:auto",
-      "position:absolute right-xs top-xs font-size-xs fg-text-violet"
+      "position:absolute right-xs top-xs font-xs fg-text-violet"
     ],
     "highlighted": []
   }

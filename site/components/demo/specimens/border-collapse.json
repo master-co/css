@@ -4,8 +4,8 @@
     "id": "match-border-spacing-to-the-mode",
     "title": "Match border spacing to the mode",
     "html": [
-      "<!-- Collapse · spacing ignored -->\n<table id=\"target\"\n  class=\"width:240px max-width:100% border-collapse:collapse\n         border-spacing-xs font-size-sm text-align:left\n         fg-text-body table-layout:fixed\">\n  <caption class=\"pb-sm font-weight-semibold text-align:left\">\n    Project assets\n  </caption>\n  <tbody>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-weight-medium\">\n        Design\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">12 files</td>\n    </tr>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-weight-medium\">\n        Research\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">8 files</td>\n    </tr>\n  </tbody>\n</table>",
-      "<!-- Separate · 8px spacing -->\n<table id=\"target\"\n  class=\"width:240px max-width:100% border-collapse:separate\n         border-spacing-xs font-size-sm text-align:left\n         fg-text-body table-layout:fixed\">\n  <caption class=\"pb-sm font-weight-semibold text-align:left\">\n    Project assets\n  </caption>\n  <tbody>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-weight-medium\">\n        Design\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">12 files</td>\n    </tr>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-weight-medium\">\n        Research\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">8 files</td>\n    </tr>\n  </tbody>\n</table>"
+      "<!-- Collapse · spacing ignored -->\n<table id=\"target\"\n  class=\"width:240px max-width:100% border-collapse:collapse\n         border-spacing-xs font-sm text-align:left\n         fg-text-body table-layout:fixed\">\n  <caption class=\"pb-sm font-semibold text-align:left\">\n    Project assets\n  </caption>\n  <tbody>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-medium\">\n        Design\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">12 files</td>\n    </tr>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-medium\">\n        Research\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">8 files</td>\n    </tr>\n  </tbody>\n</table>",
+      "<!-- Separate · 8px spacing -->\n<table id=\"target\"\n  class=\"width:240px max-width:100% border-collapse:separate\n         border-spacing-xs font-sm text-align:left\n         fg-text-body table-layout:fixed\">\n  <caption class=\"pb-sm font-semibold text-align:left\">\n    Project assets\n  </caption>\n  <tbody>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-medium\">\n        Design\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">12 files</td>\n    </tr>\n    <tr>\n      <th scope=\"row\"\n        class=\"p-xs border-width:2px border-style:solid b-blue font-medium\">\n        Research\n      </th>\n      <td class=\"p-xs border-width:2px border-style:solid b-blue\">8 files</td>\n    </tr>\n  </tbody>\n</table>"
     ],
     "css": "",
     "classes": [
@@ -13,31 +13,31 @@
       "max-width:100%",
       "border-collapse:collapse",
       "border-spacing-xs",
-      "font-size-sm",
+      "font-sm",
       "text-align:left",
       "fg-text-body",
       "table-layout:fixed",
       "pb-sm",
-      "font-weight-semibold",
+      "font-semibold",
       "p-xs",
       "border-width:2px",
       "border-style:solid",
       "b-blue",
-      "font-weight-medium",
+      "font-medium",
       "border-collapse:separate"
     ],
     "classLists": [
-      "width:240px max-width:100% border-collapse:collapse border-spacing-xs font-size-sm text-align:left fg-text-body table-layout:fixed",
-      "pb-sm font-weight-semibold text-align:left",
-      "p-xs border-width:2px border-style:solid b-blue font-weight-medium",
+      "width:240px max-width:100% border-collapse:collapse border-spacing-xs font-sm text-align:left fg-text-body table-layout:fixed",
+      "pb-sm font-semibold text-align:left",
+      "p-xs border-width:2px border-style:solid b-blue font-medium",
       "p-xs border-width:2px border-style:solid b-blue",
-      "p-xs border-width:2px border-style:solid b-blue font-weight-medium",
+      "p-xs border-width:2px border-style:solid b-blue font-medium",
       "p-xs border-width:2px border-style:solid b-blue",
-      "width:240px max-width:100% border-collapse:separate border-spacing-xs font-size-sm text-align:left fg-text-body table-layout:fixed",
-      "pb-sm font-weight-semibold text-align:left",
-      "p-xs border-width:2px border-style:solid b-blue font-weight-medium",
+      "width:240px max-width:100% border-collapse:separate border-spacing-xs font-sm text-align:left fg-text-body table-layout:fixed",
+      "pb-sm font-semibold text-align:left",
+      "p-xs border-width:2px border-style:solid b-blue font-medium",
       "p-xs border-width:2px border-style:solid b-blue",
-      "p-xs border-width:2px border-style:solid b-blue font-weight-medium",
+      "p-xs border-width:2px border-style:solid b-blue font-medium",
       "p-xs border-width:2px border-style:solid b-blue"
     ],
     "highlighted": []

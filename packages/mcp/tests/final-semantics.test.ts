@@ -22,8 +22,8 @@ test('AI inspection workflows preserve project context, statuses and complete al
       })
       if (expected.code) expect(actual.diagnostics?.map(item => item.code)).toContain(expected.code)
       if (expected.className === 'font-brand') {
-        expect(JSON.stringify(actual.diagnostics)).toContain('font-family-brand')
-        expect(JSON.stringify(actual.diagnostics)).toContain('font-size-brand')
+        expect(JSON.stringify(actual.diagnostics)).toContain('--font-family-brand')
+        expect(JSON.stringify(actual.diagnostics)).toContain('--font-size-brand')
       }
       results.push(actual)
     }
