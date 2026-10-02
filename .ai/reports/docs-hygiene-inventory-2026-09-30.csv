@@ -106,7 +106,6 @@ public_path,source,disposition,segments_or_owner
 /reference/clamp-lines,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/text-size,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/animate,site/reference/token-contracts.ts,retire,Animation token family contract and specimens consolidated into /reference/tokens/animate
-/reference/text-gradient,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/rules/declarations,site/app/[locale]/guide/style-declarations/contract.mdx,rewrite,Teach full native properties and canonical named tokens directly
 /reference/rules/selectors,site/app/[locale]/guide/state-selectors/contract.mdx,rewrite,Keep current selector composition; remove obsolete selector-history sentence
 /reference/rules/conditions,site/app/[locale]/guide/conditional-queries/contract.mdx,rewrite,Keep supported condition contracts; remove retired condition/group syntax history

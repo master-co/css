@@ -193,8 +193,8 @@ describe('@master/css-preset defaultManifest', () => {
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(5)
  expect(manifest.languageVersion).toBe(14)
- expect(manifest.mixins).toHaveLength(132)
- expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(132)
+ expect(manifest.mixins).toHaveLength(126)
+ expect(new Set(manifest.mixins?.map(mixin => mixin.name)).size).toBe(126)
  for (const field of ['utilities', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
  expect(manifest.mixins?.find(mixin => mixin.name === '--text')?.parameters).toEqual([{ name: '--step', syntax: 'string' }])
@@ -207,7 +207,8 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect(normalizeLineEndings(readFileSync(nativeCSSFile, 'utf8'))).toBe(nativeCSS)
     expect(nativeCSS).toContain('@layer base')
-    for (const opinion of ['text-rendering:', '-webkit-font-smoothing:', '-moz-osx-font-smoothing:', '100dvh', '-webkit-fill-available', '-moz-available', 'user-select: none']) {
+    expect(nativeCSS).toContain('-webkit-font-smoothing: antialiased')
+    for (const opinion of ['text-rendering:', '-moz-osx-font-smoothing:', '100dvh', '-webkit-fill-available', '-moz-available', 'user-select: none']) {
       expect(nativeCSS).not.toContain(opinion)
     }
     expect(nativeCSS).toContain('font-family: var(--font-family-sans)')
@@ -262,7 +263,7 @@ describe('@master/css-preset defaultManifest', () => {
   it('derives token families from preset mixins, including empty namespaces', () => {
     using tooling = createLanguageSessionSync({ manifest: defaultManifest })
     const families = tooling.tokenFamilies().families
-    expect(families.filter(family => family.argument === 'value')).toHaveLength(124)
+    expect(families.filter(family => family.argument === 'value')).toHaveLength(119)
     expect(families).toEqual(expect.arrayContaining([
       { mixin: '--p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
       { mixin: '--bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
@@ -331,8 +332,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('outline-width:thick')?.text).toBe('.outline-width\\:thick{outline-width:thick}')
     expect(css.createRule('outline-width:thin')?.text).toBe('.outline-width\\:thin{outline-width:thin}')
     expect(css.createRule('text-fill-color-text-red')?.text).toBe('.text-fill-color-text-red{-webkit-text-fill-color:var(--color-text-red)}')
-    expect(css.createRule('text-decoration-text-red')?.text).toBe('.text-decoration-text-red{text-decoration-color:var(--color-text-red)}')
-    expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
+    expect(css.createRule('text-decoration-text-red')).toBeUndefined()
+    expect(css.createRule('text-stroke-red')).toBeUndefined()
     expect(css.createRule("-webkit-text-stroke:1px")?.text).toBe(".-webkit-text-stroke\\:1px{-webkit-text-stroke:1px}")
     expect(css.createRule('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
     expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
@@ -409,8 +410,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('fg-text-link')?.text).toBe('.fg-text-link{color:var(--color-text-link)}')
     expect(css.createRule('fg-text-link-hover')?.text).toBe('.fg-text-link-hover{color:var(--color-text-link-hover)}')
     expect(css.createRule('fg-muted')).toBeUndefined()
-    expect(css.createRule('text-decoration-text-red')?.text).toBe('.text-decoration-text-red{text-decoration-color:var(--color-text-red)}')
-    expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
+    expect(css.createRule('text-decoration-text-red')).toBeUndefined()
+    expect(css.createRule('text-stroke-red')).toBeUndefined()
     expect(css.createRule('text-decoration-thickness:px')?.text).toBe('.text-decoration-thickness\\:px{text-decoration-thickness:px}')
     expect(css.createRule('text-decoration-thickness:var(--thickness)')?.text).toBe('.text-decoration-thickness\\:var\\(--thickness\\){text-decoration-thickness:var(--thickness)}')
     expect(css.createRule('bg-red')?.text).toBe('.bg-red{background-color:var(--color-red)}')
@@ -445,7 +446,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('stroke-red')?.text).toBe('.stroke-red{stroke:var(--color-red)}')
     expect(css.createRule('stroke-width:.75')?.text).toBe('.stroke-width\\:\\.75{stroke-width:.75}')
     expect(declarationsCSS.createRule('stroke-width:1px')?.text).toContain('stroke-width:1px')
-    expect(css.createRule('text-underline-sm')?.text).toBe('.text-underline-sm{text-underline-offset:var(--spacing-sm)}')
+    expect(css.createRule('text-underline-sm')).toBeUndefined()
     expect(css.createRule('text-underline-offset:0.5rem')?.text).toBe('.text-underline-offset\\:0\\.5rem{text-underline-offset:0.5rem}')
     expect(css.createRule('text-indent-sm')?.text).toBe('.text-indent-sm{text-indent:var(--spacing-sm)}')
     expect(css.createRule('background-size-sm')).toBeUndefined()
@@ -532,7 +533,7 @@ describe('@master/css-preset defaultManifest', () => {
  expect(css.createRule('display:block')?.text).toContain('display:block')
  expect(css.createRule('outline-thin')).toBeUndefined()
  expect(css.createRule('outline-width:thin')?.text).toContain('outline-width:thin')
- expect(css.createRule('text-underline-md')?.text).toContain('text-underline-offset:var(--spacing-md)')
+ expect(css.createRule('text-underline-md')).toBeUndefined()
 })
 
   it('separates raw properties from token abbreviations and preserves SVG r', () => {

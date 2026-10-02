@@ -39,7 +39,10 @@ describe.concurrent('sorting', () => {
 
 test('offers each loaded mixin as an apply completion', () => {
   const labels = hint("display:none@")?.map(({ label }) => label).filter(label => label.startsWith('@apply(')) ?? []
-  expect(labels).toHaveLength(149)
+  expect(labels).toHaveLength(126)
   expect(labels).toContain('@apply(--p())')
+  for (const name of ['text-gradient', 'text-underline', 'text-decoration', 'text-stroke', 'contain-intrinsic-block-size', 'contain-intrinsic-inline-size']) {
+    expect(labels).not.toContain(`@apply(--${name}())`)
+  }
   expect(labels).toEqual([...labels].sort((a, b) => a.replace('()', '').localeCompare(b.replace('()', ''))))
 })

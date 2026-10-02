@@ -69,7 +69,7 @@ Namespace consumers come from `utils/variable-namespace-sources.ts` and build-ti
 
 1. For future content migrations, reconcile the inventory with completed canonical-syntax work, public families, preset mixins and current APIs. Do not change semantics or force the catalog to a fixed page count.
 2. Extract shared foundation data using existing theme/manifest helpers. Move reusable MDX before removing source routes; Typography and Corner Radius own their teaching MDX locally after this migration.
-3. Populate complete family/namespace lookups and recipe contracts, including `text-gradient`. Preserve full values, scopes, modes, dependencies, minimal examples and useful lookup specimens; Guide keeps task-specific selections and compositions.
+3. Populate complete family/namespace lookups and recipe contracts. Preserve full values, scopes, modes, dependencies, minimal examples and useful lookup specimens; Guide keeps task-specific selections and compositions.
 4. Split `tokens/containers`: values/consumers belong to `tokens/container`, query contracts to `rules/conditions`, and teaching to `/guide/containers`. Retain the Guide URL and title it `Container queries`; width-cap design belongs in Sizing. Keep breakpoint definitions identified as custom media.
 5. Identify the actual owner of useful content before retiring pages. Move removed capabilities to the migration guide. Preserve Master-specific behavior found inside native CSS articles in its owning contract; retain only demos that support a concrete teaching task. Do not create placeholder property catalogs to replace retired pages.
 6. Update Guide/Reference navigation, internal links, search tasks, sitemap, Markdown and llms together. Rebuild from authored sources, verify active link targets and remove retired route files.
@@ -81,7 +81,7 @@ Completion requires full family/mixin coverage; successful property, prefix and 
 - Move visual content and interactions with the lookup data; validate the public destination before removing the source presentation. Gallery-only retention is insufficient.
 - `components/demo/foundations/FoundationTokens.tsx` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to previews, Guide export adapters and Reference examples. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
 - Reference uses complete collections; Guide passes explicit keys. Reuse typography, role, scale and numeric-table designs with equal care for either selection. A subset has no arbitrary count limit.
-- `recipe-specimens.ts` supplies the eight live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
+- `recipe-specimens.ts` supplies the seven live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
 - Verify semantic effects as well as layout: actual text and border colors, multi-line leading, unclipped actual font sizes, distinguishable shadows in both modes, and actual timing values. Keep animation controls paused initially and respect reduced motion.
 - [Restoration inventory](../../.ai/reports/foundation-visual-restoration.md) maps the pre-migration baseline to public destinations and records comparison evidence. Update it when a presentation moves.
 

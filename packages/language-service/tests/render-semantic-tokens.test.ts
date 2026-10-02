@@ -307,7 +307,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
       }
 
     @mixin --btn {
-        @safelist "text-gradient fg-primary:hover@md";
+        @safelist "fg-blue fg-primary:hover@md";
         @media (prefers-color-scheme: dark) {
           @safelist "bg-blue";
         }
@@ -363,7 +363,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expectToken(tokens, 'fg-primary', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
-  expectToken(tokens, "text-gradient", 'enumMember')
+  expectToken(tokens, "fg-blue", 'enumMember')
   expectToken(tokens, 'bg-blue', 'enumMember')
 
   expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword' as const, modifiers: ['directive'] })
@@ -430,9 +430,9 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 })
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
-  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"text-gradient\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@layer(utilities) btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
+  const { tokens } = renderTokens("\n    @mixin --reset {\n        @media (prefers-color-scheme: light) {\n          color: var(--text, black);\n        }\n      }\n\n    @mixin --btn {\n        @safelist \"fg-blue\";\n        @media (prefers-color-scheme: dark) {\n          background-color: oklch(20% 0.03 250);\n        }\n        @media (width >= 42rem) {\n          .label:hover {\n            transform: scale(1);\n          }\n        }\n      }\n@layer(utilities) btn:hover {\n        @safelist \"sr-only\";\n      }\n\n    @mixin --font(--value) {\n        font-size: var(--value);\n        &:hover {\n          text-align: var(--align, center);\n        }\n      }\n@mixin --text-left {\n        text-align: left;\n      }\n@mixin --text-right {\n        text-align: right;\n      }\n  ", 'css')
 
-  expectToken(tokens, "text-gradient", 'enumMember')
+  expectToken(tokens, "fg-blue", 'enumMember')
   expectToken(tokens, "sr-only", 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })

@@ -9,19 +9,19 @@ Guide teaches design and implementation tasks. Reference owns complete token cat
 | Facts | Source |
 | --- | --- |
 | Catalog and public routes | [reference/build.ts](../../site/reference/build.ts) and generated `site/.generated/reference.json` |
-| 124 direct-value families and 8 recipes | [mixins.css](../../packages/preset/src/mixins.css) |
+| 119 direct-value families and 7 recipes | [mixins.css](../../packages/preset/src/mixins.css) |
 | Family capabilities, prefixes and namespaces | Rust analysis exposed through language/tooling `tokenFamilies()` at site preparation time |
 | Token values, scopes and dependencies | [theme.css](../../packages/preset/src/theme.css) and the compiled preset manifest |
 | Shared Guide and Reference facts | [foundation data](../../site/common/foundation-data/tokens.ts) |
 | Public tool and package contracts | [tool contracts](../../site/reference/tool-contracts.ts), [package contracts](../../site/reference/package-contracts.ts) and API census |
 
-The generated catalog contains 85 content documents. Counts exclude category indexes, locale copies, Markdown/text copies and navigation-only URLs. Capability coverage determines the catalog; these counts are not a quota.
+The generated catalog contains 84 content documents. Counts exclude category indexes, locale copies, Markdown/text copies and navigation-only URLs. Capability coverage determines the catalog; these counts are not a quota.
 
 | Group | Documents |
 | --- | ---: |
 | Syntax and execution rules | 6 |
 | Token families, values and presets | 20 |
-| Preset recipes | 8 |
+| Preset recipes | 7 |
 | Stylesheet directives | 8 |
 | CLI commands | 3 |
 | MCP tools | 20 |
@@ -63,7 +63,6 @@ The family index includes all loaded families, including namespaces with no toke
 | `grid-row` | `grid-row-span(n)` |
 | `clamp-lines` | `clamp-lines(n)` |
 | `text-size` | `text("key")` and named `text-*` classes |
-| `text-gradient` | `text-gradient` |
 
 Recipe documents include purpose, executable examples, parameter contracts, preset source and complete generated CSS. Each scene uses the public compiler/engine output.
 

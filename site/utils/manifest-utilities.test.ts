@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys } from './manifest-utilities'
+import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys, tokenFamilies } from './manifest-utilities'
 
-test('spacing token namespace public keys include aliases and native properties', () => {
+test('spacing token namespace public keys contain only loaded family prefixes', () => {
   const keys = getTokenNamespacePublicKeys('spacing')
 
-  for (const expected of ['m', 'mt', 'p', 'px', 'gap', 'gap-x', 'inset', 'scroll-mt', 'text-underline-offset']) {
+  for (const expected of ['m', 'mt', 'p', 'px', 'gap', 'gap-x', 'inset', 'scroll-mt', 'text-indent']) {
     assert.ok(keys.includes(expected), expected)
   }
   assert.equal(keys.some((key) => !key), false)
@@ -13,28 +13,40 @@ test('spacing token namespace public keys include aliases and native properties'
   assert.equal(new Set(keys).size, keys.length)
 })
 
-test('variable namespace public keys combine native properties, manifest utilities, and aliases', () => {
-  assertIncludes(getVariableNamespacePublicKeys('spacing'), ['p', 'px', 'gap', 'scroll-mt', 'text-underline', 'text-underline-offset'])
-  assertIncludes(getVariableNamespacePublicKeys('container'), ['w', 'width', 'size', 'min-size', 'min', 'max-size', 'max', 'flex-basis', 'background-size'])
-  assertIncludes(getVariableNamespacePublicKeys('radius'), ['r', 'rtl', 'rbr', 'border-radius', 'border-start-start-radius'])
-  assertIncludes(getVariableNamespacePublicKeys('color-surface'), ['surface'])
-  assertIncludes(getVariableNamespacePublicKeys('color-text'), ['text', 'fg', 'color', 'caret-color', 'text-decoration'])
-  assertIncludes(getVariableNamespacePublicKeys('color-line'), ['b', 'bt', 'border-color', 'outline', 'stroke'])
-  assertIncludes(getVariableNamespacePublicKeys('font-size'), ['font', 'text', 'font-size'])
-  assertIncludes(getVariableNamespacePublicKeys('font-family'), ['font', 'font-family'])
-  assertIncludes(getVariableNamespacePublicKeys('font-weight'), ['font', 'font-weight'])
-  assertIncludes(getVariableNamespacePublicKeys('leading'), ['leading', 'line-height'])
-  assertIncludes(getVariableNamespacePublicKeys('tracking'), ['tracking', 'letter-spacing'])
-  assertIncludes(getVariableNamespacePublicKeys('shadow'), ['shadow', 'box-shadow'])
-  assertIncludes(getVariableNamespacePublicKeys('duration'), ['animation', 'animation-duration', 'animation-delay', 'transition', 'transition-duration', 'transition-delay'])
-  assertIncludes(getVariableNamespacePublicKeys('easing'), ['animation', 'animation-timing-function', 'transition', 'transition-timing-function'])
+test('variable namespace public keys follow the active manifest family catalog', () => {
+  assertIncludes(getVariableNamespacePublicKeys('spacing'), ['p', 'px', 'gap', 'scroll-mt', 'text-indent'])
+  assertIncludes(getVariableNamespacePublicKeys('container'), ['w', 'h', 'size-x', 'size-y', 'min-w', 'max-w', 'flex-basis'])
+  assertIncludes(getVariableNamespacePublicKeys('radius'), ['r', 'rtl', 'rbr', 'border-start-start-radius'])
+  assertIncludes(getVariableNamespacePublicKeys('color'), ['bg', 'fg', 'caret-color', 'b', 'bt', 'outline', 'stroke'])
+  assert.deepEqual(getVariableNamespacePublicKeys('text'), ['text'])
+  assert.deepEqual(getTokenNamespacePublicKeys('text'), [])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-size'), ['font-size'])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-family'), ['font-family'])
+  assert.deepEqual(getVariableNamespacePublicKeys('font-weight'), ['font-weight'])
+  assert.deepEqual(getVariableNamespacePublicKeys('leading'), ['leading'])
+  assert.deepEqual(getVariableNamespacePublicKeys('tracking'), ['tracking'])
+  assert.deepEqual(getVariableNamespacePublicKeys('shadow'), ['shadow'])
+  assert.deepEqual(getVariableNamespacePublicKeys('duration'), ['animation-delay', 'animation-duration', 'transition-delay', 'transition-duration'])
+  assert.deepEqual(getVariableNamespacePublicKeys('easing'), ['animation-timing-function', 'transition-timing-function'])
   assertIncludes(getVariableNamespacePublicKeys('animate'), ['animate'])
 
-  for (const namespace of ['spacing', 'container', 'radius', 'color-surface', 'color-text', 'color-line', 'font-size', 'font-family', 'font-weight', 'leading', 'tracking', 'shadow', 'duration', 'easing', 'animate']) {
+  for (const namespace of ['color-surface', 'color-text', 'color-line', 'content', 'font-feature']) {
+    assert.deepEqual(getVariableNamespacePublicKeys(namespace), [], namespace)
+  }
+  for (const namespace of ['spacing', 'container', 'radius', 'color', 'text', 'font-size', 'font-family', 'font-weight', 'leading', 'tracking', 'shadow', 'duration', 'easing', 'animate']) {
     const keys = getVariableNamespacePublicKeys(namespace)
     assert.equal(keys.some((key) => !key), false, namespace)
     assert.equal(keys.some((key) => key.includes('<~')), false, namespace)
     assert.equal(new Set(keys).size, keys.length, namespace)
+  }
+})
+
+test('family tables omit removed preset definitions and native property aliases', () => {
+  assert.equal(tokenFamilies.filter(family => family.argument === 'value').length, 119)
+  assert.equal(tokenFamilies.filter(family => family.argument === 'key').length, 1)
+  const prefixes = tokenFamilies.map(family => family.prefix)
+  for (const name of ['text-gradient', 'text-underline', 'text-decoration', 'text-stroke', 'contain-intrinsic-block-size', 'contain-intrinsic-inline-size', 'content', 'font-feature-settings', 'font-antialiased', 'font-smoothing-auto', 'padding', 'color', 'width']) {
+    assert.ok(!prefixes.includes(name), name)
   }
 })
 

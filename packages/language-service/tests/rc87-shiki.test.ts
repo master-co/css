@@ -183,7 +183,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
 }
 
 @mixin --btn {
-        @safelist "text-gradient fg-primary:hover@md";
+        @safelist "fg-blue fg-primary:hover@md";
     }
 @keyframes fade {
     from { opacity: 0; }
@@ -350,7 +350,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 })
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
-  const code = "@safelist \"sr-only fg-red\";\n@mixin --text-left {\n        text-align: left;\n    }\n@mixin --text-center {\n        text-align: center;\n    }\n@mixin --text-right {\n        text-align: right;\n    }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n    }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    }\n@mixin --btn {\n        @safelist \"text-gradient fg-brand:hover@sm\";\n    }"
+  const code = "@safelist \"sr-only fg-red\";\n@mixin --text-left {\n        text-align: left;\n    }\n@mixin --text-center {\n        text-align: center;\n    }\n@mixin --text-right {\n        text-align: right;\n    }\n@layer(utilities) font-* from(--font-size-*) {\n        font-size: var(--value);\n    }\n@mixin --grid-cols(--value) {\n        grid-template-columns: repeat(var(--value), minmax(0, 1fr));\n    }\n@mixin --btn {\n        @safelist \"fg-blue fg-brand:hover@sm\";\n    }"
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'css',
     manifest
@@ -376,7 +376,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
-      text: "text-gradient",
+      text: "fg-blue",
       type: 'enumMember' as const,
       modifiers: [],
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])

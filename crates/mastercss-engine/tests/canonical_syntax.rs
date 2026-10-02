@@ -8,7 +8,7 @@ fn baseline() -> Vec<serde_json::Value> {
 }
 
 // Preserve the original 139-family snapshot; these preset APIs were deliberately retired.
-const RETIRED_PRESET_FAMILIES: [&str; 15] = [
+const RETIRED_PRESET_FAMILIES: [&str; 20] = [
     "perspective",
     "perspective-origin",
     "transform-origin",
@@ -24,6 +24,11 @@ const RETIRED_PRESET_FAMILIES: [&str; 15] = [
     "y",
     "content",
     "font-feature-settings",
+    "text-underline",
+    "text-decoration",
+    "text-stroke",
+    "contain-intrinsic-block-size",
+    "contain-intrinsic-inline-size",
 ];
 
 fn engine() -> EngineSession {
@@ -124,7 +129,7 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
             MatchStatus::Matched
         );
     }
-    assert_eq!(prefixes.len(), 124);
+    assert_eq!(prefixes.len(), 119);
     for class in [
         "font-proof",
         "filter-proof",

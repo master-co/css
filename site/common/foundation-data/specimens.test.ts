@@ -57,8 +57,8 @@ test('motion is managed and uses actual per-token duration or timing values', ()
     if (namespace !== 'animate') for (const token of namespaceTokens(namespace)) assert.ok(scene.html.includes(`var(--${token.name})`))
   }
 })
-test('eight recipe specimens preserve all eight mixins and visible native content', () => {
-  assert.equal(Object.keys(recipeSpecimens).length, 8)
+test('seven recipe specimens preserve all seven mixins and visible native content', () => {
+  assert.equal(Object.keys(recipeSpecimens).length, 7)
   for (const [id, scene] of Object.entries(recipeSpecimens)) {
     assert.doesNotMatch(scene.html, />Example</)
     assert.ok(demoDocument(section(id), scene).includes(scene.html), id)

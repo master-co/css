@@ -187,7 +187,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
     @mixin --headings { @media (--all) { @contents; } }
 
     @mixin --btn {
-        @safelist "text-gradient align-items:center fg-primary:hover@md";
+        @safelist "fg-blue align-items:center fg-primary:hover@md";
 
         @media (--h)>=sm&h<lg {
           @safelist "sr-only";
@@ -209,7 +209,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
-  expectToken(tokens, "text-gradient", 'enumMember')
+  expectToken(tokens, "fg-blue", 'enumMember')
   expectToken(tokens, 'align-items', 'property')
   expectToken(tokens, 'sr-only', 'enumMember')
   expectToken(tokens, 'fg-primary', 'enumMember')
@@ -308,7 +308,7 @@ test.concurrent('renders active semantic tokens for a class context when the cur
 })
 
 test.concurrent('renders active semantic tokens only for the current class string context', () => {
-  const content = "const x = clsx(\"fg-red text-gradient\", condition && \"p-md sr-only\")"
+  const content = "const x = clsx(\"fg-red fg-blue\", condition && \"p-md sr-only\")"
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf("sr-only") + 1))
@@ -316,7 +316,7 @@ test.concurrent('renders active semantic tokens only for the current class strin
 
   expectToken(tokens, 'p-md', 'enumMember')
   expectToken(tokens, "sr-only", 'enumMember')
-  expect(tokens.some(({ text }) => text === 'fg-red' || text === "text-gradient")).toBe(false)
+  expect(tokens.some(({ text }) => text === 'fg-red' || text === "fg-blue")).toBe(false)
 })
 
 test.concurrent('skips full embedded semantic tokens in active mode', () => {

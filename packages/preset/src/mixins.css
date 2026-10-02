@@ -1,9 +1,4 @@
 /* On-demand mixins. Class token families are inferred from these definitions. */
-@mixin --text-gradient {
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 @mixin --sr-only {
   position: absolute;
   width: 1px;
@@ -295,10 +290,6 @@
   text-indent: var(--spacing);
 }
 
-@mixin --text-underline(--spacing) {
-  text-underline-offset: var(--spacing);
-}
-
 @mixin --top(--spacing) {
   top: var(--spacing);
 }
@@ -313,14 +304,6 @@
 
 @mixin --size-y(--container) {
   block-size: var(--container);
-}
-
-@mixin --contain-intrinsic-block-size(--container) {
-  contain-intrinsic-block-size: var(--container);
-}
-
-@mixin --contain-intrinsic-inline-size(--container) {
-  contain-intrinsic-inline-size: var(--container);
 }
 
 @mixin --flex-basis(--container) {
@@ -481,14 +464,6 @@
 
 @mixin --text-fill-color(--color) {
   -webkit-text-fill-color: var(--color);
-}
-
-@mixin --text-decoration(--color) {
-  text-decoration-color: var(--color);
-}
-
-@mixin --text-stroke(--color) {
-  -webkit-text-stroke-color: var(--color);
 }
 
 @mixin --shadow(--shadow) {

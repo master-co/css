@@ -24,7 +24,7 @@ Paths in the first column are relative to `site/`; Guide-local names refer to `a
 
 ## Recipe inventory
 
-All eight public recipe pages mount a scene beside its exact HTML and public-compiler output, before parameter and definition details.
+All seven public recipe pages mount a scene beside its exact HTML and public-compiler output, before parameter and definition details.
 
 | Route under `/reference/` | Observable result |
 | --- | --- |
@@ -34,7 +34,6 @@ All eight public recipe pages mount a scene beside its exact HTML and public-com
 | `clamp-lines` | Same paragraph shown complete and limited to three lines. |
 | `text-size` | Complete title, body and metadata hierarchy. |
 | `animate` token family | Complete animation specimens in `tokens/animate`; finite card entrances in Guide Motion, with playback controls and reduced-motion conditions. |
-| `text-gradient` | A readable headline with actual gradient text clipping. |
 
 ## Data and implementation boundaries
 
