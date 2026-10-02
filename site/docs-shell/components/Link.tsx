@@ -113,8 +113,8 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
 
   const resolvedClassName = useMemo(() => clsx(className, {
     'font-size:50%:after line-height:0:after white-space-collapse:break-spaces:after text-wrap-mode:wrap:after vertical-align:super:after': indicate && (target.current === '_blank' || isHash),
-    'content-hash:after': indicate && isHash,
-    'content-external:after': indicate && target.current === '_blank',
+    'content:var(--content-hash):after': indicate && isHash,
+    'content:var(--content-external):after': indicate && target.current === '_blank',
     'fg-text-disabled': props.disabled
   }, !props.disabled && (pathnameActive ? activeClassName : inactiveClassName).trim()) || undefined,
     [className, indicate, isHash, props.disabled, pathnameActive, activeClassName, inactiveClassName])

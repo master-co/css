@@ -5,7 +5,6 @@ const properties: Record<string, string[]> = {
   'font-family': ['font-family'], 'font-size': ['font-size', 'line-height'],
   'font-weight': ['font-weight'], 'font-style': ['font-style'],
   'font-feature-settings': ['font-feature-settings'], 'font-variant-numeric': ['font-variant-numeric'],
-  'font-smooth': ['-webkit-font-smoothing', '-moz-osx-font-smoothing'],
   'letter-spacing': ['letter-spacing'], 'word-spacing': ['word-spacing'],
   'line-height': ['font-size', 'line-height'], 'vertical-align': ['vertical-align'],
   'text-size': ['font-size', 'line-height', 'letter-spacing'],
@@ -31,7 +30,7 @@ export function typeSpecimens(section: ReferenceDemoSection, options?: { propert
       content = content.replace(/\bhref="#([^"]+)"/g, (attribute, id: string) => ids.has(id) ? `href="#${prefix}${id}"` : attribute)
     }
     const observed = options?.properties ?? (page === 'font-feature-settings' && id === 'prefer-semantic-numeric-utilities' ? [...properties[page], 'font-variant-numeric'] : properties[page])
-    const readings = observed.map(property => `<span>${options?.pseudo ? `${escape(options.pseudo)} ` : ''}${property} <output data-style-readout="${target}" data-style-property="${property}" ${options?.pseudo ? `data-style-pseudo="${escape(options.pseudo)}" ` : ''}${/^(font-size|line-height)$/.test(property) ? 'data-round-pixels' : ''}${page === 'font-smooth' ? ' data-empty-value="Not exposed"' : ''}>—</output></span>`).join('')
+    const readings = observed.map(property => `<span>${options?.pseudo ? `${escape(options.pseudo)} ` : ''}${property} <output data-style-readout="${target}" data-style-property="${property}" ${options?.pseudo ? `data-style-pseudo="${escape(options.pseudo)}" ` : ''}${/^(font-size|line-height)$/.test(property) ? 'data-round-pixels' : ''}>—</output></span>`).join('')
     const runs = ['ones', 'eights', 'inherited'].filter(name => source.includes(`id="${name}"`)).map(name => `<span>${name} <output data-size-readout="${prefix}${name}">—</output></span>`).join('')
     const size = options?.measure ? `<span>${escape(options.measureLabel ?? 'Box')} <output data-size-readout="${target}">—</output></span>` : source.match(/id="target" class="[^"]*\binline-block\b/) && /letter-spacing|word-spacing/.test(page) ? `<span>Run box <output data-size-readout="${target}">—</output></span>` : ''
     const family = page === 'font-family' && id === 'google-fonts' ? 'Roboto'
@@ -47,7 +46,6 @@ export function typeSpecimens(section: ReferenceDemoSection, options?: { propert
     'font-style': id === 'reset-font-style' ? 'The blue child resets its inherited slant. The surrounding words keep their italic style.' : 'The readout follows the styled subject. The selected font and available faces determine whether the browser uses a designed or synthesized slant.',
     'font-feature-settings': 'Glyph-run measurements include the actual text advance. Raw feature settings are reported independently of numeric variants.',
     'font-variant-numeric': 'The selected font must support the feature. Compare actual digits as well as computed values; equal digit counts make advances comparable.',
-    'font-smooth': 'Vendor property support and rasterization depend on the platform. “Not exposed” means this browser returns no computed value for that property.',
     'letter-spacing': 'The label, computed value and comparison stay outside the text context. Tracking can also change wrapping.',
     'line-height': 'The readout is the computed line height, not glyph height. Mixed sizes, inline objects and inherited values can affect the final line box.',
     'word-spacing': 'The value adds to the normal word separator. Compare the same content at the same size to isolate the effect.',

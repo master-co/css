@@ -1890,17 +1890,6 @@
       ]
     },
     {
-      "url": "/reference/font-smooth",
-      "kind": "utility",
-      "source": "site/app/[locale]/reference/font-smooth/content.mdx",
-      "prose": "reviewed",
-      "visual": "reviewed",
-      "notes": [
-        "Native vendor requests, inherited auto reset and theme conditions; unavailable properties and platform-dependent rendering are explicit.",
-        "54-scene typography batch: stable IDs preserved; 150/150 browser checks at 390/768/1280px in both themes; complete documents, narrow syntax and every scene inspected. Evidence: refinement-type-close, refinement-type-detail, refinement-type-gallery (33 recipes)."
-      ]
-    },
-    {
       "url": "/reference/font-style",
       "kind": "utility",
       "source": "site/app/[locale]/reference/font-style/content.mdx",
@@ -3278,16 +3267,6 @@
       ]
     },
     {
-      "url": "/reference/tokens/content",
-      "kind": "tokens",
-      "source": "packages/preset/src/default-manifest.json",
-      "prose": "reviewed",
-      "visual": "reviewed",
-      "notes": [
-        "Formal token/condition review complete: all native values, modes, consumers and stable headings retained. Shared semantic DocumentValueList/DocumentKeyList replaces value code boxes; complete CSS condition examples remain. Exact CSS variable search targets each row; keyboard focus restored after overriding prose display:contents. 150/150 browser checks at 390/768/1280px in both themes, including general Reference code and Design System regressions. All 22 complete desktop-light/mobile-dark documents plus gallery and representative other width/theme values visually inspected. Prepare, types, Reference (14), docs (6), llms (17), llms generation and AI budgets pass; full frozen site lint has zero errors and 31 unrelated warnings."
-      ]
-    },
-    {
       "url": "/reference/tokens/duration",
       "kind": "tokens",
       "source": "packages/preset/src/default-manifest.json",
@@ -3309,16 +3288,6 @@
     },
     {
       "url": "/reference/tokens/font-family",
-      "kind": "tokens",
-      "source": "packages/preset/src/default-manifest.json",
-      "prose": "reviewed",
-      "visual": "reviewed",
-      "notes": [
-        "Formal token/condition review complete: all native values, modes, consumers and stable headings retained. Shared semantic DocumentValueList/DocumentKeyList replaces value code boxes; complete CSS condition examples remain. Exact CSS variable search targets each row; keyboard focus restored after overriding prose display:contents. 150/150 browser checks at 390/768/1280px in both themes, including general Reference code and Design System regressions. All 22 complete desktop-light/mobile-dark documents plus gallery and representative other width/theme values visually inspected. Prepare, types, Reference (14), docs (6), llms (17), llms generation and AI budgets pass; full frozen site lint has zero errors and 31 unrelated warnings."
-      ]
-    },
-    {
-      "url": "/reference/tokens/font-feature",
       "kind": "tokens",
       "source": "packages/preset/src/default-manifest.json",
       "prose": "reviewed",

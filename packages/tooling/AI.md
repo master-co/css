@@ -12,7 +12,7 @@ analysis, and the dependency-light diagnostics bridge.
 - Feature subpaths under `lexer`, `source`, `scanner`, `validator`, `lint`, and
   `language`.
 - CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
-- Rust-generated, read-only built-in registry data for documentation and tooling.
+- Read-only token-family metadata inferred by Rust from the active manifest for documentation and tooling.
 - Private first-party Vue and Svelte extraction adapters used by the scanner.
 
 ## Does Not Own
@@ -31,7 +31,7 @@ analysis, and the dependency-light diagnostics bridge.
 - `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
   `./node` entries for native sync execution.
 - Node filesystem scanner under `./scanner/node`.
-- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from loaded mixins, including namespaces without tokens. There is no `./builtins` export.
+- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from loaded mixins, including namespaces without tokens.
 
 Subpaths are responsibility boundaries inside one package, not independent packages.
 Avoid adding convenience re-export files unless they define a deliberate documented

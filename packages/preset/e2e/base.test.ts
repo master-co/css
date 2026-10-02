@@ -11,7 +11,7 @@ for (const browserType of [chromium, firefox, webkit]) {
     const browser = await browserType.launch()
     const css = createTestCSS(manifest as unknown as MasterCSSManifest)
     try {
-      css.ensureClassRules('font-antialiased', 'user-select:none', 'min-height:100dvh')
+      css.ensureClassRules('user-select:none', 'min-height:100dvh')
       const page = await browser.newPage({ viewport: { width: 900, height: 700 } })
       await page.setContent('<!doctype html><html><body><button>Selectable label</button><div style="height:40px">Short content</div></body></html>')
       const inherited = await page.evaluate(() => ({
@@ -29,7 +29,7 @@ for (const browserType of [chromium, firefox, webkit]) {
       }))
       expect(actual.bodyHeight).toBeLessThan(150)
       expect(actual).toMatchObject({ ...inherited, boxSizing: 'border-box' })
-      await page.evaluate(() => { document.body.className = 'font-antialiased min-height:100dvh'; document.querySelector('button')!.className = 'user-select:none' })
+      await page.evaluate(() => { document.body.className = 'min-height:100dvh'; document.querySelector('button')!.className = 'user-select:none' })
       expect(await page.locator('body').evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(700)
       expect(await page.locator('button').evaluate(element => getComputedStyle(element).userSelect)).toBe('none')
       await page.setViewportSize({ width: 390, height: 500 })

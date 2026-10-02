@@ -14,8 +14,8 @@ const fence = (lang: string, text: string) => `\`\`\`${lang}\n${text}\n\`\`\``
 const exampleKeys: Record<string, string[]> = {
   color: ['blue-60'], 'color-line': ['control'], 'color-surface': ['raised'], 'color-text': ['body'],
   spacing: ['sm', 'md', 'lg'], container: ['md'], radius: ['lg', 'pill'], shadow: ['sm'],
-  'font-family': ['sans'], 'font-feature': ['tabular'], 'font-size': ['md'], 'font-weight': ['medium'],
-  leading: ['md'], tracking: ['tight'], text: ['md'], animate: ['fade'], duration: ['fast'], easing: ['smooth'], content: ['empty'],
+  'font-family': ['sans'], 'font-size': ['md'], 'font-weight': ['medium'],
+  leading: ['md'], tracking: ['tight'], text: ['md'], animate: ['fade'], duration: ['fast'], easing: ['smooth'],
 }
 function document(id: string, title: string, description: string, markdown: string, facts: unknown): ReferenceDocument {
   return { id: `tokens/${id}`, kind: 'tokens', title, description, category: 'Tokens & presets', url: `/reference/tokens/${id}`,

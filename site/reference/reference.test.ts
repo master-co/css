@@ -52,8 +52,8 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 88)
-  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 9)
+  assert.equal(catalog.documents.length, 85)
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 8)
   assert.deepEqual(recipes.flatMap(recipe => recipe.names.map(name => `--${name}`)).sort(), preset.mixins!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.mixin === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   for (const family of foundationFamilies) {
@@ -61,7 +61,7 @@ test('catalog covers every public family and preset recipe without indexing reti
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
     assert.ok(families.headings.some(heading => heading.id === `family-${family.prefix}`))
   }
-  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'directives/settings', 'directives/compose']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'directives/settings', 'directives/compose']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)

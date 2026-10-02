@@ -1,8 +1,8 @@
 <a id="language-version-8"></a>
 
-## Canonical token families (language 11)
+## Canonical token families
 
-Direct values use full native properties, while each built-in named-token family has exactly one canonical prefix. This is a breaking language contract: regenerate manifests and hydration data with matching packages. Manifest remains v4; the binding ABI is 22.
+Direct values use full native properties, while loaded mixins define named-token families. Generate manifests and hydration data with matching packages. Manifest v4 uses language version 13 and binding ABI 23.
 
 Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their former full-property token spellings are removed. Native declarations such as `color:red`, `padding:1rem`, and `box-shadow:0|0|2px|red` remain available. Theme variable names do not change.
 
@@ -97,7 +97,7 @@ Use `fg-primary`, `bg-primary`, `p-md`, `b-primary`, and `shadow-sm`. Their form
 | `text-stroke-color-*` | `text-stroke-*` |
 | `font-*` | Choose `font-size-*`, `font-family-*`, or `font-weight-*` from the original token definition |
 
-Families not listed keep their sole existing prefix. A project-defined mixin is preserved; do not mechanically rewrite a custom recipe merely because its name resembles a retired built-in spelling.
+Use the [family catalog](/reference/tokens/families) to check the active preset prefixes. Project-defined mixins follow their authored definitions.
 
 `filter-*`, `backdrop-filter-*`, and `text-shadow-*` no longer consume color tokens. `shadow-*` consumes only shadow tokens. A color alone is not a complete filter or shadow value; author the intended native value or a mixin explicitly.
 
@@ -112,16 +112,16 @@ Pseudo-elements are no longer translated into vendor names. To preserve the form
 
 Math spacing is consistent across `calc`, `min`, `max`, and `clamp`; `clamp` no longer gains an extra `calc` wrapper. Quoted math text, URLs, attribute underscores and escaped identifiers retain their literal meaning. These are intentional CSS output corrections.
 
-Remove `preferPropertyAliases` from lint options. `builtinTokenAliases`, `builtinTokenFamilies`, and the `./builtins` export are removed; use `tokenFamilies()` on the active language or tooling session. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 5. Families come from loaded mixins, so theme-only stylesheets must load `@master/css/mixins.css` or define their own families. The former `utilities.css` preset entry is removed.
+Read token-family metadata with `tokenFamilies()` on the active language or tooling session. MCP manifest queries use `kind: "family"`, `results.families`, and `summary.families`; the query payload version is 5. Families come from loaded mixins, so theme-only stylesheets must load `@master/css/mixins.css` or define their own families.
 
-There is no new automatic migration profile for this change. Update project sources using the tables, review custom definitions, and rebuild. Existing historical RC profiles report outputs requiring further manual changes instead of treating unsupported current syntax as successful.
+Validate project definitions against the active manifest and rebuild generated CSS.
 
 
 ## Language version 9
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 12 and ABI 22. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 13 and ABI 23. Manifest v4, hydration v3 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 

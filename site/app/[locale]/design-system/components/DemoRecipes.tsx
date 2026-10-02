@@ -101,7 +101,7 @@ const documentation: Record<string, string> = {
   'border-radius': '/reference/tokens/radius',
   'box-shadow': '/reference/tokens/shadow',
   fill: '/guide/colors',
-  content: '/reference/tokens/content',
+  content: '/reference/rules/selectors',
   'text-fill-color': 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-fill-color',
   'text-stroke-width': 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-stroke-width',
   'user-drag': 'https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable',

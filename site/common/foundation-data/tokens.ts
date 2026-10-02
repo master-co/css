@@ -26,4 +26,4 @@ export const tokenSpecimenProperties: Record<string, string> = {
   'font-size': 'fontSize', 'font-weight': 'fontWeight', leading: 'lineHeight', tracking: 'letterSpacing', text: 'fontSize',
 }
 export const hasTokenSpecimens = (namespace: string) => namespace.startsWith('color') || Object.hasOwn(tokenSpecimenProperties, namespace)
-  || ['spacing', 'container', 'font-feature', 'animate', 'duration', 'easing', 'content', 'order'].includes(namespace)
+  || ['spacing', 'container', 'animate', 'duration', 'easing', 'order'].includes(namespace)

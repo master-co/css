@@ -26,48 +26,6 @@
       "depth": 3
     }
   ],
-  "font-smooth": [
-    {
-      "id": "overview",
-      "title": "Overview",
-      "depth": 2
-    },
-    {
-      "id": "syntax-9deeec7e40b2",
-      "title": "font-antialiased",
-      "depth": 3
-    },
-    {
-      "id": "syntax-07a917ff6330",
-      "title": "font-subpixel-antialiased",
-      "depth": 3
-    },
-    {
-      "id": "examples",
-      "title": "Examples",
-      "depth": 2
-    },
-    {
-      "id": "use-antialiased-text",
-      "title": "Use antialiased text",
-      "depth": 3
-    },
-    {
-      "id": "restore-subpixel-antialiasing",
-      "title": "Restore browser antialiasing",
-      "depth": 3
-    },
-    {
-      "id": "use-sparingly",
-      "title": "Use sparingly",
-      "depth": 3
-    },
-    {
-      "id": "apply-conditionally",
-      "title": "Apply conditionally",
-      "depth": 3
-    }
-  ],
   "grid-column": [
     {
       "id": "overview",

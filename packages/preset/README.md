@@ -20,7 +20,7 @@ Most applications should import preset styles through `@master/css`. Use this pa
 @import '@master/css-preset/mixins.css';
 ```
 
-`mixins.css` defines 139 direct-value families and 10 recipes. A custom theme needs this entry or its own mixins to enable named classes. The former `utilities.css` entry is removed.
+`mixins.css` defines 124 direct-value families and 8 recipes. A custom theme needs this entry or its own mixins to enable named classes.
 
 The default index entry contains:
 

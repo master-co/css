@@ -12,23 +12,22 @@ Migrate content, presentation and interaction together. A lookup page deserves a
 | Guide Colors role data, `SurfacesDemo`, `LineRolesDemo`, `TextRolesDemo` | `tokens/color-surface`, `color-line`, `color-text`; Colors Guide | Complete, independent light/dark documents. Actual surfaces, boundaries and text. Complete composed card and original contextual specimens remain in Guide. |
 | Guide Corner Radius `Overview`; retired Border Radius example MDX | `tokens/radius`; `/guide/corner-radius` | Equal-size shapes across the full scale; class, variable and value labels; distinct pill/circle. Guide includes a complete nested card, field and action composition, plus accessible pill/icon links. |
 | Guide Elevation `ShadowTokens` / `ShadowScaleDemo` / `SurfaceElevationDemo` | `tokens/shadow`; `/guide/elevation` | Six real raised cards with original role advice, stripe canvas, 48px gaps and 64px bottom room; full light/dark comparisons. Guide retains surface composition and adds hover/focus lift. |
-| Reference Font Size `Overview`; Guide Typography `Overview`, `FontWeightTokens` and reference MDX imports | `tokens/font-size`, `font-weight`, `font-family`, `font-feature`, `leading`, `tracking`, `text`; `/guide/typography` | Actual-size flowing text, weight/family comparisons, multi-line leading, long tracking phrase, proportional/tabular numbers and complete treatments. Guide retains body/headings/page-title examples and composed hierarchy. |
+| Reference Font Size `Overview`; Guide Typography `Overview`, `FontWeightTokens` and reference MDX imports | `tokens/font-size`, `font-weight`, `font-family`, `leading`, `tracking`, `text`; `/guide/typography` | Actual-size flowing text, weight/family comparisons, multi-line leading, long tracking phrase and complete treatments. Guide retains body/headings/page-title examples and composed hierarchy. |
 | `ThemeNumberVariableTable`; Guide Spacing `Overview` | `tokens/spacing`; `/guide/spacing` | Complete authored/reference-unit table and visible striped gaps; selected Guide rows plus a fully styled form with adjacent HTML/CSS. |
 | Guide Sizing `XScale`, Containers size helpers | `tokens/container`; `/guide/sizing` | Comparative width bars and exact value table; measured avatar, fluid content, shrinkable row and selected width caps. |
 | Guide Breakpoints `BreakpointVariables` / `BreakpointQueries` | `tokens/breakpoints`; `/guide/breakpoints` | Numerical viewport scale and every exact custom-media condition; keyboard-resizable type example in Guide. |
 | Guide Containers, Layout System and Responsive Design | Their existing Guide URLs | Rich media/grid/workspace/gallery scenes retained. Unified sliders support keyboard resizing. Query thresholds remain explicit and independent of container tokens. |
 | Guide Motion `AnimationTokens`, `DurationTokens`, `EasingTokens`, `AnimationsOverview` | `tokens/animate`, `duration`, `easing`; `/guide/motion` | Complete animation set, same-path timing comparisons, real token values, paused initial state and Play/Pause/Replay. Guide includes finite card entrances, state transition and native dialog. |
-| Preset and public family registry | `tokens/content`, `order`, `families` | Actual generated decorative content; first/last visual order with explicit DOM order; complete prefix/property/namespace lookup. No invented default values. |
+| Preset and Rust-inferred family metadata | `tokens/order`, `families` | First/last visual order with explicit DOM order; complete prefix/property/namespace lookup. No invented default values. |
 
 Paths in the first column are relative to `site/`; Guide-local names refer to `app/[locale]/guide/<topic>/components/`.
 
 ## Recipe inventory
 
-All ten existing/planned public recipe pages now mount a scene beside its exact HTML and public-compiler output, before parameter and definition details.
+All eight public recipe pages mount a scene beside its exact HTML and public-compiler output, before parameter and definition details.
 
 | Route under `/reference/` | Observable result |
 | --- | --- |
-| `font-smooth` | Identical sentences with the two smoothing treatments; rendering depends on platform support. |
 | `screen-readers` | A native icon button with the accessible name “Add collection”; explanation distinguishes visual hiding from semantic removal. |
 | `grid-columns`, `grid-rows` | Six labeled cells arranged into the authored tracks. |
 | `grid-column`, `grid-row` | A featured region spans two tracks beside remaining cells. |

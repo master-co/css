@@ -63,7 +63,7 @@ Write browser normalization and structural baselines in `@layer base`. Put broad
 }
 ```
 
-`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography. It leaves document height, text rendering precision, font smoothing and button text selection to the application and platform. Use `min-height:100dvh` for a screen that needs it, `font-antialiased` for an intentional font rendering choice, or `user-select:none` on a particular interaction surface.
+`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography. It leaves document height, text rendering precision, font smoothing and button text selection to the application and platform. Use `min-height:100dvh` for a screen that needs it or `user-select:none` on a particular interaction surface.
 
 Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
 

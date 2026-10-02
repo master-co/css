@@ -11,7 +11,6 @@ import type { ReferenceDocument } from './types'
 
 /** Editorial examples; definitions, parameter syntax and CSS come from the preset. */
 export const recipes = [
-  { id: 'font-smooth', title: 'Font smoothing', names: ['font-antialiased', 'font-subpixel-antialiased'], classes: ['font-antialiased', 'font-subpixel-antialiased'], purpose: 'Set the WebKit and Mozilla font smoothing properties together. These platform-specific properties do not guarantee identical rendering across browsers.', guide: 'typography' },
   { id: 'screen-readers', title: 'Screen reader text', names: ['sr-only'], classes: ['sr-only'], purpose: 'Visually hide text while retaining it in the accessibility tree. Do not apply this recipe to a control that must become visible on keyboard focus without providing its visible focus treatment.' },
   { id: 'grid-columns', title: 'Grid columns', names: ['grid-cols'], classes: ['grid-cols(3)'], purpose: 'Create a grid with equal minmax(0, 1fr) columns. The recipe also sets display:grid. Choose a positive track count for a useful layout.', guide: 'layout-system' },
   { id: 'grid-rows', title: 'Grid rows', names: ['grid-rows'], classes: ['grid-rows(3)'], purpose: 'Create equal rows and place auto-positioned items by column. The recipe sets display:grid and grid-auto-flow:column as well as the row tracks.', guide: 'layout-system' },

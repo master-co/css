@@ -98,16 +98,15 @@ public_path,source,disposition,segments_or_owner
 /guide/installation/vuejs/runtime,site/app/[locale]/guide/installation/vuejs/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
 /guide/installation/webpack/runtime,site/app/[locale]/guide/installation/webpack/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
 /guide/installation/wordpress/runtime,site/app/[locale]/guide/installation/wordpress/runtime/content.mdx,retain,Verified current teaching or navigation; no relocation needed
-/reference/font-smooth,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/screen-readers,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/grid-columns,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/grid-rows,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/grid-column,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/grid-row,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/clamp-lines,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/text-size,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/screen-readers,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-columns,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-rows,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-column,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/grid-row,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/clamp-lines,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/text-size,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/animate,site/reference/token-contracts.ts,retire,Animation token family contract and specimens consolidated into /reference/tokens/animate
-/reference/text-gradient,packages/preset/src/utilities.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
+/reference/text-gradient,packages/preset/src/mixins.css,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/rules/declarations,site/app/[locale]/guide/style-declarations/contract.mdx,rewrite,Teach full native properties and canonical named tokens directly
 /reference/rules/selectors,site/app/[locale]/guide/state-selectors/contract.mdx,rewrite,Keep current selector composition; remove obsolete selector-history sentence
 /reference/rules/conditions,site/app/[locale]/guide/conditional-queries/contract.mdx,rewrite,Keep supported condition contracts; remove retired condition/group syntax history
@@ -121,11 +120,9 @@ public_path,source,disposition,segments_or_owner
 /reference/tokens/color-surface,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/color-text,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/container,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/tokens/content,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/duration,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/easing,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/font-family,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
-/reference/tokens/font-feature,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/font-size,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/font-weight,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial
 /reference/tokens/leading,packages/preset/src/default-manifest.json,retain,Current complete Reference contract; no historical teaching or external conversion tutorial

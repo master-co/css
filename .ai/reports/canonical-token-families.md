@@ -1,22 +1,10 @@
-# Canonical token families implementation report
+# Canonical token families
 
-Validated on 2026-09-29 against the implementation accompanying this report.
+The current preset defines 124 direct-value families and 8 recipes in `packages/preset/src/mixins.css`. Rust infers family metadata from loaded definitions. Language and tooling sessions expose it through `tokenFamilies()`; the site generates its catalog from the active preset manifest. See `site/app/[locale]/guide/directives/contract.mdx` for the current contract.
 
-The Rust registry now defines 138 built-in families with one prefix, one property, and one namespace per entry. Direct values retain full native property names; named tokens use the sole canonical prefix; combinations and parameterized styles remain mixins. Namespaces and theme token identities are unchanged. Custom mixins and registered native classes are not rejected merely for resembling retired spellings.
+## Validation recorded on 2026-09-29
 
-Intentional changes:
-
-- Removed full-property token aliases, overloaded `font-*`, duplicate `text-stroke-color-*`, and color mappings for filter, backdrop-filter and text-shadow. `shadow-*` reads only the shadow namespace.
-- Removed selector shortcuts and implicit vendor rewrites. Native legacy pseudo-element spellings remain native. Underscore decoding protects attributes, strings, comments, escapes, non-selector arguments and identifier boundaries.
-- Math normalization uses lexer ranges for calc/min/max/clamp. It preserves literals, unary signs, exponents and native function spelling, and no longer inserts calc into clamp. Native stylesheets do not receive class conveniences.
-- Unicode and escaped property names retain emitted spelling and decoded dependency identity. Resource removal is covered by tests.
-- Removed the public alias registry/type and `preferPropertyAliases`; the retired setting is rejected. Completion, inspection, lint, reference and MCP use canonical families.
-- Language version is 10 and binding ABI is 20. Manifest remains v4. MCP manifest-query payload is v4 with `families`; its outer envelope remains v3. Other unchanged batch shapes keep their existing versions.
-- Existing RC migration uses compiler-private historical data. Proposals containing removed current syntax require manual review and block writes. No new migration profile was introduced.
-
-The public migration guide is `site/app/[locale]/guide/migration/v2-rc/content.mdx`. It includes token and selector tables, removed APIs/settings, and coordinated recompilation requirements. Site markup, examples, reference output, llms sources, current corpora and CSS contract snapshots were updated. Most diff volume comes from canonical class replacements and the generated CSS contract snapshot.
-
-Validation results:
+These results describe the implementation measured on that date; they are not validation of subsequent changes.
 
 | Check | Result |
 | --- | --- |

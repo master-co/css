@@ -2,7 +2,7 @@
 
 Reference verifies language and tool behavior during writing, explanation and review. Guide pages teach a workflow and link to the formal contract. Avoid separately maintaining the same rule in both places.
 
-The canonical content policy is [Guide and Reference ownership](../AI.md#guide-and-reference-ownership). The [2026-09-29 inventory](../../.ai/reports/reference-content-inventory.md) records the 256-page baseline and implemented 90-page catalog. Retired property routes are removed without redirect compatibility; the catalog is not a native CSS support whitelist.
+The canonical content policy is [Guide and Reference ownership](../AI.md#guide-and-reference-ownership). The [content inventory](../../.ai/reports/reference-content-inventory.md) records the current catalog and its source ownership. The catalog documents Master CSS capabilities; native CSS declarations retain their native meaning.
 
 ## Sources and outputs
 
@@ -57,7 +57,7 @@ The four project styling guides use `utils/project-style-content.ts` with the sa
 
 `ConfiguredExample` accepts either a class array or trusted literal HTML, including local raw HTML specimens. It compiles with the public render session, matching iframe previews; tooling validates every expanded declaration without filtering emission. Generate CSS from the displayed source instead of maintaining cached CSS specimens; keep any configuration required by the output, such as `@mixin`, explicit.
 
-Namespace consumers come from `utils/variable-namespace-sources.ts` and public registry projections. Do not derive this index from defined preset values: registered consumers such as `order-` may have no preset token. Reference Markdown retains every consumer; Guide exports only its selected rows. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape. Do not add native query examples to token-consumer lists: explicit container-query values do not read or track container tokens.
+Namespace consumers come from `utils/variable-namespace-sources.ts` and build-time `tokenFamilies()` metadata. Do not derive this index from defined preset values: a registered consumer can exist without a matching token. Reference Markdown retains every consumer; Guide exports only its selected rows. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape. Do not add native query examples to token-consumer lists: explicit container-query values do not read or track container tokens.
 
 `DocumentCodeTable` keeps short syntax tokens intact while native CSS wraps at spaces. Reference adapts only two-column Token/CSS or Syntax/CSS tables whose cells each contain one code span. Keep long generated rules in code blocks; the authored Markdown remains the export source.
 
@@ -81,7 +81,7 @@ Completion requires full family/mixin coverage; successful property, prefix and 
 - Move visual content and interactions with the lookup data; validate the public destination before removing the source presentation. Gallery-only retention is insufficient.
 - `components/demo/foundations/FoundationTokens.tsx` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to previews, Guide export adapters and Reference examples. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
 - Reference uses complete collections; Guide passes explicit keys. Reuse typography, role, scale and numeric-table designs with equal care for either selection. A subset has no arbitrary count limit.
-- `recipe-specimens.ts` supplies the nine live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
+- `recipe-specimens.ts` supplies the eight live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
 - Verify semantic effects as well as layout: actual text and border colors, multi-line leading, unclipped actual font sizes, distinguishable shadows in both modes, and actual timing values. Keep animation controls paused initially and respect reduced motion.
 - [Restoration inventory](../../.ai/reports/foundation-visual-restoration.md) maps the pre-migration baseline to public destinations and records comparison evidence. Update it when a presentation moves.
 

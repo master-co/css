@@ -132,7 +132,7 @@ Merge `/reference/tokens/containers` into the appropriate destinations: size val
 
 ### Shared facts and presentation
 
-Use preset data for values, scopes and dependencies; public Rust registry projections for families; and public compiler/engine output for CSS examples. `common/foundation-data/tokens.ts` supplies shared facts through existing preset/manifest helpers. Keep shared presentation data under `common/foundation-data/`. Reference renders complete collections; Guide selects explicit keys from the same source. Do not introduce TypeScript semantic parsing or hand-maintained copies of preset values.
+Use preset data for values, scopes and dependencies; Rust-inferred `tokenFamilies()` metadata for families; and public compiler/engine output for CSS examples. `common/foundation-data/tokens.ts` supplies shared facts through existing preset/manifest helpers. Keep shared presentation data under `common/foundation-data/`. Reference renders complete collections; Guide selects explicit keys from the same source. Do not introduce TypeScript semantic parsing or hand-maintained copies of preset values.
 
 Distinguish curated design advice from executable contracts: a suggested card size is not a fixed meaning of its token. Keep selected keys identical in Guide HTML, search, Markdown and llms output. Relocate shared MDX/data dependencies before retiring a source page, including Typography and Corner Radius imports. Follow [Reference maintenance](reference/MAINTENANCE.md) for URL, anchor and export migration.
 
@@ -198,7 +198,7 @@ Follow the public Design Tokens policy when writing site code, demos, and exampl
 
 For numeric theme variable tables, read values from `site/utils/theme-variables` or a narrow derived helper. Complete scales belong in Reference; Guide may render the explicit subset needed for its task. Render token, value and reference-unit columns using the existing table primitives, and label display conversions as reference values rather than compiler semantics. Keep value tables separate from generated CSS examples.
 
-Complete namespace-consumer tables belong in Reference. Use canonical keys from `site/utils/manifest-utilities` and public builtins, including registered families without preset values. Guide may select relevant rows and link to the complete table. Keep grouping labels curated and reader-facing; never imply unsupported consumers, alternate spellings or a token dependency in an explicit native query. Value tables explain available values; consumer tables explain the properties and families using them.
+Complete namespace-consumer tables belong in Reference. Use canonical keys from `site/utils/manifest-utilities` and build-time `tokenFamilies()` metadata, including registered families without preset values. Guide may select relevant rows and link to the complete table. Keep grouping labels curated and reader-facing; never imply unsupported consumers, alternate spellings or a token dependency in an explicit native query. Value tables explain available values; consumer tables explain the properties and families using them.
 
 ## Assets
 

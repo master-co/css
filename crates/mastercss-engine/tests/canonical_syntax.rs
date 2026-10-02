@@ -7,6 +7,25 @@ fn baseline() -> Vec<serde_json::Value> {
     serde_json::from_str(include_str!("fixtures/token-family-baseline.json")).unwrap()
 }
 
+// Preserve the original 139-family snapshot; these preset APIs were deliberately retired.
+const RETIRED_PRESET_FAMILIES: [&str; 15] = [
+    "perspective",
+    "perspective-origin",
+    "transform-origin",
+    "background-position",
+    "mask-position",
+    "object-position",
+    "background-size",
+    "mask-size",
+    "cx",
+    "cy",
+    "stroke-dashoffset",
+    "x",
+    "y",
+    "content",
+    "font-feature-settings",
+];
+
 fn engine() -> EngineSession {
     let variables = baseline().into_iter().map(|family| (
         family["namespace"].as_str().unwrap().to_owned(),
@@ -20,7 +39,7 @@ fn engine() -> EngineSession {
 }
 
 #[test]
-fn every_preset_value_family_preserves_the_frozen_builtin_contract() {
+fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
     let engine = engine();
     let mut prefixes = HashSet::new();
     let mut properties = HashSet::new();
@@ -34,6 +53,37 @@ fn every_preset_value_family_preserves_the_frozen_builtin_contract() {
     for family in baseline() {
         let prefix = family["prefix"].as_str().unwrap();
         let property = family["property"].as_str().unwrap();
+        if RETIRED_PRESET_FAMILIES.contains(&prefix) {
+            for class in [
+                format!("{prefix}-proof"),
+                format!(
+                    "{prefix}(var(--{}-proof))",
+                    family["namespace"].as_str().unwrap()
+                ),
+            ] {
+                let result = engine.inspect(&class).unwrap();
+                assert_ne!(result.match_status, MatchStatus::Matched, "{class}");
+                assert!(result.rules.is_empty(), "{class}");
+                assert!(!labels.contains(&class), "{class}");
+            }
+            // The existing native-declaration fallback accepts unknown property names.
+            let suffixed = engine
+                .inspect(&format!("{prefix}-proof:hover@layer(utilities)!"))
+                .unwrap();
+            assert!(
+                suffixed.rules[0]
+                    .text
+                    .contains(&format!("{{{prefix}-proof:hover!important}}"))
+            );
+            assert_eq!(
+                engine
+                    .inspect(&format!("{property}:initial"))
+                    .unwrap()
+                    .match_status,
+                MatchStatus::Matched
+            );
+            continue;
+        }
         assert!(prefixes.insert(prefix.to_owned()), "{prefix}");
         assert!(properties.insert(property.to_owned()), "{property}");
         let canonical = format!("{prefix}-proof");
@@ -74,6 +124,7 @@ fn every_preset_value_family_preserves_the_frozen_builtin_contract() {
             MatchStatus::Matched
         );
     }
+    assert_eq!(prefixes.len(), 124);
     for class in [
         "font-proof",
         "filter-proof",

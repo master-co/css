@@ -39,12 +39,10 @@ test('selected Guide specimens and portable output preserve the same facts and m
   assert.doesNotMatch(output, /--shadow-2xl/)
   assert.throws(() => specimenTokens('radius', ['imaginary']))
 })
-test('text, line, leading, features and empty namespaces show their actual effect', () => {
+test('text, line, leading and order specimens show their actual effect', () => {
   assert.match(foundationScene('color-text', ['body']).html, /data-role-preview="text"[^>]+fg-text-body/)
   assert.match(foundationScene('color-line', ['control']).html, /data-role-preview="line"[^>]+border-style:solid[^>]+b-line-control/)
   assert.ok(foundationScene('leading').html.includes('from one line to the next'))
-  assert.match(foundationScene('font-feature').html, /111\.11<br>888\.88/)
-  assert.match(foundationScene('content').html, /content-empty::before/)
   const order = foundationScene('order')
   assert.ok(namespaceTokens('order').length > 0)
   assert.match(order.html, /order-first/)
@@ -59,8 +57,8 @@ test('motion is managed and uses actual per-token duration or timing values', ()
     if (namespace !== 'animate') for (const token of namespaceTokens(namespace)) assert.ok(scene.html.includes(`var(--${token.name})`))
   }
 })
-test('all ten recipe specimens compile and preserve visible native content', () => {
-  assert.equal(Object.keys(recipeSpecimens).length, 10)
+test('eight recipe specimens preserve all eight mixins and visible native content', () => {
+  assert.equal(Object.keys(recipeSpecimens).length, 8)
   for (const [id, scene] of Object.entries(recipeSpecimens)) {
     assert.doesNotMatch(scene.html, />Example</)
     assert.ok(demoDocument(section(id), scene).includes(scene.html), id)

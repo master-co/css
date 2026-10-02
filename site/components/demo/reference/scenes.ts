@@ -95,7 +95,6 @@ export const referenceScenes: Record<string, SceneFactory> = {
   'font-family': typeSpecimens,
   'font-feature-settings': typeSpecimens,
   'font-size': typeSpecimens,
-  'font-smooth': typeSpecimens,
   'font-style': typeSpecimens,
   'font-variant-numeric': typeSpecimens,
   'font-weight': typeSpecimens,

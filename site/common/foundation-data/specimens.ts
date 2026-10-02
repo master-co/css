@@ -10,7 +10,7 @@ export function specimenTokens(namespace: string, keys?: string[]) {
 export const defaultValue = (token: FoundationToken) => token.values.find(value => value.path.length === 1 && value.path[0] === ':root,:host')?.value ?? token.values[0]?.value ?? ''
 export const primaryTokens = (tokens: FoundationToken[]) => tokens.filter(token => !token.key.includes('--'))
 export function tokenClass(namespace: string, key: string) {
-  const prefixes: Record<string, string> = { color: 'bg', 'color-surface': 'bg-surface', 'color-line': 'b-line', 'color-text': 'fg-text', radius: 'r', 'font-feature': 'font-feature-settings', spacing: 'gap', container: 'max-w', duration: 'animation-duration', easing: 'animation-timing-function' }
+  const prefixes: Record<string, string> = { color: 'bg', 'color-surface': 'bg-surface', 'color-line': 'b-line', 'color-text': 'fg-text', radius: 'r', spacing: 'gap', container: 'max-w', duration: 'animation-duration', easing: 'animation-timing-function' }
   return `${prefixes[namespace] ?? namespace}-${key}`
 }
 const descriptions: Record<string, Record<string, string>> = {
@@ -37,11 +37,9 @@ export const specimenCaption: Record<string, string> = {
   'font-weight': 'Identical text, size and family isolate the selected weight. The available font determines which weights it can draw.',
   leading: 'The same multi-line paragraph at every line height. Compare reading rhythm and block height.',
   tracking: 'The same long phrase at every letter spacing. Compare the space between glyphs without changing size.',
-  'font-feature': 'Compare proportional and tabular digits using the same font, size and numbers. Feature support depends on the chosen font.',
   animate: 'Every animation specimen starts paused. Play, Pause and Replay control the native timelines; reduced motion keeps the content still. Complete shorthand values are listed below.',
   duration: 'All markers travel the same path with linear timing; only duration changes. Start paused, then Play or Replay together. Reduced motion keeps them still.',
   easing: 'All markers travel the same path over one second; only timing changes. Overshoot and rewind may pass the endpoints. Reduced motion keeps them still.',
-  content: 'An empty generated content value creates the decorative dot; the status remains real text in the document.',
   order: 'Compare each preset order token on the middle item. Visual arrangement changes; DOM, reading and keyboard order stay 1, 2, 3.',
 }
 const label = (namespace: string, token: FoundationToken) => `<div data-ui="label"><code>${escape(tokenClass(namespace, token.key))}</code> · <code>--${escape(token.name)}</code>${['shadow', 'color', 'color-line', 'color-surface', 'color-text'].includes(namespace) ? '' : ` · ${escape(defaultValue(token))}`}</div>`
@@ -74,13 +72,11 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
   } else if (namespace === 'shadow') {
     scene.html = `<div data-foundation="shadow">${tokens.map(token => `<section>${label(namespace, token)}<article data-shadow-card class="p-lg r-lg bg-surface-raised shadow-${token.key}"><div class="text-md font-weight-medium fg-text-strong">${escape(getShadowRows().find(row => row.key === token.key)?.role ?? token.key)}</div><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">${escape(getShadowRows().find(row => row.key === token.key)?.description ?? '')}</p></article></section>`).join('')}</div>`
     scene.css = 'body { padding:32px 24px 64px; } [data-foundation="shadow"] { display:grid; gap:48px; } [data-shadow-card] { min-height:128px; }'
-  } else if (['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking', 'font-feature'].includes(namespace)) {
+  } else if (['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking'].includes(namespace)) {
     scene.html = `<div data-foundation="typography">${tokens.map(token => {
       const utility = tokenClass(namespace, token.key)
       const text = namespace === 'leading' ? paragraph : namespace === 'font-family' ? 'The quick brown fox jumps over the lazy dog. 0123456789' : ['font-size', 'text'].includes(namespace) ? 'Design for people.' : namespace === 'tracking' ? 'Make space for extraordinary ideas.' : 'A thoughtful balance. Aa 0123456789'
-      return `<section>${label(namespace, token)}${namespace === 'font-feature'
-        ? `<div data-ui="comparison"><div><div data-ui="label">Proportional</div><p data-type-target class="margin:0 font-size-xl">111.11<br>888.88<br>123.45</p></div><div><div data-ui="label">Tabular</div><p data-type-target class="margin:0 font-size-xl ${utility}">111.11<br>888.88<br>123.45</p></div></div>`
-        : `<p data-type-target class="margin:0 ${['font-size', 'text', 'leading'].includes(namespace) ? '' : 'font-size-xl'} ${utility}">${text}</p>`}</section>`
+      return `<section>${label(namespace, token)}<p data-type-target class="margin:0 ${['font-size', 'text', 'leading'].includes(namespace) ? '' : 'font-size-xl'} ${utility}">${text}</p></section>`
     }).join('')}</div>`
     scene.css = '[data-foundation="typography"] { display:grid; gap:32px; } [data-foundation="typography"] > section + section { border-top:1px solid var(--color-line-divider); padding-top:24px; } [data-type-target] { overflow-wrap:anywhere; }'
     if (namespace === 'leading') scene.css += ' [data-type-target] { max-width:38ch; font-size:16px; }'
@@ -92,8 +88,6 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
     const max = Math.max(...tokens.map(token => token.numeric?.value ?? 0))
     scene.html = tokens.map(token => `<section>${label(namespace, token)}<div data-size-bar style="width:${(token.numeric?.value ?? 0) / max * 100}%" class="bg-blue-60 r-xs"></div></section>`).join('')
     scene.css = '[data-size-bar] { height:16px; margin-bottom:24px; }'
-  } else if (namespace === 'content') {
-    scene.html = '<p class="display:flex align-items:center gap-sm content-empty::before display:block::before width:.5rem::before height:.5rem::before r-pill::before bg-green-60::before">All changes saved</p>'
   } else if (namespace === 'order') {
     if (tokens.length) {
       scene.html = tokens.map(token => `<section>${label(namespace, token)}<p>DOM order: 1, 2, 3.</p><div class="display:flex flex-wrap:wrap gap-sm"><div data-ui="tile">1 · Notes</div><div data-ui="tile" class="order-${token.key}">2 · Featured</div><div data-ui="tile">3 · Archive</div></div></section>`).join('')

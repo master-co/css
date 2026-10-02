@@ -1,14 +1,4 @@
 /* On-demand mixins. Class token families are inferred from these definitions. */
-@mixin --font-antialiased {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-@mixin --font-subpixel-antialiased {
-  -webkit-font-smoothing: auto;
-  -moz-osx-font-smoothing: auto;
-}
-
 @mixin --text-gradient {
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -61,10 +51,6 @@
 }
 
 /* Single-property token families. Parameters accept ordinary CSS values. */
-@mixin --background-position(--spacing) {
-  background-position: var(--spacing);
-}
-
 @mixin --bottom(--spacing) {
   bottom: var(--spacing);
 }
@@ -157,14 +143,6 @@
   margin-top: var(--spacing);
 }
 
-@mixin --mask-position(--spacing) {
-  mask-position: var(--spacing);
-}
-
-@mixin --object-position(--spacing) {
-  object-position: var(--spacing);
-}
-
 @mixin --outline-offset(--spacing) {
   outline-offset: var(--spacing);
 }
@@ -211,14 +189,6 @@
 
 @mixin --pt(--spacing) {
   padding-top: var(--spacing);
-}
-
-@mixin --perspective(--spacing) {
-  perspective: var(--spacing);
-}
-
-@mixin --perspective-origin(--spacing) {
-  perspective-origin: var(--spacing);
 }
 
 @mixin --right(--spacing) {
@@ -337,36 +307,8 @@
   translate: var(--spacing);
 }
 
-@mixin --transform-origin(--spacing) {
-  transform-origin: var(--spacing);
-}
-
 @mixin --word-spacing(--spacing) {
   word-spacing: var(--spacing);
-}
-
-@mixin --cx(--spacing) {
-  cx: var(--spacing);
-}
-
-@mixin --cy(--spacing) {
-  cy: var(--spacing);
-}
-
-@mixin --stroke-dashoffset(--spacing) {
-  stroke-dashoffset: var(--spacing);
-}
-
-@mixin --x(--spacing) {
-  x: var(--spacing);
-}
-
-@mixin --y(--spacing) {
-  y: var(--spacing);
-}
-
-@mixin --background-size(--container) {
-  background-size: var(--container);
 }
 
 @mixin --size-y(--container) {
@@ -423,10 +365,6 @@
 
 @mixin --min-w(--container) {
   min-width: var(--container);
-}
-
-@mixin --mask-size(--container) {
-  mask-size: var(--container);
 }
 
 @mixin --w(--container) {
@@ -583,14 +521,6 @@
 
 @mixin --transition-timing-function(--easing) {
   transition-timing-function: var(--easing);
-}
-
-@mixin --content(--content) {
-  content: var(--content);
-}
-
-@mixin --font-feature-settings(--font-feature) {
-  font-feature-settings: var(--font-feature);
 }
 
 @mixin --font-family(--font-family) {

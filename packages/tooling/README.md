@@ -32,8 +32,8 @@ The readonly result is `{ version, families }`, derived from the active manifest
 loaded mixins. Each family has `mixin`, `prefix`, `namespace`, `properties`, and
 `argument: 'value' | 'key'`. Definitions are included even without current token
 values; class completions still require tokens. Direct-value families forward a
-CSS value, while string recipes receive a token key. The old `./builtins` export
-has been removed. Theme-only manifests must load or define mixins explicitly.
+CSS value, while string recipes receive a token key. Theme-only manifests must
+load or define mixins explicitly.
 
 `scanner.scanSource(source, content)` uses the same built-in adapters and Rust
 scanner as `scan`, returning a `MasterCSSScannerSourceResult` with `changed` and

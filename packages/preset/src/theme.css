@@ -107,12 +107,6 @@
   --text-10xl--line-height: 1;
   --text-10xl--letter-spacing: -.05em;
 
-  /* Font features */
-  --font-feature-tabular: 'tnum';
-
-  /* Content */
-  --content-empty: '';
-
   /* Radii */
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
