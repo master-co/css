@@ -2,9 +2,3 @@
 @import '../styles/docs-shell/theme.css';
 @import '../styles/base.css';
 @import '../styles/demo-theme.css';
-
-@layer base {
-  body {
-    -webkit-font-smoothing: antialiased;
-  }
-}
