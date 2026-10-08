@@ -72,7 +72,7 @@ snapshot and does not expose DOM nodes, bindings, or disposable CSS state.
 ```ts
 import { renderHTML } from '@master/css-server'
 
-const result = renderHTML('<div class="text:center"></div>', {
+const result = renderHTML('<div class="text-align:center"></div>', {
   manifest,
   hydrationManifest: 'inline'
 })
@@ -93,7 +93,7 @@ snapshot.
 import { createServerRenderer } from '@master/css-server'
 
 const renderer = createServerRenderer({ manifest })
-const first = renderer.renderHTML('<div class="text:center"></div>')
+const first = renderer.renderHTML('<div class="text-align:center"></div>')
 const second = renderer.renderHTML('<div class="fg-red"></div>')
 
 renderer.dispose()
@@ -112,7 +112,7 @@ import { createHTMLRenderSession } from '@master/css-server'
 
 const session = createHTMLRenderSession({ manifest })
 const firstChunk = session.write('<html><head>')
-const final = session.end('</head><body class="block"></body></html>')
+const final = session.end('</head><body class="display:block"></body></html>')
 ```
 
 Use official framework integrations when possible; they compose this package with manifest loading, source scanning, and runtime hydration.

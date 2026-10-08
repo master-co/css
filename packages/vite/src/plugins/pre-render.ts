@@ -117,7 +117,8 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     stylesheets,
     documentURL: new URL(htmlPath || '/', 'https://master-css-render.invalid/').href,
     stylesheetImportSource(css) {
-      const fileName = `${context.config?.build.assetsDir ?? 'assets'}/_master-css/native/${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`
+      const assetsDir = context.config?.build.assetsDir ?? 'assets'
+      const fileName = [assetsDir.replace(/\/$/, ''), '_master-css/native', `${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`].filter(Boolean).join('/')
       nativeStylesheetAssets.set(fileName, css)
       // SSR imports must remain same-origin and writable, even when other assets use a CDN.
       const base = context.config?.base || '/'

@@ -1,5 +1,25 @@
 import { createRequire } from 'node:module'
 
+/** Keep keyframe tracking slots inert while satisfying Turbopack's CSS Module purity rule. */
+export function protectNextKeyframeSlots(file: string, source: string, sourceMap?: string) {
+  if (!source.includes('master-css-keyframe-') || !source.includes('--master-css-slot:0')) return { code: source, sourceMap }
+  const require = createRequire(import.meta.url)
+  const postcss = createRequire(require.resolve('next/package.json'))('postcss')
+  const root = postcss.parse(source, { from: file })
+  let changed = false
+  root.walkRules((rule: { selector: string, parent?: { type: string, name?: string, params?: string }, nodes?: { type: string, prop?: string, value?: string }[] }) => {
+    if (rule.selector !== ':not(*)' || rule.parent?.type !== 'atrule' || rule.parent.name !== 'media'
+      || !rule.parent.params?.includes('master-css-keyframe-')
+      || !rule.nodes?.some(node => node.type === 'decl' && node.prop === '--master-css-slot' && node.value === '0')) return
+    // Turbopack requires a local class; :not(*) keeps the tracking rule inert.
+    rule.selector = '.__master_css_slot:not(*)'
+    changed = true
+  })
+  if (!changed) return { code: source, sourceMap }
+  const output = root.toResult({ from: file, to: file, map: { inline: false, annotation: false, sourcesContent: true, prev: sourceMap ? JSON.parse(sourceMap) : false } })
+  return { code: output.css, sourceMap: output.map.toString() }
+}
+
 /** Preserve global ownership after the user's single combined-root PostCSS pass. */
 export function protectNextGeneratedGlobals(file: string, ast: object, scoped: boolean, knownAnimations: readonly string[] = []) {
   const require = createRequire(import.meta.url)

@@ -9,6 +9,7 @@ import type { MasterCSSWebpackContext } from '../src/plugin'
 interface Result {
   stats: webpack.Stats
   assets: Record<string, string>
+  registrationAtCallback: number
 }
 
 async function watchScenario(cache: boolean, run: (state: {
@@ -28,9 +29,35 @@ async function watchScenario(cache: boolean, run: (state: {
   const compiler = webpack({ mode: 'production', context: app, entry: './entry.js', cache: cache ? { type: 'memory' } : false,
     resolve: { tsconfig: false }, experiments: { css: true },
     output: { path: join(app, 'out'), clean: true, filename: '[name].[contenthash:8].js', cssFilename: '[name].[contenthash:8].css' }, plugins: [plugin] })
+  // Drive Webpack's watch callback directly: this suite tests graph ownership,
+  // while static-watch-recovery.test.ts exercises real filesystem events.
+  const watchFileSystem = compiler.watchFileSystem!
+  type WatchMethod = typeof watchFileSystem.watch
+  let registrations = 0
+  let notifyChange: Parameters<WatchMethod>[5] | undefined
+  watchFileSystem.watch = (...args) => {
+    notifyChange = args[5]
+    registrations++
+    return {
+      close() {},
+      pause() {},
+      getFileTimeInfoEntries() { return new Map() },
+      getContextTimeInfoEntries() { return new Map() },
+      getInfo() {
+        return { changes: new Set<string>(), removals: new Set<string>(), fileTimeInfoEntries: new Map(), contextTimeInfoEntries: new Map() }
+      }
+    }
+  }
   trace.attach(compiler)
+  const waitForRegistration = (after: number) => new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => { clearInterval(interval);reject(new Error(`Watch did not register after result ${after}`)) }, 12000)
+    const interval = setInterval(() => {
+      if (registrations <= after) return
+      clearInterval(interval);clearTimeout(timer);resolve()
+    }, 20)
+  })
   const results: (Result | Error)[] = [], listeners = new Set<() => void>()
-  const watching = compiler.watch({ aggregateTimeout: 20, ...(process.env.BH_TRACE_POLL ? { poll: Number(process.env.BH_TRACE_POLL) } : {}) }, (error, stats) => {
+  const watching = compiler.watch({ aggregateTimeout: 20 }, (error, stats) => {
     if (process.env.BH_TRACE_GRAPH && !process.env.BH_TRACE_DIRECTORY) console.log(JSON.stringify({
       error: error ? String(error) : undefined,
       files: stats ? [...stats.compilation.fileDependencies] : [],
@@ -39,7 +66,7 @@ async function watchScenario(cache: boolean, run: (state: {
       modules: stats ? [...stats.compilation.modules].map(module => ({ resource: (module as webpack.NormalModule).resource })) : []
     }))
     results.push(error ?? (!stats || stats.hasErrors() ? new Error(stats?.toString({ all: false, errors: true })) : {
-      stats, assets: Object.fromEntries(stats.compilation.getAssets().map(asset => [asset.name, readFileSync(join(app, 'out', asset.name), 'utf8')]))
+      stats, assets: Object.fromEntries(stats.compilation.getAssets().map(asset => [asset.name, readFileSync(join(app, 'out', asset.name), 'utf8')])), registrationAtCallback: registrations
     }))
     const result = results.at(-1)
     trace.record('watch-result', { error: result instanceof Error ? result.message : undefined,
@@ -58,12 +85,18 @@ async function watchScenario(cache: boolean, run: (state: {
     listeners.add(inspect);inspect()
   })
   try {
-    await waitFor(0, 'initial')
+    const initial = await waitFor(0, 'initial')
+    await waitForRegistration(initial.registrationAtCallback)
     await run({ app, styles, plugin, step: async (stage, imports) => {
       const after = results.length
       trace.record('edit-entry', { stage })
       writeFileSync(join(app, 'entry.js'), `${manifestImport}${imports.map(file => `import ${JSON.stringify(file)};`).join('')}globalThis.auditStage=${JSON.stringify(stage)};`)
-      return waitFor(after, stage)
+      compiler.inputFileSystem?.purge?.(join(app, 'entry.js'))
+      if (!notifyChange) throw new Error(`Watch callback is unavailable in ${stage}`)
+      notifyChange(null, new Map(), new Map(), new Set([join(app, 'entry.js')]), new Set())
+      const result = await waitFor(after, stage)
+      await waitForRegistration(result.registrationAtCallback)
+      return result
     } })
   } finally {
     if (watching) await new Promise<void>((resolve, reject) => watching.close(error => error ? reject(error) : resolve()))

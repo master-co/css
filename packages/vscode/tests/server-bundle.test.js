@@ -405,7 +405,8 @@ test('staged language server starts without workspace node_modules and shuts dow
         position: { line: 0, character: text.indexOf('display:block:') + 'display:block:'.length },
         context: { triggerKind: 2, triggerCharacter: ':' }
       })
-      expect(completion.find((item) => item.label === ':first')?.detail).toBe(':first-child')
+      expect(completion.find((item) => item.label === ':first-child')?.insertText).toBe('first-child')
+      expect(completion.some((item) => item.label === ':first')).toBe(false)
 
       await server.request('shutdown', null)
       server.notify('exit')

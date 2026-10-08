@@ -118,6 +118,7 @@ const languageByExtension: Record<string, string> = {
   '.htm': 'html',
   '.html': 'html',
   '.js': 'javascript',
+  '.mjs': 'javascript',
   '.cjs': 'javascript',
   '.jsx': 'javascriptreact',
   '.less': 'less',

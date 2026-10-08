@@ -12,7 +12,7 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const fixtureDir = join(packageDir, 'tests/fixtures/theme-reference')
 const viteCLI = join(dirname(createRequire(import.meta.url).resolve('vite/package.json')), 'bin/vite.js')
 
-it('delivers project definitions through each Svelte route that loads their scoped style', async () => {
+it('delivers referenced resources without leaking route-owned native overrides', async () => {
   execFileSync(process.execPath, [viteCLI, 'build'], {
     cwd: fixtureDir,
     stdio: 'pipe',
@@ -38,11 +38,12 @@ it('delivers project definitions through each Svelte route that loads their scop
   const loadedCSS = routeCSS('index.html'), unloadedCSS = routeCSS('unloaded.html')
   for (const css of [loadedCSS, unloadedCSS]) {
     expect(css).toMatch(/\.probe\.svelte-[\w-]+/)
-    expect(css).toContain('--color-probe:#123456')
-    expect(css).toContain('--color-probe:#abcdef')
+    expect(css).toMatch(/--color-probe:\s*#123456/)
     expect(css).toContain('@keyframes project-pulse')
     expect(css).not.toContain('@reference')
   }
+  expect(loadedCSS).toMatch(/--color-probe:\s*#abcdef/)
+  expect(unloadedCSS).not.toMatch(/--color-probe:\s*#abcdef/)
   expect(loadedCSS).toContain('.never-loaded')
   expect(unloadedCSS).not.toContain('.never-loaded')
   expect(unloadedCSS).not.toContain('.probe-tone{')

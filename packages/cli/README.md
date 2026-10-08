@@ -16,6 +16,8 @@ npx @master/css-cli lint --format json
 npx @master/css-cli inspect --include-css --format json
 ```
 
+Without source paths, `lint` follows the scanner source policy and skips generated output and `.gitignore` matches. Pass a path or glob to lint an ignored artifact explicitly.
+
 Inspection reports distinguish class matching, CSS syntax, CSS values and browser support. Generated CSS is not visual verification. `--exit-code never` suppresses the diagnostic failure exit code; `--max-warnings` sets the warning threshold.
 
 ## Compare project changes

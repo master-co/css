@@ -7,6 +7,8 @@ The Master CSS VS Code extension and the VS Code ESLint extension are complement
 
 For scripts, CI probes, and other tools that need machine-readable Master CSS diagnostics without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
 
+With no source paths, the CLI uses the scanner's source policy: it skips generated output directories and files excluded by project or workspace `.gitignore` rules. Pass a path or glob explicitly when you need to lint an ignored build artifact.
+
 When an AI client supports tool calls, the [Master CSS MCP server](/guide/mcp-server) can run the same lint policy through `mastercss_lint_project` and preview safe fixes. ESLint should still remain the default human development and CI lint workflow for JavaScript and framework projects.
 
 Use `npx @master/css-cli inspect --format json` when the tool needs scanner state, stylesheet entry metadata, generated CSS size, or explicit missing CSS checks. `inspect` is not a replacement for lint policy rules such as class sorting, canonical classes, conflicts, or raw-value policy.

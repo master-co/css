@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-An authoring package is the smallest way to share a Master CSS styling vocabulary across projects. It is just a package with a CSS source entry, so another project can import its tokens, variants, utilities, and component classes from the app's normal CSS entry.
+An authoring package is the smallest way to share a Master CSS styling vocabulary across projects. It is just a package with a CSS source entry, so another project can import its tokens, utilities, mixins, custom media, and native component classes from the app's normal CSS entry.
 
 Use an authoring package for shared design-system vocabulary. Do not ship compiled generated CSS or a generated manifest unless your package has a separate runtime integration reason. Let each consuming project compile the source with its own Master CSS entry graph.
 
@@ -45,14 +45,14 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
   --color-text-action: var(--color-brand);
   --spacing-action-x: 1rem;
   --radius-action: 0.5rem;
- }
+}
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
 
 @layer components {
   .btn {
@@ -111,7 +111,7 @@ Packages imported by a project entry are already available to local stylesheets.
 }
 ```
 
-`@reference` makes package tokens, variants, and utilities available while compiling the local stylesheet. Required theme resources are included, but referenced native rules and generated utility classes are not. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
+`@reference` makes package tokens, utilities, mixins, and custom media available while compiling the local stylesheet. Required theme resources are included, but referenced native rules and generated utility classes are not. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
 
 ---
 
@@ -132,7 +132,7 @@ Use the package for shared vocabulary. Use the app CSS entry for local source bo
 ## Version vocabulary
 Treat exported tokens, utilities and native class names like public API. Native component CSS ships by default; its same-layer conflicts follow source order. Native classes do not derive Master suffixes.
 
-Removing or renaming a token, variant, utility, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, variants, utilities, or component classes is usually a minor change when it does not alter existing output.
+Removing or renaming a token, utility, mixin, custom media name, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, utilities, mixins, custom media names, or component classes is usually a minor change when it does not alter existing output.
 
 Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `fg-text-action`, `content-auto`, or `btn` without reading the package source.
 

@@ -83,7 +83,7 @@ const languageService = new MasterCSSLanguageService(customSettings, { session }
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
-Semantic tokens are generated with the project manifest, so custom variables, components, utilities, modes, and other manifest-dependent tokens can be classified after the caller loads the manifest.
+Semantic tokens are generated with the project manifest, so project tokens, utility definitions, and other manifest-dependent syntax can be classified after the caller loads the manifest.
 
 Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context at the current editor position.
 

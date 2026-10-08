@@ -20,7 +20,7 @@ function reportBrowserErrors(page: import('@playwright/test').Page) {
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
     "@import url(\"@master/css\");",
-    '@mixin --probe {' ,
+    '@utility probe {',
     `        display: ${displayClass === 'hidden' ? 'none' : displayClass};`,
     '        width: 4px;',
     '        height: 4px;',
@@ -128,9 +128,10 @@ describe('Vite dev HMR', () => {
       '<!doctype html>',
       '<html>',
       '<head><title>Master CSS Vite HMR</title></head>',
-      '<body><div id="probe" class="probe"></div></body>',
+      '<body><div id="probe" class="probe"></div><script type="module" src="/main.ts"></script></body>',
       '</html>'
     ].join(''))
+    writeFileSync(path.join(fixtureDir, 'main.ts'), 'import "./app.css"')
     writeStyle(fixtureDir, 'inline-flex')
 
     server = await createServer({

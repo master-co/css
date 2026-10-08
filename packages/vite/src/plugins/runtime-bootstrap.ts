@@ -10,7 +10,7 @@ export default function RuntimeBootstrapPlugin(): Plugin {
   return {
     name: 'master-css:runtime-bootstrap',
     configResolved(config) {
-      const base = config.base && config.base !== './' ? JSON.stringify(config.base) : `new URL('/', import.meta.url).href`
+      const base = config.base && config.base !== './' ? JSON.stringify(config.base) : `new URL(/* @vite-ignore */ '/', import.meta.url).href`
       stylesheetDelivery = `{ base: ${base}, development: ${config.command === 'serve'} }`
     },
     resolveId(id) {

@@ -67,7 +67,7 @@ $radius-card: .75rem;
   --color-body: #172033;
   --spacing-card: 1.5rem;
   --radius-card: .75rem;
- }
+}
 
 ```
 
@@ -146,13 +146,13 @@ Use `@layer components` for product roles:
 <button class="btn">Save</button>
 ```
 
-Use `@mixin` for reusable primitives:
+Use `@utility` for reusable class recipes; use `@mixin` when declarations need reuse inside CSS rules:
 
 ```css name=app.css
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
 ```
 
 ```html
@@ -209,7 +209,7 @@ Project theme variables are available automatically after Sass preprocessing in 
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
-- [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
+- [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
 - [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@mixin`, and `@reference`.
 - [Route-level styles](/guide/route-level-styles) for local CSS files that use project definitions and native declarations.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.

@@ -1,7 +1,7 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
 
-Copy and paste the CDN links to instantly launch the [runtime](/guide/rendering-modes#runtime-rendering) in your browser with the default preset.
+The CDN links below show the browser-only [runtime](/guide/rendering-modes#runtime-rendering) setup for a matching release and the default preset. Check that the published `@rc` packages use the same manifest contract before copying the example.
 
 <StepSection>
   <Step>
@@ -19,19 +19,19 @@ Copy and paste the CDN links to instantly launch the [runtime](/guide/rendering-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
-  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
-  <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
-  <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-  <script src="https://cdn.master.co/css-runtime@rc"></script>
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js">
+  <link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 </head>
 <body>
-  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">Hello World</h1>
+  <h1 class="margin:3rem color:#111827 font-size:40px font-style:italic font-weight:800">Hello World</h1>
 </body>
 </html>
 ```
 
-The CDN runtime only includes the default preset. Use a package-manager installation when you need custom theme tokens, utilities, modes, emitted globals, or framework integration. See [preload critical resources](/guide/preload-critical-resources#preload-runtime-engine) for the request preload details.
+The CDN runtime only includes the default preset. Keep the script and its JSON manifest on the direct CDN origin; a redirect without CORS headers can block the manifest import. The `@rc` URLs follow published npm packages, which can lag this repository's unreleased source. Use matching runtime, manifest, and preset versions when testing source changes. Use a package-manager installation when you need custom theme tokens, utilities, mixins, named conditions, or framework integration. See [preload critical resources](/guide/preload-critical-resources#preload-runtime-engine) for the request preload details.
 
 import Footer from '../footer.mdx'
 

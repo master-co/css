@@ -430,9 +430,10 @@ Each final stylesheet keeps `outputMappings` into the original input files throu
 inlining and qualifier wrappers. `nativeCSS` and `generatedCSS` remain metadata
 views of the separately compiled files; use `css` for delivery.
 
-The Node rendered stylesheet path uses this graph compilation for file imports,
-so qualified imported files may define managed utilities and use variants in native
-rules. If boundaries require multiple assets, use stylesheet delivery options;
+The Node rendered stylesheet path uses this graph compilation for file imports.
+Qualified imports may contain native rules, including native `@apply` calls, but
+global definitions must come through unqualified imports or references. If
+boundaries require multiple assets, use stylesheet delivery options;
 the single-output path reports `CSS_IMPORT_ERROR` instead of losing those assets.
 
 With `delivery` options, `compileRenderedStylesheet()` returns `entry`,

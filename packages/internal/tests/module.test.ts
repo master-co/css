@@ -48,8 +48,8 @@ describe('@master/css-internal module helpers', () => {
   "version": 6 as const,
   "languageVersion": 16 as const
 })).toBe('{"version":6,"languageVersion":16}')
-    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
-    expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
+    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{},"keyframeSlots":[],"suppressedKeyframes":[]};')
+    expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
   })
 
   it('does not expose runtime injection source helpers', () => {

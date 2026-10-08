@@ -22,7 +22,7 @@ for (const scenario of ['pending', 'burst', 'replacement', 'dispose', 'failure']
   function load() {
     let update: () => void, dispose: () => void
     const hot = { accept(dependencies: unknown, callback?: () => void) { if (Array.isArray(dependencies)) update = callback! }, dispose(callback: () => void) { dispose = callback } }
-    new Function('MasterCSSRuntime', 'modules', 'document', 'module', 'importMeta', 'globalThis', source)({ start }, modules, {}, { hot }, { webpackHot: hot }, global)
+    new Function('MasterCSSRuntime', 'modules', 'document', 'module', 'importMeta', 'globalThis', '__webpack_public_path__', source)({ start }, modules, {}, { hot }, { webpackHot: hot }, global, '/')
     return { update: (version: number) => { modules.manifest = { version };update() }, dispose: () => dispose() }
   }
   let module = load()

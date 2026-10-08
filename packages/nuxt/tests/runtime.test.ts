@@ -30,7 +30,7 @@ it('preloads the runtime manifest JSON in runtime mode', async () => {
   expect(href).toMatch(/^\/_master-css\/manifest\/master-css-manifest\.[0-9a-f]{8}\.json$/)
   const manifest = await $fetch(href || '') as { version?: number } | string
   const parsedManifest = typeof manifest === 'string' ? JSON.parse(manifest) : manifest
-  expect(parsedManifest.version).toBe(5)
+  expect(parsedManifest.version).toBe(6)
 })
 
 it('lets runtime utilities override global component layer CSS', async () => {

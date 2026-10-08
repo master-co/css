@@ -35,7 +35,7 @@ the styling language.
 
 ### Manifest compatibility
 
-The execution format is Manifest `version: 2` with `languageVersion: 4`. These are
+The execution format is Manifest `version: 6` with `languageVersion: 16`. These are
 separate from package versions and the internal native/Wasm binding ABI. Missing
 or unsupported execution versions are rejected; recompile project CSS with matching
 packages rather than changing the version fields by hand.
@@ -58,7 +58,7 @@ retention does not mean an engine understands or executes a new capability.
 Hydration data also carries versioned execution information. Use the server's
 hydration output with the matching runtime and project manifest; do not treat a
 manifest generated for another language version as compatible because its outer
-`version` is still `2`.
+`version` is still `6`.
 
 ---
 
@@ -105,30 +105,30 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```
     The runtime engine observes a new node with the class `text-align:center` and ensures the corresponding CSS rule:
     ```css
-    .text-align:center { /* [!code ++] */
-      text-align: center /* [!code ++] */
+    .text-align\:center { /* [!code ++] */
+      text-align: center; /* [!code ++] */
     } /* [!code ++] */
     ```
   </Step>
   <Step>
     #### <StepNum />Added Master CSS class names to elements in links
     ```js
-    // @MARK font-6xl
-    h1.classList.add('font-6xl')
+    // @MARK font-size:3rem
+    h1.classList.add('font-size:3rem')
     ```
-    Add class name `font-6xl` to `html <h1>`
+    Add class name `font-size:3rem` to `html <h1>`
     ```html
-    <!-- @MARK font-6xl -->
-    <h1 class="font-6xl text-align:center">Hello World</h1>
+    <!-- @MARK font-size:3rem -->
+    <h1 class="font-size:3rem text-align:center">Hello World</h1>
     ```
-    The runtime engine observes that `html <h1>` adds the new class name `font-6xl` and ensures the corresponding CSS rule:
+    The runtime engine observes that `html <h1>` adds the new class name `font-size:3rem` and ensures the corresponding CSS rule:
     ```css
-    .font-6xl { /* [!code ++] */
-      font-size: 3rem /* [!code ++] */
+    .font-size\:3rem { /* [!code ++] */
+      font-size: 3rem; /* [!code ++] */
     } /* [!code ++] */
 
-    .text-align:center {
-      text-align: left:0 right:0 margin-left:auto margin-right:auto
+    .text-align\:center {
+      text-align: center;
     }
     ```
   </Step>
@@ -140,16 +140,16 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```
     Remove class name `text-align:center` from `html <h1>`
     ```html
-    <h1 class="font-6xl text-align:center">Hello World</h1>
+    <h1 class="font-size:3rem">Hello World</h1>
     ```
     The runtime engine observes that the class name `text-align:center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
     ```css
-    .font-6xl {
-      font-size: 3rem
+    .font-size\:3rem {
+      font-size: 3rem;
     }
 
-    .text-align:center { /* [!code --] */
-      text-align: left:0 right:0 margin-left:auto margin-right:auto /* [!code --] */
+    .text-align\:center { /* [!code --] */
+      text-align: center; /* [!code --] */
     } /* [!code --] */
     ```
   </Step>
@@ -158,20 +158,20 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```js
     h1.remove()
     ```
-    Remove the `html <h1>` with class `font-6xl`
+    Remove the `html <h1>` with class `font-size:3rem`
     ```html
-    <h1 class="font-6xl">Hello World</h1> <!-- [!code ++] -->
+    <h1 class="font-size:3rem">Hello World</h1> <!-- [!code --] -->
     ```
-    The runtime engine observes that the `html <h1>` element with the class name `font-6xl` is removed and updates active usage immediately. If no connected element still uses `font-6xl`, the generated rule can be retained until idle cleanup removes it:
+    The runtime engine observes that the `html <h1>` element with the class name `font-size:3rem` is removed and updates active usage immediately. If no connected element still uses `font-size:3rem`, the generated rule can be retained until idle cleanup removes it:
     ```css
-    .font-6xl { /* [!code --] */
-      font-size: 3rem /* [!code --] */
+    .font-size\:3rem { /* [!code --] */
+      font-size: 3rem; /* [!code --] */
     } /* [!code --] */
     ```
   </Step>
   <Step>
     #### <StepNum />All active DOM class counts have been removed
-    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font-6xl'])` still remove rules synchronously.
+    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font-size:3rem'])` still remove rules synchronously.
   </Step>
 </StepSection>
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
@@ -235,7 +235,7 @@ Runtime and progressive rendering work best when the classes used during interac
 For highly interactive UI such as editors, builders, data grids, virtualized lists, drag surfaces, or dashboards with many per-item values, prefer a mixed strategy:
 
 - Keep stable layout, typography, state, and component classes in Master CSS.
-- Warm predictable runtime classes with `ensureClassRules(['grid', 'gap-md'])` before inserting a large dynamic view.
+- Warm predictable runtime classes with `ensureClassRules(['display:grid', 'gap-md'])` before inserting a large dynamic view.
 - Use inline styles or CSS variables for volatile per-element values such as coordinates, dimensions, transforms, or user-generated colors.
 - Use top-level native CSS or component-authored CSS for large repeated interaction states that are easier to model as selectors than as many runtime-generated utilities.
 
@@ -273,7 +273,7 @@ The `/_master-css/hydration/` path above is the integration-neutral route. Frame
 <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
-This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing native CSS rules, and continues observing dynamic classes. If a pre-rendered style has no manifest pointer, or a loaded manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing CSSOM rules, and continues observing dynamic classes. If a pre-rendered style has no manifest pointer, or a loaded manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
 
 After adoption, progressive rendering uses the same runtime state model as runtime rendering. Hydrated rules become runtime-managed rule objects, new classes can be generated later, and mutation-driven removals can enter the retained-rule cache before idle cleanup. This keeps the first paint deterministic while still avoiding repeated CSSOM insertion/deletion during interactive updates.
 
@@ -293,7 +293,7 @@ For example, the following HTML:
   <script type="module" src="/main.js"></script>
 </head>
 <body>
-  <h1 class="font-5xl font-heavy">Hello World</h1>
+  <h1 class="font-5xl">Hello World</h1>
 </body>
 ```
 Render the HTML:
@@ -338,7 +338,7 @@ Master CSS hydration is the process that restores the server-side or build-time 
 </figure>
 The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `MasterCSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes.
 
-Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
+Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation. During hydration, the runtime compares that IR with the CSSOM rules already present in `style#master-css`. When they match, it attaches those CSSOM rules to runtime-managed rule objects instead of regenerating them.
 
 Hydration also checks CSSOM rule counts and order, including theme buckets whose order affects the cascade. Missing, extra, duplicated, or reordered rules trigger a warning and rebuilding of `style#master-css` from the currently connected DOM classes.
 
@@ -346,7 +346,7 @@ Once hydrated, Master CSS can efficiently detect new or removed class names and 
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 
-This page hydration manifest is different from the project manifest and `emittedGlobals`. The project manifest tells the runtime how to interpret tokens, modes, components, utilities, and variants. `emittedGlobals` records variables and keyframes that the CSS entry already emitted. The page hydration manifest only describes the CSS rules that were generated into one rendered page.
+This page hydration manifest is different from the project manifest and `emittedGlobals`. The project manifest tells the runtime how to interpret tokens, utilities, mixins, conditions, and keyframes. `emittedGlobals` records variables and keyframes that the CSS entry already emitted. The page hydration manifest only describes the CSS rules that were generated into one rendered page.
 
 ---
 
@@ -382,30 +382,25 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
     ```css name=index.css
-    @layer components {
-      .btn {
-        display: inline-flex;
-        padding-inline: var(--spacing-md);
-      }
+    @utility btn {
+      display: inline-flex;
+      padding-inline: var(--spacing-md);
     }
     ```
 
-    With this project manifest, `btn` is valid because the project defines it, and `text-align:center` is valid because it is a built-in utility. Manifest-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
+    With this project manifest, `btn` is valid because `@utility` registers it, and `text-align:center` is valid as a direct declaration. Registered classes are still on-demand: defining `btn` does not emit its rule until `btn` appears in scanned source or in the scanner's fixed class list.
   </Step>
   <Step>
     #### <StepNum />Compose final CSS
     The generated stylesheet contains the valid Master CSS rules, retained native CSS from managed style entries, and any referenced variables or keyframes needed by those rules.
 
     ```css name=generated.css
-    @layer components {
+    @layer utilities {
       .btn {
         display: inline-flex;
         padding-inline: var(--spacing-md);
       }
-    }
-
-    @layer utilities {
-      .text-align:center {
+      .text-align\:center {
         text-align: center;
       }
     }
@@ -476,17 +471,16 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @theme {
   --color-primary: #4f46e5;
-
- }
+}
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
 @layer components {
-  .btn {
+  .action-button {
     display: inline-flex;
     align-items: center;
     border-radius: var(--radius-md);
@@ -499,7 +493,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 @custom-media --md (width >= 48rem);
 ```
 
-These CSS-first directives are manifest inputs. The compiler lowers theme tokens, keyframe definitions, custom media, mixins and native CSS into a `MasterCSSManifest`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+The compiler lowers theme tokens, keyframe definitions, custom media, mixins and utility registrations into a `MasterCSSManifest`. Native rules such as `.action-button` are delivered as stylesheet CSS; a manifest alone does not load them. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations use the same semantic definitions, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
@@ -508,7 +502,7 @@ These CSS-first directives are manifest inputs. The compiler lowers theme tokens
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework integrations | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may import an emitted project manifest JSON asset. |
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
-| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 3`, used to map `style#master-css` back into runtime-managed rule objects. |
+| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 4`, used to map `style#master-css` back into runtime-managed rule objects. |
 | Next build report | `@master/css-next` when `buildReport` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
 
 ---

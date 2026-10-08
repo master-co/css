@@ -125,7 +125,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_suggest_syntax: {
     purpose: 'Request language-service completion candidates and hover information at a position in an unsaved document.',
     fields: { context, content: 'Complete source buffer.', filePath, position: 'Cursor position in the buffer.', 'position.line': 'Zero-based line index.', 'position.character': 'Zero-based UTF-16 code-unit offset on the line.', triggerCharacter: 'Character that triggered completion. Omit for an explicit completion request.', limit: 'Maximum completion items returned. Defaults to 50; `total` still reports the untruncated count.' },
-    example: { content: "<div class=\"padding:\"></div>", filePath: 'src/card.html', position: { line: 0, character: 14 }, limit: 5 }, exampleNote: 'The cursor follows `p:` in the class attribute.',
+    example: { content: "<div class=\"padding:\"></div>", filePath: 'src/card.html', position: { line: 0, character: 20 }, limit: 5 }, exampleNote: 'The cursor follows `padding:` in the class attribute.',
     output: 'The result includes `completions`, their untruncated `total`, optional `hover`, and manifest status. A completion list is editor assistance; verify the selected class against the intended project and rendered UI.',
     lifecycle: readOnly
   },

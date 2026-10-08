@@ -16,11 +16,11 @@ Preload the CDN runtime with `as="script"`. The CDN runtime imports its split de
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-  <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
-  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code highlight] -->
-  <link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json"> <!-- [!code highlight] -->
-  <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-  <script src="https://cdn.master.co/css-runtime@rc"></script>
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"> <!-- [!code highlight] -->
+  <link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 </head>
 </html>
 ```
@@ -31,7 +31,7 @@ You are telling the browser that you would like to fetch it sooner than the brow
 ---
 
 ## Preload runtime project manifests
-Official runtime integrations can split the project manifest into a hashed JSON asset in production. The runtime must load that manifest before it can interpret project tokens, modes, components, utilities, and variants from your CSS entry graph.
+Official runtime integrations can split the project manifest into a hashed JSON asset in production. The runtime must load that manifest before it can interpret project tokens, utility definitions, mixins, named conditions, and keyframes from your CSS entry graph.
 
 (o) Let runtime-only integrations preload the project manifest JSON.
 ```html

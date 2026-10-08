@@ -1,14 +1,14 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
+import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, test } from 'vitest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
-const tmpDir = join(packageDir, 'tmp')
 const expectedStaticCSS = [
-  '.block{display:block}',
+  '.display\\:block{display:block}',
   '.fg-primary{color:var(--color-primary)}'
 ]
 
@@ -22,9 +22,8 @@ afterEach(() => {
 })
 
 function createFixture(prefix: string) {
-  mkdirSync(tmpDir, { recursive: true })
-  const root = join(tmpDir, `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`)
-  mkdirSync(root, { recursive: true })
+  const root = mkdtempSync(join(tmpdir(), `master-css-integration-lab-${prefix}-`))
+  symlinkSync(join(packageDir, 'node_modules'), join(root, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir')
   return root
 }
 
@@ -90,7 +89,7 @@ function commonStyle() {
 
 function createRspackFixture(mode: 'runtime' | 'static') {
   const root = createFixture(`rspack-${mode}`)
-  const modeOption = mode === 'static' ? "mode: 'static'," : ''
+  const modeOption = `mode: '${mode}',`
   writeProjectFiles(root, {
     'package.json': commonPackageJSON(),
     'src/index.html': [
@@ -106,7 +105,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
     'src/main.js': [
       "import './app.css'",
       '',
-      'document.getElementById("root").className = "block fg-primary"',
+      'document.getElementById("root").className = "display:block fg-primary"',
       "document.getElementById('root').dataset.ready = 'true'",
       ''
     ].join('\n'),
@@ -148,7 +147,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
 
 function createRsbuildFixture(mode: 'runtime' | 'static') {
   const root = createFixture(`rsbuild-${mode}`)
-  const modeOption = mode === 'static' ? "mode: 'static'," : ''
+  const modeOption = `mode: '${mode}',`
   writeProjectFiles(root, {
     'package.json': commonPackageJSON(),
     'src/index.html': [
@@ -528,7 +527,7 @@ describe('TanStack Start with @master/css-vite', () => {
       const ssrHTML = await readTanStackSSRHTML(root)
       if (ssrHTML) {
         expect(ssrHTML).toContain('TanStack Start fixture')
-        expect(ssrHTML).toContain('block fg-primary')
+        expect(ssrHTML).toContain('display:block fg-primary')
         expectNoDuplicateRuntimeHTML(ssrHTML)
       }
     } finally {

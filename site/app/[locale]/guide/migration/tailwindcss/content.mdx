@@ -25,7 +25,7 @@ Inspect the Tailwind surface before changing files.
 | --- | --- | --- |
 | CSS entry | `@import "tailwindcss"` and any imported theme files | Add `@import "@master/css"` beside it during migration. |
 | Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
-| Custom utilities | Tailwind `@utility` blocks | Recreate reusable primitives in Master CSS `@mixin`. |
+| Custom utilities | Tailwind `@utility` blocks | Recreate class recipes with Master CSS `@utility`; use `@mixin` when declarations need reuse inside CSS rules. |
 | Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Use `@custom-media` for media names and `@mixin` with `@contents` for other wrappers. |
 | Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
 | Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
@@ -93,7 +93,7 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```
 
 ```html
-<article class="r-card grid-cols(3)@md bg-brand p-card">
+<article class="r-card grid-cols(3)@dashboard bg-brand p-card">
   ...
 </article>
 ```
@@ -102,10 +102,10 @@ Master CSS resolves token names by namespace. A token like `--color-brand` becom
 
 | Tailwind v4 theme concept | Master CSS equivalent | Notes |
 | --- | --- | --- |
-| `--color-*` | `--color-*` | Use color tokens with `bg:*`, `fg:*`, `text-*`, border, outline, shadow, and other color-aware utilities. |
+| `--color-*` | `--color-*` | Use color tokens with `bg-*`, `fg-*`, border and outline color utilities. `text-*` is a typography recipe, not a color alias. |
 | `--spacing-*` or base spacing | `--spacing-*` | Use named spacing tokens for product decisions and explicit native units for direct values. |
-| `--radius-*` | `--radius-*` | Use with `r:*` and border-radius utilities. |
-| `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
+| `--radius-*` | `--radius-*` | Use with named radius utilities such as `r-card`, or write a full `border-radius` declaration class. |
+| `--shadow-*` | `--shadow-*` | Use with named shadow utilities such as `shadow-card`, or write a full `box-shadow` declaration class. |
 | `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
 | `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | Defines viewport suffixes such as `@md`; custom properties do not register conditions. |
 
@@ -151,17 +151,17 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 
 | Tailwind v4 pattern | Master CSS pattern | Notes |
 | --- | --- | --- |
-| `p-6`, `px-4`, `mt-8` | `p:1.5rem`, `px:1rem`, `mt:2rem` | These values assume Tailwind’s default .25rem scale; check the original project configuration. Use a defined token such as `p-card` for product spacing. |
-| `-mt-4` | `mt:-1rem` | Use a negative raw value, or `-mt-card` for a defined numeric token. |
-| `w-full`, `h-screen`, `min-w-0` | `w:100%`, `h:100vh`, `min-w:0` | Use native values when they read better. |
+| `p-6`, `px-4`, `mt-8` | `padding:1.5rem`, `padding-inline:1rem`, `margin-top:2rem` | These values assume Tailwind’s default .25rem scale; check the original project configuration. Use a defined token such as `p-card` for product spacing. |
+| `-mt-4` | `margin-top:-1rem` | Use a negative raw value, or `-mt-card` for a defined numeric token. |
+| `w-full`, `h-screen`, `min-w-0` | `width:100%`, `height:100vh`, `min-width:0` | Use native values when they read better. |
 | `rounded-lg` | `r-lg` | Radius tokens come from the `radius` namespace. |
 | `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
 | `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `line-height:1.75rem` | Use `text-*` only when the full type treatment is intended. |
-| `flex`, `items-center`, `justify-between` | `flex`, `align-items:center`, `justify-between` | Use built-in semantic utilities or native declaration syntax. |
-| `grid-cols-3`, `gap-4` | `grid-cols:3`, `gap:1rem` | Grid column helpers and gap utilities are built in. |
-| Arbitrary value such as `w-[min(100%,72rem)]` | `w:min(100%,72rem)` | Write native CSS function values directly. |
+| `flex`, `items-center`, `justify-between` | `display:flex`, `align-items:center`, `justify-content:space-between` | Direct declarations use complete native property names. |
+| `grid-cols-3`, `gap-4` | `grid-cols(3)`, `gap:1rem` | Use the explicit grid recipe and the native `gap` property. |
+| Arbitrary value such as `w-[min(100%,72rem)]` | `width:min(100%,72rem)` | Write native CSS function values directly. |
 | Arbitrary property such as `[scroll-margin-top:4rem]` | `scroll-margin-top:4rem` | Master CSS accepts native declaration syntax as a class. |
-| Important modifier such as `!mt-0` | `mt:0!` | The important marker goes at the end of the value. |
+| Important modifier such as `!mt-0` | `margin-top:0!` | The important marker goes at the end of the value. |
 
 Example conversion:
 
@@ -235,7 +235,7 @@ For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possi
 ---
 
 ## Replace utility composition with native CSS
-Rewrite Tailwind utility composition as native declarations and selectors, preserving token references and states. Use Master utilities directly in markup. Master CSS does not implement `@apply` or `@compose`.
+Rewrite Tailwind utility composition as native declarations and selectors, preserving token references and states. Use Master utilities directly in markup. Master CSS `@apply` expands one named `@mixin`; it does not accept utility class lists. `@compose` is unsupported.
 
 ```css name=tailwind.css
 .btn {
@@ -271,7 +271,7 @@ For component-specific styles, native declarations can express the entire rule:
 }
 ```
 
-CSS Modules and framework style blocks automatically receive project tokens, utilities, and variants in the Vite, Next.js, and Webpack integrations. Use `@reference` only for additional definition files or standalone compilation.
+CSS Modules and framework style blocks automatically receive project tokens, mixins, and custom media in the Vite, Next.js, and Webpack integrations. Use `@reference` only for additional definition files or standalone compilation.
 
 ```css name=Button.module.css
 .button {
@@ -290,7 +290,7 @@ Keep quoted strings, complex content values, and unusual selectors as ordinary C
 ---
 
 ## Migrate custom utilities and components
-Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@mixin` for reusable primitives and `@layer components` for product roles.
+Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utility` for class recipes, `@mixin` to reuse CSS declarations, and `@layer components` for product roles.
 
 ```css name=tailwind.css
 @utility content-auto {
@@ -303,9 +303,9 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 @import "@master/css";
 
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
 ```
 
 ```html
@@ -366,7 +366,7 @@ const className = 'background:' + tone
 
 ```ts
 const toneClasses = {
-  neutral: 'bg-white text-neutral',
+  neutral: 'bg-white fg-text-neutral',
   success: 'bg-green-60 fg-white',
   danger: 'bg-red-60 fg-white'
 }
@@ -440,7 +440,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
-- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
+- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
 - [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, and `@apply`.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static source scanning behavior.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup utilities, theme tokens, custom utilities, and component classes.
@@ -458,6 +458,6 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
-| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:100% max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
+| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `width:100% max-width:72rem margin-inline:auto padding-inline:1rem` for page wrappers and `container` only for container queries. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
 | Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, and combinators. |

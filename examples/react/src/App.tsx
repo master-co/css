@@ -8,13 +8,13 @@ function App() {
     <>
       <div className='grid-cols(2) width:fit-content margin-inline:auto'>
         <a href="https://rc.css.master.co" target="_blank" rel="noreferrer">
-          <img src={masterLogo} className="logo master scale(2)" alt="Master logo" />
+          <img src={masterLogo} className="scale:2 logo master" alt="Master logo" />
         </a>
         <a href="https://reactjs.org" target="_blank" rel="noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 className="font-heavy font-sans tracking-tight fg-white@dark">
+      <h1 className="font-sans font-heavy tracking-tight fg-white@dark">
         <span>Master CSS</span> <span className="color:#00D8FF">React</span>
       </h1>
       <div className="card">

@@ -62,7 +62,7 @@ async function buildCSSFixture({
 
 function expectMasterBaseCSS(css: string) {
   expect(css).toContain('@layer base')
-  expect(css).toMatch(/text-rendering:\s*geometricprecision/)
+  expect(css).toMatch(/-webkit-font-smoothing:\s*antialiased/)
   expect(css).toMatch(/font-family:\s*var\(--font-family-sans\)/)
 }
 

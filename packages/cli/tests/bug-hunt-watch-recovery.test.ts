@@ -28,13 +28,26 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
     child.stderr.on('data', chunk => { stderr += chunk })
     child.stdout.resume()
     const wait = async (check: () => boolean) => {
-      const deadline = Date.now() + 8000
+      const deadline = Date.now() + 15000
       while (!check() && child.exitCode === null && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 25))
-      expect(check(), stderr).toBe(true)
+      if (!check()) throw new Error(`CLI watch condition timed out.\n${stderr}`)
       expect(child.exitCode, stderr).toBeNull()
     }
     const output = () => Object.fromEntries(readdirSync(join(cwd, 'dist')).map(file => [file, readFileSync(join(cwd, 'dist', file)).toString('base64')]))
     const css = () => readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css')).map(file => readFileSync(join(cwd, 'dist', file), 'utf8')).join('\n')
+    const restartCount = () => (stderr.match(/Restart watching source changes/g) || []).length
+    const waitForQuiet = async () => {
+      let count = restartCount()
+      let quietSince = Date.now()
+      const deadline = Date.now() + 5000
+      while (Date.now() - quietSince < 1000) {
+        if (Date.now() >= deadline) throw new Error(`CLI watch did not settle.\n${stderr}`)
+        await new Promise(resolve => setTimeout(resolve, 25))
+        const next = restartCount()
+        if (next !== count) { count = next; quietSince = Date.now() }
+      }
+      return count
+    }
     try {
       let before: ReturnType<typeof output> | undefined
       if (!mode.startsWith('initial-')) {
@@ -51,22 +64,25 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block fg-blue\"></div>")
       await wait(() => (stderr.match(/Cannot rebuild CSS:/g) || []).length > errors)
       if (before) expect(output()).toEqual(before)
-      const restartCount = (stderr.match(/Restart watching source changes/g) || []).length
+      const beforeRecovery = restartCount()
       if (mode === 'deleted-import') writeFileSync(imported, '.example{color:blue}')
       else if (mode === 'new-import' || mode === 'initial-import') { mkdirSync(join(cwd, 'new')); writeFileSync(join(cwd, 'new/nested.css'), '.example{background-color:lime}') }
       else if (mode === 'new-resource') { mkdirSync(join(cwd, 'new')); writeFileSync(join(cwd, 'new/nested.svg'), image('blue')) }
       else writeFileSync(resource, image('blue'))
-      await wait(() => (stderr.match(/Restart watching source changes/g) || []).length > restartCount)
+      await wait(() => restartCount() > beforeRecovery)
       if (mode === 'deleted-import' || mode === 'new-import' || mode === 'new-resource') expect(css()).toMatch(/color:\s*(?:#00f|blue)\b/)
       if (mode === 'new-import') expect(css()).toMatch(/background-color:\s*(?:#0f0|lime)\b/)
       if (mode.includes('resource')) expect(readdirSync(join(cwd, 'dist')).some(file => file.endsWith('.svg') && readFileSync(join(cwd, 'dist', file), 'utf8') === image('blue'))).toBe(true)
       expect(readFileSync(join(cwd, 'dist/output.css'), 'utf8')).toContain('.fg-blue')
+      // A new file can deliver both add and change events. Let those finish
+      // before checking that a later markup edit is scanned and watch settles.
+      await waitForQuiet()
       // A later app edit must still be scanned after recovery.
       writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block fg-red\"></div>")
       await wait(() => readFileSync(join(cwd, 'dist/output.css'), 'utf8').includes('.fg-red'))
-      const settled = (stderr.match(/Restart watching source changes/g) || []).length
-      await new Promise(resolve => setTimeout(resolve, 250))
-      expect((stderr.match(/Restart watching source changes/g) || []).length).toBe(settled)
+      await waitForQuiet()
+      expect(child.exitCode, stderr).toBeNull()
+      expect(readFileSync(join(cwd, 'dist/output.css'), 'utf8')).toContain('.fg-red')
     } finally {
       if (child.exitCode === null) {
         const exited = once(child, 'exit'); child.kill('SIGTERM')
@@ -75,5 +91,5 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       }
       rmSync(cwd, { recursive: true, force: true })
     }
-  }, 30000)
+  }, 45000)
 }

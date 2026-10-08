@@ -1,3 +1,4 @@
+import '../../scripts/typescript-tooling-compat.mjs'
 import js from '@eslint/js'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { defineConfig, globalIgnores } from 'eslint/config'
@@ -5,8 +6,9 @@ import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
 import masterCSS from '@master/eslint-config-css'
+
+const { default: tseslint } = await import('typescript-eslint')
 
 export default defineConfig([
   globalIgnores(['dist/**']),

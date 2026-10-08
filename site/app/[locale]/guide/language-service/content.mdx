@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-The Master CSS Language Service brings the project manifest into the editor. It reads the same variables, components, utilities, modes, selectors, and conditions that Master CSS uses to generate CSS, then uses that knowledge to make class strings easier to read and edit.
+The Master CSS Language Service brings the project manifest into the editor. It reads project tokens, utility recipes, mixins, custom media, selectors, and conditions, then uses that context to make class strings easier to read and edit.
 
 Use [Visual Studio Code setup](/guide/installation/vscode) to install the official extension. Use it with the VS Code ESLint extension when you need team rules, diagnostics for committed markup, and automated class sorting.
 
@@ -15,7 +15,7 @@ Completion works inside configured class sources, including markup attributes, b
 </button>
 ```
 
-Suggestions include utilities, property values, color tokens, selectors, queries, groups, and directive syntax. They are manifest-aware, so project tokens become completion items after the language service finds the correct workspace manifest.
+Suggestions include utilities, property values, color tokens, selectors, queries, and directive syntax. They are manifest-aware, so project tokens become completion items after the language service finds the correct workspace manifest.
 
 ### Hover inspection
 Hover inspection shows the generated CSS for a class at the cursor. This is useful when a class combines a declaration, value, selector state, and query in one compact string.

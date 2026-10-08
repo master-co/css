@@ -149,7 +149,7 @@ export default defineConfig([
 
 ### `@master/css/prefer-canonical-classes`
 
-Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, property aliases, composition utilities, and condition suffix order.
+Prefers canonical Master CSS class forms, including named token utilities and valid utility recipes. Direct declaration classes retain full native property names and authored condition order.
 
 ```js
 import { defineConfig } from 'eslint/config'

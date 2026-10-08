@@ -206,6 +206,28 @@ describe('inspect command', () => {
 })
 
 describe('lint command', () => {
+  it('uses the scanner source policy for default files while honoring explicit paths', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-sources-'))
+    try {
+      fs.mkdirSync(resolve(cwd, 'dist'))
+      fs.writeFileSync(resolve(cwd, '.gitignore'), 'ignored.html\n')
+      for (const file of ['index.html', 'ignored.html', 'dist/output.html']) {
+        fs.writeFileSync(resolve(cwd, file), '<div class="scale(2)"></div>')
+      }
+      fs.writeFileSync(resolve(cwd, 'entry.mjs'), "document.body.classList.add('scale(2)')")
+      const defaults = JSON.parse(runCLI(['lint', '--exit-code', 'never'], { cwd }))
+      expect(defaults.files.map((file: { filePath: string }) => file.filePath).sort()).toEqual([
+        fs.realpathSync(resolve(cwd, 'entry.mjs')), fs.realpathSync(resolve(cwd, 'index.html'))
+      ])
+      const explicit = JSON.parse(runCLI(['lint', 'dist/output.html', 'ignored.html', '--exit-code', 'never'], { cwd }))
+      expect(explicit.files.map((file: { filePath: string }) => file.filePath).sort()).toEqual([
+        fs.realpathSync(resolve(cwd, 'dist/output.html')), fs.realpathSync(resolve(cwd, 'ignored.html'))
+      ])
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
   it('prints machine-readable diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-json-'))
     try {

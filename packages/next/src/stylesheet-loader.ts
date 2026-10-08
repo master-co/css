@@ -1,6 +1,6 @@
 import { addStaticCSSDependencies, resolveStaticOutputPath, transformStaticStyleSource } from './static'
 import { prepareNextEntryGraph } from './prepare-entry-graph'
-import { nextGeneratedGlobalAnimations } from './prepare-global-module'
+import { nextGeneratedGlobalAnimations, protectNextKeyframeSlots } from './prepare-global-module'
 import type { ModuleContext } from './prepare-module'
 import { deliverNextStylesheet } from './stylesheet-delivery'
 import { dirname, extname, relative, resolve } from 'node:path'
@@ -225,7 +225,10 @@ export default function masterCSSStylesheetLoader(this: LoaderContext, source: s
         if (dependencies.has(dependency)) continue
         this.addDependency?.(dependency)
       }
-      callback(null, result.code, result.sourceMap ? JSON.parse(result.sourceMap) : undefined, 'postcss' in result && result.postcss ? { masterPostCSSProcessed: true } : undefined)
+      const output = /\.module\.(?:css|scss|sass)$/u.test(this.resourcePath)
+        ? protectNextKeyframeSlots(this.resourcePath, result.code, result.sourceMap)
+        : result
+      callback(null, output.code, output.sourceMap ? JSON.parse(output.sourceMap) : undefined, 'postcss' in result && result.postcss ? { masterPostCSSProcessed: true } : undefined)
     })
     .catch((error: Error & { span?: { url?: URL } }) => {
       // Sass does not return loadedUrls when a missing import aborts compilation.

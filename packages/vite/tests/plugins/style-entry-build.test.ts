@@ -107,8 +107,9 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     expect(warn).not.toHaveBeenCalled()
   })
 
-  test('warns when placeholder was emitted but no CSS asset still contains it', async () => {
+  test.each([false, true])('warns when a CSS asset lacks the placeholder (SSR: %s)', async (ssr) => {
     const ctx = makeContext(SLOT, REAL_CSS)
+    ctx.config = { build: { ssr } }
     const plugin = StyleEntryBuildPlugin({} as any, ctx)
     const warn = vi.fn()
 
@@ -156,6 +157,18 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       'assets/index-abc.css': 'body{margin:0}', // placeholder absent
     })
     await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  test('does NOT warn for an SSR bundle with no CSS assets', async () => {
+    const ctx = makeContext(SLOT, REAL_CSS)
+    ctx.config = { build: { ssr: true } }
+    ctx.virtualCSSPlaceholderEmitted = true
+    const plugin = StyleEntryBuildPlugin({} as any, ctx)
+    const warn = vi.fn()
+
+    await (plugin as any).generateBundle.call({ warn }, {}, makeBundle({ 'server.js': 'export default {}' }))
 
     expect(warn).not.toHaveBeenCalled()
   })

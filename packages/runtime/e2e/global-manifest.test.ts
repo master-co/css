@@ -6,9 +6,10 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
-const RUNTIME_SCRIPT_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc`
-const DEFAULT_MANIFEST_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc/default-manifest.json`
-const RUNTIME_WASM_URL = `${RUNTIME_ASSET_BASE_URL}/artifacts/mastercss_binding_wasm_engine_bg.wasm`
+const RUNTIME_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js'
+const DEFAULT_MANIFEST_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json'
+const RUNTIME_WASM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/artifacts/mastercss_binding_wasm_engine_bg.wasm'
+const PRESET_BASE_CSS_URL = 'https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css'
 
 type RuntimeAssetRouteOptions = {
   onDefaultManifestRequest?: () => void
@@ -50,6 +51,33 @@ async function startGlobalRuntime(page: Page) {
   await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 }
 
+test('repository CDN example renders with current package artifacts', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', error => errors.push(error.message))
+  page.on('console', message => {
+    if (message.type() === 'error') errors.push(message.text())
+  })
+  await routeRuntimeAssets(page)
+  await page.route(PRESET_BASE_CSS_URL, route => route.fulfill({
+    contentType: 'text/css',
+    headers: { 'access-control-allow-origin': '*' },
+    body: readFileSync(resolve(__dirname, '../../preset/src/base.css'), 'utf8')
+  }))
+  await page.route(`${RUNTIME_ASSET_BASE_URL}/`, route => route.fulfill({
+    contentType: 'text/html',
+    body: readFileSync(resolve(__dirname, '../../../examples/cdn/iife.html'), 'utf8')
+  }))
+
+  await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
+  await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
+  expect(errors).toEqual([])
+  expect(await page.locator('html').getAttribute('hidden')).toBeNull()
+  expect(await page.locator('h1').evaluate(element => {
+    const style = getComputedStyle(element)
+    return { color: style.color, fontSize: style.fontSize, fontStyle: style.fontStyle, fontWeight: style.fontWeight, marginTop: style.marginTop }
+  })).toEqual({ color: 'rgb(17, 24, 39)', fontSize: '40px', fontStyle: 'italic', fontWeight: '800', marginTop: '48px' })
+})
+
 test('uses split bundled preset manifest', async ({ page }) => {
   await startGlobalRuntime(page)
 
@@ -65,6 +93,7 @@ test('uses split bundled preset manifest', async ({ page }) => {
 
 test('uses modulepreloaded default manifest', async ({ page }) => {
   let defaultManifestRequests = 0
+  let presetCSSRequests = 0
   const consoleMessages: string[] = []
 
   await routeRuntimeAssets(page, {
@@ -77,6 +106,14 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
       consoleMessages.push(message.text())
     }
   })
+  await page.route(PRESET_BASE_CSS_URL, route => {
+    presetCSSRequests++
+    route.fulfill({
+      contentType: 'text/css',
+      headers: { 'access-control-allow-origin': '*' },
+      body: readFileSync(resolve(__dirname, '../../preset/src/base.css'), 'utf8')
+    })
+  })
 
   await page.route(`${RUNTIME_ASSET_BASE_URL}/`, (route) => route.fulfill({
     contentType: 'text/html',
@@ -84,10 +121,12 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
       <!doctype html>
       <html hidden>
       <head>
+        <link rel="preload" as="style" href="${PRESET_BASE_CSS_URL}">
         <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
+        <link rel="stylesheet" href="${PRESET_BASE_CSS_URL}">
         <script src="${RUNTIME_SCRIPT_URL}"></script>
       </head>
-      <body></body>
+      <body><h1 class="font-size:40px">Hello</h1></body>
       </html>
     `
   }))
@@ -95,7 +134,9 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
   await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 
   expect(defaultManifestRequests).toBe(1)
+  expect(presetCSSRequests).toBe(1)
   expect(consoleMessages).toEqual([])
+  expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
   expect(await page.evaluate(() => {
     globalThis.masterCSSRuntime!.ensureClassRules(['font-bold'])
     return globalThis.masterCSSRuntime!.snapshot().cssText
@@ -154,7 +195,7 @@ test('fails open when strict CSP disallows Wasm compilation', async ({ page }) =
   await page.route(consumerURL, route => route.fulfill({
     contentType: 'text/html',
     headers: {
-      'content-security-policy': `default-src 'none'; script-src ${RUNTIME_ASSET_BASE_URL}; connect-src ${RUNTIME_ASSET_BASE_URL}`
+      'content-security-policy': "default-src 'none'; script-src https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net"
     },
     body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
   }))

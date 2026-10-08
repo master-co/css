@@ -50,9 +50,10 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
 </h1>
 ```
 
-Component `<style>` blocks can use tokens, modes, shared utilities, and managed
-animations from project CSS entries without `@reference`. Import the entry where
-its global reset, native rules, or generated classes should load. A component
+Component `<style>` blocks can reference theme tokens and managed animations
+from project CSS entries without `@reference`. Use shared utility classes in
+component markup. Import the entry where its global reset, native rules, or
+generated classes should load. A component
 style receives the theme resources it uses even when that entry is not loaded
 on the same route. Use `@reference` for definitions outside the project context.
 

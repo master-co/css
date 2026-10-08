@@ -5,6 +5,7 @@ import { stylesheetExampleCSS } from '../reference/stylesheet-example'
 import { verifyDirectiveExamples } from '../tests/directive-examples'
 import { verifyToolContractExamples } from '../tests/tool-contract-examples'
 import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
+import { verifyInstallationExamples } from '../tests/installation-examples'
 import { verifyLanguageExamples } from '../tests/tooling-examples-checks'
 import { authoringSource } from '../utils/authoring-examples'
 import assert from 'node:assert/strict'
@@ -61,7 +62,7 @@ const cliCommands = new Set((apiCensusJSON as APICensusContract).records
 
 after(() => tooling.dispose())
 
-test('route-level native CSS retains referenced tokens and one shared utility', async () => {
+test('route-level native CSS retains referenced tokens and named conditions', async () => {
   const css = await routeStyles()
   assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
   assert.match(css, /--color-surface-raised:/)
@@ -948,6 +949,7 @@ test('language service guide examples match actual completion, hover and formatt
 
 test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
 test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
+test('installation guides match the setup output and package asset paths', verifyInstallationExamples)
 
 test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
 

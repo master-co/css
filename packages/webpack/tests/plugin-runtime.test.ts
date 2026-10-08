@@ -371,7 +371,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       const css = [result.css, ...result.stylesheets.map((sheet: { css: string }) => sheet.css)].join('\n')
 
       expect(css).toContain('@layer base')
-      expect(css).toContain('text-rendering: geometricprecision')
+      expect(css).toMatch(/-webkit-font-smoothing:\s*antialiased/)
       expect(css).not.toContain('@master/css')
     } finally {
       rmSync(root, { recursive: true, force: true })

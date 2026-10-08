@@ -25,7 +25,9 @@ for (const managed of [false, true]) {
       }
       server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: managed ? masterCSS({ mode: 'static', runtime: false }) : [],
         environments: { edge: { consumer: 'server', dev: { createEnvironment: (name, config) => createRunnableDevEnvironment(name, config) } } },
-        server: { host: '127.0.0.1', port: 0 } })
+        // Vite probes port 0 only three times; a nonzero starting port lets it
+        // scan for the next free one when parallel test servers race.
+        server: { host: '127.0.0.1', port: 20_000 + (process.pid % 20_000) } })
       await server.listen()
       const edge = server.environments.edge
       if (!isRunnableDevEnvironment(edge)) throw new Error('Expected runnable custom environment')

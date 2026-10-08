@@ -27,6 +27,19 @@ test.each(['child', 'resource'])('watch reports a missing %s as compilation erro
     plugins: [new Plugin({ mode: 'static', runtime: false }, root)] })
   let phase = 'initial'
   const watchRegistrations: unknown[] = []
+  const originalWatch = compiler.watchFileSystem!.watch.bind(compiler.watchFileSystem)
+  let activeWatcher: ReturnType<typeof originalWatch> | undefined
+  const waitForRegistration = (after: number) => new Promise<void>((resolve, reject) => {
+    const inspect = () => {
+      if (watchRegistrations.length <= after) return
+      const entryInfo = activeWatcher?.getInfo?.().fileTimeInfoEntries.get(join(root, 'entry.css'))
+      if (!entryInfo || typeof entryInfo !== 'object' || !('timestamp' in entryInfo) || typeof entryInfo.timestamp !== 'number') return
+      clearInterval(interval);clearTimeout(timer);resolve()
+    }
+    const interval = setInterval(inspect, 20)
+    const timer = setTimeout(() => { clearInterval(interval);reject(new Error(`Watch did not initialize in ${phase}`)) }, 10000)
+    inspect()
+  })
   const events: unknown[] = []
   const trace = (event: string, detail: unknown = undefined) => {
     if (process.env.BH_TRACE_WATCH) events.push({ event, phase, detail })
@@ -39,27 +52,34 @@ test.each(['child', 'resource'])('watch reports a missing %s as compilation erro
     compilation.hooks.finishModules.tap({ name: 'AuditTraceBefore', stage: -100000 }, () => trace('finishModules:before'))
     compilation.hooks.finishModules.tap({ name: 'AuditTraceAfter', stage: 100000 }, () => trace('finishModules:after'))
   })
-  const originalWatch = compiler.watchFileSystem!.watch.bind(compiler.watchFileSystem)
   compiler.watchFileSystem!.watch = (...args) => {
-    watchRegistrations.push({ phase, childExists: existsSync(child), files: [...args[0]] })
     const callback = args[5]
     args[5] = (...values) => { trace('filesystem:aggregated', { changed: [...(values[3] ?? [])], removed: [...(values[4] ?? [])] });callback(...values) }
     const undelayed = args[6]
     args[6] = (...values) => { trace('filesystem:undelayed', values);undelayed?.(...values) }
-    return originalWatch(...args)
+    const watcher = originalWatch(...args)
+    activeWatcher = watcher
+    watchRegistrations.push({ phase, childExists: existsSync(child), files: [...args[0]] })
+    return watcher
   }
-  type Result = { fatal?: Error | null, stats?: webpack.Stats }
+  type Result = { fatal?: Error | null, stats?: webpack.Stats, registrationAtCallback: number }
   const results: Result[] = [], listeners = new Set<(result: Result) => void>()
-  const next = (after: number, predicate: (result: Result) => boolean) => new Promise<Result>((resolve, reject) => {
-    const existing = results.slice(after).find(predicate)
-    if (existing) { resolve(existing); return }
-    const callback = (result: Result) => { if (!predicate(result)) return; clearTimeout(timer); listeners.delete(callback); resolve(result) }
-    const timer = setTimeout(() => { listeners.delete(callback); reject(new Error(`No automatic watch result in ${phase}; events=${JSON.stringify(events)}; registrations=${JSON.stringify(watchRegistrations)}; after=${after}, results=${JSON.stringify(results.map(result => ({ fatal: result.fatal?.message, errors: result.stats?.compilation.errors.map(error => error.message), dependencies: [...(result.stats?.compilation.fileDependencies ?? [])], missing: [...(result.stats?.compilation.missingDependencies ?? [])] })))}`)) }, 10000)
-    listeners.add(callback)
-  })
-  const watch = compiler.watch({ aggregateTimeout: 20 }, (fatal, stats) => {
+  const next = async (after: number, predicate: (result: Result) => boolean) => {
+    const result = await new Promise<Result>((resolve, reject) => {
+      const existing = results.slice(after).find(predicate)
+      if (existing) { resolve(existing); return }
+      const callback = (result: Result) => { if (!predicate(result)) return; clearTimeout(timer); listeners.delete(callback); resolve(result) }
+      const timer = setTimeout(() => { listeners.delete(callback); reject(new Error(`No automatic watch result in ${phase}; events=${JSON.stringify(events)}; registrations=${JSON.stringify(watchRegistrations)}; after=${after}, results=${JSON.stringify(results.map(result => ({ fatal: result.fatal?.message, errors: result.stats?.compilation.errors.map(error => error.message), dependencies: [...(result.stats?.compilation.fileDependencies ?? [])], missing: [...(result.stats?.compilation.missingDependencies ?? [])] })))}`)) }, 10000)
+      listeners.add(callback)
+    })
+    // Webpack invokes the result callback before it installs and scans the next watch.
+    if (!result.fatal) await waitForRegistration(result.registrationAtCallback)
+    return result
+  }
+  // Polling isolates recovery behavior from platform file-event coalescing.
+  const watch = compiler.watch({ aggregateTimeout: 20, poll: 100 }, (fatal, stats) => {
     trace('callback', { fatal: fatal?.message, errors: stats?.compilation.errors.map(e => e.message) })
-    const result = { fatal, stats };results.push(result);for (const listener of listeners) listener(result)
+    const result = { fatal, stats, registrationAtCallback: watchRegistrations.length };results.push(result);for (const listener of listeners) listener(result)
   })
   try {
     await next(0, result => Boolean(result.stats && !result.stats.hasErrors() && result.stats.compilation.getAssets().some(asset => asset.name.endsWith('.css') && readFileSync(join(root, 'out', asset.name), 'utf8').includes('color:red'))))

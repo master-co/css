@@ -11,6 +11,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createMasterCSSHandle } from '../src/lib/server.js'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const fadeKeyframe = defaultManifest.keyframes?.find(keyframe => keyframe.name === 'fade')
+if (!fadeKeyframe) throw new Error('Expected the preset fade keyframe')
 
 function countManifestScripts(html: string) {
   return html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0
@@ -103,7 +105,7 @@ describe('rc.87 Svelte server hook renderer', () => {
     const html = await renderWithHandle(createMasterCSSHandle({
       manifest: defaultManifest,
       emittedGlobals: {
-        keyframes: { fade: 1 },
+        keyframes: { [fadeKeyframe.id]: 1 },
         variables: {
           'animate-fade': 1,
           'color-red-60': 1

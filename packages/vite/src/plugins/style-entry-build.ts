@@ -112,7 +112,8 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
       // The placeholder was emitted by a managed CSS import but no CSS
       // chunk in the final bundle still contained it. A downstream CSS
       // plugin or minifier likely rewrote or dropped the internal slot.
-      if (context.virtualCSSPlaceholderEmitted && !replacedAny && realCSS.length > 0) {
+      if (context.virtualCSSPlaceholderEmitted && !replacedAny && realCSS.length > 0
+        && !(context.config?.build.ssr && cssFileNames.length === 0)) {
         this.warn(
           `[master-css.vite] Could not splice managed style CSS into any bundle asset. ` +
           `The placeholder "${slotCSSRule}" was emitted but no CSS chunk in the final ` +

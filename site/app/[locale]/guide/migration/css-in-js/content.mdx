@@ -58,7 +58,7 @@ Move the reusable value into `@theme`, then use a class string where the button 
 
 @theme {
   --color-primary: #2563eb;
- }
+}
 
 ```
 
@@ -110,15 +110,15 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 
 ```tsx
 const toneClasses = {
-  neutral: 'bg:surface fg-body b:1px|solid|var(--color-line-divider)',
+  neutral: 'bg-surface-base fg-text-body b-line-divider border-style:solid border-width:1px',
   primary: 'bg-blue-60 fg-white bg-blue-70:hover',
   danger: 'bg-red-60 fg-white bg-red-70:hover'
 }
 
 const sizeClasses = {
-  sm: 'h:2rem px-sm font-sm',
-  md: 'h:2.5rem px-md font-sm',
-  lg: 'h:3rem px-lg font-md'
+  sm: 'height:2rem px-sm font-sm',
+  md: 'height:2.5rem px-md font-sm',
+  lg: 'height:3rem px-lg font-md'
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {

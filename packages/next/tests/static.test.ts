@@ -108,7 +108,7 @@ describe('Next static mode', () => {
 
     const css = readStaticCSS(outputPath)
     expect(css).toContain('@layer base')
-    expect(css).toContain('text-rendering: geometricprecision')
+    expect(css).toMatch(/-webkit-font-smoothing:\s*antialiased/)
     expect(css).toContain('display:block')
     expect(css).toContain('margin:0')
   })

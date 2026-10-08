@@ -323,15 +323,8 @@ pub(crate) fn collect_script_string_contexts(
             let Some(start) = compact_prefix.rfind(&format!("{call}(")) else {
                 return false;
             };
-            let suffix = &compact_prefix[start + call.len()..];
-            suffix
-                .chars()
-                .fold(0_i32, |depth, character| match character {
-                    '(' => depth + 1,
-                    ')' => depth - 1,
-                    _ => depth,
-                })
-                > 0
+            compact_source_offset(&prefix, start + call.len())
+                .is_some_and(|open| has_open_call(&prefix[open..]))
         });
         let styled_template = quote == b'`'
             && compact_prefix.rfind("styled").is_some_and(|start| {
@@ -348,14 +341,8 @@ pub(crate) fn collect_script_string_contexts(
             };
             suffix[..open].chars().all(|character| {
                 character.is_ascii_alphanumeric() || matches!(character, '_' | '$' | '.')
-            }) && suffix[open..]
-                .chars()
-                .fold(0_i32, |depth, character| match character {
-                    '(' => depth + 1,
-                    ')' => depth - 1,
-                    _ => depth,
-                })
-                > 0
+            }) && compact_source_offset(&prefix, start + "styled".len() + open)
+                .is_some_and(|source_open| has_open_call(&prefix[source_open..]))
         });
         let likely_class = direct_class || in_class_call || styled_call || styled_template;
         let mut end = index + 1;
@@ -385,6 +372,74 @@ pub(crate) fn collect_script_string_contexts(
         }
         index = end.saturating_add(1);
     }
+}
+
+fn compact_source_offset(source: &str, compact_offset: usize) -> Option<usize> {
+    let mut compact_index = 0;
+    for (source_index, character) in source.char_indices() {
+        if character.is_ascii_whitespace() {
+            continue;
+        }
+        if compact_index == compact_offset {
+            return Some(source_index);
+        }
+        compact_index += character.len_utf8();
+    }
+    None
+}
+
+fn has_open_call(source: &str) -> bool {
+    let mut characters = source.chars().peekable();
+    let mut depth = 0;
+    let mut quote = None;
+    let mut escaped = false;
+    let mut line_comment = false;
+    let mut block_comment = false;
+    while let Some(character) = characters.next() {
+        if line_comment {
+            if matches!(character, '\n' | '\r' | '\u{2028}' | '\u{2029}') {
+                line_comment = false;
+            }
+            continue;
+        }
+        if block_comment {
+            if character == '*' && characters.peek() == Some(&'/') {
+                block_comment = false;
+                characters.next();
+            }
+            continue;
+        }
+        if let Some(current) = quote {
+            if escaped {
+                escaped = false;
+            } else if character == '\\' {
+                escaped = true;
+            } else if character == current {
+                quote = None;
+            }
+            continue;
+        }
+        match character {
+            '/' if characters.peek() == Some(&'/') => {
+                line_comment = true;
+                characters.next();
+            }
+            '/' if characters.peek() == Some(&'*') => {
+                block_comment = true;
+                characters.next();
+            }
+            '\'' | '"' | '`' => quote = Some(character),
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return false;
+                }
+            }
+            _ => {}
+        }
+    }
+    depth > 0 && !line_comment && !block_comment
 }
 
 pub(crate) fn collect_nested_string_contexts(

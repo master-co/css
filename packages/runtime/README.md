@@ -81,13 +81,13 @@ cssRuntime.observe()
 Use the CDN runtime when a page only needs the default preset and zero configuration:
 
 ```html
-<link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
-<link rel="modulepreload" as="json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
-<link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-<script src="https://cdn.master.co/css-runtime@rc"></script>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+<link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+<script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 ```
 
-The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json`, and the browser must support JSON modules and import attributes. It does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
+The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json` and CORS headers, and the browser must support JSON modules and import attributes. The current runtime bundle also loads the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime, manifest, and preset on compatible versions. The IIFE does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
 
 ## API
 

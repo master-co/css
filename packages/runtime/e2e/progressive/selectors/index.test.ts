@@ -23,10 +23,10 @@ test('selectors', async ({ page }) => {
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:block::before,::after")?.native?.cssText))
     .toBe(".display\\:block\\:\\:before\\,\\:\\:after::before, .display\\:block\\:\\:before\\,\\:\\:after::after { display: block; }")
 
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::slider-thumb")?.text))
-    .toBe(".display\\:none\\:\\:slider-thumb::-webkit-slider-thumb{display:none}")
-  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::slider-thumb")?.native?.cssText))
-    .toBe(".display\\:none\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }")
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::-webkit-slider-thumb")?.text))
+    .toBe(".display\\:none\\:\\:-webkit-slider-thumb::-webkit-slider-thumb{display:none}")
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === "display:none::-webkit-slider-thumb")?.native?.cssText))
+    .toBe(".display\\:none\\:\\:-webkit-slider-thumb::-webkit-slider-thumb { display: none; }")
 
   await page.evaluate(() => {
     const baseHost = document.createElement('div')

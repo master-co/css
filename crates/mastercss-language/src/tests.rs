@@ -698,3 +698,89 @@ fn comparisons_inside_class_expressions_are_not_class_positions() {
         "{values:?}"
     );
 }
+
+#[test]
+fn closed_class_calls_do_not_claim_later_function_strings() {
+    let source = "document.documentElement.classList.toggle('dark(', active); const query = window.matchMedia('(prefers-color-scheme: dark)'); const classes = clsx('display:block', nested('ignored'));";
+    let contexts =
+        crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert_eq!(values, ["dark(", "display:block", "ignored"]);
+}
+
+#[test]
+fn comments_inside_class_calls_do_not_change_call_depth_or_add_strings() {
+    for (source, expected) in [
+        (
+            "const classes = clsx('display:block' /* ) 'not-a-class' */, 'grid');",
+            vec!["display:block", "grid"],
+        ),
+        (
+            "const classes = clsx('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+        (
+            "const classes = clsx('display:block' // ( 'not-a-class'\n); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+        (
+            "const component = styled.button('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+    ] {
+        let contexts = crate::document::collect_document_contexts(
+            source,
+            "typescriptreact",
+            &Default::default(),
+        );
+        let values = contexts
+            .iter()
+            .map(|context| &source[context.start as usize..context.end as usize])
+            .collect::<Vec<_>>();
+        assert_eq!(values, expected, "{source}");
+    }
+}
+
+#[test]
+fn javascript_line_comments_end_at_unicode_line_separators() {
+    for separator in ['\u{2028}', '\u{2029}'] {
+        let source = format!("const classes=clsx('display:block' // ({separator}, 'grid');");
+        let contexts =
+            crate::document::collect_document_contexts(&source, "typescript", &Default::default());
+        assert_eq!(contexts.len(), 2, "{source}");
+    }
+}
+
+#[test]
+fn unquoted_html_urls_do_not_hide_later_class_calls() {
+    let source =
+        "<a href=https://example.com/a//b></a><script>const classes=clsx('display:block')</script>";
+    let contexts = crate::document::collect_document_contexts(source, "html", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert_eq!(values, ["display:block"]);
+}
+
+#[test]
+fn jsx_text_slashes_do_not_hide_later_class_calls() {
+    for source in [
+        "const view=<p>https://example.com</p>; const classes=clsx('display:block');",
+        "const view=<p>//</p>; const classes=clsx('display:block');",
+    ] {
+        let contexts = crate::document::collect_document_contexts(
+            source,
+            "typescriptreact",
+            &Default::default(),
+        );
+        let values = contexts
+            .iter()
+            .map(|context| &source[context.start as usize..context.end as usize])
+            .collect::<Vec<_>>();
+        assert_eq!(values, ["display:block"], "{source}");
+    }
+}

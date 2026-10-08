@@ -45,15 +45,15 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 
 ## Features
 
-- **Syntax suggestions**: Completes Master CSS utilities, values, selectors, queries, groups, and directive syntax in configured languages.
+- **Syntax suggestions**: Completes Master CSS utilities, values, selectors, queries, and directive syntax in configured languages.
 - **Hover inspection**: Shows generated CSS previews for Master CSS syntax at the cursor.
-- **Syntax highlighting**: Highlights CSS directive syntax with the bundled TextMate grammar, then uses semantic tokens for embedded class lists, manifest-aware variables, components, selectors, pseudo states, queries, units, important markers, and quoted strings.
+- **Syntax highlighting**: Highlights CSS directive syntax with the bundled TextMate grammar, then uses semantic tokens for embedded class lists, token-backed values, selectors, pseudo states, queries, units, important markers, and quoted strings.
 - **Embedded highlighting modes**: Highlights the active class context by default, can highlight every discovered embedded utility, or can disable embedded utility highlighting.
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
 - **Manifest diagnostics**: Reports project manifest loading errors without taking over ESLint class policy warnings.
 - **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `background-color:transparent !` to `background-color:transparent!`.
-- **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
+- **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect project tokens, utility recipes, mixins, and named conditions.
 - **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
 
 The default language list covers HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown, and MDX.
@@ -226,7 +226,7 @@ Use this after changing dependencies, workspace layout, or project manifest file
 ## Troubleshooting
 
 - **Completions do not show inside strings**: Enable `editor.quickSuggestions.strings` as shown in [Quick Start](#quick-start).
-- **Manifest-specific variables or components are missing**: Ensure the project has a detected CSS entry or Master CSS package dependency, then run `Master CSS: Restart Language Server`.
+- **Project tokens or utility completions are missing**: Ensure the project has a detected CSS entry or Master CSS package dependency, then run `Master CSS: Restart Language Server`.
 - **The wrong monorepo package is used**: Set `masterCSS.workspaces` to explicit workspace directories.
 - **Embedded markup highlighting is too noisy or too quiet**: Change `masterCSS.embeddedSyntaxHighlighting` to `active`, `always`, or `off`.
 - **Semantic colors do not appear**: Confirm VS Code semantic highlighting is enabled for the active theme.

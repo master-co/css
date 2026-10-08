@@ -99,8 +99,4 @@
     height: 100%;
   }
 
-  .hidden {
-    top: -100%;
-    user-select: none;
-  }
 </style>

@@ -104,14 +104,14 @@ Review the migration as code and as UI.
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
-- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
+- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between utilities, theme tokens, and component classes.
 - [Code linting](/guide/code-linting) for validating Master CSS classes in source code.
 - [Language Service](/guide/language-service) for editor highlighting and completion.
 
 ## Custom engine and binding migration
 
-The current binding ABI is **24**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v6 / languageVersion 16 and hydration v4 data with the upgraded packages. Engine snapshots and transitions are v4; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+The current binding ABI is **26**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v6 / languageVersion 16 and hydration v4 data with the upgraded packages. Engine snapshots and transitions are v4; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
 
 Only `@theme` registers utility tokens. Its direct custom-property declarations use `:root,:host`, with optional `static` retention and `inline` value substitution. Native CSS supplies scoped overrides and must be delivered separately from the manifest; `@reference` supplies resolution context only. See the [theme contract](/reference/directives/theme).
 

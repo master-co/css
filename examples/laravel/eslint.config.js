@@ -1,3 +1,4 @@
+import '../../scripts/typescript-tooling-compat.mjs'
 import js from '@eslint/js'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { defineConfig, globalIgnores } from 'eslint/config'
@@ -6,7 +7,8 @@ import prettier from 'eslint-config-prettier'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
-import typescript from 'typescript-eslint'
+
+const { default: typescript } = await import('typescript-eslint')
 
 export default defineConfig([
   globalIgnores([

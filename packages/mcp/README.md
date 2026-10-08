@@ -43,7 +43,7 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_inspect_directives` | Inspect CSS-first directives and report manifest, dependency, warning, and CSS effects. |
 | `mastercss_render_css` | Generate CSS from HTML or a class list. |
 | `mastercss_scan_project` | Scan sources, check optional classes, and report scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics. |
-| `mastercss_manifest_query` | Query active manifest tokens, utilities, variants, modes, conditions, and aliases. |
+| `mastercss_manifest_query` | Query active manifest tokens, utilities, mixins, custom media, and token families. |
 | `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
 | `mastercss_lint_project` | Run class-list diagnostics for workspace files without writing files. |
 | `mastercss_lint_content` | Run class-list diagnostics on an in-memory source buffer without writing files. |

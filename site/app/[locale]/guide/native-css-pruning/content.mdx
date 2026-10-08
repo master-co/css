@@ -331,7 +331,7 @@ body {
 }
 ```
 
-Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, are not class-usage rules and are preserved. Empty at-rule blocks are removed after their unused class rules are pruned.
+Rules without class selectors, such as `body`, `html`, and `:root`, are not class-usage rules and are preserved. Keyframes follow their declaring file's preserve/prune policy; under pruning, animation usage determines which remain. Empty at-rule blocks are removed after their unused class rules are pruned.
 
 ---
 

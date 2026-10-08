@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { build } from 'vite'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import masterCSS from '../src'
 
@@ -27,6 +27,10 @@ test.each([
       root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }),
       build: { assetsDir, rollupOptions: { input: names.map(name => join(root, name)) } }
     })
+    if (!assetsDir) {
+      const nativeAssets = readdirSync(join(root, 'dist/_master-css/native'))
+      expect(nativeAssets).toEqual(expect.arrayContaining([expect.stringMatching(/^[a-f0-9]{16}\.css$/)]))
+    }
     const assets = new Set<string>()
     for (const name of names) {
       const html = readFileSync(join(root, 'dist', name), 'utf8')

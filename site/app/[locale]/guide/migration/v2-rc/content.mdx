@@ -116,7 +116,7 @@ Validate project definitions against the active manifest and rebuild generated C
 
 Class groups (`{...}`) and the `:of()` selector are removed. They produce no CSS and use the ordinary invalid-class diagnostic. Replace groups manually with independent classes, repeating every selector, condition and important marker; use a named mixin or native CSS when declaration order or a shared `@apply` wrapper matters. Use [native context selectors](/reference/rules/selectors#external-context) for relationships to other elements.
 
-Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 14 and ABI 24. Manifest v6, hydration v4 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
+Language 9 introduced these removals with binding ABI 19. When upgrading now, recompile saved manifests and hydration data for language 16 and ABI 26. Manifest v6, hydration v4 and lint batches v4 remain. Editor integrations must also stop importing `GROUP_TRIGGER_CHARACTER` and `DECLARATION_SEPARATOR_TRIGGER_CHARACTER`; both public constants were removed.
 
 The migration command leaves these removed class forms for manual review. It does not split or rebuild them automatically.
 
@@ -138,7 +138,7 @@ Use `bg-surface-base`, `fg-text-muted`, `b-line-divider`, `outline-line-divider`
 
 Move keyframes out of `@theme` into native CSS. Add `@prune native;` in their owning file for usage-based output, or retain the default preservation policy. Unresolved dynamic animation names retain all candidate definitions. See the [managed keyframe contract](/reference/directives/theme#native-keyframes) for references, JavaScript, source ownership and HMR.
 
-This guide upgrades saved RC contracts to language **v12** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
+This guide upgrades saved RC contracts to language **v16** (an internal contract number). Existing profiles cover earlier named-token, query, native-component and sizing changes. Use **`rc-mixins`** for the final `@utility` contract: it migrates fixed aliases, full native property names, static parameter calls and safe definitions. Custom wildcard families and browser-dependent arguments require review. Save the exact resolved manifest before upgrading; RC releases did not all share the same semantics.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -664,7 +664,7 @@ Rebuild native/Wasm bindings (ABI 26), preset manifests and hydration alongside 
 
 ## Native adaptive colors
 
-The preset now uses `light-dark()` for 45 semantic color tokens and the colors inside six shadows. General hue aliases retain their previous light values in both schemes; all 390 numbered palette colors are unchanged. Use `text-*` hue aliases for readable adaptive foregrounds. `data-theme="light"` / `data-theme="dark"` selects native `color-scheme` on roots, nested regions, and shadow hosts. Preset `@light` / `@dark` suffixes continue to mean system preference.
+The preset now uses `light-dark()` for 45 semantic color tokens and the colors inside six shadows. General hue aliases retain their previous light values in both schemes; all 390 numbered palette colors are unchanged. Use `--color-text-*` hue tokens through `fg-text-*` classes for readable adaptive foregrounds; `text-*` classes remain typography recipes. `data-theme="light"` / `data-theme="dark"` selects native `color-scheme` on roots, nested regions, and shadow hosts. Preset `@light` / `@dark` suffixes continue to mean system preference.
 
 Update the surface, line and text role names and their underlying custom properties. The old names have no compatibility aliases:
 

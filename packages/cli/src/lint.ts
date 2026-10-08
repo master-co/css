@@ -10,6 +10,7 @@ import {
 } from '@master/css-tooling/lint'
 import type { MasterCSSToolingSession } from '@master/css-tooling'
 import { createToolingSessionSync } from '@master/css-tooling/node'
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { loadProjectManifest } from '@master/css-compiler/project'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -19,7 +20,7 @@ import path from 'node:path'
 
 const REPORT_VERSION = 4
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
 export interface LintOptions {
@@ -144,7 +145,9 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
     }]
   }
   const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
-  return resolveSourcePaths(cwd, sourcePatterns, specifiedSourcePaths.length ? [] : DEFAULT_IGNORE_PATTERNS).map((source) => {
+  const explicit = specifiedSourcePaths.length > 0
+  const policy = new SourcePolicy(cwd)
+  return resolveSourcePaths(cwd, sourcePatterns, explicit ? [] : DEFAULT_IGNORE_PATTERNS).filter(source => policy.accepts(source, explicit)).map((source) => {
     const filePath = path.resolve(cwd, source)
     return {
       filePath,

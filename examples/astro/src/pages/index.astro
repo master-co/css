@@ -9,7 +9,7 @@ import Card from '../components/Card.astro';
       <p class="display:inline-flex align-items:center height:32px padding-inline:0.75rem border-radius:999px background-color:#eff6ff color:royalblue font-size:14px font-weight:600">
         Astro integration
       </p>
-      <h1 class="margin:0 margin-top:1rem font-size:48px font-weight:800 letter-spacing:-.015em">
+      <h1 class="margin:1rem|0|0 font-size:48px font-weight:800 letter-spacing:-.015em">
         Explicit progressive rendering
       </h1>
       <p class="max-width:640px color:#475569 font-size:18px line-height:1.7">
@@ -25,28 +25,28 @@ import Card from '../components/Card.astro';
         >
           Hydrate runtime class
         </button>
-      <p data-runtime-status class="margin:0 margin-top:0.75rem color:#475569 font-size:14px">
+        <p data-runtime-status class="margin:0.75rem|0|0 color:#475569 font-size:14px">
           Waiting for interaction
         </p>
       </div>
     </section>
     <section class="max-width:960px margin-inline:auto padding-bottom:3rem">
       <ul role="list" class="display:grid grid-cols(3) gap:1rem padding:0 margin:0">
-      <Card
-        href="https://css.master.co/guide/rendering-modes#progressive-rendering"
-        title="pre-rendered CSS"
-        body="Astro middleware injects style#master-css into HTML during static generation or server rendering."
-      />
-      <Card
-        href="https://css.master.co/reference/runtime"
-        title="Runtime hydration"
-        body="The browser runtime reuses the pre-rendered stylesheet and observes class changes after load."
-      />
-      <Card
-        href="https://css.master.co/guide/installation/astro"
-        title="Choose progressive mode"
-        body="Use masterCSS({ mode: 'progressive' }) in astro.config.js. The default mode is static."
-      />
+        <Card
+          href="https://css.master.co/guide/rendering-modes#progressive-rendering"
+          title="pre-rendered CSS"
+          body="Astro middleware injects style#master-css into HTML during static generation or server rendering."
+        />
+        <Card
+          href="https://css.master.co/reference/runtime"
+          title="Runtime hydration"
+          body="The browser runtime reuses the pre-rendered stylesheet and observes class changes after load."
+        />
+        <Card
+          href="https://css.master.co/guide/installation/astro"
+          title="Choose progressive mode"
+          body="Use masterCSS({ mode: 'progressive' }) in astro.config.js. The default mode is static."
+        />
       </ul>
     </section>
   </main>
@@ -73,7 +73,7 @@ import Card from '../components/Card.astro';
 
 <style>
   @media (max-width: 760px) {
-    .grid-cols\:3 {
+    ul[role="list"] {
       grid-template-columns: 1fr;
     }
   }

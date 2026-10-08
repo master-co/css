@@ -30,7 +30,7 @@ Load the global stylesheet for its reset, layer order, native rules, and generat
 ---
 
 ## Use project definitions
-A route stylesheet can use project tokens, variants, and shared utilities directly. It remains a separate CSS output owned by its route.
+A route stylesheet can use project tokens, mixins, and custom media directly. It remains a separate CSS output owned by its route.
 
 ```css name=app/home/home.css
 .pricing-hero {
@@ -43,11 +43,11 @@ A route stylesheet can use project tokens, variants, and shared utilities direct
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   border: 1px solid var(--color-line-divider);
-  background-color:var(--color-surface-raised);
+  background-color: var(--color-surface-raised);
 }
 ```
 
-Here `bg-surface-raised` is a shared utility; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
+Here `--color-surface-raised` is a shared token; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
 
 This keeps route CSS chunks self-contained without copying global native rules or generated utility classes. Unrelated CSS passes through unchanged.
 
@@ -56,7 +56,7 @@ Use `@reference` for definitions outside the project context, such as a package 
 ```css
 @reference "@acme/theme/tokens.css";
 
-.route-card { background-color:var(--color-surface-raised); }
+.route-card { background-color: var(--color-surface-raised); }
 ```
 
 An independent compiler call has no automatic project context. Supply `referenceFiles` with absolute definition filenames and enable `transformNativeStylesheets`, or write an explicit `@reference`.

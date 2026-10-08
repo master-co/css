@@ -40,7 +40,7 @@ function createGlobalsCSS(display: string) {
     '',
     '@layer components {',
     '    .probe {',
-    `        display: ${display === "display:none" ? 'none' : display};`,
+    `        display: ${display};`,
     '        width: 40px;',
     '        height: 40px;',
     '    }',
@@ -52,7 +52,7 @@ function createGlobalsCSS(display: string) {
   ].join('\n')
 }
 
-function writeFixture(fixtureDir: string, compose = "display:inline-flex") {
+function writeFixture(fixtureDir: string, display = 'inline-flex') {
   mkdirSync(join(fixtureDir, 'app'), { recursive: true })
   writeFileSync(join(fixtureDir, 'package.json'), JSON.stringify({
     private: true,
@@ -95,7 +95,7 @@ function writeFixture(fixtureDir: string, compose = "display:inline-flex") {
   ].join('\n'))
   writePage(fixtureDir, 11)
   writeModules(fixtureDir, 20)
-  writeFileSync(join(fixtureDir, 'app/globals.css'), createGlobalsCSS(compose))
+  writeFileSync(join(fixtureDir, 'app/globals.css'), createGlobalsCSS(display))
 }
 
 function writePage(fixtureDir: string, padding: number) {
@@ -311,20 +311,20 @@ describe('Next dev HMR', () => {
     try {
       await waitForServer(url, child, output)
       browser = await chromium.launch()
-      const page = await expectDisplay(browser, url, "display:inline-flex")
+      const page = await expectDisplay(browser, url, 'inline-flex')
       await page.waitForFunction(() => {
         const cascade = document.getElementById('cascade')
-        return cascade && getComputedStyle(cascade).display === "display:block"
+        return cascade && getComputedStyle(cascade).display === 'block'
       })
       await page.evaluate(() => {
         const markerWindow = window as unknown as { __MASTER_CSS_HMR_MARKER?: string }
         markerWindow.__MASTER_CSS_HMR_MARKER = 'preserve'
       })
 
-      writeFileSync(globalsPath, createGlobalsCSS("display:flex"))
+      writeFileSync(globalsPath, createGlobalsCSS('flex'))
       await page.waitForFunction(() => {
         const probe = document.getElementById('probe')
-        return probe && getComputedStyle(probe).display === "display:flex"
+        return probe && getComputedStyle(probe).display === 'flex'
       })
       const samples: { singleMs: number, burstMs: number, singleStarted: number, burstStarted: number, finished: number }[] = []
       for (let round = 0; round < 4; round++) {

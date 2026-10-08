@@ -6,10 +6,11 @@ import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
 import { deliveryFences } from './delivery-examples'
+import { installationGuideSlugs } from '../utils/installation-content'
 
 const rootURL = new URL('../../', import.meta.url)
 const installation = new URL('../app/[locale]/guide/installation/', import.meta.url)
-export const installationRoutes = ['', '/integrations', '/cli', '/cdn', '/vite', '/vite/static-rendering', '/vscode', '/react', '/react/static-rendering', '/vuejs', '/vuejs/static-rendering', '/lit', '/webpack', '/webpack/static-rendering', '/rspack', '/rspack/static-rendering', '/rsbuild', '/rsbuild/static-rendering', '/astro', '/astro/runtime-rendering', '/astro/static-rendering', '/svelte', '/express', '/express/static-rendering', '/php', '/php/static-rendering', '/rails', '/rails/static-rendering', '/laravel', '/wordpress', '/wordpress/static-rendering', '/shopify', '/aspnet-core', '/aspnet-core/static-rendering', '/blazor', '/blazor/runtime-rendering', '/blazor/static-rendering', '/storybook', '/angular', '/angular/runtime-rendering', '/angular/static-rendering', '/nextjs', '/nextjs/runtime-rendering', '/nextjs/static-rendering', '/nuxtjs', '/nuxtjs/runtime-rendering', '/nuxtjs/static-rendering', '/react-router', '/react-router/static-rendering', '/tanstack-start', '/tanstack-start/static-rendering']
+export const installationRoutes = installationGuideSlugs.map(slug => slug ? `/${slug}` : '')
 export function installationSource(route: string) {
   const path = ['', '/integrations', '/cli', '/cdn'].includes(route) ? `(main)${route}/content.mdx` : `${route.slice(1)}/content.mdx`
   return readFileSync(new URL(path, installation), 'utf8')
@@ -17,14 +18,14 @@ export function installationSource(route: string) {
 
 export function verifyInstallationExamples() {
   const ledger = JSON.parse(readFileSync(new URL('./docs-refinement.json', import.meta.url), 'utf8')) as { pages: { url: string }[] }
-  const routes = new Set([...ledger.pages.map(page => page.url), '/play'])
+  const routes = new Set([...ledger.pages.map(page => page.url), ...installationGuideSlugs.map(slug => `/guide/installation${slug ? `/${slug}` : ''}`), '/play'])
   for (const route of installationRoutes) {
     for (const match of installationSource(route).matchAll(/\]\((\/[^)]+)\)|href: ['"](\/[^'"]+)['"]/g)) {
       const href = (match[1] ?? match[2]).split('#')[0]
       assert.ok(routes.has(href), `${route}: missing destination ${href}`)
     }
   }
-  for (const mode of [undefined, 'static'] as const) {
+  for (const mode of [undefined, 'runtime', 'static'] as const) {
     const root = mkdtempSync(join(tmpdir(), 'master-doc-install-'))
     try {
       mkdirSync(join(root, 'src'))
@@ -38,7 +39,7 @@ export function verifyInstallationExamples() {
       applyMasterCSSSetupPlan(plan, { install: false })
       const config = readFileSync(join(root, 'vite.config.js'), 'utf8')
       assert.match(config, /import masterCSS from '@master\/css-vite'/)
-      assert.ok(config.includes(mode ? "masterCSS({ mode: 'static' })" : 'masterCSS()'))
+      assert.ok(config.includes(mode ? `masterCSS({ mode: '${mode}' })` : 'masterCSS()'))
       assert.match(readFileSync(join(root, 'src/style.css'), 'utf8'), /@import '@master\/css'/)
       assert.equal(readFileSync(join(root, 'src/main.js'), 'utf8'), "import './style.css'\n")
       assert.match(readFileSync(join(root, 'AGENTS.md'), 'utf8'), /Master CSS/)
@@ -51,7 +52,7 @@ export function verifyInstallationExamples() {
       assert.equal(built.status, 0, built.stderr)
       const assets = readdirSync(join(root, 'dist/assets'))
       const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, 'dist/assets', name), 'utf8')).join('\n')
-      if (mode === 'static') {
+      if (mode !== 'runtime') {
         assert.match(css, /font-style:italic/)
         assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
       } else {
@@ -69,9 +70,9 @@ export function verifyInstallationExamples() {
     writeFileSync(join(root, 'package.json'), JSON.stringify({ type: 'module', devDependencies: { '@master/css': 'rc', '@master/css-cli': 'rc' } }))
     const fences = deliveryFences(installationSource('/cli'))
     for (const name of ['main.css', 'index.html']) writeFileSync(join(root, name), fences.find(f => f.name === name)!.text)
-    const command = fences.find(f => f.language === 'bash' && /generate/.test(f.text) && !/--watch/.test(f.text))!.text.trim()
-    assert.equal(command, 'npx @master/css-cli generate --output master.css')
-    const result = spawnSync(process.execPath, [fileURLToPath(new URL('packages/cli/dist/bin/index.js', rootURL)), ...command.split(' ').slice(2)], { cwd: root, encoding: 'utf8', timeout: 20000 })
+    const command = fences.find(f => f.language === 'bash' && /generate/.test(f.text))!.text.trim()
+    assert.equal(command, 'npx @master/css-cli generate "index.html" --output master.css --watch')
+    const result = spawnSync(process.execPath, [fileURLToPath(new URL('packages/cli/dist/bin/index.js', rootURL)), 'generate', 'index.html', '--output', 'master.css'], { cwd: root, encoding: 'utf8', timeout: 20000 })
     assert.equal(result.status, 0, result.stderr)
     const seen = new Set<string>()
     function readGraph(file: string): string {
@@ -81,15 +82,15 @@ export function verifyInstallationExamples() {
       return css + [...css.matchAll(/@import "\.\/([^"?#]+)"/g)].map(([, path]) => readGraph(decodeURIComponent(path))).join('\n')
     }
     const css = readGraph('master.css')
-    for (const declaration of ['font-style:italic', 'font-size:var(--font-size-3xl)', 'font-weight:var(--font-weight-heavy)', 'margin:var(--spacing-md)']) assert.ok(css.includes(declaration), declaration)
+    for (const declaration of ['font-style:italic', 'font-size:var(--font-size-5xl)', 'font-weight:var(--font-weight-heavy)', 'margin:var(--spacing-2xl)']) assert.ok(css.includes(declaration), declaration)
     assert.doesNotMatch(css, /@compose|@master|@theme/)
   } finally { rmSync(root, { recursive: true, force: true }) }
 
   const settings = deliveryFences(installationSource('/vscode')).filter(f => f.name === '.vscode/settings.json').map(f => JSON.parse(f.text)).at(-1)
-  assert.equal(settings['editor.codeActionsOnSave']['source.fixAll.eslint'], 'explicit')
+  assert.equal(settings['editor.quickSuggestions'].strings, true)
   assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
   const cdn = deliveryFences(installationSource('/cdn')).find(f => f.name === 'index.html')!.text
-  assert.doesNotMatch(cdn, /<html[^>]*\bhidden\b/)
-  assert.match(cdn, /<script defer src="https:\/\/cdn.master.co\/css-runtime@rc"><\/script>/)
-  assert.match(cdn, /<link rel="stylesheet" href="https:\/\/cdn.master.co\/css@rc\/base.css">/)
+  assert.match(cdn, /<script src="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/global\.min\.js"><\/script>/)
+  assert.match(cdn, /<link rel="modulepreload" as="json" crossorigin href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/default-manifest\.json">/)
+  assert.match(cdn, /<link rel="stylesheet" href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-preset@rc\/src\/base\.css">/)
 }

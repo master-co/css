@@ -8,6 +8,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createMasterCSSHandle } from '../src/lib/server.js'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const fadeKeyframe = defaultManifest.keyframes?.find(keyframe => keyframe.name === 'fade')
+if (!fadeKeyframe) throw new Error('Expected the preset fade keyframe')
 
 async function renderWithHandle(
   handle: ReturnType<typeof createMasterCSSHandle>,
@@ -98,7 +100,7 @@ describe('Svelte server hook renderer', () => {
       manifest: defaultManifest,
       hydrationManifest: false,
       emittedGlobals: {
-        keyframes: { fade: 1 },
+        keyframes: { [fadeKeyframe.id]: 1 },
         variables: {
           'animate-fade': 1,
           'color-red-60': 1

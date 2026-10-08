@@ -40,7 +40,7 @@ describe('resolveMasterCSSBuildState', () => {
 
     expect(result.styleSources).toEqual([entry])
     expect(result.nativeCSS).toContain('@layer base')
-    expect(result.nativeCSS).toContain('text-rendering: geometricprecision')
+    expect(result.nativeCSS).toMatch(/-webkit-font-smoothing:\s*antialiased/)
     expect(result.nativeCSS).toContain('.hidden-card')
     expect(result.nativeCSS).toMatch(/display:\s*none/)
     expect(result.emittedGlobals.variables?.['color-host']).toBe(1)

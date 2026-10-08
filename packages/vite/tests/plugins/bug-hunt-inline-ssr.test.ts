@@ -22,7 +22,8 @@ for (const format of ['es', 'cjs'] as const) {
       expect(css).toContain('/deployed/styles/master-css-resource-')
       expect(css).toContain('?q=1#part')
       expect(css).not.toContain('file:')
-      expect(css).not.toContain('master-css-slot')
+      // Native keyframe media slots are intentional; the entry placeholder is not.
+      expect(css).not.toContain('#master-css-slot')
       const assets = result.output.filter(item => item.type === 'asset')
       if (emitAssets) expect(assets.some(item => item.fileName.endsWith('.svg'))).toBe(true)
       else expect(assets).toHaveLength(0)

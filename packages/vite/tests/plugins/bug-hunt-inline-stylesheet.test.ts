@@ -29,7 +29,8 @@ test('BH-0004 inline imports export completed CSS without automatic stylesheet i
     expect(html?.type === 'asset' && String(html.source)).not.toContain('rel="stylesheet"')
     expect(js).toMatch(/color:\\n?\s*#00f|color:\s*#00f/)
     expect(js).not.toMatch(/[\"']__MASTER_CSS_INLINE_[a-f0-9]+__[\"']/)
-    expect(js).not.toContain('master-css-slot')
+    // Native keyframe media slots are intentional; the entry placeholder is not.
+    expect(js).not.toContain('#master-css-slot')
   })
 })
 

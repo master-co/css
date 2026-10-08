@@ -99,7 +99,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(root, entryPath, '@import url("@master/css");')
 
     expect(result.content).toContain('@layer base')
-    expect(result.content).toContain('text-rendering: geometricprecision')
+    expect(result.content).toMatch(/-webkit-font-smoothing:\s*antialiased/)
     expect(result.content).not.toContain('@master/css/base.css')
     expect(result.content).not.toContain('@import "@master/css"')
     expect(result.content).not.toContain('virtual:master-utilities.css')

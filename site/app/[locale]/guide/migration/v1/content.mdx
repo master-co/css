@@ -11,7 +11,7 @@ Start by making the current toolchain run beside the old setup.
 2. Choose the current [rendering mode](/guide/rendering-modes): runtime, static, or progressive.
 3. Install the current integration package for the framework or build tool.
 4. Import `@master/css` from the stylesheet the app already loads.
-5. Move project settings, tokens, modes, variants, components, and utilities into CSS-first directives.
+5. Move project tokens, mode selectors, named conditions, component rules, and utilities into CSS.
 6. Review class syntax and generated CSS in small batches.
 7. Remove old package imports, config files, and initialization code only after the migrated paths validate.
 
@@ -66,8 +66,7 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
   --color-body: #172033;
   --spacing-card: 1.5rem;
   --radius-card: .75rem;
-
- }
+}
 
 @custom-media --dashboard (width >= 72rem);
 ```
@@ -123,13 +122,13 @@ If the v1 project had reusable component abstractions, migrate them to `@layer c
 </article>
 ```
 
-Use `@mixin` when the reusable name is a low-level primitive rather than a component role.
+Use `@utility` when a reusable name should generate a class; use `@mixin` for declarations reused inside CSS rules.
 
 ```css name=app.css
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
 ```
 
 ---
@@ -187,6 +186,6 @@ After replacing setup code, remove old imports, virtual module names, config loa
 - [Installation](/guide/installation) for current package and integration setup.
 - [Rendering modes](/guide/rendering-modes) for runtime, static, server, and progressive delivery.
 - [Style declarations](/reference/rules/declarations) for current class syntax.
-- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for native theme selectors and conditions, and [Conditional Queries](/reference/rules/conditions) for custom variants.
+- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for native theme selectors and conditions, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
 - [CSS directives](/reference#directives) for `@layer components`, `@mixin`, `@reference`, and source exceptions.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static-safe complete class strings.
