@@ -1,5 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "cacheMaxAge": "7d",
+  "cacheMaxSize": "5GB",
   "globalPassThroughEnv": [
     "CARGO_HOME",
     "RUSTUP_HOME"
@@ -42,6 +44,8 @@
         "dist/**",
         "out/**",
         ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**",
         ".nuxt/**",
         ".output/**",
         ".svelte-kit/**",

@@ -11,10 +11,10 @@
   },
   "scripts": {
     "postinstall": "husky install",
-    "build": "pnpm run build:rust:wasm && node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./packages/*\"",
+    "build": "node scripts/storage-retention.mjs --apply --auto && pnpm run build:rust:wasm && node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./packages/*\"",
     "build:rust:native": "cargo xtask build-native --release",
     "build:rust:wasm": "cargo xtask build-wasm all",
-    "build:site": "pnpm build && pnpm --filter site build",
+    "build:site": "node scripts/storage-retention.mjs --apply --auto && pnpm build && pnpm --filter site build",
     "build:site:cloudflare-pages": "bash scripts/build-site-hosted.sh",
     "build:examples": "node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./examples/*\"",
     "dev:site": "pnpm build && pnpm --filter site dev",
@@ -34,15 +34,18 @@
     "check:runtime-size:update": "node scripts/check-runtime-bundle-size.mjs --write",
     "check:rust": "cargo fmt --check && cargo clippy --workspace --all-targets --all-features -- -D warnings && cargo test --workspace && cargo xtask codegen --check && cargo xtask parity",
     "check:release": "node scripts/release-config-check.mjs",
-    "test": "turbo run test --filter=\"./packages/*\"",
+    "test": "node scripts/storage-retention.mjs --apply --auto && turbo run test --filter=\"./packages/*\"",
     "test:ai-context": "node --test scripts/check-ai-context.test.mjs",
-    "e2e": "turbo run e2e --filter=\"./packages/*\" --filter=\"!@master/css-runtime\" --concurrency=1 && pnpm --filter @master/css-runtime e2e",
+    "e2e": "node scripts/storage-retention.mjs --apply --auto && turbo run e2e --filter=\"./packages/*\" --filter=\"!@master/css-runtime\" --concurrency=1 && pnpm --filter @master/css-runtime e2e",
     "lint": "turbo run lint --filter=\"./packages/*\"",
     "type-check": "node scripts/with-typescript-tooling-compat.mjs turbo run type-check --filter=\"./packages/*\"",
     "type-check:refs": "tsc -b tsconfig.typecheck.json",
     "type-check:clean": "tsc -b tsconfig.typecheck.json --clean",
     "type-check:affected": "turbo run type-check --affected",
-    "commit-check": "commitlint --from=HEAD~1 --verbose"
+    "commit-check": "commitlint --from=HEAD~1 --verbose",
+    "storage:preview": "node scripts/storage-retention.mjs",
+    "storage:prune": "node scripts/storage-retention.mjs --apply",
+    "test:storage": "node --test scripts/storage-retention.spec.node.mjs"
   },
   "engines": {
     "node": "^24"
