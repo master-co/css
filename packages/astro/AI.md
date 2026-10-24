@@ -17,6 +17,12 @@
 - Astro source extraction implementation; `@master/css-tooling/source` owns it.
 - Duplicate Vite HTML pre-render behavior unless duplicate style injection is handled.
 
+## Astro Build Contracts
+
+- Server environments load inline manifests: Astro renders server asset URLs as public paths and moves server assets into the client output before prerendering (`inlineServerManifests`). Client environments keep the emitted manifest asset.
+- During a build, `astro:build:start` lends prerendering middleware the final client stylesheets (`prerender-stylesheets.ts`) so the hydration manifest accounts for linked CSS; rendered native imports publish under `_master-css/native/`. Deployed server routes render without stylesheet descriptions.
+- `astro:build:done` writes runtime stylesheet sidecars for runtime and progressive modes after prerendering.
+
 ## Public Surface
 
 - Default Astro integration export.
@@ -28,7 +34,9 @@
 - `src/options.ts`
 - `src/middleware.ts`
 - `src/server.ts`
-- `src/runtime-manifest-preload.ts`
+- `src/runtime-preload.ts`
+- `src/output-stylesheets.ts`
+- `src/prerender-stylesheets.ts`
 - `src/index.ts`
 
 ## Risk Areas

@@ -2,6 +2,7 @@ import { createServerRenderer, renderHTML } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MiddlewareHandler } from 'astro'
+import { prerenderStylesheets } from './prerender-stylesheets'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])
 
@@ -36,12 +37,18 @@ export function createMasterCSSMiddleware(
   hydrate = true
 ): MiddlewareHandler {
   const renderer = createServerRenderer({ manifest, emittedGlobals })
-  return async (_context, next) => {
+  return async (context, next) => {
     const response = await next()
     if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
       return response
     }
-    const rendered = renderer.renderHTML(await response.text(), { hydrationManifest: hydrate ? 'inject' : false })
+    // Linked final stylesheets let the hydration manifest account for their rules.
+    const prerender = context.isPrerendered ? prerenderStylesheets() : undefined
+    const rendered = renderer.renderHTML(await response.text(), {
+      hydrationManifest: hydrate ? 'inject' : false,
+      stylesheets: await prerender?.stylesheets(),
+      stylesheetImportSource: prerender?.publishImport
+    })
     return createResponse(response, rendered.html)
   }
 }

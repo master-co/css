@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@master/css-preset": "workspace:*",
-    "@master/css-internal": "workspace:*"
+    "@master/css-internal": "workspace:*",
+    "astro": "^7.4.2"
   }
 }
