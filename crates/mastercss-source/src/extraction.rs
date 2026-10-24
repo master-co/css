@@ -191,7 +191,14 @@ impl Collector<'_> {
         } else {
             SourceType::tsx()
         };
-        let parsed = Parser::new(&allocator, source, source_type).parse();
+        // Astro frontmatter may end the component early, e.g. `return Astro.redirect(url)`.
+        let options = oxc_parser::ParseOptions {
+            allow_return_outside_function: content_kind == "astro-frontmatter",
+            ..Default::default()
+        };
+        let parsed = Parser::new(&allocator, source, source_type)
+            .with_options(options)
+            .parse();
         if let Some(error) = parsed.diagnostics.first() {
             return Err((
                 format!("Invalid {content_kind}: {error}"),
@@ -531,4 +538,16 @@ fn astro_script_failures_do_not_fall_back_to_raw_source() {
         assert!(result.candidates.is_empty());
         assert_eq!(result.diagnostics[0].code, ErrorCode::SourceParseError);
     }
+}
+
+#[test]
+fn astro_frontmatter_may_return_early() {
+    let result = extract_source_result(&SourceExtractionInputIr {
+        source: "page.astro".into(),
+        content: "---\nif (Astro.props.moved) return Astro.redirect('/next')\nconst size = 'p:1px'\n---\n<div class=\"p:2px\" />".into(),
+        kind: SourceExtractorKind::Auto,
+        owner: None,
+    });
+    assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+    assert_eq!(result.candidates, ["p:1px", "p:2px"]);
 }
