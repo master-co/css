@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import usePathname from '~/site/docs-shell/uses/rewrited-pathname'
+import { usePathname } from '~/site/docs-shell/layouts/root'
 import DocSidebar from '~/site/docs-shell/components/DocSidebar'
 import { referenceSections, type ReferenceDocument } from './types'
 

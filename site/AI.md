@@ -15,11 +15,11 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 ## Owns
 
-- Public guide pages under `site/app/[locale]`.
+- Public guide pages under `site/content`.
 - Documentation copy, code examples, generated CSS examples, and interactive demos.
 - Site-local components, assets, dictionaries, category metadata, and docs verification scripts.
 - The document shell under `site/docs-shell/`, including layouts, MDX components, search, localization, and page factories.
-- Cloudflare/Next site build configuration.
+- Cloudflare/Astro site build configuration.
 
 ## Does Not Own
 
@@ -28,10 +28,22 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 - Package-local AI instructions.
 - Compiler, runtime, scanner, integration, or engine fixes unless explicitly requested as part of the same task.
 
+## Astro Architecture
+
+The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro owns routing, the document head and the build; React renders page bodies.
+
+- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.tsx`. A page module default-exports a React server component and may export `metadata`, `generateMetadata`, `generateStaticParams` or a permanent `redirect`. Nested `layout.tsx` modules wrap pages; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/`.
+- English is unprefixed and Traditional Chinese uses `/tw`. `astro/site-context.ts` derives the locale, canonical pathname and translations from the URL; `SiteRoot` provides them to every React root.
+- Mark interactive React modules `'use client'`. `islands/` gives them React Server Component semantics: server code receives client references, props must be serializable, server-component children become static slots, and the browser hydrates each island root. Do not use Astro `client:*` directives. Components that only read context or render markup need no directive; delegated document behavior lives in `docs-shell/scripts/document.ts`.
+- MDX compiles to React through `@mdx-js/rollup`, so content may pass arrays, elements and nested components as children. `docs-shell/components/mdx-provider.tsx` supplies Markdown renderers.
+- Pages, layouts and sections load through `astro/propagated-assets.ts` so each page links only its own stylesheets. Keep that private Astro contract in one module.
+- Public build values are `import.meta.env.PUBLIC_*`, resolved by `utils/public-env.js`. Server bundles keep source `import.meta.url` values (`astro/source-url.ts`).
+- SVG imports from scripts and MDX are React components; bitmap imports are Astro image metadata rendered with `docs-shell/components/Image`. Raw text imports use `?raw`; tsx scripts load these through `scripts/bundler-imports.ts`.
+
 ## Key Files And Patterns
 
-- Guide pages: `site/app/[locale]/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
-- Example iframe pages: `site/app/[locale]/examples/<slug>/`.
+- Guide pages: `site/content/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
+- Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
 - Category data is generated; run `pnpm --filter site prepare-app` when adding or renaming pages.
 
@@ -64,7 +76,7 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 Guide pages live under:
 
 ```txt
-site/app/[locale]/guide/<slug>/
+site/content/guide/<slug>/
 ```
 
 Use this shape:
@@ -77,7 +89,7 @@ components/
 ```
 
 - `metadata.ts` defines public title, description, category, reference links, and `fileURL`.
-- `page.tsx` uses `createPage`, `site/docs-shell/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
+- `page.tsx` exports the page created by `createPage` with `site/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
 - `content.mdx` contains guide copy, code examples, generated CSS examples, and imported local demos.
 - `components/` contains interactive demos and guide-local presentational components.
 
@@ -87,7 +99,7 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 ### Current documentation and migration ownership
 
-Public Guide, Reference, Blog, examples and package READMEs describe current behavior. Version differences, retired syntax/API names, replacement tables and upgrade steps belong only in `app/[locale]/guide/migration/`. Describe supported syntax directly rather than teaching its history. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
+Public Guide, Reference, Blog, examples and package READMEs describe current behavior. Version differences, retired syntax/API names, replacement tables and upgrade steps belong only in `content/guide/migration/`. Describe supported syntax directly rather than teaching its history. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
 
 MCP Guide and README may list `migrate-to-mastercss` and its purpose of converting external styling systems to current Master CSS. Keep its instructions, examples and comparisons in Migration Guide. The prompt does not support Master CSS version upgrades. Ordinary CSS diffs, fix previews and class-to-generated-CSS teaching remain valid. Preserve native CSS concepts and current failure conditions; do not ban words such as “before”, “after” or “removed” indiscriminately.
 
@@ -159,18 +171,18 @@ Visible documentation examples should be as framework-neutral as practical:
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
 - Use native CSS references such as `width:var(--size)` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference; the `$name` shortcut and Master length `x` are removed. Preserve native resolution `x`.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
-- Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is about that framework integration.
-- Implementation demos may use React, Next.js, and `flushSync`; displayed code does not need to match exactly.
+- Avoid exposing React state, `flushSync`, or site image components in visible examples unless the section is about that framework integration.
+- Implementation demos may use React and `flushSync`; displayed code does not need to match exactly.
 - Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `~/site/docs-shell/components`, and site demos under `~/site/components/demo`. The MDX provider only supplies Markdown renderers and `Image`.
 
 For View Transitions examples, keep `view-transition-name` values unique, prefer article-specific names such as `article-image`, use `view-transition-class` to group related snapshots, and avoid broad `::view-transition-group(*)` in shared demos unless intentionally documenting global behavior.
 
 ## Demo Implementation
 
-Interactive demos should be local client components under the guide's `components/` folder. Use existing site primitives:
+Interactive demos should be local `'use client'` components under the guide's `components/` folder. Use existing site primitives:
 
 - Wrap demos in `<Demo>`.
-- Use `next/image` for local bitmap images.
+- Use `~/site/docs-shell/components/Image` for local bitmap images.
 - Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
 - Use existing app button and panel classes where possible.
 
@@ -178,7 +190,7 @@ Design demos for the doc content column, not the viewport. A `<Demo>` inside gui
 
 For View Transitions demos, add transition styling classes to `document.documentElement` in a client component and clean them up on unmount. In React state demos, wrap the update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback. Always provide a no-API fallback.
 
-For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `<ResizeZone>` with `<IFrame>` for primary responsive demos when the lesson depends on viewport width. Keep iframe pages under `site/app/[locale]/examples/<slug>/`. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
+For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `<ResizeZone>` with `<IFrame>` for primary responsive demos when the lesson depends on viewport width. Keep iframe pages under `site/content/examples/<slug>/`. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
 
 ## Design References
 
@@ -208,20 +220,20 @@ Local bitmap assets for demos belong under:
 site/assets/images/<guide-or-feature>/
 ```
 
-Import them statically and render with Next `<Image>`:
+Import them statically and render with the site `<Image>`:
 
 ```tsx
-import Image from 'next/image'
+import Image from '~/site/docs-shell/components/Image'
 import articleImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
 ```
 
-Use `placeholder="blur"` when static imports provide blur data. Set an appropriate `sizes` value for responsive images.
+Set an appropriate `sizes` value for responsive images; Cloudflare builds add resized sources.
 
 ## Validation
 
 Reference has a normalized build-time catalog in `reference/`. Read `reference/MAINTENANCE.md` before changing its content pipeline, navigation, search or exports. `reference/token-contracts.ts` builds family and namespace lookup documents; `reference/recipes.ts` reads the preset definitions and generates complete recipe CSS. Formal language/directive prose lives in the corresponding Guide directory's `contract.mdx`, while `content.mdx` teaches the workflow and preserves old anchor entrances. Keep explicit MDX heading IDs (`\{#stable-id\}`) when renaming or translating headings. `prepare-app` generates the catalog, search records and per-page Markdown; never edit those outputs directly. Run `test:reference` for Reference changes in addition to the relevant checks below. Policy-only changes require package lint and `check:ai-context`; run the public-content checks when the corresponding pages, examples or pipeline change.
 
-Run site orchestration commands from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal development, `pnpm dev:site:clean` when `.next` must be reset, and `pnpm build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging.
+Run site orchestration commands from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal development, `pnpm dev:site:clean` when Astro or Vite caches must be reset, and `pnpm build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging.
 
 For content-only guide updates, run:
 

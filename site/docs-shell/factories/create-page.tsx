@@ -1,9 +1,7 @@
-import { JSX, Key } from 'react'
-import { Props } from '../types/Props'
+import type { JSX } from 'react'
+import type { Props } from '../types/Props'
 import generate from '../utils/generate-metadata'
-import type { ResolvingMetadata } from 'next'
 import { createTranslation } from '../utils/i18n'
-import translatedContentRegistry from '~/site/.translations/content-registry'
 
 interface Options {
   metadata: any
@@ -19,6 +17,9 @@ interface Options {
   subtitle?: string
 }
 
+/** Translated MDX lives beside its source as `content.<locale>.mdx`. */
+const translatedContent = import.meta.glob<{ default: any, toc?: any }>('/content/**/content.*.mdx')
+
 export default function createPage({
   metadata,
   content,
@@ -30,16 +31,11 @@ export default function createPage({
   ...options
 }: Options) {
   return {
-    dynamic: 'force-static',
-    revalidate: false,
-    async generateMetadata(
-      props: Props,
-      parent: ResolvingMetadata
-    ) {
-      return await generate(metadata, props, dictionaries, parent)
+    async generateMetadata(props: Pick<Props, 'params'>) {
+      return await generate(metadata, props, dictionaries)
     },
     async Page(props: Props) {
-      const params = await props.params
+      const { params } = props
       const $ = await createTranslation(params.locale, dictionaries)
       let resolvedContent: any
       let toc: any
@@ -83,15 +79,12 @@ export default function createPage({
 }
 
 async function loadTranslatedContent(locale: string, metadata: any) {
-  const routeKey = routeKeyFromMetadata(metadata)
-  if (!routeKey) return
-  const load = (translatedContentRegistry as Record<string, Record<string, () => Promise<any>>>)[locale]?.[routeKey]
-  return load?.()
+  const directory = contentDirectoryOf(metadata)
+  return directory ? translatedContent[`/content/${directory}/content.${locale}.mdx`]?.() : undefined
 }
 
-function routeKeyFromMetadata(metadata: any) {
+function contentDirectoryOf(metadata: any) {
   const fileURL = metadata?.fileURL
   if (typeof fileURL !== 'string') return
-  const match = fileURL.match(/\/app\/\[locale\]\/(.+)\/metadata\.(?:ts|js)$/)
-  return match?.[1]
+  return decodeURI(fileURL).match(/\/site\/content\/(.+)\/metadata\.(?:ts|js)$/)?.[1]
 }

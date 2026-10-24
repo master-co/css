@@ -24,7 +24,7 @@ shared `internal` submodule sources were changed for this work.
 Run from the repository root:
 
 ```sh
-pnpm --filter site clean:next
+pnpm --filter site clean
 pnpm build:site
 pnpm --filter site exec tsx --test \
   components/demo/reference/reference-demo.test.ts utils/demo-ownership.test.ts

@@ -2,7 +2,6 @@ import { createHighlighterCore, type LanguageRegistration } from 'shiki/core'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import masterCSSTextMateGrammar from '@master/css-language-service/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
-// Keep client-side Play highlighting off @master/css-language-service/shiki; that entry includes the OXC-backed semantic transformer.
 const masterCSSShikiLanguage: LanguageRegistration = {
   ...(masterCSSTextMateGrammar as unknown as LanguageRegistration),
   injectTo: [

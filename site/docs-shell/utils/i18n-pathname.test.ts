@@ -24,7 +24,7 @@ test('localizePathname prefixes non-default locales and preserves suffixes', () 
 
 test('localizePathname leaves already-localized and non-page hrefs unchanged', () => {
   assert.equal(localizePathname('/en/guide', defaults), '/en/guide')
-  assert.equal(localizePathname('/api/play', defaults), '/api/play')
+  assert.equal(localizePathname('/api/search', defaults), '/api/search')
   assert.equal(localizePathname('/images/logo.svg', defaults), '/images/logo.svg')
   assert.equal(localizePathname('#heading', defaults), '#heading')
   assert.equal(localizePathname('https://example.test/guide', defaults), 'https://example.test/guide')

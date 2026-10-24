@@ -9,7 +9,7 @@ export const vendorMigrationSlugs = ['bootstrap', 'material-ui', 'sass', ''] as 
 export const migrationSlugs = ['css', 'css-in-js', 'tailwindcss', 'v1'] as const
 
 export function migrationSource(slug: string) {
-  return readFileSync(new URL(`../app/[locale]/guide/migration/${slug}/content.mdx`, import.meta.url), 'utf8')
+  return readFileSync(new URL(`../content/guide/migration/${slug}/content.mdx`, import.meta.url), 'utf8')
 }
 
 export function migrationFences(slug: string) {

@@ -1,5 +1,5 @@
 import { IconExternalLink } from '@tabler/icons-react'
-import Image from 'next/image'
+import Image from './Image'
 import Link from './Link'
 import clsx from 'clsx'
 

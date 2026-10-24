@@ -13,7 +13,7 @@ export function agentFixMarkdown() {
 
 export async function agentGuideContent(siteRoot: string, slug: string) {
   if (!agentGuideSlugs.includes(slug as typeof agentGuideSlugs[number])) throw new Error(`Unsupported agent guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `app/[locale]/guide/${slug}/content.mdx`), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
       if (name === 'AgentPrompt') return agentPromptMarkdown(String(attributes.name))

@@ -24,7 +24,7 @@ const fence = (lang: string, value: string) => `\`\`\`${lang}\n${value}\n\`\`\``
 export { documentHeadings } from './headings'
 
 export async function buildReferenceCatalog(siteRoot: string): Promise<ReferenceCatalog> {
-  const root = path.join(siteRoot, 'app/[locale]')
+  const root = path.join(siteRoot, 'content')
   const documents: ReferenceDocument[] = []
   const relative = (file: string) => path.relative(path.dirname(siteRoot), file).split(path.sep).join('/')
   async function fromMdx(id: string, kind: ReferenceDocument['kind'], file: string, title: string, description: string, category: string) {
@@ -85,7 +85,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: siteRoot, encoding: 'utf8' }).trim()
     sourceState = execFileSync('git', ['status', '--porcelain', '--', 'site', 'packages'], { cwd: path.dirname(siteRoot), encoding: 'utf8' }).trim() ? 'working-tree' : 'revision'
   } catch { /* source archives have no git metadata */ }
-  const version = process.env.NEXT_PUBLIC_VERSION ?? JSON.parse(await readFile(path.join(siteRoot, '.generated/public-env.json'), 'utf8').catch(() => '{}')).NEXT_PUBLIC_VERSION ?? `workspace-${revision.slice(0, 7)}`
+  const version = process.env.PUBLIC_VERSION ?? JSON.parse(await readFile(path.join(siteRoot, '.generated/public-env.json'), 'utf8').catch(() => '{}')).PUBLIC_VERSION ?? `workspace-${revision.slice(0, 7)}`
   return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, tokenFamilies })), documents }
 }
 

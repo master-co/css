@@ -32,7 +32,7 @@ const contributorFields = {
   diff: 'Unified diff text used to identify affected paths. The tool does not run Git or discover the current diff for you.'
 }
 const contributorLife = 'This operation reads repository metadata and does not edit files or run validation commands. Routing is designed for the Master CSS repository. Other workspaces report `status: limited`; missing recommendations do not establish that a change needs no checks.'
-const contributorExample = { task: 'Update guide examples', paths: ['site/app/[locale]/guide/ai-coding/content.mdx'] }
+const contributorExample = { task: 'Update guide examples', paths: ['site/content/guide/ai-coding/content.mdx'] }
 const contributorNote = 'This request targets a file in the Master CSS repository. Substitute the paths you are actually changing.'
 
 export const mcpEditorial: Record<string, ToolEditorial> = {

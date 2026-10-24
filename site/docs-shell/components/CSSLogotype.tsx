@@ -1,5 +1,3 @@
-'use client'
-
 import clsx from 'clsx'
 import LogotypeAtDark from '../../public/images/css-logotype@dark.svg'
 import LogotypeAtLight from '../../public/images/css-logotype@light.svg'

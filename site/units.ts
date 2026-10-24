@@ -38,7 +38,6 @@ const units = {
     ]
   },
   examples: {},
-  play: {},
   roadmap: {},
   sponsor: {},
   brand: {},

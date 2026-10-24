@@ -1,4 +1,4 @@
-import './scripts/ignore-css-imports'
+import './scripts/bundler-imports'
 import { prepareTokenFamilies } from './scripts/prepare-token-families'
 
 await prepareTokenFamilies()

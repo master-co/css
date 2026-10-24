@@ -1,5 +1,3 @@
-'use client'
-
 import '~/site/styles/docs-shell/wrapper.css'
 import clsx from 'clsx'
 

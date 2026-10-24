@@ -7,8 +7,8 @@ const siteRoot = fileURLToPath(new URL('..', import.meta.url))
 const publicRoot = path.join(siteRoot, 'public')
 const outputRoot = path.join(siteRoot, 'out')
 const assetDirs = ['images', 'icons', 'fonts'] as const
-const ignoredDirs = new Set(['node_modules', '.next', '.generated', '.wrangler', '.open-next', '.turbo', '.master', 'out', 'test-results', 'public'])
-const sourceExtensions = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.mdx', '.css'])
+const ignoredDirs = new Set(['node_modules', '.astro', '.generated', '.wrangler', '.turbo', '.master', 'out', 'test-results', 'public'])
+const sourceExtensions = new Set(['.astro', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.mdx', '.css'])
 const sourceAsset = /['"`]((?:(?:~\/site\/|(?:\.\.\/)+)public\/|\/)?(?:images|icons|fonts)\/[^'"`\s<>${}]+)['"`]/g
 const outputAttribute = /\b(?:src|href|poster|srcset)=(['"])(.*?)\1/gi
 const cssUrl = /url\(\s*['"]?([^\)'"\s]+)['"]?\s*\)/gi

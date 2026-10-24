@@ -6,7 +6,7 @@ import { createToolingSessionSync } from '@master/css-tooling/node'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-const document = readFileSync(new URL('../app/[locale]/guide/global-styles/content.mdx', import.meta.url), 'utf8')
+const document = readFileSync(new URL('../content/guide/global-styles/content.mdx', import.meta.url), 'utf8')
 function example(name: string) {
   const text = [...document.matchAll(/```\w+ name=([^\n]+)\n([\s\S]*?)```/g)].find(match => match[1].split('&')[0] === name)?.[2]
   assert.ok(text, `Missing ${name}`)

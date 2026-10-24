@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
 
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ImageResponse } from 'next/og'
-import React from 'react'
+import { Resvg } from '@resvg/resvg-js'
+import satori from 'satori'
 import { readPublicEnv } from '../utils/public-env.js'
 
 type PageMetadata = {
@@ -35,7 +34,6 @@ const authorImageFiles: Record<string, string> = {
 Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
-await copyDefaultLocaleToRoot()
 await generateSitemap()
 await generateStaticOgImages()
 await writeHeaders()
@@ -43,33 +41,9 @@ await writeRedirects()
 await validateHydrationManifestReferences()
 await validateInlineScripts()
 
-async function copyDefaultLocaleToRoot() {
-    const localeDir = path.join(outDir, 'en')
-    const localeIndexHtml = path.join(outDir, 'en.html')
-    const localeIndexText = path.join(outDir, 'en.txt')
-
-    if (await exists(localeIndexHtml)) {
-        await copyFile(localeIndexHtml, path.join(outDir, 'index.html'))
-    }
-
-    if (await exists(localeIndexText)) {
-        await copyFile(localeIndexText, path.join(outDir, 'index.txt'))
-    }
-
-    if (!await exists(localeDir)) return
-
-    const files = await listFiles(localeDir)
-    for (const source of files) {
-        const relativePath = path.relative(localeDir, source)
-        const target = path.join(outDir, relativePath)
-        await mkdir(path.dirname(target), { recursive: true })
-        await copyFile(source, target)
-    }
-}
-
 async function generateSitemap() {
     const pages = JSON.parse(await readFile(path.join(siteDir, '.pages.json'), 'utf8')) as PageMetadata[]
-    const baseUrl = publicEnv.NEXT_PUBLIC_URL.replace(/\/$/, '')
+    const baseUrl = publicEnv.PUBLIC_URL.replace(/\/$/, '')
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -153,7 +127,7 @@ function normalizeOgImageUrl(rawUrl: string) {
 }
 
 function getOgImageCacheKey(rawUrl: string) {
-    const url = new URL(rawUrl, publicEnv.NEXT_PUBLIC_URL)
+    const url = new URL(rawUrl, publicEnv.PUBLIC_URL)
     const params = url.searchParams
     return JSON.stringify({
         locale: normalizeLocale(params.get('locale')),
@@ -165,25 +139,23 @@ function getOgImageCacheKey(rawUrl: string) {
 }
 
 async function writeOgImage(rawUrl: string, cacheKey: string) {
-    const url = new URL(rawUrl, publicEnv.NEXT_PUBLIC_URL)
+    const url = new URL(rawUrl, publicEnv.PUBLIC_URL)
     const params = url.searchParams
     const locale = normalizeLocale(params.get('locale'))
     const dictionary = await readDictionary(locale)
-    const response = await createStaticOgImage({
+    const image = await createStaticOgImage({
         locale,
         title: translate(params.get('title'), dictionary),
         description: translate(params.get('description'), dictionary),
         category: translate(params.get('category'), dictionary),
         authors: parseAuthors(params.get('authors'))
     })
-    const contentType = response.headers.get('content-type') || 'image/png'
-    const extension = contentType.includes('jpeg') || contentType.includes('jpg') ? 'jpg' : 'png'
-    const filename = `${createHash('sha1').update(cacheKey).digest('hex').slice(0, 16)}.${extension}`
+    const filename = `${createHash('sha1').update(cacheKey).digest('hex').slice(0, 16)}.png`
     const publicPath = `/og/${filename}`
     const outputPath = path.join(outDir, publicPath.slice(1))
 
     await mkdir(path.dirname(outputPath), { recursive: true })
-    await writeFile(outputPath, Buffer.from(await response.arrayBuffer()))
+    await writeFile(outputPath, image)
 
     return publicPath
 }
@@ -201,7 +173,7 @@ async function createStaticOgImage({ title, description, category, authors }: St
     const titleFontSize = title.length > 72 ? 40 : title.length > 46 ? 48 : 56
     const displayDescription = truncateText(description, 150)
 
-    return new ImageResponse(
+    const svg = await satori(
         (
             <div style={{
                 display: 'flex',
@@ -305,6 +277,7 @@ async function createStaticOgImage({ title, description, category, authors }: St
             ]
         }
     )
+    return new Resvg(svg, { fitTo: { mode: 'width', value: size.width } }).render().asPng()
 }
 
 async function readPublicAsset(publicPath: string) {
@@ -372,7 +345,7 @@ function mimeTypeForPath(publicPath: string) {
 
 async function writeHeaders() {
     await writeFile(path.join(outDir, '_headers'), [
-        '/_next/static/*',
+        '/_astro/*',
         '  Cache-Control: public, max-age=31536000, immutable',
         '/og/*',
         '  Cache-Control: public, max-age=31536000, immutable',
@@ -384,14 +357,25 @@ async function writeHeaders() {
 
 async function writeRedirects() {
     await writeFile(path.join(outDir, '_redirects'), [
-        '/en/play/:shareId /play/:shareId 301',
+        ...await collectPageRedirects(),
         '/en/* /:splat 301',
         '/en / 301',
-        '/play/:shareId /play 200',
-        '/tw/play/:shareId /tw/play 200',
         '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 200',
         ''
     ].join('\n'), 'utf8')
+}
+
+/** Astro writes retired routes as refresh pages; hosts serve them as permanent redirects. */
+async function collectPageRedirects() {
+    const redirects: string[] = []
+    for (const file of (await listFiles(outDir)).filter((file) => file.endsWith('.html')).sort()) {
+        const content = await readFile(file, 'utf8')
+        const target = content.length < 2048 && content.match(/<meta http-equiv="refresh" content="0;url=([^"]+)"/)?.[1]
+        if (!target) continue
+        const source = '/' + path.relative(outDir, file).split(path.sep).join('/').replace(/\.html$/, '')
+        redirects.push(`${source} ${target} 301`)
+    }
+    return redirects
 }
 
 async function validateInlineScripts() {
@@ -443,8 +427,8 @@ async function validateHydrationManifestReferences() {
 }
 
 function toPublicOutputPath(source: string) {
-    const url = new URL(source, publicEnv.NEXT_PUBLIC_URL)
-    const baseUrl = new URL(publicEnv.NEXT_PUBLIC_URL)
+    const url = new URL(source, publicEnv.PUBLIC_URL)
+    const baseUrl = new URL(publicEnv.PUBLIC_URL)
 
     if (url.origin !== baseUrl.origin && /^https?:\/\//.test(source)) {
         return undefined

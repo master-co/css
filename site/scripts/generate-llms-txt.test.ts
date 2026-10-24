@@ -75,7 +75,7 @@ const fixture: Page[] = [
 
 test('migration exports retain readable comparisons, complete examples and search content', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   for (const slug of migrationGuideSlugs) {
     const content = await migrationGuideContent(root, slug)
     assert.deepEqual(content.notes, [])
@@ -87,7 +87,7 @@ test('migration exports retain readable comparisons, complete examples and searc
       assert.doesNotMatch(content.markdown, /<MigrationGuides|brands\[/)
       assert.match(content.markdown, /function wrapEngine/)
     }
-    const source = await readFile(path.join(root, `app/[locale]/guide/migration/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/migration/${slug}/content.mdx`), 'utf8')
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) {
       const dedented = fence[0].endsWith('\n    ```') ? fence[0].replace(/\n {4}/g, '\n') : fence[0]
       const normalized = dedented.replace(/<!--\s*@MARK[\s\S]*?-->/g, '')
@@ -103,7 +103,7 @@ test('migration exports retain readable comparisons, complete examples and searc
 
 test('project style guides retain complete configured examples in search and llms exports', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   for (const slug of projectStyleGuideSlugs) {
     const content = await projectStyleGuideContent(root, slug)
     assert.deepEqual(content.notes, [])
@@ -113,7 +113,7 @@ test('project style guides retain complete configured examples in search and llm
       const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === `/guide/${slug}`)
       assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
     }
-    const source = await readFile(path.join(root, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     for (const match of source.matchAll(/<ProjectStyleExample name="([^"]+)"/g)) {
       const example = projectStyleExample(match[1])
       assert.ok(content.markdown.includes(configuredMarkupMarkdown(example.source, example.html)), `${slug}: ${match[1]}`)
@@ -138,7 +138,7 @@ test('project style guides retain complete configured examples in search and llm
   assert.ok(theme.markdown.includes('--color-brand: #4f46e5'))
   assert.ok(theme.markdown.includes('## Add mode-aware values'))
   for (const slug of ['variables-and-modes', 'cascade-layers']) {
-    const source = await readFile(path.join(root, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     const content = await projectStyleGuideContent(root, slug)
     for (const anchor of source.matchAll(/<a id="([^"]+)"><\/a>/g)) assert.ok(content.markdown.includes(anchor[0]))
   }
@@ -200,7 +200,7 @@ test('Guide overview keeps its category anchors and publishes the same entries t
   assert.equal(sections[0].entries[2].url, '/guide/syntax-tutorial')
   const searchPages = JSON.parse(await readFile(new URL('../public/search/en.json', import.meta.url), 'utf8'))
   assert.deepEqual(searchPages.find((page: { url: string }) => page.url === '/guide').nodes, nodes)
-  const source = await readFile(new URL('../app/[locale]/guide/content.mdx', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../content/guide/content.mdx', import.meta.url), 'utf8')
   assert.doesNotMatch(source + markdown, /Get ready for the journey|Try Master CSS online|Join our community|Use documentation/)
 })
 
@@ -294,7 +294,7 @@ test('renderLlmsFull concatenates each page body with a Source line', () => {
 
 test('llms includes the complete tutorial and excludes retired Guide bodies', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url))
-  const pages = await loadPages(`${root}/app/[locale]`)
+  const pages = await loadPages(`${root}/content`)
   const tutorial = pages.find(page => page.url === '/en/guide/syntax-tutorial')
   assert.equal(tutorial?.body, (await syntaxTutorialContent(root)).markdown)
   for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!pages.some(page => page.url === `/en/guide/${slug}`))
@@ -303,7 +303,7 @@ test('llms includes the complete tutorial and excludes retired Guide bodies', as
 
 test('all foundation bodies preserve generated CSS and agree with search and llms exports', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url))
-  const pages = await loadPages(`${root}/app/[locale]`)
+  const pages = await loadPages(`${root}/content`)
   const search = await Promise.all(['en', 'tw'].map(async locale => JSON.parse(await readFile(`${root}/public/search/${locale}.json`, 'utf8'))))
   for (const slug of foundationGuideSlugs) {
     const content = await foundationGuideContent(root, slug)
@@ -326,7 +326,7 @@ test('foundation exports use the same explicit token subsets as HTML', async () 
   const { namespaceTokens } = await import('../common/foundation-data/tokens')
   const root = fileURLToPath(new URL('../', import.meta.url))
   for (const slug of foundationGuideSlugs) {
-    const source = await readFile(`${root}/app/[locale]/guide/${slug}/content.mdx`, 'utf8')
+    const source = await readFile(`${root}/content/guide/${slug}/content.mdx`, 'utf8')
     const body = (await foundationGuideContent(root, slug)).markdown
     for (const match of source.matchAll(/<FoundationTokens namespace="([^"]+)" keys={([^}]+)} \/>/g)) {
       const keys = JSON.parse(match[2])
@@ -339,7 +339,7 @@ test('foundation exports use the same explicit token subsets as HTML', async () 
   assert.ok(!colors.includes('--color-red-90'))
   const typography = (await foundationGuideContent(root, 'typography')).markdown
   for (const name of ['BodyText', 'Headings', 'PageTitles']) {
-    const included = await extractReferenceMdx(`${root}/app/[locale]/guide/typography/components/${name}.mdx`)
+    const included = await extractReferenceMdx(`${root}/content/guide/typography/components/${name}.mdx`)
     assert.ok(typography.includes(portableMarkdown(included.markdown)), name)
   }
   assert.match(typography, /Future-proof infrastructure/)
@@ -347,7 +347,7 @@ test('foundation exports use the same explicit token subsets as HTML', async () 
 
 test('foundation extraction fails on missing adapters and recursive includes without executing JSX', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'master-foundation-export-'))
-  const directory = path.join(root, 'app/[locale]/guide/typography')
+  const directory = path.join(root, 'content/guide/typography')
   await mkdir(path.join(directory, 'components'), { recursive: true })
   try {
     await writeFile(path.join(directory, 'content.mdx'), '## Inventory\n\n<UnmappedInventory />')
@@ -362,12 +362,12 @@ test('foundation extraction fails on missing adapters and recursive includes wit
 
 test('delivery guides retain ordered process text, complete fences and generated examples in exports', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   for (const slug of deliveryGuideSlugs) {
     const content = await deliveryGuideContent(root, slug)
     assert.deepEqual(content.notes, [])
     assert.equal(pages.find(page => page.url === `/en/guide/${slug}`)?.body, content.markdown)
-    const source = await readFile(path.join(root, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) {
       const dedented = fence[0].endsWith('\n    ```') ? fence[0].replace(/\n {4}/g, '\n') : fence[0]
@@ -387,12 +387,12 @@ test('delivery guides retain ordered process text, complete fences and generated
 
 test('tooling guides retain every option, diagnostic and source/result pair in search and portable output', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   for (const slug of toolingGuideSlugs) {
     const content = await toolingGuideContent(root, slug)
     assert.deepEqual(content.notes, [])
     assert.equal(pages.find(page => page.url === `/en/guide/${slug}`)?.body, content.markdown)
-    const source = await readFile(path.join(root, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     for (const match of source.matchAll(/<ToolingOptions name="([^"]+)"/g)) assert.ok(content.markdown.includes(toolingOptionsMarkdown(match[1])))
     for (const match of source.matchAll(/<ToolingExample name="([^"]+)"/g)) assert.ok(content.markdown.includes(toolingExampleMarkdown(match[1])))
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) assert.ok(content.markdown.includes(fence[0]), `${slug}: complete authored fence`)
@@ -407,7 +407,7 @@ test('tooling guides retain every option, diagnostic and source/result pair in s
 
 test('current public documents keep historical teaching in Migration Guide', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   const failures: string[] = []
   for (const page of pages) {
     const url = page.url.replace(/^\/(en|tw)(?=\/)/, '')
@@ -435,12 +435,12 @@ test('hygiene distinguishes current diffs and native CSS from migration teaching
 
 test('agent guides export complete prompts, tool catalogs, preview workflow and native examples', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   for (const slug of agentGuideSlugs) {
     const content = await agentGuideContent(root, slug)
     assert.deepEqual(content.notes, [])
     assert.equal(pages.find(page => page.url === `/en/guide/${slug}`)?.body, content.markdown)
-    const source = await readFile(path.join(root, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     for (const match of source.matchAll(/<AgentPrompt name="([^"]+)"/g)) assert.ok(content.markdown.includes(agentPromptMarkdown(match[1])))
     for (const match of source.matchAll(/<AgentOptions name="([^"]+)"/g)) assert.ok(content.markdown.includes(agentOptionsMarkdown(match[1])))
     if (source.includes('<AgentWorkflow')) assert.ok(content.markdown.includes(previewWorkflowMarkdown()))
@@ -543,7 +543,7 @@ test('installation steps retain complete commands, stable headings and navigatio
   for (const slug of installationGuideSlugs) {
     const content = await installationGuideContent(root, slug)
     const sourcePath = ['', 'integrations', 'cli', 'cdn'].includes(slug) ? `(main)/${slug}` : slug
-    const source = await readFile(path.join(root, `app/[locale]/guide/installation/${sourcePath}/content.mdx`), 'utf8')
+    const source = await readFile(path.join(root, `content/guide/installation/${sourcePath}/content.mdx`), 'utf8')
     const normalizeFence = (value: string) => value.replace(/<!--\s*@MARK[\s\S]*?-->/g, '').split('\n').map(line => line.trim()).join('\n').trim()
     const exportedFences = deliveryFences(content.markdown).map(fence => normalizeFence(fence.text))
     for (const fence of deliveryFences(source)) assert.ok(exportedFences.includes(normalizeFence(fence.text)), `${slug}: ${fence.name}`)
@@ -590,7 +590,7 @@ test('literal document navigation exports text and rejects executable attributes
 test('brand downloads retain their asset URLs, labels and policy in portable and search output', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await brandContent(root)
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   assert.equal(pages.find(page => page.url === '/en/brand')?.body, content.markdown)
   for (const name of ['css-logotype@dark.svg', 'css-logotype@light.svg', 'logo.svg']) {
     assert.ok(content.markdown.includes(`/images/${name}`), name)
@@ -611,7 +611,7 @@ test('brand downloads retain their asset URLs, labels and policy in portable and
 test('introduction retains its authored panel code in portable and search output', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await introductionContent(root)
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   assert.equal(pages.find(page => page.url === '/en/guide/introduction')?.body, content.markdown)
   for (const text of ['Launch panel', 'Build the first screen in markup', 'Dashboard', 'gap-md', 'font-2xl', 'bg-surface-raised shadow-lg']) assert.ok(content.markdown.includes(text), text)
   assert.doesNotMatch(content.markdown, /<Overview|<DemoConfiguredExample|MCSS_EXPRESSION/)
@@ -629,7 +629,7 @@ test('benchmarks export the same chart values and complete tables as the page', 
   const { BenchmarkBars } = await import('../components/benchmarks')
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await benchmarkContent(root)
-  const pages = await loadPages(path.join(root, 'app/[locale]'))
+  const pages = await loadPages(path.join(root, 'content'))
   assert.equal(pages.find(page => page.url === '/en/guide/benchmarks')?.body, content.markdown)
   const snapshot = JSON.parse(await readFile(path.join(root, '../benchmarks/docs-page-css-size/snapshot.json'), 'utf8'))
   for (const page of snapshot.pages) {

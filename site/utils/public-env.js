@@ -5,8 +5,6 @@ import { fileURLToPath } from 'node:url'
 
 export const publicProjectName = 'Master CSS'
 export const defaultRcUrl = 'https://rc.css.master.co'
-export const defaultPlayApiUrl = '/api/play'
-export const localePrefixModes = new Set(['always', 'canonical'])
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const repoRoot = resolve(siteDir, '..')
@@ -23,7 +21,7 @@ export function resolvePublicEnv(options = {}) {
 
   const repository = options.repositoryUrl ?? readRepository(cwd)
   const { owner, slug } = parseRepository(repository)
-  const resolvedCommitRef = env.NEXT_PUBLIC_COMMIT_REF
+  const resolvedCommitRef = env.PUBLIC_COMMIT_REF
     || env.CF_PAGES_BRANCH
     || env.VERCEL_GIT_COMMIT_REF
     || env.GITHUB_REF_NAME
@@ -32,20 +30,18 @@ export function resolvePublicEnv(options = {}) {
   const siteUrl = resolveSiteUrl(env, commitRef)
 
   return {
-    NEXT_PUBLIC_PROJECT: env.NEXT_PUBLIC_PROJECT || publicProjectName,
-    NEXT_PUBLIC_HOST: env.NEXT_PUBLIC_HOST || new URL(siteUrl).host,
-    NEXT_PUBLIC_URL: siteUrl,
-    NEXT_PUBLIC_PLAY_API_URL: env.NEXT_PUBLIC_PLAY_API_URL || defaultPlayApiUrl,
-    NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: resolveLocalePrefixMode(env),
-    NEXT_PUBLIC_VERSION: env.NEXT_PUBLIC_VERSION || resolveVersion({
+    PUBLIC_PROJECT: env.PUBLIC_PROJECT || publicProjectName,
+    PUBLIC_HOST: env.PUBLIC_HOST || new URL(siteUrl).host,
+    PUBLIC_URL: siteUrl,
+    PUBLIC_VERSION: env.PUBLIC_VERSION || resolveVersion({
       runGit,
       repositoryUrl: repository,
       commitRef,
       releaseRequired: options.releaseRequired ?? isReleaseRef(resolvedCommitRef)
     }),
-    NEXT_PUBLIC_REPO_OWNER: env.NEXT_PUBLIC_REPO_OWNER || owner,
-    NEXT_PUBLIC_REPO_SLUG: env.NEXT_PUBLIC_REPO_SLUG || slug,
-    NEXT_PUBLIC_COMMIT_REF: commitRef
+    PUBLIC_REPO_OWNER: env.PUBLIC_REPO_OWNER || owner,
+    PUBLIC_REPO_SLUG: env.PUBLIC_REPO_SLUG || slug,
+    PUBLIC_COMMIT_REF: commitRef
   }
 }
 
@@ -96,7 +92,7 @@ export function resolveVersion({ runGit, repositoryUrl = '', commitRef, releaseR
 }
 
 function resolveSiteUrl(env, commitRef) {
-  if (env.NEXT_PUBLIC_URL) return env.NEXT_PUBLIC_URL
+  if (env.PUBLIC_URL) return env.PUBLIC_URL
   const port = env.PORT || 3000
   const localUrl = `http://localhost:${port}`
   if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
@@ -105,17 +101,6 @@ function resolveSiteUrl(env, commitRef) {
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`
 
   return localUrl
-}
-
-function resolveLocalePrefixMode(env) {
-  const mode = env.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE
-  if (mode) {
-    if (!localePrefixModes.has(mode)) {
-      throw new Error(`NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE must be "always" or "canonical", got "${mode}"`)
-    }
-    return mode
-  }
-  return env.NODE_ENV === 'development' ? 'always' : 'canonical'
 }
 
 function isRcBranch(commitRef) {

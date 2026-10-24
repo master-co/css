@@ -9,8 +9,8 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 | Content | Source | Generated facts |
 | --- | --- | --- |
 | Preset recipes | `reference/recipes.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
-| Language rules | `app/[locale]/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
-| Directives | `app/[locale]/guide/directives/contract.mdx` | Named sections in the directive Reference |
+| Language rules | `content/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
+| Directives | `content/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes, conditions and consumers |
 | CLI | Public `master-css` binary | Actual `--help` output |
 | MCP | Public stdio `tools/list` protocol | Actual tool descriptions and input/output schemas when advertised |
@@ -29,9 +29,9 @@ do not add an outer disclosure. Source/result examples opt in with
 output fences carry `disclosure=generated-css`, including `stylesheet=result`
 fences. Pair recognition must accept that extra metadata, and prepared highlights
 must match the live rendering path. Keep the full CSS in server HTML, search and
-portable exports. Playground retains its dedicated output panel.
+portable exports.
 
-General Reference, token and recipe pages have separate Next route entries, with the same public URLs and shared `ReferencePage` shell. Keep specimen imports in their owning route entry so ordinary rules and package pages do not compile the specimen graph. Brand icons belong to the pages that request them: explicitly import `create-header-icon` and pass its element to `createPage({ icon })` or `createLayout({ icon })`; the generic page factory and article header must not import the brand registry. File badges use the existing public SVG URLs at their existing CSS dimensions; other SVG components still use SVGR.
+General Reference, token and recipe pages have separate route modules under `content/reference/`, with the same public URLs and shared `ReferencePage` shell. Keep specimen imports in their owning route entry so ordinary rules and package pages do not compile the specimen graph. Brand icons belong to the pages that request them: explicitly import `create-header-icon` and pass its element to `createPage({ icon })` or `createLayout({ icon })`; the generic page factory and article header must not import the brand registry. File badges use the existing public SVG URLs at their existing CSS dimensions; other SVG components still use SVGR.
 
 The current source revision and semantic/content digests identify the build inputs. Current-version URLs can change between builds; these are not historical version snapshots. A local dirty checkout is not a published immutable document.
 

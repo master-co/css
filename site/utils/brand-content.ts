@@ -3,7 +3,7 @@ import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 
 /** Export actual asset labels and URLs without executing presentation components. */
 export async function brandContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'app/[locale]/brand/content.mdx'), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, 'content/brand/content.mdx'), [], [], {
     component(name, attrs) {
       if (name !== 'DemoAsset') return
       for (const key of ['title', 'description', 'src', 'alt']) {

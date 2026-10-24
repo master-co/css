@@ -8,7 +8,7 @@ import clsx from 'clsx'
 import { IconArrowUpRight, IconChevronRight, IconLanguage, IconSelector, IconVersions } from '@tabler/icons-react'
 import ThemeSelect from './ThemeSelect'
 import ThemeIcon from './ThemeIcon'
-import { useThemeMode } from '@master/theme-mode.react'
+import { useThemeMode } from '../contexts/theme-mode'
 import DocVersionSelect from './DocVersionSelect'
 import LanguageSelect from './LanguageSelect'
 import { useLocale } from '../contexts/locale'
@@ -63,7 +63,7 @@ export default function DocMenuButton(props: any) {
               <div className="display:flex flex:1 align-items:center height:48px border-bottom-width:1px border-bottom-style:solid bb-line-subtle fg-text-strong">
                 {$('Version')}
                 <div className='position:relative display:flex align-items:center margin-left:auto'>
-                  <div className="mr-sm margin-left:auto text-transform:capitalize fg-text-muted">{process.env.NEXT_PUBLIC_VERSION}</div>
+                  <div className="mr-sm margin-left:auto text-transform:capitalize fg-text-muted">{import.meta.env.PUBLIC_VERSION}</div>
                   <DocVersionSelect />
                   <IconSelector className="mr-sm fg-text-muted" stroke="1.3" />
                 </div>

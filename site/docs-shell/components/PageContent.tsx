@@ -7,7 +7,7 @@ import Link from './Link'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useTranslation } from '../contexts/i18n'
-import Image from 'next/image'
+import Image from './Image'
 import canIUseImg from '../../public/images/caniuse.favicon.png'
 import mdnImg from '../../public/images/mdnwebdocs.png'
 import { usePageContent } from './PageContentContext'
@@ -18,7 +18,7 @@ export default function PageContent({ metadata }: any) {
   const { activeTransitionsReady, currentId, currentParentId, items: pageContent } = usePageContent()
   const ref = useRef<HTMLElement>(null)
   const pageDirname = metadata.fileURL?.substring(0, metadata.fileURL.lastIndexOf('/'))
-  const pageContentPath = encodeURIComponent(metadata.sourcePath || ('site/app/[locale]/' + pageDirname?.match(/\[locale\]\/(.*)/)?.[1] + '/content.mdx'))
+  const pageContentPath = encodeURIComponent(metadata.sourcePath || ('site/content/' + pageDirname?.match(/\[locale\]\/(.*)/)?.[1] + '/content.mdx'))
   const $ = useTranslation()
 
   return (

@@ -37,7 +37,7 @@ describe('workspace real files smoke', () => {
           ignore: ['**/node_modules/**', '**/dist/**'],
           deep: 4,
         }).slice(0, 20),
-        ...glob.sync('site/app/[locale]/**/content.mdx', {
+        ...glob.sync('site/content/**/content.mdx', {
           cwd: workspaceRoot,
           absolute: true,
           ignore: ['**/node_modules/**'],

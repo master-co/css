@@ -8,7 +8,6 @@
       "esnext"
     ],
     "allowJs": true,
-    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,13 +17,10 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    // Stylesheet side-effect imports resolve to CSS files the bundler owns.
+    "noUncheckedSideEffectImports": false,
     "types": [
       "mdx",
       "node"
@@ -46,21 +42,22 @@
       "@master/css-binding-wasm-compiler": [ "../packages/binding-wasm-compiler/src/provider.ts" ],
       "@master/css-binding-wasm-engine": [ "../packages/binding-wasm-engine/src/provider.ts" ],
       "@master/css-binding-wasm-tooling": [ "../packages/binding-wasm-tooling/src/provider.ts" ],
-      "@master/css-next": [ "../node_modules/@master/css-next/src" ],
+      "@master/css-astro": [ "../node_modules/@master/css-astro/src" ],
       "~/packages/*": [ "../packages/*" ],
       "~/site/*": [ "./*" ],
       "~/*": [ "../*" ]
     }
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "out",
+    ".astro"
   ],
   "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
+    "src/env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.mdx",
+    "**/*.mdx"
   ]
 }

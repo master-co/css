@@ -7,11 +7,11 @@ import PageContentBlockMap from '../components/PageContentBlockMap'
 import { PageContentProvider } from '../components/PageContentContext'
 import DocArticle from '../components/DocArticle'
 
-export default async function DocLayout({ children, params, searchParams, toc, pageCategories, metadata, dictionaries, footerProps, ...props }: any) {
-  const { locale } = await params
+export default function DocLayout({ children, params, toc, pageCategories, metadata, dictionaries, footerProps, ...props }: any) {
+  const { locale } = params
   const pageContent = Array.isArray(toc) && toc.length > 0 ? toc : null
   const article = (
-    <DocArticle>
+    <DocArticle aside={Boolean(pageContent)}>
       <ArticleHeader {...props} locale={locale} metadata={structuredClone(metadata)} dictionaries={dictionaries} toc={pageContent}/>
       {children}
       <PageNavs locale={locale} metadata={structuredClone(metadata)} pageCategories={pageCategories} dictionaries={dictionaries} />

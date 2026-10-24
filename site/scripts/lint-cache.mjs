@@ -45,7 +45,7 @@ export function lintCacheFingerprint({ site = join(repository, 'site'), root = r
   const inputs = new Set([
     ...['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', '.gitignore', 'scripts/typescript-tooling-compat.mjs'].map(file => join(root, file)),
     ...['package.json', '.gitignore', 'scripts/lint.mjs', 'scripts/lint-cache.mjs'].map(file => join(site, file)),
-    ...glob.sync(['**/eslint.config.*', 'eslint.rules.*'], { cwd: site, absolute: true, dot: true, ignore: ['node_modules/**', '.next/**', 'out/**', '.cache/**'] }),
+    ...glob.sync(['**/eslint.config.*', 'eslint.rules.*'], { cwd: site, absolute: true, dot: true, ignore: ['node_modules/**', '.astro/**', 'out/**', '.cache/**'] }),
     ...workspaceRuntimeInputs(root)
   ])
   const entries = discoverManifestEntriesSync({ root: site })
@@ -65,9 +65,6 @@ export function lintCacheFingerprint({ site = join(repository, 'site'), root = r
   if (process.env.MASTER_CSS_NATIVE_BINDING_PATH) inputs.add(resolve(process.env.MASTER_CSS_NATIVE_BINDING_PATH))
   const hash = createHash('sha256')
   hash.update(JSON.stringify([process.version, process.platform, process.arch, process.env.NODE_OPTIONS ?? '', site]))
-  // Next's link diagnostics depend on other route filenames, even when the
-  // file containing the link has not changed.
-  hash.update(JSON.stringify(glob.sync(['app/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{js,jsx,ts,tsx}', 'src/app/**/*.{js,jsx,ts,tsx}', 'src/pages/**/*.{js,jsx,ts,tsx}'], { cwd: site }).sort()))
   for (const file of [...inputs].sort()) {
     const name = relative(root, file)
     hash.update(JSON.stringify(isAbsolute(name) ? file : name))

@@ -16,16 +16,16 @@ function fixture(t) {
   t.after(() => rmSync(root, { recursive: true, force: true }))
   write('package.json', '{}')
   write('site/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
-  write('site/app/index.css', '@import "@master/css"; @import "../../theme.css";')
+  write('site/content/index.css', '@import "@master/css"; @import "../../theme.css";')
   write('theme.css', '@mixin --fixture-one { color: red; }')
-  write('site/app/page.tsx', 'export default function Page() { return null }')
+  write('site/content/page.tsx', 'export default function Page() { return null }')
   return { root, site, write, key: () => lintCacheFingerprint({ root, site }) }
 }
 
 test('content keys remain stable across source edits and cache writes', t => {
   const { key, write } = fixture(t)
   const before = key()
-  write('site/app/page.tsx', 'export default function Page() { return <div /> }')
+  write('site/content/page.tsx', 'export default function Page() { return <div /> }')
   write('site/.cache/eslint/result.json', '{}')
   assert.equal(key(), before)
 })
@@ -43,13 +43,10 @@ test('CSS contents, transitive imports and entry topology invalidate cached sour
   assert.notEqual(key(), before)
 })
 
-test('package ownership and route filenames invalidate other files', t => {
+test('package ownership invalidates other files', t => {
   const { key, write } = fixture(t)
-  let before = key()
+  const before = key()
   write('site/child/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
-  assert.notEqual(key(), before)
-  before = key()
-  write('site/app/new/page.tsx', 'export default function Page() { return null }')
   assert.notEqual(key(), before)
 })
 
@@ -67,6 +64,6 @@ test('config, lockfile and delivered plugin/native bytes are part of the namespa
 
 test('unresolvable imports cannot produce a reusable key', t => {
   const { key, write } = fixture(t)
-  write('site/app/index.css', '@import "@master/css"; @import "./missing.css";')
+  write('site/content/index.css', '@import "@master/css"; @import "./missing.css";')
   assert.throws(key)
 })

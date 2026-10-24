@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { FC, ImgHTMLAttributes } from 'react'
 
 /* eslint-disable jsx-a11y/alt-text */

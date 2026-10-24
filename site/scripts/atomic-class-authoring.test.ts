@@ -24,7 +24,7 @@ test('site and official markup examples use atomic class authoring', async () =>
   // Historical migration evidence and intentional invalid-input tests are not authoring examples.
   const files = await glob(['site/{app,components,docs-shell,utils}/**/*.{tsx,ts,mdx,html}', 'examples/**/*.{tsx,jsx,vue,svelte,html}'], {
     cwd: root,
-    ignore: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/*.test.*', '**/*.spec.*', '**/tests/**', '**/guide/migration/**']
+    ignore: ['**/node_modules/**', '**/dist/**', '**/.astro/**', '**/*.test.*', '**/*.spec.*', '**/tests/**', '**/guide/migration/**']
   })
   const audit = createAtomicClassAudit()
   const failures: string[] = []
@@ -51,7 +51,7 @@ test('site and official markup examples use atomic class authoring', async () =>
 })
 
 test('syntax tables describe single settings and independent properties', async () => {
-  const files = await glob('site/app/**/reference/**/syntaxes.ts', { cwd: root })
+  const files = await glob('site/content/**/reference/**/syntaxes.ts', { cwd: root })
   const failures: string[] = []
   for (const file of files) {
     const source = await readFile(path.join(root, file), 'utf8')

@@ -10,7 +10,7 @@ export const projectStyleGuideSlugs = ['theme', 'variables-and-modes', 'global-s
 
 export async function projectStyleGuideContent(siteRoot: string, slug: string) {
   if (!projectStyleGuideSlugs.includes(slug as typeof projectStyleGuideSlugs[number])) throw new Error(`Unsupported project style guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `app/[locale]/guide/${slug}/content.mdx`), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
       if (name === 'DemoFeatureSupport') return `Browser feature check: \`${String(attributes.condition)}\`. The live preview reports support in the current browser; the example retains its native fallback.`

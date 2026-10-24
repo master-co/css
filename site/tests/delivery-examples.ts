@@ -9,7 +9,7 @@ export const deliverySlugs = ['rendering-modes', 'scanning-latent-classes', 'nat
 export const siteRoot = fileURLToPath(new URL('..', import.meta.url))
 
 export function deliverySource(slug: string) {
-  return readFileSync(join(siteRoot, `app/[locale]/guide/${slug}/content.mdx`), 'utf8')
+  return readFileSync(join(siteRoot, `content/guide/${slug}/content.mdx`), 'utf8')
 }
 
 export function deliverySection(slug: string, heading: string) {

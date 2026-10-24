@@ -118,6 +118,5 @@ export default function FileIcon({ name, ext, lang, ...props }: Props) {
   if (!source && lang) source = icons[lang]
   if (!source) return null
   // Public file badges have fixed colors and do not need a React SVG module.
-  // eslint-disable-next-line @next/next/no-img-element -- Tiny local SVG badges need no image resizing.
   return <img {...props} src={source} alt="" />
 }

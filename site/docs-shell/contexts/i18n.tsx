@@ -1,18 +1,16 @@
-'use client'
-
-import { createContext, useCallback, useContext } from 'react'
+import { useCallback, useContext } from 'react'
+import { sharedContext } from '~/site/islands/context'
 
 export declare interface i18nConfig {
   translations: any,
   defaultLocale: string,
   locales: string[],
-  localePrefixMode?: 'always' | 'canonical',
   localizablePathnameRoots?: string[],
   hreflangOfLocale: any,
   nameOfLocale: any
 }
 
-const I18nContext = createContext<i18nConfig | null>(null)
+const I18nContext = sharedContext<i18nConfig | null>('i18n', null)
 
 export const I18nProvider = (props: any) => {
   return <I18nContext.Provider {...props} />

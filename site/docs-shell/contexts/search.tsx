@@ -2,7 +2,7 @@
 
 import '~/site/styles/docs-shell/documentation-search.css'
 import Link from '../components/Link'
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from './i18n'
 import { useLocale } from './locale'
 import { createDocumentationSearch, type DocumentationSearchPage } from '../utils/documentation-search'
@@ -11,7 +11,7 @@ import { isInteractOutside } from '../utils/isInteractOutside'
 import { createPortal } from 'react-dom'
 
 const cache: Record<string, Promise<DocumentationSearchPage[]>> = {}
-const SearchContext = createContext<any>(null)
+const openEvent = 'site-search:open'
 
 async function loadPages(locale: string) {
   cache[locale] ??= fetch(`/search/${encodeURIComponent(locale)}.json`).then(response => {
@@ -21,13 +21,16 @@ async function loadPages(locale: string) {
   return cache[locale]
 }
 
+/** Search triggers live in independent islands; they open the page's single dialog by event. */
 export const useSearch = () => {
-  const value = useContext(SearchContext)
-  if (!value) throw new Error('useSearch must be used within a SearchProvider')
-  return value
+  const $ = useTranslation()
+  return {
+    open: () => window.dispatchEvent(new CustomEvent(openEvent)),
+    searchPlaceholder: $('Search ⌘ K …')
+  }
 }
 
-export function SearchProvider({ children }: { children: React.ReactNode }) {
+export default function SearchDialog() {
   const $ = useTranslation()
   const locale = useLocale()
   const tw = locale === 'tw'
@@ -82,6 +85,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     return () => element.removeEventListener('click', closeOnBackdropClick)
   }, [opened, close])
   useEffect(() => {
+    window.addEventListener(openEvent, open)
+    return () => window.removeEventListener(openEvent, open)
+  }, [open])
+  useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); opened ? close() : open() }
     }
@@ -92,8 +99,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const kinds: Record<string, string> = tw
     ? { utility: 'Utility', rule: '規則', tokens: 'Tokens', directive: '指令', tool: '工具', package: 'API' }
     : { utility: 'Utility', rule: 'Rule', tokens: 'Tokens', directive: 'Directive', tool: 'Tool', package: 'API' }
-  return <SearchContext.Provider value={{ open, close, searchPlaceholder: $('Search ⌘ K …') }}>
-    {children}
+  return <>
     {opened && createPortal(<dialog ref={dialog} className="documentation-search" aria-label={tw ? '搜尋文件' : 'Search documentation'} onCancel={close}>
       <div className="documentation-search-input">
         <IconSearch size={22} stroke={1.6} aria-hidden="true" />
@@ -135,7 +141,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       </div>
       <div className="documentation-search-footer" aria-hidden="true"><span><kbd><IconArrowUp size={12} /></kbd><kbd><IconArrowDown size={12} /></kbd>{tw ? '選擇' : 'Navigate'}</span><span><kbd><IconCornerDownLeft size={12} /></kbd>{tw ? '開啟' : 'Open'}</span><span>{tw ? 'Guide 與 Reference' : 'Guide & Reference'}</span></div>
     </dialog>, document.body)}
-  </SearchContext.Provider>
+  </>
 }
 
 function excerpt(text: string, query: string) {
@@ -146,4 +152,3 @@ function excerpt(text: string, query: string) {
   return <>{start > 0 ? '…' : ''}{offset < 0 ? value : <>{value.slice(0, offset)}<mark>{value.slice(offset, offset + query.length)}</mark>{value.slice(offset + query.length)}</>}{start + 220 < text.length ? '…' : ''}</>
 }
 
-export default SearchContext

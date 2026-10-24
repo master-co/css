@@ -4,12 +4,10 @@ import { brandContent } from './utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from './utils/installation-content'
 import { pages as basePages } from './scripts/generate-page-categories'
 
-import { readFile, rm } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import i18n from './docs-shell/common/i18n.config.js'
 import { writeIfChanged } from './scripts/write-if-changed'
 import { extractSearchNodesFromMdx, generateSearchPages } from '~/site/docs-shell/utils/search-pages'
-import { generateTranslatedContentRegistry } from './scripts/generate-translation-registry'
-import { syncRawSources } from './scripts/sync-raw-sources'
 import { generateReference } from './reference/build'
 import { guideOverviewMarkdown } from './utils/guide-overview'
 import { syntaxTutorialContent } from './utils/syntax-tutorial'
@@ -20,9 +18,7 @@ import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-conte
 import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
 
-await syncRawSources()
 const searchPages = await generateSearchPages({ defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
-await generateTranslatedContentRegistry()
 await generateReference(process.cwd(), searchPages, basePages)
 
 const guideCategories = JSON.parse(await readFile(new URL('./.categories/guide.json', import.meta.url), 'utf8'))
@@ -69,4 +65,3 @@ for (const locale of ['en', 'tw']) {
   await writeIfChanged(searchFile, JSON.stringify(pages))
 }
 
-await rm(new URL('./public/monaco-editor', import.meta.url), { recursive: true, force: true })

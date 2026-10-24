@@ -175,7 +175,7 @@ test('preserves native values and only falls back for unmatched Master names', (
 })
 
 test('all reference syntaxes generate declarations without preview fallback', async () => {
-  const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+  const referenceRootURL = new URL('../content/reference/', import.meta.url)
   const entries = await readdir(referenceRootURL, { withFileTypes: true })
   const failures: string[] = []
 
@@ -211,7 +211,7 @@ test('all reference syntaxes generate declarations without preview fallback', as
 })
 
 test('all reference syntaxes place nested rows after plain rows', async () => {
-  const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+  const referenceRootURL = new URL('../content/reference/', import.meta.url)
   const entries = await readdir(referenceRootURL, { withFileTypes: true })
   const failures: string[] = []
 

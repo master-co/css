@@ -10,7 +10,7 @@ import { generatePresetCSS } from '../common/generate-preset-css'
 import preset from '../utils/preset-manifest'
 import { deliveryFences, deliveryFixture } from './delivery-examples'
 
-export const directiveSource = readFileSync(new URL('../app/[locale]/guide/directives/contract.mdx', import.meta.url), 'utf8')
+export const directiveSource = readFileSync(new URL('../content/guide/directives/contract.mdx', import.meta.url), 'utf8')
 export function directiveSection(id: string) {
   const start = directiveSource.indexOf(`\\{#${id}\\}`)
   assert.ok(start >= 0, id)

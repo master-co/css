@@ -11,7 +11,7 @@ import resolveHeading from './resolve-heading.js'
 import { writeIfChangedSync } from '../../scripts/write-if-changed'
 import { localizePathname, type LocalePrefixMode } from './i18n-pathname.js'
 
-const DEFAULT_METADATA_GLOB = './app/[locale]/**/*metadata.ts'
+const DEFAULT_METADATA_GLOB = './content/**/*metadata.ts'
 
 export interface SearchNode {
   id?: string

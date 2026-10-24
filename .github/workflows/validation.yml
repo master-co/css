@@ -177,7 +177,6 @@ jobs:
           fi
           pnpm --filter site build
           pnpm --filter site test:css-contract
-          pnpm --filter site test:play
           pnpm --filter site test:lint-cache
           pnpm --filter site lint:full
           pnpm --filter site type-check

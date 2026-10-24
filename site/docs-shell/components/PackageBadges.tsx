@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { getColorHex } from '../data/color-palette'
 import Link from './Link'
 

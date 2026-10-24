@@ -28,7 +28,7 @@ function foundationComponent(_slug: string, name: string, _attributes: Record<st
 /** No JSX execution: authored MDX, native generated CSS and the same data as SSR. */
 export async function foundationGuideContent(siteRoot: string, slug: string) {
   if (!foundationGuideSlugs.includes(slug as typeof foundationGuideSlugs[number])) throw new Error(`Unsupported foundation guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `app/[locale]/guide/${slug}/content.mdx`), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include', component: (name, attributes) => foundationComponent(slug, name, attributes)
   })
   if (result.notes.length) throw new Error(`Incomplete ${slug} export: ${result.notes.join('; ')}`)

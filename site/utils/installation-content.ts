@@ -20,7 +20,7 @@ export const installationGuideSlugs = [
 export async function installationGuideContent(siteRoot: string, slug: string) {
   if (!installationGuideSlugs.includes(slug as typeof installationGuideSlugs[number])) throw new Error(`Unsupported installation guide: ${slug}`)
   const route = ['', 'integrations', 'cli', 'cdn'].includes(slug) ? `(main)/${slug}` : slug
-  const result = await extractReferenceMdx(path.join(siteRoot, `app/[locale]/guide/installation/${route}/content.mdx`), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/installation/${route}/content.mdx`), [], [], {
     overview: 'include',
     component(name) {
       if (name === 'InstallationGuides') return installationGuidesMarkdown()

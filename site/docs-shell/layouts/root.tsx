@@ -1,39 +1,51 @@
-'use client'
-
+import { useContext, useMemo, type ReactNode } from 'react'
 import i18n from '../common/i18n.config.js'
-import { RedirectsProvider } from '../contexts/redirects'
 import { LocaleProvider } from '../contexts/locale'
 import { I18nProvider } from '../contexts/i18n'
-import ThemeModeProvider from '@master/theme-mode.react'
-import { SearchProvider } from '../contexts/search'
-import { App, AppProvider } from '../contexts/app'
+import { AppProvider } from '../contexts/app'
+import app from '~/site/app-config'
+import units from '~/site/units'
+import { sharedContext } from '~/site/islands/context'
 
-export interface RootLayoutProps {
-  children: React.ReactNode
-  locale: typeof i18n['locales'][number]
-  app: App
-  localePrefixMode?: 'always' | 'canonical'
-  localizablePathnameRoots?: string[]
-  translations: any
-  redirects: any[]
-  style?: React.CSSProperties
-  hidden?: boolean
+export type SiteLocale = typeof i18n.locales[number]
+
+export interface SiteContextValue {
+  locale: SiteLocale
+  /** Canonical pathname without the default locale prefix. */
+  pathname: string
+  translations: Record<string, string>
 }
 
-export default function RootLayout({ children, locale, app, redirects, translations, localePrefixMode, localizablePathnameRoots }: RootLayoutProps) {
+export const siteContextElementId = 'site-context'
+export const SiteContext = sharedContext<SiteContextValue | null>('site', null)
+
+const localizablePathnameRoots = Object.keys(units)
+
+export function usePathname() {
+  const site = useContext(SiteContext)
+  if (!site) throw new Error('usePathname must be used within SiteRoot')
+  return site.pathname
+}
+
+/** Read the context Html.astro serializes for client islands. */
+export function readSiteContext(): SiteContextValue {
+  const element = document.getElementById(siteContextElementId)
+  if (!element?.textContent) throw new Error(`Missing #${siteContextElementId}`)
+  return JSON.parse(element.textContent)
+}
+
+export function SiteRoot({ locale, pathname, translations, children }: SiteContextValue & { children?: ReactNode }) {
+  const site = useMemo(() => ({ locale, pathname, translations }), [locale, pathname, translations])
+  const i18nValue = useMemo(() => ({ ...i18n, localizablePathnameRoots, translations }), [translations])
   return (
-    <AppProvider value={app}>
-      <ThemeModeProvider preference='system'>
-        <RedirectsProvider value={redirects}>
-          <I18nProvider value={{ ...i18n, localePrefixMode, localizablePathnameRoots, translations }}>
-            <LocaleProvider value={locale}>
-              <SearchProvider>
-                {children}
-              </SearchProvider>
-            </LocaleProvider>
-          </I18nProvider>
-        </RedirectsProvider>
-      </ThemeModeProvider>
-    </AppProvider>
+    <SiteContext.Provider value={site}>
+      <AppProvider value={app}>
+        <I18nProvider value={i18nValue}>
+          <LocaleProvider value={locale}>
+            {children}
+          </LocaleProvider>
+        </I18nProvider>
+      </AppProvider>
+    </SiteContext.Provider>
   )
 }

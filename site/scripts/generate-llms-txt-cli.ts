@@ -1,4 +1,4 @@
-import './ignore-css-imports'
+import './bundler-imports'
 import { fileURLToPath } from 'node:url'
 
 const { generate } = await import('./generate-llms-txt')

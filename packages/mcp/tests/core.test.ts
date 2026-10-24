@@ -756,7 +756,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_repo_context',
         arguments: {
           paths: [
-            'site/app/[locale]/guide/mcp-server/content.mdx',
+            'site/content/guide/mcp-server/content.mdx',
             'site/package.json'
           ]
         }

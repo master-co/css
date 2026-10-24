@@ -1,12 +1,11 @@
 import FastGlob from 'fast-glob'
-import { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types'
 import { dirname, join, resolve } from 'path'
 import { DefinedMetadata } from '../docs-shell/types/Metadata'
 import { existsSync, mkdirSync } from 'fs'
 import { writeIfChangedSync } from './write-if-changed'
 
 const { default: units } = await import(resolve('./units'))
-const metadataPaths = FastGlob.sync('./app/[locale]/**/*metadata.ts')
+const metadataPaths = FastGlob.sync('./content/**/*metadata.ts')
   .filter((metadataPath) => existsSync(join(dirname(metadataPath), 'page.tsx')))
 export const pages = await Promise.all(
   metadataPaths
@@ -27,8 +26,8 @@ for (const name in units) {
   const categories = pages
     .filter(({ pathname }) => pathname.startsWith('/' + name + '/') || (pathname === '/' + name))
     .sort((a, b) => {
-      const titleA = ((a.title as AbsoluteTemplateString)?.absolute || a.title as string).toLowerCase()
-      const titleB = ((b.title as AbsoluteTemplateString)?.absolute || b.title as string).toLowerCase()
+      const titleA = ((a.title as { absolute?: string })?.absolute || a.title as string).toLowerCase()
+      const titleB = ((b.title as { absolute?: string })?.absolute || b.title as string).toLowerCase()
       return titleA.localeCompare(titleB)
     })
     .reduce((categories: { name: string, pages: DefinedMetadata[] }[], eachPage: any) => {

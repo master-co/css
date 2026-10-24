@@ -5,7 +5,7 @@ import Link from './Link'
 import SearchButton from './SearchButton'
 import LanguageSelect from './LanguageSelect'
 import ThemeSelect from './ThemeSelect'
-import { useThemeMode } from '@master/theme-mode.react'
+import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Fragment } from 'react'
 import type { HTMLAttributes, ReactNode } from 'react'
@@ -65,7 +65,7 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
         ))}
         {legalLinks.length > 0 && <div className='border-left-width:1px border-left-style:solid bl-line-subtle display:none@media((width<64rem))'></div>}
         <label className='position:relative display:none@media((width<64rem))'>
-          <span className='pr-xs text-transform:capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
+          <span className='pr-xs text-transform:capitalize'>{$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}</span>
           <ThemeSelect />
           <IconChevronDown className='display:inline-block height:1em width:1em vertical-align:middle' />
         </label>

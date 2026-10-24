@@ -1,6 +1,3 @@
-'use client'
-
-import type { KeyboardEvent } from 'react'
 import clsx from 'clsx'
 import WindowControls from './WindowControls'
 import FileIcon from './FileIcon'
@@ -11,34 +8,17 @@ type Tab = { name?: string, lang: string, ext?: string }
 type Props = {
   tabs: Tab[]
   currentName?: string
-  copyText: string
   className?: string
   showControls?: boolean
   copyable?: boolean
+  /** Tab lists switch panels through `docs-shell/scripts/code`. */
   idPrefix?: string
-  onTabChange?: (name: string) => void
 }
 
-export default function CodeTabBar({ tabs, currentName, copyText, className, showControls, copyable = true, idPrefix, onTabChange }: Props) {
-  const interactive = Boolean(onTabChange)
-
-  function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    let nextIndex: number
-    switch (event.key) {
-      case 'ArrowRight': nextIndex = (index + 1) % tabs.length; break
-      case 'ArrowLeft': nextIndex = (index - 1 + tabs.length) % tabs.length; break
-      case 'Home': nextIndex = 0; break
-      case 'End': nextIndex = tabs.length - 1; break
-      default: return
-    }
-    event.preventDefault()
-    onTabChange?.(tabs[nextIndex].name ?? tabs[nextIndex].lang)
-    event.currentTarget.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus()
-  }
-
+export default function CodeTabBar({ tabs, currentName, className, showControls, copyable = true, idPrefix }: Props) {
   return <div className={clsx('code-bar', className)}>
     {showControls && <div className="code-window-controls" aria-hidden="true"><WindowControls /></div>}
-    {interactive
+    {idPrefix
       ? <div className="code-bar-tabs" role="tablist" aria-label="Code examples">
         {tabs.map(({ name, lang, ext }, index) => {
           const tabName = name ?? lang
@@ -53,9 +33,6 @@ export default function CodeTabBar({ tabs, currentName, copyText, className, sho
             aria-selected={active}
             tabIndex={active ? 0 : -1}
             data-code-tabs-tab-name={tabName}
-            suppressHydrationWarning
-            onClick={() => onTabChange?.(tabName)}
-            onKeyDown={event => onTabKeyDown(event, index)}
           >
             <FileIcon name={tabName} lang={lang} ext={ext} className="code-tab-icon" />
             <span>{tabName}</span>
@@ -66,6 +43,6 @@ export default function CodeTabBar({ tabs, currentName, copyText, className, sho
         <FileIcon name={tabs[0]?.name ?? tabs[0]?.lang ?? ''} lang={tabs[0]?.lang} ext={tabs[0]?.ext} className="code-tab-icon" />
         <span>{tabs[0]?.name}</span>
       </div>}
-    {copyable && <div className="code-bar-actions"><CodeCopyButton key={currentName} text={copyText} name={currentName} /></div>}
+    {copyable && <div className="code-bar-actions"><CodeCopyButton name={currentName} /></div>}
   </div>
 }

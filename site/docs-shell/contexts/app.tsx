@@ -1,6 +1,5 @@
-'use client'
-
-import { createContext, useContext } from 'react'
+import { useContext } from 'react'
+import { sharedContext } from '~/site/islands/context'
 import type { ComponentType, FunctionComponent, SVGProps } from 'react'
 
 export declare interface AppNavItem {
@@ -19,7 +18,7 @@ export declare interface App {
   versions: { name: string, href: string }[]
 }
 
-const AppContext = createContext<App | undefined>(undefined)
+const AppContext = sharedContext<App | undefined>('app', undefined)
 
 export const useApp = () => {
   const context = useContext(AppContext)

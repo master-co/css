@@ -11,7 +11,7 @@ import { mdxjsEsmFromMarkdown } from 'mdast-util-mdxjs-esm'
 import { mdxJsx } from 'micromark-extension-mdx-jsx'
 import { mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx'
 
-const root = fileURLToPath(new URL('../app/[locale]', import.meta.url))
+const root = fileURLToPath(new URL('../content', import.meta.url))
 const sharedComponents = new Set(['Image'])
 const jsxParser = acorn.Parser.extend(jsx())
 const mdxAcorn = { ...acorn, Parser: jsxParser, parse: jsxParser.parse.bind(jsxParser), parseExpressionAt: jsxParser.parseExpressionAt.bind(jsxParser) }

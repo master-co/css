@@ -1,8 +1,7 @@
-'use client'
+import { useContext } from 'react'
+import { sharedContext } from '~/site/islands/context'
 
-import { createContext, useContext } from 'react'
-
-const LocaleContext = createContext<any>(null)
+const LocaleContext = sharedContext<any>('locale', null)
 
 export const LocaleProvider = (props: any) => {
   return <LocaleContext.Provider {...props} />

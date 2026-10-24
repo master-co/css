@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from './Image'
 import authors from '../data/authors'
 import clsx from 'clsx'
 import Link from './Link'

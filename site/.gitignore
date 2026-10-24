@@ -10,8 +10,6 @@
 /node_modules
 /.pnp
 .pnp.js
-/public/monaco-editor
-/public/play-compiler
 /public/search
 /public/reference
 /public/tw/reference
@@ -22,9 +20,8 @@
 /playwright-report/
 /blob-report/
 
-# next.js
-/.next/
-/.open-next/
+# astro
+/.astro/
 /out/
 
 # production
@@ -50,4 +47,3 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts

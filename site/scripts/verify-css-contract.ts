@@ -102,7 +102,7 @@ if (!expected) {
 }
 
 async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot> {
-    for (const sourceDirectory of ['app', 'components', 'docs-shell', 'styles']) {
+    for (const sourceDirectory of ['content', 'components', 'docs-shell', 'sections', 'styles']) {
         for (const file of await listFiles(path.join(siteDir, sourceDirectory))) {
             if (file.endsWith('.module.css')) {
                 throw new Error(`Site runtime styles must use route or component CSS: ${path.relative(siteDir, file)}`)
@@ -121,10 +121,17 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     const legacyManifestAssets = files.filter(file => /[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file))
     if (legacyManifestAssets.length) throw new Error('Site still contains legacy runtime manifest media assets; rebuild the output.')
     const stylesheetCache = new Map<string, string>()
-    const stylesheetText = async (reference: string) => {
+    // Delivered CSS includes local @import graphs, expanded at their import positions.
+    const stylesheetText = async (reference: string, seen = new Set<string>()): Promise<string> => {
         const file = publicOutputPath(reference)
+        if (seen.has(file)) return ''
+        seen.add(file)
         if (!stylesheetCache.has(file)) stylesheetCache.set(file, await readFile(file, 'utf8'))
-        return stylesheetCache.get(file)!
+        let css = stylesheetCache.get(file)!
+        for (const [statement, specifier] of css.matchAll(/@import\s+"(\.[^"]+)";/g)) {
+            css = css.replace(statement, await stylesheetText(new URL(specifier, new URL(reference, 'https://css-contract.invalid')).pathname, seen))
+        }
+        return css
     }
     const cssSegments: Record<string, string> = {}
     const rules: Record<string, HydrationRule> = {}
@@ -210,7 +217,6 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
         '/': { reference: false, benchmark: false, demo: false, button: false, review: false },
-        '/play': { reference: false, benchmark: false, demo: false, button: false, review: false },
         '/guide': { reference: false, benchmark: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/guide/benchmarks': { benchmark: true, reference: false },

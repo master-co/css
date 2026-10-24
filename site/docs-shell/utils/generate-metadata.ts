@@ -1,15 +1,14 @@
 import { defu } from 'defu'
-import type { Metadata as NextMetadata, ResolvingMetadata } from 'next'
+import type { Metadata } from '../types/Metadata'
 import type { Props } from '../types/Props'
 import { createTranslation } from './i18n'
 
 export default async function generate(
-  metadata: NextMetadata | Record<string, any>,
-  { params }: Props,
-  dictionaries: Record<string, () => Promise<any>>,
-  parent: ResolvingMetadata
-): Promise<NextMetadata> {
-  const { locale } = await params
+  metadata: Metadata | Record<string, any>,
+  { params }: Pick<Props, 'params'>,
+  dictionaries: Record<string, () => Promise<any>>
+): Promise<Metadata> {
+  const { locale } = params
   const $ = await createTranslation(locale, dictionaries)
   const description = $(metadata.description)
   const category = $(metadata.category)
@@ -26,11 +25,10 @@ export default async function generate(
     requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors.map((author: any) => author.name))
   }
   const baseMetadata: any = {
-    icons: '',
     openGraph: {
       title: ogTitle,
       description: ogDescription,
-      siteName: process.env.NEXT_PUBLIC_PROJECT
+      siteName: import.meta.env.PUBLIC_PROJECT
     },
     twitter: {
       title: ogTitle,
@@ -40,13 +38,11 @@ export default async function generate(
       card: 'summary_large_image'
     }
   }
-  if (!(metadata as any).vercelOG) {
-    if (metadata.openGraph?.images) {
-      baseMetadata.twitter.images = baseMetadata.openGraph.images
-    } else {
-      const ogImageUrl = new URL(`/api/og-image?${new URLSearchParams(requestedSearchParams)}`, process.env.NEXT_PUBLIC_URL).toString()
-      baseMetadata.openGraph.images = baseMetadata.twitter.images = ogImageUrl
-    }
+  if (metadata.openGraph?.images) {
+    baseMetadata.twitter.images = metadata.openGraph.images
+  } else {
+    // postbuild-static renders each placeholder into a static /og image.
+    baseMetadata.openGraph.images = baseMetadata.twitter.images = `/api/og-image?${new URLSearchParams(requestedSearchParams)}`
   }
   return defu(
     {
@@ -60,5 +56,5 @@ export default async function generate(
     },
     metadata,
     baseMetadata
-  )
+  ) as Metadata
 }

@@ -7,7 +7,7 @@ export const deliveryGuideSlugs = ['rendering-modes', 'scanning-latent-classes',
 
 export async function deliveryGuideContent(siteRoot: string, slug: string) {
   if (!deliveryGuideSlugs.includes(slug as typeof deliveryGuideSlugs[number])) throw new Error(`Unsupported delivery guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `app/[locale]/guide/${slug}/content.mdx`), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component: (name, attributes) => name === 'DeliveryFlow' ? deliveryFlowMarkdown(String(attributes.name))
       : name === 'ResourceWaterfall' ? resourceWaterfallsMarkdown()

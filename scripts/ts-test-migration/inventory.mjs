@@ -275,8 +275,8 @@ function resolveKnownGlobPatterns(patterns, treeFiles) {
         if (/\/index\.html$/u.test(file)) return true
         return /\/src\/.*\.(?:ts|tsx|html|vue|svelte|astro)$/u.test(file)
       }))
-    } else if (patternValue.startsWith('site/app/')) {
-      output.push(...treeFiles.filter((file) => /^site\/app\/\[locale\]\/.*\/content\.mdx$/u.test(file)))
+    } else if (patternValue.startsWith('site/content/')) {
+      output.push(...treeFiles.filter((file) => /^site\/content\/.*\/content\.mdx$/u.test(file)))
     }
   }
   return [...new Set(output)].sort()

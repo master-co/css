@@ -110,7 +110,7 @@ test('current Reference excludes upgrade workflows and obsolete syntax identifie
     assert.deepEqual(documentationHygieneIssues(doc.markdown), [], doc.id)
     for (const name of ['@compose', '@settings', '@mode', '@custom-variant']) assert.ok(!doc.aliases.includes(name), `${doc.id}: ${name}`)
   }
-  const guide = await readFile(path.join(root, 'app/[locale]/guide/migration/v2-rc/content.mdx'), 'utf8')
+  const guide = await readFile(path.join(root, 'content/guide/migration/v2-rc/content.mdx'), 'utf8')
   const { execFileSync } = await import('node:child_process')
   const help = execFileSync(process.execPath, [path.join(root, '../packages/cli/dist/bin/index.js'), 'migrate', '--help'], { encoding: 'utf8' })
   for (const option of help.matchAll(/(?:^|\n) {2}(--[\w-]+)/g)) assert.ok(guide.includes(option[1]), option[1])
@@ -246,7 +246,7 @@ test('continuing recipe and Guide anchors remain available', async () => {
       for (const id of page.anchors) if (!Object.hasOwn(anchors, id)) missing.push(`${page.source}#${id}`)
       continue
     }
-    const generated = catalog.documents.find(doc => page.source === `site/app/[locale]/reference/${doc.id}/content.mdx`)
+    const generated = catalog.documents.find(doc => page.source === `site/content/reference/${doc.id}/content.mdx`)
     if (generated) {
       for (const id of page.anchors) if (!generated.markdown.includes(`id="${id}"`) && !generated.headings.some(h => h.id === id)) missing.push(`${page.source}#${id}`)
       continue
@@ -260,7 +260,7 @@ test('continuing recipe and Guide anchors remain available', async () => {
 })
 
 test('Reference links and preserved Guide anchors resolve to real documents and sections', async () => {
-  const guideRoutes = new Set((await readdir(path.join(root, 'app/[locale]/guide'), { recursive: true }))
+  const guideRoutes = new Set((await readdir(path.join(root, 'content/guide'), { recursive: true }))
     .filter(file => file.endsWith('page.tsx'))
     .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.tsx$/, '')))
   for (const doc of catalog.documents) {
@@ -276,7 +276,7 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
   }
   for (const doc of catalog.documents.filter(doc => doc.kind === 'rule')) {
     const [guideURL, guideAnchor] = doc.guide!.split('#')
-    const guide = await readFile(path.join(root, `app/[locale]${guideURL}/content.mdx`), 'utf8')
+    const guide = await readFile(path.join(root, `content${guideURL}/content.mdx`), 'utf8')
     if (guideAnchor) {
       assert.ok(extractSearchNodesFromMdx(guide).some(node => node.id === guideAnchor), doc.guide)
       continue
@@ -293,7 +293,7 @@ test('all 121 retired Guide anchors target an existing contract or migration sec
     const doc = catalog.documents.find(doc => doc.url === url)
     if (doc) assert.ok(doc.headings.some(heading => heading.id === anchor), target)
     else {
-      const text = await readFile(path.join(root, `app/[locale]${url}/content.mdx`), 'utf8')
+      const text = await readFile(path.join(root, `content${url}/content.mdx`), 'utf8')
       assert.ok(text.includes(`{#${anchor}`) || text.includes(`id="${anchor}"`), target)
     }
     count++
@@ -561,7 +561,7 @@ test('directive contracts preserve stable entrances and complete compiled styles
     assert.equal(matching.length, 1, example.title)
     assert.ok(matching[0].markdown.includes(await stylesheetExampleMarkdown(example.title, example.source)))
   }
-  const settings = { markdown: await readFile(path.join(root, 'app/[locale]/guide/migration/v2-rc/content.mdx'), 'utf8') }
+  const settings = { markdown: await readFile(path.join(root, 'content/guide/migration/v2-rc/content.mdx'), 'utf8') }
   assert.match(settings.markdown, /entire directive and manifest `settings` field are removed/)
   assert.match(settings.markdown, /native selectors/)
   assert.match(settings.markdown, /global important/)
@@ -598,7 +598,7 @@ test('package declarations preserve every export and anchor without exposing imp
       inspect(source)
     }
     for (const match of doc.markdown.matchAll(/\]\((\/guide\/[^)#]+)(?:#[^)]+)?\)/g)) {
-      const candidates = (await readdir(path.join(root, 'app/[locale]/guide'), { recursive: true })).filter(file => file.endsWith('page.tsx'))
+      const candidates = (await readdir(path.join(root, 'content/guide'), { recursive: true })).filter(file => file.endsWith('page.tsx'))
       assert.ok(candidates.some(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.tsx$/, '') === match[1]), `${doc.id}: ${match[1]}`)
     }
   }

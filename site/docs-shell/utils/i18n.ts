@@ -1,5 +1,3 @@
-import 'server-only'
-
 export async function createTranslation(locale: string, dictionaries: Record<string, () => Promise<any>>): Promise<(text: any) => string> {
   const translations = await importTranslations(locale, dictionaries)
   return (text: any) => (translations)[text || ''] || text

@@ -1,6 +1,6 @@
 import '~/site/styles/demo.css'
 import type { HTMLAttributes, ReactElement, ReactNode, SVGAttributes } from 'react'
-import Image, { type ImageProps as NextImageProps } from 'next/image'
+import Image, { type ImageProps as BaseImageProps } from '~/site/docs-shell/components/Image'
 import clsx from 'clsx'
 
 export type DemoTone = 'neutral' | 'blue' | 'violet' | 'amber'
@@ -54,7 +54,7 @@ export function DemoText({ variant = 'body', className, ...props }: HTMLAttribut
   return <p {...props} data-variant={variant} className={clsx('demo-text', className)} />
 }
 
-type ImageProps = Omit<NextImageProps, 'src' | 'alt'> & { src: string, alt: string }
+type ImageProps = Omit<BaseImageProps, 'src' | 'alt'> & { src: string, alt: string }
 type VectorProps = SVGAttributes<SVGSVGElement> & { src?: never }
 
 export function DemoMedia(props: ImageProps): ReactElement
@@ -62,7 +62,7 @@ export function DemoMedia(props: VectorProps): ReactElement
 export function DemoMedia(props: ImageProps | VectorProps) {
   if (props.src !== undefined) {
     const { className, alt, ...image } = props
-    return <Image width={320} height={200} unoptimized {...image} alt={alt} className={clsx('demo-media', className)} />
+    return <Image width={320} height={200} {...image} alt={alt} className={clsx('demo-media', className)} />
   }
   const { className, ...vector } = props
   return (

@@ -4,7 +4,7 @@
     {
       "url": "/brand",
       "kind": "brand",
-      "source": "site/app/[locale]/brand/content.mdx",
+      "source": "site/content/brand/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -14,7 +14,7 @@
     {
       "url": "/design-system",
       "kind": "design-system",
-      "source": "site/app/[locale]/design-system/content.mdx",
+      "source": "site/content/design-system/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -24,7 +24,7 @@
     {
       "url": "/guide",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/content.mdx",
+      "source": "site/content/guide/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -34,7 +34,7 @@
     {
       "url": "/guide/ai-coding",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/ai-coding/content.mdx",
+      "source": "site/content/guide/ai-coding/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -45,7 +45,7 @@
     {
       "url": "/guide/authoring-packages",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/authoring-packages/content.mdx",
+      "source": "site/content/guide/authoring-packages/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -56,7 +56,7 @@
     {
       "url": "/guide/benchmarks",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/benchmarks/content.mdx",
+      "source": "site/content/guide/benchmarks/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -66,7 +66,7 @@
     {
       "url": "/guide/breakpoints",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/breakpoints/content.mdx",
+      "source": "site/content/guide/breakpoints/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -76,7 +76,7 @@
     {
       "url": "/guide/cascade-layers",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/cascade-layers/content.mdx",
+      "source": "site/content/guide/cascade-layers/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -88,7 +88,7 @@
     {
       "url": "/guide/code-linting",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/code-linting/content.mdx",
+      "source": "site/content/guide/code-linting/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -99,7 +99,7 @@
     {
       "url": "/guide/colors",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/colors/content.mdx",
+      "source": "site/content/guide/colors/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -109,7 +109,7 @@
     {
       "url": "/guide/compatibility",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/compatibility/content.mdx",
+      "source": "site/content/guide/compatibility/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -120,7 +120,7 @@
     {
       "url": "/guide/containers",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/containers/content.mdx",
+      "source": "site/content/guide/containers/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -130,7 +130,7 @@
     {
       "url": "/guide/corner-radius",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/corner-radius/content.mdx",
+      "source": "site/content/guide/corner-radius/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -140,7 +140,7 @@
     {
       "url": "/guide/elevation",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/elevation/content.mdx",
+      "source": "site/content/guide/elevation/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -150,7 +150,7 @@
     {
       "url": "/guide/flash-of-unstyled-content",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/flash-of-unstyled-content/content.mdx",
+      "source": "site/content/guide/flash-of-unstyled-content/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -162,7 +162,7 @@
     {
       "url": "/guide/global-styles",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/global-styles/content.mdx",
+      "source": "site/content/guide/global-styles/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -174,7 +174,7 @@
     {
       "url": "/guide/installation",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/(main)/content.mdx",
+      "source": "site/content/guide/installation/(main)/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -185,7 +185,7 @@
     {
       "url": "/guide/installation/angular",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/angular/content.mdx",
+      "source": "site/content/guide/installation/angular/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -196,7 +196,7 @@
     {
       "url": "/guide/installation/angular/runtime-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/angular/runtime-rendering/content.mdx",
+      "source": "site/content/guide/installation/angular/runtime-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -207,7 +207,7 @@
     {
       "url": "/guide/installation/angular/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/angular/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/angular/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -218,7 +218,7 @@
     {
       "url": "/guide/installation/aspnet-core",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/aspnet-core/content.mdx",
+      "source": "site/content/guide/installation/aspnet-core/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -228,7 +228,7 @@
     {
       "url": "/guide/installation/aspnet-core/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/aspnet-core/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/aspnet-core/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -238,7 +238,7 @@
     {
       "url": "/guide/installation/astro",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/astro/content.mdx",
+      "source": "site/content/guide/installation/astro/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -248,7 +248,7 @@
     {
       "url": "/guide/installation/astro/runtime-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/astro/runtime-rendering/content.mdx",
+      "source": "site/content/guide/installation/astro/runtime-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -258,7 +258,7 @@
     {
       "url": "/guide/installation/astro/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/astro/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/astro/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -268,7 +268,7 @@
     {
       "url": "/guide/installation/blazor",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/blazor/content.mdx",
+      "source": "site/content/guide/installation/blazor/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -278,7 +278,7 @@
     {
       "url": "/guide/installation/blazor/runtime-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/blazor/runtime-rendering/content.mdx",
+      "source": "site/content/guide/installation/blazor/runtime-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -288,7 +288,7 @@
     {
       "url": "/guide/installation/blazor/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/blazor/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/blazor/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -298,7 +298,7 @@
     {
       "url": "/guide/installation/cdn",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/(main)/cdn/content.mdx",
+      "source": "site/content/guide/installation/(main)/cdn/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -309,7 +309,7 @@
     {
       "url": "/guide/installation/cli",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/(main)/cli/content.mdx",
+      "source": "site/content/guide/installation/(main)/cli/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -320,7 +320,7 @@
     {
       "url": "/guide/installation/express",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/express/content.mdx",
+      "source": "site/content/guide/installation/express/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -330,7 +330,7 @@
     {
       "url": "/guide/installation/express/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/express/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/express/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -340,7 +340,7 @@
     {
       "url": "/guide/installation/integrations",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/(main)/integrations/content.mdx",
+      "source": "site/content/guide/installation/(main)/integrations/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -351,7 +351,7 @@
     {
       "url": "/guide/installation/laravel",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/laravel/content.mdx",
+      "source": "site/content/guide/installation/laravel/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -361,7 +361,7 @@
     {
       "url": "/guide/installation/lit",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/lit/content.mdx",
+      "source": "site/content/guide/installation/lit/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -372,7 +372,7 @@
     {
       "url": "/guide/installation/nextjs",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nextjs/content.mdx",
+      "source": "site/content/guide/installation/nextjs/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -383,7 +383,7 @@
     {
       "url": "/guide/installation/nextjs/runtime-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nextjs/runtime-rendering/content.mdx",
+      "source": "site/content/guide/installation/nextjs/runtime-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -394,7 +394,7 @@
     {
       "url": "/guide/installation/nextjs/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nextjs/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/nextjs/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -405,7 +405,7 @@
     {
       "url": "/guide/installation/nuxtjs",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nuxtjs/content.mdx",
+      "source": "site/content/guide/installation/nuxtjs/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -415,7 +415,7 @@
     {
       "url": "/guide/installation/nuxtjs/runtime-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nuxtjs/runtime-rendering/content.mdx",
+      "source": "site/content/guide/installation/nuxtjs/runtime-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -425,7 +425,7 @@
     {
       "url": "/guide/installation/nuxtjs/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/nuxtjs/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/nuxtjs/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -435,7 +435,7 @@
     {
       "url": "/guide/installation/php",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/php/content.mdx",
+      "source": "site/content/guide/installation/php/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -445,7 +445,7 @@
     {
       "url": "/guide/installation/php/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/php/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/php/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -455,7 +455,7 @@
     {
       "url": "/guide/installation/rails",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rails/content.mdx",
+      "source": "site/content/guide/installation/rails/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -465,7 +465,7 @@
     {
       "url": "/guide/installation/rails/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rails/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/rails/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -475,7 +475,7 @@
     {
       "url": "/guide/installation/react",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/react/content.mdx",
+      "source": "site/content/guide/installation/react/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -486,7 +486,7 @@
     {
       "url": "/guide/installation/react-router",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/react-router/content.mdx",
+      "source": "site/content/guide/installation/react-router/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -496,7 +496,7 @@
     {
       "url": "/guide/installation/react-router/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/react-router/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/react-router/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -506,7 +506,7 @@
     {
       "url": "/guide/installation/react/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/react/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/react/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -517,7 +517,7 @@
     {
       "url": "/guide/installation/rsbuild",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rsbuild/content.mdx",
+      "source": "site/content/guide/installation/rsbuild/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -527,7 +527,7 @@
     {
       "url": "/guide/installation/rsbuild/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rsbuild/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/rsbuild/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -537,7 +537,7 @@
     {
       "url": "/guide/installation/rspack",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rspack/content.mdx",
+      "source": "site/content/guide/installation/rspack/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -547,7 +547,7 @@
     {
       "url": "/guide/installation/rspack/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/rspack/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/rspack/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -557,7 +557,7 @@
     {
       "url": "/guide/installation/shopify",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/shopify/content.mdx",
+      "source": "site/content/guide/installation/shopify/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -567,7 +567,7 @@
     {
       "url": "/guide/installation/storybook",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/storybook/content.mdx",
+      "source": "site/content/guide/installation/storybook/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -578,7 +578,7 @@
     {
       "url": "/guide/installation/svelte",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/svelte/content.mdx",
+      "source": "site/content/guide/installation/svelte/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -588,7 +588,7 @@
     {
       "url": "/guide/installation/tanstack-start",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/tanstack-start/content.mdx",
+      "source": "site/content/guide/installation/tanstack-start/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -599,7 +599,7 @@
     {
       "url": "/guide/installation/tanstack-start/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/tanstack-start/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/tanstack-start/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -610,7 +610,7 @@
     {
       "url": "/guide/installation/vite",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/vite/content.mdx",
+      "source": "site/content/guide/installation/vite/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -621,7 +621,7 @@
     {
       "url": "/guide/installation/vite/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/vite/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/vite/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -632,7 +632,7 @@
     {
       "url": "/guide/installation/vscode",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/vscode/content.mdx",
+      "source": "site/content/guide/installation/vscode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -643,7 +643,7 @@
     {
       "url": "/guide/installation/vuejs",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/vuejs/content.mdx",
+      "source": "site/content/guide/installation/vuejs/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -654,7 +654,7 @@
     {
       "url": "/guide/installation/vuejs/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/vuejs/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/vuejs/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -665,7 +665,7 @@
     {
       "url": "/guide/installation/webpack",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/webpack/content.mdx",
+      "source": "site/content/guide/installation/webpack/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -675,7 +675,7 @@
     {
       "url": "/guide/installation/webpack/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/webpack/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/webpack/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -685,7 +685,7 @@
     {
       "url": "/guide/installation/wordpress",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/wordpress/content.mdx",
+      "source": "site/content/guide/installation/wordpress/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -695,7 +695,7 @@
     {
       "url": "/guide/installation/wordpress/static-rendering",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/installation/wordpress/static-rendering/content.mdx",
+      "source": "site/content/guide/installation/wordpress/static-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -705,7 +705,7 @@
     {
       "url": "/guide/introduction",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/introduction/content.mdx",
+      "source": "site/content/guide/introduction/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -715,7 +715,7 @@
     {
       "url": "/guide/language-service",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/language-service/content.mdx",
+      "source": "site/content/guide/language-service/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -726,7 +726,7 @@
     {
       "url": "/guide/layout-system",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/layout-system/content.mdx",
+      "source": "site/content/guide/layout-system/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -736,7 +736,7 @@
     {
       "url": "/guide/mcp-server",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/mcp-server/content.mdx",
+      "source": "site/content/guide/mcp-server/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -747,7 +747,7 @@
     {
       "url": "/guide/migration",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/content.mdx",
+      "source": "site/content/guide/migration/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -757,7 +757,7 @@
     {
       "url": "/guide/migration/bootstrap",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/bootstrap/content.mdx",
+      "source": "site/content/guide/migration/bootstrap/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -767,7 +767,7 @@
     {
       "url": "/guide/migration/css",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/css/content.mdx",
+      "source": "site/content/guide/migration/css/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -779,7 +779,7 @@
     {
       "url": "/guide/migration/css-in-js",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/css-in-js/content.mdx",
+      "source": "site/content/guide/migration/css-in-js/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -791,7 +791,7 @@
     {
       "url": "/guide/migration/material-ui",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/material-ui/content.mdx",
+      "source": "site/content/guide/migration/material-ui/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -801,7 +801,7 @@
     {
       "url": "/guide/migration/sass",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/sass/content.mdx",
+      "source": "site/content/guide/migration/sass/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -811,7 +811,7 @@
     {
       "url": "/guide/migration/tailwindcss",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/tailwindcss/content.mdx",
+      "source": "site/content/guide/migration/tailwindcss/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -823,7 +823,7 @@
     {
       "url": "/guide/migration/v1",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/migration/v1/content.mdx",
+      "source": "site/content/guide/migration/v1/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -835,7 +835,7 @@
     {
       "url": "/guide/monorepo",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/monorepo/content.mdx",
+      "source": "site/content/guide/monorepo/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -846,7 +846,7 @@
     {
       "url": "/guide/motion",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/motion/content.mdx",
+      "source": "site/content/guide/motion/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -856,7 +856,7 @@
     {
       "url": "/guide/native-css-pruning",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/native-css-pruning/content.mdx",
+      "source": "site/content/guide/native-css-pruning/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -868,7 +868,7 @@
     {
       "url": "/guide/preload-critical-resources",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/preload-critical-resources/content.mdx",
+      "source": "site/content/guide/preload-critical-resources/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -880,7 +880,7 @@
     {
       "url": "/guide/rendering-modes",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/rendering-modes/content.mdx",
+      "source": "site/content/guide/rendering-modes/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -892,7 +892,7 @@
     {
       "url": "/guide/responsive-design",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/responsive-design/content.mdx",
+      "source": "site/content/guide/responsive-design/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -902,7 +902,7 @@
     {
       "url": "/guide/route-level-styles",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/route-level-styles/content.mdx",
+      "source": "site/content/guide/route-level-styles/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -914,7 +914,7 @@
     {
       "url": "/guide/scanning-latent-classes",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/scanning-latent-classes/content.mdx",
+      "source": "site/content/guide/scanning-latent-classes/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -926,7 +926,7 @@
     {
       "url": "/guide/sizing",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/sizing/content.mdx",
+      "source": "site/content/guide/sizing/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -936,7 +936,7 @@
     {
       "url": "/guide/spacing",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/spacing/content.mdx",
+      "source": "site/content/guide/spacing/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -947,7 +947,7 @@
     {
       "url": "/guide/syntax-tutorial",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/syntax-tutorial/content.mdx",
+      "source": "site/content/guide/syntax-tutorial/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -957,7 +957,7 @@
     {
       "url": "/guide/theme",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/theme/content.mdx",
+      "source": "site/content/guide/theme/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -969,7 +969,7 @@
     {
       "url": "/guide/typography",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/typography/content.mdx",
+      "source": "site/content/guide/typography/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -979,7 +979,7 @@
     {
       "url": "/guide/variables-and-modes",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/variables-and-modes/content.mdx",
+      "source": "site/content/guide/variables-and-modes/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -991,7 +991,7 @@
     {
       "url": "/guide/view-transitions",
       "kind": "guide",
-      "source": "site/app/[locale]/guide/view-transitions/content.mdx",
+      "source": "site/content/guide/view-transitions/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1002,7 +1002,7 @@
     {
       "url": "/reference",
       "kind": "index",
-      "source": "site/app/[locale]/reference/content.mdx",
+      "source": "site/content/reference/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1012,7 +1012,7 @@
     {
       "url": "/reference/accent-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/accent-color/content.mdx",
+      "source": "site/content/reference/accent-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1023,7 +1023,7 @@
     {
       "url": "/reference/align-content",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/align-content/content.mdx",
+      "source": "site/content/reference/align-content/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1034,7 +1034,7 @@
     {
       "url": "/reference/align-items",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/align-items/content.mdx",
+      "source": "site/content/reference/align-items/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1045,7 +1045,7 @@
     {
       "url": "/reference/align-self",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/align-self/content.mdx",
+      "source": "site/content/reference/align-self/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1056,7 +1056,7 @@
     {
       "url": "/reference/animate",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animate/content.mdx",
+      "source": "site/content/reference/animate/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1067,7 +1067,7 @@
     {
       "url": "/reference/animation-delay",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-delay/content.mdx",
+      "source": "site/content/reference/animation-delay/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1078,7 +1078,7 @@
     {
       "url": "/reference/animation-direction",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-direction/content.mdx",
+      "source": "site/content/reference/animation-direction/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1089,7 +1089,7 @@
     {
       "url": "/reference/animation-duration",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-duration/content.mdx",
+      "source": "site/content/reference/animation-duration/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1100,7 +1100,7 @@
     {
       "url": "/reference/animation-fill-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-fill-mode/content.mdx",
+      "source": "site/content/reference/animation-fill-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1111,7 +1111,7 @@
     {
       "url": "/reference/animation-iteration-count",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-iteration-count/content.mdx",
+      "source": "site/content/reference/animation-iteration-count/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1122,7 +1122,7 @@
     {
       "url": "/reference/animation-name",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-name/content.mdx",
+      "source": "site/content/reference/animation-name/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1133,7 +1133,7 @@
     {
       "url": "/reference/animation-play-state",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-play-state/content.mdx",
+      "source": "site/content/reference/animation-play-state/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1144,7 +1144,7 @@
     {
       "url": "/reference/animation-timing-function",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/animation-timing-function/content.mdx",
+      "source": "site/content/reference/animation-timing-function/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1155,7 +1155,7 @@
     {
       "url": "/reference/appearance",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/appearance/content.mdx",
+      "source": "site/content/reference/appearance/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1166,7 +1166,7 @@
     {
       "url": "/reference/aspect-ratio",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/aspect-ratio/content.mdx",
+      "source": "site/content/reference/aspect-ratio/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1177,7 +1177,7 @@
     {
       "url": "/reference/backdrop-filter",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/backdrop-filter/content.mdx",
+      "source": "site/content/reference/backdrop-filter/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1188,7 +1188,7 @@
     {
       "url": "/reference/background-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-color/content.mdx",
+      "source": "site/content/reference/background-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1199,7 +1199,7 @@
     {
       "url": "/reference/background-attachment",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-attachment/content.mdx",
+      "source": "site/content/reference/background-attachment/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1210,7 +1210,7 @@
     {
       "url": "/reference/background-blend-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-blend-mode/content.mdx",
+      "source": "site/content/reference/background-blend-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1221,7 +1221,7 @@
     {
       "url": "/reference/background-clip",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-clip/content.mdx",
+      "source": "site/content/reference/background-clip/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1232,7 +1232,7 @@
     {
       "url": "/reference/background-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-color/content.mdx",
+      "source": "site/content/reference/background-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1243,7 +1243,7 @@
     {
       "url": "/reference/background-image",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-image/content.mdx",
+      "source": "site/content/reference/background-image/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1254,7 +1254,7 @@
     {
       "url": "/reference/background-origin",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-origin/content.mdx",
+      "source": "site/content/reference/background-origin/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1265,7 +1265,7 @@
     {
       "url": "/reference/background-position",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-position/content.mdx",
+      "source": "site/content/reference/background-position/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1276,7 +1276,7 @@
     {
       "url": "/reference/background-repeat",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-repeat/content.mdx",
+      "source": "site/content/reference/background-repeat/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1287,7 +1287,7 @@
     {
       "url": "/reference/background-size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/background-size/content.mdx",
+      "source": "site/content/reference/background-size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1298,7 +1298,7 @@
     {
       "url": "/reference/border-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-width/content.mdx",
+      "source": "site/content/reference/border-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1309,7 +1309,7 @@
     {
       "url": "/reference/border-collapse",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-collapse/content.mdx",
+      "source": "site/content/reference/border-collapse/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1320,7 +1320,7 @@
     {
       "url": "/reference/border-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-color/content.mdx",
+      "source": "site/content/reference/border-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1331,7 +1331,7 @@
     {
       "url": "/reference/border-image-source",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-source/content.mdx",
+      "source": "site/content/reference/border-image-source/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1342,7 +1342,7 @@
     {
       "url": "/reference/border-image-outset",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-outset/content.mdx",
+      "source": "site/content/reference/border-image-outset/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1353,7 +1353,7 @@
     {
       "url": "/reference/border-image-repeat",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-repeat/content.mdx",
+      "source": "site/content/reference/border-image-repeat/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1364,7 +1364,7 @@
     {
       "url": "/reference/border-image-slice",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-slice/content.mdx",
+      "source": "site/content/reference/border-image-slice/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1375,7 +1375,7 @@
     {
       "url": "/reference/border-image-source",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-source/content.mdx",
+      "source": "site/content/reference/border-image-source/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1386,7 +1386,7 @@
     {
       "url": "/reference/border-image-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-image-width/content.mdx",
+      "source": "site/content/reference/border-image-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1397,7 +1397,7 @@
     {
       "url": "/reference/border-radius",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-radius/content.mdx",
+      "source": "site/content/reference/border-radius/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1408,7 +1408,7 @@
     {
       "url": "/reference/border-style",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-style/content.mdx",
+      "source": "site/content/reference/border-style/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1419,7 +1419,7 @@
     {
       "url": "/reference/border-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/border-width/content.mdx",
+      "source": "site/content/reference/border-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1430,7 +1430,7 @@
     {
       "url": "/reference/box-decoration-break",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/box-decoration-break/content.mdx",
+      "source": "site/content/reference/box-decoration-break/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1441,7 +1441,7 @@
     {
       "url": "/reference/box-shadow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/box-shadow/content.mdx",
+      "source": "site/content/reference/box-shadow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1452,7 +1452,7 @@
     {
       "url": "/reference/box-sizing",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/box-sizing/content.mdx",
+      "source": "site/content/reference/box-sizing/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1463,7 +1463,7 @@
     {
       "url": "/reference/break-after",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/break-after/content.mdx",
+      "source": "site/content/reference/break-after/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1474,7 +1474,7 @@
     {
       "url": "/reference/break-before",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/break-before/content.mdx",
+      "source": "site/content/reference/break-before/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1485,7 +1485,7 @@
     {
       "url": "/reference/break-inside",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/break-inside/content.mdx",
+      "source": "site/content/reference/break-inside/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1496,7 +1496,7 @@
     {
       "url": "/reference/caret-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/caret-color/content.mdx",
+      "source": "site/content/reference/caret-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1507,7 +1507,7 @@
     {
       "url": "/reference/clear",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/clear/content.mdx",
+      "source": "site/content/reference/clear/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1518,7 +1518,7 @@
     {
       "url": "/reference/clip-path",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/clip-path/content.mdx",
+      "source": "site/content/reference/clip-path/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1529,7 +1529,7 @@
     {
       "url": "/reference/color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/color/content.mdx",
+      "source": "site/content/reference/color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1540,7 +1540,7 @@
     {
       "url": "/reference/column-span",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/column-span/content.mdx",
+      "source": "site/content/reference/column-span/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1551,7 +1551,7 @@
     {
       "url": "/reference/column-count",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/column-count/content.mdx",
+      "source": "site/content/reference/column-count/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1562,7 +1562,7 @@
     {
       "url": "/reference/contain",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/contain/content.mdx",
+      "source": "site/content/reference/contain/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1573,7 +1573,7 @@
     {
       "url": "/reference/content",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/content/content.mdx",
+      "source": "site/content/reference/content/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1584,7 +1584,7 @@
     {
       "url": "/reference/counter-increment",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/counter-increment/content.mdx",
+      "source": "site/content/reference/counter-increment/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1595,7 +1595,7 @@
     {
       "url": "/reference/counter-reset",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/counter-reset/content.mdx",
+      "source": "site/content/reference/counter-reset/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1606,7 +1606,7 @@
     {
       "url": "/reference/counter-set",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/counter-set/content.mdx",
+      "source": "site/content/reference/counter-set/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1617,7 +1617,7 @@
     {
       "url": "/reference/cursor",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/cursor/content.mdx",
+      "source": "site/content/reference/cursor/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1628,7 +1628,7 @@
     {
       "url": "/reference/direction",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/direction/content.mdx",
+      "source": "site/content/reference/direction/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1639,7 +1639,7 @@
     {
       "url": "/reference/directives/candidates",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1650,7 +1650,7 @@
     {
       "url": "/reference/directives/compose",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1661,7 +1661,7 @@
     {
       "url": "/reference/directives/definitions",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1672,7 +1672,7 @@
     {
       "url": "/reference/directives/entry",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1683,7 +1683,7 @@
     {
       "url": "/reference/directives/preserve",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1694,7 +1694,7 @@
     {
       "url": "/reference/directives/reference",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1705,7 +1705,7 @@
     {
       "url": "/reference/directives/settings",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1716,7 +1716,7 @@
     {
       "url": "/reference/directives/source",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1727,7 +1727,7 @@
     {
       "url": "/reference/directives/theme",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1738,7 +1738,7 @@
     {
       "url": "/reference/directives/variant",
       "kind": "directive",
-      "source": "site/app/[locale]/guide/directives/contract.mdx",
+      "source": "site/content/guide/directives/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1749,7 +1749,7 @@
     {
       "url": "/reference/display",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/display/content.mdx",
+      "source": "site/content/reference/display/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1760,7 +1760,7 @@
     {
       "url": "/reference/fill",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/fill/content.mdx",
+      "source": "site/content/reference/fill/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1771,7 +1771,7 @@
     {
       "url": "/reference/filter",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/filter/content.mdx",
+      "source": "site/content/reference/filter/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1782,7 +1782,7 @@
     {
       "url": "/reference/flex-grow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-grow/content.mdx",
+      "source": "site/content/reference/flex-grow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1793,7 +1793,7 @@
     {
       "url": "/reference/flex-basis",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-basis/content.mdx",
+      "source": "site/content/reference/flex-basis/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1804,7 +1804,7 @@
     {
       "url": "/reference/flex-direction",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-direction/content.mdx",
+      "source": "site/content/reference/flex-direction/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1815,7 +1815,7 @@
     {
       "url": "/reference/flex-grow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-grow/content.mdx",
+      "source": "site/content/reference/flex-grow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1826,7 +1826,7 @@
     {
       "url": "/reference/flex-shrink",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-shrink/content.mdx",
+      "source": "site/content/reference/flex-shrink/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1837,7 +1837,7 @@
     {
       "url": "/reference/flex-wrap",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/flex-wrap/content.mdx",
+      "source": "site/content/reference/flex-wrap/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1848,7 +1848,7 @@
     {
       "url": "/reference/float",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/float/content.mdx",
+      "source": "site/content/reference/float/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1859,7 +1859,7 @@
     {
       "url": "/reference/font-family",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-family/content.mdx",
+      "source": "site/content/reference/font-family/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1870,7 +1870,7 @@
     {
       "url": "/reference/font-feature-settings",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-feature-settings/content.mdx",
+      "source": "site/content/reference/font-feature-settings/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1881,7 +1881,7 @@
     {
       "url": "/reference/font-size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-size/content.mdx",
+      "source": "site/content/reference/font-size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1892,7 +1892,7 @@
     {
       "url": "/reference/font-style",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-style/content.mdx",
+      "source": "site/content/reference/font-style/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1903,7 +1903,7 @@
     {
       "url": "/reference/font-variant-numeric",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-variant-numeric/content.mdx",
+      "source": "site/content/reference/font-variant-numeric/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1914,7 +1914,7 @@
     {
       "url": "/reference/font-weight",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/font-weight/content.mdx",
+      "source": "site/content/reference/font-weight/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1925,7 +1925,7 @@
     {
       "url": "/reference/gap",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/gap/content.mdx",
+      "source": "site/content/reference/gap/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1936,7 +1936,7 @@
     {
       "url": "/reference/grid-template-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template-columns/content.mdx",
+      "source": "site/content/reference/grid-template-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1947,7 +1947,7 @@
     {
       "url": "/reference/grid-area",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-area/content.mdx",
+      "source": "site/content/reference/grid-area/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1958,7 +1958,7 @@
     {
       "url": "/reference/grid-auto-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-auto-columns/content.mdx",
+      "source": "site/content/reference/grid-auto-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1969,7 +1969,7 @@
     {
       "url": "/reference/grid-auto-flow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-auto-flow/content.mdx",
+      "source": "site/content/reference/grid-auto-flow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1980,7 +1980,7 @@
     {
       "url": "/reference/grid-auto-rows",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-auto-rows/content.mdx",
+      "source": "site/content/reference/grid-auto-rows/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -1991,7 +1991,7 @@
     {
       "url": "/reference/grid-column",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-column/content.mdx",
+      "source": "site/content/reference/grid-column/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2002,7 +2002,7 @@
     {
       "url": "/reference/grid-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-columns/content.mdx",
+      "source": "site/content/reference/grid-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2013,7 +2013,7 @@
     {
       "url": "/reference/grid-row",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-row/content.mdx",
+      "source": "site/content/reference/grid-row/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2024,7 +2024,7 @@
     {
       "url": "/reference/grid-rows",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-rows/content.mdx",
+      "source": "site/content/reference/grid-rows/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2035,7 +2035,7 @@
     {
       "url": "/reference/grid-template-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template-columns/content.mdx",
+      "source": "site/content/reference/grid-template-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2046,7 +2046,7 @@
     {
       "url": "/reference/grid-template-areas",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template-areas/content.mdx",
+      "source": "site/content/reference/grid-template-areas/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2057,7 +2057,7 @@
     {
       "url": "/reference/grid-template-columns",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template-columns/content.mdx",
+      "source": "site/content/reference/grid-template-columns/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2068,7 +2068,7 @@
     {
       "url": "/reference/grid-template-rows",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/grid-template-rows/content.mdx",
+      "source": "site/content/reference/grid-template-rows/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2079,7 +2079,7 @@
     {
       "url": "/reference/height",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/height/content.mdx",
+      "source": "site/content/reference/height/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2090,7 +2090,7 @@
     {
       "url": "/reference/hyphens",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/hyphens/content.mdx",
+      "source": "site/content/reference/hyphens/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2101,7 +2101,7 @@
     {
       "url": "/reference/inset",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/inset/content.mdx",
+      "source": "site/content/reference/inset/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2112,7 +2112,7 @@
     {
       "url": "/reference/isolation",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/isolation/content.mdx",
+      "source": "site/content/reference/isolation/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2123,7 +2123,7 @@
     {
       "url": "/reference/justify-content",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/justify-content/content.mdx",
+      "source": "site/content/reference/justify-content/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2134,7 +2134,7 @@
     {
       "url": "/reference/justify-items",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/justify-items/content.mdx",
+      "source": "site/content/reference/justify-items/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2145,7 +2145,7 @@
     {
       "url": "/reference/justify-self",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/justify-self/content.mdx",
+      "source": "site/content/reference/justify-self/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2156,7 +2156,7 @@
     {
       "url": "/reference/letter-spacing",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/letter-spacing/content.mdx",
+      "source": "site/content/reference/letter-spacing/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2167,7 +2167,7 @@
     {
       "url": "/reference/clamp-lines",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/clamp-lines/content.mdx",
+      "source": "site/content/reference/clamp-lines/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2178,7 +2178,7 @@
     {
       "url": "/reference/line-height",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/line-height/content.mdx",
+      "source": "site/content/reference/line-height/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2189,7 +2189,7 @@
     {
       "url": "/reference/list-style-type",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/list-style-type/content.mdx",
+      "source": "site/content/reference/list-style-type/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2200,7 +2200,7 @@
     {
       "url": "/reference/list-style-image",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/list-style-image/content.mdx",
+      "source": "site/content/reference/list-style-image/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2211,7 +2211,7 @@
     {
       "url": "/reference/list-style-position",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/list-style-position/content.mdx",
+      "source": "site/content/reference/list-style-position/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2222,7 +2222,7 @@
     {
       "url": "/reference/list-style-type",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/list-style-type/content.mdx",
+      "source": "site/content/reference/list-style-type/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2233,7 +2233,7 @@
     {
       "url": "/reference/margin",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/margin/content.mdx",
+      "source": "site/content/reference/margin/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2244,7 +2244,7 @@
     {
       "url": "/reference/mask-image",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/mask-image/content.mdx",
+      "source": "site/content/reference/mask-image/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2255,7 +2255,7 @@
     {
       "url": "/reference/max-height",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/max-height/content.mdx",
+      "source": "site/content/reference/max-height/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2266,7 +2266,7 @@
     {
       "url": "/reference/max-size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/max-size/content.mdx",
+      "source": "site/content/reference/max-size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2277,7 +2277,7 @@
     {
       "url": "/reference/max-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/max-width/content.mdx",
+      "source": "site/content/reference/max-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2288,7 +2288,7 @@
     {
       "url": "/reference/min-height",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/min-height/content.mdx",
+      "source": "site/content/reference/min-height/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2299,7 +2299,7 @@
     {
       "url": "/reference/min-size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/min-size/content.mdx",
+      "source": "site/content/reference/min-size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2310,7 +2310,7 @@
     {
       "url": "/reference/min-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/min-width/content.mdx",
+      "source": "site/content/reference/min-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2321,7 +2321,7 @@
     {
       "url": "/reference/mix-blend-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/mix-blend-mode/content.mdx",
+      "source": "site/content/reference/mix-blend-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2332,7 +2332,7 @@
     {
       "url": "/reference/object-fit",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/object-fit/content.mdx",
+      "source": "site/content/reference/object-fit/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2343,7 +2343,7 @@
     {
       "url": "/reference/object-position",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/object-position/content.mdx",
+      "source": "site/content/reference/object-position/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2354,7 +2354,7 @@
     {
       "url": "/reference/opacity",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/opacity/content.mdx",
+      "source": "site/content/reference/opacity/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2365,7 +2365,7 @@
     {
       "url": "/reference/order",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/order/content.mdx",
+      "source": "site/content/reference/order/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2376,7 +2376,7 @@
     {
       "url": "/reference/outline-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline-width/content.mdx",
+      "source": "site/content/reference/outline-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2387,7 +2387,7 @@
     {
       "url": "/reference/outline-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline-color/content.mdx",
+      "source": "site/content/reference/outline-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2398,7 +2398,7 @@
     {
       "url": "/reference/outline-offset",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline-offset/content.mdx",
+      "source": "site/content/reference/outline-offset/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2409,7 +2409,7 @@
     {
       "url": "/reference/outline-style",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline-style/content.mdx",
+      "source": "site/content/reference/outline-style/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2420,7 +2420,7 @@
     {
       "url": "/reference/outline-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/outline-width/content.mdx",
+      "source": "site/content/reference/outline-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2431,7 +2431,7 @@
     {
       "url": "/reference/overflow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/overflow/content.mdx",
+      "source": "site/content/reference/overflow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2442,7 +2442,7 @@
     {
       "url": "/reference/overflow-wrap",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/overflow-wrap/content.mdx",
+      "source": "site/content/reference/overflow-wrap/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2453,7 +2453,7 @@
     {
       "url": "/reference/overscroll-behavior",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/overscroll-behavior/content.mdx",
+      "source": "site/content/reference/overscroll-behavior/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2684,7 +2684,7 @@
     {
       "url": "/reference/padding",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/padding/content.mdx",
+      "source": "site/content/reference/padding/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2695,7 +2695,7 @@
     {
       "url": "/reference/place-content",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/place-content/content.mdx",
+      "source": "site/content/reference/place-content/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2706,7 +2706,7 @@
     {
       "url": "/reference/place-items",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/place-items/content.mdx",
+      "source": "site/content/reference/place-items/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2717,7 +2717,7 @@
     {
       "url": "/reference/place-self",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/place-self/content.mdx",
+      "source": "site/content/reference/place-self/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2728,7 +2728,7 @@
     {
       "url": "/reference/pointer-events",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/pointer-events/content.mdx",
+      "source": "site/content/reference/pointer-events/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2739,7 +2739,7 @@
     {
       "url": "/reference/position",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/position/content.mdx",
+      "source": "site/content/reference/position/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2750,7 +2750,7 @@
     {
       "url": "/reference/resize",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/resize/content.mdx",
+      "source": "site/content/reference/resize/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2761,7 +2761,7 @@
     {
       "url": "/reference/rules/conditions",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/conditional-queries/contract.mdx",
+      "source": "site/content/guide/conditional-queries/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2772,7 +2772,7 @@
     {
       "url": "/reference/rules/declarations",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/style-declarations/contract.mdx",
+      "source": "site/content/guide/style-declarations/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2783,7 +2783,7 @@
     {
       "url": "/reference/rules/extraction",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/scanning-latent-classes/contract.mdx",
+      "source": "site/content/guide/scanning-latent-classes/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2794,7 +2794,7 @@
     {
       "url": "/reference/rules/layers",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/cascade-layers/contract.mdx",
+      "source": "site/content/guide/cascade-layers/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2805,7 +2805,7 @@
     {
       "url": "/reference/rules/modes",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/variables-and-modes/contract.mdx",
+      "source": "site/content/guide/variables-and-modes/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2816,7 +2816,7 @@
     {
       "url": "/reference/rules/selectors",
       "kind": "rule",
-      "source": "site/app/[locale]/guide/state-selectors/contract.mdx",
+      "source": "site/content/guide/state-selectors/contract.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2827,7 +2827,7 @@
     {
       "url": "/reference/screen-readers",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/screen-readers/content.mdx",
+      "source": "site/content/reference/screen-readers/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2838,7 +2838,7 @@
     {
       "url": "/reference/scroll-behavior",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-behavior/content.mdx",
+      "source": "site/content/reference/scroll-behavior/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2849,7 +2849,7 @@
     {
       "url": "/reference/scroll-margin",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-margin/content.mdx",
+      "source": "site/content/reference/scroll-margin/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2860,7 +2860,7 @@
     {
       "url": "/reference/scroll-padding",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-padding/content.mdx",
+      "source": "site/content/reference/scroll-padding/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2871,7 +2871,7 @@
     {
       "url": "/reference/scroll-snap-align",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-snap-align/content.mdx",
+      "source": "site/content/reference/scroll-snap-align/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2882,7 +2882,7 @@
     {
       "url": "/reference/scroll-snap-stop",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-snap-stop/content.mdx",
+      "source": "site/content/reference/scroll-snap-stop/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2893,7 +2893,7 @@
     {
       "url": "/reference/scroll-snap-type",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/scroll-snap-type/content.mdx",
+      "source": "site/content/reference/scroll-snap-type/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2904,7 +2904,7 @@
     {
       "url": "/reference/shape-image-threshold",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/shape-image-threshold/content.mdx",
+      "source": "site/content/reference/shape-image-threshold/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2915,7 +2915,7 @@
     {
       "url": "/reference/shape-margin",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/shape-margin/content.mdx",
+      "source": "site/content/reference/shape-margin/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2926,7 +2926,7 @@
     {
       "url": "/reference/shape-outside",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/shape-outside/content.mdx",
+      "source": "site/content/reference/shape-outside/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2937,7 +2937,7 @@
     {
       "url": "/reference/size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/size/content.mdx",
+      "source": "site/content/reference/size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2948,7 +2948,7 @@
     {
       "url": "/reference/stroke",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/stroke/content.mdx",
+      "source": "site/content/reference/stroke/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2959,7 +2959,7 @@
     {
       "url": "/reference/stroke-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/stroke-width/content.mdx",
+      "source": "site/content/reference/stroke-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2970,7 +2970,7 @@
     {
       "url": "/reference/text-align",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-align/content.mdx",
+      "source": "site/content/reference/text-align/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2981,7 +2981,7 @@
     {
       "url": "/reference/text-decoration-line",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration-line/content.mdx",
+      "source": "site/content/reference/text-decoration-line/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -2992,7 +2992,7 @@
     {
       "url": "/reference/text-decoration-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration-color/content.mdx",
+      "source": "site/content/reference/text-decoration-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3003,7 +3003,7 @@
     {
       "url": "/reference/text-decoration-line",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration-line/content.mdx",
+      "source": "site/content/reference/text-decoration-line/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3014,7 +3014,7 @@
     {
       "url": "/reference/text-decoration-style",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration-style/content.mdx",
+      "source": "site/content/reference/text-decoration-style/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3025,7 +3025,7 @@
     {
       "url": "/reference/text-decoration-thickness",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-decoration-thickness/content.mdx",
+      "source": "site/content/reference/text-decoration-thickness/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3036,7 +3036,7 @@
     {
       "url": "/reference/text-fill-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-fill-color/content.mdx",
+      "source": "site/content/reference/text-fill-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3047,7 +3047,7 @@
     {
       "url": "/reference/text-indent",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-indent/content.mdx",
+      "source": "site/content/reference/text-indent/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3058,7 +3058,7 @@
     {
       "url": "/reference/text-orientation",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-orientation/content.mdx",
+      "source": "site/content/reference/text-orientation/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3069,7 +3069,7 @@
     {
       "url": "/reference/text-overflow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-overflow/content.mdx",
+      "source": "site/content/reference/text-overflow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3080,7 +3080,7 @@
     {
       "url": "/reference/text-rendering",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-rendering/content.mdx",
+      "source": "site/content/reference/text-rendering/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3091,7 +3091,7 @@
     {
       "url": "/reference/text-shadow",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-shadow/content.mdx",
+      "source": "site/content/reference/text-shadow/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3102,7 +3102,7 @@
     {
       "url": "/reference/text-size",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-size/content.mdx",
+      "source": "site/content/reference/text-size/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3113,7 +3113,7 @@
     {
       "url": "/reference/text-stroke-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-stroke-width/content.mdx",
+      "source": "site/content/reference/text-stroke-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3124,7 +3124,7 @@
     {
       "url": "/reference/text-stroke-color",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-stroke-color/content.mdx",
+      "source": "site/content/reference/text-stroke-color/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3135,7 +3135,7 @@
     {
       "url": "/reference/text-stroke-width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-stroke-width/content.mdx",
+      "source": "site/content/reference/text-stroke-width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3146,7 +3146,7 @@
     {
       "url": "/reference/text-transform",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-transform/content.mdx",
+      "source": "site/content/reference/text-transform/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3157,7 +3157,7 @@
     {
       "url": "/reference/text-underline-offset",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-underline-offset/content.mdx",
+      "source": "site/content/reference/text-underline-offset/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3168,7 +3168,7 @@
     {
       "url": "/reference/text-wrap-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/text-wrap-mode/content.mdx",
+      "source": "site/content/reference/text-wrap-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3632,7 +3632,7 @@
     {
       "url": "/reference/touch-action",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/touch-action/content.mdx",
+      "source": "site/content/reference/touch-action/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3643,7 +3643,7 @@
     {
       "url": "/reference/transform",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transform/content.mdx",
+      "source": "site/content/reference/transform/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3654,7 +3654,7 @@
     {
       "url": "/reference/transform-box",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transform-box/content.mdx",
+      "source": "site/content/reference/transform-box/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3665,7 +3665,7 @@
     {
       "url": "/reference/transform-origin",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transform-origin/content.mdx",
+      "source": "site/content/reference/transform-origin/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3676,7 +3676,7 @@
     {
       "url": "/reference/transform-style",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transform-style/content.mdx",
+      "source": "site/content/reference/transform-style/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3687,7 +3687,7 @@
     {
       "url": "/reference/transition-property",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition-property/content.mdx",
+      "source": "site/content/reference/transition-property/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3698,7 +3698,7 @@
     {
       "url": "/reference/transition-delay",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition-delay/content.mdx",
+      "source": "site/content/reference/transition-delay/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3709,7 +3709,7 @@
     {
       "url": "/reference/transition-duration",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition-duration/content.mdx",
+      "source": "site/content/reference/transition-duration/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3720,7 +3720,7 @@
     {
       "url": "/reference/transition-property",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition-property/content.mdx",
+      "source": "site/content/reference/transition-property/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3731,7 +3731,7 @@
     {
       "url": "/reference/transition-timing-function",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/transition-timing-function/content.mdx",
+      "source": "site/content/reference/transition-timing-function/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3742,7 +3742,7 @@
     {
       "url": "/reference/user-drag",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/user-drag/content.mdx",
+      "source": "site/content/reference/user-drag/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3753,7 +3753,7 @@
     {
       "url": "/reference/user-select",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/user-select/content.mdx",
+      "source": "site/content/reference/user-select/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3764,7 +3764,7 @@
     {
       "url": "/reference/vertical-align",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/vertical-align/content.mdx",
+      "source": "site/content/reference/vertical-align/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3775,7 +3775,7 @@
     {
       "url": "/reference/visibility",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/visibility/content.mdx",
+      "source": "site/content/reference/visibility/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3786,7 +3786,7 @@
     {
       "url": "/reference/white-space-collapse",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/white-space-collapse/content.mdx",
+      "source": "site/content/reference/white-space-collapse/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3797,7 +3797,7 @@
     {
       "url": "/reference/width",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/width/content.mdx",
+      "source": "site/content/reference/width/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3808,7 +3808,7 @@
     {
       "url": "/reference/will-change",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/will-change/content.mdx",
+      "source": "site/content/reference/will-change/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3819,7 +3819,7 @@
     {
       "url": "/reference/word-break",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/word-break/content.mdx",
+      "source": "site/content/reference/word-break/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3830,7 +3830,7 @@
     {
       "url": "/reference/word-spacing",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/word-spacing/content.mdx",
+      "source": "site/content/reference/word-spacing/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3841,7 +3841,7 @@
     {
       "url": "/reference/writing-mode",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/writing-mode/content.mdx",
+      "source": "site/content/reference/writing-mode/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [
@@ -3852,7 +3852,7 @@
     {
       "url": "/reference/z-index",
       "kind": "utility",
-      "source": "site/app/[locale]/reference/z-index/content.mdx",
+      "source": "site/content/reference/z-index/content.mdx",
       "prose": "reviewed",
       "visual": "reviewed",
       "notes": [

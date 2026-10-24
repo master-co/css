@@ -9,10 +9,10 @@ export default function DocVersionSelect() {
     window.location.href = event.target.value
   }, [])
   return (
-    <select name="version" defaultValue={process.env.NEXT_PUBLIC_URL}
+    <select name="version" defaultValue={import.meta.env.PUBLIC_URL}
       className="position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer"
       onChange={navigate}>
-      <option value={process.env.NEXT_PUBLIC_URL}>v{process.env.NEXT_PUBLIC_VERSION}</option>
+      <option value={import.meta.env.PUBLIC_URL}>v{import.meta.env.PUBLIC_VERSION}</option>
       {app.versions.map(({ name, href }) => <option key={href} value={href}>{name}</option>)}
     </select>
   )

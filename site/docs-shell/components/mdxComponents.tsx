@@ -1,6 +1,5 @@
 import type { MDXComponents } from 'mdx/types'
-import dynamic from 'next/dynamic'
-import Image from 'next/image'
+import Image from './Image'
 import Do from './Do'
 import DoNot from './DoNot'
 import Info from './Info'
@@ -8,10 +7,10 @@ import InteractingIndicator from './InteractingIndicator'
 import PMAction from './PMAction'
 import Warn from './Warn'
 
-const InlineCode = dynamic(() => import('./InlineCode'))
-const Code = dynamic(() => import('./Code'))
-const DocHeading = dynamic(() => import('./DocHeading'))
-const Link = dynamic(() => import('./Link'))
+import InlineCode from './InlineCode'
+import Code from './Code'
+import DocHeading from './DocHeading'
+import Link from './Link'
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -161,7 +160,6 @@ export const mdxComponents: MDXComponents = {
 
     return <Image {...props} />
   },
-  // Fixed server component error
   Image: (props: any) => {
 
     return <Image {...props} />
@@ -176,10 +174,3 @@ export const mdxComponents: MDXComponents = {
 
 }
 
-// This file is required to use MDX in `app` directory.
-export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return {
-    ...mdxComponents,
-    ...components,
-  }
-}

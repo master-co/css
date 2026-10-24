@@ -28,7 +28,7 @@ pnpm submodules
 budgets. Generated files need an explicit marker; exceptional static data needs a
 bounded entry in `.ai/context/source-budget.json`.
 
-Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Next's local cache needs to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
+Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Astro or Vite caches need to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
 
 `pnpm type-check` runs package-local type-check scripts through Turbo for all packages, including framework-specific checkers such as Vue's `vue-tsc`.
 

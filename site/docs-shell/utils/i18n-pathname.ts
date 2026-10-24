@@ -16,7 +16,6 @@ const nonPagePathnameRoots = new Set([
   'fonts',
   'images',
   'og',
-  'play-compiler',
   'search'
 ])
 

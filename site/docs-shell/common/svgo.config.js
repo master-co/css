@@ -1,6 +1,3 @@
-
-import { nanoid } from 'nanoid'
-
 export default {
   plugins: [
     {
@@ -11,11 +8,7 @@ export default {
         },
       },
     },
-    {
-      name: 'prefixIds',
-      params: {
-        prefix: () => nanoid(5),
-      }
-    }
+    // Prefix ids from the SVG file name so server and client renders stay identical.
+    'prefixIds',
   ],
 }

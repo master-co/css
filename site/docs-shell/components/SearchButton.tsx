@@ -4,7 +4,7 @@ import SearchSvg from '../../public/images/search.svg'
 import { useSearch } from '../contexts/search'
 
 export default function SearchButton({ className, iconSize, hideIcon, children }: any) {
-  const { open, close, searchPlaceholder } = useSearch()
+  const { open, searchPlaceholder } = useSearch()
   return (
     <button className={className} onClick={open}>
       {children

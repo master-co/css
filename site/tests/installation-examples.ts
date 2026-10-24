@@ -9,7 +9,7 @@ import { deliveryFences } from './delivery-examples'
 import { installationGuideSlugs } from '../utils/installation-content'
 
 const rootURL = new URL('../../', import.meta.url)
-const installation = new URL('../app/[locale]/guide/installation/', import.meta.url)
+const installation = new URL('../content/guide/installation/', import.meta.url)
 export const installationRoutes = installationGuideSlugs.map(slug => slug ? `/${slug}` : '')
 export function installationSource(route: string) {
   const path = ['', '/integrations', '/cli', '/cdn'].includes(route) ? `(main)${route}/content.mdx` : `${route.slice(1)}/content.mdx`
@@ -18,7 +18,7 @@ export function installationSource(route: string) {
 
 export function verifyInstallationExamples() {
   const ledger = JSON.parse(readFileSync(new URL('./docs-refinement.json', import.meta.url), 'utf8')) as { pages: { url: string }[] }
-  const routes = new Set([...ledger.pages.map(page => page.url), ...installationGuideSlugs.map(slug => `/guide/installation${slug ? `/${slug}` : ''}`), '/play'])
+  const routes = new Set([...ledger.pages.map(page => page.url), ...installationGuideSlugs.map(slug => `/guide/installation${slug ? `/${slug}` : ''}`)])
   for (const route of installationRoutes) {
     for (const match of installationSource(route).matchAll(/\]\((\/[^)]+)\)|href: ['"](\/[^'"]+)['"]/g)) {
       const href = (match[1] ?? match[2]).split('#')[0]

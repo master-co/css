@@ -1,8 +1,11 @@
 'use client'
 
 import clsx from 'clsx'
-import CountUp from 'react-countup'
+import CountUpModule from 'react-countup'
 import { useInView } from 'react-intersection-observer'
+
+// react-countup is CommonJS; ES module interop exposes its exports object as the default.
+const CountUp = (CountUpModule as unknown as { default?: typeof CountUpModule }).default ?? CountUpModule
 
 export default function Bar({ className, width, animated, children, color = 'text-muted', max, value, icon, suffix, prefix }: any) {
   const [ref, inView] = useInView({ threshold: 0, triggerOnce: true })

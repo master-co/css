@@ -1,6 +1,6 @@
 'use client'
 
-import { useThemeMode } from '@master/theme-mode.react'
+import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
 import clsx from 'clsx'
 import type { SelectHTMLAttributes } from 'react'
 import { useTranslation } from '../contexts/i18n'

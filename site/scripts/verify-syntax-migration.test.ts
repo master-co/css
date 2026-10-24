@@ -8,9 +8,9 @@ import { extractSearchNodesFromMdx } from '../docs-shell/utils/search-pages'
 import { legacySyntaxPages, localizeSyntaxURL } from '../utils/legacy-syntax'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
 
-// Run after the static site build, including postbuild canonical route copies.
+// Run after the static site build. English is unprefixed; `/en/*` redirects at the host.
 test('retired static routes have noindex, tutorial canonical and usable no-JavaScript links', async () => {
-  for (const locale of ['', 'en', 'tw']) for (const [slug, page] of Object.entries(legacySyntaxPages)) {
+  for (const locale of ['', 'tw']) for (const [slug, page] of Object.entries(legacySyntaxPages)) {
     const html = await readFile(new URL(`../out/${locale ? `${locale}/` : ''}guide/${slug}.html`, import.meta.url), 'utf8')
     assert.match(html, /<meta name="robots" content="noindex, follow"/)
     const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1]
@@ -39,7 +39,7 @@ test('static tutorial HTML retains the same complete example and CSS as its text
   const examples = markdownTree(tutorial.markdown).children.filter(node => node.type === 'code').filter(node => node.lang === 'html' || node.meta?.includes('disclosure=generated-css'))
   const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }
   const normalizeCSS = (css: string) => css.replace(/\s/g, '').replace(/;}/g, '}')
-  for (const locale of ['', 'en', 'tw']) {
+  for (const locale of ['', 'tw']) {
     const html = await readFile(new URL(`../out/${locale ? `${locale}/` : ''}guide/syntax-tutorial.html`, import.meta.url), 'utf8')
     for (const id of ['declarations', 'states', 'conditions', 'composition', 'project-settings', 'complete-button']) assert.ok(html.includes(`id="${id}"`))
     for (const node of extractSearchNodesFromMdx(tutorial.searchMarkdown)) if (node.id) assert.ok(html.includes(`id="${node.id}"`), `${locale}: search target ${node.id}`)
@@ -69,7 +69,7 @@ test('published static articles keep the same migration boundary as text and sea
   const failures: string[] = []
   for (const { pathname } of pages) {
     if (!/^\/(?:guide|reference|blog)\//.test(pathname) || /^\/guide\/migration(?:\/|$)/.test(pathname)) continue
-    for (const locale of ['', 'en', 'tw']) {
+    for (const locale of ['', 'tw']) {
       const html = await readFile(new URL(`../out/${locale}${pathname}.html`, import.meta.url), 'utf8')
       const start = html.indexOf('<article ')
       assert.ok(start >= 0, `${locale}${pathname}: article`)

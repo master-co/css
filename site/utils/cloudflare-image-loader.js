@@ -6,18 +6,6 @@ const forcedBooleanValues = new Map([
 ])
 
 /**
- * @param {{ src: string, width: number, quality?: number }} props
- */
-export default function cloudflareImageLoader({ src, width, quality }) {
-  return createCloudflareImageUrl({
-    src,
-    width,
-    quality,
-    siteUrl: process.env.NEXT_PUBLIC_URL
-  })
-}
-
-/**
  * @param {{ src?: string, width?: number | string, quality?: number | string, siteUrl?: string }} options
  */
 export function createCloudflareImageUrl({ src, width, quality, siteUrl }) {
@@ -55,7 +43,7 @@ export function createCloudflareImageUrl({ src, width, quality, siteUrl }) {
 /**
  * @param {{ env?: Record<string, string | undefined>, siteUrl?: string }} [options]
  */
-export function shouldUseCloudflareImageLoader({ env = process.env, siteUrl = env.NEXT_PUBLIC_URL } = {}) {
+export function shouldUseCloudflareImageLoader({ env = process.env, siteUrl = env.PUBLIC_URL } = {}) {
   const forcedValue = forcedBooleanValues.get(env.MASTER_CSS_IMAGE_TRANSFORMATIONS)
   if (typeof forcedValue === 'boolean') return forcedValue
 

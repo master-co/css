@@ -122,14 +122,14 @@ test('allows overriding the site version', () => {
   const publicEnv = resolvePublicEnv({
     env: {
       CF_PAGES_BRANCH: 'rc',
-      NEXT_PUBLIC_VERSION: '2.0.0-rc.99'
+      PUBLIC_VERSION: '2.0.0-rc.99'
     },
     cwd: '/repo',
     runGit: unexpectedGit,
     repositoryUrl: JSON.parse(repository).repository.url
   })
 
-  assert.equal(publicEnv.NEXT_PUBLIC_VERSION, '2.0.0-rc.99')
+  assert.equal(publicEnv.PUBLIC_VERSION, '2.0.0-rc.99')
 })
 
 test('supports legacy release tags when no channel is known', () => {
@@ -157,12 +157,10 @@ test('uses repo-owned defaults for the rc Cloudflare Pages build', () => {
     repositoryUrl: JSON.parse(repository).repository.url
   })
 
-  assert.equal(publicEnv.NEXT_PUBLIC_PROJECT, 'Master CSS')
-  assert.equal(publicEnv.NEXT_PUBLIC_HOST, 'rc.css.master.co')
-  assert.equal(publicEnv.NEXT_PUBLIC_URL, 'https://rc.css.master.co')
-  assert.equal(publicEnv.NEXT_PUBLIC_PLAY_API_URL, '/api/play')
-  assert.equal(publicEnv.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE, 'canonical')
-  assert.equal(publicEnv.NEXT_PUBLIC_VERSION, '2.0.0-rc.79')
+  assert.equal(publicEnv.PUBLIC_PROJECT, 'Master CSS')
+  assert.equal(publicEnv.PUBLIC_HOST, 'rc.css.master.co')
+  assert.equal(publicEnv.PUBLIC_URL, 'https://rc.css.master.co')
+  assert.equal(publicEnv.PUBLIC_VERSION, '2.0.0-rc.79')
 })
 
 test('uses localhost for local development even on rc', () => {
@@ -181,14 +179,13 @@ test('uses localhost for local development even on rc', () => {
     repositoryUrl: JSON.parse(repository).repository.url
   })
 
-  assert.equal(publicEnv.NEXT_PUBLIC_HOST, 'localhost:3001')
-  assert.equal(publicEnv.NEXT_PUBLIC_URL, 'http://localhost:3001')
-  assert.equal(publicEnv.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE, 'always')
+  assert.equal(publicEnv.PUBLIC_HOST, 'localhost:3001')
+  assert.equal(publicEnv.PUBLIC_URL, 'http://localhost:3001')
 })
 
 for (const [name, overrides, expectedUrl] of [
   ['preview', {}, 'https://master-preview.vercel.app'],
-  ['explicit URL', { NEXT_PUBLIC_URL: 'https://docs.example.com' }, 'https://docs.example.com'],
+  ['explicit URL', { PUBLIC_URL: 'https://docs.example.com' }, 'https://docs.example.com'],
   ['local development', { NODE_ENV: 'development', PORT: '3001' }, 'http://localhost:3001']
 ] as const) {
   test(`resolves Vercel public metadata for ${name}`, () => {
@@ -196,37 +193,18 @@ for (const [name, overrides, expectedUrl] of [
       env: {
         VERCEL_GIT_COMMIT_REF: 'feature/site-preview',
         VERCEL_URL: 'master-preview.vercel.app',
-        NEXT_PUBLIC_VERSION: '2.0.0-rc.99',
+        PUBLIC_VERSION: '2.0.0-rc.99',
         ...overrides
       },
       cwd: '/repo',
       runGit: unexpectedGit,
       repositoryUrl: JSON.parse(repository).repository.url
     })
-    assert.equal(publicEnv.NEXT_PUBLIC_COMMIT_REF, 'feature/site-preview')
-    assert.equal(publicEnv.NEXT_PUBLIC_URL, expectedUrl)
-    assert.equal(publicEnv.NEXT_PUBLIC_HOST, new URL(expectedUrl).host)
+    assert.equal(publicEnv.PUBLIC_COMMIT_REF, 'feature/site-preview')
+    assert.equal(publicEnv.PUBLIC_URL, expectedUrl)
+    assert.equal(publicEnv.PUBLIC_HOST, new URL(expectedUrl).host)
   })
 }
-
-test('allows overriding the site locale prefix mode', () => {
-  const publicEnv = resolvePublicEnv({
-    env: {
-      NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE: 'canonical',
-      NODE_ENV: 'development'
-    },
-    cwd: '/repo',
-    runGit: git({
-      'symbolic-ref --short HEAD': 'rc',
-      'tag --points-at HEAD --list v*-rc.* --sort=-v:refname': '',
-      'ls-remote --tags --sort=-v:refname https://github.com/master-co/css.git v*-rc.*': '',
-      'describe --tags --abbrev=0 --match v*-rc.*': 'v2.0.0-rc.76'
-    }),
-    repositoryUrl: JSON.parse(repository).repository.url
-  })
-
-  assert.equal(publicEnv.NEXT_PUBLIC_SITE_LOCALE_PREFIX_MODE, 'canonical')
-})
 
 function unexpectedGit(args: string[]) {
   throw new Error(`Unexpected git command: ${args.join(' ')}`)

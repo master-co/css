@@ -4,10 +4,10 @@ import SearchButton from './SearchButton'
 import { Fragment, useRef, useState, useLayoutEffect } from 'react'
 import Link from './Link'
 import { useTranslation } from '../contexts/i18n'
-import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { DefinedMetadata } from '../types/Metadata'
 import { useLocale } from '../contexts/locale'
+import { usePathname } from '../layouts/root'
 
 export default function DocSidebar({ pageCategories, includeNestedPages = false }: {
   pageCategories: {

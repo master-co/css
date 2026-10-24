@@ -4,7 +4,9 @@ This workspace builds the public Master CSS documentation site. Install the repo
 
 ## Ownership
 
-- `app/` owns routes and guide content.
+- `content/` owns pages and guide content; `routes.ts` maps them to URLs.
+- `src/` owns the Astro route and document layout; `sections/` owns each section's shell.
+- `islands/` hydrates `'use client'` React components.
 - `docs-shell/` owns the documentation navigation, layouts, contexts, MDX rendering, and page factories.
 - `components/`, `reference/`, and `utils/` own Master CSS-specific features.
 - `styles/docs-shell/` and `public/` contain the shell's styles and required public assets.
@@ -15,11 +17,12 @@ The site owns its shell and dependency versions. The old root `internal` submodu
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm --filter site dev` | Prepare generated data and start the development server. |
+| `pnpm --filter site dev` | Prepare generated data and start the Astro development server. |
 | `pnpm --filter site build` | Build the static site and verify public assets. |
 | `pnpm --filter site prepare-app` | Regenerate page categories and search data. |
 | `pnpm --filter site type-check` | Check TypeScript. |
 | `pnpm --filter site lint` | Run site lint rules. |
+| `pnpm --filter site test:islands` | Check client island rendering and serialization. |
 | `pnpm --filter site test:reference` | Check reference catalog and syntax behavior. |
 | `pnpm --filter site test:llms` | Check generated LLM documentation. |
 | `pnpm --filter site test:assets` | After a build, check that public images, icons, and fonts exist and are used. |

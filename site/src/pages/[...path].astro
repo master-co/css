@@ -1,0 +1,14 @@
+---
+import Document from '../layouts/Document.astro'
+import RenderNode from '~/site/docs-shell/components/RenderNode'
+import { getStaticPaths as getRoutePaths, loadRoute, type RouteProps } from '~/site/routes'
+
+export const getStaticPaths = getRoutePaths
+
+const route = await loadRoute(Astro.props as RouteProps)
+if (route.kind === 'redirect') return Astro.redirect(route.location, 301)
+---
+
+<Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} bare={route.bare}>
+  <RenderNode node={route.element} />
+</Document>

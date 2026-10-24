@@ -64,7 +64,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         if (statement.type === 'ImportDeclaration') {
           for (const specifier of statement.specifiers) {
             imports[specifier.local.name] = statement.source.value
-            if (statement.attributes?.some((attribute: any) => attribute.key.name === 'turbopackLoader' && attribute.value.value === 'raw-loader')) {
+            if (statement.source.value.endsWith('?raw')) {
               rawImports[specifier.local.name] = statement.source.value
             }
           }
@@ -81,7 +81,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
   }
   collectEsm(tree)
   const readRawImport = (base: string, importedPath: string) => {
-    const target = path.resolve(base, importedPath.replace(/\?source$/, ''))
+    const target = path.resolve(base, importedPath.replace(/\?raw$/, ''))
     if (!target.startsWith(path.resolve(base) + path.sep)) throw new Error('Raw import must be package local')
     return readFile(target, 'utf8')
   }
@@ -89,8 +89,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
     const value = (expressions[text.trim()] ?? text).trim().replace(/^\{([\s\S]*)\}$/, '$1').trim()
     const rawImport = rawImports[value]
     if (rawImport) return readRawImport(path.dirname(file), rawImport)
-    // The MDX parser does not accept import attributes. Follow a small TS module
-    // that owns native raw imports without executing its code during extraction.
+    // Follow a small TS module that owns raw imports without executing its code during extraction.
     if (imports[value]?.startsWith('./')) {
       const moduleFile = path.resolve(path.dirname(file), `${imports[value]}.ts`)
       const moduleSource = await readFile(moduleFile, 'utf8').catch(() => '')
@@ -98,7 +97,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         const rawModuleAst = acorn.parse(moduleSource, { ecmaVersion: 'latest', sourceType: 'module' }) as any
         for (const statement of rawModuleAst.body) {
           if (statement.type !== 'ImportDeclaration' || !statement.specifiers.some((specifier: any) => specifier.local.name === value)) continue
-          if (statement.attributes?.some((attribute: any) => attribute.key.name === 'turbopackLoader' && attribute.value.value === 'raw-loader')) {
+          if (statement.source.value.endsWith('?raw')) {
             return readRawImport(path.dirname(moduleFile), statement.source.value)
           }
         }
@@ -177,7 +176,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'StepEnd', 'CodeTabs', 'Tab', 'DocumentSteps', 'DocumentStep', 'DocumentStepText', 'DocumentStepBody'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
       if (/^[A-Z]/.test(name)) {
         const imported = imports[name]
-        const siteRoot = file.slice(0, file.indexOf('/app/'))
+        const siteRoot = file.slice(0, file.lastIndexOf('/content/'))
         const target = imported?.startsWith('~/site/') ? path.join(siteRoot, imported.slice(7))
           : imported?.startsWith('.') ? path.resolve(path.dirname(file), imported)
             : path.join(path.dirname(file), 'components', `${name}.mdx`)

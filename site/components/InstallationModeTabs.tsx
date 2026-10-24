@@ -1,7 +1,5 @@
-'use client'
-
 import Tabs, { Tab } from '~/site/docs-shell/components/Tabs'
-import useRewritedPathname from '~/site/docs-shell/uses/rewrited-pathname'
+import { usePathname } from '~/site/docs-shell/layouts/root'
 
 export interface InstallationModeTab {
   href: string
@@ -11,7 +9,7 @@ export interface InstallationModeTab {
 
 /** Reuse the site's navigation appearance while recognizing legacy mode URLs. */
 export default function InstallationModeTabs({ items }: { items: readonly InstallationModeTab[] }) {
-  const pathname = useRewritedPathname()
+  const pathname = usePathname()
   return <Tabs className="mb-xl">
     {items.map(item => {
       const active = pathname === item.href || Boolean(item.aliases?.includes(pathname ?? ''))

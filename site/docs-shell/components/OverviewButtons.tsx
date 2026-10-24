@@ -1,5 +1,3 @@
-'use client'
-
 import clsx from 'clsx'
 import Link from './Link'
 import { DefinedMetadata } from '../types/Metadata'

@@ -13,4 +13,4 @@ const publicEnv = resolveAndWritePublicEnv({
   output
 })
 
-console.log(`[public-env] ${publicEnv.NEXT_PUBLIC_VERSION} ${publicEnv.NEXT_PUBLIC_URL}`)
+console.log(`[public-env] ${publicEnv.PUBLIC_VERSION} ${publicEnv.PUBLIC_URL}`)

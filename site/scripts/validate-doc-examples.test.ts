@@ -24,10 +24,10 @@ import { routeStyles } from '../tests/delivery-examples'
 import { installationGuideSlugs } from '../utils/installation-content'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
-const appRoot = path.join(siteRoot, 'app/[locale]')
+const appRoot = path.join(siteRoot, 'content')
 const docSections = new Set(['blog', 'guide', 'reference'])
 const visibleSourceFiles = [
-  'app/examples/layout-system/page.tsx'
+  'content/examples/layout-system/page.tsx'
 ]
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const tooling = createToolingSessionSync({ manifest: defaultManifest })
@@ -515,7 +515,7 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
   const fencedRanges: [number, number][] = []
   for (const example of extractFencedExamples(content)) {
     fencedRanges.push(example.range)
-    if (relativeSitePath(file) === 'app/[locale]/guide/migration/v2-rc/content.mdx'
+    if (relativeSitePath(file) === 'content/guide/migration/v2-rc/content.mdx'
       && example.info.includes('RC reference — not executed')) continue
     candidates.push(...extractCandidatesFromSnippet({
       content,
@@ -538,7 +538,7 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
   }))
 
   // This page displays its literal package CSS through a registered source component.
-  if (relativeSitePath(file) === 'app/[locale]/guide/authoring-packages/content.mdx'
+  if (relativeSitePath(file) === 'content/guide/authoring-packages/content.mdx'
     && content.includes('<PackageAuthoringExample part="source"')) {
     for (const candidate of candidates) candidate.context += '\n' + authoringSource
   }
@@ -765,7 +765,7 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
 
 /** These literal classes belong to the retained Bootstrap 5.3 markup, not Master CSS. */
 function isMigrationVendorClass(example: ExampleCandidate): boolean {
-  return relativeSitePath(example.file) === 'app/[locale]/guide/migration/bootstrap/content.mdx'
+  return relativeSitePath(example.file) === 'content/guide/migration/bootstrap/content.mdx'
     && example.kind === 'fenced:html:class'
     && ['py-5', 'row', 'g-4', 'col-md-4'].includes(example.candidate)
 }

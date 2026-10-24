@@ -1,0 +1,21 @@
+import ReferencePage, { loadReferenceRoute, referenceMetadata } from '~/site/reference/ReferencePage'
+import TokenSpecimens from '~/site/reference/TokenSpecimens'
+import { routeIndex } from '~/site/reference/route-index'
+
+
+type Props = { params: { locale: string; namespace: string } }
+
+export function generateStaticParams() {
+  return routeIndex.filter(doc => doc.kind === 'tokens').map(doc => ({ namespace: doc.id.slice('tokens/'.length) }))
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { namespace, locale } = params
+  return referenceMetadata(`tokens/${namespace}`, locale)
+}
+
+export default async function Page(props: Props) {
+  const { namespace } = props.params
+  const doc = await loadReferenceRoute(`tokens/${namespace}`, 'tokens')
+  return <ReferencePage {...props} document={doc} tokenSpecimen={<TokenSpecimens namespace={namespace} />} />
+}

@@ -1,10 +1,4 @@
-'use client'
-
 import type { PageContentItem } from './PageContentContext'
-import Script from 'next/script'
-import { useSyncExternalStore } from 'react'
-
-const emptySubscribe = () => () => undefined
 
 function escapeScriptJson(value: unknown) {
   return JSON.stringify(value)
@@ -139,20 +133,15 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
   run()
 }
 
+/** Marks the doc-page active state while the document parses, before islands hydrate. */
 export default function PageContentBootstrap({ items }: {
   items: PageContentItem[]
 }) {
-  const shouldRenderBootstrap = useSyncExternalStore(emptySubscribe, () => false, () => true)
-  if (!shouldRenderBootstrap) return null
-
   const serializedItems = escapeScriptJson(items.map(({ id, level }) => ({ id, level })))
-
   return (
-    /* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document -- Doc-page active state must be marked before hydration. */
-    <Script
+    <script
       data-page-content-bootstrap
       id="page-content-bootstrap"
-      strategy="beforeInteractive"
       dangerouslySetInnerHTML={{
         __html: `(${pageContentBootstrap.toString()})(${serializedItems});`
       }}

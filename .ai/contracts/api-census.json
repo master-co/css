@@ -298,7 +298,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "integration",
@@ -314,7 +315,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -330,7 +332,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -346,7 +349,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8091,8 +8095,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8108,8 +8111,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8125,8 +8127,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8142,8 +8143,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8159,8 +8159,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8176,8 +8175,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8193,8 +8191,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8210,8 +8207,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8227,8 +8223,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -8244,8 +8239,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -19820,7 +19814,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -20102,8 +20097,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -20393,7 +20387,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -20417,7 +20412,8 @@
       "owner": "@master/css-astro",
       "responsibility": "Astro integration lifecycle",
       "consumers": [
-        "master-css-astro-example"
+        "master-css-astro-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "integration",
@@ -21389,8 +21385,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",
@@ -21414,8 +21409,7 @@
       "owner": "@master/css-next",
       "responsibility": "Next.js integration lifecycle",
       "consumers": [
-        "master-css-nextjs-example",
-        "site"
+        "master-css-nextjs-example"
       ],
       "platform": "build-host",
       "lifecycle": "integration",

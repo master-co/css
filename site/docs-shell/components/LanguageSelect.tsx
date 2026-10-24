@@ -1,21 +1,19 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { useLocale } from '../contexts/locale'
 import { useI18n } from '../contexts/i18n'
 import { localizePathname } from '../utils/i18n-pathname'
+import { usePathname } from '../layouts/root'
 
 export default function LanguageSelect({ className, children, ...props }: { className?: string, [key: string]: any, children?: React.ReactElement }) {
-  const router = useRouter()
   const pathname = usePathname()
   const locale = useLocale()
   const i18n = useI18n()
   return (
     <>
       <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer', className)}
-        onChange={async (event: any) => {
-          if (!pathname) return
+        onChange={(event: any) => {
           const newLocale = event.target.value
           const splits = pathname.split('/')
           for (const eachLocale of i18n.locales) {
@@ -24,11 +22,10 @@ export default function LanguageSelect({ className, children, ...props }: { clas
               break
             }
           }
-          router.push(localizePathname(splits.join('/') || '/', {
+          location.assign(localizePathname(splits.join('/') || '/', {
             defaultLocale: i18n.defaultLocale,
             locale: newLocale,
             locales: i18n.locales,
-            localePrefixMode: i18n.localePrefixMode,
             localizablePathnameRoots: i18n.localizablePathnameRoots
           }))
         }}

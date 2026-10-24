@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
 import ReferenceMarkdown from './ReferenceBody'
@@ -14,14 +13,14 @@ export function referenceMetadata(id: string, locale: string) {
 }
 
 export async function loadReferenceRoute(id: string, kind?: ReferenceDocument['kind']) {
-  if (!routeIndex.some(doc => doc.id === id && (!kind || doc.kind === kind))) notFound()
+  if (!routeIndex.some(doc => doc.id === id && (!kind || doc.kind === kind))) throw new Error(`Unknown reference route ${id}`)
   return loadReferenceDocument(id)
 }
 
 /** Route entries choose their specimen; the shared shell imports no specimen graph. */
 export default function ReferencePage({ document: doc, recipeSpecimen, tokenSpecimen, ...props }: {
   document: ReferenceRenderDocument
-  params: Promise<{ locale: string }>
+  params: { locale: string }
   recipeSpecimen?: React.ReactNode
   tokenSpecimen?: React.ReactNode
 }) {
