@@ -17,7 +17,8 @@ export default function UsageGraphPlugin(_options: ResolvedMasterCSSVitePluginOp
     async transform(code, id) {
       if (id.startsWith('\0')) return
       const source = id.split('?')[0]
-      if (/\.(?:mdx?|vue|svelte)$/.test(source)) {
+      // Framework plugins compile these in load; scan the authored file once.
+      if (/\.(?:mdx?|vue|svelte|astro)$/.test(source)) {
         if (source !== id) return
         code = await readFile(source, 'utf8')
       }
