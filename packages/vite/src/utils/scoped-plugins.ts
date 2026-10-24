@@ -5,6 +5,9 @@ type Hook = (this: unknown, ...args: unknown[]) => unknown
 interface HookObject { handler: Hook }
 interface EnvironmentContext { environment?: { getTopLevelConfig(): ResolvedConfig } }
 
+/** Vite runs these on the top-level plugin and ignores them on environment plugins. */
+const topLevelHooks = new Set(['apply', 'applyToEnvironment', 'config', 'configEnvironment', 'configResolved', 'configureServer', 'configurePreviewServer'])
+
 function hookConfig(name: string, receiver: unknown, args: unknown[]): ResolvedConfig | undefined {
   if (name === 'configResolved') return args[0] as ResolvedConfig
   if (name === 'configureServer' || name === 'configurePreviewServer') return (args[0] as { config: ResolvedConfig }).config
@@ -60,9 +63,8 @@ export function scopePlugins(createPlugins: () => Plugin[]): Plugin[] {
         const applied = await owned.applyToEnvironment(environment)
         if (applied !== true) return applied
       }
-      const bound = { ...plugin } as Plugin & Record<string, unknown>
-      for (const [name, hook] of Object.entries(plugin)) {
-        if (name === 'apply' || name === 'applyToEnvironment' || name === 'config' || name === 'configEnvironment') continue
+      const bound = Object.fromEntries(Object.entries(plugin).filter(([name]) => !topLevelHooks.has(name))) as Plugin & Record<string, unknown>
+      for (const [name, hook] of Object.entries(bound)) {
         const handler = typeof hook === 'function' ? hook : hook && typeof hook === 'object' && 'handler' in hook ? hook.handler : undefined
         if (typeof handler !== 'function') continue
         const invoke: Hook = function (...args) { return invocationConfig.run(config, () => handler.apply(this, args)) }
