@@ -26,7 +26,7 @@ Without `--yes`, TTY sessions ask about ESLint, MCP, AI guidance, and dependency
 
 Use `--minimal` for core framework setup only, or disable individual recommended integrations with `--no-eslint`, `--no-mcp`, or `--no-ai`.
 
-Use `--mode <mode>` when the framework integration should be configured for a specific rendering mode during setup:
+Without `--mode`, the installer configures static rendering. Use `--mode <mode>` when the framework integration should be configured for a specific rendering mode during setup:
 
 ```bash
 npm create @master/css@rc -- --framework nextjs --mode static --yes

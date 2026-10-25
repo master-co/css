@@ -70,7 +70,11 @@ export default {
 }
 ```
 
-When `output.filename` is fixed, uses only a build-wide hash, or is a callback,
+Static mode is the default and does not inject the browser runtime. Select
+`mode: 'runtime'` or `mode: 'progressive'` explicitly when class names first
+appear in the browser.
+
+In those modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
 the injected runtime entry uses its own content-hashed file under `_master-css/`.
 Application filenames retain their configured behavior. Chunk-specific templates
 such as `[name].js` or `[contenthash].js` also apply to the runtime entry.

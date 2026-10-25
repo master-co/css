@@ -62,7 +62,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('--ai', 'Add Master CSS guidance to AGENTS.md.')
     .option('--no-ai', 'Skip Master CSS guidance for coding agents.')
     .option('--minimal', 'Only add core Master CSS framework setup.')
-    .option('--mode <mode>', `Rendering mode: ${formatRenderingModes()}.`, parseRenderingModeOption)
+    .option('--mode <mode>', `Rendering mode: ${formatRenderingModes()}. Defaults to static.`, parseRenderingModeOption)
     .option('--install <package-manager>', 'Run dependency installation with npm, pnpm, yarn, or bun after edits.')
     .option('--no-install', 'Do not run dependency installation.')
     .option('--dry-run', 'Print the setup plan without writing files.')
