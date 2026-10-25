@@ -72,13 +72,15 @@ function resolveStylesheetLoaderPath() {
   return fileURLToPath(new URL('./stylesheet-loader.js', import.meta.url))
 }
 
-function createInstrumentationClientSource(stylesheetBase: string) {
+function createInstrumentationClientSource(stylesheetBase: string, progressive: boolean) {
   return [
     `import 'private-next-master-css-user-instrumentation-client'`,
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
-    `import masterCSSManifest from 'virtual:master-css-manifest'`,
+    ...(progressive ? [] : [`import masterCSSManifest from 'virtual:master-css-manifest'`]),
     `import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`,
     ``,
+    // Progressive pages defer the engine, so the project manifest loads only if it starts.
+    ...(progressive ? [`const masterCSSManifest = () => import('virtual:master-css-manifest').then(resolveModuleDefault)`] : []),
     `const state = (globalThis.__MASTER_CSS_NEXT_RUNTIME__ ??= {})`,
     ``,
     `async function resolveModuleDefault(module) {`,
@@ -102,7 +104,7 @@ function createInstrumentationClientSource(stylesheetBase: string) {
     `    const startToken = {}`,
     `    state.startToken = startToken`,
     `    destroyRuntime()`,
-    `    const manifest = await resolveModuleDefault(manifestModule)`,
+    `    const manifest = typeof manifestModule === 'function' ? manifestModule : await resolveModuleDefault(manifestModule)`,
     `    const emittedGlobals = await resolveModuleDefault(emittedGlobalsModule)`,
     `    if (state.startToken !== startToken) return`,
     `    const startup = (state.pendingStart ?? Promise.resolve()).catch(() => {}).then(async () => {`,
@@ -151,10 +153,10 @@ function createInstrumentationClientSource(stylesheetBase: string) {
   ].join('\n')
 }
 
-function ensureInstrumentationClientPath(projectDir = process.cwd(), stylesheetBase = '/_next/') {
+function ensureInstrumentationClientPath(projectDir = process.cwd(), stylesheetBase = '/_next/', progressive = false) {
   return ensureVirtualModuleFile(
     join(projectDir, 'node_modules', '.master-css', INSTRUMENTATION_CLIENT_FILE),
-    createInstrumentationClientSource(stylesheetBase)
+    createInstrumentationClientSource(stylesheetBase, progressive)
   )
 }
 
@@ -615,7 +617,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
   const turbopackVirtualManifestPath = toTurbopackProjectPath(virtualManifestPath, projectDir)
   const turbopackVirtualEmittedGlobalsPath = toTurbopackProjectPath(virtualEmittedGlobalsPath, projectDir)
   const runtimeInstrumentationPath = resolvedOptions.injectRuntime && (resolvedOptions.mode === 'runtime' || resolvedOptions.mode === 'progressive')
-    ? ensureInstrumentationClientPath(projectDir, `${(nextConfig.assetPrefix || nextConfig.basePath || '').replace(/\/$/, '')}/_next/`)
+    ? ensureInstrumentationClientPath(projectDir, `${(nextConfig.assetPrefix || nextConfig.basePath || '').replace(/\/$/, '')}/_next/`, resolvedOptions.mode === 'progressive')
     : undefined
   registerOptions(options)
 

@@ -1,14 +1,25 @@
 export const MASTER_CSS_RUNTIME_BOOTSTRAP_ID = 'virtual:master-css-runtime'
 export const RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID = `\0${MASTER_CSS_RUNTIME_BOOTSTRAP_ID}`
 
-export function createMasterCSSRuntimeBootstrapSource(stylesheetDelivery?: string) {
+export interface MasterCSSRuntimeBootstrapOptions {
+  /** Expression for the runtime `stylesheetDelivery` option. */
+  readonly stylesheetDelivery?: string
+  /** Progressive pages defer the engine, so the project manifest loads only if it starts. */
+  readonly progressive?: boolean
+}
+
+export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, progressive }: MasterCSSRuntimeBootstrapOptions = {}) {
   return [
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
-    `import masterCSSManifest from 'virtual:master-css-manifest'`,
+    ...(progressive
+      ? []
+      : [`import masterCSSManifest from 'virtual:master-css-manifest'`]),
     `import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`,
     ``,
     `let masterCSSRuntime`,
-    `let currentManifest = masterCSSManifest`,
+    progressive
+      ? `let currentManifest = () => import('virtual:master-css-manifest').then(module => module.default)`
+      : `let currentManifest = masterCSSManifest`,
     `let currentEmittedGlobals = masterCSSEmittedGlobals`,
     `let startGeneration = 0`,
     `let pendingStart = import.meta.hot?.data.pendingRuntimeStart ?? Promise.resolve()`,
@@ -22,7 +33,8 @@ export function createMasterCSSRuntimeBootstrapSource(stylesheetDelivery?: strin
     `async function startRuntime(manifest = currentManifest, emittedGlobals = currentEmittedGlobals) {`,
     `  if (typeof document === 'undefined') return`,
     `  if (masterCSSRuntime) {`,
-    `    masterCSSRuntime.refresh(manifest, emittedGlobals)`,
+    `    // A manifest loader means only emitted globals changed.`,
+    `    masterCSSRuntime.refresh(typeof manifest === 'function' ? undefined : manifest, emittedGlobals)`,
     `    return`,
     `  }`,
     `  disposeRuntime()`,

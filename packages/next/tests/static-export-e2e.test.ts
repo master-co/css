@@ -68,6 +68,12 @@ describe('static export e2e', () => {
     ]))
     expect(manifestSources.length).toBeGreaterThan(0)
     expect(existsSync(join(fixtureDir, '.next/static/master-css/hydration'))).toBe(false)
+    // Progressive pages defer the engine, so neither its Wasm nor the project manifest is preloaded.
+    for (const htmlFile of htmlFiles) {
+      const html = readFileSync(htmlFile, 'utf-8')
+      expect(html).not.toContain('application/wasm')
+      expect(html).not.toMatch(/<link\b[^>]*master-css-manifest/)
+    }
 
     for (const source of manifestSources) {
       const pathname = new URL(source, 'http://localhost').pathname
@@ -101,6 +107,9 @@ describe('static export e2e', () => {
       await page.goto(`http://127.0.0.1:${address.port}`)
       await page.waitForFunction(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__?.runtime?.snapshot().hydration.state === 'progressive')
       expect(await page.locator('main').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
+      // Every rendered class is covered, so the engine waits for the first one that is not.
+      expect(await page.evaluate(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__.runtime.snapshot().engine)).toBe('deferred')
+      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(false)
       await page.locator('main').evaluate(element => element.classList.add('padding:17px'))
       await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).padding)).toBe('17px')
       expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(true)

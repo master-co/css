@@ -5,7 +5,7 @@ import {
 } from '@master/css-internal/runtime-bootstrap'
 import type { Plugin } from 'vite'
 
-export default function RuntimeBootstrapPlugin(): Plugin {
+export default function RuntimeBootstrapPlugin(progressive: boolean): Plugin {
   let stylesheetDelivery: string | undefined
   return {
     name: 'master-css:runtime-bootstrap',
@@ -20,7 +20,7 @@ export default function RuntimeBootstrapPlugin(): Plugin {
     },
     load(id) {
       if (id === RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID) {
-        return createMasterCSSRuntimeBootstrapSource(stylesheetDelivery)
+        return createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, progressive })
       }
     }
   }

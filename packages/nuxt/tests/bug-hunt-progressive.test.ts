@@ -6,7 +6,7 @@ import { setupNuxtTest } from './setup-test'
 
 // BH-0023: progressive mode must hydrate and style new classes after SSR.
 setupNuxtTest({ rootDir: resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/progressive') })
-it('loads its client manifest and handles new runtime classes', async () => {
+it('loads its client manifest only when a new runtime class needs the engine', async () => {
     const page = await createPage()
     const failed: string[] = []
     const assets: { url: string, status: number, contentType: string | undefined }[] = []
@@ -17,6 +17,11 @@ it('loads its client manifest and handles new runtime classes', async () => {
     page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()) })
     try {
         await page.goto(url('/'), { waitUntil: 'domcontentloaded' })
+        await page.waitForFunction(() => (globalThis as any).masterCSSRuntime?.snapshot().observing)
+        // Every rendered class is covered, so the deferred engine has not loaded the manifest.
+        expect(await page.evaluate(() => (globalThis as any).masterCSSRuntime.snapshot().engine)).toBe('deferred')
+        expect(assets).toEqual([])
+        expect(await page.content()).not.toMatch(/<link\b[^>]*(?:master-css-manifest|application\/wasm)/)
         await page.evaluate(() => {
             const probe = document.createElement('div')
             probe.id = 'bh-0023-probe'
@@ -25,6 +30,7 @@ it('loads its client manifest and handles new runtime classes', async () => {
         })
         const styled = await page.waitForFunction(() => getComputedStyle(document.getElementById('bh-0023-probe')!).display === 'none', undefined, { timeout: 5000 }).then(() => true, () => false)
         expect({ styled, failed }, JSON.stringify({ assets, errors })).toEqual({ styled: true, failed: [] })
+        expect(assets.map(asset => asset.status)).toEqual([200])
     } finally {
         await page.close()
     }

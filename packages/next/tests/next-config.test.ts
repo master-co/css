@@ -17,11 +17,11 @@ const nextInstrumentationClientId = 'private-next-instrumentation-client'
 const masterCSSUserInstrumentationClientId = 'private-next-master-css-user-instrumentation-client'
 const removedReactPackageName = ['@master', 'css.react'].join('/')
 
-function readGeneratedInstrumentationClientSource(root: string) {
+function readGeneratedInstrumentationClientSource(root: string, mode: 'runtime' | 'progressive' = 'runtime') {
   const cwd = process.cwd()
   try {
     process.chdir(root)
-    withMasterCSS({}, { mode: 'progressive' })
+    withMasterCSS({}, { mode })
     return readFileSync(join(root, 'node_modules', '.master-css', 'master-css-next-instrumentation-client.js'), 'utf-8')
   } finally {
     process.chdir(cwd)
@@ -384,6 +384,31 @@ describe('withMasterCSS', () => {
         stylesheetDelivery: { base: '/_next/', development: false }
       })
       expect(runtime.observe).toHaveBeenCalled()
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('loads the progressive project manifest only when the runtime engine starts', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'master-css-next-progressive-runtime-'))
+    const manifest = { version: 1, marker: 'progressive-manifest' }
+    const emittedGlobals = { variables: {}, animations: {} }
+    const { module: runtimeModule } = createMasterCSSRuntimeTestModule()
+
+    try {
+      const source = readGeneratedInstrumentationClientSource(root, 'progressive')
+      expect(source).not.toContain(`import masterCSSManifest from 'virtual:master-css-manifest'`)
+
+      const { importModule } = await runInstrumentationClient(source, {
+        'private-next-master-css-user-instrumentation-client': {},
+        '@master/css-runtime': runtimeModule,
+        'virtual:master-css-manifest': Promise.resolve({ default: manifest }),
+        'virtual:master-css-emitted-globals': { default: emittedGlobals }
+      })
+
+      const [[options]] = runtimeModule.MasterCSSRuntime.start.mock.calls as unknown as [[{ manifest: () => Promise<unknown> }]]
+      expect(importModule).not.toHaveBeenCalledWith('virtual:master-css-manifest')
+      await expect(options.manifest()).resolves.toBe(manifest)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

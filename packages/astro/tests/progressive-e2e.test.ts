@@ -12,7 +12,7 @@ const fixtureDir = join(packageDir, 'tests/fixtures/progressive')
 const outDir = join(fixtureDir, 'dist')
 
 type RuntimeGlobal = typeof globalThis & {
-  masterCSSRuntime?: { snapshot(): { observing: boolean, hydration: unknown } }
+  masterCSSRuntime?: { snapshot(): { observing: boolean, engine: string, hydration: unknown } }
 }
 
 beforeAll(() => buildAstroFixture(fixtureDir), 120_000)
@@ -27,6 +27,9 @@ it('pre-renders progressive CSS through the middleware of a static Astro build',
   const manifest = style?.[0].match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
   expect(manifest).toBeTruthy()
   expect(existsSync(join(outDir, manifest!))).toBe(true)
+  // Progressive pages defer the engine, so neither its Wasm nor the project manifest is preloaded.
+  expect(html).not.toContain('application/wasm')
+  expect(html).not.toMatch(/<link\b[^>]*master-css-manifest/)
   // The runtime adopts linked stylesheets through their sidecars.
   const stylesheets = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(([, href]) => href)
   expect(stylesheets.length).toBeGreaterThan(0)
@@ -55,11 +58,17 @@ it('hydrates the pre-rendered CSS in a browser', async () => {
   try {
     const page = await browser.newPage()
     const warnings: string[] = []
+    const requests: string[] = []
     page.on('console', message => { if (message.type() === 'warning') warnings.push(message.text()) })
+    page.on('request', request => requests.push(request.url()))
     await page.goto(`${server.origin}/`)
     await page.waitForFunction(() => (globalThis as RuntimeGlobal).masterCSSRuntime?.snapshot().observing)
-    expect(await page.evaluate(() => (globalThis as RuntimeGlobal).masterCSSRuntime!.snapshot().hydration))
-      .toEqual({ state: 'progressive', manifestLoaded: true })
+    expect(await page.evaluate(() => {
+      const { engine, hydration } = (globalThis as RuntimeGlobal).masterCSSRuntime!.snapshot()
+      return { engine, hydration }
+    })).toEqual({ engine: 'deferred', hydration: { state: 'progressive', manifestLoaded: true } })
+    // Every class is pre-rendered, so the engine, its Wasm and the project manifest stay unloaded.
+    expect(requests.filter(url => /\.wasm$|master-css-manifest/.test(url))).toEqual([])
     expect(warnings).toEqual([])
   } finally {
     await browser.close()

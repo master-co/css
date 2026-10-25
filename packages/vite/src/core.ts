@@ -52,7 +52,7 @@ export function createMasterCSSVitePlugin(
 }
 
 function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGlobalsAPI: EmittedGlobalsPluginAPI): Plugin[] {
-  const runtimeBootstrap = RuntimeBootstrapPlugin()
+  const runtimeBootstrap = RuntimeBootstrapPlugin(options.mode === 'progressive')
   const context = {
     pruneNativeCSS: options.pruneNativeCSS,
     includeGeneratedCSS: options.mode === 'static'

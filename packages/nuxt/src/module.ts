@@ -280,7 +280,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
         if (options.injectRuntime) {
           addPlugin({
             mode: 'client',
-            src: resolve('./runtime/css-runtime')
+            src: resolve(options.mode === 'progressive' ? './runtime/css-runtime-progressive' : './runtime/css-runtime')
           }, {
             append: true
           })
