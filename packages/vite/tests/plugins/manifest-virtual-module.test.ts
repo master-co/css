@@ -129,6 +129,24 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(context.defaultManifestAssetSource).toBeUndefined()
   })
 
+  it('resolves server manifest file URLs relative to the chunk', async () => {
+    const { context } = createContext(path.join(FIXTURE_DIR, 'css-only'))
+    context.config.command = 'build'
+    const plugin = ManifestVirtualModulePlugin(context)
+    const server = { config: { consumer: 'server' } }, client = { config: { consumer: 'client' } }
+    // An environment build keeps one config, so `build.ssr` cannot tell the outputs apart.
+    const serverCode = await (plugin.load as any).call({ environment: server, emitFile: () => 'server_ref' }, RESOLVED_VIRTUAL_MANIFEST_ID)
+    const clientCode = await (plugin.load as any).call({ environment: client, emitFile: () => 'client_ref' }, RESOLVED_VIRTUAL_MANIFEST_ID)
+    const resolveFileUrl = (referenceId: string, format = 'es') => (plugin.resolveFileUrl as any)({ referenceId, relativePath: '../_app/master-css-manifest.json', format })
+
+    expect(serverCode).toContain('loadMasterCSSManifestFromFile')
+    expect(clientCode).not.toContain('loadMasterCSSManifestFromFile')
+    expect(resolveFileUrl('server_ref')).toBe('new URL("../_app/master-css-manifest.json", import.meta.url).href')
+    expect(resolveFileUrl('server_ref', 'cjs')).toBe(`new URL("../_app/master-css-manifest.json", require('node:url').pathToFileURL(__filename).href).href`)
+    // Client references keep the host's public URL.
+    expect(resolveFileUrl('client_ref')).toBeUndefined()
+  })
+
   it('handles unimported CSS manifest changes through CSS HMR only', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context } = createContext(root)

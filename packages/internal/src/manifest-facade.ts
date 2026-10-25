@@ -40,6 +40,17 @@ export function toManifestPreloadLinkTag(href: string) {
   ].join(' ')
 }
 
+/**
+ * Server facades read the emitted manifest file, so their URL must stay relative to
+ * the chunk. Vite 8.3 renders plugin file URLs as public `base` URLs, server builds
+ * included; a `resolveFileUrl` hook returns this expression for server references.
+ */
+export function toServerManifestFileURL(relativePath: string, format: string) {
+  const path = JSON.stringify(relativePath)
+  if (format === 'es') return `new URL(${path}, import.meta.url).href`
+  if (format === 'cjs') return `new URL(${path}, require('node:url').pathToFileURL(__filename).href).href`
+}
+
 export function toBrowserManifestFacadeModule(urlExpression: string) {
   return [
     `const masterCSSManifestURL = ${urlExpression};`,

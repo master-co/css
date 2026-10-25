@@ -7,6 +7,7 @@ import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
+  toServerManifestFileURL,
   toUniversalManifestFacadeModule
 } from './manifest-facade'
 import type { MasterCSSVirtualManifestLoadResult } from './manifest-loader'
@@ -42,6 +43,11 @@ interface MasterCSSVirtualModuleNode {
 }
 
 interface MasterCSSVirtualModulePluginContext {
+  readonly environment?: {
+    readonly config: {
+      readonly consumer?: string
+    }
+  }
   readonly addWatchFile?: (id: string) => void
   readonly emitFile?: (asset: {
     readonly type: 'asset'
@@ -70,14 +76,20 @@ function isProductionBuild(context: MasterCSSManifestVirtualModuleContext) {
   return context.config?.command === 'build'
 }
 
-function isServerBuild(context: MasterCSSManifestVirtualModuleContext) {
+function isServerBuild(
+  context: MasterCSSManifestVirtualModuleContext,
+  pluginContext: MasterCSSVirtualModulePluginContext
+) {
+  // An environment build shares one config across client and server output.
+  if (pluginContext.environment) return pluginContext.environment.config.consumer === 'server'
   return Boolean(context.config?.build?.ssr)
 }
 
 function createManifestModule(
   context: MasterCSSManifestVirtualModuleContext,
   pluginContext: MasterCSSVirtualModulePluginContext,
-  json: string
+  json: string,
+  serverReferences: Set<string>
 ) {
   context.defaultManifestAssetReferenceId = undefined
   context.defaultManifestAssetSource = undefined
@@ -88,11 +100,13 @@ function createManifestModule(
     source: json
   })
   const urlExpression = `import.meta.ROLLUP_FILE_URL_${referenceId}`
-  if (!isServerBuild(context)) {
+  const server = isServerBuild(context, pluginContext)
+  if (server) serverReferences.add(referenceId)
+  else {
     context.defaultManifestAssetReferenceId = referenceId
     context.defaultManifestAssetSource = json
   }
-  return isServerBuild(context)
+  return server
     ? toUniversalManifestFacadeModule(urlExpression)
     : toBrowserManifestFacadeModule(urlExpression)
 }
@@ -102,6 +116,7 @@ export function createMasterCSSManifestVirtualModulePlugin(
   context: MasterCSSManifestVirtualModuleContext = {}
 ) {
   let cssManifestDependencies: readonly string[] = []
+  const serverManifestReferences = new Set<string>()
   const addServerAllow = (dependency: string) => {
     const allow = context.config?.server?.fs?.allow
     if (allow && !allow.includes(dependency)) allow.push(dependency)
@@ -136,8 +151,11 @@ export function createMasterCSSManifestVirtualModulePlugin(
     async load(this: MasterCSSVirtualModulePluginContext, id: string) {
       if (id === RESOLVED_VIRTUAL_MANIFEST_ID) {
         const result = await loadDefaultManifest(this)
-        return createManifestModule(context, this, toManifestJSON(result.manifest))
+        return createManifestModule(context, this, toManifestJSON(result.manifest), serverManifestReferences)
       }
+    },
+    resolveFileUrl({ referenceId, relativePath, format }: { referenceId: string, relativePath: string, format: string }) {
+      if (serverManifestReferences.has(referenceId)) return toServerManifestFileURL(relativePath, format)
     },
     handleHotUpdate({
       file,

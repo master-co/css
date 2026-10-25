@@ -18,6 +18,7 @@ import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
+  toServerManifestFileURL,
   toUniversalManifestFacadeModule
 } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
@@ -29,18 +30,26 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDe
   return [module]
 }
 
+interface ManifestPluginContext {
+  environment?: { config: { consumer?: string } }
+  emitFile?: (asset: { type: 'asset', name: string, source: string }) => string
+}
+
 function isProductionBuild(context: MasterCSSVitePluginContext) {
   return context.config?.command === 'build'
 }
 
-function isServerBuild(context: MasterCSSVitePluginContext) {
+function isServerBuild(context: MasterCSSVitePluginContext, pluginContext: ManifestPluginContext) {
+  // An environment build shares one config across client and server output.
+  if (pluginContext.environment) return pluginContext.environment.config.consumer === 'server'
   return Boolean(context.config?.build.ssr)
 }
 
 function createManifestModule(
   context: MasterCSSVitePluginContext,
-  pluginContext: { emitFile?: (asset: { type: 'asset', name: string, source: string }) => string },
-  json: string
+  pluginContext: ManifestPluginContext,
+  json: string,
+  serverReferences: Set<string>
 ) {
   if (!isProductionBuild(context) || !pluginContext.emitFile) return toInlineManifestModule(json)
   const referenceId = pluginContext.emitFile({
@@ -49,13 +58,16 @@ function createManifestModule(
     source: json
   })
   const urlExpression = `import.meta.ROLLUP_FILE_URL_${referenceId}`
-  return isServerBuild(context)
+  const server = isServerBuild(context, pluginContext)
+  if (server) serverReferences.add(referenceId)
+  return server
     ? toUniversalManifestFacadeModule(urlExpression)
     : toBrowserManifestFacadeModule(urlExpression)
 }
 
 export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext): Plugin {
   const cssManifestDependencies = new Map<string, string[]>()
+  const serverManifestReferences = new Set<string>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
     if (!allow) return
@@ -100,7 +112,10 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      return createManifestModule(context, this, serializeMasterCSSManifest(result.manifest))
+      return createManifestModule(context, this, serializeMasterCSSManifest(result.manifest), serverManifestReferences)
+    },
+    resolveFileUrl({ referenceId, relativePath, format }) {
+      if (serverManifestReferences.has(referenceId)) return toServerManifestFileURL(relativePath, format)
     },
     async handleHotUpdate({ file, server }) {
       let handled = false

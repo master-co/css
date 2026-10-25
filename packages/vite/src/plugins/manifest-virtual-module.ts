@@ -37,7 +37,7 @@ export default function ManifestVirtualModulePlugin(
   )
   type Host = DependencyHost & ThisParameterType<typeof plugin.load>
   const recovery = createManifestRecovery(context, RESOLVED_VIRTUAL_MANIFEST_ID,
-    (onDependency, host: Host) => plugin.load.call({ addWatchFile: onDependency, emitFile: host.emitFile?.bind(host) }, RESOLVED_VIRTUAL_MANIFEST_ID))
+    (onDependency, host: Host) => plugin.load.call({ environment: host.environment, addWatchFile: onDependency, emitFile: host.emitFile?.bind(host) }, RESOLVED_VIRTUAL_MANIFEST_ID))
   return {
     ...plugin,
     async buildStart() {

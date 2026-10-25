@@ -162,6 +162,24 @@ describe('ManifestLoaderPlugin', () => {
     expect(code).not.toContain('#456')
   })
 
+  it('resolves server CSS manifest file URLs relative to the chunk', async () => {
+    const context = await createContext()
+    context.config.command = 'build'
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call({ resolve }, './theme.css' + MASTER_CSS_MANIFEST_QUERY, path.join(FIXTURE_DIR, 'entry.ts'))
+    const load = (consumer: string, referenceId: string) => (plugin.load as any).call({ environment: { config: { consumer } }, addWatchFile: vi.fn(), emitFile: () => referenceId }, resolvedId)
+    // An environment build keeps one config, so `build.ssr` cannot tell the outputs apart.
+    const serverCode = await load('server', 'server_ref')
+    const clientCode = await load('client', 'client_ref')
+    const resolveFileUrl = (referenceId: string) => (plugin.resolveFileUrl as any)({ referenceId, relativePath: '../assets/master-css-manifest.json', format: 'es' })
+
+    expect(serverCode).toContain('loadMasterCSSManifestFromFile')
+    expect(clientCode).not.toContain('loadMasterCSSManifestFromFile')
+    expect(resolveFileUrl('server_ref')).toBe('new URL("../assets/master-css-manifest.json", import.meta.url).href')
+    expect(resolveFileUrl('client_ref')).toBeUndefined()
+  })
+
   it('updates per-file CSS manifest modules through HMR when imported', async () => {
     const context = await createContext()
     const plugin = ManifestLoaderPlugin(context)
