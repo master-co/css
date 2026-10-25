@@ -116,6 +116,7 @@ export function DemoPanel({ className, ...props }: DivProps) {
   return <DemoSurface {...props} className={clsx('width:100% p-md p-lg@sm', className)} />
 }
 
+/** The default size sits below utilities so specimens can pass their own `font-*` or `text-*`. */
 export function DemoP({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <DemoText {...props} className={clsx('font-xl fg-text-strong', className)} />
+  return <DemoText {...props} className={clsx('font-xl@layer(defaults) fg-text-strong', className)} />
 }

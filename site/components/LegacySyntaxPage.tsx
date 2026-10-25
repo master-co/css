@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import LegacySyntaxRedirect from './LegacySyntaxRedirect'
 import { legacySyntaxPages, localizeSyntaxURL, type LegacySyntaxSlug } from '../utils/legacy-syntax'
 

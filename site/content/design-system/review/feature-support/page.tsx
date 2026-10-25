@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import Link from '~/site/docs-shell/components/Link'
 import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport'

@@ -22,7 +22,7 @@ export default function Bar({ className, width, animated, children, color = 'tex
         </svg>
       </div>
       {icon}
-      <b className={`text-${color} white-space:nowrap`}>
+      <b className={`fg-${color} white-space:nowrap`}>
         <CountUp
           start={max}
           end={inView && value}

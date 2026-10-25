@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import Footer from '../components/Footer'
 import HeroHeader from '../components/HeroHeader'
 import clsx from 'clsx'

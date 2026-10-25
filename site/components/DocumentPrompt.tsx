@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import '~/site/styles/documentation-values.css'
 import DocumentCopyButton from './DocumentCopyButton'
 

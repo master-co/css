@@ -22,7 +22,8 @@ export function Tab(props: any) {
   return (
     <Link {...props}
       className={clsx(
-        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-width:2px border-block-style:solid border-block-color:transparent font-weight:460 white-space:nowrap app-nav',
+        // Each state owns the bottom color: a token longhand does not override a native block shorthand.
+        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-width:2px border-block-style:solid border-top-color:transparent font-weight:460 white-space:nowrap app-nav',
         {
           'font-xs!': size === 'sm',
           'font-sm!': !size
@@ -30,7 +31,7 @@ export function Tab(props: any) {
         props.className
       )}
       activeClassName="fg-accent! bb-accent"
-      inactiveClassName="fg-text-strong bb-major:hover">
+      inactiveClassName="fg-text-strong border-bottom-color:transparent bb-major:hover">
       {children}
     </Link>
   )

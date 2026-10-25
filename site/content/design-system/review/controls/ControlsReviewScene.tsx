@@ -5,13 +5,13 @@ import Demo from '~/site/components/demo/Demo'
 import { DemoControls, DemoItem } from '~/site/components/demo/primitives'
 
 const options = [
-  { value: 'items-start', label: 'Start' },
-  { value: 'items-center', label: 'Center' },
-  { value: 'items-end', label: 'End' }
+  { value: 'align-items:flex-start', label: 'Start' },
+  { value: 'align-items:center', label: 'Center' },
+  { value: 'align-items:flex-end', label: 'End' }
 ] as const
 
 export default function ControlsReviewScene() {
-  const [alignment, setAlignment] = useState<(typeof options)[number]['value']>('items-start')
+  const [alignment, setAlignment] = useState<(typeof options)[number]['value']>('align-items:flex-start')
   const buttons = options.map(({ value, label }) => <button
     key={value}
     type="button"

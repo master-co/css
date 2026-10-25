@@ -21,7 +21,7 @@ const views = [
     eyebrow: 'Root update',
     body: 'The browser captures the old card, applies the state update, then animates into the new card.',
     accent: 'bg-accent',
-    tint: 'bg-accent-surface'
+    tint: 'bg-accent/.14'
   },
   {
     id: 'product',

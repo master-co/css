@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import Image from '~/site/docs-shell/components/Image'
 import mountain1 from '~/site/public/images/mountain1.jpg'
 import mountain2 from '~/site/public/images/mountain2.jpg'

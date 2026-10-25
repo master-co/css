@@ -4,12 +4,16 @@ import { useState } from 'react'
 import { Demo, DemoControls, DemoItem, DemoLabel, DemoMotion, DemoScrollArea } from '~/site/components/demo'
 
 export default function DemoInteractions() {
-  const [alignment, setAlignment] = useState('items-start')
-  const options = ['items-start', 'items-center', 'items-end']
+  const options = [
+    { value: 'align-items:flex-start', label: 'start' },
+    { value: 'align-items:center', label: 'center' },
+    { value: 'align-items:flex-end', label: 'end' }
+  ]
+  const [alignment, setAlignment] = useState(options[0].value)
   return (
     <>
       <Demo title="Controls with a purpose" controls={<DemoControls label="Cross-axis alignment" variant="segmented">
-        {options.map(value => <button type="button" key={value} className="demo-button" aria-pressed={value === alignment} onClick={() => setAlignment(value)}>{value.replace('items-', '')}</button>)}
+        {options.map(({ value, label }) => <button type="button" key={value} className="demo-button" aria-pressed={value === alignment} onClick={() => setAlignment(value)}>{label}</button>)}
       </DemoControls>} caption="Controls sit outside the measured layout. Selection changes the actual utility class.">
         <div className={`display:flex gap-sm height:10rem ${alignment}`}>
           <DemoItem className="flex:1 p-md" tone="blue">01</DemoItem><DemoItem className="flex:1 height:6rem p-md" tone="violet">02</DemoItem><DemoItem className="flex:1 p-md" tone="neutral">03</DemoItem>

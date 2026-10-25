@@ -1,4 +1,5 @@
 import '~/site/styles/docs-shell/code.css'
+import '~/site/styles/docs-shell/scrollbar.css'
 
 import type { HTMLAttributes, ReactNode } from 'react'
 import clsx from 'clsx'

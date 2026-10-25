@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import Footer from '~/site/docs-shell/components/Footer'
 import pageCategories from '~/site/.categories/blog.json'
 import { footerProps } from '~/site/navigation'

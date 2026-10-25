@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/prose.css'
 import { IconHash } from '@tabler/icons-react'
 import Link from './Link'
 import resolvingHeading from '../utils/resolve-heading'

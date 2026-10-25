@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/scrollbar.css'
 import SearchButton from './SearchButton'
 import { Fragment, useRef, useState, useLayoutEffect } from 'react'
 import Link from './Link'

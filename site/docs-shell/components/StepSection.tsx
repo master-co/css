@@ -12,7 +12,8 @@ const StepSection = styled.div`
   font-size:16px_:is(h2,h3,h4)
   font-weight:460_:is(h2,h3,h4)
   user-select:text_a
-  margin-left:-2.781rem_:is(.code,.codeTabs,.demo)@media((width<64rem))
+  margin-block:0>.site-demo
+  margin-left:-2.781rem_:is(.code,.codeTabs)@media((width<64rem))
 `
 
 export const StepNum = styled.div`
