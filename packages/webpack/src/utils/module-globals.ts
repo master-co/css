@@ -4,8 +4,11 @@ import { createRequire } from 'node:module'
 export function preserveModuleGlobals(source: string, globals: string) {
   const require = createRequire(import.meta.url)
   // Use the host's parser, including its escaping and animation keyword tables.
-  const { NodeType: T, parseAStylesheet } = require('webpack/lib/css/syntax')
-  const { CSS_MODULES_KEYWORDS } = require('webpack/lib/css/data')
+  // Webpack 5.112 moved the parser under `syntax.parser` and made the keyword table lazy.
+  const syntax = require('webpack/lib/css/syntax')
+  const { NodeType: T, parseAStylesheet } = syntax.parser ?? syntax
+  const data = require('webpack/lib/css/data')
+  const CSS_MODULES_KEYWORDS = data.getCssModulesKeywords?.() ?? data.CSS_MODULES_KEYWORDS
   const variables = new Set<string>(), animations = new Set<string>()
   const walkRules = (node: any, visit: (node: any) => void) => {
     visit(node)
