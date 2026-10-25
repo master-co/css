@@ -58,7 +58,7 @@
     "@master/css-schema": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "fast-glob": "^3.3.3",
-    "vscode-languageserver-textdocument": "^1.0.14",
+    "vscode-languageserver-textdocument": "^1.0.16",
     "zod": "^4.6.7"
   },
   "devDependencies": {

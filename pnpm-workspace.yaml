@@ -12,7 +12,6 @@ allowBuilds:
   '@vscode/vsce-sign': true
   aronrepo: true
   esbuild: true
-  keytar: true
   lmdb: true
   msgpackr-extract: true
   protobufjs: true
