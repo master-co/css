@@ -109,13 +109,13 @@
     "provenance": true
   },
   "dependencies": {
-    "@eslint/css-tree": "^4.1.1",
+    "@eslint/css-tree": "^4.1.2",
     "@master/css-binding": "workspace:*",
     "@master/css-schema": "workspace:*",
     "consola": "^3.4.2",
     "defu": "^6.1.7",
-    "ignore": "^7.0.8",
-    "mdn-data": "^2.35.0",
+    "ignore": "^7.0.14",
+    "mdn-data": "^2.37.2",
     "minimatch": "^10.2.6"
   },
   "peerDependencies": {
