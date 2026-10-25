@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
@@ -34,6 +34,18 @@ it('pre-renders progressive CSS through the middleware of a static Astro build',
     const sidecar = JSON.parse(readFileSync(join(outDir, href + MASTER_CSS_STYLESHEET_ASSET_SUFFIX), 'utf8'))
     expect(sidecar.version).toBe(1)
   }
+  // The entry re-imports the preset that the default build manifest already supplies.
+  const assetsDir = join(outDir, '_astro')
+  const assets = readdirSync(assetsDir)
+  const projectManifest = assets.find(file => /^master-css-manifest\..+\.json$/.test(file))
+  expect(projectManifest).toBeTruthy()
+  const theme: unknown[] = JSON.parse(readFileSync(join(assetsDir, projectManifest!), 'utf8')).theme
+  expect(theme.length).toBeGreaterThan(0)
+  expect(new Set(theme.map(node => JSON.stringify(node))).size).toBe(theme.length)
+  const themeRules = assets.filter(file => file.endsWith('.css'))
+    .flatMap(file => readFileSync(join(assetsDir, file), 'utf8').match(/:root,:host\{[^}]*\}/g) ?? [])
+  expect(themeRules.length).toBeGreaterThan(0)
+  expect(new Set(themeRules).size).toBe(themeRules.length)
 })
 
 // Astro builds the runtime in a client bundle that never imports the page CSS.

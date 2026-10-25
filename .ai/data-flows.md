@@ -64,6 +64,8 @@ Main files:
 Risks:
 
 - Only `@import "@master/css"` identifies a project entry; it loads the full preset.
+  Hosts also pass the default build manifest as base, so merges must stay idempotent:
+  re-declared theme rules and variable values replace identical base copies, keyframes by ID.
 - Package CSS entrypoints must not accidentally identify themselves as project roots.
 - Import-graph order and manifest merge order affect every consumer.
 - Mixin expansion and recipe sorting affect generated CSS and cascade behavior. Native @apply roots pin their expanded token closure through emittedGlobals; unreferenced definitions are not roots.

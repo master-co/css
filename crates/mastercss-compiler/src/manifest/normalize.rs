@@ -108,7 +108,10 @@ pub(super) fn merge_variables(base: Option<&Value>, next: Option<&Value>) -> Opt
                 .get_mut("values")
                 .and_then(Value::as_array_mut)
                 .expect("scoped values");
-            values.extend(variable["values"].as_array().into_iter().flatten().cloned());
+            // Re-declared values replace identical base values, matching theme rules.
+            let next_values = variable["values"].as_array().map_or(&[][..], Vec::as_slice);
+            values.retain(|value| !next_values.contains(value));
+            values.extend(next_values.iter().cloned());
             let dependencies = previous
                 .as_object_mut()
                 .expect("variable")
@@ -157,18 +160,20 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
         Value::from(mastercss_schema::LANGUAGE_VERSION),
     );
     let variables = merge_variables(base.get("variables"), fragment.get("variables"));
+    // A fragment may re-declare base theme rules, such as a project entry importing
+    // the preset already supplied as the default build manifest. An earlier
+    // identical rule never wins the cascade, so the later declaration replaces it.
+    let fragment_theme = fragment
+        .get("theme")
+        .and_then(Value::as_array)
+        .map_or(&[][..], Vec::as_slice);
     let theme = base
         .get("theme")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-        .chain(
-            fragment
-                .get("theme")
-                .and_then(Value::as_array)
-                .into_iter()
-                .flatten(),
-        )
+        .filter(|node| !fragment_theme.contains(node))
+        .chain(fragment_theme)
         .cloned()
         .collect::<Vec<_>>();
     if !theme.is_empty() {

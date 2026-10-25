@@ -269,6 +269,36 @@ test('loads package entry preset manifest from CSS imports', async () => {
   }
 })
 
+test('does not duplicate base preset tokens re-imported by a project entry', async () => {
+  const cwd = createFixture()
+  try {
+    const entry = join(cwd, 'index.css')
+    writeFileSync(entry, '@import "@master/css";\n@theme { --color-brand: #123; }')
+
+    const { manifest } = await loadProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(manifest.theme).toStrictEqual([
+      ...defaultManifest.theme!,
+      {
+        type: 'rule',
+        prelude: ':root,:host',
+        children: [{ type: 'declaration', name: 'color-brand', value: '#123' }]
+      }
+    ])
+    const defaultValues = new Map(flattenMasterCSSManifestVariables(defaultManifest.variables)
+      .map(variable => [variable.name, variable.values]))
+    for (const variable of flattenMasterCSSManifestVariables(manifest.variables)) {
+      expect(variable.values).toStrictEqual(defaultValues.get(variable.name)
+        ?? [{ path: [':root,:host'], value: '#123' }])
+    }
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('loads project-level CSS manifest entries', async () => {
   const cwd = createFixture()
   try {
