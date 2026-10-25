@@ -42,7 +42,7 @@ Import Master CSS from the app stylesheet and keep the current Material UI provi
 
 Default source discovery is enough for most projects. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
 
-Use [Rendering modes](/guide/rendering-modes) before a large migration. Runtime rendering is often the easiest starting point for React apps that are actively changing during migration; static or progressive rendering may be better once class strings are stable.
+Use [Rendering modes](/guide/rendering-modes) before a large migration. Start with the default static rendering: write complete class strings in components, toggle known classes for state, and pass changing values through CSS variables. Choose runtime or progressive rendering only when the app creates new class names in the browser.
 
 ---
 

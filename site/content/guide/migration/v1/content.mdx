@@ -46,9 +46,9 @@ Choose the rendering mode before converting many classes:
 
 | Project shape | Recommended starting point |
 | --- | --- |
-| App already used browser runtime generation | Runtime rendering |
-| App wants zero-runtime generated CSS from complete source strings | Static rendering |
-| SSR or SSG app needs first-page CSS plus client-side class changes | Progressive rendering |
+| App keeps complete class strings in source | Static rendering (default) |
+| App creates new class names in the browser | Runtime rendering |
+| SSR or SSG app needs first-page CSS plus class names created in the browser | Progressive rendering |
 | Mixed legacy app with dynamic class creation | Start with runtime or progressive, then move stable surfaces toward static-safe class strings |
 
 Use the framework-specific installation guide for exact package names and setup code instead of carrying old initialization forward.

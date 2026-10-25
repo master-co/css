@@ -57,9 +57,9 @@ Use [Rendering modes](/guide/rendering-modes) before converting many files. The 
 
 | Project shape | Recommended starting point | Why |
 | --- | --- | --- |
-| Vite SPA or component app | Runtime rendering | Fast adoption while classes are changing during migration. |
-| Static marketing site or content site | Static rendering | Builds a zero-runtime CSS asset from complete class strings. |
-| SSR or SSG app with dynamic client state | Progressive rendering | Sends first-page CSS early, then lets the runtime handle later class changes. |
+| Vite SPA, component app, marketing site, or content site | Static rendering (default) | Tailwind projects already keep complete class strings in source, so the default setup builds a zero-runtime CSS asset. Toggling known classes and updating CSS variables work without a browser runtime. |
+| App that creates new class names in the browser, such as a visual editor or playground | Runtime rendering | Generates rules for class names that first appear after the build. |
+| SSR or SSG app that also creates new class names in the browser | Progressive rendering | Sends first-page CSS early, then lets the runtime handle class names that appear later. |
 | Highly interactive editor, builder, or data grid | Mixed approach | Keep stable classes in Master CSS and volatile per-element values in CSS variables or inline styles. |
 
 Static rendering depends on complete class strings in scanned source. If a Tailwind component builds class names from fragments, rewrite that part to explicit class maps before expecting static output to be complete.

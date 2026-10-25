@@ -3,7 +3,7 @@ import createLayout from '~/site/docs-shell/factories/create-layout'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
-import Tabs, { Tab } from '~/site/docs-shell/components/Tabs'
+import Tabs, { Tab, TabBadge } from '~/site/docs-shell/components/Tabs'
 
 export const { Page, generateMetadata } = createLayout({
   metadata: {
@@ -18,7 +18,7 @@ export const { Page, generateMetadata } = createLayout({
   icon: createHeaderIcon('aspnet-core'),
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/aspnet-core'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/aspnet-core'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
       <Tab href='/guide/installation/aspnet-core/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
