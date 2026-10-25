@@ -11,9 +11,9 @@
       "brotli": 15430
     },
     "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
-      "raw": 625482,
-      "gzip": 238209,
-      "brotli": 188464
+      "raw": 670987,
+      "gzip": 240919,
+      "brotli": 190278
     },
     "packages/runtime/dist/index.js (progressive critical path)": {
       "raw": 46490,

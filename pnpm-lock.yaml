@@ -131,9 +131,6 @@ importers:
       aronrepo:
         specifier: ^2.2.1
         version: 2.2.1(@commitlint/cli@21.2.4(conventional-commits-parser@7.1.2)(typescript@7.0.2))(semantic-release@25.0.9(supports-color@5.5.0)(typescript@7.0.2))
-      binaryen:
-        specifier: 132.0.0
-        version: 132.0.0
       concurrently:
         specifier: ^10.0.6
         version: 10.0.6
@@ -9713,10 +9710,6 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-
-  binaryen@132.0.0:
-    resolution: {integrity: sha512-4Usg7yEvwO3FMso3Oov6qkOOHSod1IEv+boKkh77kTljM+eNBouqCTbqWswGzbG+vDNO/b/v2C4gfEh1WgB9Lg==}
-    hasBin: true
 
   binaryextensions@6.11.0:
     resolution: {integrity: sha512-sXnYK/Ij80TO3lcqZVV2YgfKN5QjUWIRk/XSm2J/4bd/lPko3lvk0O4ZppH6m+6hB2/GTu+ptNwVFe1xh+QLQw==}
@@ -26587,8 +26580,6 @@ snapshots:
   big.js@5.2.2: {}
 
   binary-extensions@2.3.0: {}
-
-  binaryen@132.0.0: {}
 
   binaryextensions@6.11.0:
     dependencies:

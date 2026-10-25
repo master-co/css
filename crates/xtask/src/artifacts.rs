@@ -359,7 +359,6 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 artifact_name: "mastercss_binding_wasm_engine",
                 profile: "release-wasm",
                 default_features: true,
-                optimize: true,
                 typescript: true,
                 output: "packages/binding-wasm-engine/artifacts",
             };
@@ -385,7 +384,6 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 artifact_name: "mastercss_binding_wasm_compiler",
                 profile: "release",
                 default_features: true,
-                optimize: false,
                 typescript: true,
                 output: "packages/binding-wasm-compiler/artifacts",
             },
@@ -398,7 +396,6 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 artifact_name: "mastercss_binding_wasm_tooling",
                 profile: "release",
                 default_features: true,
-                optimize: false,
                 typescript: true,
                 output: "packages/binding-wasm-tooling/artifacts",
             },
@@ -413,7 +410,6 @@ struct WasmBuild {
     artifact_name: &'static str,
     profile: &'static str,
     default_features: bool,
-    optimize: bool,
     typescript: bool,
     output: &'static str,
 }
@@ -452,46 +448,6 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
         .map_err(|error| error.to_string())?
         .generate(&output)
         .map_err(|error| format!("Cannot generate Wasm bindings: {error}"))?;
-    if build.optimize {
-        optimize_wasm(
-            root,
-            &output.join(format!("{}_bg.wasm", build.artifact_name)),
-            build.label,
-        )?;
-    }
     println!("Built {}", output.display());
     Ok(())
-}
-
-fn optimize_wasm(root: &Path, wasm: &Path, label: &str) -> Result<(), String> {
-    let wasm_opt = root.join("node_modules/binaryen/bin/wasm-opt");
-    if !wasm_opt.is_file() {
-        return Err(format!(
-            "Cannot find {}. Run `pnpm install` before building Wasm artifacts.",
-            wasm_opt.display()
-        ));
-    }
-    let mut command = Command::new("node");
-    command
-        .current_dir(root)
-        .arg(&wasm_opt)
-        .arg(wasm)
-        // Binaryen's inlining shrinks raw bytes but duplicates bodies that
-        // brotli and gzip would otherwise share, so served artifacts grow.
-        .args(["-Oz", "--skip-pass=inlining-optimizing"])
-        // Match `rustc --print cfg --target wasm32-unknown-unknown`; LLVM's
-        // bulk-memory and reference-types imply the opt and overlong subsets.
-        .args([
-            "--enable-bulk-memory",
-            "--enable-bulk-memory-opt",
-            "--enable-call-indirect-overlong",
-            "--enable-multivalue",
-            "--enable-mutable-globals",
-            "--enable-nontrapping-float-to-int",
-            "--enable-reference-types",
-            "--enable-sign-ext",
-            "-o",
-        ])
-        .arg(wasm);
-    run_command(&mut command, &format!("{label} Wasm optimization"))
 }
