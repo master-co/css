@@ -27,7 +27,7 @@ export default nextConfig
 
 | Mode | Description |
 | --- | --- |
-| `progressive` | Combines pre-rendered first-page CSS with the browser runtime for later client-side class changes. |
+| `progressive` | Combines pre-rendered first-page CSS with the browser runtime for later client-side class changes. The runtime downloads its engine only when such a class appears. |
 | `runtime` | Injects the browser runtime through the Next.js client instrumentation hook without adding the build adapter. |
 | `pre-render` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
 | `static` | Scans source files with `MasterCSSScanner` from `@master/css-tooling/scanner/node`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |

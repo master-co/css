@@ -74,7 +74,9 @@ does not insert a runtime script into the page.
 
 For progressive rendering, select `mode: 'progressive'`, keep the client hook,
 and export the `handle` from `@master/css-svelte/hooks.server`;
-compose it first when using SvelteKit’s `sequence()`. For pre-render only, select
+compose it first when using SvelteKit’s `sequence()`. In this mode the client
+hook passes the project manifest as a loader, so a page whose classes are all
+pre-rendered does not download the runtime engine. For pre-render only, select
 `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
 A static application needs neither Master CSS hook. A pre-render application
 uses only the server hook.

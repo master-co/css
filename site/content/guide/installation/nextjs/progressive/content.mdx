@@ -43,7 +43,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   <HelloWorld url="localhost:3000" />
 </StepSection>
 
-Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages. The runtime then adopts those rules and can generate CSS for class names added later in the browser. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output.
+Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages. The runtime then adopts those rules and can generate CSS for class names added later in the browser; it downloads its engine only when such a class appears. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output.
 
 ```tsx name=app/page.tsx
 export default function Home() {

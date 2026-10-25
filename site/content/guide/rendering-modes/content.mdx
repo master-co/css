@@ -3,14 +3,14 @@ import ModeImg from '~/site/docs-shell/components/ModeImg'
 import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
 
 ## Overview [sr-only]
-Official build integrations default to `static`. Toggling known classes, changing themes and updating custom properties all work with static CSS. Choose an explicit runtime mode when new class names first become known in the browser, such as a visual editor or playground. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
+Official build integrations default to `static`. Toggling known classes, changing themes and updating custom properties all work with static CSS. Choose an explicit runtime mode when new class names first become known in the browser, such as a visual editor or playground. Client-rendered applications without pre-rendered HTML use `'runtime'`; `'progressive'` needs pages rendered on the server or during the build. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `'runtime'`               | Starts `MasterCSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
 | `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, preserves native CSS by default, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
-| `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. |
+| `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. The runtime engine, Wasm and project manifest load only when such a class appears. |
 
 Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, defaults, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
@@ -226,8 +226,16 @@ console.log(snapshot.classRules['btn']?.rules)
 | `usageCounts` | Active connected DOM usage by class name. It updates when observed elements are added, removed, or change class names. |
 | `classRules` | Generated rule snapshots by class name, including active, warmed, hydrated, and retained rules. |
 | `classRules[className].retained` | Whether an unused rule is being kept temporarily for idle cleanup or fast reuse. |
+| `engine` | `'deferred'` until a progressive page needs its engine, then `'loading'`, `'ready'`, or `'failed'`. Runtime-rendered pages report `'ready'` once `start()` resolves. |
 
 Direct runtime APIs are rule APIs, not DOM usage APIs. `ensureClassRules(classNames)` accepts an array and synchronously generates or reuses rules, so it is the explicit warming path before inserting a large dynamic view. `deleteClassRules(classNames)` accepts an array, synchronously removes generated rules, and bypasses retention. The MutationObserver path is more conservative: a removed DOM class disappears from `snapshot().usageCounts` immediately, while its generated rules can be retained and cleaned later outside the interaction window.
+
+Rule APIs need the engine. On a progressive page whose engine is still deferred, they throw `RUNTIME_ENGINE_NOT_READY` and start the engine, so warm classes after `await cssRuntime.ready()`. Until then, `snapshot().classRules` comes from the hydration manifest and `snapshot().layers` is empty:
+
+```js
+await cssRuntime.ready()
+cssRuntime.ensureClassRules(['display:grid', 'gap-md'])
+```
 
 ### Interaction-heavy screens
 Runtime and progressive rendering work best when the classes used during interaction are already generated, hydrated, retained, or warmed. A large interaction that inserts many elements with first-time class names still asks the browser to process DOM changes and new CSS rules in the same frame window.
@@ -252,6 +260,15 @@ Next.js delivers this manifest as a standard ESM data module; its bundler manage
 
 This does not change generated CSS or cascade order. It only moves discovery of the project manifest earlier so the runtime's later import can reuse the browser's preloaded module.
 
+Progressive pages do not need the project manifest to paint or to track classes that the page hydration manifest already covers. Official integrations pass it to the runtime as a loader, so the JSON is requested only when the engine starts, and they do not preload it:
+
+```js
+const cssRuntime = await MasterCSSRuntime.start({
+  manifest: () => import('virtual:master-css-manifest').then(module => module.default),
+  emittedGlobals
+})
+```
+
 ---
 
 ## Progressive Rendering
@@ -261,7 +278,7 @@ On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a
   <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
   <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-Progressive outputs use a page hydration manifest to hand generated rules to the runtime. Static and pre-render modes do not require runtime engine, Wasm or a runtime manifest:
+Progressive outputs point `style#master-css` at a page hydration manifest that hands the generated rules to the runtime. Static and pre-render outputs load no runtime, so they need no engine, Wasm, project manifest or hydration manifest:
 
 ```html
 <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
@@ -273,11 +290,15 @@ The `/_master-css/hydration/` path above is the integration-neutral route. Frame
 <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
-This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing CSSOM rules, and continues observing dynamic classes. If a pre-rendered style has no manifest pointer, or a loaded manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. `MasterCSSRuntime.start()` imports the hydration manifest as a JSON module and then defers the engine: it does not load the engine module, the Wasm or the project manifest, and it leaves the pre-rendered CSSOM untouched while it observes class usage. A page whose connected classes all appear in the hydration manifest never downloads the engine.
+
+The hydration manifest covers the class names of its rules and its `classNamesWithoutRules`: classes in the rendered HTML, such as ordinary authored CSS classes, that generate no Master CSS rules. The first connected class outside both starts the engine, as does `cssRuntime.ready()`. The runtime then compares the hydration manifest and `style#master-css` with the Rust engine's output, adopts the existing CSSOM rules, generates the uncovered classes, and moves hydrated classes that are no longer connected into the retained-rule cache. If the manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If a pre-rendered style has no manifest pointer, the runtime starts its engine immediately and rebuilds the same way. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
+
+If the engine cannot start, the runtime reports the failure through `onDiagnostic` and keeps the pre-rendered CSS; classes outside the hydration manifest stay unstyled until `refresh()` or a new `start()` retries. Set `enginePrefetch: 'idle'` for pages that are likely to introduce new classes soon after load: the runtime starts the engine during browser idle time, so the first new class does not wait for the engine download. Set `engine: 'eager'` to start the engine during `start()`.
 
 After adoption, progressive rendering uses the same runtime state model as runtime rendering. Hydrated rules become runtime-managed rule objects, new classes can be generated later, and mutation-driven removals can enter the retained-rule cache before idle cleanup. This keeps the first paint deterministic while still avoiding repeated CSSOM insertion/deletion during interactive updates.
 
-Inline `script#master-css-hydration-manifest` is still supported for compatibility and for dynamic SSR responses that cannot write a stable public JSON asset. Pages with no generated rules or managed resources do not need a hydration manifest pointer.
+Inline `script#master-css-hydration-manifest` serves dynamic SSR responses that cannot write a stable public JSON asset. Pages with no generated rules or managed resources do not need a hydration manifest pointer.
 
 Do not preload the page hydration manifest. It is different from the runtime project manifest: the browser already has the CSS needed for first paint in `style#master-css`, and the hydration manifest only tells the runtime how to adopt those existing rules.
 
@@ -336,13 +357,13 @@ Master CSS hydration is the process that restores the server-side or build-time 
   <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
   <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `MasterCSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes.
+The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `MasterCSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes. Until a class outside the manifest appears, the runtime only reads the manifest's class names; the rule checks below run when the engine starts.
 
-Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation, and its `emittedGlobals` records the variables and keyframes the server treated as already emitted by the page's stylesheets. Before validating resources, the runtime counts any of those its own `emittedGlobals` lacks, because a client bundle can be built without the page CSS. During hydration, the runtime compares that IR with the CSSOM rules already present in `style#master-css`. When they match, it attaches those CSSOM rules to runtime-managed rule objects instead of regenerating them.
+Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. `classNamesWithoutRules` lists the other classes the server saw in the rendered HTML, which generate no Master CSS rules. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation, and its `emittedGlobals` records the variables and keyframes the server treated as already emitted by the page's stylesheets. Before validating resources, the runtime counts any of those its own `emittedGlobals` lacks, because a client bundle can be built without the page CSS. When the engine starts, the runtime compares the engine's output for the manifest classes with that IR and with the CSSOM rules already present in `style#master-css`. When they match, it attaches those CSSOM rules to runtime-managed rule objects instead of regenerating them.
 
 Hydration also checks CSSOM rule counts and order, including theme buckets whose order affects the cascade. Missing, extra, duplicated, or reordered rules trigger a warning and rebuilding of `style#master-css` from the currently connected DOM classes.
 
-Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime. Classes removed after hydration disappear from `snapshot().usageCounts` immediately; their generated rules may be retained briefly and removed later by idle cleanup.
+Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are generated by the engine. Classes removed after hydration disappear from `snapshot().usageCounts` immediately; their generated rules may be retained briefly and removed later by idle cleanup. Before the engine starts, removed classes keep their pre-rendered rules; the engine releases them when it starts.
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 

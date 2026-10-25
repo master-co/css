@@ -87,7 +87,7 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 ```
 
-The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json` and CORS headers, and the browser must support JSON modules and import attributes. The current runtime bundle also loads the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime, manifest, and preset on compatible versions. The IIFE does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
+The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json` and CORS headers, and the browser must support JSON modules and import attributes. When its engine starts, the runtime also loads the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`, an engine build without render sessions or inspection. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime, manifest, and preset on compatible versions. The IIFE does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
 
 ## API
 
@@ -105,34 +105,49 @@ cssRuntime.observe()
 
 | API | Type | Description |
 | --- | --- | --- |
-| `MasterCSSRuntime.start(options)` | `Promise<MasterCSSRuntime>` | Initializes or reuses the runtime for `options.root`; `manifest` is required. |
+| `MasterCSSRuntime.start(options)` | `Promise<MasterCSSRuntime>` | Initializes or reuses the runtime for `options.root`. |
+| `ready()` | `Promise<this>` | Starts the engine if it is deferred and resolves when it is ready; rejects when engine startup fails, or with `RUNTIME_DISPOSED` after `dispose()`. |
 | `observe()` | `this` | Observes class attribute changes. |
-| `disconnect()` | `this` | Stops observation and clears non-hydrated runtime state. |
-| `refresh(manifest)` | `this` | Replaces the complete manifest. |
-| `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Ensures rules for a readonly class-name collection. |
-| `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Deletes rules for a readonly class-name collection. |
-| `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, and hydration state. |
-| `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the binding session. |
+| `disconnect()` | `this` | Stops observation and clears non-hydrated runtime state. A pending engine startup continues. |
+| `refresh(manifest?, emittedGlobals?)` | `this` | Replaces the complete manifest and, when provided, the emitted global CSS state. A deferred or failed runtime starts its engine from the new inputs; during engine startup the refresh is applied once the engine is ready. |
+| `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously ensures rules for a readonly class-name collection. |
+| `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously deletes rules for a readonly class-name collection, bypassing retention. |
+| `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, engine state, and hydration state. |
+| `binding` | `'native' \| 'wasm' \| undefined` | The engine binding; `undefined` until the engine is ready. |
+| `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the binding session, and cancels a pending engine startup. |
 
-### Progressive Hydration
+| Option | Description |
+| --- | --- |
+| `manifest` | The project manifest, or `() => Promise<MasterCSSManifest>` to load it only when the engine starts. Required. |
+| `emittedGlobals` | Variables and keyframes already emitted by the project CSS entry. |
+| `hydrationManifest` | Explicit page hydration data. Without it, `start()` reads inline or external hydration data from the document. |
+| `root` | The `Document` or `ShadowRoot` to observe; defaults to `document`. |
+| `engine` | `'eager'` starts the engine during `start()`. `'deferred'` waits for the first class that the page hydration manifest does not cover. Defaults to `'deferred'` when `style#master-css` has a valid, non-empty hydration manifest, and `'eager'` otherwise. |
+| `enginePrefetch` | `'none'` (default) starts a deferred engine only when it is needed. `'idle'` starts it during browser idle time, including the engine module, Wasm and project manifest downloads, so later uncovered classes do not wait. |
+| `binding` | `'auto'` (default), `'wasm'`, or `'native'`. |
+| `startupTimeoutMs` | Fails hydration data loading or engine startup that takes longer than this with `RUNTIME_STARTUP_TIMEOUT`. |
+| `onDiagnostic` | Receives startup and engine startup diagnostics. |
+
+### Progressive hydration
 
 ```ts
 import { MasterCSSRuntime } from '@master/css-runtime'
-import manifest from 'virtual:master-css-manifest'
-import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 const cssRuntime = await MasterCSSRuntime.start({
-  manifest,
-  emittedGlobals,
+  manifest: () => import('virtual:master-css-manifest').then(module => module.default),
 })
 cssRuntime.observe()
 ```
 
-`start()` resolves explicit, inline, or external hydration data before returning. `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. These counts are cumulative for the lifetime of the runtime and cannot be unregistered.
+`start()` resolves explicit, inline, or external hydration data before returning. When `style#master-css` has a valid, non-empty hydration manifest, the engine is deferred: `start()` does not load the engine module, the Wasm, or the project manifest, and the runtime leaves the pre-rendered CSSOM untouched while it tracks class usage. The hydration manifest covers the class names of its rules and its `classNamesWithoutRules`: server-rendered classes, such as ordinary authored CSS classes, that generate no Master CSS rules. The first connected class outside both starts the engine. The runtime then verifies the pre-rendered rules against the Rust engine, generates the uncovered classes, and releases hydrated classes that are no longer connected. A page whose classes are all pre-rendered never downloads the engine.
 
-Concurrent `start()` calls for the same root share one startup. The first call's manifest, binding, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
+`snapshot().engine` reports `'deferred'`, `'loading'`, `'ready'`, or `'failed'`. While the engine is deferred or loading, `ensureClassRules()` and `deleteClassRules()` throw `RUNTIME_ENGINE_NOT_READY` and start the engine; call `await cssRuntime.ready()` before using them. Until the engine is ready, `snapshot()` reads `classRules` from the hydration manifest and `cssText` from `style#master-css`, and reports no layers. If engine startup fails, `onDiagnostic` receives the failure, pre-rendered CSS stays in place, and classes outside the hydration manifest remain unstyled. Rule APIs keep throwing `RUNTIME_ENGINE_NOT_READY` without restarting the engine; `refresh()` or a new `start()` retries.
 
-`globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade.
+`emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. These counts are cumulative for the lifetime of the runtime and cannot be unregistered.
+
+Concurrent `start()` calls for the same root share one startup. The first call's manifest, binding, engine options, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
+
+`globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade, including `ready()`.
 
 ## Related docs
 

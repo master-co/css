@@ -80,8 +80,8 @@ Import the default stylesheet from the CSS entry your app already loads:
 ```
 
 During development, `runtime` and `progressive` modes load the injected runtime
-under Vite's resolved `base`, including nested HTML pages. The runtime preload
-uses the same URL. Relative or empty bases follow Vite's development normalization.
+under Vite's resolved `base`, including nested HTML pages. The `runtime` mode
+preload uses the same URL. Relative or empty bases follow Vite's development normalization.
 
 ## Client types
 Add the client type reference when TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules:
@@ -330,7 +330,7 @@ import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry.
 
-In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it injects its private runtime bootstrap. Applications that need manual startup should import `MasterCSSRuntime` from `@master/css-runtime` and use these virtual inputs; the bootstrap itself is intentionally not a public subpath.
+In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it injects its private runtime bootstrap. In `progressive` mode, the bootstrap passes the manifest as a loader and adds no preloads, so a page whose classes are all pre-rendered loads neither the manifest nor the runtime engine. Applications that need manual startup should import `MasterCSSRuntime` from `@master/css-runtime` and use these virtual inputs; on progressive pages, pass `manifest: () => import('virtual:master-css-manifest').then(module => module.default)`. The bootstrap itself is intentionally not a public subpath.
 
 ## Options
 

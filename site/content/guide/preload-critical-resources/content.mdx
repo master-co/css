@@ -46,7 +46,7 @@ Official runtime integrations can split the project manifest into a hashed JSON 
 
 The modulepreload starts the JSON module request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-manifest`, whose facade imports the same JSON module. Matching `as="json"` and `crossorigin` lets the browser reuse the preloaded module instead of issuing a second request.
 
-(i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, so its page hydration manifest should not be preloaded.
+(i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, and its runtime requests the project manifest only when the engine starts, so do not preload either manifest on progressive pages.
 
 ### Choose the right manifest JSON
 Master CSS uses different JSON files for different handoff points:
@@ -54,13 +54,15 @@ Master CSS uses different JSON files for different handoff points:
 | JSON file | Used by | Preload? |
 | --- | --- | --- |
 | CDN default manifest | CDN runtime-only pages that use the packaged default preset manifest. | Yes, when using the CDN runtime. |
-| Project manifest asset | Official runtime integrations that emit `master-css-manifest.<hash>.json` for `virtual:master-css-manifest`. | Yes, in pure runtime mode when the integration injects the runtime. |
+| Project manifest asset | Official runtime integrations that emit `master-css-manifest.<hash>.json` for `virtual:master-css-manifest`. | Yes, in pure runtime mode when the integration injects the runtime. No on progressive pages. |
 | Page hydration manifest | Progressive pages that hand `style#master-css` rules to a browser runtime. | No. The browser can paint without it. |
 
 ---
 
 ## Defer runtime engine
-(o) Defer the runtime engine, because the critical CSS has already been pre-rendered on the page.
+On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module, the Wasm and the project manifest are requested only when a class that the page hydration manifest does not cover appears.
+
+(o) Load the runtime as an ordinary deferred module script.
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -71,15 +73,19 @@ Master CSS uses different JSON files for different handoff points:
 </html>
 ```
 
-(x) Do not preload the runtime engine in progressive rendering mode.
+(x) Do not preload the runtime, its engine Wasm or the project manifest in progressive rendering mode. A preload downloads them even when the page never needs the engine.
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
+  <link rel="preload" as="fetch" type="application/wasm" crossorigin href="/assets/mastercss_binding_wasm_engine_bg.<hash>.wasm"> <!-- [!code --] -->
+  <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json"> <!-- [!code --] -->
 </head>
 </html>
 ```
+
+When new classes usually appear soon after load, start the runtime with `enginePrefetch: 'idle'`. The runtime then starts the engine during browser idle time, after first paint, so the first new class does not wait for the engine download.
 
 ---
 
@@ -92,7 +98,7 @@ Progressive rendering can externalize the page hydration manifest:
 
 (x) Do not add a preload hint for this JSON file.
 
-The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let the runtime import it when hydration starts. If a referenced manifest cannot be imported or validated, startup rejects with `INVALID_HYDRATION_MANIFEST`; if a loaded manifest does not match the style block, the runtime warns and rebuilds from connected DOM classes.
+The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let `MasterCSSRuntime.start()` import it. If a referenced manifest cannot be imported or validated, startup rejects with `INVALID_HYDRATION_MANIFEST`; if the engine later finds that the manifest does not match the style block, the runtime warns and rebuilds from connected DOM classes.
 
 This is different from runtime project manifests. A runtime-only page needs its project manifest before it can interpret classes. A progressive page already has the first-response rules in `style#master-css`, so its page hydration manifest only describes CSS that was already rendered into that one HTML response.
 

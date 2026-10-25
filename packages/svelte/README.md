@@ -99,7 +99,7 @@ This module starts the runtime with the project manifest and emitted globals and
 
 ### Server hook
 
-For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. The runtime then downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
 
 ```ts
 export { handle } from '@master/css-svelte/hooks.server'

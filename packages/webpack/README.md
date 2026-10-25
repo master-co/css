@@ -72,7 +72,10 @@ export default {
 
 Static mode is the default and does not inject the browser runtime. Select
 `mode: 'runtime'` or `mode: 'progressive'` explicitly when class names first
-appear in the browser.
+appear in the browser. The webpack integration does not write page hydration
+manifests itself. In `progressive` mode, the runtime defers its engine when the
+server that renders the HTML injects one; the runtime entry still bundles the
+project manifest.
 
 In those modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
 the injected runtime entry uses its own content-hashed file under `_master-css/`.

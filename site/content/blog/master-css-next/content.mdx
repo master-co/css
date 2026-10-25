@@ -46,7 +46,7 @@ Progressive Rendering moves that first CSS pass into the build:
 2. `@master/css-next` receives those build outputs through the Adapter API.
 3. The adapter runs the Master CSS server renderer against each HTML document.
 4. The generated CSS is injected as `<style id="master-css">`, and the page hydration manifest is written as a hashed JSON asset.
-5. The style tag receives `data-master-css-hydration-manifest`, and the runtime imports that manifest during hydration to attach existing CSS rules to runtime-managed rule objects instead of regenerating them.
+5. The style tag receives `data-master-css-hydration-manifest`. The runtime imports that manifest at startup and loads its engine only when a class outside it appears; the engine then attaches the existing CSS rules to runtime-managed rule objects instead of regenerating them.
 
 The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the manifest pointer is missing or the loaded rules no longer match `style#master-css`, the runtime warns and rebuilds its stylesheet from connected DOM classes. A referenced manifest that cannot be loaded or validated instead rejects startup with `INVALID_HYDRATION_MANIFEST`.
 
