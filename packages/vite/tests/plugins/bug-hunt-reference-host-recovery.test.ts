@@ -94,15 +94,20 @@ test.each(cases)('BH-0004 build-watch reference recovery $syntax/$kind/startup=$
     const result = await build({ ...f.config, build: { watch: {}, minify: false, assetsInlineLimit: 0 } })
     if (!('on' in result)) throw new Error('Missing Vite build watcher')
     watcher = result
-    const events: { code: string, error?: unknown }[] = []
+    const events: { code: string, error?: unknown, run: number }[] = []
     let terminal: { code: string, error?: unknown } | undefined
+    let runs = 0
     result.on('event', event => {
       if (process.env.BH_TRACE) console.log('build-event', JSON.stringify({ kind, syntax, startupMissing, code: event.code, ...(event.code === 'ERROR' ? { error: String(event.error), details: event.error } : {}) }))
       if (event.code === 'BUNDLE_END') closing.push(event.result.close())
+      if (event.code === 'START') runs++
       if (event.code === 'BUNDLE_END' || event.code === 'ERROR') terminal = event
-      if (event.code === 'END' && terminal) { events.push(terminal); terminal = undefined }
+      if (event.code === 'END' && terminal) { events.push({ ...terminal, run: runs }); terminal = undefined }
     })
-    const nextEvent = async (phase: string) => { await vi.waitFor(() => expect(events.length, phase).toBeGreaterThan(0), { timeout: watchDeadline }); return events.shift()! }
+    const nextEvent = async (phase: string, after = 0) => {
+      await vi.waitFor(() => expect(events.some(event => event.run > after), phase).toBe(true), { timeout: watchDeadline })
+      return events.splice(0, events.findIndex(event => event.run > after) + 1).pop()!
+    }
     const initial = await nextEvent('initial')
     expect(initial.code).toBe(startupMissing ? 'ERROR' : 'BUNDLE_END')
     const output = () => readdirSync(join(f.root, 'dist'), { recursive: true, withFileTypes: true }).filter(file => file.isFile()).map(file => readFileSync(join(file.parentPath, file.name), 'utf8')).join('\n')
@@ -111,8 +116,11 @@ test.each(cases)('BH-0004 build-watch reference recovery $syntax/$kind/startup=$
       rmSync(f.reference)
       expect((await nextEvent('deleted')).code).toBe('ERROR')
     }
+    // Rolldown's watcher can report the deletion again after the failed build,
+    // so only a build that starts after the restore has to succeed.
+    const restoreAfter = runs
     writeFileSync(f.reference, f.tokens(7))
-    const restored = await nextEvent('restored')
+    const restored = await nextEvent('restored', restoreAfter)
     expect(restored.code, String(restored.error)).toBe('BUNDLE_END')
     const css = output()
     expect(css).toMatch(/padding:\s*7rem/)
