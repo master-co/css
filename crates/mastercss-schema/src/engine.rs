@@ -79,6 +79,11 @@ pub struct HydrationManifest {
     /// stylesheets. The runtime cannot reproduce `resource_order` without them.
     #[serde(default, skip_serializing_if = "EmittedGlobals::is_empty")]
     pub emitted_globals: EmittedGlobals,
+    /// Rendered classes that generate no rules, such as authored component classes.
+    /// With the rule classes, they tell a deferred runtime which connected classes
+    /// the pre-rendered CSS already accounts for.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub class_names_without_rules: Vec<String>,
 }
 
 impl HydrationManifest {
@@ -92,6 +97,7 @@ impl HydrationManifest {
                 keyframes: Vec::new(),
             },
             emitted_globals: EmittedGlobals::default(),
+            class_names_without_rules: Vec::new(),
         }
     }
 

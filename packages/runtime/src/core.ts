@@ -1,8 +1,7 @@
-import {
-  createEngine,
-  type MasterCSSEngine,
-  type MasterCSSEngineSnapshot,
-  type MasterCSSEngineTransition
+import type {
+  MasterCSSEngine,
+  MasterCSSEngineSnapshot,
+  MasterCSSEngineTransition
 } from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import {
@@ -29,9 +28,10 @@ import HydratedGeneratedRule from './generated-rule'
 import RuntimeLayer from './layer'
 import registerGlobal from './register-global'
 import RuntimeHost, { LAYER_ORDER, getGeneratedRuleNodeTexts, isLayerBlockRule } from './host'
-import { applyRuntimeMutationDelta } from './mutation'
+import { applyDeferredMutationDelta, applyRuntimeMutationDelta } from './mutation'
 import {
   findElementById,
+  getRenderedClassNames,
   getRootHost,
   isDocumentRoot,
   resolveHydrationManifest
@@ -51,12 +51,16 @@ import {
 } from './retention-config'
 import {
   MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS,
+  createStartupTimeout,
   toStartupDiagnostic
 } from './startup'
 import type {
   MasterCSSRuntimeClassSnapshot,
+  MasterCSSRuntimeEngineState,
   MasterCSSRuntimeFacade,
   MasterCSSRuntimeLayerSnapshot,
+  MasterCSSRuntimeManifestLoader,
+  MasterCSSRuntimeRuleSnapshot,
   MasterCSSRuntimeSnapshot,
   MasterCSSRuntimeStartOptions
 } from './types'
@@ -70,6 +74,37 @@ interface PendingRuntimeStart {
   hydrationManifest?: MasterCSSHydrationManifest
 }
 
+interface LoadedEngine {
+  readonly engine: MasterCSSEngine
+  readonly manifest: MasterCSSManifest
+}
+
+function resolveManifest(manifest: MasterCSSManifest | MasterCSSRuntimeManifestLoader) {
+  return typeof manifest === 'function' ? manifest() : Promise.resolve(manifest)
+}
+
+/** `@master/css` stays out of the entry chunk, so deferred pages never download it. */
+async function loadEngine(
+  manifest: Promise<MasterCSSManifest>,
+  emittedGlobals: MasterCSSEmittedGlobals | undefined,
+  binding: NonNullable<MasterCSSRuntimeStartOptions['binding']>
+): Promise<LoadedEngine> {
+  // Destructured directly so bundlers can drop the rest of @master/css.
+  const { createEngine } = await import('@master/css')
+  const resolvedManifest = await manifest
+  return {
+    engine: await createEngine({ manifest: resolvedManifest, emittedGlobals, binding }),
+    manifest: resolvedManifest
+  }
+}
+
+function runtimeDisposedError() {
+  return new MasterCSSError({
+    code: 'RUNTIME_DISPOSED',
+    domain: 'runtime',
+    message: 'The Master CSS runtime has been disposed.'
+  })
+}
 
 export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   static #instances = new WeakMap<Document | ShadowRoot, MasterCSSRuntime>()
@@ -93,20 +128,41 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private retainedCleanupIdleHandle: number | undefined
   private retainedCleanupTimeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
 
+  private engineState: MasterCSSRuntimeEngineState
+  private engineStart?: Promise<this>
+  private manifestSource: MasterCSSManifest | MasterCSSRuntimeManifestLoader
+  private manifestRequest?: Promise<MasterCSSManifest>
+  /** Engine calls made while it loads, replayed in order once it is installed or fails. */
+  private readonly pendingEngineCalls: (() => void)[] = []
+  private renderedClassNames: Set<string>
+  private readonly engineBinding: NonNullable<MasterCSSRuntimeStartOptions['binding']>
+  private readonly startupTimeoutMs: number
+  private readonly onDiagnostic: MasterCSSRuntimeStartOptions['onDiagnostic']
+
   private constructor(
     root: Document | ShadowRoot,
-    manifest: MasterCSSManifest,
-    emittedGlobals: MasterCSSEmittedGlobals | undefined,
+    options: MasterCSSRuntimeStartOptions,
     hydrationManifest: MasterCSSHydrationManifest | undefined,
-    bindingEngine: MasterCSSEngine,
-    stylesheets?: MasterCSSRuntimeStartOptions['stylesheets'],
-    stylesheetDelivery?: MasterCSSRuntimeStartOptions['stylesheetDelivery']
+    loaded?: LoadedEngine
   ) {
-    super(root, manifest, emittedGlobals, hydrationManifest, bindingEngine, stylesheets, stylesheetDelivery)
+    super(root, options.emittedGlobals, hydrationManifest, options.stylesheets, options.stylesheetDelivery)
+    this.manifestSource = options.manifest
+    this.renderedClassNames = getRenderedClassNames(hydrationManifest)
+    this.engineBinding = options.binding || 'auto'
+    this.startupTimeoutMs = options.startupTimeoutMs ?? MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS
+    this.onDiagnostic = options.onDiagnostic
+    if (loaded) {
+      this.bindingEngine = loaded.engine
+      this.manifest = loaded.manifest
+      this.engineState = 'ready'
+    } else {
+      this.engineState = 'deferred'
+      if (options.enginePrefetch === 'idle') this.startEngineWhenIdle()
+    }
   }
 
-  get binding(): MasterCSSEngine['binding'] {
-    return this.bindingEngine.binding
+  get binding(): MasterCSSEngine['binding'] | undefined {
+    return this.bindingEngine?.binding
   }
 
   static async start(options: MasterCSSRuntimeStartOptions): Promise<MasterCSSRuntime> {
@@ -115,6 +171,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (current) {
       current.registerEmittedGlobals(options.emittedGlobals)
       if (options.hydrationManifest !== undefined) current.setHydrationManifest(options.hydrationManifest)
+      current.retryEngine()
       return current
     }
     const pending = MasterCSSRuntime.#starts.get(root)
@@ -158,57 +215,148 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
       onDiagnostic
     } = options
     const ownerWindow = (isDocumentRoot(root) ? root : root.ownerDocument).defaultView || globalThis
+    const timeout = createStartupTimeout(ownerWindow, startupTimeoutMs, 'runtime')
     let abandoned = false
     let ownedEngine: MasterCSSEngine | undefined
     let startupRuntime: MasterCSSRuntime | undefined
-    let timeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
-    const enginePromise = createEngine({
-      manifest: options.manifest,
-      emittedGlobals: options.emittedGlobals,
-      binding
-    }).then((engine) => {
-      if (abandoned) {
-        engine.dispose()
-      } else {
-        ownedEngine = engine
-      }
-      return engine
-    })
+    const startEngine = () => loadEngine(resolveManifest(options.manifest), options.emittedGlobals, binding)
+      .then((loaded) => {
+        if (abandoned) {
+          loaded.engine.dispose()
+        } else {
+          ownedEngine = loaded.engine
+        }
+        return loaded
+      })
+    // Only a pre-rendered stylesheet can defer the engine; its hydration manifest decides.
+    const deferrable = options.engine !== 'eager' && Boolean(findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID))
+    const enginePromise = deferrable ? undefined : startEngine()
     const hydrationPromise = resolveHydrationManifest(root, options.hydrationManifest)
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutHandle = ownerWindow.setTimeout(() => reject(new MasterCSSError({
-        code: 'RUNTIME_STARTUP_TIMEOUT',
-        domain: 'runtime',
-        message: `Master CSS runtime did not start within ${startupTimeoutMs}ms.`
-      })), startupTimeoutMs)
-    })
 
     try {
-      const [engine, hydrationManifest] = await Promise.race([
-        Promise.all([enginePromise, hydrationPromise]),
-        timeoutPromise
-      ])
-      if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
-      startupRuntime = new MasterCSSRuntime(
-        root,
-        options.manifest,
-        options.emittedGlobals,
-        hydrationManifest,
-        engine,
-        options.stylesheets,
-        options.stylesheetDelivery
-      )
+      let loaded: LoadedEngine | undefined
+      let hydrationManifest: MasterCSSHydrationManifest | undefined
+      if (enginePromise) {
+        [loaded, hydrationManifest] = await timeout.race(Promise.all([enginePromise, hydrationPromise]))
+      } else {
+        hydrationManifest = await timeout.race(hydrationPromise)
+        if (!hydrationManifest?.rules.length) loaded = await timeout.race(startEngine())
+      }
+      timeout.clear()
+      startupRuntime = new MasterCSSRuntime(root, options, hydrationManifest, loaded)
       return startupRuntime.register()
     } catch (error) {
       abandoned = true
       ;(startupRuntime || ownedEngine)?.dispose()
-      if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
+      timeout.clear()
       getRootHost(root).removeAttribute('hidden')
       onDiagnostic?.(toStartupDiagnostic(error))
       throw error
     }
   }
 
+  /** Starts the engine of a deferred progressive page, resolving once it executes rules. */
+  ready(): Promise<this> {
+    if (this.disposed) return Promise.reject(runtimeDisposedError())
+    return this.engineState === 'ready' ? Promise.resolve(this) : this.startEngine()
+  }
+
+  private startEngine(): Promise<this> {
+    this.engineStart ??= this.loadDeferredEngine()
+    return this.engineStart
+  }
+
+  private async loadDeferredEngine(): Promise<this> {
+    this.engineState = 'loading'
+    const timeout = createStartupTimeout(this.getAnimationFrameWindow(), this.startupTimeoutMs, 'engine')
+    const loading = loadEngine(this.loadManifest(), this.emittedGlobals, this.engineBinding)
+    try {
+      const { engine, manifest } = await timeout.race(loading)
+      if (this.disposed) throw runtimeDisposedError()
+      this.installEngine(engine, manifest)
+      return this
+    } catch (error) {
+      if (!this.disposed) {
+        // Pre-rendered CSS stays valid. Only refresh() or start() retries.
+        this.engineState = 'failed'
+        this.manifestRequest = undefined
+        this.host.removeAttribute('hidden')
+        this.onDiagnostic?.(toStartupDiagnostic(error))
+        this.replayPendingEngineCalls()
+      }
+      // An engine that loads after a timeout or disposal is not this runtime's.
+      void loading.then(({ engine }) => {
+        if (this.engineState === 'ready' && this.bindingEngine === engine) return
+        if (this.bindingEngine === engine) this.bindingEngine = undefined
+        engine.dispose()
+      }, () => {})
+      throw error
+    } finally {
+      timeout.clear()
+    }
+  }
+
+  private loadManifest() {
+    this.manifestRequest ??= resolveManifest(this.manifestSource)
+    return this.manifestRequest
+  }
+
+  private installEngine(engine: MasterCSSEngine, manifest: MasterCSSManifest) {
+    this.bindingEngine = engine
+    this.manifest = manifest
+    this.engineState = 'ready'
+    if (this.observing) {
+      this.adoptConnectedClasses(new Set(this.classCounts.keys()))
+      this.reconcileKeyframeRules()
+    }
+    this.replayPendingEngineCalls()
+  }
+
+  private replayPendingEngineCalls() {
+    for (const call of this.pendingEngineCalls.splice(0)) call()
+  }
+
+  private startEngineWhenIdle() {
+    const view = this.getCleanupWindow()
+    const start = () => this.requestEngine()
+    if (view.requestIdleCallback) view.requestIdleCallback(start)
+    else view.setTimeout(start, 0)
+  }
+
+  /** Starts a deferred engine for a class pre-rendered CSS lacks; a failed one waits for a retry. */
+  private requestEngine() {
+    if (this.engineState === 'deferred' && !this.disposed) void this.startEngine().catch(() => {})
+  }
+
+  private retryEngine() {
+    if (this.engineState !== 'failed') return
+    this.engineStart = undefined
+    this.engineState = 'deferred'
+    this.requestEngine()
+  }
+
+  private requireEngine() {
+    if (this.engineState === 'ready') return this.engine
+    this.requestEngine()
+    throw new MasterCSSError({
+      code: 'RUNTIME_ENGINE_NOT_READY',
+      domain: 'runtime',
+      message: 'The Master CSS engine has not started. Await runtime.ready() before changing class rules.'
+    })
+  }
+
+  protected override registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
+    if (emittedGlobals && this.engineState === 'loading') {
+      this.pendingEngineCalls.push(() => super.registerEmittedGlobals(emittedGlobals))
+    } else {
+      super.registerEmittedGlobals(emittedGlobals)
+    }
+  }
+
+  protected override setHydrationManifest(hydrationManifest?: MasterCSSHydrationManifest): this {
+    this.renderedClassNames = getRenderedClassNames(hydrationManifest)
+    return super.setHydrationManifest(hydrationManifest)
+  }
 
   private register(): this {
     const registered = MasterCSSRuntime.#instances.get(this.root) === this
@@ -238,6 +386,10 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     facade = Object.freeze({
       get binding() {
         return getBinding()
+      },
+      ready: async () => {
+        await this.ready()
+        return facade
       },
       observe: () => {
         this.observe()
@@ -274,7 +426,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.style = null
     this.progressive = false
     this.createRuntimeStyle()
-    this.adoptSnapshot(this.bindingEngine.snapshot())
+    this.adoptSnapshot(this.engine.snapshot())
     this.ensureClassRules([...connectedNames])
   }
 
@@ -292,7 +444,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
 
   private failHydration(reason: string, ensuredClassNames: string[] = []) {
     this.hydrationFailureReason = reason
-    if (ensuredClassNames.length) this.bindingEngine.deleteClassRules(ensuredClassNames)
+    if (ensuredClassNames.length) this.engine.deleteClassRules(ensuredClassNames)
     this.resetHostRuleState()
     return undefined
   }
@@ -335,14 +487,14 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
       return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
     }
     const classNames = [...new Set(manifest.rules.map(rule => rule.className))]
-    this.bindingEngine.ensureClassRules(classNames)
-    let snapshot = this.bindingEngine.snapshot()
+    this.engine.ensureClassRules(classNames)
+    let snapshot = this.engine.snapshot()
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
     // The server knows which stylesheets this page links; this bundle's emitted
     // globals may describe others. Resources follow the server's.
-    if (this.registerMissingEmittedGlobals(manifest.emittedGlobals)) snapshot = this.bindingEngine.snapshot()
+    if (this.registerMissingEmittedGlobals(manifest.emittedGlobals)) snapshot = this.engine.snapshot()
     const resourceOrder = {
       variables: snapshot.resources.variables.map(resource => resource.name),
       keyframes: snapshot.resources.keyframes.map(resource => resource.id)
@@ -378,12 +530,22 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ name }) => name))
     const missing = [...connectedNames].filter((className) => !hydratedClassNames.has(className))
     if (missing.length) this.ensureClassRules(missing)
+    // Pre-rendered classes gone from the DOM, including removals while the engine
+    // was deferred, enter the same retention as later removals.
+    this.queueRemovedClassNames(hydratedClassNames)
   }
 
   private renderRuntimeStyle(connectedNames: Set<string>) {
     this.createRuntimeStyle()
-    this.adoptSnapshot(this.bindingEngine.snapshot())
+    this.adoptSnapshot(this.engine.snapshot())
     this.ensureClassRules([...connectedNames])
+  }
+
+  private adoptConnectedClasses(connectedNames: Set<string>) {
+    if (this.progressive) this.hydrateRuntimeStyle(connectedNames)
+    else this.renderRuntimeStyle(connectedNames)
+    // A failed hydration also rebuilds with runtime CSS.
+    if (!this.progressive) this.host.removeAttribute('hidden')
   }
 
   private getAnimationFrameWindow() {
@@ -619,6 +781,11 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         && ((node as Element).matches('style,link[rel="stylesheet"]') || (node as Element).querySelector('style,link[rel="stylesheet"]')))
     })) this.reconcileKeyframeRules()
     const deltaCounts = this.classTracker.collectMutations(records, this.root)
+    if (this.engineState !== 'ready') {
+      const addedClassNames = applyDeferredMutationDelta(deltaCounts, this.classCounts)
+      if (addedClassNames.some(className => !this.renderedClassNames.has(className))) this.requestEngine()
+      return
+    }
     applyRuntimeMutationDelta(records, deltaCounts, {
       classCounts: this.classCounts,
       isWarm: (className) => this.classUtilities.has(className) || this.retainedClassNames.has(className),
@@ -633,8 +800,9 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   ensureClassRules(classNames: readonly string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
+    const engine = this.requireEngine()
     this.cancelRetainedClassNames(classNames)
-    const transition = this.bindingEngine.ensureClassRules(classNames)
+    const transition = engine.ensureClassRules(classNames)
     this.applyTransition(transition, classNames)
     return transition
   }
@@ -642,8 +810,9 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   deleteClassRules(classNames: readonly string[]) {
     this.cancelPendingAddedClassNames(classNames)
     this.cancelPendingRemovedClassNames(classNames)
+    const engine = this.requireEngine()
     this.cancelRetainedClassNames(classNames)
-    const transition = this.bindingEngine.deleteClassRules(classNames)
+    const transition = engine.deleteClassRules(classNames)
     this.applyTransition(transition, classNames)
     return transition
   }
@@ -663,11 +832,14 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (this.observing) return this
     this.detectRuntimeStyle()
     const connectedNames = this.collectConnectedClasses()
-    if (this.progressive) this.hydrateRuntimeStyle(connectedNames)
-    else this.renderRuntimeStyle(connectedNames)
+    if (this.engineState === 'ready') {
+      this.adoptConnectedClasses(connectedNames)
+    } else if (!this.progressive || [...connectedNames].some(className => !this.renderedClassNames.has(className))) {
+      // Pre-rendered CSS styles covered classes; the engine starts for the first one it lacks.
+      this.requestEngine()
+    }
     this.startMutationObserver()
     this.root.addEventListener('load', this.handleStylesheetLoad, true)
-    if (!this.progressive) this.host.removeAttribute('hidden')
     this.observing = true
     if (process.env.NODE_ENV === 'development') debugRuntimeObserved(this)
     return this
@@ -683,7 +855,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.root.removeEventListener('load', this.handleStylesheetLoad, true)
     this.observing = false
     const activeClassNames = [...this.classUtilities.keys()]
-    if (activeClassNames.length) this.bindingEngine.deleteClassRules(activeClassNames)
+    if (activeClassNames.length) this.bindingEngine?.deleteClassRules(activeClassNames)
     this.classCounts.clear()
     this.classTracker.reset()
     this.clearKeyframeRules()
@@ -696,13 +868,29 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return this
   }
 
-  refresh(manifest: MasterCSSManifest = this.manifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+  refresh(manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+    if (this.engineState === 'loading') {
+      this.pendingEngineCalls.push(() => this.refresh(manifest, emittedGlobals))
+      return this
+    }
+    if (this.engineState !== 'ready') {
+      // The engine has not loaded: it starts from the refreshed inputs instead.
+      if (manifest) {
+        this.manifestSource = manifest
+        this.manifestRequest = undefined
+      }
+      if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
+      this.retryEngine()
+      this.requestEngine()
+      return this
+    }
+    manifest ??= this.manifest!
     // HMR drops deferred removals and the warm cache. Release their rules first,
     // or the Rust rebuild replays them as connected classes nothing owns.
     const releasedClassNames = [...new Set([...this.pendingRemovedClassNames, ...this.retainedClassNames])]
       .filter((className) => !this.classCounts.has(className))
     if (releasedClassNames.length) this.deleteClassRules(releasedClassNames)
-    const transition = this.bindingEngine.refresh(manifest, emittedGlobals)
+    const transition = this.engine.refresh(manifest, emittedGlobals)
     if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
@@ -716,24 +904,41 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return this
   }
 
+  private getClassRuleSnapshots() {
+    const ruleSnapshots = new Map<string, MasterCSSRuntimeRuleSnapshot[]>()
+    if (this.engineState === 'ready') {
+      for (const [className, rules] of this.classUtilities) {
+        ruleSnapshots.set(className, rules.map((rule) => Object.freeze({
+          key: rule.key,
+          layer: rule.layer.name as MasterCSSManifestUtilityLayerName,
+          text: rule.text
+        })))
+      }
+      return ruleSnapshots
+    }
+    // Until the engine starts, the hydration manifest describes the pre-rendered rules.
+    for (const { className, key, layer, text } of this.hydrationManifest?.rules || []) {
+      const rules = ruleSnapshots.get(className) || []
+      rules.push(Object.freeze({ key, layer, text }))
+      ruleSnapshots.set(className, rules)
+    }
+    return ruleSnapshots
+  }
+
   snapshot(): MasterCSSRuntimeSnapshot {
     const usageCounts = Object.freeze(Object.fromEntries(this.classCounts))
+    const ruleSnapshots = this.getClassRuleSnapshots()
     const classNames = new Set([
-      ...this.classUtilities.keys(),
+      ...ruleSnapshots.keys(),
       ...this.classCounts.keys(),
       ...this.retainedClassNames
     ])
     const classRules: Record<string, MasterCSSRuntimeClassSnapshot> = Object.create(null)
     for (const className of [...classNames].sort()) {
-      const rules = (this.classUtilities.get(className) || []).map((rule) => Object.freeze({
-        key: rule.key,
-        layer: rule.layer.name as MasterCSSManifestUtilityLayerName,
-        text: rule.text
-      }))
       classRules[className] = Object.freeze({
         usageCount: this.classCounts.get(className) || 0,
         retained: this.retainedClassNames.has(className),
-        rules: Object.freeze(rules)
+        rules: Object.freeze(ruleSnapshots.get(className) || [])
       })
     }
     const layers: MasterCSSRuntimeLayerSnapshot[] = [
@@ -748,7 +953,8 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     ]
     return Object.freeze({
       binding: this.binding,
-      cssText: this.bindingEngine.snapshot().text,
+      engine: this.engineState,
+      cssText: this.engineState === 'ready' ? this.engine.snapshot().text : this.style?.textContent || '',
       observing: this.observing,
       classRules: Object.freeze(classRules),
       usageCounts,
@@ -770,7 +976,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   dispose() {
     if (this.disposed) return
     this.disconnect()
-    this.bindingEngine.dispose()
+    this.bindingEngine?.dispose()
     this.unregister()
     this.disposeNativeStylesheets()
     this.disposed = true

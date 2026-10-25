@@ -2,15 +2,38 @@ import assert from 'node:assert/strict'
 import { brotliCompressSync, gzipSync } from 'node:zlib'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { Rolldown } from 'tsdown'
 
 const baselinePath = path.resolve('.ai/contracts/runtime-bundle-size.json')
 const artifactPaths = [
   'packages/runtime/dist/global.min.js',
   'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm'
 ]
+const runtimeEntryPath = 'packages/runtime/dist/index.js'
+// What an app bundler ships before a progressive page needs the engine.
+const progressiveCriticalPath = `${runtimeEntryPath} (progressive critical path)`
 
-function measure(file) {
-  const source = readFileSync(file)
+/** Bundles the runtime ESM entry the way an app does, leaving out the lazily imported engine. */
+async function bundleProgressiveCriticalPath() {
+  const bundle = await Rolldown.rolldown({
+    input: runtimeEntryPath,
+    platform: 'browser',
+    external: ['@master/css'],
+    transform: { define: { 'process.env.NODE_ENV': '"production"' } },
+    logLevel: 'silent'
+  })
+  try {
+    const { output } = await bundle.generate({ format: 'esm', minify: true })
+    const chunks = output.filter(chunk => chunk.type === 'chunk')
+    assert.equal(chunks.length, 1, 'The progressive runtime entry must not split before the engine import.')
+    assert.match(chunks[0].code, /import\(`@master\/css`\)/, 'The runtime must import @master/css lazily.')
+    return Buffer.from(chunks[0].code)
+  } finally {
+    await bundle.close()
+  }
+}
+
+function measure(source) {
   return {
     raw: source.byteLength,
     gzip: gzipSync(source, { level: 9 }).byteLength,
@@ -18,16 +41,17 @@ function measure(file) {
   }
 }
 
-function createBaseline() {
+async function createBaseline() {
   const artifacts = {}
-  for (const file of artifactPaths) {
+  for (const file of [...artifactPaths, runtimeEntryPath]) {
     assert.equal(
       existsSync(file),
       true,
       `Runtime bundle ${file} does not exist. Build the runtime Wasm and @master/css-runtime before checking its size.`
     )
-    artifacts[file] = measure(file)
   }
+  for (const file of artifactPaths) artifacts[file] = measure(readFileSync(file))
+  artifacts[progressiveCriticalPath] = measure(await bundleProgressiveCriticalPath())
   return {
     version: 1,
     allowance: {
@@ -38,7 +62,7 @@ function createBaseline() {
   }
 }
 
-const actual = createBaseline()
+const actual = await createBaseline()
 if (process.argv.includes('--write')) {
   writeFileSync(baselinePath, `${JSON.stringify(actual, null, 2)}\n`)
   process.stdout.write(`Updated ${baselinePath}.\n`)

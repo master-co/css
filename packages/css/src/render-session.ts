@@ -76,6 +76,9 @@ function toSnapshot(
     emittedGlobals: Object.freeze({ ...emittedGlobals }),
     hydrationManifest: Object.freeze({
       ...rendered.hydrationManifest,
+      ...(rendered.hydrationManifest.classNamesWithoutRules
+        ? { classNamesWithoutRules: freezeArray(rendered.hydrationManifest.classNamesWithoutRules) }
+        : {}),
       rules: freezeArray(rendered.hydrationManifest.rules),
       resourceOrder: Object.freeze({
         variables: freezeArray(rendered.hydrationManifest.resourceOrder.variables),

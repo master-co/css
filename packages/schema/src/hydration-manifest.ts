@@ -51,6 +51,8 @@ export interface MasterCSSHydrationManifest {
   readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }
   /** Resource counts the server render treated as emitted by the page's stylesheets. */
   readonly emittedGlobals?: MasterCSSEmittedGlobals
+  /** Rendered classes that generate no rules, such as authored component classes. */
+  readonly classNamesWithoutRules?: readonly string[]
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

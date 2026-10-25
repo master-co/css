@@ -21,6 +21,14 @@ export function getRootHost(root: Document | ShadowRoot) {
   return isDocumentRoot(root) ? root.documentElement : root.host
 }
 
+/** Classes the server rendered, so the progressive stylesheet already holds their CSS, if any. */
+export function getRenderedClassNames(hydrationManifest: MasterCSSHydrationManifest | undefined) {
+  return new Set([
+    ...hydrationManifest?.rules.map(rule => rule.className) || [],
+    ...hydrationManifest?.classNamesWithoutRules || []
+  ])
+}
+
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
   return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 4
     && (hydrationManifest as MasterCSSHydrationManifest | undefined)?.languageVersion === 16
@@ -28,6 +36,8 @@ function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrati
     && (hydrationManifest as MasterCSSHydrationManifest).rules.every(rule => rule && Array.isArray(rule.priority?.features))
     && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.variables)
     && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.keyframes)
+    && ((hydrationManifest as MasterCSSHydrationManifest).classNamesWithoutRules === undefined
+      || Array.isArray((hydrationManifest as MasterCSSHydrationManifest).classNamesWithoutRules))
     ? hydrationManifest as MasterCSSHydrationManifest
     : undefined
 }

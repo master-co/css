@@ -533,22 +533,50 @@ try {
     }
   }))
 
-  results.push(await runBenchmark('progressive hydration success path', async () => {
+  // Every class is pre-rendered, so the engine stays deferred.
+  results.push(await runBenchmark('progressive startup with deferred engine', async () => {
     const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
       const state = await page.evaluate(() => {
         const snapshot = globalThis.masterCSSRuntime.snapshot()
         return {
+          engine: snapshot.engine,
           failure: snapshot.hydration.failureReason,
           progressive: snapshot.hydration.state === 'progressive',
           utilities: Object.keys(snapshot.classRules).length
         }
       })
-      if (!state.progressive || state.failure || state.utilities !== hydrationClasses.length) {
-        throw new Error(`Expected successful hydration, got ${JSON.stringify(state)}.`)
+      if (state.engine !== 'deferred' || !state.progressive || state.failure || state.utilities !== hydrationClasses.length) {
+        throw new Error(`Expected a deferred progressive startup, got ${JSON.stringify(state)}.`)
       }
       return elapsed
+    } finally {
+      await page.close()
+    }
+  }))
+
+  results.push(await runBenchmark('progressive engine start for the first uncovered class', async () => {
+    const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
+    try {
+      await loadRuntime(page, scriptURL)
+      return await page.evaluate(async () => {
+        const className = 'outline-offset:13px'
+        const startedAt = performance.now()
+        const element = document.createElement('p')
+        element.className = className
+        document.body.append(element)
+        while (!globalThis.masterCSSRuntime.snapshot().classRules[className]?.rules.length) {
+          if (performance.now() - startedAt > 10_000) {
+            throw new Error(`Timed out waiting for the deferred engine to generate ${className}.`)
+          }
+          await new Promise((resolveFrame) => requestAnimationFrame(resolveFrame))
+        }
+        if (globalThis.masterCSSRuntime.snapshot().hydration.failureReason) {
+          throw new Error('Expected the deferred engine to hydrate the pre-rendered CSS.')
+        }
+        return performance.now() - startedAt
+      })
     } finally {
       await page.close()
     }

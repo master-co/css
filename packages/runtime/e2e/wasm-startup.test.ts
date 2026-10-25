@@ -107,7 +107,7 @@ test('fails open when Wasm startup exceeds the configured timeout', async ({ pag
   expect(await page.evaluate(() => Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__))).toBe(false)
 })
 
-test('disposes an engine that resolves before hydration startup times out', async ({ page }) => {
+test('disposes an eager engine that resolves before hydration startup times out', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const hydrationURL = new URL('/slow-hydration.json', loaderURL).href
   await page.route(hydrationURL, async route => {
@@ -151,6 +151,7 @@ test('disposes an engine that resolves before hydration startup times out', asyn
       await globalThis.MasterCSSRuntime.start({
         manifest,
         binding,
+        engine: 'eager',
         startupTimeoutMs: 25
       } as never)
     } catch (error) {

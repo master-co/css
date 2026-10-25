@@ -109,7 +109,9 @@ export default class RuntimeHost {
   private readonly ruleClasses = new Map<HydratedGeneratedRule, string | Set<string>>()
   protected readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
 
-  protected manifest: MasterCSSManifest
+  /** Set when the engine starts; progressive pages defer both. */
+  protected manifest?: MasterCSSManifest
+  protected bindingEngine?: MasterCSSEngine
   protected style: HTMLStyleElement | null = null
   protected progressive = false
   protected hydrationFailureReason?: string
@@ -123,35 +125,45 @@ export default class RuntimeHost {
 
   constructor(
     protected readonly root: Document | ShadowRoot,
-    manifest: MasterCSSManifest,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
     protected hydrationManifest: MasterCSSHydrationManifest | undefined,
-    protected readonly bindingEngine: MasterCSSEngine,
     stylesheets?: MasterCSSRuntimeOptions['stylesheets'],
     stylesheetDelivery?: MasterCSSRuntimeOptions['stylesheetDelivery']
   ) {
     this.keyframeHost = new KeyframeHost(root,
       () => this.getStyleSheet(), () => this.manifest, () => this.emittedGlobals.keyframeSlots, stylesheets,
       stylesheetDelivery, () => this.reconcileKeyframeRules())
-    this.manifest = manifest
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
     this.host = isDocumentRoot(root) ? root.documentElement : root.host
     this.container = isDocumentRoot(root) ? root.head : root
     this.resetResourceCounts()
   }
 
+  /** Rule and resource changes run only after the engine starts. */
+  protected get engine(): MasterCSSEngine {
+    if (!this.bindingEngine) {
+      throw new MasterCSSError({
+        code: 'INTERNAL',
+        domain: 'runtime',
+        message: 'The Master CSS engine has not started.'
+      })
+    }
+    return this.bindingEngine
+  }
+
   protected registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
     if (!emittedGlobals) return
-    const transition = this.bindingEngine.registerEmittedGlobals(emittedGlobals)
+    // A deferred engine starts from the accumulated globals instead.
+    const transition = this.bindingEngine?.registerEmittedGlobals(emittedGlobals)
     addEmittedGlobals(this.emittedGlobals, emittedGlobals)
-    this.applyTransition(transition)
+    if (transition) this.applyTransition(transition)
   }
 
   /** Count resources another host emitted without changing rendered CSS; callers adopt a snapshot next. */
   protected registerMissingEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
     const missing = emittedGlobals && missingEmittedGlobals(this.emittedGlobals, emittedGlobals)
     if (!missing) return false
-    this.bindingEngine.registerEmittedGlobals(missing)
+    this.engine.registerEmittedGlobals(missing)
     addEmittedGlobals(this.emittedGlobals, missing)
     return true
   }
@@ -161,7 +173,7 @@ export default class RuntimeHost {
   }
 
   protected replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
-    const transition = this.bindingEngine.replaceEmittedGlobals(emittedGlobals)
+    const transition = this.engine.replaceEmittedGlobals(emittedGlobals)
     Object.assign(this.emittedGlobals, cloneEmittedGlobals(emittedGlobals))
     this.applyTransition(transition)
   }
@@ -293,6 +305,8 @@ export default class RuntimeHost {
   protected disposeNativeStylesheets() { this.keyframeHost.dispose() }
 
   protected reconcileKeyframeRules() {
+    // Keyframe rules come from the engine, which reconciles them when it starts.
+    if (!this.bindingEngine) return
     this.keyframeHost.reconcileOwners()
     const claimed = new Set<CSSRule>()
     for (const rule of this.keyframes.rules) {
@@ -427,7 +441,7 @@ export default class RuntimeHost {
         if (rule) this.unregisterLayerRule(rule)
       }
     }
-    const state = this.bindingEngine.executionState(classNames)
+    const state = this.engine.executionState(classNames)
     this.syncResourceSnapshot(state.resources)
     this.syncClassReferences(state.classes)
   }

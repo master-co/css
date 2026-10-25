@@ -86,7 +86,7 @@ impl RenderSession {
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
         let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
-        let hydration_manifest = self.hydration_manifest(&snapshot);
+        let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes);
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -114,7 +114,7 @@ impl RenderSession {
             }
         }
         let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
-        let hydration_manifest = self.hydration_manifest(&snapshot);
+        let hydration_manifest = self.hydration_manifest(&snapshot, &classes);
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -128,11 +128,25 @@ impl RenderSession {
         })
     }
 
-    fn hydration_manifest(&self, snapshot: &EngineSnapshotIr) -> HydrationManifest {
+    fn hydration_manifest(
+        &self,
+        snapshot: &EngineSnapshotIr,
+        classes: &[String],
+    ) -> HydrationManifest {
         // The runtime ships its own emitted globals, which may describe other stylesheets
         // than this page links. It reproduces the snapshot from the server's instead.
         let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
         hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
+        let rule_classes = snapshot
+            .rules
+            .iter()
+            .map(|rule| rule.class_name.as_str())
+            .collect::<HashSet<_>>();
+        hydration_manifest.class_names_without_rules = classes
+            .iter()
+            .filter(|class_name| !rule_classes.contains(class_name.as_str()))
+            .cloned()
+            .collect();
         hydration_manifest
     }
 
@@ -195,6 +209,10 @@ mod tests {
         );
         assert_eq!(rendered.hydration_manifest.version, 4);
         assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
+        assert_eq!(
+            rendered.hydration_manifest.class_names_without_rules,
+            ["unknown"]
+        );
         assert!(
             rendered
                 .hydration_manifest

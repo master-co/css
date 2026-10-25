@@ -11,8 +11,17 @@ export interface MasterCSSRuntimeStylesheet {
   readonly ownerIds: readonly string[]
 }
 
+/** Loads the project manifest when the runtime starts its engine. */
+export type MasterCSSRuntimeManifestLoader = () => Promise<MasterCSSManifest>
+
+/**
+ * `deferred` keeps a progressive page on its pre-rendered CSS until a class
+ * lacks it; `loading` and `failed` describe that start, `ready` executes rules.
+ */
+export type MasterCSSRuntimeEngineState = 'deferred' | 'loading' | 'ready' | 'failed'
+
 export interface MasterCSSRuntimeOptions {
-  readonly manifest: MasterCSSManifest
+  readonly manifest: MasterCSSManifest | MasterCSSRuntimeManifestLoader
   readonly root?: Document | ShadowRoot
   readonly emittedGlobals?: MasterCSSEmittedGlobals
   readonly hydrationManifest?: MasterCSSHydrationManifest
@@ -26,6 +35,13 @@ export type MasterCSSRuntimeBinding = 'auto' | 'native' | 'wasm'
 
 export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
   readonly binding?: MasterCSSRuntimeBinding
+  /**
+   * Progressive pages with a hydration manifest defer the engine, its Wasm and
+   * a lazy manifest until a class lacks pre-rendered CSS. `eager` starts it now.
+   */
+  readonly engine?: 'eager' | 'deferred'
+  /** `idle` starts a deferred engine when the browser is idle, before a class needs it. */
+  readonly enginePrefetch?: 'none' | 'idle'
   readonly startupTimeoutMs?: number
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
@@ -49,7 +65,8 @@ export interface MasterCSSRuntimeLayerSnapshot {
 }
 
 export interface MasterCSSRuntimeSnapshot {
-  readonly binding: MasterCSSEngine['binding']
+  readonly binding: MasterCSSEngine['binding'] | undefined
+  readonly engine: MasterCSSRuntimeEngineState
   readonly cssText: string
   readonly observing: boolean
   readonly classRules: Readonly<Record<string, MasterCSSRuntimeClassSnapshot>>
@@ -63,7 +80,8 @@ export interface MasterCSSRuntimeSnapshot {
 }
 
 export interface MasterCSSRuntimeFacade extends Disposable {
-  readonly binding: MasterCSSEngine['binding']
+  readonly binding: MasterCSSEngine['binding'] | undefined
+  ready(): Promise<this>
   observe(): this
   disconnect(): this
   refresh(manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): this

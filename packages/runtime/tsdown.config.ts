@@ -36,6 +36,22 @@ const browserBindingLoader = {
   }
 }
 
+// The global bundle inlines the lazy engine import as a namespace; re-export only
+// createEngine so the render APIs of @master/css stay tree-shaken.
+const globalEngineModule = '\0master-css-global-engine'
+const globalEngineLoader = {
+  name: 'global-engine-loader',
+  resolveId: {
+    order: 'pre' as const,
+    handler(source: string, importer?: string) {
+      if (source === '@master/css' && importer !== globalEngineModule) return globalEngineModule
+    }
+  },
+  load(id: string) {
+    if (id === globalEngineModule) return `export { createEngine } from '@master/css'`
+  }
+}
+
 export default defineConfig([
   {
     entry: ['src/**/*.ts'],
@@ -74,12 +90,14 @@ export default defineConfig([
       'global.min': 'src/global.min.ts'
     },
     platform: 'browser',
+    // The inlined engine initializes lazily, after document.currentScript is
+    // cleared; capture the script URL while the bundle first runs.
     define: {
-      'import.meta.url': '(document.currentScript?.src || globalThis.location.href)'
+      'import.meta.url': 'masterCSSRuntimeScriptURL'
     },
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [browserBindingLoader],
+    plugins: [globalEngineLoader, browserBindingLoader],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false
@@ -88,7 +106,8 @@ export default defineConfig([
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false,
-      comments: false
+      comments: false,
+      intro: 'const masterCSSRuntimeScriptURL = document.currentScript?.src || globalThis.location.href'
     }
   }
 ])
