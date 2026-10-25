@@ -60,7 +60,7 @@ npx sv add @master/css-svelte-addon
 
 The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and defaults to static rendering without adding a server hook.
 
-`@master/css-svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-tooling/source`.
+`@master/css-svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. It requires SvelteKit 3 and Svelte 5. Source extraction for `.svelte` files is handled automatically by `@master/css-tooling/source`.
 
 ## Manual setup
 

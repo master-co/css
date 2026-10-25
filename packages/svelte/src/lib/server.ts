@@ -8,7 +8,7 @@ import {
   createServerRenderer,
   type MasterCSSHydrationManifestRenderMode
 } from '@master/css-server'
-import type { Handle } from '@sveltejs/kit'
+import type { Handle } from '@sveltejs/kit/hooks'
 
 export type MasterCSSSvelteHydrationManifestOption =
   | 'inline'

@@ -11,6 +11,12 @@ describe('Svelte Vite integration', () => {
     expect(masterCSS({ mode: 'runtime' }).map(plugin => plugin.name)).toContain('master-css:inject-runtime')
   })
 
+  test('omits index HTML hooks, which SvelteKit never calls', () => {
+    for (const mode of ['static', 'runtime', 'progressive', 'pre-render'] as const) {
+      expect(masterCSS({ mode }).filter(plugin => plugin.transformIndexHtml).map(plugin => plugin.name)).toEqual([])
+    }
+  })
+
   test('includes the emittedGlobals virtual module from the wrapped Vite plugin', () => {
     expect(masterCSS().map((plugin) => plugin.name)).toContain('master-css:virtual-module:emitted-globals')
   })

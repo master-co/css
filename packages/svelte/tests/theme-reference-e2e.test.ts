@@ -87,7 +87,7 @@ it('delivers referenced resources without leaking route-owned native overrides',
 
 it('hot-updates added and edited entries, then reloads after an entry is deleted', async () => {
   const directory = mkdtempSync(join(packageDir, 'tests/fixtures/theme-hmr-'))
-  cpSync(fixtureDir, directory, { recursive: true, filter: source => !source.includes('/.svelte-kit') })
+  cpSync(fixtureDir, directory, { recursive: true, filter: source => !source.includes('/.svelte-kit') && !source.includes('/node_modules') })
   const entry = join(directory, 'src/routes/globals.css')
   writeFileSync(join(directory, 'src/routes/+page.svelte'), '<main class="probe">HMR probe</main><style>.probe{color:var(--color-probe,fuchsia)}</style>')
   writeFileSync(join(directory, 'src/routes/unloaded/+page.svelte'), '<main>Other route</main>')

@@ -25,6 +25,15 @@ function SvelteKitServerExternalPlugin(): BasePlugin {
   }
 }
 
+// SvelteKit renders pages through its server hooks and never calls
+// `transformIndexHtml`; SvelteKit 3 warns about every plugin that defines it.
+function withoutIndexHTMLTransform(plugin: BasePlugin): BasePlugin {
+  if (!plugin.transformIndexHtml) return plugin
+  const kitPlugin = { ...plugin }
+  delete kitPlugin.transformIndexHtml
+  return kitPlugin
+}
+
 export function createMasterCSSVitePlugin(
   options: MasterCSSVitePluginOptions = {}
 ): BasePlugin[] {
@@ -33,7 +42,7 @@ export function createMasterCSSVitePlugin(
     ...createBaseMasterCSSVitePlugin({
       mode: 'static',
       ...options
-    })
+    }).map(withoutIndexHTMLTransform)
   ]
 }
 
