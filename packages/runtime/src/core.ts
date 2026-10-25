@@ -697,6 +697,11 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   refresh(manifest: MasterCSSManifest = this.manifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+    // HMR drops deferred removals and the warm cache. Release their rules first,
+    // or the Rust rebuild replays them as connected classes nothing owns.
+    const releasedClassNames = [...new Set([...this.pendingRemovedClassNames, ...this.retainedClassNames])]
+      .filter((className) => !this.classCounts.has(className))
+    if (releasedClassNames.length) this.deleteClassRules(releasedClassNames)
     const transition = this.bindingEngine.refresh(manifest, emittedGlobals)
     if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
     this.clearPendingAddedClassNames()

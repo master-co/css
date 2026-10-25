@@ -83,10 +83,11 @@ test('default shorthand and explicit native host overrides work inside shadow ro
   await expect(page.locator('#shadow')).toHaveCSS('background-color', 'rgb(255, 0, 0)')
 })
 
+const staticResourceSource = '@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)} @utility animate(--animate) {animation:var(--animate)}@utility animate-(--animate) {animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
+
 for (const hydrate of [false, true]) {
   test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
-    const source = '@mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}@mixin --animate(--animate){animation:var(--animate)} @utility animate(--animate) {animation:var(--animate)}@utility animate-(--animate) {animation:var(--animate)}@theme static inline{--color-fixed:red;--animate-enter:enter 1s}@prune native;@theme{--color-frame:blue;}@keyframes enter{to{color:var(--color-frame)}}@keyframes unused{to{opacity:0}}'
-    const { manifest } = compileManifestSync(source, { baseManifest: { version: 6, languageVersion: 16 } })
+    const { manifest } = compileManifestSync(staticResourceSource, { baseManifest: { version: 6, languageVersion: 16 } })
     const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
@@ -112,8 +113,36 @@ for (const hydrate of [false, true]) {
     await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(false)
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
-    const refreshed = compileManifestSync(source.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 16 } }).manifest
+    const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 16 } }).manifest
     await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })
 }
+
+test('HMR releases class rules whose deferred removal has not flushed', async ({ page }) => {
+  const options = { baseManifest: { version: 6, languageVersion: 16 } }
+  const { manifest } = compileManifestSync(staticResourceSource, options)
+  const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), options).manifest
+  await page.setContent('<!doctype html><html><head></head><body><div id="target" class="bg-fixed animate-enter"></div></body></html>')
+  await page.evaluate(async ({ loader, manifest }) => {
+    const { startCSSRuntime } = await import(loader)
+    await startCSSRuntime({ manifest })
+  }, { loader: await getRuntimeLoaderURL(), manifest })
+  await expect(page.locator('#target')).toHaveCSS('background-color', 'rgb(255, 0, 0)')
+  const state = await page.locator('#target').evaluate(async (element, manifest) => {
+    element.className = ''
+    // Deliver the MutationObserver records, but refresh before the removal frames run.
+    await Promise.resolve()
+    const usageCounts = globalThis.masterCSSRuntime.snapshot().usageCounts
+    globalThis.masterCSSRuntime.refresh(manifest)
+    const { classRules, cssText } = globalThis.masterCSSRuntime.snapshot()
+    return {
+      usageCounts,
+      classRules: Object.keys(classRules),
+      cssText,
+      keyframes: [...document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules]
+        .filter((rule): rule is CSSKeyframesRule => rule instanceof CSSKeyframesRule).map(rule => rule.name)
+    }
+  }, refreshed)
+  expect(state).toEqual({ usageCounts: {}, classRules: [], cssText: '', keyframes: [] })
+})
