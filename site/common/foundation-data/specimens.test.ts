@@ -19,7 +19,7 @@ test('every non-palette preset specimen compiles against the public engine, with
     assert.ok(configuredExampleCSS(scene.css ?? '', configuredMarkupClasses(scene.html)).length > 0)
   }
 })
-test('palette retains all 30 complete fixed hue rows and separates aliases', () => {
+test('palette retains all 22 complete fixed hue rows and separates aliases', () => {
   const groups = new Map<string, number[]>()
   for (const token of namespaceTokens('color')) {
     const match = token.key.match(/^(.+)-(\d+)$/)
@@ -27,7 +27,7 @@ test('palette retains all 30 complete fixed hue rows and separates aliases', () 
     assert.match(defaultValue(token), /^oklch\(/)
     groups.set(match[1], [...groups.get(match[1]) ?? [], Number(match[2])])
   }
-  assert.equal(groups.size, 30)
+  assert.equal(groups.size, 22)
   for (const steps of groups.values()) assert.deepEqual(steps, [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100])
 })
 test('selected Guide specimens and portable output preserve the same facts and meaningful comparison', () => {

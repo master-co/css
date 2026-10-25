@@ -18,7 +18,7 @@ const visualComponents = new Set([
   'FoundationTransition', 'FoundationDialog', 'ShadowScaleDemo',
   // Original Guide specimens restored from HEAD. Each has adjacent teaching copy.
   'ResizeZone', 'IFrame', 'SurfacesDemo', 'LineRolesDemo', 'TextRolesDemo',
-  'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo', 'NaturalMaterials'
+  'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo'
 ])
 function foundationComponent(_slug: string, name: string, _attributes: Record<string, unknown>) {
   if (visualComponents.has(name)) return ''

@@ -1,4 +1,3 @@
-import NaturalMaterials from './components/NaturalMaterials'
 import { FoundationColorRoles } from '~/site/components/demo/FoundationPaint'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 import { BaseHueDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
@@ -21,39 +20,7 @@ Choose palette steps directly for swatches, illustrations, brand accents, and st
 <div class="bg-blue-5 fg-blue-60">…</div>
 ```
 
-<FoundationTokens namespace="color" keys={["blue-0", "blue-5", "blue-10", "blue-20", "blue-30", "blue-40", "blue-50", "blue-60", "blue-70", "blue-80", "blue-90", "blue-95", "blue-100", "sand-0", "sand-5", "sand-10", "sand-20", "sand-30", "sand-40", "sand-50", "sand-60", "sand-70", "sand-80", "sand-90", "sand-95", "sand-100", "petrol-0", "petrol-5", "petrol-10", "petrol-20", "petrol-30", "petrol-40", "petrol-50", "petrol-60", "petrol-70", "petrol-80", "petrol-90", "petrol-95", "petrol-100"]} />
-
-### Natural material colors
-
-Eight material-inspired families extend the palette with warm neutrals, botanical greens, mineral blue-green, and fired earth. Each has all thirteen fixed steps, a base hue alias such as `bg-petrol`, and a foreground alias such as `fg-text-petrol`.
-
-| Family | Character | Pairing direction |
-| --- | --- | --- |
-| `sand` | Golden beige with warm umber shadows | Plaster, paper, and warm editorial surfaces |
-| `taupe` | Restrained red-brown gray | Quiet typography and architectural neutrals |
-| `olive` | Mature yellow-green | Botanical accents beside sand or taupe |
-| `sage` | Soft gray-green | Calm surfaces and natural lifestyle interfaces |
-| `moss` | Fuller leaf green | Plant imagery and accents beside sage |
-| `petrol` | Deep mineral blue-green | Cool backdrops beside warm materials |
-| `copper` | Golden orange-brown | Warm accents distinct from red clay |
-| `terracotta` | Muted red clay with peach tints | Ceramic, craft, and boutique compositions |
-
-The lightest steps retain a tint; the darkest retain the material's hue. Step numbers describe an ordered palette, not equal lightness or guaranteed contrast between families. The curves are individually tuned rather than shared across every hue.
-
-```html
-<article class="bg-sand-5 fg-taupe-80 bg-taupe-95@dark fg-sand-10@dark">
-  Warm materials, with explicit light and dark pairings.
-</article>
-<p class="bg-surface-raised fg-text-petrol">A mode-aware mineral accent.</p>
-```
-
-<NaturalMaterials />
-
-All eight families fit within Display P3. Petrol's `60` and `70` steps use a small extension beyond sRGB; other new steps fit sRGB. Browsers map colors to the display's available gamut. Copy the OKLCH value or CSS variable to preserve the authored color; a hex representation is an sRGB approximation.
-
-The new `--color-text-<family>` token aliases, used through `fg-text-<family>` classes, meet at least 4.5:1 against the matching preset `base`, `inset`, `raised`, and `floating` surfaces in both modes, measured after sRGB gamut mapping. Check contrast again when changing the surface, adding transparency, or choosing a fixed step or base hue alias. See [WCAG's text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
-
-(!) `olive` resolves to the fixed preset alias, just as `red` and `blue` do. Existing classes such as `fg-olive` and `bg-olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `color:#808000` or `background-color:#808000`.
+<FoundationTokens namespace="color" keys={["blue-0", "blue-5", "blue-10", "blue-20", "blue-30", "blue-40", "blue-50", "blue-60", "blue-70", "blue-80", "blue-90", "blue-95", "blue-100", "neutral-0", "neutral-5", "neutral-10", "neutral-20", "neutral-30", "neutral-40", "neutral-50", "neutral-60", "neutral-70", "neutral-80", "neutral-90", "neutral-95", "neutral-100", "red-0", "red-5", "red-10", "red-20", "red-30", "red-40", "red-50", "red-60", "red-70", "red-80", "red-90", "red-95", "red-100"]} />
 
 ---
 
@@ -67,7 +34,7 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | Fixed swatch | Palette steps | `bg-blue-5`, `fg-blue-60` |
 | App structure and hierarchy | Preset roles | `bg-surface-base`, `bg-surface-raised`, `b-line-divider`, `fg-text-body` |
 | Fixed hue swatch | Hue aliases | `bg-blue`, `fg-blue` |
-| Adaptive readable foreground | Text hue aliases | `fg-text-blue`, `fg-text-petrol` |
+| Adaptive readable foreground | Text hue aliases | `fg-text-blue`, `fg-text-red` |
 
 ```html
 <!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border-width:1px border-style:solid b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
@@ -142,7 +109,7 @@ See the complete [values and consumers](/reference/tokens/color-text) in Referen
 ---
 
 ## Fixed and adaptive hue aliases \{#mode-aware-hue-aliases\}
-The 30 general hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
+The 22 general hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
 
 ### Base hue aliases
 Base hue aliases use the same value in every scheme. They are accents and swatches, with no text contrast guarantee.
@@ -253,7 +220,7 @@ Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset do
 
 ## Contrast
 
-- `fg-text-body`, `fg-text-strong`, links, and all 30 `fg-text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `fg-text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
+- `fg-text-body`, `fg-text-strong`, links, and all 22 `fg-text-*` hue aliases target at least 4.5:1 on the opaque base, inset, raised, and floating surfaces in both schemes. `fg-text-yellow` uses yellow-90 in light mode, a deliberately deep ochre foreground.
 - `fg-text-muted` is for base, inset, and raised surfaces. Use `fg-text-body` on floating surfaces. `fg-text-disabled` is reserved for genuinely disabled controls.
 - `line-control` uses neutral-50 / gray-40 for necessary boundaries, targeting at least 3:1. `line-divider` and `line-subtle` are decorative.
 - Pair `bg-surface-inverse` with `fg-text-inverse`. Keep link underlines or another non-color cue; `fg-text-link-hover` needs `:hover` explicitly.

@@ -74,6 +74,10 @@ The runtime keeps unused IR definitions for future DOM classes. Compiler-only pa
 
 The preset contains 119 direct-value utilities and seven other recipes. `r-pill` uses `--radius-pill: calc(infinity * 1px)` and only sets border radius. Color families use the full `color` namespace: `bg-surface-base`, `fg-text-muted`, `b-line-divider`; the role is part of the token key. Ten native keyframes live in `theme.css` under `@prune native` and are absent from unused native output. Migration `rc-preset` resolves the saved Manifest v3 token identities and preserves custom mixins.
 
+## Palette boundary
+
+`colors.css` defines exactly 22 families of 13 steps, one fixed alias per family, one `--color-text-<family>` alias per family, and the surface, line and text roles. The preset palette is a functional baseline, not a curated collection; aesthetic or material palettes belong in project `@theme` tokens. A new default family must be perceptually distinct from every existing family across its steps, must not take a name whose established CSS named-color or ecosystem palette meaning differs from its values, and must serve a role that project tokens or relative color syntax cannot. The eight unreleased natural material families were removed under this rule.
+
 ## Conditions and wrappers
 
 `src/media.css` owns eleven breakpoints and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
