@@ -4,6 +4,7 @@ import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
 import { getScanner, ensureScanner, releaseScannerEnvironment } from '../utils/scanner-context'
+import { refreshGeneratedModule } from '../utils/dev-module-refresh'
 
 /** HMR when the config and source files changed */
 export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
@@ -14,12 +15,7 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
     if (!server) return
     const affectedModuleIds = new Set(context.virtualCSSImporters || [])
     affectedModuleIds.add(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
-    await Promise.all(Array.from(affectedModuleIds).map(async (eachModuleId) => {
-      const eachModule = server.moduleGraph.getModuleById(eachModuleId)
-      if (eachModule) {
-        await server.reloadModule(eachModule)
-      }
-    }))
+    await Promise.all(Array.from(affectedModuleIds).map((eachModuleId) => refreshGeneratedModule(server, eachModuleId)))
   }
   const handleReset = async ({ server }: { server: ViteDevServer }) => {
     const scanner = getScanner(context)

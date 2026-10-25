@@ -35,13 +35,33 @@ function makeScanner() {
 
 type ModuleEntry = [string, { transformResult?: { code: string }, ssrTransformResult?: { code: string }, file?: string }]
 function makeServer({ modules = [] as ModuleEntry[] } = {}) {
-  return {
+  const server = {
     moduleGraph: {
       idToModuleMap: new Map(modules),
-      getModuleById: () => null,
+      getModuleById: (_id: string): unknown => null,
     },
     reloadModule: vi.fn(),
     ws: { send: vi.fn() },
+    environments: {} as Record<string, unknown>,
+  }
+  // The mixed-graph mocks double as the client environment's graph.
+  server.environments.client = {
+    config: { consumer: 'client' },
+    moduleGraph: { getModuleById: (id: string) => server.moduleGraph.getModuleById(id) },
+    reloadModule: (module: unknown) => server.reloadModule(module),
+  }
+  return server
+}
+
+function makeServerEnvironment(modules: { id: string, file?: string, isSelfAccepting?: boolean }[]) {
+  return {
+    config: { consumer: 'server' },
+    moduleGraph: {
+      getModuleById: (id: string) => modules.find(module => module.id === id),
+      getModulesByFile: (file: string) => new Set(modules.filter(module => module.file === file)),
+      invalidateModule: vi.fn(),
+    },
+    reloadModule: vi.fn(),
   }
 }
 
@@ -199,6 +219,32 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     await tick(5)
 
     expect(server.reloadModule).toHaveBeenCalledWith(emittedGlobalsModule)
+  })
+
+  test('invalidates server CSS importers instead of reloading their server program', async () => {
+    const scanner = makeScanner()
+    const server = makeServer()
+    const ssr = makeServerEnvironment([
+      { id: '/style.css', file: '/style.css' },
+      { id: '/style.css?inline', file: '/style.css' },
+      { id: RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, file: RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, isSelfAccepting: true },
+    ])
+    server.environments.ssr = ssr
+
+    const plugin = StyleEntryHMRPlugin({} as any, {
+      scanner,
+      virtualCSSImporters: new Set(['/style.css']),
+    } as any)
+    ;(plugin as any).configureServer.call({}, server as any)
+    ;(plugin as any).buildStart.call({})
+
+    scanner.emit('change')
+    await tick(5)
+
+    // Runners refetch invalidated modules on their next import; a reload would
+    // restart the server program under requests that are still rendering.
+    expect(ssr.moduleGraph.invalidateModule.mock.calls.map(([module]) => module.id)).toEqual(['/style.css', '/style.css?inline'])
+    expect(ssr.reloadModule.mock.calls.map(([module]) => module.id)).toEqual([RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID])
   })
 
   test('C4: an error in one reset does not poison the chain (subsequent resets still run)', async () => {

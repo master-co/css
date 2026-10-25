@@ -7,11 +7,14 @@ import type { ResolvedMasterCSSVitePluginOptions } from '../../src/options'
 import StyleEntryHMRPlugin from '../../src/plugins/style-entry-hmr'
 
 const scanner = () => new EventEmitter() as MasterCSSScanner
-const server = () => ({
-  config: { root: '/audit' } as ResolvedConfig,
-  moduleGraph: { getModuleById: () => ({}) },
-  reloadModule: vi.fn(async () => {})
-}) as unknown as ViteDevServer
+const server = () => {
+  const reloadModule = vi.fn(async () => {})
+  return {
+    config: { root: '/audit' } as ResolvedConfig,
+    environments: { client: { config: { consumer: 'client' }, moduleGraph: { getModuleById: () => ({}) }, reloadModule } },
+    reloadModule
+  } as unknown as ViteDevServer
+}
 
 test('BH-0004 scanner changes notify the replacement server without retaining the closed server', async () => {
   const oldServer = server(), nextServer = server()

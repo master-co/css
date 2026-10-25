@@ -8,6 +8,22 @@ import { getExtractedCSSResult } from '../utils/extracted-css'
 import { discoverManifestEntries } from '@master/css-compiler/project'
 import { readFile } from 'node:fs/promises'
 import { registerStylesheetSource } from '../utils/register-style-source'
+import { refreshGeneratedModule } from '../utils/dev-module-refresh'
+
+// Server programs keep the handle they built from these globals, so a dev update
+// replaces the contents of one object instead of re-running its importers.
+function toServerDevEmittedGlobalsModule(emittedGlobals: MasterCSSEmittedGlobals) {
+  return [
+    'const emittedGlobals = import.meta.hot?.data.emittedGlobals ?? {};',
+    'for (const key of Object.keys(emittedGlobals)) delete emittedGlobals[key];',
+    `Object.assign(emittedGlobals, ${JSON.stringify(normalizeEmittedGlobals(emittedGlobals))});`,
+    'if (import.meta.hot) {',
+    '  import.meta.hot.data.emittedGlobals = emittedGlobals;',
+    '  import.meta.hot.accept();',
+    '}',
+    'export default emittedGlobals;'
+  ].join('\n')
+}
 
 /**
  * The plugin's `api`, shared by every configuration that one plugin instance
@@ -32,8 +48,7 @@ export default function EmittedGlobalsVirtualModulePlugin(
     api,
     configureServer(server) {
       context.onEmittedGlobalsChange = () => {
-        const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
-        if (module) void server.reloadModule(module).catch(error => server.config.logger.error(String(error)))
+        void refreshGeneratedModule(server, RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID).catch(error => server.config.logger.error(String(error)))
       }
     },
     async resolveId(id) {
@@ -53,6 +68,9 @@ export default function EmittedGlobalsVirtualModulePlugin(
         await initialStylesheets
       }
       const result = await getExtractedCSSResult(context)
+      if (context.config?.command === 'serve' && this.environment.config.consumer === 'server') {
+        return toServerDevEmittedGlobalsModule(result.emittedGlobals)
+      }
       return toEmittedGlobalsModule(result.emittedGlobals)
     },
     shouldTransformCachedModule({ id }) { return id === RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID },
