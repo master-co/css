@@ -1,4 +1,4 @@
-import { fileExists, transforms, Walker } from '@sveltejs/sv-utils'
+import { fileExists, transforms, Walker, type AstTypes, type TransformFn } from '@sveltejs/sv-utils'
 import type { Workspace } from 'sv'
 
 export const MASTER_CSS_PACKAGE = '@master/css'
@@ -21,15 +21,6 @@ interface ImportDeclaration {
     type: string
     local?: { name?: string }
   }[]
-}
-
-interface CallExpression {
-  type: 'CallExpression'
-  callee?: {
-    type: string
-    name?: string
-  }
-  arguments?: unknown[]
 }
 
 interface Identifier {
@@ -69,10 +60,10 @@ function findDefaultImportName(ast: { body: unknown[] }, from: string) {
   }
 }
 
-function moveSequenceHandleFirst(ast: unknown, handleName: string) {
-  Walker.walk(ast as { type: string }, null, {
-    CallExpression(node: CallExpression, { next }: { next: () => void }) {
-      if (node.callee?.type === 'Identifier' && node.callee.name === 'sequence' && node.arguments) {
+function moveSequenceHandleFirst(ast: AstTypes.Program, handleName: string) {
+  Walker.walk(ast as AstTypes.Node, null, {
+    CallExpression(node, { next }) {
+      if (node.callee.type === 'Identifier' && node.callee.name === 'sequence') {
         const currentIndex = node.arguments.findIndex((argument) => isIdentifier(argument, handleName))
         if (currentIndex > 0) {
           const [handle] = node.arguments.splice(currentIndex, 1)
@@ -84,8 +75,14 @@ function moveSequenceHandleFirst(ast: unknown, handleName: string) {
   })
 }
 
+// sv-utils 1.x types TransformFn as `string | false`; these callbacks never abort.
+function applyTransform(transform: TransformFn, content: string): string {
+  const output = transform(content)
+  return output === false ? content : output
+}
+
 export function addMasterCSSVitePlugin(content: string) {
-  return transforms.script(({ ast, js }) => {
+  return applyTransform(transforms.script(({ ast, js }) => {
     const defaultPluginName = findDefaultImportName(
       ast,
       MASTER_CSS_SVELTE_VITE_IMPORT
@@ -107,15 +104,15 @@ export function addMasterCSSVitePlugin(content: string) {
     js.vite.addPlugin(ast, {
       code: `${pluginName}()`
     })
-  })(content)
+  }), content)
 }
 
 export function addMasterCSSStylesheetImport(content: string) {
-  return transforms.css(({ ast, css }) => {
+  return applyTransform(transforms.css(({ ast, css }) => {
     css.addImports(ast, {
       imports: [`'${MASTER_CSS_PACKAGE}'`]
     })
-  })(content)
+  }), content)
 }
 
 export function addStylesheetImportToLayout(
@@ -124,7 +121,7 @@ export function addStylesheetImportToLayout(
   stylesheetRelativePath: string,
   svelteVersion: string
 ) {
-  return transforms.svelteScript({ language }, ({ ast, js, svelte }) => {
+  return applyTransform(transforms.svelteScript({ language }, ({ ast, js, svelte }) => {
     js.imports.addEmpty(ast.instance.content, {
       from: stylesheetRelativePath
     })
@@ -134,11 +131,11 @@ export function addStylesheetImportToLayout(
         language
       })
     }
-  })(content)
+  }), content)
 }
 
 export function addMasterCSSServerHook(content: string, language: Language) {
-  return transforms.script(({ ast, comments, js }) => {
+  return applyTransform(transforms.script(({ ast, comments, js }) => {
     js.kit.addHooksHandle(ast, {
       language,
       newHandleName: MASTER_CSS_HANDLE_NAME,
@@ -152,7 +149,7 @@ export function addMasterCSSServerHook(content: string, language: Language) {
         handle: MASTER_CSS_IMPORTED_HANDLE_NAME
       }
     })
-  })(content)
+  }), content)
 }
 
 export function resolveHooksServerPath(cwd: string, srcDirectory: string, language: Language) {

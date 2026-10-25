@@ -45,14 +45,14 @@ export default defineConfig({
     const output = addMasterCSSServerHook('', 'ts')
 
     expect(output).toContain(`import { handle as masterCSSSvelteHandle } from '@master/css-svelte/hooks.server';`)
-    expect(output).toContain(`import type { Handle } from '@sveltejs/kit';`)
+    expect(output).toContain(`import type { Handle } from '@sveltejs/kit/hooks';`)
     expect(output).toContain('const masterCSSHandle: Handle = masterCSSSvelteHandle;')
     expect(output).toContain('export const handle')
   })
 
   test('composes an existing server handle with Master CSS first', () => {
     const input = `
-import type { Handle } from '@sveltejs/kit'
+import type { Handle } from '@sveltejs/kit/hooks'
 
 export const handle: Handle = async ({ event, resolve }) => {
   return resolve(event, {
@@ -62,14 +62,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 `
     const output = addMasterCSSServerHook(input, 'ts')
 
-    expect(output).toContain(`import { sequence } from '@sveltejs/kit/hooks';`)
+    expect(output).toMatch(/import \{[^}]*\bsequence\b[^}]*\} from '@sveltejs\/kit\/hooks';/)
     expect(output).toContain('sequence(masterCSSHandle, originalHandle)')
   })
 
   test('prepends Master CSS to an existing sequence idempotently', () => {
     const input = `
-import { sequence } from '@sveltejs/kit/hooks'
-import type { Handle } from '@sveltejs/kit'
+import { sequence, type Handle } from '@sveltejs/kit/hooks'
 
 const first: Handle = async ({ event, resolve }) => resolve(event)
 const second: Handle = async ({ event, resolve }) => resolve(event)

@@ -90,7 +90,7 @@ for (const addonTestCase of testCases) {
 
     if (addonTestCase.kind.type === 'existing-stylesheet') {
       expect(countMatches(readProjectFile(projectDir, 'src/routes/layout.css'), "@import '@master/css';")).toBe(1)
-      expect(countMatches(readProjectFile(projectDir, 'src/routes/+layout.svelte'), "import './layout.css';")).toBe(1)
+      expect(countMatches(readProjectFile(projectDir, 'src/routes/+layout.svelte'), "import './layout.css'")).toBe(1)
     }
 
     if (addonTestCase.kind.type === 'idempotent') {
@@ -107,11 +107,13 @@ for (const addonTestCase of testCases) {
 }
 
 test('marks non-SvelteKit projects unsupported', () => {
+  type SetupContext = Parameters<NonNullable<typeof addon.setup>>[0]
   const unsupported: string[] = []
-  addon.setup?.({
+  const context: Pick<SetupContext, 'isKit' | 'unsupported'> = {
     isKit: false,
-    unsupported: (reason) => unsupported.push(reason)
-  } as Parameters<NonNullable<typeof addon.setup>>[0])
+    unsupported: (reason) => { unsupported.push(reason) }
+  }
+  addon.setup?.(context as SetupContext)
 
   expect(unsupported).toEqual(['Requires SvelteKit'])
 })
@@ -128,7 +130,7 @@ function assertMasterCSSSetup(projectDir: string, variant: string) {
   expect(viteConfig).toContain('masterCSS()')
 
   expect(readProjectFile(projectDir, 'src/routes/layout.css')).toContain("@import '@master/css';")
-  expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css';")
+  expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css'")
 
   if (existsSync(resolve(projectDir, hookPath(variant)))) {
     expect(readProjectFile(projectDir, hookPath(variant))).not.toContain('@master/css-svelte/hooks.server')
@@ -193,7 +195,7 @@ function writeStubPackage(
 }
 
 function existingHook(extension: string) {
-  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit'\n\n" : ''
+  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit/hooks'\n\n" : ''
   const typeAnnotation = extension === 'ts' ? ': Handle' : ''
   return `${typeImport}export const handle${typeAnnotation} = async ({ event, resolve }) => {
   return resolve(event, {
@@ -204,10 +206,10 @@ function existingHook(extension: string) {
 }
 
 function existingSequence(extension: string) {
-  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit'\n" : ''
+  const typeImport = extension === 'ts' ? ', type Handle' : ''
   const typeAnnotation = extension === 'ts' ? ': Handle' : ''
-  return `import { sequence } from '@sveltejs/kit/hooks'
-${typeImport}
+  return `import { sequence${typeImport} } from '@sveltejs/kit/hooks'
+
 const first${typeAnnotation} = async ({ event, resolve }) => resolve(event)
 const second${typeAnnotation} = async ({ event, resolve }) => resolve(event)
 export const handle = sequence(first, second)
