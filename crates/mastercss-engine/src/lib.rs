@@ -339,6 +339,7 @@ pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;
 mod execution_state;
 mod generation;
+mod hosted_stylesheet;
 mod manifest;
 mod mixin;
 pub use mixin::{

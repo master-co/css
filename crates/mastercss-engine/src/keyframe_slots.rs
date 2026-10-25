@@ -19,6 +19,15 @@ pub struct KeyframeOutputEdit {
     pub mappings: Vec<mastercss_schema::CssOutputMapping>,
 }
 
+/// Slot IDs that anchor keyframes in `css`, excluding resource-only slots.
+pub(crate) fn active_slot_ids(css: &str) -> HashSet<String> {
+    slots(css)
+        .into_iter()
+        .filter(|slot| !slot.resources_only)
+        .map(|slot| slot.id)
+        .collect()
+}
+
 fn slots(css: &str) -> Vec<Slot> {
     if !css.contains("master-css-keyframe-") {
         return Vec::new();
@@ -107,11 +116,7 @@ impl EngineSession {
     }
 
     pub(crate) fn register_keyframe_slots(&mut self, css: &str) {
-        let active = slots(css)
-            .into_iter()
-            .filter(|slot| !slot.resources_only)
-            .map(|slot| slot.id)
-            .collect::<HashSet<_>>();
+        let active = active_slot_ids(css);
         for definition in &self.compiled.keyframes {
             if active.contains(definition.slot_id.as_ref().unwrap_or(&definition.id)) {
                 self.stylesheet_keyframe_slots.insert(definition.id.clone());

@@ -56,6 +56,27 @@ function addEmittedGlobals(
   }
 }
 
+function missingEmittedGlobals(
+  current: Required<MasterCSSEmittedGlobals>,
+  source: MasterCSSEmittedGlobals
+) {
+  const missing = cloneEmittedGlobals()
+  let found = false
+  for (const kind of ['variables', 'keyframes'] as const) {
+    for (const [name, count] of Object.entries(source[kind] || {})) {
+      if (count && !current[kind][name]) {
+        missing[kind][name] = count
+        found = true
+      }
+    }
+  }
+  for (const kind of ['keyframeSlots', 'suppressedKeyframes'] as const) {
+    missing[kind] = (source[kind] || []).filter(id => !current[kind].includes(id))
+    found ||= missing[kind].length > 0
+  }
+  return found ? missing : undefined
+}
+
 export default class RuntimeHost {
   protected readonly host: Element
   protected readonly container: HTMLElement | ShadowRoot
@@ -124,6 +145,15 @@ export default class RuntimeHost {
     const transition = this.bindingEngine.registerEmittedGlobals(emittedGlobals)
     addEmittedGlobals(this.emittedGlobals, emittedGlobals)
     this.applyTransition(transition)
+  }
+
+  /** Count resources another host emitted without changing rendered CSS; callers adopt a snapshot next. */
+  protected registerMissingEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
+    const missing = emittedGlobals && missingEmittedGlobals(this.emittedGlobals, emittedGlobals)
+    if (!missing) return false
+    this.bindingEngine.registerEmittedGlobals(missing)
+    addEmittedGlobals(this.emittedGlobals, missing)
+    return true
   }
 
   protected adoptEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {

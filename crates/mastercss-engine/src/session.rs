@@ -272,6 +272,11 @@ impl EngineSession {
         })
     }
 
+    /// Resource counts the host reports as emitted outside this session.
+    pub fn host_emitted_globals(&self) -> &EmittedGlobals {
+        &self.emitted_globals
+    }
+
     pub fn emitted_globals_snapshot(&self) -> Result<EmittedGlobals, EngineError> {
         self.ensure_active()?;
         let mut emitted_globals = self.emitted_globals.clone();

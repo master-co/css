@@ -75,6 +75,10 @@ pub struct HydrationManifest {
     pub language_version: u32,
     pub rules: Vec<GeneratedRuleIr>,
     pub resource_order: HydrationResourceOrder,
+    /// Resource counts the server render treated as already emitted by the page's
+    /// stylesheets. The runtime cannot reproduce `resource_order` without them.
+    #[serde(default, skip_serializing_if = "EmittedGlobals::is_empty")]
+    pub emitted_globals: EmittedGlobals,
 }
 
 impl HydrationManifest {
@@ -87,6 +91,7 @@ impl HydrationManifest {
                 variables: resource_order,
                 keyframes: Vec::new(),
             },
+            emitted_globals: EmittedGlobals::default(),
         }
     }
 

@@ -338,7 +338,7 @@ Master CSS hydration is the process that restores the server-side or build-time 
 </figure>
 The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `MasterCSSRuntime.start()` reads inline `script#master-css-hydration-manifest` or imports the URL from `style#master-css[data-master-css-hydration-manifest]` before it returns. Call `runtime.observe()` after startup completes.
 
-Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation. During hydration, the runtime compares that IR with the CSSOM rules already present in `style#master-css`. When they match, it attaches those CSSOM rules to runtime-managed rule objects instead of regenerating them.
+Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The server and client discover variables and animations in the manifest's sorted rule order, so DOM class order and warmed server caches produce the same resource buckets. The manifest's `resourceOrder` records that order for validation, and its `emittedGlobals` records the variables and keyframes the server treated as already emitted by the page's stylesheets. Before validating resources, the runtime counts any of those its own `emittedGlobals` lacks, because a client bundle can be built without the page CSS. During hydration, the runtime compares that IR with the CSSOM rules already present in `style#master-css`. When they match, it attaches those CSSOM rules to runtime-managed rule objects instead of regenerating them.
 
 Hydration also checks CSSOM rule counts and order, including theme buckets whose order affects the cascade. Missing, extra, duplicated, or reordered rules trigger a warning and rebuilding of `style#master-css` from the currently connected DOM classes.
 
@@ -346,7 +346,7 @@ Once hydrated, Master CSS can efficiently detect new or removed class names and 
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 
-This page hydration manifest is different from the project manifest and `emittedGlobals`. The project manifest tells the runtime how to interpret tokens, utilities, mixins, conditions, and keyframes. `emittedGlobals` records variables and keyframes that the CSS entry already emitted. The page hydration manifest only describes the CSS rules that were generated into one rendered page.
+This page hydration manifest is different from the project manifest and `emittedGlobals`. The project manifest tells the runtime how to interpret tokens, utilities, mixins, conditions, and keyframes. `emittedGlobals` records variables and keyframes that the CSS entry already emitted. The page hydration manifest only describes the CSS rules that were generated into one rendered page, along with the `emittedGlobals` the server rendered them against.
 
 ---
 
@@ -569,4 +569,4 @@ Resource URLs inside animation frames pass through the host's CSS asset processi
 
 Pre-render and progressive adapters materialize required native keyframes before JavaScript runs. They insert the owned CSS at its original link position and publish any rendered child imports at same-origin URLs, so hydration can adopt the existing CSSOM and anonymous layers. Deploy these generated CSS files with the other build output.
 
-Custom server hosts can pass compiler-prepared `stylesheets` and `documentURL` to `renderHTML()` or a server renderer. Supply `stylesheetImportSource(css, source)` when those assets import other owned stylesheets; publish the supplied CSS and return its same-origin URL. The compiler prepares the URL references and Rust selects resources. Inline native styles are updated in place automatically.
+Custom server hosts can pass compiler-prepared `stylesheets` and `documentURL` to `renderHTML()` or a server renderer. Supply `stylesheetImportSource(css, source)` when those assets import other owned stylesheets; publish the supplied CSS and return its same-origin URL. The compiler prepares the URL references and Rust selects resources. Variables a stylesheet declares on every theme path that defines them, and animations it uses through a native keyframe slot, count as emitted by the page, so `style#master-css` does not define them again. Variables a stylesheet only references are still generated into `style#master-css`. Inline native styles are updated in place automatically.

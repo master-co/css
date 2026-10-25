@@ -72,6 +72,7 @@
   "devDependencies": {
     "@master/css-preset": "workspace:*",
     "@master/css-internal": "workspace:*",
+    "@playwright/test": "1.63.0",
     "astro": "^7.4.2"
   }
 }

@@ -1,3 +1,4 @@
+import type { MasterCSSEmittedGlobals } from './emitted-globals.js'
 import type { MasterCSSManifestUtilityLayerName } from './manifest.js'
 import type { UtilityType } from './utility-type.js'
 
@@ -48,6 +49,8 @@ export interface MasterCSSHydrationManifest {
   readonly languageVersion: 16
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }
+  /** Resource counts the server render treated as emitted by the page's stylesheets. */
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

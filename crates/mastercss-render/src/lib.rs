@@ -75,7 +75,7 @@ impl RenderSession {
     }
 
     pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
-        self.engine.ensure_stylesheet_resources(native_css)?;
+        self.engine.ensure_hosted_stylesheet_resources(native_css)?;
         self.stylesheets.push(native_css.into());
         Ok(())
     }
@@ -86,7 +86,7 @@ impl RenderSession {
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
         let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
-        let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
+        let hydration_manifest = self.hydration_manifest(&snapshot);
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -114,7 +114,7 @@ impl RenderSession {
             }
         }
         let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
-        let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
+        let hydration_manifest = self.hydration_manifest(&snapshot);
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -126,6 +126,14 @@ impl RenderSession {
             snapshot,
             hydration_manifest,
         })
+    }
+
+    fn hydration_manifest(&self, snapshot: &EngineSnapshotIr) -> HydrationManifest {
+        // The runtime ships its own emitted globals, which may describe other stylesheets
+        // than this page links. It reproduces the snapshot from the server's instead.
+        let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
+        hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
+        hydration_manifest
     }
 
     fn hydratable_snapshot(
@@ -285,6 +293,62 @@ mod tests {
             fresh.ensure_classes(classes).unwrap();
             assert_eq!(cached_snapshot, fresh.snapshot().unwrap());
         }
+    }
+
+    #[test]
+    fn hydration_manifest_carries_host_emitted_globals() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"utilities":[{"kind":"static","name":"brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]}]})
+        .to_string();
+        let mut server =
+            RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":1}}"#)).unwrap();
+        server
+            .ensure_stylesheet_resources(".card{color:var(--color-primary)}")
+            .unwrap();
+        server.ensure_classes(["brand"]).unwrap();
+        let rendered = server.snapshot().unwrap();
+        let emitted_globals = &rendered.hydration_manifest.emitted_globals;
+        assert!(
+            rendered
+                .hydration_manifest
+                .resource_order
+                .variables
+                .is_empty()
+        );
+        assert_eq!(emitted_globals.variable_count("color-primary"), 1);
+        assert_eq!(
+            &server
+                .snapshot_for_classes(["brand"])
+                .unwrap()
+                .hydration_manifest
+                .emitted_globals,
+            emitted_globals
+        );
+
+        // A runtime built without the stylesheet's globals diverges until it
+        // registers the ones the server planned against.
+        let mut runtime = EngineSession::create(&manifest).unwrap();
+        runtime.ensure_class_rules(["brand"]).unwrap();
+        assert_ne!(
+            HydrationManifest::from_snapshot(&runtime.snapshot().unwrap()).resource_order,
+            rendered.hydration_manifest.resource_order
+        );
+        runtime
+            .register_emitted_globals(&serde_json::to_string(emitted_globals).unwrap())
+            .unwrap();
+        let snapshot = runtime.snapshot().unwrap();
+        assert_eq!(
+            HydrationManifest::from_snapshot(&snapshot).resource_order,
+            rendered.hydration_manifest.resource_order
+        );
+        assert_eq!(snapshot.text, rendered.snapshot.text);
+
+        let unhosted = render_classes(&manifest, ["brand"]).unwrap();
+        assert!(
+            serde_json::to_value(&unhosted.hydration_manifest)
+                .unwrap()
+                .get("emittedGlobals")
+                .is_none()
+        );
     }
 
     #[test]

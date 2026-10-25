@@ -114,6 +114,13 @@ impl EmittedGlobals {
     pub fn variable_count(&self, name: &str) -> u32 {
         self.variables.get(name).copied().unwrap_or_default()
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.variables.is_empty()
+            && self.keyframes.is_empty()
+            && self.keyframe_slots.is_empty()
+            && self.suppressed_keyframes.is_empty()
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]

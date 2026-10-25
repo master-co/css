@@ -336,10 +336,13 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     }
     const classNames = [...new Set(manifest.rules.map(rule => rule.className))]
     this.bindingEngine.ensureClassRules(classNames)
-    const snapshot = this.bindingEngine.snapshot()
+    let snapshot = this.bindingEngine.snapshot()
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
+    // The server knows which stylesheets this page links; this bundle's emitted
+    // globals may describe others. Resources follow the server's.
+    if (this.registerMissingEmittedGlobals(manifest.emittedGlobals)) snapshot = this.bindingEngine.snapshot()
     const resourceOrder = {
       variables: snapshot.resources.variables.map(resource => resource.name),
       keyframes: snapshot.resources.keyframes.map(resource => resource.id)
