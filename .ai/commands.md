@@ -106,7 +106,9 @@ reports outside source control.
 
 Use `pnpm --filter @master/css bench` for engine session startup and execution. Rust engine benchmarks remain authoritative for matching, parsing, priority, layer insertion, and resource behavior.
 
-Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
+Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, engine startup, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
+
+`pnpm run check:runtime-size` compares raw/gzip/brotli sizes of the global runtime bundle, the runtime Wasm, and the progressive critical path (the runtime ESM entry bundled without its lazily imported engine) against `.ai/contracts/runtime-bundle-size.json`. Build the runtime Wasm (`cargo xtask build-wasm runtime`) and `@master/css-runtime` first. Use `pnpm run check:runtime-size:update` only for an intentional, reported size change.
 
 The `Benchmark` GitHub Actions workflow runs on relevant benchmark, Rust core, CSS execution, tooling, preset, runtime, schema, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 

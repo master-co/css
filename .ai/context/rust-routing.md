@@ -36,7 +36,7 @@ own loading, filesystem, browser, editor, and platform adaptation.
 | Crate | Responsibility | Pair with |
 |---|---|---|
 | `mastercss-binding-native` | napi ABI adapters grouped by engine, compiler, tooling, render/scanner | `packages/binding`, affected public host package |
-| `mastercss-binding-wasm-engine` | Runtime-safe engine Wasm ABI | `packages/binding-wasm-engine`, `packages/runtime`, `packages/css` |
+| `mastercss-binding-wasm-engine` | Runtime-safe engine Wasm ABI; default `full` adds render sessions and inspection, while `packages/runtime/artifacts` is built without it | `packages/binding-wasm-engine`, `packages/runtime`, `packages/css` |
 | `mastercss-binding-wasm-compiler` | Compiler Wasm ABI | `packages/binding-wasm-compiler`, `packages/compiler` |
 | `mastercss-binding-wasm-tooling` | Tooling Wasm ABI | `packages/binding-wasm-tooling`, `packages/tooling` |
 | `mastercss-cli` | Native CLI transport over project/scanner/engine | `packages/cli` |
@@ -62,5 +62,5 @@ cargo xtask parity
 ```
 
 Engine/compiler output changes require the matching npm package tests. Runtime-Wasm
-changes require runtime e2e and bundle-size review. Never edit generated binding
+changes require runtime e2e and bundle-size review (`pnpm run check:runtime-size`). Never edit generated binding
 protocol files directly.

@@ -56,6 +56,9 @@ declarations.
 - Virtual id and generated import specifier compatibility.
 - Keeping the package dependency-light and adapter-neutral.
 - Shared protocol changes affecting multiple integrations.
+- Runtime bootstrap modes: progressive pages pass the project manifest as a dynamic
+  `import('virtual:master-css-manifest')` loader so a fully pre-rendered page never
+  requests it; runtime mode imports it statically for its preload.
 - Dependency/watch registration remaining stable when manifest compilation fails.
 - Accidentally exposing the package as a published dependency or third-party SPI.
 - Turning the package into a generic home for unrelated repository helpers.

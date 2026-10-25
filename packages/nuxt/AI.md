@@ -24,7 +24,7 @@
 
 - `src/module.ts`
 - `src/options.ts`
-- `src/runtime/css-runtime.ts`
+- `src/runtime/css-runtime.ts` (runtime mode), `src/runtime/css-runtime-progressive.ts` (progressive mode), `src/runtime/start-css-runtime.ts`
 - `src/runtime/css-server.ts`
 - `tests/fixtures/*`
 
@@ -33,6 +33,7 @@
 - SSR and Nitro virtual manifest aliases.
 - Nuxt inline styles behavior in static mode.
 - Client/server mode differences.
+- The progressive client runtime plugin (`css-runtime-progressive.ts`) passes the project manifest as a dynamic import loader; only runtime mode preloads the manifest.
 - Generated `.output` fixture content.
 
 ## Safe Changes

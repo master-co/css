@@ -44,6 +44,7 @@ session, and live CSS state are internal.
 - Injecting into documents without `<head>` or `<html>`.
 - Serialization preserving source expectations.
 - Fixture `generated.css` output changes.
+- Hydration manifest `classNamesWithoutRules`: rendered classes that generate no rules. Omitting one makes a progressive page start its runtime engine for that class.
 
 ## Constraints
 

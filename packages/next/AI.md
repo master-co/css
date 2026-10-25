@@ -52,6 +52,7 @@
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
+- Progressive instrumentation-client output passes the project manifest as a dynamic import loader and adds no engine or manifest preloads, so a fully pre-rendered page does not request the runtime engine.
 
 ## Static Publication Invariants
 

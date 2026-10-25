@@ -103,8 +103,10 @@ belong to `@master/css-language-service`, not the editor-neutral tooling core.
 ## Runtime And Server
 
 `packages/runtime` owns browser DOM observation, class reference counts, CSSOM
-mutation, scheduling, and hydration around the runtime-Wasm engine session. It must
-not gain build-time observers, global tooling event buses, or configuration loaders.
+mutation, scheduling, hydration, and engine startup around the runtime-Wasm engine
+session. Progressive pages defer the engine until a class outside the page hydration
+manifest appears. It must not gain build-time observers, global tooling event buses,
+or configuration loaders.
 
 Runtime host responsibilities are split across `core.ts` (public orchestration),
 `host.ts` (DOM/CSSOM host), `hydration.ts`, `mutation.ts`, `retention-config.ts`, and

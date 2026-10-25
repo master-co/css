@@ -111,11 +111,14 @@ Risks:
 
 ```txt
 document or shadow root
-  -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest })
+  -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest, engine })
+  -> resolve hydration data; defer the engine when style#master-css has a non-empty hydration manifest
   -> runtime.observe()
+  -> deferred: track class counts against rule class names and classNamesWithoutRules; leave the CSSOM untouched
+  -> first uncovered class, ready(), rule API, refresh() or idle startup: import the engine and the project manifest
   -> register emitted variable and managed keyframe counts; replace the complete external snapshot on HMR
   -> find or create style#master-css
-  -> hydrate pre-rendered rules or connect current classes
+  -> hydrate pre-rendered rules or connect current classes; reconcile classes counted while deferred
   -> MutationObserver detects class and subtree changes
   -> class reference counts change
   -> runtime-Wasm engine transition
@@ -136,6 +139,7 @@ Main files:
 Risks:
 
 - Hydration must reconstruct the same virtual state as fresh execution.
+- A deferred engine must reach the same state as one started eagerly; TypeScript only records usage until the engine reconciles it.
 - Native CSSRule order must match Rust priority and stable layer order.
 - Reference-count errors can leak rules or remove active rules.
 
