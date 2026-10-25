@@ -3,6 +3,8 @@ import {
   createMasterCSSVitePlugin,
   type MasterCSSVitePluginOptions
 } from '@master/css-vite'
+import { mergeEmittedGlobals } from '@master/css-internal/emitted-globals-module'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import {
   resolveMasterCSSAstroIntegrationOptions,
   type MasterCSSAstroIntegrationOptions,
@@ -28,11 +30,17 @@ const MANIFEST_MODULE_PLUGINS = new Set([
   'master-css:virtual-module:manifest',
   'master-css:manifest-loader'
 ])
+const EMITTED_GLOBALS_PLUGIN = 'master-css:virtual-module:emitted-globals'
 
 // Use the plugin type @master/css-vite produces; Astro may resolve another Vite instance.
 type Plugin = ReturnType<typeof createMasterCSSVitePlugin>[number]
 type EnvironmentApplication = NonNullable<Plugin['applyToEnvironment']>
 type PluginContext = { environment?: { config: { consumer?: string } }, emitFile?: unknown }
+type BuildEnvironment = { name: string, config: { consumer?: string } }
+/** The emitted-globals plugin's `api` from @master/css-vite. */
+export type EmittedGlobalsPluginAPI = {
+  finalize?: (environment: BuildEnvironment, emittedGlobals: Required<MasterCSSEmittedGlobals>) => MasterCSSEmittedGlobals
+}
 
 function withoutAssetEmission<T extends object>(context: T): T {
   return new Proxy(context, {
@@ -74,8 +82,29 @@ export function inlineServerManifests(plugin: Plugin): Plugin {
   }
 }
 
+/**
+ * Astro links the CSS its server environments process on pages whose runtime
+ * the client environment bundles without importing that CSS. Astro builds the
+ * server environments first, so the client bundle also counts their emitted
+ * globals, as a Vite runtime bundle counts the CSS delivered beside it.
+ */
+export function deliverServerEmittedGlobals(plugins: readonly Plugin[]) {
+  const api = plugins.find(plugin => plugin.name === EMITTED_GLOBALS_PLUGIN)?.api as EmittedGlobalsPluginAPI | undefined
+  if (!api) return
+  const server = new Map<string, MasterCSSEmittedGlobals>()
+  api.finalize = (environment, emittedGlobals) => {
+    if (environment.config.consumer === 'client') return mergeEmittedGlobals(emittedGlobals, ...server.values())
+    server.set(environment.name, emittedGlobals)
+    return emittedGlobals
+  }
+}
+
 export function createAstroVitePlugins(options: MasterCSSVitePluginOptions) {
-  return createMasterCSSVitePlugin(options)
+  const plugins = createMasterCSSVitePlugin(options)
+  // Progressive hydration manifests carry each page's emitted globals instead;
+  // a union across server environments could claim more than a page links.
+  if (options.mode === 'runtime') deliverServerEmittedGlobals(plugins)
+  return plugins
     .filter(plugin => !ASTRO_OMITTED_VITE_PLUGINS.has(plugin.name))
     .map(inlineServerManifests)
 }

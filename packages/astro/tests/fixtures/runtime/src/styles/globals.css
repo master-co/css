@@ -1,0 +1,6 @@
+@import '@master/css';
+
+/* Shares --color-text-body with the page's fg-text-body utility. */
+@layer components {
+  .card { padding: var(--spacing-md); color: var(--color-text-body); }
+}

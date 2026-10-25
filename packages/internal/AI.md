@@ -10,6 +10,7 @@ published consumers. It is not a general-purpose shared utility package.
 
 - Virtual module ids and `?master-css-manifest` request helpers.
 - Generated manifest, emittedGlobals, and runtime-bootstrap module source helpers.
+- Merging emittedGlobals of separate stylesheet hosts.
 - Shared default project-manifest loading and the narrow manifest virtual-module plugin.
 - Default build manifest and manifest-entry request helpers.
 - Explicit Node virtual-path/hash helpers.

@@ -1,5 +1,6 @@
-import type { Plugin } from 'vite'
-import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
+import type { Environment, Plugin } from 'vite'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import { normalizeEmittedGlobals, toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 import MagicString from 'magic-string'
 import type { MasterCSSVitePluginContext } from '../core'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
@@ -8,8 +9,19 @@ import { discoverManifestEntries } from '@master/css-compiler/project'
 import { readFile } from 'node:fs/promises'
 import { registerStylesheetSource } from '../utils/register-style-source'
 
+/**
+ * The plugin's `api`, shared by every configuration that one plugin instance
+ * resolves. Adapters whose build links one environment's stylesheets on pages
+ * that load another environment's bundle set `finalize`.
+ */
+export interface EmittedGlobalsPluginAPI {
+  /** Receives each build environment's emitted globals as its output renders and returns the ones that output carries. */
+  finalize?: (environment: Environment, emittedGlobals: Required<MasterCSSEmittedGlobals>) => MasterCSSEmittedGlobals
+}
+
 export default function EmittedGlobalsVirtualModulePlugin(
-  context: MasterCSSVitePluginContext
+  context: MasterCSSVitePluginContext,
+  api: EmittedGlobalsPluginAPI = {}
 ): Plugin {
   const placeholder = '__MASTER_CSS_FINAL_EMITTED_GLOBALS__'
   let finalGlobals: string | undefined
@@ -17,6 +29,7 @@ export default function EmittedGlobalsVirtualModulePlugin(
   return {
     name: 'master-css:virtual-module:emitted-globals',
     enforce: 'pre',
+    api,
     configureServer(server) {
       context.onEmittedGlobalsChange = () => {
         const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
@@ -47,8 +60,8 @@ export default function EmittedGlobalsVirtualModulePlugin(
       order: 'post',
       async handler() {
         if (context.config?.command !== 'build') return
-        const result = await getExtractedCSSResult(context)
-        finalGlobals = JSON.stringify(result.emittedGlobals)
+        const { emittedGlobals } = await getExtractedCSSResult(context)
+        finalGlobals = JSON.stringify(api.finalize ? normalizeEmittedGlobals(api.finalize(this.environment, emittedGlobals)) : emittedGlobals)
       }
     },
     renderChunk(code) {

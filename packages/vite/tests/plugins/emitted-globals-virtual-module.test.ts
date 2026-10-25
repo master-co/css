@@ -1,11 +1,13 @@
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { createBuilder, type Rolldown } from 'vite'
 import { describe, expect, it } from 'vitest'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { defaultBuildManifest } from '@master/css-internal/project'
 import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
-import EmittedGlobalsVirtualModulePlugin from '../../src/plugins/emitted-globals-virtual-module'
+import masterCSS from '../../src/core'
+import EmittedGlobalsVirtualModulePlugin, { type EmittedGlobalsPluginAPI } from '../../src/plugins/emitted-globals-virtual-module'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, VIRTUAL_EMITTED_GLOBALS_ID } from '../../src/common'
 
 function parseDefaultExport(code: string) {
@@ -57,6 +59,47 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
       expect(globals.keyframeSlots).toHaveLength(1)
       expect(globals.keyframes[globals.keyframeSlots[0]]).toBe(1)
       expect(globals.suppressedKeyframes).toEqual([])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('lets an adapter finalize the emittedGlobals each build environment carries', async () => {
+    const parent = join(process.cwd(), 'tmp')
+    mkdirSync(parent, { recursive: true })
+    const root = realpathSync(mkdtempSync(join(parent, 'emitted-globals-environments-')))
+    try {
+      writeFileSync(join(root, 'style.css'), "@import '@master/css';.card{color:var(--color-text-body)}")
+      writeFileSync(join(root, 'server.js'), 'import "./style.css";export const page = "card"')
+      writeFileSync(join(root, 'client.js'), 'export { default } from "virtual:master-css-emitted-globals"')
+      const plugins = masterCSS({ mode: 'runtime' })
+      const api = plugins.find(plugin => plugin.name === 'master-css:virtual-module:emitted-globals')!.api as EmittedGlobalsPluginAPI
+      const finalized: Record<string, unknown> = {}
+      api.finalize = (environment, emittedGlobals) => {
+        finalized[environment.name] = emittedGlobals
+        return environment.name === 'client' ? finalized.ssr as typeof emittedGlobals : emittedGlobals
+      }
+      const outputs: Record<string, Rolldown.RolldownOutput> = {}
+      // Builder environments resolve separate configurations, as in Astro.
+      const builder = await createBuilder({
+        root, configFile: false, logLevel: 'silent', plugins,
+        environments: {
+          ssr: { build: { ssr: true, emitAssets: true, write: false, rolldownOptions: { input: join(root, 'server.js') } } },
+          client: { build: { write: false, minify: false, rolldownOptions: { input: join(root, 'client.js') } } }
+        },
+        builder: {
+          async buildApp(builder) {
+            for (const name of ['ssr', 'client']) outputs[name] = await builder.build(builder.environments[name]) as Rolldown.RolldownOutput
+          }
+        }
+      })
+      await builder.buildApp()
+
+      expect(Object.keys(finalized)).toEqual(['ssr', 'client'])
+      expect(finalized.client).toMatchObject({ variables: {} })
+      expect(finalized.ssr).toMatchObject({ variables: { 'color-text-body': 1 } })
+      const client = outputs.client.output.find(chunk => chunk.type === 'chunk')!.code
+      expect(JSON.parse(JSON.parse(client.match(/JSON\.parse\(("(?:[^"\\]|\\.)*")\)/)![1]))).toEqual(finalized.ssr)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

@@ -4,7 +4,7 @@ import type { MasterCSSStylesheetCollection } from '@master/css-compiler/stylesh
 import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
-import EmittedGlobalsVirtualModulePlugin from './plugins/emitted-globals-virtual-module'
+import EmittedGlobalsVirtualModulePlugin, { type EmittedGlobalsPluginAPI } from './plugins/emitted-globals-virtual-module'
 import ContextPlugin from './plugins/context'
 import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
@@ -45,10 +45,13 @@ export function createMasterCSSVitePlugin(
 ): Plugin[] {
   const options = resolveMasterCSSVitePluginOptions(specifiedOptions)
   if (!options.enabled) return []
-  return scopePlugins(() => createPlugins(options))
+  // Adapters reach every environment's emitted globals through one API, even
+  // when the environments of a build resolve separate configurations.
+  const emittedGlobalsAPI: EmittedGlobalsPluginAPI = {}
+  return scopePlugins(() => createPlugins(options, emittedGlobalsAPI))
 }
 
-function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
+function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGlobalsAPI: EmittedGlobalsPluginAPI): Plugin[] {
   const runtimeBootstrap = RuntimeBootstrapPlugin()
   const context = {
     pruneNativeCSS: options.pruneNativeCSS,
@@ -58,7 +61,7 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
     runtimeBootstrap,
     ContextPlugin(options, context),
     ManifestVirtualModulePlugin(context),
-    EmittedGlobalsVirtualModulePlugin(context),
+    EmittedGlobalsVirtualModulePlugin(context, emittedGlobalsAPI),
     ManifestLoaderPlugin(context),
     ScannerPlugin(options, context),
     UsageGraphPlugin(options, context),

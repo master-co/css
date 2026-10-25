@@ -207,7 +207,7 @@ const cssRuntime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
 cssRuntime.observe()
 ```
 
-The manifest tells the runtime how to interpret project-specific tokens, mixins, and custom media. The `emittedGlobals` object is narrower: it only records variables and keyframes that the build already emitted from the CSS entry output. Dynamic classes can still be generated later, but shared global CSS is not duplicated when those classes reference an already-loaded variable or animation.
+The manifest tells the runtime how to interpret project-specific tokens, mixins, and custom media. The `emittedGlobals` object is narrower: it only records variables and keyframes that the build already emitted from the CSS entry output. Dynamic classes can still be generated later, but shared global CSS is not duplicated when those classes reference an already-loaded variable or animation. Integrations that process page CSS and build the runtime in separate environments, such as Astro, count the CSS every environment delivers in runtime mode; progressive pages carry theirs in the [hydration manifest](#css-hydration). Every page that loads the runtime bundle shares this object, so a variable or animation one page's CSS emits counts as already loaded on the others.
 
 ### Runtime state
 Runtime rendering separates the question "is this class currently used by the DOM?" from "does the runtime already have generated CSS for this class?"

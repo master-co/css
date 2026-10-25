@@ -19,6 +19,7 @@ import {
   toEmittedGlobalsModule,
   toUniversalManifestFacadeModule
 } from '../src/module'
+import { mergeEmittedGlobals } from '../src/emitted-globals-module'
 
 let generatedModuleIndex = 0
 
@@ -50,6 +51,19 @@ describe('@master/css-internal module helpers', () => {
 })).toBe('{"version":6,"languageVersion":16}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{},"keyframeSlots":[],"suppressedKeyframes":[]};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
+  })
+
+  it('counts emittedGlobals of separate stylesheet hosts', () => {
+    expect(mergeEmittedGlobals(
+      { variables: { color: 1, unused: 0 }, keyframes: { fade: 1 }, keyframeSlots: ['fade'] },
+      { variables: { color: 2, spacing: 1 }, keyframeSlots: ['fade', 'ping'], suppressedKeyframes: ['shake'] },
+      { variables: { color: 0xffff_ffff } }
+    )).toEqual({
+      variables: { color: 0xffff_ffff, spacing: 1 },
+      keyframes: { fade: 1 },
+      keyframeSlots: ['fade', 'ping'],
+      suppressedKeyframes: ['shake']
+    })
   })
 
   it('does not expose runtime injection source helpers', () => {
