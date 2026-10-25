@@ -62,6 +62,13 @@ export default function siteIslands(): Plugin {
   return {
     name: 'master-css-site:islands',
     enforce: 'pre',
+    // The dependency scanner cannot follow the virtual registry, and Astro scans only `src/`.
+    // Scan island modules too, so their dependencies are optimized at startup rather than
+    // discovered on the first page, which reloads it and fails pending island imports.
+    async configEnvironment(name, _options, { command }) {
+      if (name !== 'client' || command !== 'serve') return
+      return { optimizeDeps: { entries: (await listClientModules()).map(islandId) } }
+    },
     async resolveId(source, importer, options) {
       if (source === registryId) return resolvedRegistryId
       if (this.environment.config.consumer !== 'server') return

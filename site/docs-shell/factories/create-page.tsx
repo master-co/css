@@ -3,9 +3,18 @@ import type { Props } from '../types/Props'
 import generate from '../utils/generate-metadata'
 import { createTranslation } from '../utils/i18n'
 
+interface ContentModule {
+  default: (props: { pageCategories?: any }) => JSX.Element
+  toc?: any
+}
+
 interface Options {
   metadata: any
-  content?: Promise<any> | ((props: Props & {
+  /**
+   * Import MDX statically: Astro collects a page's stylesheets from its module graph
+   * when the page module loads, before a pending dynamic import finishes in dev.
+   */
+  content?: ContentModule | ((props: Props & {
     $: (text: any) => string
   }) => JSX.Element)
   categories?: any
@@ -40,16 +49,13 @@ export default function createPage({
       let resolvedContent: any
       let toc: any
       if (content) {
-        if (content instanceof Promise) {
-          const importContentModule = await loadTranslatedContent(params.locale, metadata) || await content
-          if (importContentModule && importContentModule.default) {
-            resolvedContent = <importContentModule.default pageCategories={categories} />
-            toc = importContentModule.toc
-          } else {
-            throw new Error('Invalid content module')
-          }
-        } else {
+        if (typeof content === 'function') {
           resolvedContent = content({ ...props, $ })
+        } else {
+          const contentModule = await loadTranslatedContent(params.locale, metadata) || content
+          if (!contentModule.default) throw new Error('Invalid content module')
+          resolvedContent = <contentModule.default pageCategories={categories} />
+          toc = contentModule.toc
         }
       }
       const children =
@@ -84,7 +90,7 @@ async function loadTranslatedContent(locale: string, metadata: any) {
 }
 
 function contentDirectoryOf(metadata: any) {
-  const fileURL = metadata?.fileURL
-  if (typeof fileURL !== 'string') return
-  return decodeURI(fileURL).match(/\/site\/content\/(.+)\/metadata\.(?:ts|js)$/)?.[1]
+  const sourcePath = metadata?.sourcePath
+  if (typeof sourcePath !== 'string') return
+  return sourcePath.match(/^site\/content\/(.+)\/content\.mdx$/)?.[1]
 }

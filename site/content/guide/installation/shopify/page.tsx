@@ -4,6 +4,7 @@ import Layout from '~/site/layouts/doc'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
+import * as content from './content.mdx'
 
 export const { Page, generateMetadata } = createPage({
   metadata,
@@ -12,7 +13,7 @@ export const { Page, generateMetadata } = createPage({
   noTOC: true,
   icon: createHeaderIcon('shopify'),
   categoryLink: '/guide/installation/integrations',
-  content: import('./content.mdx'),
+  content,
   Layout,
 })
 

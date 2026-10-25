@@ -2,8 +2,10 @@
 import clsx from 'clsx'
 import fontCSS from '~/site/public/fonts/index.css?raw'
 import { codeTabsBootstrap } from '~/site/docs-shell/scripts/code-tabs-bootstrap'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
 import { resolveHead } from '~/site/docs-shell/utils/head'
 import { siteContextOf } from '~/site/astro/site-context'
+import { localizePathname } from '~/site/routes'
 import { siteContextElementId } from '~/site/docs-shell/layouts/root'
 import type { Metadata } from '~/site/docs-shell/types/Metadata'
 import type { PageAssets } from '~/site/astro/propagated-assets'
@@ -15,11 +17,18 @@ interface Props {
   bodyClass?: string
   /** Standalone pages, such as iframe examples, omit the documentation shell. */
   bare?: boolean
+  /** Locales the page is published in. */
+  locales: readonly string[]
 }
 
-const { metadata, assets, bodyClass, bare } = Astro.props
+const { metadata, assets, bodyClass, bare, locales } = Astro.props
 const site = siteContextOf(Astro.url)
-const head = resolveHead(metadata, { project: import.meta.env.PUBLIC_PROJECT, siteURL: import.meta.env.PUBLIC_URL })
+const hreflangOf = (locale: string) => (i18n.hreflangOfLocale as Record<string, string>)[locale] ?? locale
+const basePathname = site.locale === i18n.defaultLocale ? site.pathname : site.pathname.slice(site.locale.length + 1) || '/'
+const languages = locales.length > 1
+  ? { ...Object.fromEntries(locales.map((locale) => [hreflangOf(locale), localizePathname(basePathname, locale)])), 'x-default': basePathname }
+  : undefined
+const head = resolveHead(metadata, { project: import.meta.env.PUBLIC_PROJECT, siteURL: import.meta.env.PUBLIC_URL, pathname: site.pathname, languages })
 const siteContextJSON = JSON.stringify(site).replace(/</g, '\\u003c')
 // Island modules carry React Refresh registration in development and need its runtime first,
 // as @vitejs/plugin-react's preamble provides for Astro's own islands.
@@ -37,7 +46,7 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
 ---
 
 <!doctype html>
-<html lang={site.locale}>
+<html lang={hreflangOf(site.locale)}>
   <head>
     <meta charset="utf-8" />
     {refreshPreamble && <script type="module" is:inline set:html={refreshPreamble}></script>}

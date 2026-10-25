@@ -8,8 +8,8 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useTranslation } from '../contexts/i18n'
 import Image from './Image'
-import canIUseImg from '../../public/images/caniuse.favicon.png'
-import mdnImg from '../../public/images/mdnwebdocs.png'
+import canIUseImg from '~/site/assets/images/references/caniuse.png'
+import mdnImg from '~/site/assets/images/references/mdn-web-docs.png'
 import { usePageContent } from './PageContentContext'
 
 const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
@@ -17,8 +17,6 @@ const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
 export default function PageContent({ metadata }: any) {
   const { activeTransitionsReady, currentId, currentParentId, items: pageContent } = usePageContent()
   const ref = useRef<HTMLElement>(null)
-  const pageDirname = metadata.fileURL?.substring(0, metadata.fileURL.lastIndexOf('/'))
-  const pageContentPath = encodeURIComponent(metadata.sourcePath || ('site/content/' + pageDirname?.match(/\[locale\]\/(.*)/)?.[1] + '/content.mdx'))
   const $ = useTranslation()
 
   return (
@@ -55,11 +53,11 @@ export default function PageContent({ metadata }: any) {
         }
       </ul>
       <ul className='mt-sm'>
-        <li>
-          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/tree/rc/${pageContentPath}`} indicate>
+        {metadata.sourcePath && <li>
+          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
             {$('Edit this page')}
           </Link>
-        </li>
+        </li>}
         <li>
           <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
             {$('Issue on this page')}

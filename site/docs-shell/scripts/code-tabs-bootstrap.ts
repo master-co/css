@@ -1,7 +1,8 @@
-/** Applies persisted code tab choices while the document parses, before scripts load. */
+/**
+ * Applies persisted code tab choices before paint. The document inlines it after
+ * the content, so every tab set has already parsed.
+ */
 export function codeTabsBootstrap() {
-  let attempts = 0
-
   const readStoredName = (key: string) => {
     try {
       const raw = window.localStorage.getItem(key)
@@ -13,46 +14,22 @@ export function codeTabsBootstrap() {
     }
   }
 
-  const applyRoot = (root: HTMLElement) => {
-    const storageKey = root.dataset.codeTabsStorageKey
+  document.querySelectorAll<HTMLElement>('[data-code-tabs-storage-key]').forEach((root) => {
+    const storedName = readStoredName(root.dataset.codeTabsStorageKey!)
     const triggers = Array.from(root.querySelectorAll<HTMLElement>('[data-code-tabs-tab-name]'))
+    if (!storedName || !triggers.some((trigger) => trigger.dataset.codeTabsTabName === storedName)) return
 
-    if (!storageKey || !triggers.length) return false
-
-    const names = triggers
-      .map((trigger) => trigger.dataset.codeTabsTabName)
-      .filter((name): name is string => Boolean(name))
-    const firstName = names[0]
-    const storedName = readStoredName(storageKey)
-    const currentName = storedName && names.includes(storedName) ? storedName : firstName
-
-    if (!currentName) return false
-
-    root.dataset.codeTabsCurrentName = currentName
+    root.dataset.codeTabsCurrentName = storedName
     triggers.forEach((trigger) => {
-      const active = trigger.dataset.codeTabsTabName === currentName
+      const active = trigger.dataset.codeTabsTabName === storedName
       trigger.setAttribute('aria-selected', String(active))
       trigger.tabIndex = active ? 0 : -1
     })
 
     root.querySelectorAll<HTMLElement>('[data-code-tabs-panel-name]').forEach((panel) => {
-      const active = panel.dataset.codeTabsPanelName === currentName
+      const active = panel.dataset.codeTabsPanelName === storedName
       panel.hidden = !active
       panel.classList.toggle('display:none', !active)
     })
-
-    return true
-  }
-
-  const run = () => {
-    attempts += 1
-    const roots = Array.from(document.querySelectorAll<HTMLElement>('[data-code-tabs-storage-key]'))
-    const pending = !roots.length || roots.some((root) => !applyRoot(root))
-
-    if (pending && attempts < 120) {
-      window.requestAnimationFrame(run)
-    }
-  }
-
-  run()
+  })
 }

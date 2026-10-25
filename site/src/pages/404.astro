@@ -8,6 +8,6 @@ import { withSection } from '~/site/routes'
 const route = await withSection('brand', { robots: 'noindex' }, h(NotFound))
 ---
 
-<Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass}>
+<Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} locales={route.locales}>
   <RenderNode node={route.element} />
 </Document>

@@ -89,7 +89,8 @@ async function generateStaticOgImages() {
                 staticPath = await writeOgImage(normalizedUrl, cacheKey)
                 generated.set(cacheKey, staticPath)
             }
-            content = content.split(rawUrl).join(staticPath)
+            // Keep the origin of absolute card URLs, which social crawlers require.
+            content = content.split(rawUrl).join(/^https?:\/\//.test(rawUrl) ? new URL(staticPath, rawUrl).href : staticPath)
         }
 
         if (content.includes('/api/og-image')) {

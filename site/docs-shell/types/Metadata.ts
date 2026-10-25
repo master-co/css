@@ -13,4 +13,5 @@ export declare type Metadata = {
   [key: string]: any
 }
 
-export declare type DefinedMetadata = Metadata & { pathname: string }
+/** `define()` output: the canonical pathname and the repository path of the page content. */
+export declare type DefinedMetadata = Omit<Metadata, 'fileURL'> & { pathname: string, sourcePath: string }

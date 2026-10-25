@@ -11,8 +11,7 @@ document.addEventListener('click', (event) => {
   const heading = event.target.closest<HTMLElement>('[data-doc-heading][id]')
   if (heading) {
     const link = location.origin + location.pathname + '#' + heading.id
-    snackbar('Link copied <b>' + link + '</b>')
-    navigator.clipboard.writeText(link)
+    navigator.clipboard?.writeText(link).then(() => snackbar('Link copied <b>' + link + '</b>'), () => {})
   }
   if (event.defaultPrevented) return
   const hashLink = event.target.closest<HTMLAnchorElement>('a[href^="#"]')

@@ -58,6 +58,10 @@ const sectionShells: Record<Section, string> = {
   examples: 'examples'
 }
 
+function localesOf(section: Section): readonly string[] {
+  return unlocalizedSections.has(section) ? [i18n.defaultLocale] : i18n.locales
+}
+
 function directoriesOf(file: string) {
   return file.slice(contentRoot.length).split('/').slice(0, -1)
 }
@@ -112,9 +116,8 @@ export async function getStaticPaths() {
     const module = await loadModule(file)
     const segments = segmentsOf(file)
     const paramSets = module.generateStaticParams ? await module.generateStaticParams() : [{}]
-    const locales = unlocalizedSections.has(sectionOf(file)) ? [i18n.defaultLocale] : i18n.locales
     for (const params of paramSets) {
-      for (const locale of locales) {
+      for (const locale of localesOf(sectionOf(file))) {
         const pathname = localizePathname(pathnameOf(segments, params), locale)
         paths.push({ params: { path: pathname.slice(1) || undefined }, props: { file, locale: locale as RouteProps['locale'], params } })
       }
@@ -125,7 +128,7 @@ export async function getStaticPaths() {
 
 export type LoadedRoute =
   | { kind: 'redirect', location: string }
-  | { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean }
+  | { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean, locales: readonly string[] }
 
 export async function loadRoute({ file, locale, params }: RouteProps): Promise<LoadedRoute> {
   const page = await loadPropagated(pageModules, file)
@@ -158,6 +161,7 @@ export async function withSection(sectionName: Section, metadata: Partial<Metada
     element: h(section.module.default, null, element),
     assets: mergeAssets(...site, section.propagated, ...propagated),
     bodyClass: section.module.bodyClass,
-    bare: section.module.bare
+    bare: section.module.bare,
+    locales: localesOf(sectionName)
   }
 }
