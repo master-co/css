@@ -62,7 +62,7 @@
     "@master/css-tooling": "workspace:*",
     "@master/css-runtime": "workspace:*",
     "@master/css-server": "workspace:*",
-    "magic-string": "^1.2.3",
+    "magic-string": "^1.4.3",
     "@master/css-schema": "workspace:*"
   },
   "devDependencies": {

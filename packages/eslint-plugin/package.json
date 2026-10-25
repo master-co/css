@@ -50,8 +50,8 @@
     "@master/css-compiler": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "@master/css-preset": "workspace:*",
-    "@typescript-eslint/utils": "^8.69.0",
-    "typescript-eslint": "^8.69.0"
+    "@typescript-eslint/utils": "^8.72.0",
+    "typescript-eslint": "^8.72.0"
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^22.6.0",

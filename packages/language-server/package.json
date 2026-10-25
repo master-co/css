@@ -26,7 +26,7 @@
     "@master/css-tooling": "workspace:*",
     "defu": "^6.1.7",
     "fast-glob": "^3.3.3",
-    "nanoid": "^6.0.1",
+    "nanoid": "^6.0.2",
     "vscode-languageserver": "^10.1.1",
     "vscode-languageserver-textdocument": "^1.0.14",
     "vscode-uri": "^3.2.0",

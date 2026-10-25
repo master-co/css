@@ -57,7 +57,7 @@
     "@master/css-server": "workspace:*",
     "@master/css-schema": "workspace:*",
     "@master/css-vite": "workspace:*",
-    "@nuxt/kit": "^4.5.2"
+    "@nuxt/kit": "^4.6.2"
   },
   "devDependencies": {
     "@master/css-internal": "workspace:*",

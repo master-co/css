@@ -56,10 +56,10 @@
     "@master/css-tooling": "workspace:*",
     "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "fast-glob": "^3.3.3",
     "vscode-languageserver-textdocument": "^1.0.14",
-    "zod": "^4.5.4"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@master/css-internal": "workspace:*"
