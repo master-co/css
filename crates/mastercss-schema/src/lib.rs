@@ -159,6 +159,7 @@ mod directives;
 mod engine;
 mod manifest;
 mod mixin;
+mod tagged;
 
 pub use directives::*;
 pub use engine::*;

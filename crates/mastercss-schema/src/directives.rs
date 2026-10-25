@@ -232,7 +232,7 @@ pub struct CssDirectiveManifestInput {
 /// Ordered managed CSS. Lowering supplies :root,:host for direct @theme
 /// declarations; the executable tree always has an explicit selector.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase", deny_unknown_fields)]
+#[serde(tag = "type", rename_all = "lowercase", try_from = "RawThemeNode")]
 pub enum ThemeNode {
     Rule {
         prelude: String,
@@ -246,6 +246,59 @@ pub enum ThemeNode {
         #[serde(default, rename = "static", skip_serializing_if = "std::ops::Not::not")]
         is_static: bool,
     },
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum ThemeNodeType {
+    Rule,
+    Declaration,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RawThemeNode {
+    r#type: ThemeNodeType,
+    prelude: Option<String>,
+    children: Option<Vec<ThemeNode>>,
+    name: Option<String>,
+    value: Option<String>,
+    inline: Option<bool>,
+    #[serde(rename = "static")]
+    is_static: Option<bool>,
+}
+
+impl TryFrom<RawThemeNode> for ThemeNode {
+    type Error = serde::de::value::Error;
+
+    fn try_from(raw: RawThemeNode) -> Result<Self, Self::Error> {
+        let present = [
+            ("prelude", raw.prelude.is_some()),
+            ("children", raw.children.is_some()),
+            ("name", raw.name.is_some()),
+            ("value", raw.value.is_some()),
+            ("inline", raw.inline.is_some()),
+            ("static", raw.is_static.is_some()),
+        ];
+        Ok(match raw.r#type {
+            ThemeNodeType::Rule => {
+                tagged::only(&present, &["prelude", "children"])?;
+                Self::Rule {
+                    prelude: tagged::required(raw.prelude, "prelude")?,
+                    children: tagged::required(raw.children, "children")?,
+                }
+            }
+            ThemeNodeType::Declaration => {
+                tagged::only(&present, &["name", "value", "inline", "static"])?;
+                Self::Declaration {
+                    name: tagged::required(raw.name, "name")?,
+                    value: tagged::required(raw.value, "value")?,
+                    inline: raw.inline.unwrap_or_default(),
+                    is_static: raw.is_static.unwrap_or_default(),
+                }
+            }
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -460,7 +513,11 @@ pub struct CssDefinitionSource {
 
 /// Resolved declarative custom media expression, with no runtime alias lookup.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "kebab-case", deny_unknown_fields)]
+#[serde(
+    tag = "type",
+    rename_all = "kebab-case",
+    try_from = "RawMediaQueryExpr"
+)]
 pub enum MediaQueryExpr {
     True,
     False,
@@ -469,6 +526,81 @@ pub enum MediaQueryExpr {
     Not { query: Box<MediaQueryExpr> },
     And { queries: Vec<MediaQueryExpr> },
     Or { queries: Vec<MediaQueryExpr> },
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+enum MediaQueryExprType {
+    True,
+    False,
+    Feature,
+    MediaType,
+    Not,
+    And,
+    Or,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RawMediaQueryExpr {
+    r#type: MediaQueryExprType,
+    value: Option<String>,
+    name: Option<String>,
+    query: Option<Box<MediaQueryExpr>>,
+    queries: Option<Vec<MediaQueryExpr>>,
+}
+
+impl TryFrom<RawMediaQueryExpr> for MediaQueryExpr {
+    type Error = serde::de::value::Error;
+
+    fn try_from(raw: RawMediaQueryExpr) -> Result<Self, Self::Error> {
+        let present = [
+            ("value", raw.value.is_some()),
+            ("name", raw.name.is_some()),
+            ("query", raw.query.is_some()),
+            ("queries", raw.queries.is_some()),
+        ];
+        Ok(match raw.r#type {
+            MediaQueryExprType::True => {
+                tagged::only(&present, &[])?;
+                Self::True
+            }
+            MediaQueryExprType::False => {
+                tagged::only(&present, &[])?;
+                Self::False
+            }
+            MediaQueryExprType::Feature => {
+                tagged::only(&present, &["value"])?;
+                Self::Feature {
+                    value: tagged::required(raw.value, "value")?,
+                }
+            }
+            MediaQueryExprType::MediaType => {
+                tagged::only(&present, &["name"])?;
+                Self::MediaType {
+                    name: tagged::required(raw.name, "name")?,
+                }
+            }
+            MediaQueryExprType::Not => {
+                tagged::only(&present, &["query"])?;
+                Self::Not {
+                    query: tagged::required(raw.query, "query")?,
+                }
+            }
+            MediaQueryExprType::And => {
+                tagged::only(&present, &["queries"])?;
+                Self::And {
+                    queries: tagged::required(raw.queries, "queries")?,
+                }
+            }
+            MediaQueryExprType::Or => {
+                tagged::only(&present, &["queries"])?;
+                Self::Or {
+                    queries: tagged::required(raw.queries, "queries")?,
+                }
+            }
+        })
+    }
 }
 
 /// Informational compiler feedback with an authored source reference.
