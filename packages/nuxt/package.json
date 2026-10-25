@@ -62,19 +62,19 @@
   "devDependencies": {
     "@master/css-internal": "workspace:*",
     "@master/css-preset": "workspace:*",
-    "@nuxt/devtools": "4.0.0-alpha.17",
+    "@nuxt/devtools": "4.0.0-beta.7",
     "@nuxt/eslint": "^1.17.0",
     "@nuxt/eslint-config": "^1.17.0",
     "@nuxt/module-builder": "^1.0.3",
-    "@nuxt/schema": "^4.5.2",
-    "@nuxt/test-utils": "^4.2.0",
-    "@vue/test-utils": "^2.5.0",
+    "@nuxt/schema": "^4.6.2",
+    "@nuxt/test-utils": "^4.3.4",
+    "@vue/test-utils": "^2.5.1",
     "changelogen": "^0.6.2",
-    "eslint": "^10.10.0",
-    "happy-dom": "^20.14.0",
-    "nuxt": "^4.5.2",
-    "playwright-core": "^1.63.0",
+    "eslint": "^10.13.0",
+    "happy-dom": "^21.0.4",
+    "nuxt": "^4.6.2",
+    "playwright-core": "^1.64.1",
     "vite": "^8.2.2",
-    "vue": "^3.5.42"
+    "vue": "^3.5.44"
   }
 }

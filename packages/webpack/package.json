@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@master/css-internal": "workspace:*",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.1",
     "tapable": "^2.3.3",
     "webpack": "^5.110.3"
   }

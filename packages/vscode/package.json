@@ -499,7 +499,7 @@
     "@master/css-compiler": "workspace:*",
     "@master/css-preset": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@shikijs/langs": "4.4.3",
+    "@shikijs/langs": "4.5.0",
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.9.2",
     "vscode-languageclient": "^10.1.1",

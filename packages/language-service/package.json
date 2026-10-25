@@ -31,12 +31,12 @@
     "vscode-languageserver-textdocument": "^1.0.14"
   },
   "devDependencies": {
-    "@angular-eslint/template-parser": "^22.2.0",
+    "@angular-eslint/template-parser": "^22.6.0",
     "@master/eslint-config-css": "workspace:*",
     "@types/js-beautify": "^1.14.3",
     "@types/vscode": "^1.125.0",
-    "@typescript-eslint/parser": "^8.69.0",
-    "shiki": "^4.4.3",
+    "@typescript-eslint/parser": "^8.72.0",
+    "shiki": "^4.5.0",
     "vscode-languageserver": "^10.1.1"
   },
   "sideEffects": [

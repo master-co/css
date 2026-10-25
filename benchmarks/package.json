@@ -40,7 +40,7 @@
     "@master/css-tooling": "workspace:^",
     "@master/css-server": "workspace:^",
     "@master/css-vite": "workspace:^",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.1",
     "@tailwindcss/cli": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
     "@types/css-tree": "^3.2.0",
