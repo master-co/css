@@ -83,7 +83,11 @@ function findPackageRoot(entryFile: string, packageName: string) {
   }
 }
 
-/** Canonical package file identity survives installation paths and publication URLs. */
+/**
+ * Package file identity survives checkout, installation and publication paths:
+ * the nearest named package plus the package-relative path. Keyframe IDs hash
+ * this owner into delivered CSS, so absolute paths remain only without a name.
+ */
 export function stylesheetResourceOwner(file: string): string {
   if (!isAbsolute(file)) return file
   try { file = realpathSync(file) } catch { /* Virtual and preprocessed sources retain their supplied identity. */ }
@@ -92,12 +96,10 @@ export function stylesheetResourceOwner(file: string): string {
     const manifest = resolve(directory, 'package.json')
     if (existsSync(manifest)) {
       try {
-        const pkg = readJSONFile<CSSPackageJSON>(manifest)
-        if (typeof pkg.name === 'string' && MASTER_CSS_PACKAGE_IDS.has(pkg.name)) {
-          return `${pkg.name}/${relative(directory, file).replace(/\\/g, '/')}`
-        }
-      } catch { /* A missing or malformed package identity leaves the file owner intact. */ }
-      return file
+        const { name } = readJSONFile<CSSPackageJSON>(manifest)
+        if (typeof name === 'string' && name) return `${name}/${relative(directory, file).replace(/\\/g, '/')}`
+      } catch { /* A malformed manifest names no package. */ }
+      // Nameless manifests, such as nested `{"type":"module"}` files, defer to an enclosing package.
     }
     const parent = dirname(directory)
     if (parent === directory) return file

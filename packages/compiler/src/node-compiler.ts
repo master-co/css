@@ -35,6 +35,7 @@ import {
   resolveNodePackageCSS,
   resolveMasterCSSPackageEntryFile,
   prepareCSSImportGraph,
+  stylesheetResourceOwner,
   type PreparedCSSImportGraph
 } from './node-imports'
 export { resolveMasterCSSPackageEntryFile } from './node-imports'
@@ -214,11 +215,14 @@ export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
 }
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
+  const from = options.from || 'master.css'
   const result = reviveBindingCompileResult(callCompilerBinding<CompileCSSResult>(() => (
     nativeCompiler().compileCSSDirectives(
       source,
       {
-        from: options.from || 'master.css',
+        from,
+        // Single-file keyframe IDs share the graph owner, not the checkout path.
+        resourceOwner: stylesheetResourceOwner(from),
         preserveNativeCSS: options.preserveNativeCSS !== false,
         pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),

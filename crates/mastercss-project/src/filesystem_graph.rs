@@ -1,6 +1,8 @@
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
+    fs,
+    path::Path,
 };
 
 use mastercss_compiler::{
@@ -78,10 +80,46 @@ pub(super) fn prepare(entry: &str) -> Result<CssImportGraphRequest, CompilerErro
             }
         }
     }
+    let files = provider.0.into_inner();
     Ok(CssImportGraphRequest {
-        resource_owners: Default::default(),
+        resource_owners: files
+            .keys()
+            .map(|id| (id.clone(), stylesheet_resource_owner(id)))
+            .collect(),
         entry: entry.into(),
-        files: provider.0.into_inner(),
+        files,
         edges,
     })
+}
+
+/// The Node host's `stylesheetResourceOwner()` rule for canonical paths: the
+/// nearest named package plus the package-relative path. Keyframe IDs hash
+/// this owner into delivered CSS, so absolute paths remain only without a name.
+pub(super) fn stylesheet_resource_owner(file: &str) -> String {
+    let path = Path::new(file);
+    if !path.is_absolute() {
+        return file.into();
+    }
+    for directory in path.ancestors().skip(1) {
+        let Ok(manifest) = fs::read_to_string(directory.join("package.json")) else {
+            continue;
+        };
+        // Nameless manifests, such as nested `{"type":"module"}` files, defer to an enclosing package.
+        let Some(name) = serde_json::from_str::<serde_json::Value>(&manifest)
+            .ok()
+            .and_then(|manifest| manifest.get("name")?.as_str().map(str::to_owned))
+            .filter(|name| !name.is_empty())
+        else {
+            continue;
+        };
+        let relative = path
+            .strip_prefix(directory)
+            .unwrap_or(path)
+            .components()
+            .map(|component| component.as_os_str().to_string_lossy())
+            .collect::<Vec<_>>()
+            .join("/");
+        return format!("{name}/{relative}");
+    }
+    file.into()
 }

@@ -55,6 +55,7 @@
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.
 - `@theme` accepts only direct tokens, with optional static/inline modifiers. Tokens use `:root,:host`; native selectors and conditions stay outside the block and do not register utility tokens. Preserve repeated declarations and track dependencies after one-pass inline substitution. Static roots survive class removal; reference-only static definitions are not output roots.
 - Native keyframes retain containers, layers, order and each import occurrence. Preserve every same-name definition by ID. `@safelist keyframes` retains exact decoded names. Dynamic names retain all candidate definitions. Metadata-only compilation must keep definitions; delivery suppression is separate. Pruned rules, reference-only styles and unused mixins are not roots.
+- Keyframe and slot IDs hash each file's resource owner into delivered CSS. `stylesheetResourceOwner()` yields the nearest named package plus package-relative path (the Rust filesystem host mirrors it); never pass checkout-dependent paths as owners.
 
 ## Safe Changes
 
