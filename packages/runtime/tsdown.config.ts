@@ -1,14 +1,34 @@
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
+
+const wasmEngineLoader = fileURLToPath(new URL('../binding-wasm-engine/src/index.ts', import.meta.url))
 
 const browserBindingLoader = {
   name: 'browser-binding-loader',
   resolveId: {
     order: 'pre' as const,
-    handler(source: string) {
+    handler(source: string, importer?: string) {
       if (source === '@master/css-binding/engine') {
         return fileURLToPath(new URL(
           '../binding/src/engine-binding-browser.ts',
+          import.meta.url
+        ))
+      }
+      if (source === '@master/css-binding-wasm-engine') {
+        return fileURLToPath(new URL(
+          '../binding-wasm-engine/src/provider.ts',
+          import.meta.url
+        ))
+      }
+      // Pair the bundled bindings with the runtime-only module that
+      // `cargo xtask build-wasm runtime` generates beside the staged Wasm asset.
+      if (
+        source === '../artifacts/mastercss_binding_wasm_engine.js'
+        && importer && resolve(importer) === wasmEngineLoader
+      ) {
+        return fileURLToPath(new URL(
+          './artifacts/mastercss_binding_wasm_engine.js',
           import.meta.url
         ))
       }

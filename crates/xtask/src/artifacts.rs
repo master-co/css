@@ -351,60 +351,147 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
         return Ok(());
     }
     let root = workspace_root();
-    let (package, crate_name, artifact_name) = match surface {
-        "runtime" => (
-            "binding-wasm-engine",
-            "mastercss-binding-wasm-engine",
-            "mastercss_binding_wasm_engine",
+    match surface {
+        "runtime" => {
+            let engine = WasmBuild {
+                label: "engine",
+                crate_name: "mastercss-binding-wasm-engine",
+                artifact_name: "mastercss_binding_wasm_engine",
+                profile: "release-wasm",
+                default_features: true,
+                optimize: true,
+                typescript: true,
+                output: "packages/binding-wasm-engine/artifacts",
+            };
+            build_wasm_artifact(&root, &engine)?;
+            // The runtime bundles bindings generated from its own module, so the
+            // browser downloads only the engine session exports it executes.
+            build_wasm_artifact(
+                &root,
+                &WasmBuild {
+                    label: "runtime",
+                    default_features: false,
+                    typescript: false,
+                    output: "packages/runtime/artifacts",
+                    ..engine
+                },
+            )
+        }
+        "compiler" => build_wasm_artifact(
+            &root,
+            &WasmBuild {
+                label: "compiler",
+                crate_name: "mastercss-binding-wasm-compiler",
+                artifact_name: "mastercss_binding_wasm_compiler",
+                profile: "release",
+                default_features: true,
+                optimize: false,
+                typescript: true,
+                output: "packages/binding-wasm-compiler/artifacts",
+            },
         ),
-        "compiler" => (
-            "binding-wasm-compiler",
-            "mastercss-binding-wasm-compiler",
-            "mastercss_binding_wasm_compiler",
+        "tooling" => build_wasm_artifact(
+            &root,
+            &WasmBuild {
+                label: "tooling",
+                crate_name: "mastercss-binding-wasm-tooling",
+                artifact_name: "mastercss_binding_wasm_tooling",
+                profile: "release",
+                default_features: true,
+                optimize: false,
+                typescript: true,
+                output: "packages/binding-wasm-tooling/artifacts",
+            },
         ),
-        "tooling" => (
-            "binding-wasm-tooling",
-            "mastercss-binding-wasm-tooling",
-            "mastercss_binding_wasm_tooling",
-        ),
-        _ => return Err(format!("Unknown Wasm surface: {surface}")),
-    };
+        _ => Err(format!("Unknown Wasm surface: {surface}")),
+    }
+}
+
+struct WasmBuild {
+    label: &'static str,
+    crate_name: &'static str,
+    artifact_name: &'static str,
+    profile: &'static str,
+    default_features: bool,
+    optimize: bool,
+    typescript: bool,
+    output: &'static str,
+}
+
+fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
     let mut command = Command::new("cargo");
-    command.current_dir(&root).args([
+    command.current_dir(root).args([
         "build",
         "--package",
-        crate_name,
+        build.crate_name,
         "--target",
         "wasm32-unknown-unknown",
-        "--release",
+        "--profile",
+        build.profile,
     ]);
-    run_command(&mut command, &format!("{surface} Wasm build"))?;
+    if !build.default_features {
+        command.arg("--no-default-features");
+    }
+    run_command(&mut command, &format!("{} Wasm build", build.label))?;
 
     let input = root.join(format!(
-        "target/wasm32-unknown-unknown/release/{artifact_name}.wasm"
+        "target/wasm32-unknown-unknown/{}/{}.wasm",
+        build.profile, build.artifact_name
     ));
-    let output = root.join(format!("packages/{package}/artifacts"));
+    let output = root.join(build.output);
     fs::create_dir_all(&output)
         .map_err(|error| format!("Cannot create {}: {error}", output.display()))?;
     let mut bindgen = wasm_bindgen_cli_support::Bindgen::new();
     bindgen
         .input_path(&input)
-        .out_name(artifact_name)
-        .typescript(true)
+        .out_name(build.artifact_name)
+        .typescript(build.typescript)
+        .remove_name_section(true)
+        .remove_producers_section(true)
         .web(true)
         .map_err(|error| error.to_string())?
         .generate(&output)
         .map_err(|error| format!("Cannot generate Wasm bindings: {error}"))?;
-    if surface == "runtime" {
-        let runtime_output = root.join("packages/runtime/artifacts");
-        fs::create_dir_all(&runtime_output)
-            .map_err(|error| format!("Cannot create {}: {error}", runtime_output.display()))?;
-        fs::copy(
-            output.join("mastercss_binding_wasm_engine_bg.wasm"),
-            runtime_output.join("mastercss_binding_wasm_engine_bg.wasm"),
-        )
-        .map_err(|error| format!("Cannot stage runtime Wasm asset: {error}"))?;
+    if build.optimize {
+        optimize_wasm(
+            root,
+            &output.join(format!("{}_bg.wasm", build.artifact_name)),
+            build.label,
+        )?;
     }
     println!("Built {}", output.display());
     Ok(())
+}
+
+fn optimize_wasm(root: &Path, wasm: &Path, label: &str) -> Result<(), String> {
+    let wasm_opt = root.join("node_modules/binaryen/bin/wasm-opt");
+    if !wasm_opt.is_file() {
+        return Err(format!(
+            "Cannot find {}. Run `pnpm install` before building Wasm artifacts.",
+            wasm_opt.display()
+        ));
+    }
+    let mut command = Command::new("node");
+    command
+        .current_dir(root)
+        .arg(&wasm_opt)
+        .arg(wasm)
+        // Binaryen's inlining shrinks raw bytes but duplicates bodies that
+        // brotli and gzip would otherwise share, so served artifacts grow.
+        .args(["-Oz", "--skip-pass=inlining-optimizing"])
+        // Match `rustc --print cfg --target wasm32-unknown-unknown`; LLVM's
+        // bulk-memory and reference-types imply the opt and overlong subsets.
+        .args([
+            "--enable-bulk-memory",
+            "--enable-bulk-memory-opt",
+            "--enable-call-indirect-overlong",
+            "--enable-multivalue",
+            "--enable-mutable-globals",
+            "--enable-nontrapping-float-to-int",
+            "--enable-reference-types",
+            "--enable-sign-ext",
+            "-o",
+        ])
+        .arg(wasm);
+    run_command(&mut command, &format!("{label} Wasm optimization"))
 }

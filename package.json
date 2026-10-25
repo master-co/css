@@ -95,6 +95,7 @@
     "@types/node": "^24.19.2",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "aronrepo": "^2.2.1",
+    "binaryen": "132.0.0",
     "concurrently": "^10.0.6",
     "cross-env": "^10.1.0",
     "edit-json-file": "^1.8.1",

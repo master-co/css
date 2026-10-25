@@ -10,9 +10,15 @@ publish.workspace = true
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[features]
+default = ["full"]
+# Render sessions and engine inspection. The browser runtime artifact is built
+# without it.
+full = ["dep:mastercss-render"]
+
 [dependencies]
 mastercss-engine = { path = "../mastercss-engine" }
-mastercss-render = { path = "../mastercss-render" }
+mastercss-render = { path = "../mastercss-render", optional = true }
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true
 serde_json.workspace = true

@@ -71,11 +71,16 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 
-[profile.release.package.mastercss-binding-wasm-engine]
-opt-level = "s"
-
 [profile.release.package.mastercss-binding-wasm-compiler]
 opt-level = "s"
 
 [profile.release.package.mastercss-binding-wasm-tooling]
+opt-level = "s"
+
+# The runtime engine Wasm is downloaded by every browser page. Optimize every
+# crate in it for size; `release` keeps opt-level 3 for native code. "z" is
+# another 12% smaller under brotli but made runtime rule generation, startup,
+# and hydration about 18% slower in `pnpm --filter @master/css-runtime bench`.
+[profile.release-wasm]
+inherits = "release"
 opt-level = "s"

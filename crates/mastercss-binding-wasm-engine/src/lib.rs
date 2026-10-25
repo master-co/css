@@ -45,6 +45,7 @@ impl WasmEngineSession {
         })
     }
 
+    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = manifestJSON)]
     pub fn manifest_json(&self) -> Result<String, JsValue> {
         self.inner.manifest_json().map_err(js_error)
@@ -92,6 +93,7 @@ impl WasmEngineSession {
         render_value(&transition)
     }
 
+    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
         &self,
@@ -127,6 +129,7 @@ impl WasmEngineSession {
         render_value(&snapshot)
     }
 
+    #[cfg(feature = "full")]
     pub fn inspect(&self, class_name: &str) -> Result<JsValue, JsValue> {
         let inspection = self.inner.inspect(class_name).map_err(js_error)?;
         render_value(&inspection)
@@ -137,11 +140,13 @@ impl WasmEngineSession {
     }
 }
 
+#[cfg(feature = "full")]
 #[wasm_bindgen(js_name = RenderSession)]
 pub struct WasmRenderSession {
     inner: mastercss_render::RenderSession,
 }
 
+#[cfg(feature = "full")]
 #[wasm_bindgen(js_class = RenderSession)]
 impl WasmRenderSession {
     #[wasm_bindgen(constructor)]
@@ -213,7 +218,11 @@ pub fn binding_info() -> JsValue {
         env!("CARGO_PKG_VERSION"),
         "wasm32-unknown-unknown",
         "runtime",
-        &["engine", "render"],
+        if cfg!(feature = "full") {
+            &["engine", "render"]
+        } else {
+            &["engine"]
+        },
     );
     serde_wasm_bindgen::to_value(&value).expect("binding info is serializable")
 }

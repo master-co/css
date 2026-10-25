@@ -57,13 +57,15 @@ async function loadDefaultWasmProvider(options: MasterCSSWasmBindingLoadOptions 
 }
 
 async function createWasmProvider(
+  feature: 'engine' | 'render',
   options: MasterCSSWasmBindingLoadOptions | undefined,
   factory: MasterCSSEngineWasmProviderFactory = loadDefaultWasmProvider
 ) {
   const provider = await factory(options) as MasterCSSEngineWasmProviderContract
+  // The browser runtime artifact ships only the engine feature.
   assertMasterCSSBindingInfo(provider.info, {
     surface: 'runtime',
-    features: ['engine', 'render']
+    features: [feature]
   })
   return provider
 }
@@ -83,7 +85,7 @@ export async function createWasmEngineBindingSession(
   loadOptions: MasterCSSWasmBindingLoadOptions | undefined,
   providerFactory?: MasterCSSEngineWasmProviderFactory
 ): Promise<MasterCSSEngineBindingSession> {
-  const provider = await createWasmProvider(loadOptions, providerFactory)
+  const provider = await createWasmProvider('engine', loadOptions, providerFactory)
   const session = await provider.createEngineSession(
     serializeMasterCSSManifest(options.manifest),
     options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
@@ -109,7 +111,7 @@ export async function createWasmRenderBindingSession(
   loadOptions: MasterCSSWasmBindingLoadOptions | undefined,
   providerFactory?: MasterCSSEngineWasmProviderFactory
 ): Promise<MasterCSSRenderBindingSession> {
-  const provider = await createWasmProvider(loadOptions, providerFactory)
+  const provider = await createWasmProvider('render', loadOptions, providerFactory)
   const session = await provider.createRenderSession(
     serializeMasterCSSManifest(options.manifest),
     options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined

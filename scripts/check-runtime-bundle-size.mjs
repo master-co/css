@@ -5,7 +5,8 @@ import path from 'node:path'
 
 const baselinePath = path.resolve('.ai/contracts/runtime-bundle-size.json')
 const artifactPaths = [
-  'packages/runtime/dist/global.min.js'
+  'packages/runtime/dist/global.min.js',
+  'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm'
 ]
 
 function measure(file) {
@@ -23,7 +24,7 @@ function createBaseline() {
     assert.equal(
       existsSync(file),
       true,
-      `Runtime bundle ${file} does not exist. Build @master/css-runtime before checking its size.`
+      `Runtime bundle ${file} does not exist. Build the runtime Wasm and @master/css-runtime before checking its size.`
     )
     artifacts[file] = measure(file)
   }

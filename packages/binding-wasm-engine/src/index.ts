@@ -9,18 +9,20 @@ export type MasterCSSWasmInput =
   | BufferSource
   | WebAssembly.Module
 
+// The browser runtime artifact is built without the binding's `full` feature,
+// so render sessions and inspection exports are absent from its module.
 interface GeneratedEngineSession {
-  manifestJSON(): string
+  manifestJSON?(): string
   ensureClassRules(classNames: string[]): MasterCSSWasmEngineTransition
   deleteClassRules(classNames: string[]): MasterCSSWasmEngineTransition
   registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
   replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
-  nativeDeclarationCandidates(classNames: string[]): unknown
+  nativeDeclarationCandidates?(classNames: string[]): unknown
   ensureClassRulesWithNativeSupport(classNames: string[], supported: Uint8Array): MasterCSSWasmEngineTransition
   refresh(manifestJSON: string, emittedGlobalsJSON?: string): MasterCSSWasmEngineTransition
   snapshot(): MasterCSSWasmEngineSnapshot
   executionState(classNames: string[]): MasterCSSWasmEngineExecutionState
-  inspect(className: string): MasterCSSWasmEngineInspection
+  inspect?(className: string): MasterCSSWasmEngineInspection
   dispose(): void
 }
 
@@ -37,7 +39,7 @@ interface GeneratedRenderSession {
 interface GeneratedWasmModule {
   default(input: { module_or_path: MasterCSSWasmInput }): Promise<WebAssembly.Exports>
   EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedEngineSession
-  RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedRenderSession
+  RenderSession?: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedRenderSession
   bindingInfo(): unknown
 }
 
@@ -144,6 +146,15 @@ export async function loadWasmEngine(
   }
 }
 
+function assertExport<T>(value: T | undefined, name: string): asserts value is T {
+  if (value !== undefined) return
+  throw new MasterCSSError({
+    code: 'WASM_FEATURE_UNAVAILABLE',
+    domain: 'binding',
+    message: `This Master CSS engine Wasm artifact does not include ${name}.`
+  })
+}
+
 function emittedGlobalsJSON(options: MasterCSSWasmEngineSessionOptions) {
   return options.emittedGlobals === undefined
     ? undefined
@@ -170,6 +181,7 @@ export async function createWasmEngineSession(
   return Object.freeze({
     manifestJSON() {
       assertActive()
+      assertExport(session.manifestJSON, 'manifestJSON()')
       return session.manifestJSON()
     },
     ensureClassRules(classNames: string[]) {
@@ -210,6 +222,7 @@ export async function createWasmEngineSession(
     },
     inspect(className: string) {
       assertActive()
+      assertExport(session.inspect, 'inspect()')
       return session.inspect(className)
     },
     dispose() {
@@ -226,6 +239,7 @@ export async function createWasmRenderSession(
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ) {
   const module = await loadWasmEngine(loadOptions) as GeneratedWasmModule
+  assertExport(module.RenderSession, 'RenderSession')
   const session = new module.RenderSession(manifestJSON, emittedGlobalsJSON(sessionOptions))
   let disposed = false
   const assertActive = () => {
