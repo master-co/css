@@ -99,8 +99,9 @@ function PageContentNav({ children, id, level, activeTransitionsReady, currentId
     }
   }, [$, children])
 
-  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} suppressHydrationWarning className={clsx('display:flex align-items:center fg-text-muted contain:content will-change:color fg-accent.active! fill-accent.active_svg app-nav', {
-    'transition-property:color transition-duration:.15s': activeTransitionsReady,
+  // Pre-render the transition and enable it with an attribute: a class added after
+  // hydration would start the Master CSS engine on every documentation page.
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('display:flex align-items:center fg-text-muted contain:content will-change:color transition-duration:.15s[data-transitions-ready] transition-property:color[data-transitions-ready] fg-accent.active! fill-accent.active_svg app-nav', {
     'active': active || currentParentId === id,
     'min-height:32px': level === 2,
     'min-height:24px font-xs': level === 3,

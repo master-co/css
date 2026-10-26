@@ -32,8 +32,7 @@ export default function PageContentBlockMap() {
               type="button"
               onClick={() => anchor(item.id, { offset: 110 })}
             >
-              <span data-page-content-block-indicator suppressHydrationWarning className={clsx('display:block height:3px border-radius:1e9em bg-accent/.45.active-parent! opacity:.8.active-parent! width:16px.active! bg-accent.active! opacity:1.active!', {
-                'transition-property:all transition-duration:.15s': activeTransitionsReady,
+              <span data-page-content-block-indicator data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('display:block height:3px border-radius:1e9em bg-accent/.45.active-parent! opacity:.8.active-parent! transition-duration:.15s[data-transitions-ready] transition-property:all[data-transitions-ready] width:16px.active! bg-accent.active! opacity:1.active!', {
                 'active': active,
                 'active-parent': activeParent,
                 'width:14px bg-line-divider opacity:.6': item.level === 2,
