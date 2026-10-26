@@ -170,7 +170,7 @@ pub(crate) fn collect_class_completion_candidates(
     manifest: &Program,
 ) -> Vec<EngineClassCompletionCandidate> {
     let mut candidates = Vec::new();
-    let mut labels = HashSet::new();
+    let mut labels = HashSet::default();
     let mut ambiguous_keys = Vec::new();
 
     // Native declarations are independent of the preset and token namespaces.

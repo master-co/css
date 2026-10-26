@@ -465,7 +465,7 @@ impl Decode for UtilityDefinition {
             alias_groups: Decode::decode(reader)?,
             variable_aliases: Decode::decode(reader)?,
             variable_alias_refs: Decode::decode(reader)?,
-            variables: HashMap::new(),
+            variables: HashMap::default(),
             variable_entries: Vec::new(),
             native_fallback: Decode::decode(reader)?,
             emit: Decode::decode(reader)?,

@@ -542,7 +542,7 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
             .env(profile_env("TRIM_PATHS"), "all");
         // The standard library keeps the opt-level of its prebuilt copy: rebuilt for
         // size it measured larger under brotli and slower to start.
-        for package in ["core", "alloc", "std", "dlmalloc"] {
+        for package in ["core", "alloc", "std"] {
             command.arg("--config").arg(format!(
                 "profile.{}.package.{package}.opt-level=3",
                 build.profile

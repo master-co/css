@@ -43,7 +43,7 @@ struct ManifestInput {
 pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, EngineError> {
     let mut input: ManifestInput = serde_json::from_value(manifest.as_value().clone())
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
-    let mut seen = std::collections::HashSet::new();
+    let mut seen = super::HashSet::default();
     input.keyframes.reverse();
     input
         .keyframes
@@ -131,7 +131,12 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
             &program.compiled_variable_order,
         );
     }
-    program.utilities.sort_by_key(static_last);
+    // A stable partition by `static_last`, without the standard sort's code.
+    let (mut utilities, rest): (Vec<_>, Vec<_>) = std::mem::take(&mut program.utilities)
+        .into_iter()
+        .partition(|utility| static_last(utility) == 0);
+    utilities.extend(rest);
+    program.utilities = utilities;
     for (index, utility) in program.utilities.iter().enumerate() {
         for matcher in &utility.matchers {
             match matcher {
@@ -171,7 +176,7 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
 pub(crate) fn compile_variables(
     groups: &Map<String, Value>,
 ) -> Result<(HashMap<String, CompiledVariable>, Vec<String>), EngineError> {
-    let mut variables = HashMap::new();
+    let mut variables = HashMap::default();
     let mut order = Vec::new();
     for (namespace, definitions) in groups {
         let Some(definitions) = definitions.as_array() else {

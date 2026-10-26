@@ -64,11 +64,26 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
     for feature in &mut features {
         feature.domain = domain.clone();
     }
-    features.sort_by(|left, right| {
-        natural_compare(&left.feature, &right.feature)
-            .then_with(|| natural_compare(&left.unit, &right.unit))
-    });
+    sort_features(&mut features);
     features
+}
+
+/// Orders features by domain, feature and unit. A stable insertion sort: the lists
+/// are short, and the standard sort would add its merge code to the runtime Wasm.
+fn sort_features(features: &mut [ConditionFeature]) {
+    let after = |left: &ConditionFeature, right: &ConditionFeature| {
+        natural_compare(&left.domain, &right.domain)
+            .then_with(|| natural_compare(&left.feature, &right.feature))
+            .then_with(|| natural_compare(&left.unit, &right.unit))
+            .is_gt()
+    };
+    for index in 1..features.len() {
+        let mut position = index;
+        while position > 0 && after(&features[position - 1], &features[position]) {
+            features.swap(position - 1, position);
+            position -= 1;
+        }
+    }
 }
 
 fn range_dimension(value: &str) -> Option<(f64, String)> {
@@ -226,11 +241,7 @@ pub(crate) fn merge_condition_features(
             target.push(source.clone());
         }
     }
-    target.sort_by(|left, right| {
-        natural_compare(&left.domain, &right.domain)
-            .then_with(|| natural_compare(&left.feature, &right.feature))
-            .then_with(|| natural_compare(&left.unit, &right.unit))
-    });
+    sort_features(target);
 }
 
 /// Ordering evidence is independent of emission. Only a wholly numeric media

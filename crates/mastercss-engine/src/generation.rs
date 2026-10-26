@@ -188,7 +188,7 @@ impl EngineSession {
             .is_empty()
             .then(|| self.native_declaration_fallback(semantic_class_name))
             .flatten();
-        let mut seen = HashSet::new();
+        let mut seen = HashSet::default();
         let mut emitted = false;
         for (utility, matched) in matches
             .iter()

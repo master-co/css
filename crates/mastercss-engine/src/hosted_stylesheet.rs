@@ -72,7 +72,7 @@ fn theme_paths(
 fn declared_paths(css: &str) -> HashMap<String, HashSet<Vec<String>>> {
     let tokens = tokenize_css_syntax(css);
     let statements = collect_css_syntax_statements(&tokens);
-    let mut declared: HashMap<String, HashSet<Vec<String>>> = HashMap::new();
+    let mut declared: HashMap<String, HashSet<Vec<String>>> = HashMap::default();
     'declarations: for statement in &statements {
         if !statement.declaration {
             continue;
@@ -116,7 +116,7 @@ impl EngineSession {
         let mut hosted = EmittedGlobals::default();
         let declared = declared_paths(native_css);
         if !declared.is_empty() {
-            let mut paths = HashMap::new();
+            let mut paths = HashMap::default();
             theme_paths(&self.compiled.theme, &mut Vec::new(), &mut paths);
             for (name, chains) in &declared {
                 if self.emitted_globals.variable_count(name) == 0

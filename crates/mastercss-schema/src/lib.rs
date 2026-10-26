@@ -108,9 +108,9 @@ impl<'a> BindingInfo<'a> {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EmittedGlobals {
     #[serde(default)]
-    pub variables: BTreeMap<String, u32>,
+    pub variables: NameCounts,
     #[serde(default)]
-    pub keyframes: BTreeMap<String, u32>,
+    pub keyframes: NameCounts,
     #[serde(default)]
     pub keyframe_slots: Vec<String>,
     #[serde(default)]
@@ -190,12 +190,14 @@ mod directives;
 mod engine;
 mod manifest;
 mod mixin;
+mod name_counts;
 mod tagged;
 
 pub use directives::*;
 pub use engine::*;
 pub use manifest::*;
 pub use mixin::*;
+pub use name_counts::NameCounts;
 
 #[cfg(test)]
 mod tests;

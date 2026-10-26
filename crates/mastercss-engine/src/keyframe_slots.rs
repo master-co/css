@@ -52,7 +52,7 @@ fn slots(css: &str) -> Vec<Slot> {
                 return (delimiter.kind == Kind::Delim(';')).then(|| Slot {
                     id: id.into(),
                     range: token.bytes.start..delimiter.bytes.end,
-                    values: HashMap::new(),
+                    values: HashMap::default(),
                     resources_only: false,
                 });
             }
@@ -161,7 +161,7 @@ impl EngineSession {
 
     #[cfg(feature = "stylesheet-resources")]
     pub fn keyframe_output_edits(&self, css: &str) -> Vec<KeyframeOutputEdit> {
-        let mut definitions = HashMap::new();
+        let mut definitions = HashMap::default();
         for definition in &self.compiled.keyframes {
             definitions
                 .entry(definition.slot_id.as_ref().unwrap_or(&definition.id))

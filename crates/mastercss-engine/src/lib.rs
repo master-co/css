@@ -1,7 +1,8 @@
 #![forbid(unsafe_code)]
 
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+
+use hash::{HashMap, HashSet};
 
 use mastercss_lexer::concat_text;
 use mastercss_lexer::{
@@ -380,6 +381,7 @@ const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
 ];
 
 mod animation;
+mod hash;
 mod inline_theme;
 pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;

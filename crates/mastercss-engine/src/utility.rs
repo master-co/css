@@ -9,7 +9,7 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
     let mut ids = utilities
         .iter()
         .map(|utility| utility.id.clone())
-        .collect::<std::collections::HashSet<_>>();
+        .collect::<super::HashSet<_>>();
     for property in mastercss_schema::native_css_properties() {
         let id = concat_text!("native:", property);
         if !ids.insert(id.clone()) {
@@ -25,7 +25,7 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
-            variables: HashMap::new(),
+            variables: HashMap::default(),
             variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {

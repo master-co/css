@@ -1,8 +1,8 @@
 //! Execution of the statically compilable mixin subset. No CSS stylesheet parser
 //! or browser-dependent parameter evaluation is part of the runtime engine.
+use super::{HashMap, HashSet};
 use mastercss_lexer::concat_text;
 use mastercss_lexer::text::decimal;
-use std::collections::{HashMap, HashSet};
 
 use crate::decimal::Decimal;
 use mastercss_lexer::{CssSyntaxKind as Kind, css_escape, tokenize_css_syntax};
@@ -130,7 +130,7 @@ fn validate_recipe_definitions(
         let definition = registry
             .get(name)
             .ok_or_else(|| crate::message(|| format!("Unknown mixin {name}")))?;
-        let mut names = HashSet::new();
+        let mut names = HashSet::default();
         for parameter in &definition.parameters {
             if !parameter.name.starts_with("--") || !names.insert(&parameter.name) {
                 return Err(crate::message(|| {
@@ -215,14 +215,14 @@ fn validate_recipe_definitions(
         done.insert(name);
         Ok(())
     }
-    let mut done = HashSet::new();
+    let mut done = HashSet::default();
     for name in registry.keys() {
         if utility_root != Some(name)
             && (!name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]))
         {
             return Err(crate::message(|| format!("Invalid mixin name {name}")));
         }
-        visit(name, &registry, &mut HashSet::new(), &mut done)?;
+        visit(name, &registry, &mut HashSet::default(), &mut done)?;
     }
     Ok(())
 }
@@ -248,7 +248,12 @@ fn ident(value: &str) -> Result<String, String> {
     Ok(css_escape(&result))
 }
 
-pub fn evaluate_mixin_value(
+/// Evaluates a mixin value outside any expansion, where no parameter is bound.
+pub fn evaluate_mixin_value(value: &MixinValue) -> Result<String, String> {
+    evaluate_value(value, &HashMap::default())
+}
+
+fn evaluate_value(
     value: &MixinValue,
     environment: &HashMap<String, String>,
 ) -> Result<String, String> {
@@ -257,7 +262,7 @@ pub fn evaluate_mixin_value(
         match part {
             MixinValuePart::Text { value } => output.push_str(value),
             MixinValuePart::Function { name, value } => {
-                let inner = evaluate_mixin_value(value, environment)?;
+                let inner = evaluate_value(value, environment)?;
                 if name.eq_ignore_ascii_case("var")
                     && let Some(argument) = parameter_value(&inner, environment)
                 {
@@ -298,7 +303,7 @@ fn references_parameters(value: &MixinValue, environment: &HashMap<String, Strin
         MixinValuePart::Text { .. } => false,
         MixinValuePart::Function { name, value } => {
             (name.eq_ignore_ascii_case("var")
-                && evaluate_mixin_value(value, &HashMap::new())
+                && evaluate_mixin_value(value)
                     .is_ok_and(|inner| parameter_value(&inner, environment).is_some()))
                 || references_parameters(value, environment)
         }
@@ -501,7 +506,7 @@ impl Expansion<'_> {
                         );
                     }
                     let substituted = references_parameters(value, environment);
-                    let value = evaluate_mixin_value(value, environment)?;
+                    let value = evaluate_value(value, environment)?;
                     if substituted {
                         validate_declaration(property, &value)?;
                     }
@@ -619,7 +624,7 @@ impl Expansion<'_> {
                     }
                     let arguments = arguments
                         .iter()
-                        .map(|argument| evaluate_mixin_value(argument, environment))
+                        .map(|argument| evaluate_value(argument, environment))
                         .collect::<Result<Vec<_>, _>>()?;
                     let mut forbidden = forbidden.clone();
                     if !safe_subject {
@@ -675,21 +680,21 @@ pub fn expand_mixin_with_contents(
     };
     let contents = contents.map(|nodes| ContentsContext {
         nodes: nodes.to_vec(),
-        environment: HashMap::new(),
+        environment: HashMap::default(),
         outer: None,
         stack: Vec::new(),
         safe_subject: true,
-        forbidden: HashSet::new(),
+        forbidden: HashSet::default(),
     });
     if let Err(message) = expansion.call(
         name,
         arguments,
-        &HashMap::new(),
+        &HashMap::default(),
         Placement {
             selector: "&",
             conditions: &[],
         },
-        &HashSet::new(),
+        &HashSet::default(),
         contents.as_ref(),
     ) {
         let definition = expansion.stack.last().map(String::as_str).unwrap_or(name);
@@ -731,13 +736,13 @@ pub(crate) fn expand_body(
     };
     expansion.nodes(
         body,
-        &HashMap::new(),
+        &HashMap::default(),
         Placement {
             selector: "&",
             conditions: &[],
         },
         true,
-        &HashSet::new(),
+        &HashSet::default(),
         None,
     )?;
     Ok(expansion.output)
@@ -769,12 +774,12 @@ pub fn expand_utility(
     expansion.call(
         &recipe.name,
         arguments,
-        &HashMap::new(),
+        &HashMap::default(),
         Placement {
             selector: "&",
             conditions: &[],
         },
-        &HashSet::new(),
+        &HashSet::default(),
         None,
     )?;
     Ok(expansion.output)

@@ -102,7 +102,7 @@ fn preserves_importance_vendor_fallbacks_and_per_declaration_origins() {
         else {
             panic!("declaration");
         };
-        values.push(mastercss_engine::evaluate_mixin_value(value, &Default::default()).unwrap());
+        values.push(mastercss_engine::evaluate_mixin_value(value).unwrap());
         let range = &origin.as_ref().unwrap().range;
         assert!(source[range.start as usize..range.end as usize].starts_with("display:"));
     }

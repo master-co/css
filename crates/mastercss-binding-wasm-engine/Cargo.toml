@@ -30,5 +30,8 @@ serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 wasm-bindgen.workspace = true
 
+[target.'cfg(target_family = "wasm")'.dependencies]
+talc.workspace = true
+
 [dev-dependencies]
 serde_json.workspace = true

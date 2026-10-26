@@ -114,7 +114,7 @@ impl EngineSession {
             .cloned()
             .collect::<Vec<_>>();
         for name in roots {
-            self.register_variable(&name, &mut HashSet::new());
+            self.register_variable(&name, &mut HashSet::default());
             if self.compiled.compiled_variables[&name].namespace == "animate" {
                 let animation = self.declaration_animation_references(&concat_text!(
                     "animation:var(--",
@@ -191,7 +191,7 @@ impl EngineSession {
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
-            variables: HashMap::new(),
+            variables: HashMap::default(),
             variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {
@@ -235,7 +235,7 @@ impl EngineSession {
         let Some(_source_candidate) = source_candidate else {
             return Vec::new();
         };
-        let mut seen = HashSet::new();
+        let mut seen = HashSet::default();
         generated
             .into_iter()
             .filter_map(|rule| single_native_declaration(&rule.declarations))
@@ -252,7 +252,7 @@ impl EngineSession {
 
     pub(crate) fn register_rule_variables(&mut self, variable_names: &[String]) {
         for variable_name in variable_names {
-            self.register_variable(variable_name, &mut HashSet::new());
+            self.register_variable(variable_name, &mut HashSet::default());
         }
     }
 
@@ -281,7 +281,7 @@ impl EngineSession {
 
     pub(crate) fn unregister_rule_variables(&mut self, variable_names: &[String]) {
         for variable_name in variable_names {
-            self.unregister_variable(variable_name, &mut HashSet::new());
+            self.unregister_variable(variable_name, &mut HashSet::default());
         }
     }
 

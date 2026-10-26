@@ -11,9 +11,9 @@
       "brotli": 15847
     },
     "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
-      "raw": 299335,
-      "gzip": 107410,
-      "brotli": 89874
+      "raw": 272265,
+      "gzip": 97616,
+      "brotli": 82149
     },
     "packages/runtime/dist/default-program.bin": {
       "raw": 52492,

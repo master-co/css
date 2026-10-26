@@ -39,7 +39,7 @@ pub(crate) fn analyze(
         return AnimationReferences::default();
     }
     // Values these declarations assign, resolved after the delivered animation_variables.
-    let mut variables = HashMap::<String, Vec<String>>::new();
+    let mut variables = HashMap::<String, Vec<String>>::default();
     for (name, value) in declarations {
         if let Some(name) = name.strip_prefix("--") {
             variables
@@ -60,7 +60,7 @@ pub(crate) fn analyze(
             value,
             manifest,
             &variables,
-            &mut HashSet::new(),
+            &mut HashSet::default(),
             &mut budget,
         ) {
             Some(values) => {
@@ -155,7 +155,7 @@ fn resolve(
 
 fn parse_names(value: &str, names_only: bool, result: &mut AnimationReferences) {
     let tokens = tokenize_css_syntax(value);
-    let mut used = HashSet::new();
+    let mut used = HashSet::default();
     let mut cursor = 0;
     while cursor < tokens.len() {
         let token = &tokens[cursor];

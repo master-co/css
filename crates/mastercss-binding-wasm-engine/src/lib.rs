@@ -7,6 +7,12 @@ use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_schema::EmittedGlobals;
 use wasm_bindgen::prelude::*;
 
+// Talc replaces the default dlmalloc: 2 KB smaller in the runtime Wasm under brotli
+// for a little slower startup. Sessions run on one thread.
+#[cfg(all(target_family = "wasm", not(target_feature = "atomics")))]
+#[global_allocator]
+static ALLOCATOR: talc::wasm::WasmDynamicTalc = talc::wasm::new_wasm_dynamic_allocator();
+
 // Results cross the boundary as JSON text that the JavaScript provider parses.
 // Sessions execute encoded programs, and emitted globals arrive as two arrays so the
 // runtime parses no JSON. Only `full` builds compile manifests; those entry points

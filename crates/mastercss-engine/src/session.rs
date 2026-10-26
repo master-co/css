@@ -85,15 +85,15 @@ impl EngineSession {
             manifest: None,
             compiled,
             layers: std::array::from_fn(|_| Vec::new()),
-            class_rules: HashMap::new(),
+            class_rules: HashMap::default(),
             class_order: Vec::new(),
-            rule_counts: HashMap::new(),
+            rule_counts: HashMap::default(),
             emitted_globals,
-            variable_counts: HashMap::new(),
-            keyframe_counts: HashMap::new(),
-            stylesheet_keyframe_slots: HashSet::new(),
-            variable_floors: HashMap::new(),
-            keyframe_floors: HashMap::new(),
+            variable_counts: HashMap::default(),
+            keyframe_counts: HashMap::default(),
+            stylesheet_keyframe_slots: HashSet::default(),
+            variable_floors: HashMap::default(),
+            keyframe_floors: HashMap::default(),
             keyframe_texts: Vec::new(),
             stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),
@@ -300,7 +300,7 @@ impl EngineSession {
                 .filter(|name| session.compiled.compiled_variables.contains_key(name))
                 .collect::<Vec<_>>();
             for variable_name in &variable_names {
-                session.register_variable(variable_name, &mut HashSet::new());
+                session.register_variable(variable_name, &mut HashSet::default());
             }
 
             Ok(EngineTransitionIr::empty())
@@ -316,10 +316,10 @@ impl EngineSession {
         self.ensure_active()?;
         let mut emitted_globals = self.emitted_globals.clone();
         for name in &self.theme_variable_names {
-            emitted_globals.variables.entry(name.clone()).or_insert(1);
+            emitted_globals.variables.get_or_insert(name.clone(), 1);
         }
         for definition in self.keyframe_snapshot() {
-            emitted_globals.keyframes.entry(definition.id).or_insert(1);
+            emitted_globals.keyframes.get_or_insert(definition.id, 1);
         }
         for id in &self.stylesheet_keyframe_slots {
             if !emitted_globals.keyframe_slots.contains(id) {
@@ -513,7 +513,7 @@ impl EngineSession {
         S: AsRef<str>,
     {
         self.ensure_active()?;
-        let mut seen = HashSet::new();
+        let mut seen = HashSet::default();
         let mut cached_classes = Vec::new();
         for class_name in class_names {
             let class_name = class_name.as_ref();
@@ -608,7 +608,7 @@ impl EngineSession {
         selectors: impl IntoIterator<Item = &'a str>,
     ) -> Result<Vec<String>, EngineError> {
         self.ensure_active()?;
-        let mut seen = HashSet::new();
+        let mut seen = HashSet::default();
         Ok(selectors
             .into_iter()
             .flat_map(mastercss_lexer::selector_class_names)
@@ -927,8 +927,8 @@ impl EngineSession {
             .map_or((class_name, false), |name| (name, true));
         let matching_class_names = [semantic_class_name.to_owned()];
         let mut variable_aliases = Vec::new();
-        let mut seen_aliases = HashSet::new();
-        let mut seen = HashSet::new();
+        let mut seen_aliases = HashSet::default();
+        let mut seen = HashSet::default();
         for matching_class_name in matching_class_names {
             let mut generated = false;
             for (utility_index, matched) in
@@ -1072,15 +1072,15 @@ impl EngineSession {
             manifest: self.manifest.clone(),
             compiled: self.compiled.clone(),
             layers: std::array::from_fn(|_| Vec::new()),
-            class_rules: HashMap::new(),
+            class_rules: HashMap::default(),
             class_order: Vec::new(),
-            rule_counts: HashMap::new(),
+            rule_counts: HashMap::default(),
             emitted_globals,
-            variable_counts: HashMap::new(),
-            keyframe_counts: HashMap::new(),
-            stylesheet_keyframe_slots: HashSet::new(),
-            variable_floors: HashMap::new(),
-            keyframe_floors: HashMap::new(),
+            variable_counts: HashMap::default(),
+            keyframe_counts: HashMap::default(),
+            stylesheet_keyframe_slots: HashSet::default(),
+            variable_floors: HashMap::default(),
+            keyframe_floors: HashMap::default(),
             keyframe_texts: Vec::new(),
             stylesheet_sources: Vec::new(),
             theme_variable_names: Vec::new(),

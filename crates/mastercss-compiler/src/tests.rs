@@ -286,7 +286,7 @@ fn lowers_mixins_with_utf16_source_ranges() {
         };
         assert_eq!(actual_property, property);
         assert_eq!(
-            mastercss_engine::evaluate_mixin_value(actual_value, &Default::default()).unwrap(),
+            mastercss_engine::evaluate_mixin_value(actual_value).unwrap(),
             value
         );
         let start = source[..source.find(&format!("@mixin {name}")).unwrap()]

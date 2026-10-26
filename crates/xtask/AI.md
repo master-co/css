@@ -21,11 +21,14 @@ Both browser module builds use the pinned nightly `RUNTIME_WASM_TOOLCHAIN`
 library with `panic = "immediate-abort"` and trimmed paths, so no panic formatting,
 location or Unicode escape table is linked (about 8 KB brotli). Panics there trap as
 `RuntimeError: unreachable` without a message; reproduce them with the full build or
-native to see it. The rebuilt `core`, `alloc`, `std` and `dlmalloc` keep opt-level 3
-like the prebuilt library: `s` measured 1.5 KB larger under brotli and 13% slower
-empty-page startup, `z` larger still. Fat LTO measured no smaller. The runtime build
-goes to `target/wasm-runtime`, apart from stable outputs. Native code and every other
-Wasm build keep the stable toolchain.
+native to see it. The rebuilt `core`, `alloc` and `std` keep opt-level 3 like the
+prebuilt library: `s` measured 1.5 KB larger under brotli and 13% slower empty-page
+startup, `z` larger still. Fat LTO measured no smaller. The runtime build goes to
+`target/wasm-runtime`, apart from stable outputs. Native code and every other Wasm
+build keep the stable toolchain. The engine Wasm binding allocates with talc instead
+of std's dlmalloc: 2.0 KB smaller under brotli and within 2% of its memory over
+repeated ensure and delete cycles, for up to 3% slower startup in the runtime
+benchmark.
 `opt-level "z"` is smaller still but measured about 18% slower in the runtime
 benchmark. Compiler and tooling Wasm keep the `release` profile. Every Wasm surface
 drops the name and producers sections, so browser stack traces show no Rust function

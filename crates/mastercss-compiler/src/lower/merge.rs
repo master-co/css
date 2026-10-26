@@ -70,7 +70,7 @@ pub(super) fn create_merged_style_definitions(
                 };
                 let arguments = arguments
                     .iter()
-                    .map(|value| mastercss_engine::evaluate_mixin_value(value, &Default::default()))
+                    .map(mastercss_engine::evaluate_mixin_value)
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(fail)?;
                 let rules = engine

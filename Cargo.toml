@@ -48,6 +48,7 @@ regex = "1.13.1"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
 sha2 = "0.11.0"
+talc = { version = "5.1.1", default-features = false }
 serde-wasm-bindgen = "0.6.5"
 thiserror = "2.0.20"
 wasm-bindgen = "0.2.128"

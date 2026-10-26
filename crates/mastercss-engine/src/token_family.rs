@@ -1,11 +1,11 @@
 //! Token metadata from explicit utility registration.
+#[cfg(feature = "manifest")]
+use super::HashSet;
 use mastercss_lexer::{CssSyntaxKind, tokenize_css_syntax};
 #[cfg(feature = "manifest")]
 use mastercss_schema::MixinParameterSyntax;
 use mastercss_schema::{MixinDefinition, MixinNode, MixinValuePart};
 use serde::Serialize;
-#[cfg(feature = "manifest")]
-use std::collections::HashSet;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -82,7 +82,12 @@ pub(crate) fn infer(
             let recipe = &definition.recipe;
             let parameter = &recipe.parameters[0];
             let mut properties = Vec::new();
-            collect_properties(&recipe.body, mixins, &mut HashSet::new(), &mut properties);
+            collect_properties(
+                &recipe.body,
+                mixins,
+                &mut HashSet::default(),
+                &mut properties,
+            );
             TokenFamily {
                 utility: recipe.name.clone(),
                 prefix: recipe.name.clone(),

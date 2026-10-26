@@ -121,7 +121,10 @@ const forbidden = [
   ['core::fmt formatting (use concat_text! instead of format!)', /\bcore\[[0-9a-f]+\]::fmt::write\b|\balloc\[[0-9a-f]+\]::fmt::format\b/],
   ['panic formatting (the build rebuilds std with immediate-abort panics)', /\bpanicking::|panic_fmt/],
   ['Unicode tables (decide CSS name code points in mastercss-lexer)', /\bunicode::unicode_data::|unicode::printable::/],
-  ['float parsing and formatting (use decimal.rs)', /\bdec2flt::|\bflt2dec::|\bfmt::float::/]
+  ['float parsing and formatting (use decimal.rs)', /\bdec2flt::|\bflt2dec::|\bfmt::float::/],
+  ['SipHash (use the engine hash.rs aliases)', /\bhash::sip::|\bRandomState\b/],
+  ['BTreeMap (use NameCounts or a sorted Vec)', /\bbtree::/],
+  ['dlmalloc (the binding allocates with talc)', /\bdlmalloc\b/]
 ]
 
 /** Mirrors the categories used to plan the runtime Wasm size work. */
