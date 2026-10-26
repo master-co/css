@@ -18,7 +18,6 @@ interface GeneratedEngineSession {
   registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
   replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
   nativeDeclarationCandidates?(classNames: string[]): unknown
-  ensureClassRulesWithNativeSupport(classNames: string[], supported: Uint8Array): MasterCSSWasmEngineTransition
   refresh(manifestJSON: string, emittedGlobalsJSON?: string): MasterCSSWasmEngineTransition
   snapshot(): MasterCSSWasmEngineSnapshot
   executionState(classNames: string[]): MasterCSSWasmEngineExecutionState
@@ -85,13 +84,13 @@ export interface MasterCSSWasmNativeDeclarationCandidate {
   value: string
 }
 
-const defaultWasmURL = new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url)
-const initializedInputs = new WeakMap<object, MasterCSSWasmInput>()
-let defaultModulePromise: Promise<GeneratedWasmModule> | undefined
-
-async function importGeneratedModule(): Promise<GeneratedWasmModule> {
-  return await import('../artifacts/mastercss_binding_wasm_engine.js') as unknown as GeneratedWasmModule
+/** The generated bindings and Wasm binary an entry point loads by default. */
+export interface MasterCSSWasmEngineArtifact {
+  readonly url: URL
+  load(): Promise<object>
 }
+
+const initializedInputs = new WeakMap<object, MasterCSSWasmInput>()
 
 function sameInput(left: MasterCSSWasmInput, right: MasterCSSWasmInput) {
   return left === right || String(left) === String(right)
@@ -114,37 +113,75 @@ async function initializeModule(module: GeneratedWasmModule, input: MasterCSSWas
   return module
 }
 
-export async function loadWasmEngine(
-  options: MasterCSSWasmEngineLoadOptions = {}
-): Promise<object> {
-  try {
-    if (options.module) {
-      return await initializeModule(
-        options.module as GeneratedWasmModule,
-        options.input ?? defaultWasmURL
+/**
+ * Binds the loading and session APIs to one artifact. Entry points own the artifact
+ * paths, so a bundler only sees the Wasm its entry can load.
+ */
+export function createWasmEngineLoader(artifact: MasterCSSWasmEngineArtifact) {
+  let defaultModulePromise: Promise<GeneratedWasmModule> | undefined
+  const importGeneratedModule = async () => await artifact.load() as GeneratedWasmModule
+
+  async function loadWasmEngine(
+    options: MasterCSSWasmEngineLoadOptions = {}
+  ): Promise<object> {
+    try {
+      if (options.module) {
+        return await initializeModule(
+          options.module as GeneratedWasmModule,
+          options.input ?? artifact.url
+        )
+      }
+      if (options.input !== undefined) {
+        return await initializeModule(await importGeneratedModule(), options.input)
+      }
+      defaultModulePromise ??= importGeneratedModule()
+        .then((module) => initializeModule(module, artifact.url))
+        .catch((cause) => {
+          defaultModulePromise = undefined
+          throw cause
+        })
+      return await defaultModulePromise
+    } catch (cause) {
+      if (cause instanceof MasterCSSError) throw cause
+      throw new MasterCSSError({
+        code: 'WASM_LOAD_FAILED',
+        domain: 'binding',
+        message: cause instanceof Error
+          ? cause.message
+          : 'Cannot load the Master CSS engine Wasm artifact.'
+      }, { cause })
+    }
+  }
+
+  return Object.freeze({
+    url: artifact.url,
+    loadWasmEngine,
+    async createWasmEngineSession(
+      manifestJSON: string,
+      sessionOptions: MasterCSSWasmEngineSessionOptions = {},
+      loadOptions: MasterCSSWasmEngineLoadOptions = {}
+    ) {
+      return engineSession(
+        await loadWasmEngine(loadOptions) as GeneratedWasmModule,
+        manifestJSON,
+        sessionOptions
+      )
+    },
+    async createWasmRenderSession(
+      manifestJSON: string,
+      sessionOptions: MasterCSSWasmEngineSessionOptions = {},
+      loadOptions: MasterCSSWasmEngineLoadOptions = {}
+    ) {
+      return renderSession(
+        await loadWasmEngine(loadOptions) as GeneratedWasmModule,
+        manifestJSON,
+        sessionOptions
       )
     }
-    if (options.input !== undefined) {
-      return await initializeModule(await importGeneratedModule(), options.input)
-    }
-    defaultModulePromise ??= importGeneratedModule()
-      .then((module) => initializeModule(module, defaultWasmURL))
-      .catch((cause) => {
-        defaultModulePromise = undefined
-        throw cause
-      })
-    return await defaultModulePromise
-  } catch (cause) {
-    if (cause instanceof MasterCSSError) throw cause
-    throw new MasterCSSError({
-      code: 'WASM_LOAD_FAILED',
-      domain: 'binding',
-      message: cause instanceof Error
-        ? cause.message
-        : 'Cannot load the Master CSS engine Wasm artifact.'
-    }, { cause })
-  }
+  })
 }
+
+export type MasterCSSWasmEngineLoader = ReturnType<typeof createWasmEngineLoader>
 
 function assertExport<T>(value: T | undefined, name: string): asserts value is T {
   if (value !== undefined) return
@@ -161,12 +198,11 @@ function emittedGlobalsJSON(options: MasterCSSWasmEngineSessionOptions) {
     : JSON.stringify(options.emittedGlobals)
 }
 
-export async function createWasmEngineSession(
+function engineSession(
+  module: GeneratedWasmModule,
   manifestJSON: string,
-  sessionOptions: MasterCSSWasmEngineSessionOptions = {},
-  loadOptions: MasterCSSWasmEngineLoadOptions = {}
+  sessionOptions: MasterCSSWasmEngineSessionOptions
 ) {
-  const module = await loadWasmEngine(loadOptions) as GeneratedWasmModule
   const session = new module.EngineSession(manifestJSON, emittedGlobalsJSON(sessionOptions))
   let disposed = false
   const assertActive = () => {
@@ -233,12 +269,11 @@ export async function createWasmEngineSession(
   })
 }
 
-export async function createWasmRenderSession(
+function renderSession(
+  module: GeneratedWasmModule,
   manifestJSON: string,
-  sessionOptions: MasterCSSWasmEngineSessionOptions = {},
-  loadOptions: MasterCSSWasmEngineLoadOptions = {}
+  sessionOptions: MasterCSSWasmEngineSessionOptions
 ) {
-  const module = await loadWasmEngine(loadOptions) as GeneratedWasmModule
   assertExport(module.RenderSession, 'RenderSession')
   const session = new module.RenderSession(manifestJSON, emittedGlobalsJSON(sessionOptions))
   let disposed = false

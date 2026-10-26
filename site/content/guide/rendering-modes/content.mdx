@@ -584,6 +584,9 @@ An inspection can recognize `padding:red` as declaration syntax while leaving it
 CSS value and browser support `not-checked`. Use the validator from
 `@master/css-tooling` for value validation; a matched rule alone is not a validation
 result. Inspection results are immutable and do not register classes with the engine.
+Browsers load an engine Wasm build without inspection or render sessions, so
+`inspect()` throws `WASM_FEATURE_UNAVAILABLE` there; inspect classes in Node or with
+`@master/css-tooling`.
 
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v6, engine snapshot v4 and transition v4 define the data exchanged with the engine; page hydration manifests use v5.
 

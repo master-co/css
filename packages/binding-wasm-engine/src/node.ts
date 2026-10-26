@@ -1,8 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import {
-  createWasmEngineSession as createWasmEngineSessionBase,
-  createWasmRenderSession as createWasmRenderSessionBase,
-  loadWasmEngine as loadWasmEngineBase,
+  createWasmEngineLoader,
   type MasterCSSWasmEngineLoadOptions,
   type MasterCSSWasmEngineSessionOptions
 } from './index'
@@ -12,7 +10,11 @@ export type {
   MasterCSSWasmEngineSessionOptions
 } from './index'
 
-const defaultWasmURL = new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url)
+// Node hosts also render on the server, so they load the module with every feature.
+export const fullWasmEngine = createWasmEngineLoader({
+  url: new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url),
+  load: () => import('../artifacts/mastercss_binding_wasm_engine.js')
+})
 
 function resolveFileURL(input: MasterCSSWasmEngineLoadOptions['input']) {
   if (input instanceof URL) return input.protocol === 'file:' ? input : undefined
@@ -20,11 +22,11 @@ function resolveFileURL(input: MasterCSSWasmEngineLoadOptions['input']) {
   return new URL(input)
 }
 
-async function withNodeWasmInput(
+export async function withNodeWasmInput(
   options: MasterCSSWasmEngineLoadOptions
 ): Promise<MasterCSSWasmEngineLoadOptions> {
   const fileURL = options.input === undefined
-    ? defaultWasmURL
+    ? fullWasmEngine.url
     : resolveFileURL(options.input)
   if (!fileURL) return options
   return {
@@ -34,7 +36,7 @@ async function withNodeWasmInput(
 }
 
 export async function loadWasmEngine(options: MasterCSSWasmEngineLoadOptions = {}) {
-  return await loadWasmEngineBase(await withNodeWasmInput(options))
+  return await fullWasmEngine.loadWasmEngine(await withNodeWasmInput(options))
 }
 
 export async function createWasmEngineSession(
@@ -42,7 +44,7 @@ export async function createWasmEngineSession(
   sessionOptions: MasterCSSWasmEngineSessionOptions = {},
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ) {
-  return await createWasmEngineSessionBase(
+  return await fullWasmEngine.createWasmEngineSession(
     manifestJSON,
     sessionOptions,
     await withNodeWasmInput(loadOptions)
@@ -54,7 +56,7 @@ export async function createWasmRenderSession(
   sessionOptions: MasterCSSWasmEngineSessionOptions = {},
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ) {
-  return await createWasmRenderSessionBase(
+  return await fullWasmEngine.createWasmRenderSession(
     manifestJSON,
     sessionOptions,
     await withNodeWasmInput(loadOptions)

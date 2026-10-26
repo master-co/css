@@ -215,6 +215,9 @@ fn run() -> Result<(), String> {
         }
         [command] if command == "build-wasm" => build_wasm("runtime"),
         [command, surface] if command == "build-wasm" => build_wasm(surface),
+        [command, surface, flag] if command == "build-wasm" && flag == "--names" => {
+            build_wasm_names(surface)
+        }
         [command, artifacts, output] if command == "assemble-native-release" => {
             assemble_native_release(
                 Path::new(artifacts),
@@ -250,7 +253,7 @@ fn run() -> Result<(), String> {
             )
         }
         _ => Err(
-            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling] | assemble-native-release <artifacts-dir> <checksums.json> [--stage] [--require-assets] [--verify-staged]"
+            "Usage: cargo xtask codegen [--check] | parity | build-native [--release] | stage-native-target <package> [--release] | build-wasm [all|runtime|compiler|tooling] | build-wasm runtime --names | assemble-native-release <artifacts-dir> <checksums.json> [--stage] [--require-assets] [--verify-staged]"
                 .into(),
         ),
     }

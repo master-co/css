@@ -1,14 +1,15 @@
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
 
-const wasmEngineLoader = fileURLToPath(new URL('../binding-wasm-engine/src/index.ts', import.meta.url))
+const runtimeArtifactModule = fileURLToPath(new URL('../binding-wasm-engine/src/runtime-artifact.ts', import.meta.url))
+const globalRuntimeArtifact = '\0master-css-global-runtime-artifact'
 
 const browserBindingLoader = {
   name: 'browser-binding-loader',
   resolveId: {
     order: 'pre' as const,
-    handler(source: string, importer?: string) {
+    handler(source: string) {
       if (source === '@master/css-binding/engine') {
         return fileURLToPath(new URL(
           '../binding/src/engine-binding-browser.ts',
@@ -21,18 +22,32 @@ const browserBindingLoader = {
           import.meta.url
         ))
       }
-      // Pair the bundled bindings with the runtime-only module that
-      // `cargo xtask build-wasm runtime` generates beside the staged Wasm asset.
-      if (
-        source === '../artifacts/mastercss_binding_wasm_engine.js'
-        && importer && resolve(importer) === wasmEngineLoader
-      ) {
-        return fileURLToPath(new URL(
-          './artifacts/mastercss_binding_wasm_engine.js',
-          import.meta.url
-        ))
+    }
+  }
+}
+
+// The CDN serves the runtime Wasm from this package's `artifacts/` beside `dist/`,
+// so the global bundle resolves it against its script URL instead of the binding's.
+const globalRuntimeArtifactLoader = {
+  name: 'global-runtime-artifact-loader',
+  resolveId: {
+    order: 'pre' as const,
+    handler(source: string, importer?: string) {
+      if (importer && resolve(dirname(importer), `${source}.ts`) === runtimeArtifactModule) {
+        return globalRuntimeArtifact
       }
     }
+  },
+  load(id: string) {
+    if (id !== globalRuntimeArtifact) return
+    const bindings = fileURLToPath(new URL(
+      '../binding-wasm-engine/artifacts/runtime/mastercss_binding_wasm_engine.js',
+      import.meta.url
+    ))
+    return [
+      'export const runtimeWasmURL = new URL(\'../artifacts/mastercss_binding_wasm_engine_bg.wasm\', import.meta.url)',
+      `export const loadRuntimeBindings = () => import(${JSON.stringify(bindings)})`
+    ].join('\n')
   }
 }
 
@@ -97,7 +112,7 @@ export default defineConfig([
     },
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [globalEngineLoader, browserBindingLoader],
+    plugins: [globalEngineLoader, globalRuntimeArtifactLoader, browserBindingLoader],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false

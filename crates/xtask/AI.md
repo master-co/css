@@ -11,8 +11,11 @@ generated target to bypass codegen.
 
 `build-wasm runtime` builds the engine binding twice with the `release-wasm`
 profile, which optimizes every crate for size: with the default `full` feature into
-`packages/binding-wasm-engine/artifacts`, and without it into
-`packages/runtime/artifacts` together with that module's own bindings.
+`packages/binding-wasm-engine/artifacts` for Node, and without it into
+`packages/binding-wasm-engine/artifacts/runtime` for the binding's browser entry. It
+then stages that Wasm into `packages/runtime/artifacts` for the CDN bundle and the
+release asset. `build-wasm runtime --names` builds the browser module with its name
+section into `target/wasm-size/runtime` for `pnpm run report:runtime-wasm-size`.
 `opt-level "z"` is smaller still but measured about 18% slower in the runtime
 benchmark. Compiler and tooling Wasm keep the `release` profile. Every Wasm surface
 drops the name and producers sections, so browser stack traces show no Rust function

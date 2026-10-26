@@ -32,6 +32,7 @@
     "check:packages:update": "node scripts/check-package-contracts.mjs --write",
     "check:runtime-size": "node scripts/check-runtime-bundle-size.mjs",
     "check:runtime-size:update": "node scripts/check-runtime-bundle-size.mjs --write",
+    "report:runtime-wasm-size": "node scripts/report-runtime-wasm-size.mjs",
     "check:rust": "cargo fmt --check && cargo clippy --workspace --all-targets --all-features -- -D warnings && cargo test --workspace && cargo xtask codegen --check && cargo xtask parity",
     "check:release": "node scripts/release-config-check.mjs",
     "test": "node scripts/storage-retention.mjs --apply --auto && turbo run test --filter=\"./packages/*\"",

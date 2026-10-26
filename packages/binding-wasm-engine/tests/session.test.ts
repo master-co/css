@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, expect, it, vi } from 'vitest'
-import { createWasmRenderSession, loadWasmEngine } from '../src'
-import { createWasmEngineSession } from '../src/node'
+import { createWasmEngineSession, createWasmRenderSession, loadWasmEngine } from '../src/node'
 
 afterEach(() => vi.unstubAllGlobals())
 

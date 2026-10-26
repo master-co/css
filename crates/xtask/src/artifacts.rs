@@ -361,20 +361,23 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 default_features: true,
                 typescript: true,
                 output: "packages/binding-wasm-engine/artifacts",
+                target_dir: None,
+                keep_names: false,
             };
             build_wasm_artifact(&root, &engine)?;
-            // The runtime bundles bindings generated from its own module, so the
-            // browser downloads only the engine session exports it executes.
+            // Browsers execute only engine sessions, so the binding package's
+            // browser entry loads a module built without `full`. The CDN bundle and
+            // the release asset take the same Wasm from the runtime package.
             build_wasm_artifact(
                 &root,
                 &WasmBuild {
                     label: "runtime",
                     default_features: false,
-                    typescript: false,
-                    output: "packages/runtime/artifacts",
+                    output: RUNTIME_WASM_OUTPUT,
                     ..engine
                 },
-            )
+            )?;
+            stage_runtime_wasm(&root)
         }
         "compiler" => build_wasm_artifact(
             &root,
@@ -386,6 +389,8 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 default_features: true,
                 typescript: true,
                 output: "packages/binding-wasm-compiler/artifacts",
+                target_dir: None,
+                keep_names: false,
             },
         ),
         "tooling" => build_wasm_artifact(
@@ -398,10 +403,74 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 default_features: true,
                 typescript: true,
                 output: "packages/binding-wasm-tooling/artifacts",
+                target_dir: None,
+                keep_names: false,
             },
         ),
         _ => Err(format!("Unknown Wasm surface: {surface}")),
     }
+}
+
+const RUNTIME_WASM_OUTPUT: &str = "packages/binding-wasm-engine/artifacts/runtime";
+const RUNTIME_WASM_STAGE: &str = "packages/runtime/artifacts";
+const RUNTIME_WASM_FILE: &str = "mastercss_binding_wasm_engine_bg.wasm";
+const WASM_SIZE_TARGET: &str = "target/wasm-size";
+
+/// Builds the runtime engine Wasm with its name section into `target/wasm-size/runtime`
+/// for `scripts/report-runtime-wasm-size.mjs`. Nothing is staged into packages.
+pub(crate) fn build_wasm_names(surface: &str) -> Result<(), String> {
+    if surface != "runtime" {
+        return Err(format!(
+            "build-wasm --names supports only the runtime surface, not {surface}"
+        ));
+    }
+    build_wasm_artifact(
+        &workspace_root(),
+        &WasmBuild {
+            label: "runtime (names)",
+            crate_name: "mastercss-binding-wasm-engine",
+            artifact_name: "mastercss_binding_wasm_engine",
+            profile: "release-wasm",
+            default_features: false,
+            typescript: false,
+            output: "target/wasm-size/runtime",
+            target_dir: Some(WASM_SIZE_TARGET),
+            keep_names: true,
+        },
+    )
+}
+
+fn stage_runtime_wasm(root: &Path) -> Result<(), String> {
+    let source = root.join(RUNTIME_WASM_OUTPUT).join(RUNTIME_WASM_FILE);
+    let stage = root.join(RUNTIME_WASM_STAGE);
+    fs::create_dir_all(&stage)
+        .map_err(|error| format!("Cannot create {}: {error}", stage.display()))?;
+    // Older builds staged generated bindings here; the CDN bundle now inlines them.
+    for entry in
+        fs::read_dir(&stage).map_err(|error| format!("Cannot read {}: {error}", stage.display()))?
+    {
+        let path = entry
+            .map_err(|error| format!("Cannot read {}: {error}", stage.display()))?
+            .path();
+        if path
+            .file_name()
+            .is_some_and(|name| name != RUNTIME_WASM_FILE)
+            && path.is_file()
+        {
+            fs::remove_file(&path)
+                .map_err(|error| format!("Cannot remove {}: {error}", path.display()))?;
+        }
+    }
+    let target = stage.join(RUNTIME_WASM_FILE);
+    fs::copy(&source, &target).map_err(|error| {
+        format!(
+            "Cannot stage {} as {}: {error}",
+            source.display(),
+            target.display()
+        )
+    })?;
+    println!("Staged {}", target.display());
+    Ok(())
 }
 
 struct WasmBuild {
@@ -412,6 +481,8 @@ struct WasmBuild {
     default_features: bool,
     typescript: bool,
     output: &'static str,
+    target_dir: Option<&'static str>,
+    keep_names: bool,
 }
 
 fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
@@ -428,12 +499,27 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
     if !build.default_features {
         command.arg("--no-default-features");
     }
+    if let Some(target_dir) = build.target_dir {
+        command.arg("--target-dir").arg(root.join(target_dir));
+    }
+    if build.keep_names {
+        // The release profile strips symbols, which drops the name section at link time.
+        command.env(
+            format!(
+                "CARGO_PROFILE_{}_STRIP",
+                build.profile.to_ascii_uppercase().replace('-', "_")
+            ),
+            "none",
+        );
+    }
     run_command(&mut command, &format!("{} Wasm build", build.label))?;
 
-    let input = root.join(format!(
-        "target/wasm32-unknown-unknown/{}/{}.wasm",
-        build.profile, build.artifact_name
-    ));
+    let input = root
+        .join(build.target_dir.unwrap_or("target"))
+        .join(format!(
+            "wasm32-unknown-unknown/{}/{}.wasm",
+            build.profile, build.artifact_name
+        ));
     let output = root.join(build.output);
     fs::create_dir_all(&output)
         .map_err(|error| format!("Cannot create {}: {error}", output.display()))?;
@@ -442,7 +528,7 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
         .input_path(&input)
         .out_name(build.artifact_name)
         .typescript(build.typescript)
-        .remove_name_section(true)
+        .remove_name_section(!build.keep_names)
         .remove_producers_section(true)
         .web(true)
         .map_err(|error| error.to_string())?
