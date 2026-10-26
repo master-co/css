@@ -1,4 +1,3 @@
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSKeyframeDefinition } from '@master/css-schema/manifest'
 import type { MasterCSSRuntimeOptions } from './types'
 import NativeStylesheets from './native-stylesheets'
@@ -14,7 +13,8 @@ export default class KeyframeHost {
   constructor(
     private readonly root: Document | ShadowRoot,
     private readonly sheet: () => CSSStyleSheet | undefined,
-    private readonly manifest: () => MasterCSSManifest | undefined,
+    /** The engine's definitions, deduplicated by ID, in program order. */
+    private readonly definitions: () => readonly MasterCSSKeyframeDefinition[],
     private readonly slots: () => readonly string[],
     private readonly stylesheets?: MasterCSSRuntimeOptions['stylesheets'],
     private readonly delivery?: MasterCSSRuntimeOptions['stylesheetDelivery'],
@@ -30,7 +30,7 @@ export default class KeyframeHost {
   }
 
   private definition(id: string) {
-    return this.manifest()?.keyframes?.find(definition => definition.id === id)
+    return this.definitions().find(definition => definition.id === id)
   }
 
   private allSlots(id: string, sheets: readonly CSSStyleSheet[]) {
@@ -134,7 +134,7 @@ export default class KeyframeHost {
   insert(id: string, text: string): CSSRule | undefined {
     const definition = this.definition(id)
     if (!definition) return
-    const order = this.manifest()!.keyframes!.indexOf(definition)
+    const order = this.definitions().indexOf(definition)
     const anchored = this.slots().includes(id)
     const parent = anchored ? this.nativeSlot(definition) : this.generatedParent(definition, order)
     // A host can attach an imported stylesheet after runtime startup. Keep the
@@ -185,7 +185,7 @@ export default class KeyframeHost {
     const native = candidates[0]
     if (!native) return
     claimed.add(native)
-    const order = this.manifest()!.keyframes!.indexOf(definition)
+    const order = this.definitions().indexOf(definition)
     this.order.set(native, order)
     if (!this.slots().includes(id)) {
       let parent = native.parentRule

@@ -5,6 +5,8 @@ export type {
   MasterCSSRuntimeLayerSnapshot,
   MasterCSSRuntimeOptions,
   MasterCSSRuntimeFacade,
+  MasterCSSRuntimeProgram,
+  MasterCSSRuntimeProgramLoader,
   MasterCSSRuntimeRuleSnapshot,
   MasterCSSRuntimeSnapshot,
   MasterCSSRuntimeStartOptions

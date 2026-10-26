@@ -5,7 +5,7 @@ import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { getRuntimeLoaderURL } from './init'
+import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const baseManifest = preset as unknown as MasterCSSManifest
 const source = `@theme { --text-hero: 30px; --text-unused: 100px; }
@@ -50,7 +50,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
       await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => { globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(); resolve() }))))
       await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().cssText)).not.toContain('--text-hero')
       const updated = compileManifestSync(source.replace('30px', '36px'), { baseManifest }).manifest
-      await page.evaluate(manifest => { globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(manifest); document.querySelector('#text')!.className = 'text-hero' }, updated)
+      await page.evaluate(program => { globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(program); document.querySelector('#text')!.className = 'text-hero' }, compileProgram(updated))
       await expect(page.locator('#text')).toHaveCSS('font-size', '36px')
     }
   })

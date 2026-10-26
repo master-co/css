@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
@@ -67,6 +68,22 @@ const globalEngineLoader = {
   }
 }
 
+// The CDN bundle fetches the default preset's runtime program beside its script.
+// It is compiled from the preset manifest on every build, so it always matches the
+// engine that executes it.
+const defaultProgram = {
+  name: 'default-program',
+  async generateBundle(this: { emitFile(file: { type: 'asset', fileName: string, source: Uint8Array }): string }) {
+    const { compileRuntimeProgram } = await import('@master/css/node')
+    const manifest = JSON.parse(readFileSync(new URL('../preset/src/default-manifest.json', import.meta.url), 'utf8'))
+    this.emitFile({
+      type: 'asset',
+      fileName: 'default-program.bin',
+      source: await compileRuntimeProgram(manifest)
+    })
+  }
+}
+
 export default defineConfig([
   {
     entry: ['src/**/*.ts'],
@@ -82,10 +99,6 @@ export default defineConfig([
         neverBundle: [/^[^./]/, /^\.{1,2}\//]
       }
     },
-    copy: {
-      from: '../preset/src/default-manifest.json',
-      to: 'dist'
-    }
   },
   {
     entry: {
@@ -94,7 +107,7 @@ export default defineConfig([
     platform: 'browser',
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [browserBindingLoader],
+    plugins: [browserBindingLoader, defaultProgram],
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false

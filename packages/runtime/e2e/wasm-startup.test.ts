@@ -1,15 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { getRuntimeLoaderURL } from './init'
+import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const wasm = readFileSync(resolve(__dirname, '../artifacts/mastercss_binding_wasm_engine_bg.wasm'))
 const wasmRequest = /mastercss_binding_wasm_engine_bg\.wasm(?:\?.*)?$/
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
   const blankURL = new URL('/__master-css-runtime-wasm-startup.html', loaderURL).href
@@ -119,7 +116,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
   })
   await gotoRuntimeOrigin(page, loaderURL)
 
-  const result = await page.evaluate(async ({ hydrationURL, loaderURL, manifest }) => {
+  const result = await page.evaluate(async ({ hydrationURL, loaderURL, program }) => {
     await import(loaderURL)
     const style = document.createElement('style')
     style.id = 'master-css'
@@ -132,6 +129,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
       deleteClassRules: () => ({ version: 3, mutations: [] }),
       registerEmittedGlobals: () => ({ version: 3, mutations: [] }),
       refresh: () => ({ version: 3, mutations: [] }),
+      keyframeDefinitions: () => [],
       inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
         version: 3,
@@ -149,7 +147,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
     let code: string | undefined
     try {
       await globalThis.MasterCSSRuntime.start({
-        manifest,
+        program,
         binding,
         engine: 'eager',
         startupTimeoutMs: 25
@@ -158,11 +156,11 @@ test('disposes an eager engine that resolves before hydration startup times out'
       code = (error as { code?: string }).code
     }
     style.remove()
-    const retry = await globalThis.MasterCSSRuntime.start({ manifest })
+    const retry = await globalThis.MasterCSSRuntime.start({ program })
     const retryBinding = retry.binding
     retry.dispose()
     return { code, disposals, retryBinding }
-  }, { hydrationURL, loaderURL, manifest: defaultManifest })
+  }, { hydrationURL, loaderURL, program: compileProgram() })
 
   expect(result).toEqual({
     code: 'RUNTIME_STARTUP_TIMEOUT',
@@ -175,7 +173,7 @@ test('rejects every pending caller and disposes when emitted globals registratio
   const loaderURL = await getRuntimeLoaderURL()
   await gotoRuntimeOrigin(page, loaderURL)
 
-  const result = await page.evaluate(async ({ loaderURL, manifest }) => {
+  const result = await page.evaluate(async ({ loaderURL, program }) => {
     await import(loaderURL)
     let disposals = 0
     const engine = {
@@ -186,6 +184,7 @@ test('rejects every pending caller and disposes when emitted globals registratio
         throw new Error('invalid emitted globals')
       },
       refresh: () => ({ version: 3, mutations: [] }),
+      keyframeDefinitions: () => [],
       inspect: (className: string) => ({ version: 2, className, valid: false, rules: [] }),
       snapshot: () => ({
         version: 3,
@@ -203,13 +202,13 @@ test('rejects every pending caller and disposes when emitted globals registratio
         return engine
       }
     }
-    const first = globalThis.MasterCSSRuntime.start({ manifest, binding } as never)
+    const first = globalThis.MasterCSSRuntime.start({ program, binding } as never)
     const second = globalThis.MasterCSSRuntime.start({
-      manifest,
+      program,
       emittedGlobals: { variables: { invalid: 1 } }
     })
     const failures = await Promise.allSettled([first, second])
-    const retry = await globalThis.MasterCSSRuntime.start({ manifest })
+    const retry = await globalThis.MasterCSSRuntime.start({ program })
     const retryBinding = retry.binding
     retry.dispose()
     return {
@@ -220,7 +219,7 @@ test('rejects every pending caller and disposes when emitted globals registratio
       })),
       retryBinding
     }
-  }, { loaderURL, manifest: defaultManifest })
+  }, { loaderURL, program: compileProgram() })
 
   expect(result).toEqual({
     disposals: 1,

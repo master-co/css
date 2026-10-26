@@ -7,7 +7,7 @@ import type {
 } from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import { MasterCSSError } from '@master/css-schema'
-import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
+import type { MasterCSSKeyframeDefinition, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import HydratedGeneratedRule from './generated-rule'
@@ -110,7 +110,7 @@ export default class RuntimeHost {
   protected readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
 
   /** Set when the engine starts; progressive pages defer both. */
-  protected manifest?: MasterCSSManifest
+  protected keyframeDefinitions: readonly MasterCSSKeyframeDefinition[] = []
   protected bindingEngine?: MasterCSSEngine
   protected style: HTMLStyleElement | null = null
   protected progressive = false
@@ -131,7 +131,7 @@ export default class RuntimeHost {
     stylesheetDelivery?: MasterCSSRuntimeOptions['stylesheetDelivery']
   ) {
     this.keyframeHost = new KeyframeHost(root,
-      () => this.getStyleSheet(), () => this.manifest, () => this.emittedGlobals.keyframeSlots, stylesheets,
+      () => this.getStyleSheet(), () => this.keyframeDefinitions, () => this.emittedGlobals.keyframeSlots, stylesheets,
       stylesheetDelivery, () => this.reconcileKeyframeRules())
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
     this.host = isDocumentRoot(root) ? root.documentElement : root.host

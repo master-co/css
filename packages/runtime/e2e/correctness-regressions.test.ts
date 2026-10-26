@@ -3,7 +3,7 @@ import { createServerRenderer } from '@master/css-server'
 import { renderClassNamesSync } from '@master/css/node'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import init, { getRuntimeLoaderURL } from './init'
+import init, { compileProgram, getRuntimeLoaderURL } from './init'
 
 const preset = defaultManifest as unknown as MasterCSSManifest
 const utility = (name: string, declarations: Record<string, string>) => ({
@@ -22,22 +22,22 @@ async function startRendered(page: Page, html: string, manifest: MasterCSSManife
 test('refresh creates rules for previously unknown DOM classes and removes obsolete rules', async ({ page }) => {
   await page.setContent('<div id="target" class="new-custom"></div>')
   await init(page)
-  const added = await page.evaluate((manifest) => {
+  const added = await page.evaluate((program) => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-    runtime.refresh(manifest)
+    runtime.refresh(program)
     return { ruleCount: runtime.snapshot().classRules['new-custom'].rules.length, display: getComputedStyle(document.querySelector('#target')!).display }
-  }, { ...preset, utilities: [...(preset.utilities || []), utility('new-custom', { display: 'none' })] })
+  }, compileProgram({ ...preset, utilities: [...(preset.utilities || []), utility('new-custom', { display: 'none' })] }))
   expect(added).toEqual({ ruleCount: 1, display: 'none' })
-  const removed = await page.evaluate((manifest) => {
+  const removed = await page.evaluate((program) => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-    runtime.refresh(manifest)
+    runtime.refresh(program)
     return { ruleCount: runtime.snapshot().classRules['new-custom'].rules.length, display: getComputedStyle(document.querySelector('#target')!).display }
-  }, preset)
+  }, compileProgram(preset))
   expect(removed).toEqual({ ruleCount: 0, display: 'block' })
 })
 
 for (const invalid of [false, true]) {
-  test(`refresh preserves pending DOM additions when the manifest is ${invalid ? 'invalid' : 'valid'}`, async ({ page }) => {
+  test(`refresh preserves pending DOM additions when the program is ${invalid ? 'invalid' : 'valid'}`, async ({ page }) => {
     await init(page)
     const result = await page.evaluate(async (invalid) => {
       const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
@@ -45,7 +45,7 @@ for (const invalid of [false, true]) {
       await Promise.resolve()
       let threw = false
       try {
-        if (invalid) runtime.refresh({ version: 2 } as unknown as MasterCSSManifest)
+        if (invalid) runtime.refresh(new Uint8Array([1, 2, 3]))
         else runtime.refresh()
       } catch { threw = true }
       await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))

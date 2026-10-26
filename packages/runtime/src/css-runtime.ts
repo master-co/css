@@ -1,23 +1,29 @@
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { MasterCSSRuntime } from './core'
+import type { MasterCSSRuntimeProgram, MasterCSSRuntimeProgramLoader } from './types'
 
 type MasterCSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
-type MasterCSSRuntimeManifest = MasterCSSManifest | ((host: HTMLElement) => MasterCSSManifest)
+type MasterCSSRuntimeHostProgram =
+  | MasterCSSRuntimeProgram
+  | ((host: HTMLElement) => MasterCSSRuntimeProgram | Promise<MasterCSSRuntimeProgram>)
 type MasterCSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
 type MasterCSSRuntimeEmittedGlobals = MasterCSSEmittedGlobals | ((host: HTMLElement) => MasterCSSEmittedGlobals | undefined)
 type MasterCSSRuntimeHydrationManifest = MasterCSSHydrationManifest | ((host: HTMLElement) => MasterCSSHydrationManifest | undefined)
 
 export interface WithMasterCSSRuntimeOptions {
-  readonly manifest: MasterCSSRuntimeManifest
+  /** The runtime program, or a function of the host element that loads it when the engine starts. */
+  readonly program: MasterCSSRuntimeHostProgram
   readonly root?: MasterCSSRuntimeRoot
   readonly emittedGlobals?: MasterCSSRuntimeEmittedGlobals
   readonly hydrationManifest?: MasterCSSRuntimeHydrationManifest
 }
 
-function resolveManifest(host: HTMLElement, manifest: MasterCSSRuntimeManifest): MasterCSSManifest {
-  return typeof manifest === 'function' ? manifest(host) : manifest
+function resolveProgram(
+  host: HTMLElement,
+  program: MasterCSSRuntimeHostProgram
+): MasterCSSRuntimeProgram | MasterCSSRuntimeProgramLoader {
+  return typeof program === 'function' ? async () => await program(host) : program
 }
 
 function resolveRoot(host: HTMLElement, root: MasterCSSRuntimeRoot | undefined): ShadowRoot | null | undefined {
@@ -51,7 +57,7 @@ export function withMasterCSSRuntime(
           throw new Error('withMasterCSSRuntime() requires a shadow root. Provide options.root or create a shadow root before connectedCallback() finishes.')
         }
         const pendingRuntime = MasterCSSRuntime.start({
-          manifest: resolveManifest(this, options.manifest),
+          program: resolveProgram(this, options.program),
           root,
           emittedGlobals: resolveEmittedGlobals(this, options.emittedGlobals),
           hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest),

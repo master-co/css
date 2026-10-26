@@ -1,6 +1,5 @@
 import log from './log'
 import type { MasterCSSRuntime } from '../core'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { HydrateResult } from '../types/hydrate-result'
 
 export function debugRuntimeCreated(cssRuntime: MasterCSSRuntime) {
@@ -21,8 +20,8 @@ export function debugRuntimeObserved(cssRuntime: MasterCSSRuntime) {
   }
 }
 
-export function debugRuntimeRefreshed(cssRuntime: MasterCSSRuntime, manifest: MasterCSSManifest) {
-  log.debug('refreshed', cssRuntime, manifest)
+export function debugRuntimeRefreshed(cssRuntime: MasterCSSRuntime, program: Uint8Array) {
+  log.debug('refreshed', cssRuntime, program)
 }
 
 export function debugRuntimeDisconnected(cssRuntime: MasterCSSRuntime) {

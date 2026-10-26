@@ -7,10 +7,7 @@ import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals
 import {
   MasterCSSError,
 } from '@master/css-schema'
-import {
-  type MasterCSSManifest,
-  type MasterCSSManifestUtilityLayerName,
-} from '@master/css-schema/manifest'
+import type { MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import {
   type MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
@@ -59,7 +56,8 @@ import type {
   MasterCSSRuntimeEngineState,
   MasterCSSRuntimeFacade,
   MasterCSSRuntimeLayerSnapshot,
-  MasterCSSRuntimeManifestLoader,
+  MasterCSSRuntimeProgram,
+  MasterCSSRuntimeProgramLoader,
   MasterCSSRuntimeRuleSnapshot,
   MasterCSSRuntimeSnapshot,
   MasterCSSRuntimeStartOptions
@@ -76,25 +74,31 @@ interface PendingRuntimeStart {
 
 interface LoadedEngine {
   readonly engine: MasterCSSEngine
-  readonly manifest: MasterCSSManifest
+  readonly program: Uint8Array
 }
 
-function resolveManifest(manifest: MasterCSSManifest | MasterCSSRuntimeManifestLoader) {
-  return typeof manifest === 'function' ? manifest() : Promise.resolve(manifest)
+function programBytes(program: MasterCSSRuntimeProgram) {
+  return ArrayBuffer.isView(program)
+    ? new Uint8Array(program.buffer, program.byteOffset, program.byteLength)
+    : new Uint8Array(program)
+}
+
+async function resolveProgram(program: MasterCSSRuntimeProgram | MasterCSSRuntimeProgramLoader) {
+  return programBytes(typeof program === 'function' ? await program() : program)
 }
 
 /** `@master/css` stays out of the entry chunk, so deferred pages never download it. */
 async function loadEngine(
-  manifest: Promise<MasterCSSManifest>,
+  program: Promise<Uint8Array>,
   emittedGlobals: MasterCSSEmittedGlobals | undefined,
   binding: NonNullable<MasterCSSRuntimeStartOptions['binding']>
 ): Promise<LoadedEngine> {
   // Destructured directly so bundlers can drop the rest of @master/css.
   const { createEngine } = await import('@master/css')
-  const resolvedManifest = await manifest
+  const resolvedProgram = await program
   return {
-    engine: await createEngine({ manifest: resolvedManifest, emittedGlobals, binding }),
-    manifest: resolvedManifest
+    engine: await createEngine({ program: resolvedProgram, emittedGlobals, binding }),
+    program: resolvedProgram
   }
 }
 
@@ -130,8 +134,10 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
 
   private engineState: MasterCSSRuntimeEngineState
   private engineStart?: Promise<this>
-  private manifestSource: MasterCSSManifest | MasterCSSRuntimeManifestLoader
-  private manifestRequest?: Promise<MasterCSSManifest>
+  private programSource: MasterCSSRuntimeProgram | MasterCSSRuntimeProgramLoader
+  private programRequest?: Promise<Uint8Array>
+  /** The program the engine executes; refresh() without one re-executes it. */
+  private program?: Uint8Array
   /** Engine calls made while it loads, replayed in order once it is installed or fails. */
   private readonly pendingEngineCalls: (() => void)[] = []
   private renderedClassNames: Set<string>
@@ -146,14 +152,15 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     loaded?: LoadedEngine
   ) {
     super(root, options.emittedGlobals, hydrationManifest, options.stylesheets, options.stylesheetDelivery)
-    this.manifestSource = options.manifest
+    this.programSource = options.program
     this.renderedClassNames = getRenderedClassNames(hydrationManifest)
     this.engineBinding = options.binding || 'auto'
     this.startupTimeoutMs = options.startupTimeoutMs ?? MASTER_CSS_RUNTIME_STARTUP_TIMEOUT_MS
     this.onDiagnostic = options.onDiagnostic
     if (loaded) {
       this.bindingEngine = loaded.engine
-      this.manifest = loaded.manifest
+      this.program = loaded.program
+      this.keyframeDefinitions = loaded.engine.keyframeDefinitions()
       this.engineState = 'ready'
     } else {
       this.engineState = 'deferred'
@@ -219,7 +226,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     let abandoned = false
     let ownedEngine: MasterCSSEngine | undefined
     let startupRuntime: MasterCSSRuntime | undefined
-    const startEngine = () => loadEngine(resolveManifest(options.manifest), options.emittedGlobals, binding)
+    const startEngine = () => loadEngine(resolveProgram(options.program), options.emittedGlobals, binding)
       .then((loaded) => {
         if (abandoned) {
           loaded.engine.dispose()
@@ -269,17 +276,17 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private async loadDeferredEngine(): Promise<this> {
     this.engineState = 'loading'
     const timeout = createStartupTimeout(this.getAnimationFrameWindow(), this.startupTimeoutMs, 'engine')
-    const loading = loadEngine(this.loadManifest(), this.emittedGlobals, this.engineBinding)
+    const loading = loadEngine(this.loadProgram(), this.emittedGlobals, this.engineBinding)
     try {
-      const { engine, manifest } = await timeout.race(loading)
+      const { engine, program } = await timeout.race(loading)
       if (this.disposed) throw runtimeDisposedError()
-      this.installEngine(engine, manifest)
+      this.installEngine(engine, program)
       return this
     } catch (error) {
       if (!this.disposed) {
         // Pre-rendered CSS stays valid. Only refresh() or start() retries.
         this.engineState = 'failed'
-        this.manifestRequest = undefined
+        this.programRequest = undefined
         this.host.removeAttribute('hidden')
         this.onDiagnostic?.(toStartupDiagnostic(error))
         this.replayPendingEngineCalls()
@@ -296,14 +303,15 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     }
   }
 
-  private loadManifest() {
-    this.manifestRequest ??= resolveManifest(this.manifestSource)
-    return this.manifestRequest
+  private loadProgram() {
+    this.programRequest ??= resolveProgram(this.programSource)
+    return this.programRequest
   }
 
-  private installEngine(engine: MasterCSSEngine, manifest: MasterCSSManifest) {
+  private installEngine(engine: MasterCSSEngine, program: Uint8Array) {
     this.bindingEngine = engine
-    this.manifest = manifest
+    this.program = program
+    this.keyframeDefinitions = engine.keyframeDefinitions()
     this.engineState = 'ready'
     if (this.observing) {
       this.adoptConnectedClasses(new Set(this.classCounts.keys()))
@@ -399,8 +407,8 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         this.disconnect()
         return facade
       },
-      refresh: (manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) => {
-        this.refresh(manifest, emittedGlobals)
+      refresh: (program?: MasterCSSRuntimeProgram, emittedGlobals?: MasterCSSEmittedGlobals) => {
+        this.refresh(program, emittedGlobals)
         return facade
       },
       ensureClassRules: (classNames: readonly string[]) =>
@@ -867,39 +875,40 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return this
   }
 
-  refresh(manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+  refresh(program?: MasterCSSRuntimeProgram, emittedGlobals?: MasterCSSEmittedGlobals) {
     if (this.engineState === 'loading') {
-      this.pendingEngineCalls.push(() => this.refresh(manifest, emittedGlobals))
+      this.pendingEngineCalls.push(() => this.refresh(program, emittedGlobals))
       return this
     }
     if (this.engineState !== 'ready') {
       // The engine has not loaded: it starts from the refreshed inputs instead.
-      if (manifest) {
-        this.manifestSource = manifest
-        this.manifestRequest = undefined
+      if (program) {
+        this.programSource = program
+        this.programRequest = undefined
       }
       if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
       this.retryEngine()
       this.requestEngine()
       return this
     }
-    manifest ??= this.manifest!
+    const next = program ? programBytes(program) : this.program!
     // HMR drops deferred removals and the warm cache. Release their rules first,
     // or the Rust rebuild replays them as connected classes nothing owns.
     const releasedClassNames = [...new Set([...this.pendingRemovedClassNames, ...this.retainedClassNames])]
       .filter((className) => !this.classCounts.has(className))
     if (releasedClassNames.length) this.deleteClassRules(releasedClassNames)
-    const transition = this.engine.refresh(manifest, emittedGlobals)
+    const transition = this.engine.refresh(next, emittedGlobals)
     if (emittedGlobals) this.adoptEmittedGlobals(emittedGlobals)
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
-    this.manifest = manifest
+    this.program = next
+    this.keyframeDefinitions = this.engine.keyframeDefinitions()
     this.clearClassReferences()
     this.applyTransition(transition)
     this.reconcileKeyframeRules()
     this.ensureClassRules([...this.classCounts.keys()])
-    if (process.env.NODE_ENV === 'development') debugRuntimeRefreshed(this, manifest)
+    if (process.env.NODE_ENV === 'development') debugRuntimeRefreshed(this, next)
     return this
   }
 

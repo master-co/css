@@ -7,7 +7,9 @@ import { Rolldown } from 'tsdown'
 const baselinePath = path.resolve('.ai/contracts/runtime-bundle-size.json')
 const artifactPaths = [
   'packages/runtime/dist/global.min.js',
-  'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm'
+  'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm',
+  // The default preset's runtime program, which the CDN bundle fetches.
+  'packages/runtime/dist/default-program.bin'
 ]
 // Bundler apps load the browser build from the binding package; the CDN bundle and
 // the release asset load the copy staged into the runtime package.

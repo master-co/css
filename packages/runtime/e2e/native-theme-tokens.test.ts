@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { compileManifestSync } from '@master/css-compiler/node'
 import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
-import { getRuntimeLoaderURL } from './init'
+import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const compiled = compileManifestSync(`
 @mixin --bg(--color){background-color:var(--color)} @utility bg(--color) {background-color:var(--color)}@utility bg-(--color) {background-color:var(--color)}
@@ -114,7 +114,7 @@ for (const hydrate of [false, true]) {
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
     const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 16 } }).manifest
-    await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), refreshed)
+    await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program), compileProgram(refreshed))
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })
 }
@@ -129,12 +129,12 @@ test('HMR releases class rules whose deferred removal has not flushed', async ({
     await startCSSRuntime({ manifest })
   }, { loader: await getRuntimeLoaderURL(), manifest })
   await expect(page.locator('#target')).toHaveCSS('background-color', 'rgb(255, 0, 0)')
-  const state = await page.locator('#target').evaluate(async (element, manifest) => {
+  const state = await page.locator('#target').evaluate(async (element, program) => {
     element.className = ''
     // Deliver the MutationObserver records, but refresh before the removal frames run.
     await Promise.resolve()
     const usageCounts = globalThis.masterCSSRuntime.snapshot().usageCounts
-    globalThis.masterCSSRuntime.refresh(manifest)
+    globalThis.masterCSSRuntime.refresh(program)
     const { classRules, cssText } = globalThis.masterCSSRuntime.snapshot()
     return {
       usageCounts,
@@ -143,6 +143,6 @@ test('HMR releases class rules whose deferred removal has not flushed', async ({
       keyframes: [...document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules]
         .filter((rule): rule is CSSKeyframesRule => rule instanceof CSSKeyframesRule).map(rule => rule.name)
     }
-  }, refreshed)
+  }, compileProgram(refreshed))
   expect(state).toEqual({ usageCounts: {}, classRules: [], cssText: '', keyframes: [] })
 })

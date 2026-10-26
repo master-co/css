@@ -7,7 +7,7 @@ import {
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import { getRuntimeLoaderURL } from '../init'
+import { compileProgram, getRuntimeLoaderURL } from '../init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const wasmRequest = /mastercss_binding_wasm_engine_bg\.wasm(?:\?.*)?$/
@@ -47,7 +47,7 @@ async function openPrerenderedPage(
 async function startDeferredRuntime(page: Page, loaderURL: string, options: Record<string, unknown> = {}) {
   await page.evaluate(async ({ loaderURL, options }) => {
     const { startCSSRuntime } = await import(loaderURL)
-    await startCSSRuntime({ lazyManifest: true, ready: false, ...options })
+    await startCSSRuntime({ lazyProgram: true, ready: false, ...options })
   }, { loaderURL, options })
 }
 
@@ -65,7 +65,7 @@ function engineRequests(requests: string[]) {
   return requests.filter(url => engineRequest.test(url))
 }
 
-test('keeps a fully pre-rendered page off the engine, its Wasm and the project manifest', async ({ page }) => {
+test('keeps a fully pre-rendered page off the engine, its Wasm and the program', async ({ page }) => {
   const { loaderURL, requests } = await openPrerenderedPage(
     page,
     '<p id="target" class="fg-red-60"></p><p id="other"></p>',
@@ -85,7 +85,7 @@ test('keeps a fully pre-rendered page off the engine, its Wasm and the project m
       usageCounts: snapshot.usageCounts,
       ruleCounts: Object.fromEntries(Object.entries(snapshot.classRules).map(([className, { rules }]) => [className, rules.length])),
       prerendered: snapshot.cssText.includes('.fg-red-60'),
-      manifestLoads: globalThis.__MASTER_CSS_RUNTIME_MANIFEST_LOADS__,
+      programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__,
       color: getComputedStyle(document.getElementById('target')!).color,
       display: getComputedStyle(document.getElementById('other')!).display
     }
@@ -98,7 +98,7 @@ test('keeps a fully pre-rendered page off the engine, its Wasm and the project m
     // Rules come from the engine, so a deferred runtime reports usage only.
     ruleCounts: { 'display:block': 0, 'fg-red-60': 0 },
     prerendered: true,
-    manifestLoads: 0,
+    programLoads: 0,
     color: expect.not.stringMatching(/^rgb\(0, 0, 0\)$/),
     display: 'block'
   })
@@ -151,14 +151,14 @@ test('starts the engine once for the first class pre-rendered CSS lacks', async 
       binding: snapshot.binding,
       hydration: snapshot.hydration.state,
       generated: ['display:flex', 'fg-blue-60', 'fg-red-60'].map(className => snapshot.classRules[className]?.rules.length),
-      manifestLoads: globalThis.__MASTER_CSS_RUNTIME_MANIFEST_LOADS__,
+      programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__,
       display: getComputedStyle(document.getElementById('target')!).display
     }
   })).toEqual({
     binding: 'wasm',
     hydration: 'progressive',
     generated: [1, 1, 1],
-    manifestLoads: 1,
+    programLoads: 1,
     display: 'flex'
   })
   expect(requests.filter(url => wasmRequest.test(url))).toHaveLength(1)
@@ -264,21 +264,21 @@ test('rejects rule changes before the engine is ready and starts it', async ({ p
   })).toEqual({ code: 'RUNTIME_ENGINE_NOT_READY', engineAfterRejection: 'loading', inserted: true })
 })
 
-test('starts a deferred engine from refreshed inputs without the original manifest loader', async ({ page }) => {
+test('starts a deferred engine from refreshed inputs without the original program loader', async ({ page }) => {
   const { loaderURL } = await openPrerenderedPage(page, '<p class="fg-red-60"></p>', ['fg-red-60'])
   await startDeferredRuntime(page, loaderURL)
 
-  expect(await page.evaluate(async (manifest) => {
+  expect(await page.evaluate(async (program) => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
-    runtime.refresh(manifest)
+    runtime.refresh(program)
     await runtime.ready()
     const snapshot = runtime.snapshot()
     return {
       engine: snapshot.engine,
       hydration: snapshot.hydration.state,
-      manifestLoads: globalThis.__MASTER_CSS_RUNTIME_MANIFEST_LOADS__
+      programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__
     }
-  }, defaultManifest)).toEqual({ engine: 'ready', hydration: 'progressive', manifestLoads: 0 })
+  }, compileProgram())).toEqual({ engine: 'ready', hydration: 'progressive', programLoads: 0 })
 })
 
 test('disposes an engine that finishes loading after the runtime is disposed', async ({ page }) => {
@@ -313,6 +313,6 @@ test('loads the engine at start when eager startup is requested', async ({ page 
   await startDeferredRuntime(page, loaderURL, { engine: 'eager' })
   expect(await page.evaluate(() => ({
     engine: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().engine,
-    manifestLoads: globalThis.__MASTER_CSS_RUNTIME_MANIFEST_LOADS__
-  }))).toEqual({ engine: 'ready', manifestLoads: 1 })
+    programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__
+  }))).toEqual({ engine: 'ready', programLoads: 1 })
 })

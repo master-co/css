@@ -1,11 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import init, { getRuntimeLoaderURL } from './init'
-
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+import init, { compileProgram, getRuntimeLoaderURL } from './init'
 
 async function waitForRuntimeRuleFlush(page: Page) {
   await page.evaluate(() => new Promise<void>((resolve) => {
@@ -68,11 +64,11 @@ test('destroy on progressive', async ({ page }) => {
     styleRemoved: true
   })
 
-  await page.evaluate(async (manifest) => {
-    const runtime = await globalThis.MasterCSSRuntime.start({ manifest })
+  await page.evaluate(async (program) => {
+    const runtime = await globalThis.MasterCSSRuntime.start({ program })
     runtime.observe()
     document.body.classList.add("display:block", 'font-bold')
-  }, defaultManifest)
+  }, compileProgram())
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime?.snapshot().classRules))
     .toMatchObject({
@@ -106,14 +102,14 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
     .toEqual({})
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
-  const disposed = await page.evaluate(async (manifest) => {
+  const disposed = await page.evaluate(async (program) => {
     document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.dispose()
-    const replacement = await globalThis.MasterCSSRuntime.start({ manifest })
+    const replacement = await globalThis.MasterCSSRuntime.start({ program })
     const replaced = replacement !== runtime
     replacement.dispose()
     return {
@@ -121,7 +117,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
       globalRuntime: globalThis.masterCSSRuntime,
       hasStyle: !!document.head.querySelector('style#master-css')
     }
-  }, defaultManifest)
+  }, compileProgram())
   expect(disposed).toEqual({
     replaced: true,
     globalRuntime: undefined,

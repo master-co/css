@@ -1,10 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { UtilityType } from '@master/css-schema/utility-type'
-import init from './init'
-
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+import init, { compileProgram } from './init'
 
 async function waitForRuntimeRuleFlush(page: Page) {
   await page.evaluate(() => new Promise<void>((resolve) => {
@@ -65,12 +61,12 @@ test('dispose on progressive', async ({ page }) => {
     globalCleared: true,
     styleRemoved: true
   })
-  await page.evaluate(async (manifest) => {
-    const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
+  await page.evaluate(async (program) => {
+    const nextRuntime = await globalThis.MasterCSSRuntime.start({ program })
     nextRuntime.observe()
     document.body.classList.add("display:block")
     document.body.classList.add('font-bold')
-  }, defaultManifest)
+  }, compileProgram())
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => {
     const classRules = globalThis.masterCSSRuntime?.snapshot().classRules
@@ -332,16 +328,16 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
     document.body.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
   })
   await waitForRuntimeRuleFlush(page)
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const current = globalThis.__MASTER_CSS_RUNTIME_TEST__
     const before = current.text
     const returned = await globalThis.MasterCSSRuntime.start({
-      manifest,
+      program,
       emittedGlobals: {
         variables: { 'color-red-60': 1 }
       }
     })
-    const returnedAgain = await globalThis.MasterCSSRuntime.start({ manifest })
+    const returnedAgain = await globalThis.MasterCSSRuntime.start({ program })
     return {
       same: returned === returnedAgain,
       before,
@@ -349,7 +345,7 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
       variables: current.emittedGlobals.variables,
       variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),
     }
-  }, defaultManifest)
+  }, compileProgram())
 
   expect(result.same).toBe(true)
   expect(result.before).toContain('--color-red-60:')
@@ -364,21 +360,21 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
 
 test('merges emittedGlobals from concurrent starts before resolving callers', async ({ page }) => {
   await init(page)
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const host = document.createElement('div')
     document.body.append(host)
     const root = host.attachShadow({ mode: 'open' })
     root.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
-    const first = globalThis.MasterCSSRuntime.start({ manifest, root })
+    const first = globalThis.MasterCSSRuntime.start({ program, root })
     const second = globalThis.MasterCSSRuntime.start({
-      manifest,
+      program,
       root,
       emittedGlobals: {
         variables: { 'color-red-60': 1 }
       }
     })
     const third = globalThis.MasterCSSRuntime.start({
-      manifest,
+      program,
       root,
       emittedGlobals: {
         variables: { 'color-red-60': 2 }
@@ -400,7 +396,7 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
       counts: snapshot.usageCounts,
       emittedGlobals
     }
-  }, defaultManifest)
+  }, compileProgram())
 
   expect(result.same).toBe(true)
   expect(result.counts).toEqual({
@@ -418,12 +414,12 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
 
 test('registers emittedGlobals counts once on a new runtime', async ({ page }) => {
   await init(page)
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const host = document.createElement('div')
     document.body.append(host)
     const root = host.attachShadow({ mode: 'open' })
     const runtime = await globalThis.MasterCSSRuntime.start({
-      manifest,
+      program,
       root,
       emittedGlobals: {
         variables: { 'color-primary': 1 }
@@ -435,7 +431,7 @@ test('registers emittedGlobals counts once on a new runtime', async ({ page }) =
     }
     runtime.dispose()
     return result
-  }, defaultManifest)
+  }, compileProgram())
 
   expect(result.variables).toMatchObject({ 'color-primary': 1 })
   expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })

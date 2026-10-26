@@ -8,7 +8,7 @@ import { chromium, firefox, webkit } from '@playwright/test'
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
 const globalBundleFile = resolve(distRoot, 'global.min.js')
-const defaultManifestFile = resolve(distRoot, 'default-manifest.json')
+const defaultProgramFile = resolve(distRoot, 'default-program.bin')
 const runtimeWasmFile = resolve(packageRoot, 'artifacts/mastercss_binding_wasm_engine_bg.wasm')
 const args = parseArgs(process.argv.slice(2))
 const rounds = Number(process.env.MASTER_CSS_BENCH_ROUNDS || 5)
@@ -34,7 +34,7 @@ const utilityKeys = [
   'left'
 ]
 
-if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !existsSync(runtimeWasmFile)) {
+if (!existsSync(globalBundleFile) || !existsSync(defaultProgramFile) || !existsSync(runtimeWasmFile)) {
   console.error('Runtime benchmark requires built runtime global artifacts.')
   console.error('Run `pnpm --filter @master/css-runtime build` first.')
   process.exit(1)
@@ -42,6 +42,7 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !exists
 
 const { renderClassNamesSync } = await import('@master/css/node')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
+const defaultProgram = new Uint8Array(await readFile(defaultProgramFile))
 const browserTypes = {
   chromium,
   firefox,
@@ -123,32 +124,32 @@ function startServer() {
 
     try {
       if (path === '/') {
-        const manifestPreload = url.searchParams.get('preloadManifest') === 'true'
+        const programPreload = url.searchParams.get('preloadProgram') === 'true'
         response.writeHead(200, {
           'content-type': 'text/html; charset=utf-8',
           'cache-control': 'no-store'
         })
         response.end([
           '<!doctype html><html hidden><head><meta charset="utf-8">',
-          manifestPreload ? '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">' : '',
+          programPreload ? '<link rel="preload" as="fetch" crossorigin href="/default-program.bin">' : '',
           '</head><body></body></html>'
         ].join(''))
         return
       }
 
-      if (path === '/manifest-consumer') {
+      if (path === '/program-consumer') {
         response.writeHead(200, {
           'content-type': 'text/html; charset=utf-8',
           'cache-control': 'no-store'
         })
         response.end([
           '<!doctype html><html hidden><head><meta charset="utf-8">',
-          '<link rel="modulepreload" as="json" crossorigin href="/default-manifest.json">',
+          '<link rel="preload" as="fetch" crossorigin href="/default-program.bin">',
           '<script>',
-          'globalThis.benchmarkManifestLoad = async () => {',
+          'globalThis.benchmarkProgramLoad = async () => {',
           'await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));',
           'const startedAt = performance.now();',
-          'await import("/default-manifest.json", { with: { type: "json" } });',
+          'await (await fetch("/default-program.bin")).arrayBuffer();',
           'return performance.now() - startedAt;',
           '};',
           '</script>',
@@ -166,13 +167,13 @@ function startServer() {
         return
       }
 
-      if (path === '/default-manifest.json') {
+      if (path === '/default-program.bin') {
         response.writeHead(200, {
-          'content-type': 'application/json; charset=utf-8',
+          'content-type': 'application/octet-stream',
           'cache-control': 'no-store',
           'access-control-allow-origin': '*'
         })
-        response.end(await readFile(defaultManifestFile))
+        response.end(await readFile(defaultProgramFile))
         return
       }
 
@@ -236,7 +237,7 @@ async function loadRuntime(page, scriptURL) {
 async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
   const page = await createBenchmarkPage(browser)
   const url = new URL(baseURL)
-  if (options.preloadManifest) url.searchParams.set('preloadManifest', 'true')
+  if (options.preloadProgram) url.searchParams.set('preloadProgram', 'true')
   await page.goto(url.href)
   if (bodyMarkup) {
     await page.evaluate((html) => {
@@ -246,12 +247,12 @@ async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
   return page
 }
 
-async function consumeManifest(browser, baseURL) {
+async function consumeProgram(browser, baseURL) {
   const page = await createBenchmarkPage(browser)
-  const url = new URL('/manifest-consumer', baseURL)
+  const url = new URL('/program-consumer', baseURL)
   await page.goto(url.href)
   try {
-    return await page.evaluate(() => globalThis.benchmarkManifestLoad())
+    return await page.evaluate(() => globalThis.benchmarkProgramLoad())
   } finally {
     await page.close()
   }
@@ -397,12 +398,12 @@ try {
   const hydrationFixture = createHydrationFixture(hydrationClasses)
   const results = []
 
-  results.push(await runBenchmark('default manifest consume (modulepreload)', () => {
-    return consumeManifest(browser, server.url)
+  results.push(await runBenchmark('default program consume (preload)', () => {
+    return consumeProgram(browser, server.url)
   }))
 
-  results.push(await runBenchmark('empty DOM startup (modulepreload)', async () => {
-    const page = await createPage(browser, server.url, '', { preloadManifest: true })
+  results.push(await runBenchmark('empty DOM startup (preload)', async () => {
+    const page = await createPage(browser, server.url, '', { preloadProgram: true })
     try {
       return await loadRuntime(page, scriptURL)
     } finally {
@@ -416,19 +417,19 @@ try {
       server.url,
       scriptURL,
       '<div class="fg-red-60 animation:fade|1s"></div>',
-      { preloadManifest: true }
+      { preloadProgram: true }
     )
     try {
-      const elapsed = await page.evaluate(async (manifest) => {
+      const elapsed = await page.evaluate(async (program) => {
         const startedAt = performance.now()
         await globalThis.MasterCSSRuntime.start({
-          manifest,
+          program,
           emittedGlobals: {
             variables: { 'color-red-60': 1 }
           }
         })
         return performance.now() - startedAt
-      }, defaultManifest)
+      }, defaultProgram)
       const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().cssText)
       if (cssText.includes('--color-red-60:') || cssText.includes('@keyframes fade{')) {
         throw new Error('Late emitted globals were not removed from runtime CSS.')
@@ -459,7 +460,7 @@ try {
   }))
 
   results.push(await runBenchmark('initial DOM scan + unique class add (preload)', async () => {
-    const page = await createPage(browser, server.url, scanMarkup, { preloadManifest: true })
+    const page = await createPage(browser, server.url, scanMarkup, { preloadProgram: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
       const generatedCount = await page.evaluate(
@@ -475,7 +476,7 @@ try {
   }))
 
   results.push(await runBenchmark('mutation ensure/delete class rules', async () => {
-    const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
+    const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadProgram: true })
     try {
       const elapsed = await page.evaluate(async ({ html }) => {
         const container = document.createElement('section')
@@ -512,7 +513,7 @@ try {
   }))
 
   results.push(await runBenchmark('direct CSSOM ensure/delete generated rules', async () => {
-    const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
+    const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadProgram: true })
     try {
       const elapsed = await page.evaluate((classes) => {
         const startedAt = performance.now()
@@ -535,7 +536,7 @@ try {
 
   // Every class is pre-rendered, so the engine stays deferred.
   results.push(await runBenchmark('progressive startup with deferred engine', async () => {
-    const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
+    const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadProgram: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
       const state = await page.evaluate(() => {
@@ -557,7 +558,7 @@ try {
   }))
 
   results.push(await runBenchmark('progressive engine start for the first uncovered class', async () => {
-    const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
+    const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadProgram: true })
     try {
       await loadRuntime(page, scriptURL)
       return await page.evaluate(async () => {
@@ -583,7 +584,7 @@ try {
   }))
 
   results.push(await runBenchmark('progressive hydration fallback path', async () => {
-    const page = await createProgressivePage(browser, server.url, hydrationFixture, false, { preloadManifest: true })
+    const page = await createProgressivePage(browser, server.url, hydrationFixture, false, { preloadProgram: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
       const state = await page.evaluate(() => {

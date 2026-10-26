@@ -3,7 +3,7 @@ import { compileManifestSync } from '@master/css-compiler/node'
 import { createServerRenderer } from '@master/css-server'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { getRuntimeLoaderURL } from './init'
+import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const manifest = defaultManifestJSON as unknown as MasterCSSManifest
 const ambiguous = compileManifestSync('@theme { --font-family-sm: monospace; }', { baseManifest: manifest }).manifest
@@ -30,10 +30,10 @@ for (const mode of ['runtime', 'progressive'] as const) {
     await expect(page.locator('#shorthand')).toHaveCSS('animation-duration', '1s')
     await expect(page.locator('#shorthand')).toHaveCSS('animation-timing-function', 'ease')
     if (mode === 'progressive') expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
-    await page.evaluate(manifest => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(manifest), ambiguous)
+    await page.evaluate(program => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(program), compileProgram(ambiguous))
     await expect(page.locator('#type')).toHaveCSS('font-size', '16px')
     expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('.font-sm{')
-    await page.evaluate(manifest => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(manifest), manifest)
+    await page.evaluate(program => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(program), compileProgram(manifest))
     await expect(page.locator('#type')).toHaveCSS('font-size', '14px')
     await page.locator('#type').evaluate(element => { element.className = 'font-mono font-lg font-regular' })
     await expect(page.locator('#type')).toHaveCSS('font-size', '18px')

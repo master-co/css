@@ -39,9 +39,9 @@ const config = configure({
           label: 'runtime-${nextRelease.gitTag}.wasm'
         },
         {
-          path: 'packages/preset/dist/default-manifest.json',
-          name: 'default-manifest-${nextRelease.gitTag}.json',
-          label: 'default-manifest-${nextRelease.gitTag}.json'
+          path: 'packages/runtime/dist/default-program.bin',
+          name: 'default-program-${nextRelease.gitTag}.bin',
+          label: 'default-program-${nextRelease.gitTag}.bin'
         },
         {
           path: 'release-artifacts/checksums.json',

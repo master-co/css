@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
-import { getRuntimeLoaderURL } from './init'
+import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const baseManifest = { version: 6 as const, languageVersion: 16 as const }
 const source = '@prune native;@layer before;@layer{@keyframes probe{to{opacity:.2}}@media(width>600px){@keyframes probe{to{opacity:.4}}}}@supports(display:grid){@keyframes probe{to{opacity:.6}}}@keyframes probe{to{opacity:.8}}'
@@ -95,16 +95,16 @@ test('HMR atomically replaces native owners, conditions, names and retention pol
   await setup(page)
   await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['animation-name:probe']))
   const next = await compileRenderedStylesheet('/slots.css', '@preserve native;@media(width>600px){@keyframes replacement{to{opacity:.25}}}', { baseManifest, classes: [] })
-  await page.evaluate(({ css, manifest, emittedGlobals }) => {
+  await page.evaluate(({ css, program, emittedGlobals }) => {
     document.querySelector<HTMLStyleElement>('#owned')!.textContent = css
-    globalThis.masterCSSRuntime.refresh(manifest, emittedGlobals)
-  }, { css: next.nativeCSS, manifest: next.manifest, emittedGlobals: next.emittedGlobals })
+    globalThis.masterCSSRuntime.refresh(program, emittedGlobals)
+  }, { css: next.nativeCSS, program: compileProgram(next.manifest), emittedGlobals: next.emittedGlobals })
   expect(await frames(page)).toEqual(['replacement'])
   const empty = await compileRenderedStylesheet('/slots.css', '', { baseManifest, classes: [] })
-  await page.evaluate(({ manifest, emittedGlobals }) => {
+  await page.evaluate(({ program, emittedGlobals }) => {
     document.querySelector<HTMLStyleElement>('#owned')!.textContent = ''
-    globalThis.masterCSSRuntime.refresh(manifest, emittedGlobals)
-  }, empty)
+    globalThis.masterCSSRuntime.refresh(program, emittedGlobals)
+  }, { program: compileProgram(empty.manifest), emittedGlobals: empty.emittedGlobals })
   expect(await frames(page)).toEqual([])
 })
 

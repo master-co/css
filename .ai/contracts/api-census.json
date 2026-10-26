@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 911,
+    "records": 913,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 727,
+      "export": 729,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -8592,6 +8592,48 @@
       "package": "@master/css-runtime",
       "subpath": ".",
       "name": "MasterCSSRuntimeOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-runtime",
+      "responsibility": "browser DOM and CSSOM runtime",
+      "consumers": [
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-vite",
+        "@master/css-webpack",
+        "master-css-angular-example",
+        "master-css-lit-example"
+      ],
+      "platform": "browser",
+      "lifecycle": "runtime-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-runtime:.#MasterCSSRuntimeProgram",
+      "package": "@master/css-runtime",
+      "subpath": ".",
+      "name": "MasterCSSRuntimeProgram"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-runtime",
+      "responsibility": "browser DOM and CSSOM runtime",
+      "consumers": [
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-vite",
+        "@master/css-webpack",
+        "master-css-angular-example",
+        "master-css-lit-example"
+      ],
+      "platform": "browser",
+      "lifecycle": "runtime-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-runtime:.#MasterCSSRuntimeProgramLoader",
+      "package": "@master/css-runtime",
+      "subpath": ".",
+      "name": "MasterCSSRuntimeProgramLoader"
     },
     {
       "kind": "export",

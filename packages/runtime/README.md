@@ -65,16 +65,18 @@
 npm install @master/css-runtime
 ```
 
-Initialize the runtime with the project manifest and emitted global CSS state provided by an official integration:
+Initialize the runtime with the project's runtime program and emitted global CSS state provided by an official integration:
 
 ```js
 import { MasterCSSRuntime } from '@master/css-runtime'
-import manifest from 'virtual:master-css-manifest'
+import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const cssRuntime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+const cssRuntime = await MasterCSSRuntime.start({ program, emittedGlobals })
 cssRuntime.observe()
 ```
+
+The runtime program is the project manifest compiled for the browser engine. Integrations compile it at build time; other Node build steps can call `compileRuntimeProgram(manifest)` from `@master/css/node`. Browsers cannot compile manifests.
 
 ## CDN IIFE
 
@@ -82,12 +84,12 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 
 ```html
 <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-<link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json">
+<link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
 <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 ```
 
-The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json` and CORS headers, and the browser must support JSON modules and import attributes. When its engine starts, the runtime also loads the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`, an engine build without render sessions or inspection. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime, manifest, and preset on compatible versions. The IIFE does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
+The IIFE starts automatically and registers the document runtime as `globalThis.masterCSSRuntime`. When its engine starts, it fetches `default-program.bin` next to the runtime script, the default preset compiled for the engine, and the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`, an engine build without manifest compilation, render sessions or inspection. The CDN must serve both with CORS headers, and a Content Security Policy must allow fetching them (`connect-src`). The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime and preset on compatible versions. The IIFE does not read global options or custom programs. Use ESM `await MasterCSSRuntime.start({ program, emittedGlobals })` for custom inputs.
 
 ## API
 
@@ -95,9 +97,9 @@ The IIFE imports `default-manifest.json` next to the runtime script as a JSON mo
 
 ```ts
 import { MasterCSSRuntime } from '@master/css-runtime'
-import manifest from 'virtual:master-css-manifest'
+import program from 'virtual:master-css-program'
 
-const cssRuntime = await MasterCSSRuntime.start({ manifest })
+const cssRuntime = await MasterCSSRuntime.start({ program })
 cssRuntime.observe()
 ```
 
@@ -109,7 +111,7 @@ cssRuntime.observe()
 | `ready()` | `Promise<this>` | Starts the engine if it is deferred and resolves when it is ready; rejects when engine startup fails, or with `RUNTIME_DISPOSED` after `dispose()`. |
 | `observe()` | `this` | Observes class attribute changes. |
 | `disconnect()` | `this` | Stops observation and clears non-hydrated runtime state. A pending engine startup continues. |
-| `refresh(manifest?, emittedGlobals?)` | `this` | Replaces the complete manifest and, when provided, the emitted global CSS state. A deferred or failed runtime starts its engine from the new inputs; during engine startup the refresh is applied once the engine is ready. |
+| `refresh(program?, emittedGlobals?)` | `this` | Replaces the runtime program and, when provided, the emitted global CSS state; without a program it re-executes the current one. A deferred or failed runtime starts its engine from the new inputs; during engine startup the refresh is applied once the engine is ready. |
 | `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously ensures rules for a readonly class-name collection. |
 | `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously deletes rules for a readonly class-name collection, bypassing retention. |
 | `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, engine state, and hydration state. |
@@ -118,12 +120,12 @@ cssRuntime.observe()
 
 | Option | Description |
 | --- | --- |
-| `manifest` | The project manifest, or `() => Promise<MasterCSSManifest>` to load it only when the engine starts. Required. |
+| `program` | The runtime program as a `Uint8Array` or `ArrayBuffer`, or `() => Promise<Uint8Array \| ArrayBuffer>` to load it only when the engine starts. Required. |
 | `emittedGlobals` | Variables and keyframes already emitted by the project CSS entry. |
 | `hydrationManifest` | Explicit page hydration data. Without it, `start()` reads inline or external hydration data from the document. |
 | `root` | The `Document` or `ShadowRoot` to observe; defaults to `document`. |
 | `engine` | `'eager'` starts the engine during `start()`. `'deferred'` waits for the first class that the page hydration manifest does not cover. Defaults to `'deferred'` when `style#master-css` has a valid, non-empty hydration manifest, and `'eager'` otherwise. |
-| `enginePrefetch` | `'none'` (default) starts a deferred engine only when it is needed. `'idle'` starts it during browser idle time, including the engine module, Wasm and project manifest downloads, so later uncovered classes do not wait. |
+| `enginePrefetch` | `'none'` (default) starts a deferred engine only when it is needed. `'idle'` starts it during browser idle time, including the engine module, Wasm and runtime program downloads, so later uncovered classes do not wait. |
 | `binding` | `'auto'` (default), `'wasm'`, or `'native'`. |
 | `startupTimeoutMs` | Fails hydration data loading or engine startup that takes longer than this with `RUNTIME_STARTUP_TIMEOUT`. |
 | `onDiagnostic` | Receives startup and engine startup diagnostics. |
@@ -134,7 +136,7 @@ cssRuntime.observe()
 import { MasterCSSRuntime } from '@master/css-runtime'
 
 const cssRuntime = await MasterCSSRuntime.start({
-  manifest: () => import('virtual:master-css-manifest').then(module => module.default),
+  program: () => import('virtual:master-css-program').then(module => module.default),
 })
 cssRuntime.observe()
 ```
@@ -145,7 +147,7 @@ cssRuntime.observe()
 
 `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. These counts are cumulative for the lifetime of the runtime and cannot be unregistered.
 
-Concurrent `start()` calls for the same root share one startup. The first call's manifest, binding, engine options, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
+Concurrent `start()` calls for the same root share one startup. The first call's program, binding, engine options, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
 
 `globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade, including `ready()`.
 

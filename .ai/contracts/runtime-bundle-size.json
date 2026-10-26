@@ -6,19 +6,24 @@
   },
   "artifacts": {
     "packages/runtime/dist/global.min.js": {
-      "raw": 63805,
-      "gzip": 17813,
-      "brotli": 15786
+      "raw": 64113,
+      "gzip": 17881,
+      "brotli": 15847
     },
     "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
       "raw": 352311,
       "gzip": 135630,
       "brotli": 114608
     },
+    "packages/runtime/dist/default-program.bin": {
+      "raw": 52492,
+      "gzip": 14918,
+      "brotli": 10651
+    },
     "packages/runtime/dist/index.js (progressive critical path)": {
-      "raw": 45944,
-      "gzip": 12742,
-      "brotli": 11504
+      "raw": 46233,
+      "gzip": 12841,
+      "brotli": 11596
     }
   }
 }

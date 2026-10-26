@@ -108,7 +108,7 @@ Use `pnpm --filter @master/css bench` for engine session startup and execution. 
 
 Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, engine startup, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
 
-`pnpm run check:runtime-size` compares raw/gzip/brotli sizes of the global runtime bundle, the runtime Wasm, and the progressive critical path (the runtime ESM entry bundled without its lazily imported engine) against `.ai/contracts/runtime-bundle-size.json`, and requires the bundler and CDN copies of the runtime Wasm to be identical. Build the runtime Wasm (`cargo xtask build-wasm runtime`) and `@master/css-runtime` first. Use `pnpm run check:runtime-size:update` only for an intentional, reported size change. `pnpm run report:runtime-wasm-size` (`--modules` for engine modules) rebuilds the runtime Wasm with names and attributes its code and data to crates and categories, each group brotli-compressed alone.
+`pnpm run check:runtime-size` compares raw/gzip/brotli sizes of the global runtime bundle, the runtime Wasm, the default runtime program it fetches, and the progressive critical path (the runtime ESM entry bundled without its lazily imported engine) against `.ai/contracts/runtime-bundle-size.json`, and requires the bundler and CDN copies of the runtime Wasm to be identical. Build the runtime Wasm (`cargo xtask build-wasm runtime`) and `@master/css-runtime` first. Use `pnpm run check:runtime-size:update` only for an intentional, reported size change. `pnpm run report:runtime-wasm-size` (`--modules` for engine modules) rebuilds the runtime Wasm with names and attributes its code and data to crates and categories, each group brotli-compressed alone.
 
 The `Benchmark` GitHub Actions workflow runs on relevant benchmark, Rust core, CSS execution, tooling, preset, runtime, schema, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 
@@ -118,14 +118,14 @@ For bundle reports, build first and measure the changed artifacts on the same ma
 pnpm --filter @master/css build
 pnpm --filter @master/css-runtime build
 wc -c packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js
-wc -c packages/runtime/dist/default-manifest.json
+wc -c packages/runtime/dist/default-program.bin
 gzip -c packages/css/dist/engine/bound-engine.js | wc -c
 brotli -c packages/css/dist/engine/bound-engine.js | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
-gzip -c packages/runtime/dist/default-manifest.json | wc -c
-brotli -c packages/runtime/dist/default-manifest.json | wc -c
-shasum -a 256 packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
+gzip -c packages/runtime/dist/default-program.bin | wc -c
+brotli -c packages/runtime/dist/default-program.bin | wc -c
+shasum -a 256 packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js packages/runtime/dist/default-program.bin
 ```
 
 ## CI Equivalents

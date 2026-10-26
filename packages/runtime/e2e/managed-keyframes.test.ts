@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { renderClassNamesSync } from '@master/css/node'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import init, { createRuntimeProjectManifest, getRuntimeLoaderURL } from './init'
+import init, { compileProgram, createRuntimeProjectManifest, getRuntimeLoaderURL } from './init'
 
 const keyframes = [
   { id: 'first', name: 'first', text: '@keyframes first{to{opacity:.5}}' },
@@ -29,9 +28,9 @@ test('dynamic roots keep all and HMR replaces external ownership', async ({ page
   await init(page, undefined, { keyframes })
   await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['animation-name:var(--external)']))
   expect(await names(page)).toEqual(['first', 'second'])
-  await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest, { keyframes: { first: 1 } }), manifest)
+  await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program, { keyframes: { first: 1 } }), compileProgram(manifest))
   expect(await names(page)).toEqual(['second'])
-  await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest, {}), manifest)
+  await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program, {}), compileProgram(manifest))
   expect(await names(page)).toEqual(['first', 'second'])
   await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['animation-name:var(--external)']))
   expect(await names(page)).toEqual([])
@@ -43,9 +42,9 @@ test('hydrates top-level keyframes and updates their body', async ({ page }) => 
   await init(page, rendered.cssText, { keyframes }, rendered.hydrationManifest)
   expect(await names(page)).toEqual(['first'])
   expect(await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().hydration.failureReason)).toBeUndefined()
-  await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), {
+  await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program), compileProgram({
     ...manifest, keyframes: [{ id: 'first', name: 'first', text: '@keyframes first{to{opacity:.25}}' }]
-  })
+  }))
   expect(await page.evaluate(() => document.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules.item(1)!.cssText)).toContain('0.25')
 })
 
@@ -67,15 +66,15 @@ test('rejected keyframe insertions never delete neighboring rules', async ({ pag
 
 test('ShadowRoot tracks keyframes independently from Document', async ({ page }) => {
   await init(page, undefined, { keyframes })
-  await page.evaluate(async ({ manifest, loader }) => {
+  await page.evaluate(async ({ program, loader }) => {
     await import(loader)
     const host = document.createElement('section')
     document.body.append(host)
     const root = host.attachShadow({ mode: 'open' })
     root.innerHTML = '<div class="animation-name:first"></div>'
-    const runtime = await globalThis.MasterCSSRuntime.start({ root, manifest })
+    const runtime = await globalThis.MasterCSSRuntime.start({ root, program })
     runtime.observe()
-  }, { manifest: manifest as MasterCSSManifest, loader: await getRuntimeLoaderURL() })
+  }, { program: compileProgram(manifest), loader: await getRuntimeLoaderURL() })
   await expect.poll(() => page.evaluate(() => [...document.querySelector('section')!.shadowRoot!.querySelector<HTMLStyleElement>('#master-css')!.sheet!.cssRules]
     .filter(rule => rule.constructor.name === 'CSSKeyframesRule').length)).toBe(1)
   expect(await names(page)).toEqual([])

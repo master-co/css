@@ -1,9 +1,5 @@
 import { test, expect } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import init from './init'
-
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+import init, { compileProgram } from './init'
 
 const html = "\n  <div class=\"z-index:1\">\n    <div class=\"z-index:2\">\n      <div class=\"z-index:3\"></div>\n    </div>\n  </div>\n"
 
@@ -115,15 +111,15 @@ test('remove a class while the subtree is disconnected and append again', async 
 
 test('moves class subtrees across document and shadow roots without stale counts', async ({ page }) => {
   await init(page)
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const hostA = document.createElement('div')
     const hostB = document.createElement('div')
     document.body.append(hostA, hostB)
     const rootA = hostA.attachShadow({ mode: 'open' })
     const rootB = hostB.attachShadow({ mode: 'open' })
     rootA.innerHTML = "<section id=\"moved\" class=\"display:block\"><span class=\"fg-red-60\"></span></section>"
-    const runtimeA = await globalThis.MasterCSSRuntime.start({ manifest, root: rootA })
-    const runtimeB = await globalThis.MasterCSSRuntime.start({ manifest, root: rootB })
+    const runtimeA = await globalThis.MasterCSSRuntime.start({ program, root: rootA })
+    const runtimeB = await globalThis.MasterCSSRuntime.start({ program, root: rootB })
     runtimeA.observe()
     runtimeB.observe()
 
@@ -158,7 +154,7 @@ test('moves class subtrees across document and shadow roots without stale counts
     runtimeA.dispose()
     runtimeB.dispose()
     return { before, afterShadowMove, afterSameRootMove, afterDocumentMove, sourceTextAfterCleanup }
-  }, defaultManifest)
+  }, compileProgram())
 
   expect(result.before).toEqual({
     a: { 'display:block': 1, 'fg-red-60': 1 },

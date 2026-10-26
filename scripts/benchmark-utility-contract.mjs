@@ -14,7 +14,7 @@ const digest = bytes => createHash('sha256').update(bytes).digest('hex')
 const sizes = bytes => ({ raw: bytes.length, gzip: gzipSync(bytes, { level: 9 }).length, brotli: brotliCompressSync(bytes).length, sha256: digest(bytes) })
 const paths = [
   { binding: resolve(baseline, 'mastercss.node'), manifest: resolve(baseline, 'preset.json'), js: resolve(baseline, 'artifacts/runtime.js'), wasm: resolve(baseline, 'artifacts/engine.wasm'), runtimeManifest: resolve(baseline, 'artifacts/runtime-manifest.json') },
-  { binding: resolve(currentBinding ?? 'packages/binding/artifacts/mastercss.node'), manifest: resolve('packages/preset/src/default-manifest.json'), js: resolve('packages/runtime/dist/global.min.js'), wasm: resolve('packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm'), runtimeManifest: resolve('packages/runtime/dist/default-manifest.json') }
+  { binding: resolve(currentBinding ?? 'packages/binding/artifacts/mastercss.node'), manifest: resolve('packages/preset/src/default-manifest.json'), js: resolve('packages/runtime/dist/global.min.js'), wasm: resolve('packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm'), runtimeManifest: resolve('packages/runtime/dist/default-program.bin') }
 ]
 const pair = paths.map(paths => ({ paths, api: require(paths.binding), manifest: readFileSync(paths.manifest, 'utf8'), samples: {} }))
 const classes = Array.from({ length: 240 }, (_, index) => `${index % 2 ? 'width' : 'p'}:${index}px${index % 3 === 0 ? '@media((width>=50rem))' : ''}`)

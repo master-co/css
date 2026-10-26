@@ -73,7 +73,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
   <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 </head>
@@ -83,7 +83,7 @@
 </html>
 ```
 
-The `@rc` URLs use published npm packages. They may lag unreleased changes in this repository; use matching runtime, manifest, and preset versions when testing local source.
+The `@rc` URLs use published npm packages. They may lag unreleased changes in this repository; use matching runtime and preset versions when testing local source.
 
 ## Documentation
 Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation/cdn).

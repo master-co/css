@@ -7,12 +7,12 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
 const RUNTIME_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js'
-const DEFAULT_MANIFEST_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json'
+const DEFAULT_PROGRAM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin'
 const RUNTIME_WASM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/artifacts/mastercss_binding_wasm_engine_bg.wasm'
 const PRESET_BASE_CSS_URL = 'https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css'
 
 type RuntimeAssetRouteOptions = {
-  onDefaultManifestRequest?: () => void
+  onDefaultProgramRequest?: () => void
   onWasmRequest?: () => void
 }
 
@@ -23,14 +23,14 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
       body: readFileSync(resolve(__dirname, '../dist/global.min.js'), 'utf8')
     })
   })
-  await page.route(DEFAULT_MANIFEST_URL, (route) => {
-    options.onDefaultManifestRequest?.()
+  await page.route(DEFAULT_PROGRAM_URL, (route) => {
+    options.onDefaultProgramRequest?.()
     route.fulfill({
-      contentType: 'application/json',
+      contentType: 'application/octet-stream',
       headers: {
         'access-control-allow-origin': '*'
       },
-      body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
+      body: readFileSync(resolve(__dirname, '../dist/default-program.bin'))
     })
   })
   await page.route(RUNTIME_WASM_URL, (route) => {
@@ -78,7 +78,7 @@ test('repository CDN example renders with current package artifacts', async ({ p
   })).toEqual({ color: 'rgb(17, 24, 39)', fontSize: '40px', fontStyle: 'italic', fontWeight: '800', marginTop: '48px' })
 })
 
-test('uses split bundled preset manifest', async ({ page }) => {
+test('uses the default preset program', async ({ page }) => {
   await startGlobalRuntime(page)
 
   const snapshot = await page.evaluate(() => {
@@ -91,14 +91,14 @@ test('uses split bundled preset manifest', async ({ page }) => {
   expect(snapshot.classRules['fg-white']?.rules).not.toHaveLength(0)
 })
 
-test('uses modulepreloaded default manifest', async ({ page }) => {
-  let defaultManifestRequests = 0
+test('uses the preloaded default program', async ({ page }) => {
+  let defaultProgramRequests = 0
   let presetCSSRequests = 0
   const consoleMessages: string[] = []
 
   await routeRuntimeAssets(page, {
-    onDefaultManifestRequest: () => {
-      defaultManifestRequests++
+    onDefaultProgramRequest: () => {
+      defaultProgramRequests++
     }
   })
   page.on('console', (message) => {
@@ -122,7 +122,7 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
       <html hidden>
       <head>
         <link rel="preload" as="style" href="${PRESET_BASE_CSS_URL}">
-        <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
+        <link rel="preload" as="fetch" crossorigin href="${DEFAULT_PROGRAM_URL}">
         <link rel="stylesheet" href="${PRESET_BASE_CSS_URL}">
         <script src="${RUNTIME_SCRIPT_URL}"></script>
       </head>
@@ -133,7 +133,7 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
   await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
   await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 
-  expect(defaultManifestRequests).toBe(1)
+  expect(defaultProgramRequests).toBe(1)
   expect(presetCSSRequests).toBe(1)
   expect(consoleMessages).toEqual([])
   expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')

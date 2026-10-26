@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { renderClassNamesSync } from '@master/css/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import init, { createRuntimeProjectManifest } from './init'
+import init, { compileProgram, createRuntimeProjectManifest } from './init'
 
 const mixins: NonNullable<MasterCSSManifest['mixins']> = [
   { name: '--repeat', body: [
@@ -23,7 +23,7 @@ test('wrapper nodes hydrate, survive refresh, and release resources on DOM remov
   expect(await read()).toContain('@layer components')
   expect(await read()).toContain(':hover')
   expect(await read()).toContain('@keyframes contents-fade')
-  await page.evaluate(manifest => globalThis.masterCSSRuntime.refresh(manifest), manifest)
+  await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program), compileProgram(manifest))
   expect(await read()).toBe(rendered.cssText)
   await page.locator('div').evaluate(element => element.removeAttribute('class'))
   await expect.poll(() => page.evaluate(() => {

@@ -88,7 +88,7 @@ try {
   }
   results.artifacts = Object.fromEntries([
     'packages/preset/src/default-manifest.json', 'packages/runtime/dist/global.min.js',
-    'packages/runtime/dist/default-manifest.json', 'packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm'
+    'packages/runtime/dist/default-program.bin', 'packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm'
   ].map(path => {
     const size = buffer => ({ raw: buffer.byteLength, gzip9: gzipSync(buffer, { level: 9 }).byteLength, brotli: brotliCompressSync(buffer).byteLength })
     return [path, {

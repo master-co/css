@@ -1,15 +1,12 @@
 import { test, expect, type Page } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   type MasterCSSHydrationManifest,
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import init, { getRuntimeLoaderURL } from './init'
+import init, { compileProgram, getRuntimeLoaderURL } from './init'
 
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 async function startCSSRuntimeAsync(
   page: Page,
@@ -705,14 +702,14 @@ test('disconnect and dispose clear pending mutation additions and removals', asy
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules)).toEqual({})
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
-  const disposed = await page.evaluate(async (manifest) => {
+  const disposed = await page.evaluate(async (program) => {
     document.body.innerHTML = "<p id=\"target\" class=\"fg-red-60\"></p><p class=\"z-index:1234\"></p>"
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.dispose()
-    const replacement = await globalThis.MasterCSSRuntime.start({ manifest })
+    const replacement = await globalThis.MasterCSSRuntime.start({ program })
     const replaced = replacement !== runtime
     replacement.dispose()
     return {
@@ -720,7 +717,7 @@ test('disconnect and dispose clear pending mutation additions and removals', asy
       globalRuntime: globalThis.masterCSSRuntime,
       hasStyle: !!document.head.querySelector('style#master-css')
     }
-  }, defaultManifest)
+  }, compileProgram())
   expect(disposed).toEqual({
     replaced: true,
     globalRuntime: undefined,
@@ -732,7 +729,7 @@ test('disconnect and dispose clear pending mutation additions and removals', asy
 test('shadow roots maintain isolated runtime state and style nodes', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const host = document.createElement('section')
     const shadow = host.attachShadow({ mode: 'open' })
     shadow.innerHTML = "<p class=\"display:block\"></p>"
@@ -740,14 +737,14 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
 
     const shadowRuntime = await globalThis.MasterCSSRuntime.start({
       root: shadow,
-      manifest
+      program
     })
     shadowRuntime.observe()
     const shadowSnapshot = shadowRuntime.snapshot()
     const documentSnapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
     const instanceRegistered = await globalThis.MasterCSSRuntime.start({
       root: shadow,
-      manifest
+      program
     }) === shadowRuntime
     const shadowHasStyle = !!shadow.querySelector('style#master-css')
     shadowRuntime.dispose()
@@ -761,7 +758,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
       shadowText: shadowSnapshot.cssText,
       instanceRegistered
     }
-  }, defaultManifest)
+  }, compileProgram())
 
   expect(result).toEqual({
     documentCounts: {},

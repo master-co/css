@@ -1,7 +1,7 @@
 import type { MasterCSSEngine, MasterCSSEngineTransition } from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSDiagnostic } from '@master/css-schema'
-import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
+import type { MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { LAYER_ORDER } from './host'
 
@@ -11,8 +11,11 @@ export interface MasterCSSRuntimeStylesheet {
   readonly ownerIds: readonly string[]
 }
 
-/** Loads the project manifest when the runtime starts its engine. */
-export type MasterCSSRuntimeManifestLoader = () => Promise<MasterCSSManifest>
+/** A runtime program that `compileRuntimeProgram()` from `@master/css/node` compiled. */
+export type MasterCSSRuntimeProgram = Uint8Array | ArrayBuffer
+
+/** Loads the runtime program when the runtime starts its engine. */
+export type MasterCSSRuntimeProgramLoader = () => Promise<MasterCSSRuntimeProgram>
 
 /**
  * `deferred` keeps a progressive page on its pre-rendered CSS until a class
@@ -21,7 +24,7 @@ export type MasterCSSRuntimeManifestLoader = () => Promise<MasterCSSManifest>
 export type MasterCSSRuntimeEngineState = 'deferred' | 'loading' | 'ready' | 'failed'
 
 export interface MasterCSSRuntimeOptions {
-  readonly manifest: MasterCSSManifest | MasterCSSRuntimeManifestLoader
+  readonly program: MasterCSSRuntimeProgram | MasterCSSRuntimeProgramLoader
   readonly root?: Document | ShadowRoot
   readonly emittedGlobals?: MasterCSSEmittedGlobals
   readonly hydrationManifest?: MasterCSSHydrationManifest
@@ -37,7 +40,7 @@ export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
   readonly binding?: MasterCSSRuntimeBinding
   /**
    * Progressive pages with a hydration manifest defer the engine, its Wasm and
-   * a lazy manifest until a class lacks pre-rendered CSS. `eager` starts it now.
+   * a lazy program until a class lacks pre-rendered CSS. `eager` starts it now.
    */
   readonly engine?: 'eager' | 'deferred'
   /** `idle` starts a deferred engine when the browser is idle, before a class needs it. */
@@ -84,7 +87,7 @@ export interface MasterCSSRuntimeFacade extends Disposable {
   ready(): Promise<this>
   observe(): this
   disconnect(): this
-  refresh(manifest?: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): this
+  refresh(program?: MasterCSSRuntimeProgram, emittedGlobals?: MasterCSSEmittedGlobals): this
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   snapshot(): MasterCSSRuntimeSnapshot

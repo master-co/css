@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { renderClassNamesSync } from '@master/css/node'
+import { compileRuntimeProgramSync, renderClassNamesSync } from '@master/css/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
@@ -14,13 +14,43 @@ import {
 } from '@master/css-schema/manifest'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { createServer, type ViteDevServer } from 'vite'
+import { createServer, type Plugin, type ViteDevServer } from 'vite'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const packageRoot = resolve(__dirname, '..')
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 let runtimeServerPromise: Promise<ViteDevServer> | undefined
+
+/** The path where the harness server compiles a posted manifest into a runtime program. */
+export const RUNTIME_PROGRAM_PATH = '/@master-css/runtime-program'
+
+/** Compiles a manifest into the runtime program a page executes, as integrations do at build time. */
+export function compileProgram(manifest: MasterCSSManifest = defaultManifest): Uint8Array {
+  return compileRuntimeProgramSync(manifest)
+}
+
+/** Lets page code that receives manifests, such as the runtime loader, compile them. */
+const runtimeProgramCompiler: Plugin = {
+  name: 'master-css-runtime-program',
+  configureServer(server) {
+    server.middlewares.use(RUNTIME_PROGRAM_PATH, (request, response) => {
+      let body = ''
+      request.setEncoding('utf8')
+      request.on('data', (chunk: string) => body += chunk)
+      request.on('end', () => {
+        try {
+          const program = compileProgram(JSON.parse(body) as MasterCSSManifest)
+          response.setHeader('content-type', 'application/octet-stream')
+          response.end(Buffer.from(program))
+        } catch (error) {
+          response.statusCode = 422
+          response.end(error instanceof Error ? error.message : String(error))
+        }
+      })
+    })
+  }
+}
 
 type RuntimeManifestVariableInput = MasterCSSManifestVariable
 
@@ -81,6 +111,7 @@ export async function getRuntimeLoaderURL() {
         'process.env.NODE_ENV': JSON.stringify('production')
       },
       logLevel: 'error',
+      plugins: [runtimeProgramCompiler],
       root: packageRoot,
       server: {
         cors: true,

@@ -792,6 +792,8 @@
           "MasterCSSRuntimeFacade",
           "MasterCSSRuntimeLayerSnapshot",
           "MasterCSSRuntimeOptions",
+          "MasterCSSRuntimeProgram",
+          "MasterCSSRuntimeProgramLoader",
           "MasterCSSRuntimeRuleSnapshot",
           "MasterCSSRuntimeSnapshot",
           "MasterCSSRuntimeStartOptions",
@@ -799,7 +801,7 @@
           "withMasterCSSRuntime"
         ]
       },
-      "surface": "a61db0dfdb63d294"
+      "surface": "d58f7fa7f25f666b"
     },
     "@master/css-schema": {
       "directory": "schema",

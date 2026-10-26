@@ -1,18 +1,16 @@
 import { expect, test } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import init from './init'
+import init, { compileProgram } from './init'
 
 test('BH-0009 tracks class updates in a same-origin iframe Document root', async ({ page }) => {
   await init(page)
-  const result = await page.evaluate(async (manifest) => {
+  const result = await page.evaluate(async (program) => {
     const frame = document.createElement('iframe')
     document.body.appendChild(frame)
     const root = frame.contentDocument!
     const element = root.createElement('div')
     element.className = "display:block"
     root.body.appendChild(element)
-    const runtime = await globalThis.MasterCSSRuntime.start({ root, manifest })
+    const runtime = await globalThis.MasterCSSRuntime.start({ root, program })
     try {
       runtime.observe()
       const before = runtime.snapshot().usageCounts
@@ -25,7 +23,7 @@ test('BH-0009 tracks class updates in a same-origin iframe Document root', async
       runtime.dispose()
       frame.remove()
     }
-  }, defaultManifestJSON as unknown as MasterCSSManifest)
+  }, compileProgram())
   expect(result.before).toEqual({ 'display:block': 1 })
   expect(result.after).toEqual({ 'display:none': 1 })
 })
@@ -33,7 +31,7 @@ test('BH-0009 tracks class updates in a same-origin iframe Document root', async
 for (const kind of ['document', 'shadow'] as const) {
   test(`BH-0009 handles iframe ${kind} subtree addition, attributes, moves and removal`, async ({ page }) => {
     await init(page)
-    const result = await page.evaluate(async ({ manifest, kind }) => {
+    const result = await page.evaluate(async ({ program, kind }) => {
       const frame = document.createElement('iframe')
       document.body.appendChild(frame)
       const owner = frame.contentDocument!
@@ -41,7 +39,7 @@ for (const kind of ['document', 'shadow'] as const) {
       owner.body.append(host)
       const root = kind === 'shadow' ? host.attachShadow({ mode: 'open' }) : owner
       const container = kind === 'shadow' ? root as ShadowRoot : owner.body
-      const runtime = await globalThis.MasterCSSRuntime.start({ root, manifest })
+      const runtime = await globalThis.MasterCSSRuntime.start({ root, program })
       const flush = () => new Promise<void>(resolve => {
         frame.contentWindow!.requestAnimationFrame(() => frame.contentWindow!.requestAnimationFrame(() => frame.contentWindow!.requestAnimationFrame(() => resolve())))
       })
@@ -72,7 +70,7 @@ for (const kind of ['document', 'shadow'] as const) {
         runtime.dispose()
         frame.remove()
       }
-    }, { manifest: defaultManifestJSON as unknown as MasterCSSManifest, kind })
+    }, { program: compileProgram(), kind })
     expect(result).toEqual({ added: { 'display:block': 2 }, changed: { 'display:block': 1, 'display:none': 1 }, display: 'none', moved: { 'display:block': 1, 'display:none': 1 }, removed: {} })
   })
 }

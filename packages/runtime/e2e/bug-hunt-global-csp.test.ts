@@ -27,7 +27,7 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
     requests.push(path)
     const assets: Record<string, { contentType: string, body: string | Buffer }> = {
       '/runtime/global.min.js': { contentType: 'text/javascript', body: readFileSync(new URL('../dist/global.min.js', import.meta.url)) },
-      '/runtime/default-manifest.json': { contentType: 'application/json', body: readFileSync(new URL('../dist/default-manifest.json', import.meta.url)) },
+      '/runtime/default-program.bin': { contentType: 'application/octet-stream', body: readFileSync(new URL('../dist/default-program.bin', import.meta.url)) },
       '/artifacts/mastercss_binding_wasm_engine_bg.wasm': { contentType: 'application/wasm', body: readFileSync(new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url)) },
       '/hydration.json': { contentType: 'application/json', body: hydration }
     }

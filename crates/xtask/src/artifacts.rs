@@ -315,7 +315,7 @@ pub(crate) fn assemble_native_release_at(
     let public_assets = [
         "packages/runtime/dist/global.min.js",
         "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm",
-        "packages/preset/dist/default-manifest.json",
+        "packages/runtime/dist/default-program.bin",
     ];
     for relative in public_assets {
         let path = root.join(relative);
