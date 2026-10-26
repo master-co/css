@@ -411,6 +411,7 @@ fn matches_existing_css_escape_examples() {
     assert_eq!(css_escape("-1col"), "-\\31 col");
     assert_eq!(css_escape("-"), "\\-");
     assert_eq!(css_escape("a b"), "a\\ b");
+    assert_eq!(css_escape("\u{1}a\u{1f}\u{7f}"), "\\1 a\\1f \\7f ");
 }
 
 #[test]

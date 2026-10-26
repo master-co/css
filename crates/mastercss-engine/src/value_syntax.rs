@@ -1,4 +1,5 @@
 use super::normalize_dynamic_value;
+use mastercss_lexer::concat_text;
 use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
 use std::borrow::Cow;
 
@@ -125,7 +126,7 @@ fn normalize_math_expression(source: &str) -> String {
                 if operand && raw.starts_with(['+', '-']) {
                     edits.push((
                         token.bytes.start..token.bytes.start + 1,
-                        format!(" {} ", &raw[..1]),
+                        concat_text!(" ", &raw[..1], " "),
                     ));
                 }
                 if matches!(token.kind, Kind::Dimension(_, _)) && !raw.contains('\\') {
@@ -160,14 +161,14 @@ fn normalize_math_expression(source: &str) -> String {
                         // exponent sign never becomes another subtraction operator.
                         edits.push((
                             token.bytes.start + at..token.bytes.end,
-                            format!(" - {}", normalize_math_expression(&raw[at + 1..])),
+                            concat_text!(" - ", normalize_math_expression(&raw[at + 1..])),
                         ));
                     }
                 }
                 operand = true;
             }
             Kind::Delim(op @ ('+' | '-' | '*' | '/')) if operand => {
-                edits.push((token.bytes.clone(), format!(" {op} ")));
+                edits.push((token.bytes.clone(), concat_text!(" ", op.to_string(), " ")));
                 operand = false;
             }
             Kind::Delim(',') => {

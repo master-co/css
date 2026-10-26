@@ -1,6 +1,8 @@
 use super::{
     Program, StateBranch, add_condition_wrapper, render_condition_token, resolve_layer_condition,
 };
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
 
 pub(crate) fn resolve_state_branches(
     state_token: &str,
@@ -36,7 +38,7 @@ pub(crate) fn resolve_state_branches(
     for condition_token in condition_tokens {
         let paths = if let Some(paths) = manifest
             .custom_media_paths
-            .get(&format!("--{condition_token}"))
+            .get(&concat_text!("--", condition_token))
         {
             Some(Ok(std::borrow::Cow::Borrowed(paths)))
         } else {
@@ -62,11 +64,16 @@ pub(crate) fn resolve_state_branches(
                         .enumerate()
                         .map(|(index, path)| {
                             let mut branch = branch.clone();
-                            branch.key.push_str(&format!("@{condition_token}#{index}"));
+                            branch.key.push_str(&concat_text!(
+                                "@",
+                                condition_token,
+                                "#",
+                                decimal(index)
+                            ));
                             for query in path {
                                 branch
                                     .condition_wrappers
-                                    .push(("media".into(), format!("@media {query}")));
+                                    .push(("media".into(), concat_text!("@media ", query)));
                             }
                             branch
                         })
@@ -363,7 +370,7 @@ pub(crate) fn replace_selector_underscores(source: &str) -> String {
 pub(crate) fn suffix_to_template(suffix: &str) -> String {
     split_top_level(suffix, ',')
         .into_iter()
-        .map(|group| format!("&{group}"))
+        .map(|group| concat_text!("&", group))
         .collect::<Vec<_>>()
         .join(",")
 }

@@ -1,6 +1,8 @@
 //! Compiler-issued native resource anchors. This module owns their interpretation
 //! in every host; TypeScript only installs the resulting CSS and CSSOM mutations.
 use super::*;
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
 #[cfg(feature = "stylesheet-resources")]
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
 
@@ -107,7 +109,7 @@ impl EngineSession {
                 continue;
             }
             output.push_str(&css[previous..slot.range.start]);
-            output.push_str(&format!("@--master-css-keyframe-{};", slot.id));
+            output.push_str(&concat_text!("@--master-css-keyframe-", slot.id, ";"));
             previous = slot.range.end;
         }
         output.push_str(&css[previous..]);
@@ -176,19 +178,28 @@ impl EngineSession {
             let start = units;
             units += css[slot.range.clone()].encode_utf16().count() as u32;
             previous = slot.range.end;
-            let mut text = format!(
-                "@media only all,(master-css-keyframe-{}){{:not(*){{--master-css-slot:0",
-                definition.slot_id.as_ref().unwrap_or(&definition.id)
+            let mut text = concat_text!(
+                "@media only all,(master-css-keyframe-",
+                definition.slot_id.as_ref().unwrap_or(&definition.id),
+                "){:not(*){--master-css-slot:0"
             );
             let mut frame = String::new();
             let mut cursor = 0;
             for (index, resource) in definition.resources.iter().enumerate() {
                 let value = slot
                     .values
-                    .get(&format!("--master-css-keyframe-resource-{index}"))
+                    .get(&concat_text!(
+                        "--master-css-keyframe-resource-",
+                        decimal(index)
+                    ))
                     .map(String::as_str)
                     .unwrap_or(&resource.value);
-                text.push_str(&format!(";--master-css-keyframe-resource-{index}:{value}"));
+                text.push_str(&concat_text!(
+                    ";--master-css-keyframe-resource-",
+                    decimal(index),
+                    ":",
+                    value
+                ));
                 let start = mastercss_lexer::utf16_to_byte_offset(&definition.text, resource.start)
                     .unwrap();
                 let end =
@@ -264,7 +275,10 @@ impl EngineSession {
             text.push_str(&definition.text[cursor..start]);
             text.push_str(
                 values
-                    .get(&format!("--master-css-keyframe-resource-{index}"))
+                    .get(&concat_text!(
+                        "--master-css-keyframe-resource-",
+                        decimal(index)
+                    ))
                     .unwrap_or(&resource.value),
             );
             cursor = end;

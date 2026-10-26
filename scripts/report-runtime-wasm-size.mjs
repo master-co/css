@@ -3,7 +3,8 @@
 // `cargo xtask build-wasm runtime --names` builds the shipped module with its name
 // section. Each group's function bodies are brotli-compressed on their own, so the
 // numbers rank what a change can remove; they do not add up to the shipped size,
-// which is reported separately with every custom section dropped.
+// which is reported separately with every custom section dropped. The report fails
+// when code the runtime must not link, such as `core::fmt`, comes back.
 //
 //   node scripts/report-runtime-wasm-size.mjs [--no-build] [--modules] [--json <file>]
 import { execFileSync } from 'node:child_process'
@@ -115,6 +116,14 @@ function parseModule(bytes) {
 
 const crate = name => name.match(/mastercss_(\w+?)\[[0-9a-f]+\]::(\w+)/)
 
+// Code the runtime Wasm must never link again; each was removed on purpose.
+const forbidden = [
+  ['core::fmt formatting (use concat_text! instead of format!)', /\bcore\[[0-9a-f]+\]::fmt::write\b|\balloc\[[0-9a-f]+\]::fmt::format\b/],
+  ['panic formatting (the build rebuilds std with immediate-abort panics)', /\bpanicking::|panic_fmt/],
+  ['Unicode tables (decide CSS name code points in mastercss-lexer)', /\bunicode::unicode_data::|unicode::printable::/],
+  ['float parsing and formatting (use decimal.rs)', /\bdec2flt::|\bflt2dec::|\bfmt::float::/]
+]
+
 /** Mirrors the categories used to plan the runtime Wasm size work. */
 function category(name) {
   if (name.includes('serde_wasm_bindgen')) return 'serde_wasm_bindgen'
@@ -190,5 +199,13 @@ if (args.includes('--modules')) {
   lines.push('', 'mastercss-engine modules')
   for (const group of report.engineModules) lines.push(row(`  ${group.group}`, group.raw, group.brotli, `  ${group.functions} fn`))
 }
+const linkedNames = [...module.names.values()]
+const violations = forbidden.flatMap(([label, pattern]) => {
+  const linked = linkedNames.filter(name => pattern.test(name))
+  return linked.length ? [`${label}: ${linked.slice(0, 3).join(', ')}${linked.length > 3 ? ` and ${linked.length - 3} more` : ''}`] : []
+})
+report.forbidden = violations
+if (violations.length) lines.push('', 'Forbidden code is linked:', ...violations.map(violation => `  ${violation}`))
 process.stdout.write(`${lines.join('\n')}\n`)
 if (jsonPath) writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`)
+if (violations.length) process.exitCode = 1

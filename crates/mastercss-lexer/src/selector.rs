@@ -6,7 +6,7 @@ pub fn replace_nesting_selector(source: &str, parent: &str) -> Option<String> {
     let mut attributes = 0_u32;
     let mut cursor = 0;
     let parent = if split_selector_list(parent).len() > 1 {
-        format!(":is({parent})")
+        crate::concat_text!(":is(", parent, ")")
     } else {
         parent.to_owned()
     };

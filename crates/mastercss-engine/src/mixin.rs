@@ -1,5 +1,7 @@
 //! Execution of the statically compilable mixin subset. No CSS stylesheet parser
 //! or browser-dependent parameter evaluation is part of the runtime engine.
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
 use std::collections::{HashMap, HashSet};
 
 use crate::decimal::Decimal;
@@ -542,7 +544,7 @@ impl Expansion<'_> {
                     body,
                 } => {
                     let next = mastercss_lexer::replace_nesting_selector(child, selector)
-                        .unwrap_or_else(|| format!("{selector} {child}"));
+                        .unwrap_or_else(|| concat_text!(selector, " ", child));
                     self.nodes(
                         body,
                         environment,
@@ -696,10 +698,14 @@ pub fn expand_mixin_with_contents(
             .get(definition)
             .and_then(|definition| definition.source.as_ref());
         return Err(match location {
-            Some(source) => format!(
-                "{message}; {definition} defined at {}:{}",
+            Some(source) => concat_text!(
+                message,
+                "; ",
+                definition,
+                " defined at ",
                 source.file.as_deref().unwrap_or("stylesheet.css"),
-                source.range.start
+                ":",
+                decimal(source.range.start as usize)
             ),
             None => message,
         });

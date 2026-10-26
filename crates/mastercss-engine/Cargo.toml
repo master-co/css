@@ -26,4 +26,3 @@ mastercss-lexer = { path = "../mastercss-lexer" }
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true
 serde_json.workspace = true
-thiserror.workspace = true

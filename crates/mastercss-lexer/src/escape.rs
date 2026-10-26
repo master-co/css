@@ -19,7 +19,7 @@ pub fn css_escape(value: &str) -> String {
             || (index == 1 && is_ascii_digit_unit(unit) && first == 0x002d)
         {
             result.push('\\');
-            result.push_str(&format!("{unit:x}"));
+            push_hex(&mut result, unit);
             result.push(' ');
             continue;
         }
@@ -51,6 +51,18 @@ pub fn escape_regexp(value: &str) -> String {
         output.push(character);
     }
     output
+}
+
+/// Appends `unit` in lowercase hexadecimal without leading zeros.
+fn push_hex(result: &mut String, unit: u16) {
+    let mut started = false;
+    for shift in [12, 8, 4, 0] {
+        let digit = (unit >> shift) & 0xf;
+        if started || digit != 0 || shift == 0 {
+            started = true;
+            result.push(char::from(b"0123456789abcdef"[usize::from(digit)]));
+        }
+    }
 }
 
 pub(crate) fn is_ascii_digit_unit(value: u16) -> bool {

@@ -5,6 +5,7 @@ use super::{
     emit_declarations, parse_serialized_declarations, resolve_state_branches, selector_priority,
     wrap_raw_conditions, wrap_state_conditions,
 };
+use mastercss_lexer::concat_text;
 
 /// One emitted state branch of a class, shared by rule and composition generation.
 struct GeneratedBranch<'a> {
@@ -117,7 +118,7 @@ impl EngineSession {
                     }
                     None => selector_text.clone(),
                 };
-                let mut text = format!("{rule_selector_text}{{{declarations}}}");
+                let mut text = concat_text!(rule_selector_text, "{", declarations, "}");
                 text = wrap_raw_conditions(text, &rule_conditions);
                 text = wrap_state_conditions(text, &branch.condition_wrappers);
                 node_texts.push(text);
@@ -216,7 +217,7 @@ impl EngineSession {
                 let key = if branch_index == 0 && branch.key.is_empty() {
                     class_name.to_owned()
                 } else {
-                    format!("{class_name}\0{}", branch.key)
+                    concat_text!(class_name, "\0", branch.key)
                 };
                 let layer = branch.layer.unwrap_or(utility.layer);
                 if !seen.insert((key.clone(), layer)) {

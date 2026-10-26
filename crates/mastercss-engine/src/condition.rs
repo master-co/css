@@ -1,4 +1,6 @@
 use super::{ConditionFeature, Program, UtilityLayerName, natural_compare};
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
 
 pub(crate) fn resolve_layer_condition(token: &str, manifest: &Program) -> Option<UtilityLayerName> {
     let _ = manifest;
@@ -16,7 +18,7 @@ pub(crate) fn render_condition_token(token: &str, _manifest: &Program) -> Option
         return Some(("starting-style".into(), "@starting-style".into()));
     }
     let query = mastercss_lexer::parse_native_query(token)?;
-    let wrapper = format!("@{} {}", query.kind, query.prelude);
+    let wrapper = concat_text!("@", query.kind, " ", query.prelude);
     Some((query.kind, wrapper))
 }
 
@@ -37,7 +39,7 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
             if !name.chars().all(mastercss_lexer::is_name_code_point) {
                 return features;
             }
-            (format!("container:{name}"), body.trim())
+            (concat_text!("container:", name), body.trim())
         }
     } else {
         return features;
@@ -99,7 +101,7 @@ fn add_native_range_features(features: &mut Vec<ConditionFeature>, body: &str) -
         if !range_feature(name) {
             return false;
         }
-        add_condition_feature(features, &format!("{name}:{unit}"), operator, number);
+        add_condition_feature(features, &concat_text!(name, ":", unit), operator, number);
         return true;
     }
     let mut operands = Vec::new();
@@ -148,7 +150,7 @@ fn add_native_range_features(features: &mut Vec<ConditionFeature>, body: &str) -
         let Some((number, unit)) = range_dimension(dimension) else {
             return false;
         };
-        add_condition_feature(features, &format!("{name}:{unit}"), operator, number);
+        add_condition_feature(features, &concat_text!(name, ":", unit), operator, number);
     }
     true
 }
@@ -246,15 +248,16 @@ pub fn condition_priority(wrappers: &[(String, String)]) -> (Vec<ConditionFeatur
     let mut conditions = Vec::new();
     for (index, ((_, wrapper), ranges)) in wrappers.iter().zip(parsed).enumerate() {
         if ranges.is_empty() {
-            conditions.push(format!(
-                "{index}:{}",
+            conditions.push(concat_text!(
+                decimal(index),
+                ":",
                 mastercss_lexer::canonical_native_content(wrapper)
             ));
         } else if media_conjunction {
             merge_condition_features(&mut features, &ranges);
         } else {
             for mut range in ranges {
-                range.domain = format!("{index}:{}", range.domain);
+                range.domain = concat_text!(decimal(index), ":", range.domain);
                 features.push(range);
             }
         }

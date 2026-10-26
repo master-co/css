@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+pub mod text;
 mod utf16_index;
 pub use utf16_index::Utf16Index;
 

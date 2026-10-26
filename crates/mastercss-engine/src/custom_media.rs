@@ -1,12 +1,13 @@
 //! CSS custom media uses logical substitution. A resolved expression retains
 //! media types separately from features; mixed types lower to nested @media
 //! blocks rather than being spliced into an invalid feature expression.
+use mastercss_lexer::concat_text;
 use mastercss_lexer::{CssSyntaxKind as Kind, CssSyntaxToken, tokenize_css_syntax};
 use mastercss_schema::MediaQueryExpr as Expr;
 
 pub fn parse_custom_media_query(
     source: &str,
-    resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
+    resolve: &mut dyn FnMut(&str) -> Result<Expr, String>,
 ) -> Result<Expr, String> {
     let tokens = tokenize_css_syntax(source);
     if tokens.len() == 1
@@ -72,7 +73,7 @@ impl MediaParser<'_> {
         &self,
         start: usize,
         end: usize,
-        resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
+        resolve: &mut dyn FnMut(&str) -> Result<Expr, String>,
     ) -> Result<Expr, String> {
         let mut queries = Vec::new();
         let mut cursor = start;
@@ -93,7 +94,7 @@ impl MediaParser<'_> {
         &self,
         start: usize,
         end: usize,
-        resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
+        resolve: &mut dyn FnMut(&str) -> Result<Expr, String>,
     ) -> Result<Expr, String> {
         if start >= end {
             return Err(crate::message(|| "Empty media query".into()));
@@ -158,7 +159,7 @@ impl MediaParser<'_> {
         &self,
         start: usize,
         end: usize,
-        resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
+        resolve: &mut dyn FnMut(&str) -> Result<Expr, String>,
     ) -> Result<Expr, String> {
         let top = self.top(start, end)?;
         if top.is_empty() {
@@ -214,7 +215,7 @@ impl MediaParser<'_> {
         &self,
         start: usize,
         end: usize,
-        resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
+        resolve: &mut dyn FnMut(&str) -> Result<Expr, String>,
     ) -> Result<Expr, String> {
         let token = &self.tokens[start];
         let close = token
@@ -288,13 +289,17 @@ pub fn custom_media_branches(query: &Expr) -> Result<Vec<Vec<String>>, String> {
                 }
             }
             Expr::Feature { value } => vec![vec![if negate {
-                format!("not {value}")
+                concat_text!("not ", value)
             } else {
                 value.clone()
             }]],
             Expr::MediaType { name } => {
                 let name = mastercss_lexer::css_escape(name);
-                vec![vec![if negate { format!("not {name}") } else { name }]]
+                vec![vec![if negate {
+                    concat_text!("not ", name)
+                } else {
+                    name
+                }]]
             }
             Expr::Not { query } => branches(query, !negate, depth + 1, remaining)?,
             Expr::And { queries } | Expr::Or { queries } => {

@@ -2,6 +2,7 @@ use super::{
     Program, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
     is_css_identifier_character, split_top_level,
 };
+use mastercss_lexer::concat_text;
 
 pub(crate) fn create_selector_text(
     class_name: &str,
@@ -9,7 +10,7 @@ pub(crate) fn create_selector_text(
     branch: &StateBranch,
     _manifest: &Program,
 ) -> String {
-    let body = format!(".{}", css_escape(class_name));
+    let body = concat_text!(".", css_escape(class_name));
     let mut selector = branch
         .selector_template
         .as_deref()
@@ -99,7 +100,7 @@ pub(crate) fn wrap_raw_conditions(mut text: String, conditions: &[String]) -> St
     for condition in conditions.iter().rev() {
         let condition = condition.trim();
         if !condition.is_empty() {
-            text = format!("{condition}{{{text}}}");
+            text = concat_text!(condition, "{", text, "}");
         }
     }
     text
@@ -107,7 +108,7 @@ pub(crate) fn wrap_raw_conditions(mut text: String, conditions: &[String]) -> St
 
 pub(crate) fn wrap_state_conditions(mut text: String, wrappers: &[(String, String)]) -> String {
     for (_, wrapper) in wrappers.iter().rev() {
-        text = format!("{wrapper}{{{text}}}");
+        text = concat_text!(wrapper, "{", text, "}");
     }
     text
 }
@@ -201,9 +202,9 @@ pub(crate) fn emit_declarations(
 
 pub(crate) fn format_declaration(property: &str, value: &str, important: bool) -> String {
     if important && !value.ends_with("!important") {
-        format!("{property}:{value}!important")
+        concat_text!(property, ":", value, "!important")
     } else {
-        format!("{property}:{value}")
+        concat_text!(property, ":", value)
     }
 }
 
@@ -219,9 +220,10 @@ fn format_native_declaration(property: &str, value: &str, important: bool) -> St
             | "user-drag"
             | "user-select"
     ) {
-        format!(
-            "{};{standard}",
-            format_declaration(&format!("-webkit-{property}"), value, important)
+        concat_text!(
+            format_declaration(&concat_text!("-webkit-", property), value, important),
+            ";",
+            standard
         )
     } else {
         standard

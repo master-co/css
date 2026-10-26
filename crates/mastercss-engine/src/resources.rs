@@ -4,6 +4,7 @@ use super::{
     UtilityLayerName, native_declaration_head, resolve_value_components, single_native_declaration,
     split_dynamic_value_state,
 };
+use mastercss_lexer::concat_text;
 
 impl EngineSession {
     pub(crate) fn ensure_active(&self) -> Result<(), EngineError> {
@@ -22,15 +23,17 @@ impl EngineSession {
                     mastercss_schema::ThemeNode::Declaration { name, value, .. }
                         if active.contains(name.as_str()) =>
                     {
-                        text.push_str(&format!(
-                            "{}:{value};",
-                            mastercss_lexer::css_escape(&format!("--{name}"))
+                        text.push_str(&concat_text!(
+                            mastercss_lexer::css_escape(&concat_text!("--", name)),
+                            ":",
+                            value,
+                            ";"
                         ));
                     }
                     mastercss_schema::ThemeNode::Rule { prelude, children } => {
                         let body = render(children, active);
                         if !body.is_empty() {
-                            text.push_str(&format!("{prelude}{{{body}}}"));
+                            text.push_str(&concat_text!(prelude, "{", body, "}"));
                         }
                     }
                     _ => {}
@@ -113,8 +116,11 @@ impl EngineSession {
         for name in roots {
             self.register_variable(&name, &mut HashSet::new());
             if self.compiled.compiled_variables[&name].namespace == "animate" {
-                let animation =
-                    self.declaration_animation_references(&format!("animation:var(--{name})"));
+                let animation = self.declaration_animation_references(&concat_text!(
+                    "animation:var(--",
+                    name,
+                    ")"
+                ));
                 self.register_keyframes(&animation.names, animation.retain_all);
             }
         }
@@ -176,7 +182,7 @@ impl EngineSession {
         }
         mastercss_lexer::decode_native_content(&value)?;
         let utility = UtilityDefinition {
-            id: format!("native:{}", candidate.ir.property),
+            id: concat_text!("native:", candidate.ir.property),
             name: None,
             utility_type: 0,
             order: Some(0),

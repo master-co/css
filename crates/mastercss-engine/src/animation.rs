@@ -1,6 +1,7 @@
 //! Conservative animation-name analysis over CSS token streams. This is shared
 //! by class execution and compiler-delivered styles, without a stylesheet parser.
 use super::{HashMap, HashSet, Program};
+use mastercss_lexer::concat_text;
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -136,8 +137,7 @@ fn resolve(
         let option_tokens = tokenize_css_syntax(&option);
         let option = option_tokens.iter().rev().nth(1).filter(|token| token.kind == Kind::Delim('!')).filter(|_| matches!(option_tokens.last().map(|token| &token.kind), Some(Kind::Ident(name)) if name.eq_ignore_ascii_case("important"))).map_or(option.as_str(), |token| &option[..token.bytes.start]);
         for replacement in resolve(option, manifest, variables, stack, budget)? {
-            let expanded = format!(
-                "{}{}{}",
+            let expanded = concat_text!(
                 &value[..token.bytes.start],
                 replacement,
                 &value[tokens[close].bytes.end..]

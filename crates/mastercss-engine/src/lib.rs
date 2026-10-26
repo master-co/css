@@ -3,6 +3,7 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
+use mastercss_lexer::concat_text;
 use mastercss_lexer::{
     collect_css_variable_references as collect_css_variable_names, css_escape, utf16_len,
 };
@@ -18,7 +19,6 @@ use serde::Serialize;
 #[cfg(feature = "manifest")]
 use serde_json::Map;
 use serde_json::Value;
-use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
 
@@ -36,24 +36,61 @@ pub(crate) fn message(build: impl FnOnce() -> String) -> String {
 }
 type ConditionFeature = mastercss_schema::ConditionRangeIr;
 
-#[derive(Debug, Error)]
+#[derive(Debug)]
 pub enum EngineError {
     #[cfg(feature = "manifest")]
-    #[error(transparent)]
-    Schema(#[from] mastercss_schema::SchemaError),
-    #[error("Invalid MasterCSSManifest engine field: {0}")]
+    Schema(mastercss_schema::SchemaError),
     InvalidManifest(String),
-    #[error("Invalid Master CSS emitted globals JSON: {0}")]
     InvalidEmittedGlobals(String),
-    #[error("Invalid Master CSS runtime program: {0}")]
     InvalidProgram(String),
-    #[error("Unsupported Master CSS runtime program version. Recompile it with matching packages.")]
     UnsupportedProgramVersion,
-    #[error("Master CSS engine session has been disposed.")]
     SessionDisposed,
 }
 
+#[cfg(feature = "manifest")]
+impl From<mastercss_schema::SchemaError> for EngineError {
+    fn from(error: mastercss_schema::SchemaError) -> Self {
+        Self::Schema(error)
+    }
+}
+
+impl std::fmt::Display for EngineError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(&self.message())
+    }
+}
+
+impl std::error::Error for EngineError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            #[cfg(feature = "manifest")]
+            Self::Schema(error) => std::error::Error::source(error),
+            _ => None,
+        }
+    }
+}
+
 impl EngineError {
+    /// The message, built without `core::fmt` so the runtime Wasm links none;
+    /// `Display` writes the same text.
+    pub fn message(&self) -> String {
+        match self {
+            #[cfg(feature = "manifest")]
+            Self::Schema(error) => error.to_string(),
+            Self::InvalidManifest(detail) => {
+                concat_text!("Invalid MasterCSSManifest engine field: ", detail)
+            }
+            Self::InvalidEmittedGlobals(detail) => {
+                concat_text!("Invalid Master CSS emitted globals JSON: ", detail)
+            }
+            Self::InvalidProgram(detail) => {
+                concat_text!("Invalid Master CSS runtime program: ", detail)
+            }
+            Self::UnsupportedProgramVersion => "Unsupported Master CSS runtime program version. Recompile it with matching packages.".into(),
+            Self::SessionDisposed => "Master CSS engine session has been disposed.".into(),
+        }
+    }
+
     pub fn diagnostic(&self) -> Diagnostic {
         let code = match self {
             #[cfg(feature = "manifest")]
@@ -68,7 +105,7 @@ impl EngineError {
             phase: mastercss_schema::DiagnosticPhase::Match,
             severity: mastercss_schema::DiagnosticSeverity::Error,
             code,
-            message: self.to_string(),
+            message: self.message(),
             source: None,
             range: None,
             notes: Vec::new(),

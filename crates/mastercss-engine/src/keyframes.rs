@@ -1,4 +1,5 @@
 use super::*;
+use mastercss_lexer::concat_text;
 use mastercss_schema::EngineKeyframeResourceIr;
 
 impl EngineSession {
@@ -100,7 +101,7 @@ impl EngineSession {
             return AnimationReferences::default();
         }
         animation::analyze(
-            &stylesheet_declarations(&format!("a{{{declarations}}}")),
+            &stylesheet_declarations(&concat_text!("a{", declarations, "}")),
             &self.compiled,
         )
     }

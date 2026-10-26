@@ -2,6 +2,7 @@
 #[cfg(feature = "manifest")]
 use super::UtilityMatcher;
 use super::{Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcherType};
+use mastercss_lexer::concat_text;
 #[cfg(feature = "manifest")]
 use mastercss_schema::{MixinParameterSyntax, UtilityKind};
 
@@ -22,13 +23,13 @@ pub(crate) fn register(manifest: &mut Program) {
             UtilityKind::Static => UtilityMatcher::Static { name: name.clone() },
             UtilityKind::Function => UtilityMatcher::Function { name: name.clone() },
             UtilityKind::Token => UtilityMatcher::Token {
-                prefix: format!("{name}-"),
+                prefix: concat_text!(name, "-"),
             },
         };
         let mut utility = UtilityDefinition {
             id: identity(definition),
             name: Some(if token {
-                format!("{name}-")
+                concat_text!(name, "-")
             } else {
                 name.clone()
             }),
@@ -39,7 +40,7 @@ pub(crate) fn register(manifest: &mut Program) {
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: if token {
-                vec![format!("~{}", &recipe.parameters[0].name[2..])]
+                vec![concat_text!("~", &recipe.parameters[0].name[2..])]
             } else {
                 Vec::new()
             },
@@ -195,8 +196,11 @@ pub(crate) fn named_arguments(
     // CSS strings, not JSON escape sequences: token names may contain Unicode
     // and escaped punctuation. ASCII controls cannot occur in a class name.
     if !key_argument {
-        return Some((vec![format!("var(--{variable})")], vec![variable.clone()]));
+        return Some((
+            vec![concat_text!("var(--", variable, ")")],
+            vec![variable.clone()],
+        ));
     }
-    let quoted = format!("\"{}\"", key.replace('\\', "\\\\").replace('"', "\\\""));
+    let quoted = concat_text!("\"", key.replace('\\', "\\\\").replace('"', "\\\""), "\"");
     Some((vec![quoted], vec![variable.clone()]))
 }

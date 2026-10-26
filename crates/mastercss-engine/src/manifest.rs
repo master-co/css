@@ -4,6 +4,7 @@ use super::{
 };
 #[cfg(feature = "manifest")]
 use super::{EngineError, HashMap, Map, MasterCssManifest, Value};
+use mastercss_lexer::concat_text;
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     match layer {
@@ -71,8 +72,9 @@ pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, 
     let (compiled_variables, compiled_variable_order) = compile_variables(&input.variables)?;
     for name in input.custom_media.keys() {
         if !name.starts_with("--") || name.len() == 2 || name == "--starting-style" {
-            return Err(EngineError::InvalidManifest(format!(
-                "Invalid or reserved custom media name {name}"
+            return Err(EngineError::InvalidManifest(concat_text!(
+                "Invalid or reserved custom media name ",
+                name
             )));
         }
     }
@@ -173,14 +175,18 @@ pub(crate) fn compile_variables(
     let mut order = Vec::new();
     for (namespace, definitions) in groups {
         let Some(definitions) = definitions.as_array() else {
-            return Err(EngineError::InvalidManifest(format!(
-                "variables.{namespace} must be an array"
+            return Err(EngineError::InvalidManifest(concat_text!(
+                "variables.",
+                namespace,
+                " must be an array"
             )));
         };
         for definition in definitions {
             let Some(object) = definition.as_object() else {
-                return Err(EngineError::InvalidManifest(format!(
-                    "variables.{namespace} entries must be objects"
+                return Err(EngineError::InvalidManifest(concat_text!(
+                    "variables.",
+                    namespace,
+                    " entries must be objects"
                 )));
             };
             if object.get("value") == Some(&Value::Bool(false)) {
@@ -256,7 +262,7 @@ pub(crate) fn default_variable_name(namespace: &str, key: &str) -> String {
     } else if key.is_empty() {
         namespace.to_owned()
     } else {
-        format!("{namespace}-{key}")
+        concat_text!(namespace, "-", key)
     }
 }
 

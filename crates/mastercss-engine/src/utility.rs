@@ -3,6 +3,7 @@ use super::{
     UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
     UtilityMatcherType, collect_css_variable_names, normalize_css_math_functions,
 };
+use mastercss_lexer::concat_text;
 
 pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
     let mut ids = utilities
@@ -10,7 +11,7 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
         .map(|utility| utility.id.clone())
         .collect::<std::collections::HashSet<_>>();
     for property in mastercss_schema::native_css_properties() {
-        let id = format!("native:{property}");
+        let id = concat_text!("native:", property);
         if !ids.insert(id.clone()) {
             continue;
         }
@@ -73,7 +74,7 @@ pub(crate) fn get_variable_key_by_namespace(
     let (negative, positive_name) = variable_name
         .strip_prefix('-')
         .map_or((false, variable_name), |name| (true, name));
-    if positive_name != namespace && !positive_name.starts_with(&format!("{namespace}-")) {
+    if positive_name != namespace && !positive_name.starts_with(&concat_text!(namespace, "-")) {
         return None;
     }
     let key = positive_name
@@ -81,7 +82,7 @@ pub(crate) fn get_variable_key_by_namespace(
         .and_then(|name| name.strip_prefix('-'))
         .unwrap_or_default();
     Some(if negative {
-        format!("-{key}")
+        concat_text!("-", key)
     } else {
         key.to_owned()
     })
@@ -285,7 +286,11 @@ pub(crate) fn match_utility_filtered(
                 if negative && !super::named::allows_negative_token(utility) {
                     continue;
                 }
-                let token = if negative { format!("-{value}") } else { value };
+                let token = if negative {
+                    concat_text!("-", value)
+                } else {
+                    value
+                };
                 let resolved = if matches!(utility.emit, UtilityEmit::Recipe { .. }) {
                     super::utility_matching::named_arguments(&token, utility)
                         .map(|(arguments, variable_names)| (None, arguments, variable_names))
@@ -339,15 +344,11 @@ pub(crate) fn alpha_percentage(alpha: &str) -> Option<String> {
     }
     let point = point + 2;
     Some(if point <= 0 {
-        format!("0.{}{digits}", "0".repeat((-point) as usize))
+        concat_text!("0.", "0".repeat((-point) as usize), digits)
     } else if point as usize >= digits.len() {
-        format!("{digits}{}", "0".repeat(point as usize - digits.len()))
+        concat_text!(digits, "0".repeat(point as usize - digits.len()))
     } else {
-        format!(
-            "{}.{}",
-            &digits[..point as usize],
-            &digits[point as usize..]
-        )
+        concat_text!(&digits[..point as usize], ".", &digits[point as usize..])
     })
 }
 
@@ -363,12 +364,19 @@ pub(crate) fn resolve_utility_value(
             return None;
         }
         let percentage = alpha_percentage(alpha)?;
-        let color = format!(
-            "var({})",
-            mastercss_lexer::css_escape(&format!("--{}", variable.name))
+        let color = concat_text!(
+            "var(",
+            mastercss_lexer::css_escape(&concat_text!("--", variable.name)),
+            ")"
         );
         return Some((
-            format!("color-mix(in oklab,{color} {percentage}%,transparent)"),
+            concat_text!(
+                "color-mix(in oklab,",
+                color,
+                " ",
+                percentage,
+                "%,transparent)"
+            ),
             vec![variable.name.clone()],
         ));
     }
@@ -380,13 +388,14 @@ pub(crate) fn resolve_utility_value(
     if negative && variable.variable_type != "number" {
         return None;
     }
-    let reference = format!(
-        "var({})",
-        mastercss_lexer::css_escape(&format!("--{}", variable.name))
+    let reference = concat_text!(
+        "var(",
+        mastercss_lexer::css_escape(&concat_text!("--", variable.name)),
+        ")"
     );
     Some((
         if negative {
-            format!("calc({reference} * -1)")
+            concat_text!("calc(", reference, " * -1)")
         } else {
             reference
         },

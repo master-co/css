@@ -3,6 +3,8 @@ use super::{
     EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, RulePriorityIr,
     StoredRule,
 };
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
 use mastercss_schema::{CssDeclaration, MixinNode, MixinValuePart, UtilityLayerName};
 
 pub(crate) fn invocation(token: &str) -> Option<Result<(String, Vec<String>), String>> {
@@ -107,13 +109,16 @@ impl EngineSession {
             } else if let Some(next) = super::resolve_layer_condition(suffix, &self.compiled) {
                 set_layer(&mut layer, next)?;
             } else {
-                let branches =
-                    super::resolve_state_branches(&format!("@{suffix}"), false, &self.compiled);
+                let branches = super::resolve_state_branches(
+                    &concat_text!("@", suffix),
+                    false,
+                    &self.compiled,
+                );
                 if branches.is_empty()
                     && !self
                         .compiled
                         .custom_media
-                        .contains_key(&format!("--{suffix}"))
+                        .contains_key(&concat_text!("--", suffix))
                 {
                     return Err(crate::message(|| format!("Unknown condition @{suffix}")));
                 }
@@ -149,7 +154,7 @@ impl EngineSession {
                 EngineCompositionRuleIr {
                     class_name: class.into(),
                     utility_name: primary.utility_name.clone(),
-                    key: format!("{class}\0apply:{index}"),
+                    key: concat_text!(class, "\0apply:", decimal(index)),
                     layer: layer.unwrap_or(primary.layer),
                     explicit_layer: layer,
                     utility_type: primary.utility_type,
@@ -168,7 +173,7 @@ impl EngineSession {
                             .declarations
                             .iter()
                             .map(|declaration| {
-                                format!("{}:{}", declaration.property, declaration.value)
+                                concat_text!(declaration.property, ":", declaration.value)
                             })
                             .collect::<Vec<_>>()
                             .join(";"),
@@ -216,7 +221,7 @@ impl EngineSession {
             return Vec::new();
         };
         // Keep the expansion atomic: sorting its fragments would change authored order.
-        let anchor = format!(".{}", super::css_escape(class));
+        let anchor = concat_text!(".", super::css_escape(class));
         let mut declarations = Vec::new();
         let mut nodes = Vec::new();
         let mut selectors = Vec::new();
@@ -227,12 +232,12 @@ impl EngineSession {
             let declaration = rule
                 .declarations
                 .iter()
-                .map(|d| format!("{}:{}", d.property, d.value.as_str().unwrap_or_default()))
+                .map(|d| concat_text!(d.property, ":", d.value.as_str().unwrap_or_default()))
                 .collect::<Vec<_>>()
                 .join(";");
             nodes.push(GeneratedRuleNodeIr {
                 text: super::wrap_raw_conditions(
-                    format!("{selector}{{{declaration}}}"),
+                    concat_text!(selector, "{", declaration, "}"),
                     &rule.conditions,
                 ),
             });

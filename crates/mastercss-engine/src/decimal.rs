@@ -2,6 +2,8 @@
 //! exact without binary floats, and conversion needs no correctly rounded parser,
 //! whose tables would dominate the runtime Wasm's data.
 
+use mastercss_lexer::concat_text;
+
 /// `2^1024 − 2^970`, the least magnitude that `f64::from_str` rounds to infinity.
 const F64_OVERFLOW: &str = "179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497792";
 
@@ -54,7 +56,7 @@ impl Decimal {
         {
             return None;
         }
-        let digits = format!("{integer}{fraction}");
+        let digits = concat_text!(integer, fraction);
         let leading = digits.bytes().take_while(|byte| *byte == b'0').count();
         let digits = digits[leading..].trim_end_matches('0').to_owned();
         Some(Self {

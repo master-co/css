@@ -2,6 +2,7 @@ use super::utility::match_utility_filtered;
 use super::{
     Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher, emit_declarations,
 };
+use mastercss_lexer::concat_text;
 
 /// Select a family before looking up a token. Missing qualified tokens never
 /// fall through to a shorter prefix, and exact named utilities reserve names.
@@ -117,7 +118,8 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         code,
         message,
         source: None,
-        range: Some(mastercss_schema::SourceRange {
+        // Like messages, ranges only matter to hosts that report diagnostics.
+        range: super::DIAGNOSTIC_MESSAGES.then(|| mastercss_schema::SourceRange {
             start: 0,
             end: diagnostic_source.encode_utf16().count() as u32,
         }),
@@ -175,7 +177,10 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
     }
     let mut explicit_layer = None;
     for token in super::state::split_state_token(source).1 {
-        if !manifest.custom_media.contains_key(&format!("--{token}")) {
+        if !manifest
+            .custom_media
+            .contains_key(&concat_text!("--", token))
+        {
             let replacement = match token.as_str() {
                 "base" => Some("@layer(base)"),
                 "default" => Some("@layer(defaults)"),
@@ -254,12 +259,14 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
                     .custom_media
                     .get(name)
                     .cloned()
-                    .ok_or_else(|| format!("Undefined custom media {name}"))
+                    .ok_or_else(|| concat_text!("Undefined custom media ", name))
             })
         {
             return vec![error(super::ErrorCode::UnknownCondition, message)];
         }
-        if !manifest.custom_media.contains_key(&format!("--{token}"))
+        if !manifest
+            .custom_media
+            .contains_key(&concat_text!("--", token))
             && super::render_condition_token(&token, manifest).is_none()
             && super::resolve_layer_condition(&token, manifest).is_none()
         {
@@ -405,7 +412,7 @@ pub(crate) fn retired_token_message(source: &str, manifest: &Program) -> Option<
                 .strip_prefix(old)
                 .and_then(|tail| tail.strip_prefix('-'))
             {
-                let candidate = format!("{sign}{current}-{tail}");
+                let candidate = concat_text!(sign, current, "-", tail);
                 if !matching_utilities(&candidate, manifest).is_empty()
                     && !replacements.contains(&candidate)
                 {

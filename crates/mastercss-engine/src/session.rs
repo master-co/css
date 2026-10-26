@@ -9,6 +9,7 @@ use super::{
 };
 #[cfg(feature = "manifest")]
 use super::{MasterCssManifest, compile_manifest};
+use mastercss_lexer::concat_text;
 
 impl EngineSession {
     /// Shared compiler/native-CSS expansion; does not register a class or resources.
@@ -576,7 +577,7 @@ impl EngineSession {
         Ok(self
             .compiled
             .custom_media
-            .contains_key(&format!("--{name}")))
+            .contains_key(&concat_text!("--", name)))
     }
 
     pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
@@ -850,14 +851,14 @@ impl EngineSession {
             .any(|family| {
                 self.compiled
                     .token_utilities
-                    .get(&format!("{}-", family.prefix))
+                    .get(&concat_text!(family.prefix, "-"))
                     .is_some_and(|indexes| {
                         indexes.iter().any(|index| {
                             let utility = &self.compiled.utilities[*index];
-                            utility.variable_alias_refs == [format!("~{}", family.namespace)]
+                            utility.variable_alias_refs == [concat_text!("~", family.namespace)]
                                 && utility.variable_entries.iter().any(|(key, _)| {
                                     super::named::matching_utilities(
-                                        &format!("{}-{key}", family.prefix),
+                                        &concat_text!(family.prefix, "-", key),
                                         &self.compiled,
                                     )
                                     .iter()
@@ -951,7 +952,7 @@ impl EngineSession {
                     let key = if branch_index == 0 && branch.key.is_empty() {
                         class_name.to_owned()
                     } else {
-                        format!("{class_name}\0{}", branch.key)
+                        concat_text!(class_name, "\0", branch.key)
                     };
                     emitted |= seen.insert((key, branch.layer.unwrap_or(utility.layer)));
                 }
