@@ -151,6 +151,17 @@ fn name<'a>(source: &'a str, cursor: &mut usize) -> Cow<'a, str> {
     decoded.map_or_else(|| Cow::Borrowed(&source[start..*cursor]), Cow::Owned)
 }
 
+/// The decoded leading name and colon offset of a `name:` class, read exactly as the
+/// first two `tokenize_css_syntax` tokens would be, without tokenizing the rest.
+pub fn leading_declaration_name(source: &str) -> Option<(usize, Cow<'_, str>)> {
+    if number_end(source).is_some() || !starts_identifier(source) {
+        return None;
+    }
+    let mut cursor = 0;
+    let value = name(source, &mut cursor);
+    (cursor > 0 && source[cursor..].starts_with(':') && value != "--").then_some((cursor, value))
+}
+
 /// Component tokens with decoded CSS names, byte ranges and matched block ends.
 /// This is lexical structure, not validation of property or at-rule grammars.
 pub fn tokenize_css_syntax(source: &str) -> Vec<CssSyntaxToken<'_>> {

@@ -6,7 +6,7 @@ use super::{
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
     collect_class_completion_candidates, collect_engine_color_tokens, compare_stored_rules,
     compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
-    normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
+    resolve_state_branches, resolve_style_selector_aliases,
 };
 
 impl EngineSession {
@@ -885,26 +885,14 @@ impl EngineSession {
                 if utility.native_fallback && generated {
                     break;
                 }
-                let resolved_value = matched.value.as_deref().map(|value| {
-                    if matched.value_normalized {
-                        value.to_owned()
-                    } else {
-                        normalize_dynamic_value(value)
-                    }
-                });
                 let mut emitted = false;
                 for (branch_index, branch) in
                     resolve_state_branches(&matched.state_token, important, &self.compiled)
                         .into_iter()
                         .enumerate()
                 {
-                    if emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important,
-                        &self.compiled,
-                    )
-                    .is_empty()
+                    if emit_declarations(utility, &matched, branch.important, &self.compiled)
+                        .is_empty()
                     {
                         continue;
                     }

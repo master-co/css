@@ -175,15 +175,17 @@ pub(crate) fn selector_priority(selector: Option<&str>) -> i32 {
 
 pub(crate) fn emit_declarations(
     utility: &UtilityDefinition,
-    matched_value: Option<&str>,
+    matched: &super::UtilityMatch,
     important: bool,
     manifest: &super::ManifestProjection,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
     match &utility.emit {
         UtilityEmit::Recipe { name, .. } => {
-            super::utility_matching::emit(manifest, name, matched_value, important)
+            super::utility_matching::emit(manifest, name, matched, important)
         }
-        UtilityEmit::Property { property } => matched_value
+        UtilityEmit::Property { property } => matched
+            .value
+            .as_deref()
             .filter(|value| !value.is_empty())
             .map(|value| {
                 vec![(

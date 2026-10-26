@@ -232,7 +232,8 @@ pub(crate) fn match_utility_filtered(
             {
                 return Some(UtilityMatch {
                     value: None,
-                    value_normalized: true,
+                    arguments: Vec::new(),
+                    expansion: Default::default(),
                     state_token: class_name[name.len()..].to_owned(),
                     variable_names: Vec::new(),
                     matcher_type: UtilityMatcherType::Static,
@@ -252,7 +253,8 @@ pub(crate) fn match_utility_filtered(
                             resolve_value_components(&value, Some(utility), manifest);
                         return Some(UtilityMatch {
                             value: Some(value),
-                            value_normalized: true,
+                            arguments: Vec::new(),
+                            expansion: Default::default(),
                             state_token,
                             variable_names,
                             matcher_type: UtilityMatcherType::Key,
@@ -283,16 +285,19 @@ pub(crate) fn match_utility_filtered(
                 }
                 let token = if negative { format!("-{value}") } else { value };
                 let resolved = if matches!(utility.emit, UtilityEmit::Recipe { .. }) {
-                    super::utility_matching::named_value(&token, utility)
+                    super::utility_matching::named_arguments(&token, utility)
+                        .map(|(arguments, variable_names)| (None, arguments, variable_names))
                 } else {
                     resolve_utility_alias_value(&token, utility, manifest)
+                        .map(|(value, variable_names)| (Some(value), Vec::new(), variable_names))
                 };
-                let Some((value, variable_names)) = resolved else {
+                let Some((value, arguments, variable_names)) = resolved else {
                     continue;
                 };
                 return Some(UtilityMatch {
-                    value: Some(value),
-                    value_normalized: true,
+                    value,
+                    arguments,
+                    expansion: Default::default(),
                     state_token,
                     variable_names,
                     matcher_type: UtilityMatcherType::Token,

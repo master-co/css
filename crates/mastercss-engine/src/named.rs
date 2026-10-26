@@ -363,9 +363,7 @@ fn ambiguous_token_message(
                 matches!(matcher, UtilityMatcher::Token { .. })
             })
         {
-            for (_, declarations, _, _) in
-                emit_declarations(utility, matched.value.as_deref(), false, manifest)
-            {
+            for (_, declarations, _, _) in emit_declarations(utility, &matched, false, manifest) {
                 for declaration in super::split_top_level(&declarations, ';') {
                     if !declaration.is_empty() && !alternatives.contains(&declaration) {
                         alternatives.push(declaration);
@@ -474,7 +472,7 @@ pub(crate) fn sort_key(
     if utility.utility_type == -2 && matched.matcher_type != super::UtilityMatcherType::Token {
         return String::new(); // Static/enum identities retain their existing semantic order.
     }
-    emit_declarations(utility, matched.value.as_deref(), false, manifest)
+    emit_declarations(utility, matched, false, manifest)
         .into_iter()
         .map(|(_, declarations, _, _)| declarations)
         .collect::<Vec<_>>()

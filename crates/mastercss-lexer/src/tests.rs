@@ -556,3 +556,48 @@ fn extracts_many_mixins_with_utf16_ranges_and_untouched_gaps() {
     assert_eq!(remaining.lines().count(), source.lines().count());
     assert!(!remaining.contains("@mixin"));
 }
+
+#[test]
+fn leading_declaration_name_matches_the_first_two_tokens() {
+    use super::{CssSyntaxKind, leading_declaration_name, tokenize_css_syntax};
+    for source in [
+        "display:block",
+        "font-family:mono",
+        "--size:1rem",
+        "--:1",
+        "-webkit-line-clamp:2",
+        "\\31 0:x",
+        "f\\:oo:bar",
+        "color :red",
+        " color:red",
+        "/**/color:red",
+        "1px:red",
+        "-1px:red",
+        "--1:red",
+        "calc(1):x",
+        "@media:x",
+        "\"color\":red",
+        "color",
+        "color:",
+        ":hover",
+        "é:x",
+        "+a:b",
+    ] {
+        let tokens = tokenize_css_syntax(source);
+        let expected = match tokens.as_slice() {
+            [first, colon, ..] => match &first.kind {
+                CssSyntaxKind::Ident(name)
+                    if first.bytes.start == 0
+                        && colon.bytes.start == first.bytes.end
+                        && colon.kind == CssSyntaxKind::Delim(':')
+                        && name != "--" =>
+                {
+                    Some((colon.bytes.start, name.clone()))
+                }
+                _ => None,
+            },
+            _ => None,
+        };
+        assert_eq!(leading_declaration_name(source), expected, "{source}");
+    }
+}

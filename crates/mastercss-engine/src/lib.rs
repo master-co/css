@@ -76,6 +76,9 @@ struct ManifestProjection {
     animation_variables: HashMap<String, Vec<String>>,
     #[serde(default)]
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
+    /// The `custom_media_branches` paths of each named custom media query.
+    #[serde(skip)]
+    custom_media_paths: HashMap<String, Vec<Vec<String>>>,
     version: u32,
     #[serde(skip)]
     utilities: Vec<UtilityDefinition>,
@@ -154,8 +157,12 @@ enum UtilityEmit {
 
 #[derive(Debug, Clone)]
 struct UtilityMatch {
+    /// The declaration value of a property utility.
     value: Option<String>,
-    value_normalized: bool,
+    /// The arguments of a recipe utility.
+    arguments: Vec<String>,
+    /// The recipe expansion, computed once per match and shared by every state branch.
+    expansion: std::cell::OnceCell<Option<Vec<ExpandedMixinRule>>>,
     state_token: String,
     variable_names: Vec<String>,
     matcher_type: UtilityMatcherType,

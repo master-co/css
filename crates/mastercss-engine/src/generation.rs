@@ -1,10 +1,22 @@
 use super::{
     EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet,
-    RulePriorityIr, StoredRule, collect_css_variable_names, composition_conditions,
-    composition_selector, create_selector_text, emit_declarations, normalize_dynamic_value,
-    parse_serialized_declarations, resolve_state_branches, selector_priority, wrap_raw_conditions,
-    wrap_state_conditions,
+    RulePriorityIr, StateBranch, StoredRule, UtilityDefinition, UtilityLayerName, UtilityMatch,
+    collect_css_variable_names, composition_conditions, composition_selector, create_selector_text,
+    emit_declarations, parse_serialized_declarations, resolve_state_branches, selector_priority,
+    wrap_raw_conditions, wrap_state_conditions,
 };
+
+/// One emitted state branch of a class, shared by rule and composition generation.
+struct GeneratedBranch<'a> {
+    utility: &'a UtilityDefinition,
+    matched: &'a UtilityMatch,
+    branch: StateBranch,
+    key: String,
+    layer: UtilityLayerName,
+    emitted_rules: Vec<(usize, String, Option<String>, Vec<String>)>,
+    sort_tier: i32,
+    priority: RulePriorityIr,
+}
 
 impl EngineSession {
     pub(crate) fn generate_composition_rules(
@@ -34,113 +46,44 @@ impl EngineSession {
             return Vec::new();
         }
         let mut generated = Vec::new();
-        let mut seen = HashSet::new();
-        let (semantic_class_name, important) = class_name
-            .strip_suffix('!')
-            .map_or((class_name, false), |name| (name, true));
-        let matching_class_names = [semantic_class_name.to_owned()];
-        for matching_class_name in matching_class_names {
-            let generated_before_candidate = generated.len();
-            let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
-            let fallback = matches
-                .is_empty()
-                .then(|| self.native_declaration_fallback(&matching_class_name))
-                .flatten();
-            for (utility, matched) in matches
-                .into_iter()
-                .map(|(index, matched)| (&self.compiled.utilities[index], matched))
-                .chain(
-                    fallback
-                        .as_ref()
-                        .map(|(utility, matched)| (utility, matched.clone())),
-                )
-            {
-                if utility.native_fallback && generated.len() > generated_before_candidate {
-                    break;
-                }
-                let resolved_value = matched.value.as_deref().map(|value| {
-                    if matched.value_normalized {
-                        value.to_owned()
-                    } else {
-                        normalize_dynamic_value(value)
-                    }
+        self.generated_branches(class_name, |generated_branch| {
+            let GeneratedBranch {
+                utility,
+                branch,
+                key,
+                layer,
+                emitted_rules,
+                sort_tier,
+                priority,
+                ..
+            } = generated_branch;
+            let base_selector = composition_selector(&branch, &self.compiled);
+            let branch_conditions = composition_conditions(&branch);
+            for (_, declarations, rule_selector, rule_conditions) in emitted_rules {
+                let selector = rule_selector
+                    .as_deref()
+                    .map(|template| {
+                        mastercss_lexer::replace_nesting_selector(template, &base_selector)
+                            .unwrap_or_else(|| template.to_owned())
+                    })
+                    .unwrap_or_else(|| base_selector.clone());
+                let mut conditions = branch_conditions.clone();
+                conditions.extend(rule_conditions);
+                generated.push(EngineCompositionRuleIr {
+                    class_name: class_name.to_owned(),
+                    utility_name: utility.name.clone(),
+                    key: key.clone(),
+                    layer,
+                    explicit_layer: branch.layer,
+                    utility_type: utility.utility_type,
+                    sort_tier,
+                    priority: priority.clone(),
+                    selector,
+                    declarations: parse_serialized_declarations(&declarations),
+                    conditions,
                 });
-                for (branch_index, branch) in
-                    resolve_state_branches(&matched.state_token, important, &self.compiled)
-                        .into_iter()
-                        .enumerate()
-                {
-                    let emitted_rules = emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important,
-                        &self.compiled,
-                    );
-                    if emitted_rules.is_empty() {
-                        continue;
-                    }
-                    let key = if branch_index == 0 && branch.key.is_empty() {
-                        class_name.to_owned()
-                    } else {
-                        format!("{class_name}\0{}", branch.key)
-                    };
-                    let layer = branch.layer.unwrap_or(utility.layer);
-                    if !seen.insert((key.clone(), layer)) {
-                        continue;
-                    }
-                    let sort_tier = if !branch.condition_wrappers.is_empty() {
-                        3
-                    } else if branch.selector_template.is_some() {
-                        1
-                    } else {
-                        0
-                    };
-                    let (features, conditions) =
-                        super::condition::condition_priority(&branch.condition_wrappers);
-                    let priority = RulePriorityIr {
-                        value_priority: if matched.matcher_type == super::UtilityMatcherType::Token
-                        {
-                            -1
-                        } else {
-                            0
-                        },
-                        sort_key: super::named::sort_key(utility, &matched, &self.compiled),
-                        features,
-                        conditions,
-                        selector: selector_priority(branch.selector_template.as_deref()),
-                    };
-                    let base_selector = composition_selector(&branch, &self.compiled);
-                    let branch_conditions = composition_conditions(&branch);
-                    for (_, declarations, rule_selector, rule_conditions) in emitted_rules {
-                        let selector = rule_selector
-                            .as_deref()
-                            .map(|template| {
-                                mastercss_lexer::replace_nesting_selector(template, &base_selector)
-                                    .unwrap_or_else(|| template.to_owned())
-                            })
-                            .unwrap_or_else(|| base_selector.clone());
-                        let mut conditions = branch_conditions.clone();
-                        conditions.extend(rule_conditions);
-                        generated.push(EngineCompositionRuleIr {
-                            class_name: class_name.to_owned(),
-                            utility_name: utility.name.clone(),
-                            key: key.clone(),
-                            layer,
-                            explicit_layer: branch.layer,
-                            utility_type: utility.utility_type,
-                            sort_tier,
-                            priority: priority.clone(),
-                            selector,
-                            declarations: parse_serialized_declarations(&declarations),
-                            conditions,
-                        });
-                    }
-                }
             }
-            if generated.len() > generated_before_candidate {
-                break;
-            }
-        }
+        });
         generated
     }
 
@@ -152,162 +95,169 @@ impl EngineSession {
             return Vec::new();
         }
         let mut generated = Vec::new();
-        let mut seen = HashSet::new();
+        self.generated_branches(class_name, |generated_branch| {
+            let GeneratedBranch {
+                utility,
+                matched,
+                branch,
+                key,
+                layer,
+                emitted_rules,
+                sort_tier,
+                priority,
+            } = generated_branch;
+            let selector_text = create_selector_text(class_name, None, &branch, &self.compiled);
+            let mut node_texts = Vec::with_capacity(emitted_rules.len());
+            let mut declaration_texts = Vec::with_capacity(emitted_rules.len());
+            for (_, declarations, selector, rule_conditions) in emitted_rules {
+                let declarations = super::inline_theme::substitute(&declarations, &self.compiled);
+                let rule_selector_text = match selector.as_deref() {
+                    Some(selector) => {
+                        create_selector_text(class_name, Some(selector), &branch, &self.compiled)
+                    }
+                    None => selector_text.clone(),
+                };
+                let mut text = format!("{rule_selector_text}{{{declarations}}}");
+                text = wrap_raw_conditions(text, &rule_conditions);
+                text = wrap_state_conditions(text, &branch.condition_wrappers);
+                node_texts.push(text);
+                declaration_texts.push(declarations);
+            }
+            let text = node_texts.concat();
+            let declarations = declaration_texts.join(";");
+            let mut variable_names = matched
+                .variable_names
+                .iter()
+                .filter(|name| {
+                    self.compiled
+                        .compiled_variables
+                        .get(*name)
+                        .is_none_or(|variable| variable.inline_value.is_none())
+                })
+                .cloned()
+                .collect::<Vec<_>>();
+            for name in collect_css_variable_names(&declarations) {
+                if self.compiled.compiled_variables.contains_key(&name)
+                    && !variable_names.contains(&name)
+                {
+                    variable_names.push(name);
+                }
+            }
+            let animation = self.declaration_animation_references(&declarations);
+            generated.push(StoredRule {
+                ir: GeneratedRuleIr {
+                    class_name: class_name.to_owned(),
+                    key,
+                    layer,
+                    utility_type: utility.utility_type,
+                    sort_tier,
+                    priority,
+                    text,
+                    nodes: if node_texts.len() > 1 {
+                        node_texts
+                            .into_iter()
+                            .map(|text| GeneratedRuleNodeIr { text })
+                            .collect()
+                    } else {
+                        Vec::new()
+                    },
+                    selector_text: Some(selector_text),
+                    variable_names,
+                    keyframe_names: animation.names,
+                    retain_all_keyframes: animation.retain_all,
+                },
+                manifest_order: utility.order.unwrap_or_default(),
+                declarations,
+                native_fallback: utility.native_fallback,
+                matcher_type: Some(matched.matcher_type),
+                state_token: matched.state_token.clone(),
+            });
+        });
+        generated
+    }
+
+    /// Matches a class and visits each state branch that emits declarations. A native
+    /// fallback only applies when no registered utility emitted a branch.
+    fn generated_branches(&self, class_name: &str, mut visit: impl FnMut(GeneratedBranch<'_>)) {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let matching_class_names = [semantic_class_name.to_owned()];
-        for matching_class_name in matching_class_names {
-            let generated_before_candidate = generated.len();
-            let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
-            let fallback = matches
-                .is_empty()
-                .then(|| self.native_declaration_fallback(&matching_class_name))
-                .flatten();
-            for (utility, matched) in matches
-                .into_iter()
-                .map(|(index, matched)| (&self.compiled.utilities[index], matched))
-                .chain(
-                    fallback
-                        .as_ref()
-                        .map(|(utility, matched)| (utility, matched.clone())),
-                )
-            {
-                if utility.native_fallback && generated.len() > generated_before_candidate {
-                    break;
-                }
-                let state_branches =
-                    resolve_state_branches(&matched.state_token, important, &self.compiled);
-                let resolved_value = matched.value.as_deref().map(|value| {
-                    if matched.value_normalized {
-                        value.to_owned()
-                    } else {
-                        normalize_dynamic_value(value)
-                    }
-                });
-                for (branch_index, branch) in state_branches.into_iter().enumerate() {
-                    let emitted_rules = emit_declarations(
-                        utility,
-                        resolved_value.as_deref(),
-                        branch.important,
-                        &self.compiled,
-                    );
-                    if emitted_rules.is_empty() {
-                        continue;
-                    }
-                    let key = if branch_index == 0 && branch.key.is_empty() {
-                        class_name.to_owned()
-                    } else {
-                        format!("{class_name}\0{}", branch.key)
-                    };
-                    let layer = branch.layer.unwrap_or(utility.layer);
-                    if !seen.insert((key.clone(), layer)) {
-                        continue;
-                    }
-                    let selector_text =
-                        create_selector_text(class_name, None, &branch, &self.compiled);
-                    let mut node_texts = Vec::with_capacity(emitted_rules.len());
-                    let mut declaration_texts = Vec::with_capacity(emitted_rules.len());
-                    for (_, declarations, selector, rule_conditions) in emitted_rules {
-                        let declarations =
-                            super::inline_theme::substitute(&declarations, &self.compiled);
-                        let selector_text = create_selector_text(
-                            class_name,
-                            selector.as_deref(),
-                            &branch,
-                            &self.compiled,
-                        );
-                        let mut text = format!("{selector_text}{{{declarations}}}");
-                        text = wrap_raw_conditions(text, &rule_conditions);
-                        text = wrap_state_conditions(text, &branch.condition_wrappers);
-                        node_texts.push(text);
-                        declaration_texts.push(declarations);
-                    }
-                    let text = node_texts.concat();
-                    let declarations = declaration_texts.join(";");
-                    let mut variable_names = matched
-                        .variable_names
-                        .iter()
-                        .filter(|name| {
-                            self.compiled
-                                .compiled_variables
-                                .get(*name)
-                                .is_none_or(|variable| variable.inline_value.is_none())
-                        })
-                        .cloned()
-                        .collect::<Vec<_>>();
-                    for name in collect_css_variable_names(&declarations) {
-                        if self.compiled.compiled_variables.contains_key(&name)
-                            && !variable_names.contains(&name)
-                        {
-                            variable_names.push(name);
-                        }
-                    }
-                    let sort_tier = if !branch.condition_wrappers.is_empty() {
-                        3
-                    } else if branch.selector_template.is_some() {
-                        1
-                    } else {
-                        0
-                    };
-                    let animation = self.declaration_animation_references(&declarations);
-                    generated.push(StoredRule {
-                        ir: GeneratedRuleIr {
-                            class_name: class_name.to_owned(),
-                            key,
-                            layer,
-                            utility_type: utility.utility_type,
-                            sort_tier,
-                            priority: {
-                                let (features, conditions) = super::condition::condition_priority(
-                                    &branch.condition_wrappers,
-                                );
-                                RulePriorityIr {
-                                    value_priority: if matched.matcher_type
-                                        == super::UtilityMatcherType::Token
-                                    {
-                                        -1
-                                    } else {
-                                        0
-                                    },
-                                    sort_key: super::named::sort_key(
-                                        utility,
-                                        &matched,
-                                        &self.compiled,
-                                    ),
-                                    features,
-                                    conditions,
-                                    selector: selector_priority(
-                                        branch.selector_template.as_deref(),
-                                    ),
-                                }
-                            },
-                            text,
-                            nodes: if node_texts.len() > 1 {
-                                node_texts
-                                    .into_iter()
-                                    .map(|text| GeneratedRuleNodeIr { text })
-                                    .collect()
-                            } else {
-                                Vec::new()
-                            },
-                            selector_text: Some(selector_text),
-                            variable_names,
-                            keyframe_names: animation.names,
-                            retain_all_keyframes: animation.retain_all,
-                        },
-                        manifest_order: utility.order.unwrap_or_default(),
-                        declarations,
-                        native_fallback: utility.native_fallback,
-                        matcher_type: Some(matched.matcher_type),
-                        state_token: matched.state_token.clone(),
-                    });
-                }
-            }
-            if generated.len() > generated_before_candidate {
+        let matches = super::named::matching_utilities(semantic_class_name, &self.compiled);
+        let fallback = matches
+            .is_empty()
+            .then(|| self.native_declaration_fallback(semantic_class_name))
+            .flatten();
+        let mut seen = HashSet::new();
+        let mut emitted = false;
+        for (utility, matched) in matches
+            .iter()
+            .map(|(index, matched)| (&self.compiled.utilities[*index], matched))
+            .chain(
+                fallback
+                    .as_ref()
+                    .map(|(utility, matched)| (utility, matched)),
+            )
+        {
+            if utility.native_fallback && emitted {
                 break;
             }
+            // The sort key ignores the branch; compute it once for the first emitted one.
+            let mut sort_key = None;
+            for (branch_index, branch) in
+                resolve_state_branches(&matched.state_token, important, &self.compiled)
+                    .into_iter()
+                    .enumerate()
+            {
+                let emitted_rules =
+                    emit_declarations(utility, matched, branch.important, &self.compiled);
+                if emitted_rules.is_empty() {
+                    continue;
+                }
+                let key = if branch_index == 0 && branch.key.is_empty() {
+                    class_name.to_owned()
+                } else {
+                    format!("{class_name}\0{}", branch.key)
+                };
+                let layer = branch.layer.unwrap_or(utility.layer);
+                if !seen.insert((key.clone(), layer)) {
+                    continue;
+                }
+                let sort_tier = if !branch.condition_wrappers.is_empty() {
+                    3
+                } else if branch.selector_template.is_some() {
+                    1
+                } else {
+                    0
+                };
+                let (features, conditions) =
+                    super::condition::condition_priority(&branch.condition_wrappers);
+                let priority = RulePriorityIr {
+                    value_priority: if matched.matcher_type == super::UtilityMatcherType::Token {
+                        -1
+                    } else {
+                        0
+                    },
+                    sort_key: sort_key
+                        .get_or_insert_with(|| {
+                            super::named::sort_key(utility, matched, &self.compiled)
+                        })
+                        .clone(),
+                    features,
+                    conditions,
+                    selector: selector_priority(branch.selector_template.as_deref()),
+                };
+                emitted = true;
+                visit(GeneratedBranch {
+                    utility,
+                    matched,
+                    branch,
+                    key,
+                    layer,
+                    emitted_rules,
+                    sort_tier,
+                    priority,
+                });
+            }
         }
-        generated
     }
 }

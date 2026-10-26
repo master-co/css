@@ -3,18 +3,7 @@ use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
 use std::borrow::Cow;
 
 pub(crate) fn native_declaration_head(source: &str) -> Option<(usize, Cow<'_, str>)> {
-    let tokens = tokenize_css_syntax(source);
-    let [first, colon, ..] = tokens.as_slice() else {
-        return None;
-    };
-    let Kind::Ident(name) = &first.kind else {
-        return None;
-    };
-    (first.bytes.start == 0
-        && colon.bytes.start == first.bytes.end
-        && colon.kind == Kind::Delim(':')
-        && name != "--")
-        .then(|| (colon.bytes.start, name.clone()))
+    mastercss_lexer::leading_declaration_name(source)
 }
 
 pub(crate) fn normalize_unmanaged_value(value: &str) -> String {

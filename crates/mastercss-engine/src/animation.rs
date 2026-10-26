@@ -37,7 +37,8 @@ pub(crate) fn analyze(
     if manifest.keyframes.is_empty() {
         return AnimationReferences::default();
     }
-    let mut variables = manifest.animation_variables.clone();
+    // Values these declarations assign, resolved after the delivered animation_variables.
+    let mut variables = HashMap::<String, Vec<String>>::new();
     for (name, value) in declarations {
         if let Some(name) = name.strip_prefix("--") {
             variables
@@ -108,7 +109,15 @@ fn resolve(
         // Native values come only from delivered animation_variables.
         .flat_map(|variable| variable.values.iter().map(|value| value.value.clone()))
         .collect::<Vec<_>>();
-    options.extend(variables.get(&name).into_iter().flatten().cloned());
+    options.extend(
+        manifest
+            .animation_variables
+            .get(&name)
+            .into_iter()
+            .chain(variables.get(&name))
+            .flatten()
+            .cloned(),
+    );
     // A fallback does not prove that an externally supplied property is absent.
     // Keep the unknown branch live even when a literal fallback exists.
     if options.is_empty() {

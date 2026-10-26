@@ -197,7 +197,8 @@ impl EngineSession {
             utility,
             super::UtilityMatch {
                 value: Some(value),
-                value_normalized: true,
+                arguments: Vec::new(),
+                expansion: Default::default(),
                 state_token: state,
                 variable_names: Vec::new(),
                 matcher_type: super::UtilityMatcherType::Key,

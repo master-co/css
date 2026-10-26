@@ -35,27 +35,26 @@ pub(crate) fn resolve_state_branches(
     }
 
     for condition_token in condition_tokens {
-        let media = if let Some(query) = manifest.custom_media.get(&format!("--{condition_token}"))
+        let paths = if let Some(paths) = manifest
+            .custom_media_paths
+            .get(&format!("--{condition_token}"))
         {
-            Some(Ok(query.clone()))
+            Some(Ok(std::borrow::Cow::Borrowed(paths)))
         } else {
             mastercss_lexer::parse_native_query(&condition_token)
                 .filter(|query| query.kind == "media" && query.prelude.contains("--"))
                 .map(|query| {
                     crate::parse_custom_media_query(&query.prelude, &mut |name| {
-                        manifest
-                            .custom_media
-                            .get(name)
-                            .cloned()
-                            .ok_or_else(|| format!("Undefined custom media {name}"))
+                        manifest.custom_media.get(name).cloned().ok_or_else(|| {
+                            crate::message(|| format!("Undefined custom media {name}"))
+                        })
                     })
+                    .and_then(|media| crate::custom_media_branches(&media))
+                    .map(std::borrow::Cow::Owned)
                 })
         };
-        if let Some(media) = media {
-            let Ok(media) = media else { return Vec::new() };
-            let Ok(paths) = crate::custom_media_branches(&media) else {
-                return Vec::new();
-            };
+        if let Some(paths) = paths {
+            let Ok(paths) = paths else { return Vec::new() };
             branches = branches
                 .into_iter()
                 .flat_map(|branch| {

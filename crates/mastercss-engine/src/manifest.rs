@@ -56,7 +56,8 @@ pub(crate) fn compile_manifest(
                 "Invalid or reserved custom media name {name}"
             )));
         }
-        crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
+        let paths = crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
+        projection.custom_media_paths.insert(name.clone(), paths);
     }
     super::utility_matching::register(&mut projection);
     append_builtin_native_declaration_utilities(&mut projection.utilities);

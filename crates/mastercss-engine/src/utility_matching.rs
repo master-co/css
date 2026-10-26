@@ -107,14 +107,15 @@ pub(crate) fn matching(
     let Some(index) = manifest.function_utilities.get(&name).copied() else {
         return Some(Vec::new());
     };
-    if expand(manifest, &format!("Function:{name}"), &arguments).is_err() {
+    let Ok(expansion) = expand(manifest, &format!("Function:{name}"), &arguments) else {
         return Some(Vec::new());
-    }
+    };
     Some(vec![(
         index,
         UtilityMatch {
-            value: Some(serde_json::to_string(&arguments).expect("arguments")),
-            value_normalized: true,
+            value: None,
+            arguments,
+            expansion: Some(expansion).into(),
             state_token,
             variable_names: Vec::new(),
             matcher_type: UtilityMatcherType::Function,
@@ -133,15 +134,10 @@ pub(crate) fn diagnostic(source: &str, manifest: &ManifestProjection) -> Option<
     }
     let matches = super::named::matching_utilities(source, manifest);
     for (index, matched) in matches {
-        if let UtilityEmit::Recipe { name, .. } = &manifest.utilities[index].emit {
-            let arguments = matched
-                .value
-                .as_deref()
-                .and_then(|value| serde_json::from_str::<Vec<String>>(value).ok())
-                .unwrap_or_default();
-            if let Err(message) = expand(manifest, name, &arguments) {
-                return Some(message);
-            }
+        if let UtilityEmit::Recipe { name, .. } = &manifest.utilities[index].emit
+            && let Err(message) = expand(manifest, name, &matched.arguments)
+        {
+            return Some(message);
         }
     }
     None
@@ -150,17 +146,17 @@ pub(crate) fn diagnostic(source: &str, manifest: &ManifestProjection) -> Option<
 pub(crate) fn emit(
     manifest: &ManifestProjection,
     name: &str,
-    value: Option<&str>,
+    matched: &UtilityMatch,
     important: bool,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
-    let arguments = value
-        .and_then(|value| serde_json::from_str::<Vec<String>>(value).ok())
-        .unwrap_or_default();
-    let Ok(rules) = expand(manifest, name, &arguments) else {
+    let Some(rules) = matched
+        .expansion
+        .get_or_init(|| expand(manifest, name, &matched.arguments).ok())
+    else {
         return Vec::new();
     };
     rules
-        .into_iter()
+        .iter()
         .enumerate()
         .map(|(index, rule)| {
             let declarations = rule
@@ -178,14 +174,17 @@ pub(crate) fn emit(
             (
                 index,
                 declarations,
-                (rule.selector != "&").then_some(rule.selector),
-                rule.conditions,
+                (rule.selector != "&").then(|| rule.selector.clone()),
+                rule.conditions.clone(),
             )
         })
         .collect()
 }
 
-pub(crate) fn named_value(key: &str, utility: &UtilityDefinition) -> Option<(String, Vec<String>)> {
+pub(crate) fn named_arguments(
+    key: &str,
+    utility: &UtilityDefinition,
+) -> Option<(Vec<String>, Vec<String>)> {
     let key_argument = matches!(utility.emit, UtilityEmit::Recipe { key: true, .. });
     if key_argument && key.contains("--") {
         return None;
@@ -194,14 +193,8 @@ pub(crate) fn named_value(key: &str, utility: &UtilityDefinition) -> Option<(Str
     // CSS strings, not JSON escape sequences: token names may contain Unicode
     // and escaped punctuation. ASCII controls cannot occur in a class name.
     if !key_argument {
-        return Some((
-            serde_json::to_string(&vec![format!("var(--{variable})")]).expect("argument"),
-            vec![variable.clone()],
-        ));
+        return Some((vec![format!("var(--{variable})")], vec![variable.clone()]));
     }
     let quoted = format!("\"{}\"", key.replace('\\', "\\\\").replace('"', "\\\""));
-    Some((
-        serde_json::to_string(&vec![quoted]).expect("argument"),
-        vec![variable.clone()],
-    ))
+    Some((vec![quoted], vec![variable.clone()]))
 }

@@ -271,7 +271,7 @@ pub use at_rules::extract_top_level_at_rule_blocks;
 pub use class_list::{collect_class_list_cursor_ranges, collect_class_list_token_ranges};
 pub use css_syntax::{
     CssSyntaxKind, CssSyntaxStatement, CssSyntaxToken, collect_css_syntax_statements,
-    tokenize_css_syntax,
+    leading_declaration_name, tokenize_css_syntax,
 };
 pub use directives::{
     find_css_directive_ranges, is_keyframe_safelist, keyframe_safelist_diagnostics,
