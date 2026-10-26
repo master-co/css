@@ -285,6 +285,19 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
             .match_status
             != mastercss_schema::MatchStatus::Matched
     );
+    // `$` before any CSS name code point, non-ASCII symbols included, is a legacy
+    // reference.
+    for class_name in ["content:$é", "content:$☃"] {
+        assert!(
+            engine.inspect(class_name).unwrap().match_status
+                != mastercss_schema::MatchStatus::Matched,
+            "{class_name}"
+        );
+    }
+    assert_eq!(
+        engine.inspect("content:'$'").unwrap().match_status,
+        mastercss_schema::MatchStatus::Matched
+    );
 }
 
 #[test]
@@ -345,4 +358,40 @@ fn repeated_native_declarations_share_one_rule() {
         engine.css_text(),
         "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
     );
+}
+
+#[test]
+fn mixin_numbers_are_checked_on_their_digits() {
+    let definitions: Vec<mastercss_schema::MixinDefinition> = serde_json::from_value(serde_json::json!([
+        {"name": "--clamp", "parameters": [{"name": "--n"}], "body": [{"type": "declaration", "property": "-webkit-line-clamp", "value": [{"type": "function", "name": "var", "value": [{"type": "text", "value": "--n"}]}]}]},
+        {"name": "--scale", "parameters": [{"name": "--n", "syntax": "number"}], "body": [{"type": "declaration", "property": "scale", "value": [{"type": "function", "name": "var", "value": [{"type": "text", "value": "--n"}]}]}]}
+    ]))
+    .unwrap();
+    // Positive integers are exact: a fraction beyond f64 precision is still one.
+    for (argument, accepted) in [
+        ("3", true),
+        ("3.0", true),
+        ("1.5e1", true),
+        ("1.00000000000000000001", false),
+        ("0", false),
+        ("-2", false),
+        ("1e400", false),
+    ] {
+        assert_eq!(
+            crate::expand_mixin(&definitions, "--clamp", &[argument.into()]).is_ok(),
+            accepted,
+            "{argument}"
+        );
+    }
+    for (argument, accepted) in [
+        ("1.5", true),
+        ("1.7976931348623157e308", true),
+        ("1.8e308", false),
+    ] {
+        assert_eq!(
+            crate::expand_mixin(&definitions, "--scale", &[argument.into()]).is_ok(),
+            accepted,
+            "{argument}"
+        );
+    }
 }

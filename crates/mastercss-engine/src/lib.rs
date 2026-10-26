@@ -348,6 +348,7 @@ pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;
 mod condition;
 mod custom_media;
+mod decimal;
 mod keyframe_slots;
 #[cfg(feature = "stylesheet-resources")]
 pub use keyframe_slots::KeyframeOutputEdit;

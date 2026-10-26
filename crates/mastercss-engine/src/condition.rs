@@ -34,10 +34,7 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
             let Some((name, body)) = body.split_once(char::is_whitespace) else {
                 return features;
             };
-            if !name
-                .chars()
-                .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_'))
-            {
+            if !name.chars().all(mastercss_lexer::is_name_code_point) {
                 return features;
             }
             (format!("container:{name}"), body.trim())
@@ -76,10 +73,10 @@ fn range_dimension(value: &str) -> Option<(f64, String)> {
     let number_end = value
         .find(|c: char| !(c.is_ascii_digit() || matches!(c, '.' | '-' | '+')))
         .unwrap_or(value.len());
-    let number = value[..number_end].parse::<f64>().ok()?;
+    let number = crate::decimal::Decimal::parse(&value[..number_end])?;
     let unit = &value[number_end..];
-    (number.is_finite() && unit.chars().all(|c| c.is_ascii_alphabetic() || c == '%'))
-        .then(|| (number, unit.to_ascii_lowercase()))
+    (number.is_finite_f64() && unit.chars().all(|c| c.is_ascii_alphabetic() || c == '%'))
+        .then(|| (number.to_f64(), unit.to_ascii_lowercase()))
 }
 
 fn range_feature(value: &str) -> bool {

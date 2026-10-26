@@ -318,7 +318,7 @@ pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
             .any(|token| {
                 matches!(token.kind, mastercss_lexer::CssSyntaxKind::Delim('$'))
                     && value[token.bytes.end..]
-                        .starts_with(|c: char| c.is_alphanumeric() || matches!(c, '(' | '-' | '_'))
+                        .starts_with(|c: char| mastercss_lexer::is_name_code_point(c) || c == '(')
             })
 }
 
@@ -326,46 +326,14 @@ pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
 /// `.07` becomes `7` rather than the binary float product `7.000000000000001`. It
 /// accepts the decimal forms `f64::from_str` accepts, including an exponent.
 pub(crate) fn alpha_percentage(alpha: &str) -> Option<String> {
-    let (negative, unsigned) = match alpha.as_bytes().first() {
-        Some(b'+') => (false, &alpha[1..]),
-        Some(b'-') => (true, &alpha[1..]),
-        _ => (false, alpha),
-    };
-    let (mantissa, exponent) = match unsigned.find(['e', 'E']) {
-        Some(index) => {
-            let exponent = &unsigned[index + 1..];
-            let digits = exponent.strip_prefix(['+', '-']).unwrap_or(exponent);
-            if digits.is_empty() || !digits.bytes().all(|byte| byte.is_ascii_digit()) {
-                return None;
-            }
-            // Beyond this the value is zero or out of range either way.
-            let magnitude = digits.parse::<i64>().unwrap_or(i64::MAX).min(1 << 20);
-            let exponent = if exponent.starts_with('-') {
-                -magnitude
-            } else {
-                magnitude
-            };
-            (&unsigned[..index], exponent)
-        }
-        None => (unsigned, 0),
-    };
-    let (integer, fraction) = mantissa.split_once('.').unwrap_or((mantissa, ""));
-    if integer.is_empty() && fraction.is_empty()
-        || !integer
-            .bytes()
-            .chain(fraction.bytes())
-            .all(|byte| byte.is_ascii_digit())
-    {
-        return None;
-    }
-    // The value is 0.<digits> × 10^point with no leading or trailing zero digits.
-    let digits = format!("{integer}{fraction}");
-    let leading = digits.bytes().take_while(|byte| *byte == b'0').count();
-    let digits = digits[leading..].trim_end_matches('0');
+    let crate::decimal::Decimal {
+        negative,
+        digits,
+        point,
+    } = crate::decimal::Decimal::parse(alpha)?;
     if digits.is_empty() {
         return Some("0".into());
     }
-    let point = integer.len() as i64 - leading as i64 + exponent;
     if negative || point > 1 || point == 1 && digits != "1" {
         return None;
     }

@@ -128,14 +128,22 @@ pub fn valid_mode_name(name: &str) -> bool {
         && !name
             .strip_prefix('-')
             .is_some_and(|s| s.starts_with(|c: char| c.is_ascii_digit()))
-        && name
-            .chars()
-            .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_'))
+        && name.chars().all(crate::is_name_code_point)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn mode_names_are_css_names() {
+        for name in ["dark", "high-contrast", "暗色", "dark·mode", "☃"] {
+            assert!(valid_mode_name(name), "{name}");
+        }
+        for name in ["", "-", "1dark", "-1dark", "dark mode", "dark!"] {
+            assert!(!valid_mode_name(name), "{name}");
+        }
+    }
+
     #[test]
     fn nesting_preserves_literal_ampersands() {
         assert_eq!(

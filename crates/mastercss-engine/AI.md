@@ -23,6 +23,7 @@ emitted globals as `EmittedGlobals` values; hosts that receive JSON use
 - `manifest.rs`: manifest validation, compilation into a `Program`, and `finish_program`.
 - `program.rs`: the versioned binary `Program` encoding; decoding checks every bound.
 - `completion.rs`: completion-facing engine data.
+- `decimal.rs`: numbers decided on their decimal digits; use it instead of `str::parse::<f64>()`, whose tables the runtime Wasm omits.
 - `tests/`: lifecycle and syntax behavior; `tests.rs` owns broader unit coverage.
 
 ## Guardrails

@@ -19,6 +19,12 @@ fn equivalent_native_ranges_share_sorting_data_without_converting_units() {
         native_query_features("@container card (40rem<=width<64rem)"),
         range
     );
+    // Container names are CSS names: any non-ASCII code point qualifies.
+    for name in ["card", "卡片", "card☃"] {
+        let features = native_query_features(&format!("@container {name} (40rem<=width<64rem)"));
+        assert_eq!(features[0].domain, format!("container:{name}"), "{name}");
+    }
+    assert!(native_query_features("@container card! (40rem<=width<64rem)").is_empty());
     assert_ne!(
         native_query_features("@media (width>=640px)"),
         native_query_features("@media (width>=40rem)")

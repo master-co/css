@@ -32,7 +32,9 @@ fn whitespace(c: char) -> bool {
     matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0c')
 }
 
-fn name_character(c: char) -> bool {
+/// A CSS Syntax name code point: an ASCII letter or digit, `-`, `_` or any non-ASCII
+/// code point.
+pub fn is_name_code_point(c: char) -> bool {
     c.is_ascii_alphanumeric() || c == '-' || c == '_' || !c.is_ascii()
 }
 
@@ -139,7 +141,7 @@ fn name<'a>(source: &'a str, cursor: &mut usize) -> Cow<'a, str> {
             if let Some(c) = escape(source, cursor) {
                 output.push(c);
             }
-        } else if name_character(c) {
+        } else if is_name_code_point(c) {
             *cursor += c.len_utf8();
             if let Some(output) = &mut decoded {
                 output.push(c);

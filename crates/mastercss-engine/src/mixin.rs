@@ -2,6 +2,7 @@
 //! or browser-dependent parameter evaluation is part of the runtime engine.
 use std::collections::{HashMap, HashSet};
 
+use crate::decimal::Decimal;
 use mastercss_lexer::{CssSyntaxKind as Kind, css_escape, tokenize_css_syntax};
 use mastercss_schema::{
     MixinDefinition, MixinNode, MixinParameter, MixinParameterSyntax, MixinValue, MixinValuePart,
@@ -72,7 +73,7 @@ fn validate_argument(
             matches!(tokens.as_slice(), [token] if matches!(token.kind, Kind::Number(number) if number.trim_start_matches(['+', '-']).chars().all(|c| c.is_ascii_digit()) && number.parse::<i64>().is_ok()))
         }
         Some(MixinParameterSyntax::Number) => {
-            matches!(tokens.as_slice(), [token] if matches!(token.kind, Kind::Number(number) if number.parse::<f64>().is_ok_and(f64::is_finite)))
+            matches!(tokens.as_slice(), [token] if matches!(token.kind, Kind::Number(number) if Decimal::parse(number).is_some_and(|number| number.is_finite_f64())))
         }
         Some(MixinParameterSyntax::String) => {
             matches!(tokens.as_slice(), [token] if matches!(token.kind, Kind::String(_)) && value.ends_with(['\'', '"']))
@@ -335,6 +336,14 @@ fn same_subject(selector: &str) -> bool {
     })
 }
 
+/// Whether a number token is a positive integer, decided exactly on its digits; a
+/// value too large for `f64` is not one.
+fn is_positive_integer(number: &str) -> bool {
+    Decimal::parse(number).is_none_or(|number| {
+        !number.negative && !number.is_zero() && number.is_integer() && number.is_finite_f64()
+    })
+}
+
 fn validate_declaration(property: &str, value: &str) -> Result<(), String> {
     let tokens = tokenize_css_syntax(value);
     let property = property.to_ascii_lowercase();
@@ -344,9 +353,7 @@ fn validate_declaration(property: &str, value: &str) -> Result<(), String> {
                 && matches!(&token.kind, Kind::Ident(name) if name.eq_ignore_ascii_case("span")));
         if positive
             && let Some(Kind::Number(number)) = tokens.get(index + 1).map(|next| &next.kind)
-            && number
-                .parse::<f64>()
-                .is_ok_and(|number| number <= 0.0 || number.fract() != 0.0)
+            && !is_positive_integer(number)
         {
             return Err(crate::message(|| {
                 format!("{property} requires a positive integer")
@@ -354,7 +361,7 @@ fn validate_declaration(property: &str, value: &str) -> Result<(), String> {
         }
     }
     if property == "-webkit-line-clamp"
-        && matches!(tokens.first().map(|token| &token.kind), Some(Kind::Number(number)) if number.parse::<f64>().is_ok_and(|number| number <= 0.0 || number.fract() != 0.0))
+        && matches!(tokens.first().map(|token| &token.kind), Some(Kind::Number(number)) if !is_positive_integer(number))
     {
         return Err(crate::message(|| {
             "-webkit-line-clamp requires a positive integer".into()
