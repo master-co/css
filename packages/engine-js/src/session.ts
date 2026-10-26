@@ -1,3 +1,4 @@
+import { decodeProgram } from './program'
 import type {
   EmittedGlobals,
   EngineSession,
@@ -8,17 +9,18 @@ import type {
 } from './types'
 
 export class EngineError extends Error {
-  constructor(readonly code: 'SESSION_DISPOSED' | 'INVALID_PROGRAM', message: string) {
+  constructor(readonly code: 'SESSION_DISPOSED' | 'INVALID_PROGRAM' | 'UNSUPPORTED_PROGRAM_VERSION', message: string) {
     super(message)
   }
 }
 
 const EMPTY_TRANSITION: Transition = Object.freeze({ version: 0, mutations: Object.freeze([]) })
 
-// J0 skeleton: every operation returns an empty result so the differential harness
-// can run end to end and report each divergence from the Rust engine.
+// Operations return empty results until class matching lands (J2), so the
+// differential harness reports each divergence from the Rust engine.
 export function createEngineSession(program: Uint8Array, emittedGlobals?: EmittedGlobals): EngineSession {
-  void program
+  const decoded = decodeProgram(program)
+  if (!decoded.ok) throw new EngineError(decoded.error.code, decoded.error.message)
   void emittedGlobals
   let disposed = false
   const assertActive = () => {
